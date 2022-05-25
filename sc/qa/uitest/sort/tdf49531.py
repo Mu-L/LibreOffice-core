@@ -8,15 +8,14 @@
 #
 from uitest.framework import UITestCase
 from uitest.uihelper.common import get_state_as_dict, get_url_for_data_file
-from uitest.uihelper.common import select_pos
-from uitest.uihelper.common import select_by_text
-from uitest.uihelper.calc import enter_text_to_cell
+from uitest.uihelper.common import select_by_text, select_pos
+
 from libreoffice.calc.document import get_cell_by_position
 from libreoffice.uno.propertyvalue import mkPropertyValues
 
-#Bug 49531 - EDITING: Sort rows for will sort columns
-#Bug 49520 - EDITING: CRASH when undo sort with chart
 
+# Bug 49531 - EDITING: Sort rows for will sort columns
+# Bug 49520 - EDITING: CRASH when undo sort with chart
 class tdf49531(UITestCase):
     def test_td49531_sort_undo_crash(self):
         with self.ui_test.load_file(get_url_for_data_file("tdf49531.ods")) as calc_doc:
@@ -31,14 +30,14 @@ class tdf49531(UITestCase):
                 xTabs = xDialog.getChild("tabcontrol")
                 select_pos(xTabs, "1")
                 xNatural = xDialog.getChild("naturalsort")
-                xtopdown = xDialog.getChild("topdown")
-                xHeader = xDialog.getChild("header")
                 if (get_state_as_dict(xNatural)["Selected"]) == "true":
                     xNatural.executeAction("CLICK", tuple())
+                select_pos(xTabs, "0")
+                xtopdown = xDialog.getChild("rbTopDown")
+                xHeader = xDialog.getChild("cbHeader")
                 if (get_state_as_dict(xHeader)["Selected"]) == "true":
                     xHeader.executeAction("CLICK", tuple())
                 xtopdown.executeAction("CLICK", tuple())
-                select_pos(xTabs, "0")
                 xSortKey1 = xDialog.getChild("sortlb")
                 xAsc = xDialog.getChild("up")
                 select_by_text(xSortKey1, "B")

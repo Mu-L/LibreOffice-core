@@ -102,6 +102,7 @@
 #include <dbaccess/dbaundomanager.hxx>
 #include <editeng/paperinf.hxx>
 #include <framework/titlehelper.hxx>
+#include <o3tl/safeint.hxx>
 #include <svl/itempool.hxx>
 #include <svl/undo.hxx>
 #include <svx/svdlayer.hxx>
@@ -1309,13 +1310,12 @@ void SAL_CALL OReportDefinition::storeToStorage( const uno::Reference< embed::XS
     }
 
     /** property map for export info set */
-    comphelper::PropertyMapEntry const aExportInfoMap[] =
+    static comphelper::PropertyMapEntry const aExportInfoMap[] =
     {
         { OUString("UsePrettyPrinting") , 0, cppu::UnoType<sal_Bool>::get(),          beans::PropertyAttribute::MAYBEVOID, 0 },
         { OUString("StreamName")        , 0, cppu::UnoType<OUString>::get(), beans::PropertyAttribute::MAYBEVOID, 0 },
         { OUString("StreamRelPath")     , 0, cppu::UnoType<OUString>::get(), beans::PropertyAttribute::MAYBEVOID, 0 },
         { OUString("BaseURI")           , 0, cppu::UnoType<OUString>::get(), beans::PropertyAttribute::MAYBEVOID, 0 },
-        { OUString(), 0, css::uno::Type(), 0, 0 }
     };
     uno::Reference< beans::XPropertySet > xInfoSet( comphelper::GenericPropertySet_CreateInstance( new comphelper::PropertySetInfo( aExportInfoMap ) ) );
 
@@ -2283,7 +2283,7 @@ sal_Int32 SAL_CALL OStylesHelper::getCount(  )
 uno::Any SAL_CALL OStylesHelper::getByIndex( sal_Int32 Index )
 {
     ::osl::MutexGuard aGuard(m_aMutex);
-    if ( Index < 0 || Index >= static_cast<sal_Int32>(m_aElementsPos.size()) )
+    if ( Index < 0 || o3tl::make_unsigned(Index) >= m_aElementsPos.size() )
         throw lang::IndexOutOfBoundsException();
     return m_aElementsPos[Index]->second;
 }

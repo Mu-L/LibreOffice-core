@@ -7,7 +7,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include <swmodeltestbase.hxx>
+#include <wrtsh.hxx>
 
 #include <optional>
 
@@ -19,12 +19,13 @@
 #include <sal/types.h>
 #include <comphelper/propertyvalue.hxx>
 
+#include <swmodeltestbase.hxx>
 #include <doc.hxx>
 #include <docsh.hxx>
 #include <formatlinebreak.hxx>
-#include <wrtsh.hxx>
 #include <ndtxt.hxx>
 #include <textcontentcontrol.hxx>
+#include <fmtanchr.hxx>
 
 namespace
 {
@@ -160,7 +161,7 @@ CPPUNIT_TEST_FIXTURE(Test, testInsertCheckboxContentControl)
     auto pTextContentControl = static_txtattr_cast<SwTextContentControl*>(pAttr);
     auto& rFormatContentControl
         = static_cast<SwFormatContentControl&>(pTextContentControl->GetAttr());
-    SwContentControl* pContentControl = rFormatContentControl.GetContentControl();
+    std::shared_ptr<SwContentControl> pContentControl = rFormatContentControl.GetContentControl();
     // Without the accompanying fix in place, this test would have failed, the inserted content
     // control wasn't a checkbox one.
     CPPUNIT_ASSERT(pContentControl->GetCheckbox());
@@ -215,6 +216,133 @@ CPPUNIT_TEST_FIXTURE(Test, testSelectDropdownContentControl)
     // - Actual  : choose an item
     // i.e. the document text was unchanged instead of display text of the first list item.
     CPPUNIT_ASSERT_EQUAL(OUString("red"), pTextNode->GetExpandText(pWrtShell->GetLayout()));
+}
+
+CPPUNIT_TEST_FIXTURE(Test, testInsertDropdownContentControl)
+{
+    // Given an empty document:
+    SwDoc* pDoc = createSwDoc();
+
+    // When inserting a content control:
+    SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
+    pWrtShell->InsertContentControl(SwContentControlType::DROP_DOWN_LIST);
+
+    // Then make sure that the matching text attribute is added to the document model:
+    SwTextNode* pTextNode = pWrtShell->GetCursor()->GetNode().GetTextNode();
+    SwTextAttr* pAttr = pTextNode->GetTextAttrForCharAt(0, RES_TXTATR_CONTENTCONTROL);
+    auto pTextContentControl = static_txtattr_cast<SwTextContentControl*>(pAttr);
+    auto& rFormatContentControl
+        = static_cast<SwFormatContentControl&>(pTextContentControl->GetAttr());
+    std::shared_ptr<SwContentControl> pContentControl = rFormatContentControl.GetContentControl();
+    // Without the accompanying fix in place, this test would have failed:
+    // - Expected: 1
+    // - Actual  : 0
+    // i.e. the inserted content control was a default (rich text) one, not a dropdown.
+    CPPUNIT_ASSERT_EQUAL(static_cast<size_t>(1), pContentControl->GetListItems().size());
+}
+
+CPPUNIT_TEST_FIXTURE(Test, testReplacePictureContentControl)
+{
+    // Given a document with a picture content control:
+    SwDoc* pDoc = createSwDoc();
+    uno::Reference<lang::XMultiServiceFactory> xMSF(mxComponent, uno::UNO_QUERY);
+    uno::Reference<text::XTextDocument> xTextDocument(mxComponent, uno::UNO_QUERY);
+    uno::Reference<text::XText> xText = xTextDocument->getText();
+    uno::Reference<text::XTextCursor> xCursor = xText->createTextCursor();
+    uno::Reference<beans::XPropertySet> xTextGraphic(
+        xMSF->createInstance("com.sun.star.text.TextGraphicObject"), uno::UNO_QUERY);
+    xTextGraphic->setPropertyValue("AnchorType",
+                                   uno::Any(text::TextContentAnchorType_AS_CHARACTER));
+    uno::Reference<text::XTextContent> xTextContent(xTextGraphic, uno::UNO_QUERY);
+    xText->insertTextContent(xCursor, xTextContent, false);
+    xCursor->gotoStart(/*bExpand=*/false);
+    xCursor->gotoEnd(/*bExpand=*/true);
+    uno::Reference<text::XTextContent> xContentControl(
+        xMSF->createInstance("com.sun.star.text.ContentControl"), uno::UNO_QUERY);
+    uno::Reference<beans::XPropertySet> xContentControlProps(xContentControl, uno::UNO_QUERY);
+    xContentControlProps->setPropertyValue("ShowingPlaceHolder", uno::Any(true));
+    xContentControlProps->setPropertyValue("Picture", uno::Any(true));
+    xText->insertTextContent(xCursor, xContentControl, /*bAbsorb=*/true);
+
+    // When clicking on that content control:
+    SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
+    pWrtShell->GotoObj(/*bNext=*/true, GotoObjFlags::Any);
+    pWrtShell->EnterSelFrameMode();
+    const SwFrameFormat* pFlyFormat = pWrtShell->GetFlyFrameFormat();
+    const SwFormatAnchor& rFormatAnchor = pFlyFormat->GetAnchor();
+    const SwPosition* pAnchorPos = rFormatAnchor.GetContentAnchor();
+    SwTextNode* pTextNode = pAnchorPos->nNode.GetNode().GetTextNode();
+    SwTextAttr* pAttr = pTextNode->GetTextAttrForCharAt(0, RES_TXTATR_CONTENTCONTROL);
+    auto pTextContentControl = static_txtattr_cast<SwTextContentControl*>(pAttr);
+    auto& rFormatContentControl
+        = static_cast<SwFormatContentControl&>(pTextContentControl->GetAttr());
+    pWrtShell->GotoContentControl(rFormatContentControl);
+
+    // Then make sure that the picture is replaced:
+    CPPUNIT_ASSERT(!rFormatContentControl.GetContentControl()->GetShowingPlaceHolder());
+    // Without the accompanying fix in place, this test would have failed, there was no special
+    // handling for picture content control (how to interact with them), and the default handler
+    // killed the image selection.
+    CPPUNIT_ASSERT(pWrtShell->IsFrameSelected());
+}
+
+CPPUNIT_TEST_FIXTURE(Test, testInsertPictureContentControl)
+{
+    // Given an empty document:
+    SwDoc* pDoc = createSwDoc();
+
+    // When inserting a content control:
+    SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
+    pWrtShell->InsertContentControl(SwContentControlType::PICTURE);
+
+    // Then make sure that the matching text attribute is added to the document model:
+    SwTextNode* pTextNode = pWrtShell->GetCursor()->GetNode().GetTextNode();
+    SwTextAttr* pAttr = pTextNode->GetTextAttrForCharAt(0, RES_TXTATR_CONTENTCONTROL);
+    auto pTextContentControl = static_txtattr_cast<SwTextContentControl*>(pAttr);
+    auto& rFormatContentControl
+        = static_cast<SwFormatContentControl&>(pTextContentControl->GetAttr());
+    std::shared_ptr<SwContentControl> pContentControl = rFormatContentControl.GetContentControl();
+    // Without the accompanying fix in place, this test would have failed, there was no special
+    // handling for picture content control, no placeholder fly content was inserted.
+    CPPUNIT_ASSERT(pContentControl->GetPicture());
+    CPPUNIT_ASSERT(pTextNode->GetTextAttrForCharAt(1, RES_TXTATR_FLYCNT));
+}
+
+CPPUNIT_TEST_FIXTURE(Test, testSelectDateContentControl)
+{
+    // Given a document with a date content control:
+    SwDoc* pDoc = createSwDoc();
+    uno::Reference<lang::XMultiServiceFactory> xMSF(mxComponent, uno::UNO_QUERY);
+    uno::Reference<text::XTextDocument> xTextDocument(mxComponent, uno::UNO_QUERY);
+    uno::Reference<text::XText> xText = xTextDocument->getText();
+    uno::Reference<text::XTextCursor> xCursor = xText->createTextCursor();
+    xText->insertString(xCursor, "test", /*bAbsorb=*/false);
+    xCursor->gotoStart(/*bExpand=*/false);
+    xCursor->gotoEnd(/*bExpand=*/true);
+    uno::Reference<text::XTextContent> xContentControl(
+        xMSF->createInstance("com.sun.star.text.ContentControl"), uno::UNO_QUERY);
+    uno::Reference<beans::XPropertySet> xContentControlProps(xContentControl, uno::UNO_QUERY);
+    xContentControlProps->setPropertyValue("Date", uno::Any(true));
+    xContentControlProps->setPropertyValue("DateFormat", uno::Any(OUString("YYYY-MM-DD")));
+    xContentControlProps->setPropertyValue("DateLanguage", uno::Any(OUString("en-US")));
+    xText->insertTextContent(xCursor, xContentControl, /*bAbsorb=*/true);
+
+    // When clicking on that content control:
+    SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
+    SwTextNode* pTextNode = pWrtShell->GetCursor()->GetNode().GetTextNode();
+    SwTextAttr* pAttr = pTextNode->GetTextAttrForCharAt(0, RES_TXTATR_CONTENTCONTROL);
+    auto pTextContentControl = static_txtattr_cast<SwTextContentControl*>(pAttr);
+    auto& rFormatContentControl
+        = static_cast<SwFormatContentControl&>(pTextContentControl->GetAttr());
+    rFormatContentControl.GetContentControl()->SetSelectedDate(44705);
+    pWrtShell->GotoContentControl(rFormatContentControl);
+
+    // Then make sure that the document text is updated:
+    // Without the accompanying fix in place, this test would have failed with:
+    // - Expected: 2022-05-24
+    // - Actual  : test
+    // i.e. the content control was not updated.
+    CPPUNIT_ASSERT_EQUAL(OUString("2022-05-24"), pTextNode->GetExpandText(pWrtShell->GetLayout()));
 }
 }
 

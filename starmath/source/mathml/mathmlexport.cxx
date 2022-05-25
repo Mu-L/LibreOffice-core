@@ -128,27 +128,29 @@ bool SmXMLExportWrapper::Export(SfxMedium& rMedium)
         }
     }
 
+    static constexpr OUStringLiteral sUsePrettyPrinting(u"UsePrettyPrinting");
+    static constexpr OUStringLiteral sBaseURI(u"BaseURI");
+    static constexpr OUStringLiteral sStreamRelPath(u"StreamRelPath");
+    static constexpr OUStringLiteral sStreamName(u"StreamName");
+
     // create XPropertySet with three properties for status indicator
-    comphelper::PropertyMapEntry aInfoMap[]
-        = { { OUString("UsePrettyPrinting"), 0, cppu::UnoType<bool>::get(),
-              beans::PropertyAttribute::MAYBEVOID, 0 },
-            { OUString("BaseURI"), 0, ::cppu::UnoType<OUString>::get(),
-              beans::PropertyAttribute::MAYBEVOID, 0 },
-            { OUString("StreamRelPath"), 0, ::cppu::UnoType<OUString>::get(),
-              beans::PropertyAttribute::MAYBEVOID, 0 },
-            { OUString("StreamName"), 0, ::cppu::UnoType<OUString>::get(),
-              beans::PropertyAttribute::MAYBEVOID, 0 },
-            { OUString(), 0, css::uno::Type(), 0, 0 } };
+    static const comphelper::PropertyMapEntry aInfoMap[] = {
+        { sUsePrettyPrinting, 0, cppu::UnoType<bool>::get(), beans::PropertyAttribute::MAYBEVOID,
+          0 },
+        { sBaseURI, 0, ::cppu::UnoType<OUString>::get(), beans::PropertyAttribute::MAYBEVOID, 0 },
+        { sStreamRelPath, 0, ::cppu::UnoType<OUString>::get(), beans::PropertyAttribute::MAYBEVOID,
+          0 },
+        { sStreamName, 0, ::cppu::UnoType<OUString>::get(), beans::PropertyAttribute::MAYBEVOID, 0 }
+    };
     uno::Reference<beans::XPropertySet> xInfoSet(
         comphelper::GenericPropertySet_CreateInstance(new comphelper::PropertySetInfo(aInfoMap)));
 
     bool bUsePrettyPrinting
         = bFlat || officecfg::Office::Common::Save::Document::PrettyPrinting::get();
-    xInfoSet->setPropertyValue("UsePrettyPrinting", Any(bUsePrettyPrinting));
+    xInfoSet->setPropertyValue(sUsePrettyPrinting, Any(bUsePrettyPrinting));
 
     // Set base URI
-    OUString sPropName("BaseURI");
-    xInfoSet->setPropertyValue(sPropName, Any(rMedium.GetBaseURL(true)));
+    xInfoSet->setPropertyValue(sBaseURI, Any(rMedium.GetBaseURL(true)));
 
     sal_Int32 nSteps = 0;
     if (xStatusIndicator.is())
@@ -172,8 +174,7 @@ bool SmXMLExportWrapper::Export(SfxMedium& rMedium)
 
             if (!aName.isEmpty())
             {
-                sPropName = "StreamRelPath";
-                xInfoSet->setPropertyValue(sPropName, Any(aName));
+                xInfoSet->setPropertyValue(sStreamRelPath, Any(aName));
             }
         }
 
@@ -292,10 +293,14 @@ bool SmXMLExportWrapper::WriteThroughComponent(const Reference<embed::XStorage>&
     }
 
     uno::Reference<beans::XPropertySet> xSet(xStream, uno::UNO_QUERY);
-    xSet->setPropertyValue("MediaType", Any(OUString("text/xml")));
+    static const OUStringLiteral sMediaType = u"MediaType";
+    static const OUStringLiteral sTextXml = u"text/xml";
+    xSet->setPropertyValue(sMediaType, Any(OUString(sTextXml)));
 
     // all streams must be encrypted in encrypted document
-    xSet->setPropertyValue("UseCommonStoragePasswordEncryption", Any(true));
+    static const OUStringLiteral sUseCommonStoragePasswordEncryption
+        = u"UseCommonStoragePasswordEncryption";
+    xSet->setPropertyValue(sUseCommonStoragePasswordEncryption, Any(true));
 
     // set Base URL
     if (rPropSet.is())
@@ -537,8 +542,10 @@ void SmXMLExport::GetConfigurationSettings(Sequence<PropertyValue>& rProps)
                            aRet.Name = prop.Name;
                            OUString aActualName(prop.Name);
                            // handle 'save used symbols only'
+                           static constexpr OUStringLiteral sUserDefinedSymbolsInUse
+                               = u"UserDefinedSymbolsInUse";
                            if (bUsedSymbolsOnly && prop.Name == "Symbols")
-                               aActualName = "UserDefinedSymbolsInUse";
+                               aActualName = sUserDefinedSymbolsInUse;
                            aRet.Value = xProps->getPropertyValue(aActualName);
                        }
                        return aRet;
@@ -1142,8 +1149,7 @@ void SmXMLExport::ExportFont(const SmNode* pNode, int nLevel)
         case TMATHMLCOL:
         {
             nc = pNode->GetToken().cMathChar.toUInt32(16);
-            OUString sssStr
-                = OUString::createFromAscii(starmathdatabase::Identify_Color_MATHML(nc).pIdent);
+            const OUString& sssStr = starmathdatabase::Identify_Color_MATHML(nc).aIdent;
             AddAttribute(XML_NAMESPACE_MATH, XML_MATHCOLOR, sssStr);
         }
         break;

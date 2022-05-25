@@ -169,6 +169,9 @@ public:
 
     void        ClearSelectionItems( const sal_uInt16* pWhich, const ScMarkData& rMark, SCCOL nCol );
     void        ChangeSelectionIndent( bool bIncrement, const ScMarkData& rMark, SCCOL nCol );
+
+    bool        TestInsertRow( SCSIZE nSize ) const;
+    void        InsertRow( SCROW nStartRow, SCSIZE nSize );
 };
 
 // Use protected inheritance to prevent publishing some internal ScColumnData
@@ -285,7 +288,7 @@ public:
     bool        IsEmptyAttr() const;
 
                 // data only:
-    bool        IsEmptyBlock(SCROW nStartRow, SCROW nEndRow) const;
+    bool        IsEmptyData(SCROW nStartRow, SCROW nEndRow) const;
     SCSIZE      GetEmptyLinesInBlock( SCROW nStartRow, SCROW nEndRow, ScDirection eDir ) const;
     bool        HasDataAt( SCROW nRow, ScDataAreaExtras* pDataAreaExtras = nullptr ) const;
     bool        HasDataAt( sc::ColumnBlockConstPosition& rBlockPos, SCROW nRow,
@@ -379,7 +382,7 @@ public:
     bool       TestCopyScenarioTo( const ScColumn& rDestCol ) const;
     void        MarkScenarioIn( ScMarkData& rDestMark ) const;
 
-    void        CopyUpdated( const ScColumn& rPosCol, ScColumn& rDestCol ) const;
+    void        CopyUpdated( const ScColumn* pPosCol, ScColumn& rDestCol ) const;
 
     void        SwapCol(ScColumn& rCol);
     void        MoveTo(SCROW nStartRow, SCROW nEndRow, ScColumn& rCol);
@@ -1032,6 +1035,16 @@ inline void ScColumn::SetPatternArea( SCROW nStartRow, SCROW nEndRow,
 inline void ScColumnData::SetAttrEntries(std::vector<ScAttrEntry> && vNewData)
 {
     pAttrArray->SetAttrEntries( std::move( vNewData ));
+}
+
+inline bool ScColumnData::TestInsertRow( SCSIZE nSize ) const
+{
+    return pAttrArray->TestInsertRow( nSize );
+}
+
+inline void ScColumnData::InsertRow( SCROW nStartRow, SCSIZE nSize )
+{
+    pAttrArray->InsertRow( nStartRow, nSize );
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

@@ -85,6 +85,7 @@
 #include <oox/export/vmlexport.hxx>
 #include <sal/log.hxx>
 #include <comphelper/propertysequence.hxx>
+#include <comphelper/string.hxx>
 
 #include "sprmids.hxx"
 
@@ -219,7 +220,7 @@ SwWW8AttrIter::SwWW8AttrIter(MSWordExportBase& rWr, const SwTextNode& rTextNd) :
      Get list of any graphics which may be anchored from this paragraph.
     */
     maFlyFrames = GetFramesInNode(rWr.m_aFrames, m_rNode);
-    std::sort(maFlyFrames.begin(), maFlyFrames.end(), sortswflys());
+    std::stable_sort(maFlyFrames.begin(), maFlyFrames.end(), sortswflys());
 
     /*
      #i18480#
@@ -1019,8 +1020,11 @@ bool WW8AttributeOutput::AnalyzeURL( const OUString& rUrl, const OUString& rTarg
     if ( !sURL.isEmpty() )
         sURL = URIHelper::simpleNormalizedMakeRelative( m_rWW8Export.GetWriter().GetBaseURL(), sURL );
 
-    if ( bBookMarkOnly )
-        sURL = FieldString( ww::eHYPERLINK );
+    if (bBookMarkOnly)
+    {
+        sURL = FieldString(ww::eHYPERLINK);
+        *pMark = BookmarkToWord(*pMark);
+    }
     else
         sURL = FieldString( ww::eHYPERLINK ) + "\"" + sURL + "\"";
 
@@ -1785,6 +1789,12 @@ OUString SwWW8AttrIter::GetSnippet(const OUString &rStr, sal_Int32 nCurrentPos,
     aSnippet = aSnippet.replace(0x0A, 0x0B);
     aSnippet = aSnippet.replace(CHAR_HARDHYPHEN, 0x1e);
     aSnippet = aSnippet.replace(CHAR_SOFTHYPHEN, 0x1f);
+    // Ignore the dummy character at the end of content controls.
+    static sal_Unicode const aForbidden[] = {
+        CH_TXTATR_BREAKWORD,
+        0
+    };
+    aSnippet = comphelper::string::removeAny(aSnippet, aForbidden);
 
     m_rExport.m_aCurrentCharPropStarts.push( nCurrentPos );
     const SfxPoolItem &rItem = GetItem(RES_CHRATR_CASEMAP);

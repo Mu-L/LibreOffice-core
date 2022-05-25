@@ -965,11 +965,17 @@ sal_uInt16 SwSubFont::GetHeight( SwViewShell const *pSh, const OutputDevice& rOu
     return nHeight; // + nLeading;
 }
 
+sal_uInt16 SwSubFont::GetHangingBaseline( SwViewShell const *pSh, const OutputDevice& rOut )
+{
+    SwFntAccess aFntAccess( m_nFontCacheId, m_nFontIndex, this, pSh );
+    return aFntAccess.Get()->GetFontHangingBaseline( pSh, rOut );
+}
+
 Size SwSubFont::GetTextSize_( SwDrawTextInfo& rInf )
 {
     // Robust: the font is supposed to be set already, but better safe than
     // sorry...
-    if ( !pLastFont || pLastFont->GetOwner() != reinterpret_cast<const void*>(m_nFontCacheId) ||
+    if ( !pLastFont || pLastFont->GetOwner() != m_nFontCacheId ||
          !IsSameInstance( rInf.GetpOut()->GetFont() ) )
         ChgFnt( rInf.GetShell(), rInf.GetOut() );
 
@@ -1087,7 +1093,7 @@ void SwSubFont::DrawText_( SwDrawTextInfo &rInf, const bool bGrey )
         pUnderFnt = rInf.GetUnderFnt();
     }
 
-    if( !pLastFont || pLastFont->GetOwner() != reinterpret_cast<const void*>(m_nFontCacheId) )
+    if( !pLastFont || pLastFont->GetOwner() != m_nFontCacheId )
         ChgFnt( rInf.GetShell(), rInf.GetOut() );
 
     SwDigitModeModifier aDigitModeModifier( rInf.GetOut(), rInf.GetFont()->GetLanguage() );
@@ -1212,7 +1218,7 @@ void SwSubFont::DrawStretchText_( SwDrawTextInfo &rInf )
         pUnderFnt = rInf.GetUnderFnt();
     }
 
-    if ( !pLastFont || pLastFont->GetOwner() != reinterpret_cast<const void*>(m_nFontCacheId) )
+    if ( !pLastFont || pLastFont->GetOwner() != m_nFontCacheId )
         ChgFnt( rInf.GetShell(), rInf.GetOut() );
 
     SwDigitModeModifier aDigitModeModifier( rInf.GetOut(), rInf.GetFont()->GetLanguage() );
@@ -1277,7 +1283,7 @@ void SwSubFont::DrawStretchText_( SwDrawTextInfo &rInf )
 
 TextFrameIndex SwSubFont::GetModelPositionForViewPoint_( SwDrawTextInfo& rInf )
 {
-    if ( !pLastFont || pLastFont->GetOwner() != reinterpret_cast<const void*>(m_nFontCacheId) )
+    if ( !pLastFont || pLastFont->GetOwner() != m_nFontCacheId )
         ChgFnt( rInf.GetShell(), rInf.GetOut() );
 
     SwDigitModeModifier aDigitModeModifier( rInf.GetOut(), rInf.GetFont()->GetLanguage() );

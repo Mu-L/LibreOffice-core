@@ -719,13 +719,12 @@ DECLARE_HTMLEXPORT_ROUNDTRIP_TEST(testReqIfOleImg, "reqif-ole-img.xhtml")
     // Check mime/media types.
     CPPUNIT_ASSERT_EQUAL(OUString("image/png"), getProperty<OUString>(xGraphic, "MimeType"));
 
-    uno::Reference<document::XStorageBasedDocument> xStorageProvider(mxComponent, uno::UNO_QUERY);
-    uno::Reference<embed::XStorage> xStorage = xStorageProvider->getDocumentStorage();
-    auto aStreamName = getProperty<OUString>(xObject, "StreamName");
-    uno::Reference<io::XStream> xStream
-        = xStorage->openStreamElement(aStreamName, embed::ElementModes::READ);
+    uno::Reference<beans::XPropertySet> xObjectProps(xObject, uno::UNO_QUERY);
+    uno::Reference<io::XActiveDataStreamer> xStreamProvider(
+        xObjectProps->getPropertyValue("EmbeddedObject"), uno::UNO_QUERY);
+    uno::Reference<io::XSeekable> xStream(xStreamProvider->getStream(), uno::UNO_QUERY);
     // This was empty when either import or export handling was missing.
-    CPPUNIT_ASSERT_EQUAL(OUString("text/rtf"), getProperty<OUString>(xStream, "MediaType"));
+    CPPUNIT_ASSERT_EQUAL(static_cast<sal_Int64>(37888), xStream->getLength());
 
     // Check alternate text (it was empty, for export the 'alt' attribute was used).
     CPPUNIT_ASSERT_EQUAL(OUString("OLE Object"), getProperty<OUString>(xObject, "Title").trim());
@@ -2288,6 +2287,40 @@ CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testTableBackground)
     assertXPath(pXmlDoc, "//reqif-xhtml:table[2]/reqif-xhtml:tr[1]", "style",
                 "background: #00ff00");
     assertXPathNoAttribute(pXmlDoc, "//reqif-xhtml:table[2]/reqif-xhtml:tr[1]", "bgcolor");
+}
+
+CPPUNIT_TEST_FIXTURE(HtmlExportTest, testImageKeepRatio)
+{
+    // Given a document with an image: width is relative, height is "keep ratio":
+    createSwDoc();
+    uno::Reference<lang::XMultiServiceFactory> xFactory(mxComponent, uno::UNO_QUERY);
+    uno::Reference<beans::XPropertySet> xTextGraphic(
+        xFactory->createInstance("com.sun.star.text.TextGraphicObject"), uno::UNO_QUERY);
+    xTextGraphic->setPropertyValue("AnchorType",
+                                   uno::Any(text::TextContentAnchorType_AS_CHARACTER));
+    xTextGraphic->setPropertyValue("RelativeWidth", uno::Any(static_cast<sal_Int16>(42)));
+    xTextGraphic->setPropertyValue("IsSyncHeightToWidth", uno::Any(true));
+    uno::Reference<text::XTextDocument> xTextDocument(mxComponent, uno::UNO_QUERY);
+    uno::Reference<text::XText> xBodyText = xTextDocument->getText();
+    uno::Reference<text::XTextCursor> xCursor(xBodyText->createTextCursor());
+    uno::Reference<text::XTextContent> xTextContent(xTextGraphic, uno::UNO_QUERY);
+    xBodyText->insertTextContent(xCursor, xTextContent, false);
+
+    // When exporting to HTML:
+    uno::Reference<frame::XStorable> xStorable(mxComponent, uno::UNO_QUERY);
+    uno::Sequence<beans::PropertyValue> aStoreProperties = {
+        comphelper::makePropertyValue("FilterName", OUString("HTML (StarWriter)")),
+    };
+    xStorable->storeToURL(maTempFile.GetURL(), aStoreProperties);
+
+    // Then make sure that the width is not a fixed size, that would break on resizing the browser
+    // window:
+    htmlDocUniquePtr pDoc = parseHtml(maTempFile);
+    // Without the accompanying fix in place, this test would have failed with:
+    // - Expected: auto
+    // - Actual  : 2
+    // i.e. a static (CSS pixel) height was written.
+    assertXPath(pDoc, "/html/body/p/img", "height", "auto");
 }
 
 CPPUNIT_PLUGIN_IMPLEMENT();

@@ -1331,10 +1331,10 @@ void ScTextWnd::SetNumLines(tools::Long nLines)
 {
     ScViewData& rViewData = mpViewShell->GetViewData();
     rViewData.SetFormulaBarLines(nLines);
-
     if ( nLines > 1 )
     {
-        mnLastExpandedLines = nLines;
+        // SetFormulaBarLines sanitizes the height, so get the sanitized value
+        mnLastExpandedLines = rViewData.GetFormulaBarLines();
         Resize();
     }
 }
@@ -1790,7 +1790,8 @@ bool ScTextWnd::Command( const CommandEvent& rCEvt )
 
 bool ScTextWnd::StartDrag()
 {
-    if (m_xEditView)
+    // tdf#145248 don't start a drag if actively selecting
+    if (m_xEditView && !m_xEditEngine->IsInSelectionMode())
     {
         OUString sSelection = m_xEditView->GetSelected();
         m_xHelper->SetData(sSelection);

@@ -111,7 +111,7 @@ public:
     /// @throws css::container::NoSuchElementException
     /// @throws css::lang::WrappedTargetException
     /// @throws css::uno::RuntimeException
-    css::uno::Any getByName( const OUString& aName );
+    css::uno::Sequence < css::beans::PropertyValue > getByName( const OUString& aName );
     /// @throws css::uno::RuntimeException
     css::uno::Sequence< OUString > getElementNames(  );
     /// @throws css::uno::RuntimeException
@@ -238,14 +238,15 @@ void GlobalEventConfig_Impl::replaceByName( const OUString& aName, const Any& aE
     SetModified();
 }
 
-Any GlobalEventConfig_Impl::getByName( const OUString& aName )
+css::uno::Sequence < css::beans::PropertyValue > GlobalEventConfig_Impl::getByName( const OUString& aName )
 {
-    Any aRet;
+    static constexpr OUStringLiteral sEventType = u"EventType";
+    static constexpr OUStringLiteral sScript = u"Script";
     Sequence< beans::PropertyValue > props(2);
     auto pProps = props.getArray();
-    pProps[0].Name = "EventType";
-    pProps[0].Value <<= OUString("Script");
-    pProps[1].Name = "Script";
+    pProps[0].Name = sEventType;
+    pProps[0].Value <<= OUString(sScript);
+    pProps[1].Name = sScript;
     EventBindingHash::const_iterator it = m_eventBindingHash.find( aName );
     if( it != m_eventBindingHash.end() )
     {
@@ -261,8 +262,7 @@ Any GlobalEventConfig_Impl::getByName( const OUString& aName )
 
         pProps[1].Value <<= OUString();
     }
-    aRet <<= props;
-    return aRet;
+    return props;
 }
 
 Sequence< OUString > GlobalEventConfig_Impl::getElementNames(  )
@@ -342,6 +342,10 @@ void SAL_CALL GlobalEventConfig::replaceByName( const OUString& aName, const Any
 }
 Any SAL_CALL GlobalEventConfig::getByName( const OUString& aName )
 {
+    return Any(getByName2(aName));
+}
+css::uno::Sequence < css::beans::PropertyValue > GlobalEventConfig::getByName2( const OUString& aName )
+{
     std::unique_lock aGuard( GetOwnStaticMutex() );
     return m_pImpl->getByName( aName );
 }
@@ -370,7 +374,7 @@ OUString GlobalEventConfig::GetEventName( GlobalEventId nIndex )
 {
     if (utl::ConfigManager::IsFuzzing())
         return OUString();
-    rtl::Reference<GlobalEventConfig> createImpl(new GlobalEventConfig);
+    static rtl::Reference<GlobalEventConfig> createImpl(new GlobalEventConfig);
     return GlobalEventConfig::m_pImpl->GetEventName( nIndex );
 }
 

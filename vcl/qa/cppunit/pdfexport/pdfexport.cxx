@@ -610,6 +610,41 @@ CPPUNIT_TEST_FIXTURE(PdfExportTest, testTdf107018)
     CPPUNIT_ASSERT_EQUAL(OString("Pages"), pName->GetValue());
 }
 
+CPPUNIT_TEST_FIXTURE(PdfExportTest, testTdf148706)
+{
+    // Import the bugdoc and export as PDF.
+    aMediaDescriptor["FilterName"] <<= OUString("writer_pdf_Export");
+    saveAsPDF(u"tdf148706.odt");
+
+    // Parse the export result with pdfium.
+    std::unique_ptr<vcl::pdf::PDFiumDocument> pPdfDocument = parseExport();
+    CPPUNIT_ASSERT(pPdfDocument);
+
+    // The document has one page.
+    CPPUNIT_ASSERT_EQUAL(1, pPdfDocument->getPageCount());
+    std::unique_ptr<vcl::pdf::PDFiumPage> pPdfPage = pPdfDocument->openPage(/*nIndex=*/0);
+    CPPUNIT_ASSERT(pPdfPage);
+
+    // The page has one annotation.
+    CPPUNIT_ASSERT_EQUAL(1, pPdfPage->getAnnotationCount());
+    std::unique_ptr<vcl::pdf::PDFiumAnnotation> pAnnot = pPdfPage->getAnnotation(0);
+
+    CPPUNIT_ASSERT(pAnnot->hasKey("V"));
+    CPPUNIT_ASSERT_EQUAL(vcl::pdf::PDFObjectType::String, pAnnot->getValueType("V"));
+    OUString aV = pAnnot->getString("V");
+
+    // Without the fix in place, this test would have failed with
+    // - Expected: 1821.84
+    // - Actual  :
+    CPPUNIT_ASSERT_EQUAL(OUString("1821.84"), aV);
+
+    CPPUNIT_ASSERT(pAnnot->hasKey("DV"));
+    CPPUNIT_ASSERT_EQUAL(vcl::pdf::PDFObjectType::String, pAnnot->getValueType("DV"));
+    OUString aDV = pAnnot->getString("DV");
+
+    CPPUNIT_ASSERT_EQUAL(OUString("1821.84"), aDV);
+}
+
 CPPUNIT_TEST_FIXTURE(PdfExportTest, testTdf107089)
 {
     vcl::filter::PDFDocument aDocument;
@@ -820,6 +855,109 @@ CPPUNIT_TEST_FIXTURE(PdfExportTest, testTdf108963)
     CPPUNIT_ASSERT_EQUAL(1, nYellowPathCount);
 }
 
+CPPUNIT_TEST_FIXTURE(PdfExportTest, testAlternativeText)
+{
+    aMediaDescriptor["FilterName"] <<= OUString("impress_pdf_Export");
+
+    uno::Sequence<beans::PropertyValue> aFilterData(
+        comphelper::InitPropertySequence({ { "UseTaggedPDF", uno::Any(true) } }));
+    aMediaDescriptor["FilterData"] <<= aFilterData;
+    saveAsPDF(u"alternativeText.fodp");
+
+    // Parse the export result.
+    vcl::filter::PDFDocument aDocument;
+    SvFileStream aStream(maTempFile.GetURL(), StreamMode::READ);
+    CPPUNIT_ASSERT(aDocument.Read(aStream));
+
+    // The document has one page.
+    std::vector<vcl::filter::PDFObjectElement*> aPages = aDocument.GetPages();
+    CPPUNIT_ASSERT_EQUAL(static_cast<size_t>(1), aPages.size());
+
+    for (const auto& aElement : aDocument.GetElements())
+    {
+        auto pObject = dynamic_cast<vcl::filter::PDFObjectElement*>(aElement.get());
+        if (!pObject)
+            continue;
+        auto pType = dynamic_cast<vcl::filter::PDFNameElement*>(pObject->Lookup("Type"));
+        if (pType && pType->GetValue() == "StructElem")
+        {
+            auto pS = dynamic_cast<vcl::filter::PDFNameElement*>(pObject->Lookup("S"));
+            if (pS && pS->GetValue() == "Figure")
+            {
+                CPPUNIT_ASSERT_EQUAL(
+                    OUString(u"This is the text alternative - This is the description"),
+                    ::vcl::filter::PDFDocument::DecodeHexStringUTF16BE(
+                        *dynamic_cast<vcl::filter::PDFHexStringElement*>(pObject->Lookup("Alt"))));
+            }
+        }
+    }
+}
+
+CPPUNIT_TEST_FIXTURE(PdfExportTest, testTdf105972)
+{
+    vcl::filter::PDFDocument aDocument;
+    load(u"tdf105972.fodt", aDocument);
+
+    // The document has one page.
+    std::vector<vcl::filter::PDFObjectElement*> aPages = aDocument.GetPages();
+    CPPUNIT_ASSERT_EQUAL(static_cast<size_t>(1), aPages.size());
+
+    auto pAnnots = dynamic_cast<vcl::filter::PDFArrayElement*>(aPages[0]->Lookup("Annots"));
+    CPPUNIT_ASSERT(pAnnots);
+    CPPUNIT_ASSERT_EQUAL(static_cast<size_t>(3), pAnnots->GetElements().size());
+
+    sal_uInt32 nTextFieldCount = 0;
+    for (const auto& aElement : aDocument.GetElements())
+    {
+        auto pObject = dynamic_cast<vcl::filter::PDFObjectElement*>(aElement.get());
+        if (!pObject)
+            continue;
+        auto pType = dynamic_cast<vcl::filter::PDFNameElement*>(pObject->Lookup("FT"));
+        if (pType && pType->GetValue() == "Tx")
+        {
+            ++nTextFieldCount;
+
+            auto pT = dynamic_cast<vcl::filter::PDFLiteralStringElement*>(pObject->Lookup("T"));
+            CPPUNIT_ASSERT(pT);
+            auto pAA = dynamic_cast<vcl::filter::PDFDictionaryElement*>(pObject->Lookup("AA"));
+            CPPUNIT_ASSERT(pAA);
+            CPPUNIT_ASSERT_EQUAL(static_cast<size_t>(2), pAA->GetItems().size());
+            auto pF = dynamic_cast<vcl::filter::PDFDictionaryElement*>(pAA->LookupElement("F"));
+            CPPUNIT_ASSERT(pF);
+            CPPUNIT_ASSERT_EQUAL(static_cast<size_t>(2), pF->GetItems().size());
+
+            if (nTextFieldCount == 1)
+            {
+                CPPUNIT_ASSERT_EQUAL(OString("CurrencyField"), pT->GetValue());
+
+                auto pJS
+                    = dynamic_cast<vcl::filter::PDFLiteralStringElement*>(pF->LookupElement("JS"));
+                CPPUNIT_ASSERT_EQUAL(
+                    OString("AFNumber_Format\\(4, 0, 0, 0, \"\\\\u20ac\",true\\);"),
+                    pJS->GetValue());
+            }
+            else if (nTextFieldCount == 2)
+            {
+                CPPUNIT_ASSERT_EQUAL(OString("TimeField"), pT->GetValue());
+
+                auto pJS
+                    = dynamic_cast<vcl::filter::PDFLiteralStringElement*>(pF->LookupElement("JS"));
+                CPPUNIT_ASSERT_EQUAL(OString("AFTime_FormatEx\\(\"h:MM:sstt\"\\);"),
+                                     pJS->GetValue());
+            }
+            else
+            {
+                CPPUNIT_ASSERT_EQUAL(OString("DateField"), pT->GetValue());
+
+                auto pJS
+                    = dynamic_cast<vcl::filter::PDFLiteralStringElement*>(pF->LookupElement("JS"));
+                CPPUNIT_ASSERT_EQUAL(OString("AFDate_FormatEx\\(\"yy-mm-dd\"\\);"),
+                                     pJS->GetValue());
+            }
+        }
+    }
+}
+
 CPPUNIT_TEST_FIXTURE(PdfExportTest, testTdf148442)
 {
     vcl::filter::PDFDocument aDocument;
@@ -859,6 +997,8 @@ CPPUNIT_TEST_FIXTURE(PdfExportTest, testTdf148442)
                 CPPUNIT_ASSERT_EQUAL(OString("Checkbox1"), pT->GetValue());
                 CPPUNIT_ASSERT_EQUAL(OString("Yes"), pAS->GetValue());
                 CPPUNIT_ASSERT(!pN->GetItems().count("ref"));
+                CPPUNIT_ASSERT(pN->GetItems().count("Yes"));
+                CPPUNIT_ASSERT(pN->GetItems().count("Off"));
             }
             else if (nBtnCount == 2)
             {
@@ -867,12 +1007,19 @@ CPPUNIT_TEST_FIXTURE(PdfExportTest, testTdf148442)
 
                 // Without the fix in place, this test would have failed here
                 CPPUNIT_ASSERT(pN->GetItems().count("ref"));
+                CPPUNIT_ASSERT(!pN->GetItems().count("Yes"));
+                CPPUNIT_ASSERT(pN->GetItems().count("Off"));
             }
             else
             {
                 CPPUNIT_ASSERT_EQUAL(OString("Checkbox3"), pT->GetValue());
                 CPPUNIT_ASSERT_EQUAL(OString("Off"), pAS->GetValue());
                 CPPUNIT_ASSERT(pN->GetItems().count("ref"));
+                CPPUNIT_ASSERT(!pN->GetItems().count("Yes"));
+
+                // tdf#143612: Without the fix in place, this test would have failed here
+                CPPUNIT_ASSERT(!pN->GetItems().count("Off"));
+                CPPUNIT_ASSERT(pN->GetItems().count("refOff"));
             }
         }
     }

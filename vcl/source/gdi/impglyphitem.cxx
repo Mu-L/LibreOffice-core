@@ -98,11 +98,18 @@ SalLayoutGlyphsImpl* SalLayoutGlyphsImpl::cloneCharRange(sal_Int32 index, sal_In
     copy->SetFlags(GetFlags());
     if (empty())
         return copy.release();
+    bool rtl = front().IsRTLGlyph();
+    // Avoid mixing LTR/RTL or layouts that do not have it set explicitly (BiDiStrong). Otherwise
+    // the subset may not quite match what would a real layout call give (e.g. some characters with neutral
+    // direction such as space might have different LTR/RTL flag). It seems bailing out here mostly
+    // avoid relatively rare corner cases and doesn't matter for performance.
+    if (!(GetFlags() & SalLayoutFlags::BiDiStrong)
+        || rtl != bool(GetFlags() & SalLayoutFlags::BiDiRtl))
+        return nullptr;
     copy->reserve(std::min<size_t>(size(), length));
     sal_Int32 beginPos = index;
     sal_Int32 endPos = index + length;
     const_iterator pos;
-    bool rtl = front().IsRTLGlyph();
     if (rtl)
     {
         // Glyphs are in reverse order for RTL.
@@ -163,16 +170,6 @@ SalLayoutGlyphsImpl* SalLayoutGlyphsImpl::cloneCharRange(sal_Int32 index, sal_In
             return nullptr;
         if (!isSafeToBreak(pos, rtl))
             return nullptr;
-    }
-    // HACK: If mode is se to be RTL, but the last glyph is a non-RTL space,
-    // then making a subset would give a different result than the actual layout,
-    // because the weak BiDi mode code in ImplLayoutArgs ctor would interpret
-    // the string subset ending with space as the space being RTL, but it would
-    // treat it as non-RTL for the whole string if there would be more non-RTL
-    // characters after the space. So bail out.
-    if (GetFlags() & SalLayoutFlags::BiDiRtl && !rtl && !copy->empty() && copy->back().IsSpacing())
-    {
-        return nullptr;
     }
     return copy.release();
 }
@@ -298,6 +295,24 @@ static void checkGlyphsEqual(const SalLayoutGlyphs& g1, const SalLayoutGlyphs& g
         assert(l1->isEqual(l2));
     }
 }
+
+static void verifyGlyphs(const SalLayoutGlyphs& glyphs, VclPtr<const OutputDevice> outputDevice,
+                         const OUString& text, sal_Int32 nIndex, sal_Int32 nLen,
+                         tools::Long nLogicWidth, const vcl::text::TextLayoutCache* layoutCache)
+{
+    // Check if the cached result really matches what we would get normally.
+    std::shared_ptr<const vcl::text::TextLayoutCache> tmpLayoutCache;
+    if (layoutCache == nullptr)
+    {
+        tmpLayoutCache = vcl::text::TextLayoutCache::Create(text);
+        layoutCache = tmpLayoutCache.get();
+    }
+    std::unique_ptr<SalLayout> layout
+        = outputDevice->ImplLayout(text, nIndex, nLen, Point(0, 0), nLogicWidth, {},
+                                   SalLayoutFlags::GlyphItemsOnly, layoutCache);
+    assert(layout);
+    checkGlyphsEqual(glyphs, layout->GetGlyphs());
+}
 #endif
 
 const SalLayoutGlyphs*
@@ -312,13 +327,17 @@ SalLayoutGlyphsCache::GetLayoutGlyphs(VclPtr<const OutputDevice> outputDevice, c
     if (it != mCachedGlyphs.end())
     {
         if (it->second.IsValid())
+        {
+#ifdef DBG_UTIL
+            verifyGlyphs(it->second, outputDevice, text, nIndex, nLen, nLogicWidth, layoutCache);
+#endif
             return &it->second;
+        }
         // Do not try to create the layout here. If a cache item exists, it's already
         // been attempted and the layout was invalid (this happens with MultiSalLayout).
         // So in that case this is a cached failure.
         return nullptr;
     }
-    const SalLayoutFlags glyphItemsOnlyLayout = SalLayoutFlags::GlyphItemsOnly;
     bool resetLastSubstringKey = true;
     const sal_Unicode nbSpace = 0xa0; // non-breaking space
     if (nIndex != 0 || nLen != text.getLength())
@@ -382,19 +401,8 @@ SalLayoutGlyphsCache::GetLayoutGlyphs(VclPtr<const OutputDevice> outputDevice, c
             {
                 mLastTemporaryKey = std::move(key);
 #ifdef DBG_UTIL
-                std::shared_ptr<const vcl::text::TextLayoutCache> tmpLayoutCache;
-                if (layoutCache == nullptr)
-                {
-                    tmpLayoutCache = vcl::text::TextLayoutCache::Create(text);
-                    layoutCache = tmpLayoutCache.get();
-                }
-                // Check if the subset result really matches what we would get normally,
-                // to make sure corner cases are handled well (see SalLayoutGlyphsImpl::cloneCharRange()).
-                std::unique_ptr<SalLayout> layout
-                    = outputDevice->ImplLayout(text, nIndex, nLen, Point(0, 0), nLogicWidth, {},
-                                               glyphItemsOnlyLayout, layoutCache);
-                assert(layout);
-                checkGlyphsEqual(mLastTemporaryGlyphs, layout->GetGlyphs());
+                verifyGlyphs(mLastTemporaryGlyphs, outputDevice, text, nIndex, nLen, nLogicWidth,
+                             layoutCache);
 #endif
                 return &mLastTemporaryGlyphs;
             }
@@ -415,8 +423,9 @@ SalLayoutGlyphsCache::GetLayoutGlyphs(VclPtr<const OutputDevice> outputDevice, c
         tmpLayoutCache = vcl::text::TextLayoutCache::Create(text);
         layoutCache = tmpLayoutCache.get();
     }
-    std::unique_ptr<SalLayout> layout = outputDevice->ImplLayout(
-        text, nIndex, nLen, Point(0, 0), nLogicWidth, {}, glyphItemsOnlyLayout, layoutCache);
+    std::unique_ptr<SalLayout> layout
+        = outputDevice->ImplLayout(text, nIndex, nLen, Point(0, 0), nLogicWidth, {},
+                                   SalLayoutFlags::GlyphItemsOnly, layoutCache);
     if (layout)
     {
         SalLayoutGlyphs glyphs = layout->GetGlyphs();
@@ -450,7 +459,7 @@ SalLayoutGlyphsCache::CachedGlyphsKey::CachedGlyphsKey(
     , logicWidth(w)
     // we also need to save things used in OutputDevice::ImplPrepareLayoutArgs(), in case they
     // change in the output device, plus mapMode affects the sizes.
-    , font(outputDevice->GetFont())
+    , fontMetric(outputDevice->GetFontMetric())
     // TODO It would be possible to get a better hit ratio if mapMode wasn't part of the key
     // and results that differ only in mapmode would have coordinates adjusted based on that.
     // That would occasionally lead to rounding errors (at least differences that would
@@ -471,7 +480,7 @@ SalLayoutGlyphsCache::CachedGlyphsKey::CachedGlyphsKey(
     o3tl::hash_combine(hashValue, outputDevice.get());
     // Need to use IgnoreColor, because sometimes the color changes, but it's irrelevant
     // for text layout (and also obsolete in vcl::Font).
-    o3tl::hash_combine(hashValue, font.GetHashValueIgnoreColor());
+    o3tl::hash_combine(hashValue, fontMetric.GetHashValueIgnoreColor());
     // For some reason font scale may differ even if vcl::Font is the same,
     // so explicitly check it too.
     o3tl::hash_combine(hashValue, fontScaleX);
@@ -488,7 +497,7 @@ inline bool SalLayoutGlyphsCache::CachedGlyphsKey::operator==(const CachedGlyphs
            && logicWidth == other.logicWidth && mapMode == other.mapMode && rtl == other.rtl
            && layoutMode == other.layoutMode && digitLanguage == other.digitLanguage
            && fontScaleX == other.fontScaleX && fontScaleY == other.fontScaleY
-           && font.EqualIgnoreColor(other.font)
+           && fontMetric.EqualIgnoreColor(other.fontMetric)
            && vcl::text::FastStringCompareEqual()(text, other.text);
     // Slower things last in the comparison.
 }

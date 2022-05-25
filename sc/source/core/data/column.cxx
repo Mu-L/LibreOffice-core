@@ -1680,14 +1680,15 @@ void ScColumn::UndoToColumn(
         CopyToColumn(rCxt, nRow2+1, GetDoc().MaxRow(), InsertDeleteFlags::FORMULA, false, rColumn);
 }
 
-void ScColumn::CopyUpdated( const ScColumn& rPosCol, ScColumn& rDestCol ) const
+void ScColumn::CopyUpdated( const ScColumn* pPosCol, ScColumn& rDestCol ) const
 {
     // Copy cells from this column to the destination column only for those
-    // rows that are present in the position column (rPosCol).
+    // rows that are present in the position column (pPosCol).
 
     // First, mark all the non-empty cell ranges from the position column.
     sc::SingleColumnSpanSet aRangeSet(GetDoc().GetSheetLimits());
-    aRangeSet.scan(rPosCol);
+    if(pPosCol)
+        aRangeSet.scan(*pPosCol);
 
     // Now, copy cells from this column to the destination column for those
     // marked row ranges.
@@ -2390,12 +2391,12 @@ bool ScColumn::UpdateReferenceOnCopy( sc::RefUpdateContext& rCxt, ScDocument* pU
 
 bool ScColumn::UpdateReference( sc::RefUpdateContext& rCxt, ScDocument* pUndoDoc )
 {
-    if (rCxt.meMode == URM_COPY)
-        return UpdateReferenceOnCopy(rCxt, pUndoDoc);
-
     if (IsEmptyData() || GetDoc().IsClipOrUndo())
         // Cells in this column are all empty, or clip or undo doc. No update needed.
         return false;
+
+    if (rCxt.meMode == URM_COPY)
+        return UpdateReferenceOnCopy(rCxt, pUndoDoc);
 
     std::vector<SCROW> aBounds;
 

@@ -108,6 +108,7 @@
 #include <comphelper/xmltools.hxx>
 #include <o3tl/any.hxx>
 #include <o3tl/safeint.hxx>
+#include <o3tl/string_view.hxx>
 #include <tools/stream.hxx>
 #include <unotools/fontdefs.hxx>
 #include <vcl/cvtgrf.hxx>
@@ -563,7 +564,7 @@ void DrawingML::WriteSolidFill( const Reference< XPropertySet >& rXPropSet )
     else if ( nFillColor != nOriginalColor )
     {
         // the user has set a different color for the shape
-        if (aTransformations.hasElements() || !WriteFillColor(rXPropSet))
+        if (!WriteFillColor(rXPropSet))
         {
             WriteSolidFill(::Color(ColorTransparency, nFillColor & 0xffffff), nAlpha);
         }
@@ -598,7 +599,23 @@ bool DrawingML::WriteFillColor(const uno::Reference<beans::XPropertySet>& xPrope
     const char* pColorName = g_aPredefinedClrNames[nFillColorTheme];
 
     mpFS->startElementNS(XML_a, XML_solidFill);
-    mpFS->singleElementNS(XML_a, XML_schemeClr, XML_val, pColorName);
+    mpFS->startElementNS(XML_a, XML_schemeClr, XML_val, pColorName);
+
+    sal_Int32 nFillColorLumMod{};
+    xPropertySet->getPropertyValue("FillColorLumMod") >>= nFillColorLumMod;
+    if (nFillColorLumMod != 10000)
+    {
+        mpFS->singleElementNS(XML_a, XML_lumMod, XML_val, OString::number(nFillColorLumMod * 10));
+    }
+
+    sal_Int32 nFillColorLumOff{};
+    xPropertySet->getPropertyValue("FillColorLumOff") >>= nFillColorLumOff;
+    if (nFillColorLumOff != 0)
+    {
+        mpFS->singleElementNS(XML_a, XML_lumOff, XML_val, OString::number(nFillColorLumOff * 10));
+    }
+
+    mpFS->endElementNS(XML_a, XML_schemeClr);
     mpFS->endElementNS(XML_a, XML_solidFill);
 
     return true;
@@ -3691,14 +3708,14 @@ static std::map< OString, std::vector<OString> > lcl_getAdjNames()
     SvFileStream aStream(aPath, StreamMode::READ);
     if (aStream.GetError() != ERRCODE_NONE)
         SAL_WARN("oox.shape", "failed to open oox-drawingml-adj-names");
-    OString aLine;
+    OStringBuffer aLine;
     bool bNotDone = aStream.ReadLine(aLine);
     while (bNotDone)
     {
         sal_Int32 nIndex = 0;
         // Each line is in a "key\tvalue" format: read the key, the rest is the value.
-        OString aKey = aLine.getToken(0, '\t', nIndex);
-        OString aValue = aLine.copy(nIndex);
+        OString aKey( o3tl::getToken(aLine, 0, '\t', nIndex) );
+        OString aValue( std::string_view(aLine).substr(nIndex) );
         aRet[aKey].push_back(aValue);
         bNotDone = aStream.ReadLine(aLine);
     }

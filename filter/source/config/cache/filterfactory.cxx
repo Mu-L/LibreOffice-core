@@ -55,8 +55,7 @@ FilterCache& GetTheFilterCache()
 FilterFactory::FilterFactory(const css::uno::Reference< css::uno::XComponentContext >& rxContext)
     : m_xContext(rxContext)
 {
-    BaseContainer::init(rxContext                                         ,
-                        "com.sun.star.comp.filter.config.FilterFactory"   ,
+    BaseContainer::init("com.sun.star.comp.filter.config.FilterFactory"   ,
                          { "com.sun.star.document.FilterFactory" },
                         FilterCache::E_FILTER                         );
 }
@@ -121,14 +120,13 @@ css::uno::Sequence< OUString > SAL_CALL FilterFactory::getAvailableServiceNames(
                   Of course we can't check for corrupted service names here. We can check
                   for empty strings only...
     */
-    CacheItem lIProps;
-    CacheItem lEProps;
-    lEProps[PROPNAME_FILTERSERVICE] <<= OUString();
+    css::beans::NamedValue lEProps[] {
+        { PROPNAME_FILTERSERVICE, css::uno::Any(OUString()) } };
 
     std::vector<OUString> lUNOFilters;
     try
     {
-        lUNOFilters = GetTheFilterCache().getMatchingItemsByProps(FilterCache::E_FILTER, lIProps, lEProps);
+        lUNOFilters = GetTheFilterCache().getMatchingItemsByProps(FilterCache::E_FILTER, {}, lEProps);
     }
     catch(const css::uno::RuntimeException&)
         { throw; }
@@ -187,8 +185,7 @@ css::uno::Reference< css::container::XEnumeration > SAL_CALL FilterFactory::crea
     // pack list of item names as an enum list
     // Attention: Do not return empty reference for empty list!
     // The outside check "hasMoreElements()" should be enough, to detect this state :-)
-    css::uno::Sequence< OUString > lSet = comphelper::containerToSequence(lEnumSet);
-    return new ::comphelper::OEnumerationByName(this, lSet);
+    return new ::comphelper::OEnumerationByName(this, std::move(lEnumSet));
 }
 
 
@@ -420,8 +417,7 @@ std::vector<OUString> FilterFactory::impl_getSortedFilterListForModule(const OUS
     std::vector<OUString> lSortedFilters = impl_readSortedFilterListFromConfig(sModule);
 
     // get all filters for the requested module
-    CacheItem lIProps;
-    lIProps[PROPNAME_DOCUMENTSERVICE] <<= sModule;
+    css::beans::NamedValue lIProps[] { { PROPNAME_DOCUMENTSERVICE, css::uno::Any(sModule) } };
 
     // SAFE -> ----------------------
     osl::ClearableMutexGuard aLock(m_aMutex);

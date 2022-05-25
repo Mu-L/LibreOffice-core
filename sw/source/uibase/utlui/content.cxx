@@ -3705,14 +3705,17 @@ void SwContentTree::UpdateTracking()
         // footnotes and endnotes
         if (SwContentAtPos aContentAtPos(IsAttrAtPos::Ftn);
                 m_pActiveShell->GetContentAtPos(m_pActiveShell->GetCursorDocPos(), aContentAtPos)
-            && !(m_bIsRoot
-                && (m_nRootType != ContentTypeId::FOOTNOTE
-                    && m_nRootType != ContentTypeId::ENDNOTE)))
+                && aContentAtPos.pFndTextAttr &&
+                !(m_bIsRoot && (m_nRootType != ContentTypeId::FOOTNOTE &&
+                                m_nRootType != ContentTypeId::ENDNOTE)))
         {
-            if (mTrackContentType[ContentTypeId::FOOTNOTE])
-                lcl_SelectByContentTypeAndAddress(this, *m_xTreeView, ContentTypeId::FOOTNOTE,
-                                                  aContentAtPos.pFndTextAttr);
-            if (mTrackContentType[ContentTypeId::ENDNOTE])
+            if (!aContentAtPos.pFndTextAttr->GetFootnote().IsEndNote())
+            {
+                if (mTrackContentType[ContentTypeId::FOOTNOTE])
+                    lcl_SelectByContentTypeAndAddress(this, *m_xTreeView, ContentTypeId::FOOTNOTE,
+                                                      aContentAtPos.pFndTextAttr);
+            }
+            else if (mTrackContentType[ContentTypeId::ENDNOTE])
                 lcl_SelectByContentTypeAndAddress(this, *m_xTreeView, ContentTypeId::ENDNOTE,
                                                   aContentAtPos.pFndTextAttr);
             return;

@@ -157,7 +157,7 @@ class ScTable
 private:
     typedef ::std::vector< ScRange > ScRangeVec;
 
-    mutable ScColContainer aCol;
+    ScColContainer aCol;
 
     OUString aName;
     OUString aCodeName;
@@ -286,14 +286,14 @@ public:
 
     ScOutlineTable* GetOutlineTable()               { return pOutlineTable.get(); }
 
-    ScColumn& CreateColumnIfNotExists( const SCCOL nScCol ) const
+    ScColumn& CreateColumnIfNotExists( const SCCOL nScCol )
     {
         if ( nScCol >= aCol.size() )
             CreateColumnIfNotExistsImpl(nScCol);
         return aCol[nScCol];
     }
     // out-of-line the cold part of the function
-    void CreateColumnIfNotExistsImpl( const SCCOL nScCol ) const;
+    void CreateColumnIfNotExistsImpl( const SCCOL nScCol );
     sal_uInt64      GetCellCount() const;
     sal_uInt64      GetWeightedCount() const;
     sal_uInt64      GetWeightedCount(SCROW nStartRow, SCROW nEndRow) const;
@@ -411,7 +411,8 @@ public:
                                         bool bNoMatrixAtAll = false ) const;
     bool        HasSelectionMatrixFragment( const ScMarkData& rMark ) const;
 
-    bool        IsBlockEmpty( SCCOL nCol1, SCROW nRow1, SCCOL nCol2, SCROW nRow2, bool bIgnoreNotes ) const;
+    // This also includes e.g. notes. Use IsEmptyData() for cell data only.
+    bool        IsBlockEmpty( SCCOL nCol1, SCROW nRow1, SCCOL nCol2, SCROW nRow2 ) const;
 
     bool        SetString( SCCOL nCol, SCROW nRow, SCTAB nTab, const OUString& rString,
                            const ScSetStringParam * pParam = nullptr );
@@ -583,7 +584,7 @@ public:
                             SCCOL nDestCol, SCROW nDestRow, SCTAB nDestTab );
 
     void        CopyScenarioFrom( const ScTable* pSrcTab );
-    void        CopyScenarioTo( const ScTable* pDestTab ) const;
+    void        CopyScenarioTo( ScTable* pDestTab ) const;
     bool        TestCopyScenarioTo( const ScTable* pDestTab ) const;
     void        MarkScenarioIn(ScMarkData& rMark, ScScenarioFlags nNeededBits) const;
     bool        HasScenarioRange( const ScRange& rRange ) const;
@@ -621,7 +622,7 @@ public:
     SCROW       GetLastDataRow( SCCOL nCol1, SCCOL nCol2, SCROW nLastRow,
                                 ScDataAreaExtras* pDataAreaExtras = nullptr ) const;
 
-    bool        IsEmptyBlock(SCCOL nStartCol, SCROW nStartRow, SCCOL nEndCol, SCROW nEndRow) const;
+    bool        IsEmptyData(SCCOL nStartCol, SCROW nStartRow, SCCOL nEndCol, SCROW nEndRow) const;
     SCSIZE      GetEmptyLinesInBlock( SCCOL nStartCol, SCROW nStartRow,
                                         SCCOL nEndCol, SCROW nEndRow, ScDirection eDir ) const;
 

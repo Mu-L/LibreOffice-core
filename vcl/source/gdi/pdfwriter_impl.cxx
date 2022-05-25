@@ -44,6 +44,7 @@
 #include <i18nlangtag/languagetag.hxx>
 #include <o3tl/numeric.hxx>
 #include <o3tl/safeint.hxx>
+#include <o3tl/temporary.hxx>
 #include <officecfg/Office/Common.hxx>
 #include <osl/file.hxx>
 #include <osl/thread.h>
@@ -823,10 +824,7 @@ bool PDFPage::emit(sal_Int32 nParentObject )
         }
         aLine.append( ">>\n" );
     }
-    if( m_pWriter->getVersion() > PDFWriter::PDFVersion::PDF_1_3 && ! m_pWriter->m_bIsPDF_A1 )
-    {
-        aLine.append( "/Group<</S/Transparency/CS/DeviceRGB/I true>>" );
-    }
+
     aLine.append( "/Contents" );
     unsigned int nStreamObjects = m_aStreamObjects.size();
     if( nStreamObjects > 1 )
@@ -4170,20 +4168,42 @@ bool PDFWriterImpl::emitWidgetAnnotations()
 
         if( rWidget.m_eType == PDFWriter::CheckBox )
         {
-            auto app_it = rWidget.m_aAppearances.find( "N" );
-            if( app_it != rWidget.m_aAppearances.end() )
+            if ( !rWidget.m_aOnValue.isEmpty() )
             {
-                auto stream_it = app_it->second.find( "Yes" );
-                if( stream_it != app_it->second.end() )
+                auto app_it = rWidget.m_aAppearances.find( "N" );
+                if( app_it != rWidget.m_aAppearances.end() )
                 {
-                    SvMemoryStream* pStream = stream_it->second;
-                    app_it->second.erase( stream_it );
-                    OStringBuffer aBuf( rWidget.m_aOnValue.getLength()*2 );
-                    appendName( rWidget.m_aOnValue, aBuf );
-                    (app_it->second)[ aBuf.makeStringAndClear() ] = pStream;
+                    auto stream_it = app_it->second.find( "Yes" );
+                    if( stream_it != app_it->second.end() )
+                    {
+                        SvMemoryStream* pStream = stream_it->second;
+                        app_it->second.erase( stream_it );
+                        OStringBuffer aBuf( rWidget.m_aOnValue.getLength()*2 );
+                        appendName( rWidget.m_aOnValue, aBuf );
+                        (app_it->second)[ aBuf.makeStringAndClear() ] = pStream;
+                    }
+                    else
+                        SAL_INFO("vcl.pdfwriter", "error: CheckBox without \"Yes\" stream" );
                 }
-                else
-                    SAL_INFO("vcl.pdfwriter", "error: CheckBox without \"Yes\" stream" );
+            }
+
+            if ( !rWidget.m_aOffValue.isEmpty() )
+            {
+                auto app_it = rWidget.m_aAppearances.find( "N" );
+                if( app_it != rWidget.m_aAppearances.end() )
+                {
+                    auto stream_it = app_it->second.find( "Off" );
+                    if( stream_it != app_it->second.end() )
+                    {
+                        SvMemoryStream* pStream = stream_it->second;
+                        app_it->second.erase( stream_it );
+                        OStringBuffer aBuf( rWidget.m_aOffValue.getLength()*2 );
+                        appendName( rWidget.m_aOffValue, aBuf );
+                        (app_it->second)[ aBuf.makeStringAndClear() ] = pStream;
+                    }
+                    else
+                        SAL_INFO("vcl.pdfwriter", "error: CheckBox without \"Off\" stream" );
+                }
             }
         }
 
@@ -4363,11 +4383,71 @@ bool PDFWriterImpl::emitWidgetAnnotations()
                 }
             }
         }
-        if( rWidget.m_eType == PDFWriter::Edit && rWidget.m_nMaxLen > 0 )
+        if( rWidget.m_eType == PDFWriter::Edit )
         {
-            aLine.append( "/MaxLen " );
-            aLine.append( rWidget.m_nMaxLen );
-            aLine.append( "\n" );
+            if ( rWidget.m_nMaxLen > 0 )
+            {
+                aLine.append( "/MaxLen " );
+                aLine.append( rWidget.m_nMaxLen );
+                aLine.append( "\n" );
+            }
+
+            if ( rWidget.m_nFormat == PDFWriter::Number )
+            {
+                OString aHexText;
+
+                if ( !rWidget.m_aCurrencySymbol.isEmpty() )
+                {
+                    // Get the hexadecimal code
+                    sal_UCS4 cChar = rWidget.m_aCurrencySymbol.iterateCodePoints(&o3tl::temporary(sal_Int32(1)), -1);
+                    aHexText = "\\\\u" + OString::number(cChar, 16);
+                }
+
+                aLine.append("/AA<<\n");
+                aLine.append("/F<</JS(AFNumber_Format\\(");
+                aLine.append(OString::number(rWidget.m_nDecimalAccuracy));
+                aLine.append(", 0, 0, 0, \"");
+                aLine.append( aHexText );
+                aLine.append("\",");
+                aLine.append(OString::boolean(rWidget.m_bPrependCurrencySymbol));
+                aLine.append("\\);)");
+                aLine.append("/S/JavaScript>>\n");
+                aLine.append("/K<</JS(AFNumber_Keystroke\\(");
+                aLine.append(OString::number(rWidget.m_nDecimalAccuracy));
+                aLine.append(", 0, 0, 0, \"");
+                aLine.append( aHexText );
+                aLine.append("\",");
+                aLine.append(OString::boolean(rWidget.m_bPrependCurrencySymbol));
+                aLine.append("\\);)");
+                aLine.append("/S/JavaScript>>\n");
+                aLine.append(">>\n");
+            }
+            else if ( rWidget.m_nFormat == PDFWriter::Time )
+            {
+                aLine.append("/AA<<\n");
+                aLine.append("/F<</JS(AFTime_FormatEx\\(\"");
+                aLine.append(OUStringToOString(rWidget.m_aTimeFormat, RTL_TEXTENCODING_ASCII_US));
+                aLine.append("\"\\);)");
+                aLine.append("/S/JavaScript>>\n");
+                aLine.append("/K<</JS(AFTime_KeystrokeEx\\(\"");
+                aLine.append(OUStringToOString(rWidget.m_aTimeFormat, RTL_TEXTENCODING_ASCII_US));
+                aLine.append("\"\\);)");
+                aLine.append("/S/JavaScript>>\n");
+                aLine.append(">>\n");
+            }
+            else if ( rWidget.m_nFormat == PDFWriter::Date )
+            {
+                aLine.append("/AA<<\n");
+                aLine.append("/F<</JS(AFDate_FormatEx\\(\"");
+                aLine.append(OUStringToOString(rWidget.m_aDateFormat, RTL_TEXTENCODING_ASCII_US));
+                aLine.append("\"\\);)");
+                aLine.append("/S/JavaScript>>\n");
+                aLine.append("/K<</JS(AFDate_KeystrokeEx\\(\"");
+                aLine.append(OUStringToOString(rWidget.m_aDateFormat, RTL_TEXTENCODING_ASCII_US));
+                aLine.append("\"\\);)");
+                aLine.append("/S/JavaScript>>\n");
+                aLine.append(">>\n");
+            }
         }
         if( rWidget.m_eType == PDFWriter::PushButton )
         {
@@ -10715,21 +10795,44 @@ void PDFWriterImpl::ensureUniqueRadioOnValues()
         for (auto const& nKidIndex : rGroupWidget.m_aKidsIndex)
         {
             PDFWidget& rKid = m_aWidgets[nKidIndex];
-            auto app_it = rKid.m_aAppearances.find( "N" );
-            if( app_it != rKid.m_aAppearances.end() )
+            if ( !rKid.m_aOnValue.isEmpty() )
             {
-                auto stream_it = app_it->second.find( "Yes" );
-                if( stream_it != app_it->second.end() )
+                auto app_it = rKid.m_aAppearances.find( "N" );
+                if( app_it != rKid.m_aAppearances.end() )
                 {
-                    SvMemoryStream* pStream = stream_it->second;
-                    app_it->second.erase( stream_it );
-                    OStringBuffer aBuf( rKid.m_aOnValue.getLength()*2 );
-                    appendName( rKid.m_aOnValue, aBuf );
-                    (app_it->second)[ aBuf.makeStringAndClear() ] = pStream;
+                    auto stream_it = app_it->second.find( "Yes" );
+                    if( stream_it != app_it->second.end() )
+                    {
+                        SvMemoryStream* pStream = stream_it->second;
+                        app_it->second.erase( stream_it );
+                        OStringBuffer aBuf( rKid.m_aOnValue.getLength()*2 );
+                        appendName( rKid.m_aOnValue, aBuf );
+                        (app_it->second)[ aBuf.makeStringAndClear() ] = pStream;
+                    }
+                    else
+                        SAL_INFO("vcl.pdfwriter", "error: RadioButton without \"Yes\" stream" );
                 }
-                else
-                    SAL_INFO("vcl.pdfwriter", "error: RadioButton without \"Yes\" stream" );
             }
+
+            if ( !rKid.m_aOffValue.isEmpty() )
+            {
+                auto app_it = rKid.m_aAppearances.find( "N" );
+                if( app_it != rKid.m_aAppearances.end() )
+                {
+                    auto stream_it = app_it->second.find( "Off" );
+                    if( stream_it != app_it->second.end() )
+                    {
+                        SvMemoryStream* pStream = stream_it->second;
+                        app_it->second.erase( stream_it );
+                        OStringBuffer aBuf( rKid.m_aOffValue.getLength()*2 );
+                        appendName( rKid.m_aOffValue, aBuf );
+                        (app_it->second)[ aBuf.makeStringAndClear() ] = pStream;
+                    }
+                    else
+                        SAL_INFO("vcl.pdfwriter", "error: RadioButton without \"Off\" stream" );
+                }
+            }
+
             // update selected radio button
             if( rKid.m_aValue != "Off" )
             {
@@ -10847,6 +10950,7 @@ sal_Int32 PDFWriterImpl::createControl( const PDFWriter::AnyWidget& rControl, sa
 
         rNewWidget.m_aValue     = "Off";
         rNewWidget.m_aOnValue   = rBtn.OnValue;
+        rNewWidget.m_aOffValue   = rBtn.OffValue;
         if( rRadioButton.m_aValue.isEmpty() && rBtn.Selected )
         {
             rNewWidget.m_aValue     = rNewWidget.m_aOnValue;
@@ -10869,6 +10973,7 @@ sal_Int32 PDFWriterImpl::createControl( const PDFWriter::AnyWidget& rControl, sa
         rNewWidget.m_aValue
             = rBox.Checked ? std::u16string_view(u"Yes") : std::u16string_view(u"Off" );
         rNewWidget.m_aOnValue   = rBox.OnValue;
+        rNewWidget.m_aOffValue   = rBox.OffValue;
         // create default appearance before m_aRect gets transformed
         createDefaultCheckBoxAppearance( rNewWidget, rBox );
     }
@@ -10932,6 +11037,12 @@ sal_Int32 PDFWriterImpl::createControl( const PDFWriter::AnyWidget& rControl, sa
         if( rEdit.FileSelect && m_aContext.Version > PDFWriter::PDFVersion::PDF_1_3 )
             rNewWidget.m_nFlags |= 0x00100000;
         rNewWidget.m_nMaxLen = rEdit.MaxLen;
+        rNewWidget.m_nFormat = rEdit.Format;
+        rNewWidget.m_aCurrencySymbol = rEdit.CurrencySymbol;
+        rNewWidget.m_nDecimalAccuracy = rEdit.DecimalAccuracy;
+        rNewWidget.m_bPrependCurrencySymbol = rEdit.PrependCurrencySymbol;
+        rNewWidget.m_aTimeFormat = rEdit.TimeFormat;
+        rNewWidget.m_aDateFormat = rEdit.DateFormat;
         rNewWidget.m_aValue = rEdit.Text;
 
         createDefaultEditAppearance( rNewWidget, rEdit );

@@ -21,6 +21,7 @@
 
 #include <cassert>
 #include <cstdlib>
+#include <utility>
 #include <vector>
 
 #include <com/sun/star/beans/Property.hpp>
@@ -409,13 +410,13 @@ css::uno::Sequence< OUString > Access::getElementNames()
     osl::MutexGuard g(*lock_);
     checkLocalizedPropertyAccess();
     std::vector< rtl::Reference< ChildAccess > > children(getAllChildren());
-    std::vector<OUString> names;
-    names.reserve(children.size());
+    css::uno::Sequence<OUString> names(children.size());
+    OUString* pArray = names.getArray();
     for (auto const& child : children)
     {
-        names.push_back(child->getNameInternal());
+        *pArray++ = child->getNameInternal();
     }
-    return comphelper::containerToSequence(names);
+    return names;
 }
 
 sal_Bool Access::hasByName(OUString const & aName)
@@ -1924,8 +1925,8 @@ Access::ModifiedChild::ModifiedChild():
 {}
 
 Access::ModifiedChild::ModifiedChild(
-    rtl::Reference< ChildAccess > const & theChild, bool theDirectlyModified):
-    child(theChild), directlyModified(theDirectlyModified)
+    rtl::Reference< ChildAccess > theChild, bool theDirectlyModified):
+    child(std::move(theChild)), directlyModified(theDirectlyModified)
 {}
 
 rtl::Reference< ChildAccess > Access::getModifiedChild(

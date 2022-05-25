@@ -63,6 +63,7 @@
 #include <wrtsh.hxx>
 #include <textcontentcontrol.hxx>
 #include <dropdowncontentcontrolbutton.hxx>
+#include <datecontentcontrolbutton.hxx>
 
 // Here static members are defined. They will get changed on alteration of the
 // MapMode. This is done so that on ShowCursor the same size does not have to be
@@ -640,7 +641,7 @@ void SwSelPaintRects::HighlightContentControl()
     std::vector<basegfx::B2DRange> aContentControlRanges;
     std::vector<OString> aLOKRectangles;
     SwRect aLastPortionPaintArea;
-    const SwContentControl* pContentControl = nullptr;
+    std::shared_ptr<SwContentControl> pContentControl;
 
     if (m_bShowContentControlOverlay)
     {
@@ -697,6 +698,16 @@ void SwSelPaintRects::HighlightContentControl()
             tools::JsonWriter aJson;
             aJson.put("action", "show");
             aJson.put("rectangles", aPayload);
+
+            if (pContentControl && pContentControl->HasListItems())
+            {
+                tools::ScopedJsonWriterArray aItems = aJson.startArray("items");
+                for (const auto& rItem : pContentControl->GetListItems())
+                {
+                    aJson.putSimpleValue(rItem.ToString());
+                }
+            }
+
             std::unique_ptr<char, o3tl::free_delete> pJson(aJson.extractData());
             GetShell()->GetSfxViewShell()->libreOfficeKitViewCallback(LOK_CALLBACK_CONTENT_CONTROL, pJson.get());
         }
@@ -730,14 +741,34 @@ void SwSelPaintRects::HighlightContentControl()
             {
                 auto& rEditWin = const_cast<SwEditWin&>(pWrtShell->GetView().GetEditWin());
                 if (m_pContentControlButton
-                    && &m_pContentControlButton->GetContentControl() != pContentControl)
+                    && m_pContentControlButton->GetContentControl() != pContentControl)
                 {
                     m_pContentControlButton.disposeAndClear();
                 }
                 if (!m_pContentControlButton)
                 {
                     m_pContentControlButton = VclPtr<SwDropDownContentControlButton>::Create(
-                        &rEditWin, *pContentControl);
+                        &rEditWin, pContentControl);
+                }
+                m_pContentControlButton->CalcPosAndSize(aLastPortionPaintArea);
+                m_pContentControlButton->Show();
+            }
+        }
+        if (pContentControl && pContentControl->GetDate())
+        {
+            auto pWrtShell = dynamic_cast<const SwWrtShell*>(GetShell());
+            if (pWrtShell)
+            {
+                auto& rEditWin = const_cast<SwEditWin&>(pWrtShell->GetView().GetEditWin());
+                if (m_pContentControlButton
+                    && m_pContentControlButton->GetContentControl() != pContentControl)
+                {
+                    m_pContentControlButton.disposeAndClear();
+                }
+                if (!m_pContentControlButton)
+                {
+                    m_pContentControlButton = VclPtr<SwDateContentControlButton>::Create(
+                        &rEditWin, pContentControl, pWrtShell->GetDoc()->GetNumberFormatter());
                 }
                 m_pContentControlButton->CalcPosAndSize(aLastPortionPaintArea);
                 m_pContentControlButton->Show();

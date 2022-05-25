@@ -3753,7 +3753,6 @@ uno::Reference<sheet::XSheetCellRanges> SAL_CALL ScCellRangesBase::queryDependen
 
 uno::Reference<util::XSearchDescriptor> SAL_CALL ScCellRangesBase::createSearchDescriptor()
 {
-    SolarMutexGuard aGuard;
     return new ScCellSearchObj;
 }
 
@@ -3874,7 +3873,6 @@ uno::Reference<uno::XInterface> SAL_CALL ScCellRangesBase::findNext(
 
 uno::Reference<util::XReplaceDescriptor> SAL_CALL ScCellRangesBase::createReplaceDescriptor()
 {
-    SolarMutexGuard aGuard;
     return new ScCellSearchObj;
 }
 
@@ -4488,7 +4486,6 @@ uno::Any SAL_CALL ScCellRangesObj::getByIndex( sal_Int32 nIndex )
 
 uno::Type SAL_CALL ScCellRangesObj::getElementType()
 {
-    SolarMutexGuard aGuard;
     return cppu::UnoType<table::XCellRange>::get();
 }
 
@@ -6655,7 +6652,7 @@ uno::Reference<sheet::XDataPilotTables> SAL_CALL ScTableSheetObj::getDataPilotTa
     SolarMutexGuard aGuard;
     ScDocShell* pDocSh = GetDocShell();
     if ( pDocSh )
-        return new ScDataPilotTablesObj( pDocSh, GetTab_Impl() );
+        return new ScDataPilotTablesObj(*pDocSh, GetTab_Impl());
 
     OSL_FAIL("no document");
     return nullptr;
@@ -8324,7 +8321,6 @@ OUString SAL_CALL ScTableColumnObj::getName()
 
 void SAL_CALL ScTableColumnObj::setName( const OUString& /* aNewName */ )
 {
-    SolarMutexGuard aGuard;
     throw uno::RuntimeException();      // read-only
 }
 
@@ -8644,7 +8640,6 @@ uno::Reference<container::XEnumeration> SAL_CALL ScCellsObj::createEnumeration()
 
 uno::Type SAL_CALL ScCellsObj::getElementType()
 {
-    SolarMutexGuard aGuard;
     return cppu::UnoType<table::XCell>::get();
 }
 
@@ -8883,7 +8878,6 @@ uno::Any SAL_CALL ScCellFormatsObj::getByIndex( sal_Int32 nIndex )
 
 uno::Type SAL_CALL ScCellFormatsObj::getElementType()
 {
-    SolarMutexGuard aGuard;
     return cppu::UnoType<table::XCellRange>::get();
 }
 
@@ -9236,7 +9230,6 @@ uno::Any SAL_CALL ScUniqueCellFormatsObj::getByIndex( sal_Int32 nIndex )
 
 uno::Type SAL_CALL ScUniqueCellFormatsObj::getElementType()
 {
-    SolarMutexGuard aGuard;
     return cppu::UnoType<sheet::XSheetCellRangeContainer>::get();
 }
 

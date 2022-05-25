@@ -55,8 +55,7 @@ TypeDetection::TypeDetection(const css::uno::Reference< css::uno::XComponentCont
    , m_bCancel(false)
 {
     css::frame::Desktop::create(m_xContext)->addTerminateListener(m_xTerminateListener);
-    BaseContainer::init(rxContext                                     ,
-                        "com.sun.star.comp.filter.config.TypeDetection"   ,
+    BaseContainer::init("com.sun.star.comp.filter.config.TypeDetection"   ,
                         { "com.sun.star.document.TypeDetection" },
                         FilterCache::E_TYPE                           );
 }
@@ -496,9 +495,9 @@ void TypeDetection::impl_checkResultsAndAddBestFilter(utl::MediaDescriptor& rDes
             // That can disturb our "load on demand feature". But we have no other chance!
             cache.load(FilterCache::E_CONTAINS_FILTERS);
 
-            CacheItem lIProps;
-            lIProps[PROPNAME_DOCUMENTSERVICE] <<= sDocumentService;
-            lIProps[PROPNAME_TYPE           ] <<= sRealType;
+            css::beans::NamedValue lIProps[] {
+                { PROPNAME_DOCUMENTSERVICE, uno::Any(sDocumentService) },
+                { PROPNAME_TYPE, uno::Any(sRealType) } };
             std::vector<OUString> lFilters = cache.getMatchingItemsByProps(FilterCache::E_FILTER, lIProps);
 
             aLock.clear();
@@ -577,8 +576,8 @@ void TypeDetection::impl_checkResultsAndAddBestFilter(utl::MediaDescriptor& rDes
         // That can disturb our "load on demand feature". But we have no other chance!
         cache.load(FilterCache::E_CONTAINS_FILTERS);
 
-        CacheItem lIProps;
-        lIProps[PROPNAME_TYPE] <<= sType;
+        css::beans::NamedValue lIProps[] {
+            { PROPNAME_TYPE, uno::Any(sType) } };
         std::vector<OUString> lFilters = cache.getMatchingItemsByProps(FilterCache::E_FILTER, lIProps);
 
         aLock.clear();
@@ -736,8 +735,8 @@ void TypeDetection::impl_getPreselectionForDocumentService(
         auto & cache = GetTheFilterCache();
         cache.load(FilterCache::E_CONTAINS_FILTERS);
 
-        CacheItem lIProps;
-        lIProps[PROPNAME_DOCUMENTSERVICE] <<= sPreSelDocumentService;
+        css::beans::NamedValue lIProps[] {
+            { PROPNAME_DOCUMENTSERVICE, css::uno::Any(sPreSelDocumentService) } };
         lFilters = cache.getMatchingItemsByProps(FilterCache::E_FILTER, lIProps);
         // <- SAFE --------------------------
     }

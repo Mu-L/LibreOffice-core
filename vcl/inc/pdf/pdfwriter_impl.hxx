@@ -463,10 +463,17 @@ struct PDFWidget : public PDFAnnotation
     sal_Int32                   m_nParent; // if not 0, parent's object number
     std::vector<sal_Int32>      m_aKids; // widget children, contains object numbers
     std::vector<sal_Int32>      m_aKidsIndex; // widget children, contains index to m_aWidgets
-    OUString               m_aOnValue;
+    OUString                    m_aOnValue;
+    OUString                    m_aOffValue;
     sal_Int32                   m_nTabOrder; // lowest number gets first in tab order
     sal_Int32                   m_nRadioGroup;
     sal_Int32                   m_nMaxLen;
+    PDFWriter::FormatType       m_nFormat;
+    OUString                    m_aCurrencySymbol;
+    sal_Int32                   m_nDecimalAccuracy;
+    bool                        m_bPrependCurrencySymbol;
+    OUString                    m_aTimeFormat;
+    OUString                    m_aDateFormat;
     bool                        m_bSubmit;
     bool                        m_bSubmitGet;
     sal_Int32                   m_nDest;
@@ -482,6 +489,9 @@ struct PDFWidget : public PDFAnnotation
               m_nTabOrder( 0 ),
               m_nRadioGroup( -1 ),
               m_nMaxLen( 0 ),
+              m_nFormat( PDFWriter::FormatType::Text ),
+              m_nDecimalAccuracy ( 0 ),
+              m_bPrependCurrencySymbol( false ),
               m_bSubmit( false ),
               m_bSubmitGet( false ),
               m_nDest( -1 )

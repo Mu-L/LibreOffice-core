@@ -226,10 +226,12 @@ bool ScViewFunc::CopyToClipSingleRange( ScDocument* pClipDoc, const ScRangeList&
         return false;
 
     bool bSysClip = false;
+    std::shared_ptr<ScDocument> pSysClipDoc;
     if ( !pClipDoc )                                    // no clip doc specified
     {
         // Create one (deleted by ScTransferObj).
-        pClipDoc = new ScDocument( SCDOCMODE_CLIP );
+        pSysClipDoc = std::make_shared<ScDocument>( SCDOCMODE_CLIP );
+        pClipDoc = pSysClipDoc.get();
         bSysClip = true;                                // and copy into system
     }
     if ( !bCut )
@@ -243,7 +245,7 @@ bool ScViewFunc::CopyToClipSingleRange( ScDocument* pClipDoc, const ScRangeList&
     {
         bool bAnyOle = rDoc.HasOLEObjectsInArea( aRange );
         // Update ScGlobal::xDrawClipDocShellRef.
-        ScDrawLayer::SetGlobalDrawPersist( ScTransferObj::SetDrawClipDoc( bAnyOle ) );
+        ScDrawLayer::SetGlobalDrawPersist( ScTransferObj::SetDrawClipDoc( bAnyOle, pSysClipDoc ) );
     }
 
     // is this necessary?, will setting the doc id upset the
@@ -254,8 +256,7 @@ bool ScViewFunc::CopyToClipSingleRange( ScDocument* pClipDoc, const ScRangeList&
     if (SfxObjectShell* pObjectShell = rDoc.GetDocumentShell())
     {
         // Copy document properties from pObjectShell to pClipDoc (to its clip options, as it has no object shell).
-        uno::Reference<document::XDocumentPropertiesSupplier> xDocumentPropertiesSupplier(pObjectShell->GetModel(), uno::UNO_QUERY);
-        uno::Reference<util::XCloneable> xCloneable(xDocumentPropertiesSupplier->getDocumentProperties(), uno::UNO_QUERY);
+        uno::Reference<util::XCloneable> xCloneable(pObjectShell->getDocProperties(), uno::UNO_QUERY_THROW);
         std::unique_ptr<ScClipOptions> pOptions(new ScClipOptions);
         pOptions->m_xDocumentProperties.set(xCloneable->createClone(), uno::UNO_QUERY);
         pClipDoc->SetClipOptions(std::move(pOptions));
@@ -292,7 +293,7 @@ bool ScViewFunc::CopyToClipSingleRange( ScDocument* pClipDoc, const ScRangeList&
         aObjDesc.maDisplayName = pDocSh->GetMedium()->GetURLObject().GetURLNoPass();
         // maSize is set in ScTransferObj ctor
 
-        rtl::Reference<ScTransferObj> pTransferObj(new ScTransferObj( ScDocumentUniquePtr(pClipDoc), aObjDesc ));
+        rtl::Reference<ScTransferObj> pTransferObj(new ScTransferObj( pSysClipDoc, aObjDesc ));
         if ( ScGlobal::xDrawClipDocShellRef.is() )
         {
             SfxObjectShellRef aPersistRef( ScGlobal::xDrawClipDocShellRef.get() );
@@ -847,8 +848,8 @@ bool checkDestRangeForOverwrite(const ScRangeList& rDestRanges, const ScDocument
         {
             const ScRange& rRange = rDestRanges[i];
             bIsEmpty = rDoc.IsBlockEmpty(
-                rTab, rRange.aStart.Col(), rRange.aStart.Row(),
-                rRange.aEnd.Col(), rRange.aEnd.Row());
+                rRange.aStart.Col(), rRange.aStart.Row(),
+                rRange.aEnd.Col(), rRange.aEnd.Row(), rTab );
         }
         if (!bIsEmpty)
             break;

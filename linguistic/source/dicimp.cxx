@@ -43,6 +43,7 @@
 #include <com/sun/star/linguistic2/XSpellChecker1.hpp>
 
 #include <algorithm>
+#include <utility>
 
 
 using namespace utl;
@@ -124,7 +125,7 @@ sal_Int16 ReadDicVersion( SvStream& rStream, LanguageType &nLng, bool &bNeg, OUS
         !strcmp(pMagicHeader, pVerOOo7))
     {
         bool bSuccess;
-        OString aLine;
+        OStringBuffer aLine;
 
         nDicVersion = DIC_VERSION_7;
 
@@ -165,7 +166,7 @@ sal_Int16 ReadDicVersion( SvStream& rStream, LanguageType &nLng, bool &bNeg, OUS
                     EXTENSION_FOR_TITLE_TEXT;
             }
 
-            if (aLine.indexOf("---") != -1) // end of header
+            if (std::string_view(aLine).find("---") != std::string_view::npos) // end of header
                 break;
         }
         if (!bSuccess)
@@ -213,12 +214,12 @@ sal_Int16 ReadDicVersion( SvStream& rStream, LanguageType &nLng, bool &bNeg, OUS
     return nDicVersion;
 }
 
-DictionaryNeo::DictionaryNeo(const OUString &rName,
+DictionaryNeo::DictionaryNeo(OUString aName,
                              LanguageType nLang, DictionaryType eType,
                              const OUString &rMainURL,
                              bool bWriteable) :
     aDicEvtListeners( GetLinguMutex() ),
-    aDicName        (rName),
+    aDicName        (std::move(aName)),
     aMainURL        (rMainURL),
     eDicType        (eType),
     nLanguage       (nLang)
@@ -362,7 +363,7 @@ ErrCode DictionaryNeo::loadEntries(const OUString &rMainURL)
     }
     else if (DIC_VERSION_7 == nDicVersion)
     {
-        OString aLine;
+        OStringBuffer aLine;
 
         // remaining lines - stock strings (a [==] b)
         while (pStream->ReadLine(aLine))
@@ -503,8 +504,6 @@ int DictionaryNeo::cmpDicEntry(std::u16string_view rWord1,
                                std::u16string_view rWord2,
                                bool bSimilarOnly)
 {
-    MutexGuard  aGuard( GetLinguMutex() );
-
     // returns 0 if rWord1 is equal to rWord2
     //   "     a value < 0 if rWord1 is less than rWord2
     //   "     a value > 0 if rWord1 is greater than rWord2
@@ -1038,10 +1037,10 @@ DicEntry::DicEntry(const OUString &rDicFileWord,
     bIsNegativ = bIsNegativWord;
 }
 
-DicEntry::DicEntry(const OUString &rDicWord, bool bNegativ,
-                   const OUString &rRplcText) :
-    aDicWord                (rDicWord),
-    aReplacement            (rRplcText),
+DicEntry::DicEntry(OUString aDicWord_, bool bNegativ,
+                   OUString aRplcText_) :
+    aDicWord                (std::move(aDicWord_)),
+    aReplacement            (std::move(aRplcText_)),
     bIsNegativ              (bNegativ)
 {
 }
@@ -1054,8 +1053,6 @@ void DicEntry::splitDicFileWord(const OUString &rDicFileWord,
                                 OUString &rDicWord,
                                 OUString &rReplacement)
 {
-    MutexGuard  aGuard( GetLinguMutex() );
-
     sal_Int32 nDelimPos = rDicFileWord.indexOf( "==" );
     if (-1 != nDelimPos)
     {
@@ -1075,19 +1072,16 @@ void DicEntry::splitDicFileWord(const OUString &rDicFileWord,
 
 OUString SAL_CALL DicEntry::getDictionaryWord(  )
 {
-    MutexGuard  aGuard( GetLinguMutex() );
     return aDicWord;
 }
 
 sal_Bool SAL_CALL DicEntry::isNegative(  )
 {
-    MutexGuard  aGuard( GetLinguMutex() );
     return bIsNegativ;
 }
 
 OUString SAL_CALL DicEntry::getReplacementText(  )
 {
-    MutexGuard  aGuard( GetLinguMutex() );
     return aReplacement;
 }
 

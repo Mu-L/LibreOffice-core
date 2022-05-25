@@ -69,6 +69,7 @@
 
 #include <algorithm>
 #include <string_view>
+#include <utility>
 
 namespace {
 
@@ -188,8 +189,8 @@ private:
 
 struct test_name_compare
 {
-    explicit test_name_compare(const std::string& rName):
-        maName(rName)
+    explicit test_name_compare(std::string aName):
+        maName(std::move(aName))
     {
     }
 
@@ -490,7 +491,6 @@ static bool main2()
 //Prints stack trace based on exception context record
 static void printStack( PCONTEXT ctx )
 {
-    constexpr int MaxNameLen = 256;
     HANDLE process = GetCurrentProcess();
     HANDLE thread = GetCurrentThread();
 
@@ -550,7 +550,7 @@ static void printStack( PCONTEXT ctx )
         if (SymFromAddr(process, stack.AddrPC.Offset, nullptr, pSymbol))
             printf("\tat %s", pSymbol->Name);
         else
-            printf("\tat unknown (Error in SymFromAddr=%#08x)", GetLastError());
+            printf("\tat unknown (Error in SymFromAddr=%#08lx)", GetLastError());
 
         DWORD disp;
         //try to get line

@@ -50,6 +50,7 @@
 
 #include <rtl/ustrbuf.hxx>
 #include <sal/log.hxx>
+#include <o3tl/safeint.hxx>
 #include <osl/diagnose.h>
 
 #include <svl/grabbagitem.hxx>
@@ -59,6 +60,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cstddef>
 #include <limits>
 #include <memory>
 #include <set>
@@ -689,17 +691,17 @@ sal_Int32 ParaPortionList::GetPos(const ParaPortion* p) const
 
 ParaPortion* ParaPortionList::operator [](sal_Int32 nPos)
 {
-    return 0 <= nPos && nPos < static_cast<sal_Int32>(maPortions.size()) ? maPortions[nPos].get() : nullptr;
+    return 0 <= nPos && o3tl::make_unsigned(nPos) < maPortions.size() ? maPortions[nPos].get() : nullptr;
 }
 
 const ParaPortion* ParaPortionList::operator [](sal_Int32 nPos) const
 {
-    return 0 <= nPos && nPos < static_cast<sal_Int32>(maPortions.size()) ? maPortions[nPos].get() : nullptr;
+    return 0 <= nPos && o3tl::make_unsigned(nPos) < maPortions.size() ? maPortions[nPos].get() : nullptr;
 }
 
 std::unique_ptr<ParaPortion> ParaPortionList::Release(sal_Int32 nPos)
 {
-    if (nPos < 0 || static_cast<sal_Int32>(maPortions.size()) <= nPos)
+    if (nPos < 0 || maPortions.size() <= o3tl::make_unsigned(nPos))
     {
         SAL_WARN( "editeng", "ParaPortionList::Release - out of bounds pos " << nPos);
         return nullptr;
@@ -711,7 +713,7 @@ std::unique_ptr<ParaPortion> ParaPortionList::Release(sal_Int32 nPos)
 
 void ParaPortionList::Remove(sal_Int32 nPos)
 {
-    if (nPos < 0 || static_cast<sal_Int32>(maPortions.size()) <= nPos)
+    if (nPos < 0 || maPortions.size() <= o3tl::make_unsigned(nPos))
     {
         SAL_WARN( "editeng", "ParaPortionList::Remove - out of bounds pos " << nPos);
         return;
@@ -721,7 +723,7 @@ void ParaPortionList::Remove(sal_Int32 nPos)
 
 void ParaPortionList::Insert(sal_Int32 nPos, std::unique_ptr<ParaPortion> p)
 {
-    if (nPos < 0 || static_cast<sal_Int32>(maPortions.size()) < nPos)
+    if (nPos < 0 || maPortions.size() < o3tl::make_unsigned(nPos))
     {
         SAL_WARN( "editeng", "ParaPortionList::Insert - out of bounds pos " << nPos);
         return;
@@ -778,12 +780,12 @@ sal_Int32 ParaPortionList::FindParagraph(tools::Long nYOffset) const
 
 const ParaPortion* ParaPortionList::SafeGetObject(sal_Int32 nPos) const
 {
-    return 0 <= nPos && nPos < static_cast<sal_Int32>(maPortions.size()) ? maPortions[nPos].get() : nullptr;
+    return 0 <= nPos && o3tl::make_unsigned(nPos) < maPortions.size() ? maPortions[nPos].get() : nullptr;
 }
 
 ParaPortion* ParaPortionList::SafeGetObject(sal_Int32 nPos)
 {
-    return 0 <= nPos && nPos < static_cast<sal_Int32>(maPortions.size()) ? maPortions[nPos].get() : nullptr;
+    return 0 <= nPos && o3tl::make_unsigned(nPos) < maPortions.size() ? maPortions[nPos].get() : nullptr;
 }
 
 #if OSL_DEBUG_LEVEL > 0 && !defined NDEBUG
@@ -1215,7 +1217,7 @@ void ContentNode::ExpandAttribs( sal_Int32 nIndex, sal_Int32 nNew, SfxItemPool& 
     bool bResort = false;
     bool bExpandedEmptyAtIndexNull = false;
 
-    sal_Int32 nAttr = 0;
+    std::size_t nAttr = 0;
     CharAttribList::AttribsType& rAttribs = aCharAttribList.GetAttribs();
     EditCharAttrib* pAttrib = GetAttrib(rAttribs, nAttr);
     while ( pAttrib )
@@ -1280,7 +1282,7 @@ void ContentNode::ExpandAttribs( sal_Int32 nIndex, sal_Int32 nNew, SfxItemPool& 
                         {
                             // Check if this kind of attribute was empty and expanded here...
                             sal_uInt16 nW = pAttrib->GetItem()->Which();
-                            for ( sal_Int32 nA = 0; nA < nAttr; nA++ )
+                            for ( std::size_t nA = 0; nA < nAttr; nA++ )
                             {
                                 const EditCharAttrib& r = *aCharAttribList.GetAttribs()[nA];
                                 if ( ( r.GetStart() == 0 ) && ( r.GetItem()->Which() == nW ) )
@@ -1318,9 +1320,11 @@ void ContentNode::ExpandAttribs( sal_Int32 nIndex, sal_Int32 nNew, SfxItemPool& 
             bResort = true;
             rItemPool.Remove( *pAttrib->GetItem() );
             rAttribs.erase(rAttribs.begin()+nAttr);
-            --nAttr;
         }
-        ++nAttr;
+        else
+        {
+            ++nAttr;
+        }
         pAttrib = GetAttrib(rAttribs, nAttr);
     }
 
@@ -1352,7 +1356,7 @@ void ContentNode::CollapseAttribs( sal_Int32 nIndex, sal_Int32 nDeleted, SfxItem
     bool bResort = false;
     sal_Int32 nEndChanges = nIndex+nDeleted;
 
-    sal_Int32 nAttr = 0;
+    std::size_t nAttr = 0;
     CharAttribList::AttribsType& rAttribs = aCharAttribList.GetAttribs();
     EditCharAttrib* pAttrib = GetAttrib(rAttribs, nAttr);
     while ( pAttrib )
@@ -1412,12 +1416,14 @@ void ContentNode::CollapseAttribs( sal_Int32 nIndex, sal_Int32 nDeleted, SfxItem
             bResort = true;
             rItemPool.Remove( *pAttrib->GetItem() );
             rAttribs.erase(rAttribs.begin()+nAttr);
-            nAttr--;
         }
-        else if ( pAttrib->IsEmpty() )
-            aCharAttribList.SetHasEmptyAttribs(true);
+        else
+        {
+            if ( pAttrib->IsEmpty() )
+                aCharAttribList.SetHasEmptyAttribs(true);
+            nAttr++;
+        }
 
-        nAttr++;
         pAttrib = GetAttrib(rAttribs, nAttr);
     }
 
@@ -1443,7 +1449,7 @@ void ContentNode::CopyAndCutAttribs( ContentNode* pPrevNode, SfxItemPool& rPool,
 
     sal_Int32 nCut = pPrevNode->Len();
 
-    sal_Int32 nAttr = 0;
+    std::size_t nAttr = 0;
     CharAttribList::AttribsType& rPrevAttribs = pPrevNode->GetCharAttribs().GetAttribs();
     EditCharAttrib* pAttrib = GetAttrib(rPrevAttribs, nAttr);
     while ( pAttrib )
@@ -1451,7 +1457,7 @@ void ContentNode::CopyAndCutAttribs( ContentNode* pPrevNode, SfxItemPool& rPool,
         if ( pAttrib->GetEnd() < nCut )
         {
             // remain unchanged...
-            ;
+            nAttr++;
         }
         else if ( pAttrib->GetEnd() == nCut )
         {
@@ -1462,6 +1468,7 @@ void ContentNode::CopyAndCutAttribs( ContentNode* pPrevNode, SfxItemPool& rPool,
                 assert(pNewAttrib);
                 aCharAttribList.InsertAttrib( pNewAttrib );
             }
+            nAttr++;
         }
         else if ( pAttrib->IsInside( nCut ) || ( !nCut && !pAttrib->GetStart() && !pAttrib->IsFeature() ) )
         {
@@ -1471,6 +1478,7 @@ void ContentNode::CopyAndCutAttribs( ContentNode* pPrevNode, SfxItemPool& rPool,
             assert(pNewAttrib);
             aCharAttribList.InsertAttrib( pNewAttrib );
             pAttrib->GetEnd() = nCut;
+            nAttr++;
         }
         else
         {
@@ -1479,9 +1487,7 @@ void ContentNode::CopyAndCutAttribs( ContentNode* pPrevNode, SfxItemPool& rPool,
             aCharAttribList.InsertAttrib(it->release());
             rPrevAttribs.erase(it);
             pAttrib->MoveBackward( nCut );
-            nAttr--;
         }
-        nAttr++;
         pAttrib = GetAttrib(rPrevAttribs, nAttr);
     }
 
@@ -1502,7 +1508,7 @@ void ContentNode::AppendAttribs( ContentNode* pNextNode )
     CharAttribList::DbgCheckAttribs(pNextNode->aCharAttribList);
 #endif
 
-    sal_Int32 nAttr = 0;
+    std::size_t nAttr = 0;
     CharAttribList::AttribsType& rNextAttribs = pNextNode->GetCharAttribs().GetAttribs();
     EditCharAttrib* pAttrib = GetAttrib(rNextAttribs, nAttr);
     while ( pAttrib )
@@ -1512,10 +1518,11 @@ void ContentNode::AppendAttribs( ContentNode* pNextNode )
         if ( ( pAttrib->GetStart() == 0 ) && ( !pAttrib->IsFeature() ) )
         {
             // Attributes can possibly be summarized as:
-            sal_Int32 nTmpAttr = 0;
+            std::size_t nTmpAttr = 0;
             EditCharAttrib* pTmpAttrib = GetAttrib( aCharAttribList.GetAttribs(), nTmpAttr );
             while ( !bMelted && pTmpAttrib )
             {
+                ++nTmpAttr;
                 if ( pTmpAttrib->GetEnd() == nNewStart )
                 {
                     if (pTmpAttrib->Which() == pAttrib->Which())
@@ -1532,12 +1539,11 @@ void ContentNode::AppendAttribs( ContentNode* pNextNode )
                         }
                         else if (0 == pTmpAttrib->GetLen())
                         {
+                            --nTmpAttr; // to cancel earlier increment...
                             aCharAttribList.Remove(nTmpAttr);
-                            --nTmpAttr; // to cancel later increment...
                         }
                     }
                 }
-                ++nTmpAttr;
                 pTmpAttrib = GetAttrib( aCharAttribList.GetAttribs(), nTmpAttr );
             }
         }
@@ -2068,12 +2074,12 @@ sal_Int32 EditDoc::GetPos(const ContentNode* p) const
 
 const ContentNode* EditDoc::GetObject(sal_Int32 nPos) const
 {
-    return 0 <= nPos && nPos < static_cast<sal_Int32>(maContents.size()) ? maContents[nPos].get() : nullptr;
+    return 0 <= nPos && o3tl::make_unsigned(nPos) < maContents.size() ? maContents[nPos].get() : nullptr;
 }
 
 ContentNode* EditDoc::GetObject(sal_Int32 nPos)
 {
-    return 0 <= nPos && nPos < static_cast<sal_Int32>(maContents.size()) ? maContents[nPos].get() : nullptr;
+    return 0 <= nPos && o3tl::make_unsigned(nPos) < maContents.size() ? maContents[nPos].get() : nullptr;
 }
 
 const ContentNode* EditDoc::operator[](sal_Int32 nPos) const
@@ -2098,7 +2104,7 @@ void EditDoc::Insert(sal_Int32 nPos, ContentNode* p)
 
 void EditDoc::Remove(sal_Int32 nPos)
 {
-    if (nPos < 0 || nPos >= static_cast<sal_Int32>(maContents.size()))
+    if (nPos < 0 || o3tl::make_unsigned(nPos) >= maContents.size())
     {
         SAL_WARN( "editeng", "EditDoc::Remove - out of bounds pos " << nPos);
         return;
@@ -2108,7 +2114,7 @@ void EditDoc::Remove(sal_Int32 nPos)
 
 void EditDoc::Release(sal_Int32 nPos)
 {
-    if (nPos < 0 || nPos >= static_cast<sal_Int32>(maContents.size()))
+    if (nPos < 0 || o3tl::make_unsigned(nPos) >= maContents.size())
     {
         SAL_WARN( "editeng", "EditDoc::Release - out of bounds pos " << nPos);
         return;
@@ -2425,7 +2431,7 @@ bool EditDoc::RemoveAttribs( ContentNode* pNode, sal_Int32 nStart, sal_Int32 nEn
 #endif
 
     // iterate over the attributes ...
-    sal_Int32 nAttr = 0;
+    std::size_t nAttr = 0;
     CharAttribList::AttribsType& rAttribs = pNode->GetCharAttribs().GetAttribs();
     EditCharAttrib* pAttr = GetAttrib(rAttribs, nAttr);
     while ( pAttr )
@@ -2505,9 +2511,11 @@ bool EditDoc::RemoveAttribs( ContentNode* pNode, sal_Int32 nStart, sal_Int32 nEn
             DBG_ASSERT( !pAttr->IsFeature(), "RemoveAttribs: Remove a feature?!" );
             GetItemPool().Remove( *pAttr->GetItem() );
             rAttribs.erase(rAttribs.begin()+nAttr);
-            nAttr--;
         }
-        nAttr++;
+        else
+        {
+            nAttr++;
+        }
         pAttr = GetAttrib(rAttribs, nAttr);
     }
 
@@ -2585,7 +2593,7 @@ void EditDoc::FindAttribs( ContentNode* pNode, sal_Int32 nStartPos, sal_Int32 nE
     assert(pNode);
     DBG_ASSERT( nStartPos <= nEndPos, "Invalid region!" );
 
-    sal_uInt16 nAttr = 0;
+    std::size_t nAttr = 0;
     EditCharAttrib* pAttr = GetAttrib( pNode->GetCharAttribs().GetAttribs(), nAttr );
     // No Selection...
     if ( nStartPos == nEndPos )

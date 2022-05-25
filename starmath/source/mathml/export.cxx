@@ -127,16 +127,16 @@ bool SmMLExportWrapper::Export(SfxMedium& rMedium)
     }
 
     // create XPropertySet with three properties for status indicator
-    comphelper::PropertyMapEntry aInfoMap[]
-        = { { OUString("UsePrettyPrinting"), 0, cppu::UnoType<bool>::get(),
-              beans::PropertyAttribute::MAYBEVOID, 0 },
-            { OUString("BaseURI"), 0, ::cppu::UnoType<OUString>::get(),
-              beans::PropertyAttribute::MAYBEVOID, 0 },
-            { OUString("StreamRelPath"), 0, ::cppu::UnoType<OUString>::get(),
-              beans::PropertyAttribute::MAYBEVOID, 0 },
-            { OUString("StreamName"), 0, ::cppu::UnoType<OUString>::get(),
-              beans::PropertyAttribute::MAYBEVOID, 0 },
-            { OUString(), 0, css::uno::Type(), 0, 0 } };
+    static const comphelper::PropertyMapEntry aInfoMap[]{
+        { OUString("UsePrettyPrinting"), 0, cppu::UnoType<bool>::get(),
+          beans::PropertyAttribute::MAYBEVOID, 0 },
+        { OUString("BaseURI"), 0, ::cppu::UnoType<OUString>::get(),
+          beans::PropertyAttribute::MAYBEVOID, 0 },
+        { OUString("StreamRelPath"), 0, ::cppu::UnoType<OUString>::get(),
+          beans::PropertyAttribute::MAYBEVOID, 0 },
+        { OUString("StreamName"), 0, ::cppu::UnoType<OUString>::get(),
+          beans::PropertyAttribute::MAYBEVOID, 0 }
+    };
     uno::Reference<beans::XPropertySet> xInfoSet(
         comphelper::GenericPropertySet_CreateInstance(new comphelper::PropertySetInfo(aInfoMap)));
 
@@ -262,16 +262,16 @@ OUString SmMLExportWrapper::Export(SmMlElement* pElementTree)
     }
 
     // create XPropertySet with three properties for status indicator
-    comphelper::PropertyMapEntry aInfoMap[]
-        = { { OUString("UsePrettyPrinting"), 0, cppu::UnoType<bool>::get(),
-              beans::PropertyAttribute::MAYBEVOID, 0 },
-            { OUString("BaseURI"), 0, ::cppu::UnoType<OUString>::get(),
-              beans::PropertyAttribute::MAYBEVOID, 0 },
-            { OUString("StreamRelPath"), 0, ::cppu::UnoType<OUString>::get(),
-              beans::PropertyAttribute::MAYBEVOID, 0 },
-            { OUString("StreamName"), 0, ::cppu::UnoType<OUString>::get(),
-              beans::PropertyAttribute::MAYBEVOID, 0 },
-            { OUString(), 0, css::uno::Type(), 0, 0 } };
+    static const comphelper::PropertyMapEntry aInfoMap[]{
+        { OUString("UsePrettyPrinting"), 0, cppu::UnoType<bool>::get(),
+          beans::PropertyAttribute::MAYBEVOID, 0 },
+        { OUString("BaseURI"), 0, ::cppu::UnoType<OUString>::get(),
+          beans::PropertyAttribute::MAYBEVOID, 0 },
+        { OUString("StreamRelPath"), 0, ::cppu::UnoType<OUString>::get(),
+          beans::PropertyAttribute::MAYBEVOID, 0 },
+        { OUString("StreamName"), 0, ::cppu::UnoType<OUString>::get(),
+          beans::PropertyAttribute::MAYBEVOID, 0 }
+    };
     uno::Reference<beans::XPropertySet> xInfoSet(
         comphelper::GenericPropertySet_CreateInstance(new comphelper::PropertySetInfo(aInfoMap)));
 
@@ -785,11 +785,10 @@ void SmMLExport::exportMlAttributes(const SmMlElement* pMlElement)
                         break;
                     case SmMlAttributeValueMathbackground::MlRgb:
                     {
-                        OUString aTextColor
-                            = OUString::createFromAscii(starmathdatabase::Identify_Color_MATHML(
-                                                            sal_uInt32(aAttributeValue->m_aCol))
-                                                            .pIdent);
-                        addAttribute(XML_MATHBACKGROUND, aTextColor);
+                        const OUString& rTextColor = starmathdatabase::Identify_Color_MATHML(
+                                                         sal_uInt32(aAttributeValue->m_aCol))
+                                                         .aIdent;
+                        addAttribute(XML_MATHBACKGROUND, rTextColor);
                         break;
                     }
                     default:
@@ -807,11 +806,10 @@ void SmMLExport::exportMlAttributes(const SmMlElement* pMlElement)
                         break;
                     case SmMlAttributeValueMathcolor::MlRgb:
                     {
-                        OUString aTextColor
-                            = OUString::createFromAscii(starmathdatabase::Identify_Color_MATHML(
-                                                            sal_uInt32(aAttributeValue->m_aCol))
-                                                            .pIdent);
-                        addAttribute(XML_MATHCOLOR, aTextColor);
+                        const OUString& rTextColor = starmathdatabase::Identify_Color_MATHML(
+                                                         sal_uInt32(aAttributeValue->m_aCol))
+                                                         .aIdent;
+                        addAttribute(XML_MATHCOLOR, rTextColor);
                         break;
                     }
                     default:

@@ -856,9 +856,9 @@ bool SwCursorShell::GotoFootnoteAnchor(const SwTextFootnote& rTextFootnote)
 bool SwCursorShell::GotoFormatContentControl(const SwFormatContentControl& rContentControl)
 {
     bool bRet = false;
-    auto pContentControl = const_cast<SwContentControl*>(rContentControl.GetContentControl());
+    std::shared_ptr<SwContentControl> pContentControl = rContentControl.GetContentControl();
     if (!pContentControl->GetShowingPlaceHolder() && !pContentControl->GetCheckbox()
-        && !pContentControl->GetSelectedListItem())
+        && !pContentControl->GetSelectedListItem() && !pContentControl->GetSelectedDate())
     {
         return bRet;
     }
@@ -999,6 +999,27 @@ bool SwCursorShell::CursorInsideInputField() const
         if (dynamic_cast<const SwTextInputField*>(GetTextFieldAtCursor(&rCursor, true)))
             return true;
     }
+    return false;
+}
+
+bool SwCursorShell::CursorInsideContentControl() const
+{
+    for (SwPaM& rCursor : GetCursor()->GetRingContainer())
+    {
+        const SwPosition* pStart = rCursor.Start();
+        SwTextNode* pTextNode = pStart->nNode.GetNode().GetTextNode();
+        if (!pTextNode)
+        {
+            continue;
+        }
+
+        sal_Int32 nIndex = pStart->nContent.GetIndex();
+        if (pTextNode->GetTextAttrAt(nIndex, RES_TXTATR_CONTENTCONTROL, SwTextNode::PARENT))
+        {
+            return true;
+        }
+    }
+
     return false;
 }
 

@@ -117,6 +117,7 @@
 #include <comphelper/propertyvalue.hxx>
 #include <comphelper/storagehelper.hxx>
 #include <cppuhelper/supportsservice.hxx>
+#include <sfx2/dispatch.hxx>
 #include <swruler.hxx>
 #include <docufld.hxx>
 
@@ -163,6 +164,7 @@
 
 #include <IDocumentOutlineNodes.hxx>
 #include <SearchResultLocator.hxx>
+#include <textcontentcontrol.hxx>
 
 using namespace ::com::sun::star;
 using namespace ::com::sun::star::text;
@@ -653,9 +655,7 @@ Reference< XPropertySet >  SwXTextDocument::getEndnoteSettings()
 
 Reference< util::XReplaceDescriptor >  SwXTextDocument::createReplaceDescriptor()
 {
-    SolarMutexGuard aGuard;
-    Reference< util::XReplaceDescriptor >  xRet = new SwXTextSearch;
-    return xRet;
+    return new SwXTextSearch;
 }
 
 SwUnoCursor* SwXTextDocument::CreateCursorForSearch(Reference< XTextCursor > & xCursor)
@@ -737,10 +737,7 @@ sal_Int32 SwXTextDocument::replaceAll(const Reference< util::XSearchDescriptor >
 
 Reference< util::XSearchDescriptor >  SwXTextDocument::createSearchDescriptor()
 {
-    SolarMutexGuard aGuard;
-    Reference< util::XSearchDescriptor >  xRet = new SwXTextSearch;
-    return xRet;
-
+    return new SwXTextSearch;
 }
 
 // Used for findAll/First/Next
@@ -1320,7 +1317,6 @@ public:
     // XElementAccess
     virtual css::uno::Type SAL_CALL getElementType() override
     {
-        SolarMutexGuard aGuard;
         return cppu::UnoType<drawing::XDrawPage>::get();
     }
 
@@ -3363,6 +3359,70 @@ SwXTextDocument::getSearchResultRectangles(const char* pPayload)
     return std::vector<basegfx::B2DRange>();
 }
 
+void SwXTextDocument::executeContentControlEvent(const StringMap& rArguments)
+{
+    auto it = rArguments.find("type");
+    if (it == rArguments.end())
+    {
+        return;
+    }
+
+    if (it->second == "drop-down")
+    {
+        SwWrtShell* pWrtShell = m_pDocShell->GetWrtShell();
+        const SwPosition* pStart = pWrtShell->GetCursor()->Start();
+        SwTextNode* pTextNode = pStart->nNode.GetNode().GetTextNode();
+        if (!pTextNode)
+        {
+            return;
+        }
+
+        SwTextAttr* pAttr = pTextNode->GetTextAttrAt(pStart->nContent.GetIndex(),
+                                                     RES_TXTATR_CONTENTCONTROL, SwTextNode::PARENT);
+        if (!pAttr)
+        {
+            return;
+        }
+
+        auto pTextContentControl = static_txtattr_cast<SwTextContentControl*>(pAttr);
+        const SwFormatContentControl& rFormatContentControl = pTextContentControl->GetContentControl();
+        std::shared_ptr<SwContentControl> pContentControl = rFormatContentControl.GetContentControl();
+        if (!pContentControl->HasListItems())
+        {
+            return;
+        }
+
+        it = rArguments.find("selected");
+        if (it == rArguments.end())
+        {
+            return;
+        }
+
+        sal_Int32 nSelection = it->second.toInt32();
+        pContentControl->SetSelectedListItem(nSelection);
+        pWrtShell->GotoContentControl(rFormatContentControl);
+    }
+    else if (it->second == "picture")
+    {
+        it = rArguments.find("changed");
+        if (it == rArguments.end())
+        {
+            return;
+        }
+
+        SwView* pView = m_pDocShell->GetView();
+        if (!pView)
+        {
+            return;
+        }
+
+        // The current placeholder is selected, so this will replace, not insert.
+        SfxStringItem aItem(SID_INSERT_GRAPHIC, it->second);
+        pView->GetViewFrame()->GetDispatcher()->ExecuteList(SID_INSERT_GRAPHIC,
+                                                            SfxCallMode::SYNCHRON, { &aItem });
+    }
+}
+
 int SwXTextDocument::getPart()
 {
     SolarMutexGuard aGuard;
@@ -3376,14 +3436,11 @@ int SwXTextDocument::getPart()
 
 OUString SwXTextDocument::getPartName(int nPart)
 {
-    SolarMutexGuard aGuard;
-
     return SwResId(STR_PAGE) + OUString::number(nPart + 1);
 }
 
 OUString SwXTextDocument::getPartHash(int nPart)
 {
-    SolarMutexGuard aGuard;
     OUString sPart(SwResId(STR_PAGE) + OUString::number(nPart + 1));
 
     return OUString::number(sPart.hashCode());

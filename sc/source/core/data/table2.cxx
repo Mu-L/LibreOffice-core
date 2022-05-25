@@ -134,15 +134,20 @@ void ScTable::SetCalcNotification( bool bSet )
 
 bool ScTable::TestInsertRow( SCCOL nStartCol, SCCOL nEndCol, SCROW nStartRow, SCSIZE nSize ) const
 {
-    bool bTest = true;
-
     if ( nStartCol==0 && nEndCol==rDocument.MaxCol() && pOutlineTable )
-        bTest = pOutlineTable->TestInsertRow(nSize);
+        if (!pOutlineTable->TestInsertRow(nSize))
+            return false;
 
-    for (SCCOL i=nStartCol; (i<=nEndCol) && bTest; i++)
-        bTest = CreateColumnIfNotExists(i).TestInsertRow(nStartRow, nSize);
+    SCCOL maxCol = ClampToAllocatedColumns(nEndCol);
+    for (SCCOL i=nStartCol; i<=maxCol; i++)
+        if (!aCol[i].TestInsertRow(nStartRow, nSize))
+            return false;
 
-    return bTest;
+    if( maxCol != nEndCol )
+        if (!aDefaultColData.TestInsertRow(nSize))
+            return false;
+
+    return true;
 }
 
 void ScTable::InsertRow( SCCOL nStartCol, SCCOL nEndCol, SCROW nStartRow, SCSIZE nSize )
@@ -181,8 +186,9 @@ void ScTable::InsertRow( SCCOL nStartCol, SCCOL nEndCol, SCROW nStartRow, SCSIZE
         }
     }
 
-    for (SCCOL j=nStartCol; j<=nEndCol; j++)
+    for (SCCOL j : GetAllocatedColumnsRange(nStartCol, nEndCol))
         aCol[j].InsertRow( nStartRow, nSize );
+    aDefaultColData.InsertRow( nStartRow, nSize );
 
     mpCondFormatList->InsertRow(nTab, nStartCol, nEndCol, nStartRow, nSize);
 
@@ -303,8 +309,11 @@ void ScTable::InsertCol(
         }
     }
 
+    // Make sure there are enough columns at the end.
+    CreateColumnIfNotExists(std::min<SCCOL>(rDocument.MaxCol(), std::max(nStartCol, aCol.size()) + nSize - 1 ));
     if ((nStartRow == 0) && (nEndRow == rDocument.MaxRow()))
     {
+        // Move existing columns back, this will swap last empty columns in the inserted place.
         for (SCCOL nCol = aCol.size() - 1 - nSize; nCol >= nStartCol; --nCol)
             aCol[nCol].SwapCol(aCol[nCol+nSize]);
     }
@@ -1531,10 +1540,9 @@ void ScTable::UndoToTable(
 
 void ScTable::CopyUpdated( const ScTable* pPosTab, ScTable* pDestTab ) const
 {
-    pPosTab->CreateColumnIfNotExists(aCol.size()-1);
     pDestTab->CreateColumnIfNotExists(aCol.size()-1);
     for (SCCOL i=0; i < aCol.size(); i++)
-        aCol[i].CopyUpdated( pPosTab->aCol[i], pDestTab->aCol[i] );
+        aCol[i].CopyUpdated( pPosTab->FetchColumn(i), pDestTab->aCol[i] );
 }
 
 void ScTable::InvalidateTableArea()
@@ -1548,7 +1556,7 @@ void ScTable::InvalidatePageBreaks()
     mbPageBreaksValid = false;
 }
 
-void ScTable::CopyScenarioTo( const ScTable* pDestTab ) const
+void ScTable::CopyScenarioTo( ScTable* pDestTab ) const
 {
     OSL_ENSURE( bScenario, "bScenario == FALSE" );
 
@@ -2340,7 +2348,7 @@ void ScTable::SetMergedCells( SCCOL nCol1, SCROW nRow1, SCCOL nCol2, SCROW nRow2
         ApplyFlags(nCol1+1, nRow1+1, nCol2, nRow2, ScMF::Hor | ScMF::Ver);
 }
 
-bool ScTable::IsBlockEmpty( SCCOL nCol1, SCROW nRow1, SCCOL nCol2, SCROW nRow2, bool bIgnoreNotes ) const
+bool ScTable::IsBlockEmpty( SCCOL nCol1, SCROW nRow1, SCCOL nCol2, SCROW nRow2 ) const
 {
     if (!(ValidCol(nCol1) && ValidCol(nCol2)))
     {
@@ -2351,12 +2359,12 @@ bool ScTable::IsBlockEmpty( SCCOL nCol1, SCROW nRow1, SCCOL nCol2, SCROW nRow2, 
     bool bEmpty = true;
     for (SCCOL i=nCol1; i<=nCol2 && bEmpty; i++)
     {
-        bEmpty = aCol[i].IsEmptyBlock( nRow1, nRow2 );
+        bEmpty = aCol[i].IsEmptyData( nRow1, nRow2 );
         if (bEmpty)
         {
             bEmpty = aCol[i].IsSparklinesEmptyBlock(nRow1, nRow2);
         }
-        if (!bIgnoreNotes && bEmpty)
+        if (bEmpty)
         {
             bEmpty = aCol[i].IsNotesEmptyBlock(nRow1, nRow2);
         }
@@ -2808,9 +2816,10 @@ void ScTable::MergeSelectionPattern( ScMergePatternState& rState, const ScMarkDa
 
     for (const sc::ColRowSpan & rSpan : aSpans)
     {
-        for (SCCOLROW i = rSpan.mnStart; i <= rSpan.mnEnd; ++i)
+        SCCOL maxCol = ClampToAllocatedColumns(rSpan.mnEnd);
+        for (SCCOL i = rSpan.mnStart; i <= maxCol; ++i)
         {
-            CreateColumnIfNotExists(i).MergeSelectionPattern( rState, rMark, bDeep );
+            aCol[i].MergeSelectionPattern( rState, rMark, bDeep );
         }
     }
 }

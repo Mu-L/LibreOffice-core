@@ -52,6 +52,7 @@
 
 #include <sal/macros.h>
 #include <sal/log.hxx>
+#include <o3tl/safeint.hxx>
 #include <o3tl/string_view.hxx>
 #include <com/sun/star/uno/Exception.hpp>
 
@@ -2128,7 +2129,7 @@ void X11SalFrame::ShowFullScreen( bool bFullScreen, sal_Int32 nScreen )
             maRestorePosSize = tools::Rectangle( Point( maGeometry.nX, maGeometry.nY ),
                                           Size( maGeometry.nWidth, maGeometry.nHeight ) );
             tools::Rectangle aRect;
-            if( nScreen < 0 || nScreen >= static_cast<int>(GetDisplay()->GetXineramaScreens().size()) )
+            if( nScreen < 0 || o3tl::make_unsigned(nScreen) >= GetDisplay()->GetXineramaScreens().size() )
                 aRect = tools::Rectangle( Point(0,0), GetDisplay()->GetScreenSize( m_nXScreen ) );
             else
                 aRect = GetDisplay()->GetXineramaScreens()[nScreen];
@@ -2171,7 +2172,7 @@ void X11SalFrame::ShowFullScreen( bool bFullScreen, sal_Int32 nScreen )
     }
     else
     {
-        if( nScreen < 0 || nScreen >= static_cast<int>(GetDisplay()->GetXScreenCount()) )
+        if( nScreen < 0 || o3tl::make_unsigned(nScreen) >= GetDisplay()->GetXScreenCount() )
             nScreen = m_nXScreen.getXScreen();
         if( nScreen != static_cast<int>(m_nXScreen.getXScreen()) )
         {
@@ -3204,7 +3205,7 @@ bool X11SalFrame::HandleKeyEvent( XKeyEvent *pEvent )
         // convert to single byte text stream
         nSize = rtl_convertTextToUnicode(
                                 aConverter, aContext,
-                                reinterpret_cast<char*>(pPrintable), nLen,
+                                pPrintable, nLen,
                                 pBuffer, nBufferSize,
                                 RTL_TEXTTOUNICODE_FLAGS_UNDEFINED_IGNORE |
                                 RTL_TEXTTOUNICODE_FLAGS_INVALID_IGNORE,

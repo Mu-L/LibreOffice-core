@@ -555,11 +555,21 @@ namespace sw
                             // at the end, so no need to check in nStartNode
                             if (n == nEndNode && !isOnlyFieldmarks)
                             {
-                                SwTextAttr const*const pAttr(rTextNode.GetTextAttrForCharAt(i));
+                                SwTextAttr const* pAttr(rTextNode.GetTextAttrForCharAt(i));
                                 if (pAttr && pAttr->End() && (nEnd  < *pAttr->End()))
                                 {
                                     assert(pAttr->HasDummyChar());
                                     rBreaks.emplace_back(n, i);
+                                }
+
+                                if (!pAttr)
+                                {
+                                    // See if this is an end dummy character for a content control.
+                                    pAttr = rTextNode.GetTextAttrForEndCharAt(i, RES_TXTATR_CONTENTCONTROL);
+                                    if (pAttr && (nStart > pAttr->GetStart()))
+                                    {
+                                        rBreaks.emplace_back(n, i);
+                                    }
                                 }
                             }
                             break;
@@ -4592,7 +4602,12 @@ bool DocumentContentOperationsManager::ReplaceRangeImpl( SwPaM& rPam, const OUSt
                 m_rDoc.GetIDocumentUndoRedo().AppendUndo(
                     std::make_unique<SwUndoRedlineDelete>( aDelPam, SwUndoId::REPLACE ));
             }
+            // add redline similar to DeleteAndJoinWithRedlineImpl()
+            std::shared_ptr<SwUnoCursor> const pCursor(m_rDoc.CreateUnoCursor(*aDelPam.GetMark()));
+            pCursor->SetMark();
+            *pCursor->GetPoint() = *aDelPam.GetPoint();
             m_rDoc.getIDocumentRedlineAccess().AppendRedline( new SwRangeRedline( RedlineType::Delete, aDelPam ), true);
+            sw::UpdateFramesForAddDeleteRedline(m_rDoc, *pCursor);
 
             *rPam.GetMark() = *aDelPam.GetMark();
             if (m_rDoc.GetIDocumentUndoRedo().DoesUndo())

@@ -807,6 +807,29 @@ public:
         return mpDoc->pClass->renderSearchResult(mpDoc, pSearchResult, pBitmapBuffer, pWidth, pHeight, pByteSize);
     }
 
+    /**
+     * Posts an event for the content control at the cursor position.
+     *
+     * @param pArguments arguments of the event.
+     *
+     * Examples:
+     * To select the 3rd list item of the drop-down:
+     * {
+     *     "type": "drop-down",
+     *     "selected": "2"
+     * }
+     *
+     * To change a picture place-holder:
+     * {
+     *     "type": "picture",
+     *     "changed": "file:///path/to/test.png"
+     * }
+     */
+    void sendContentControlEvent(const char* pArguments)
+    {
+        mpDoc->pClass->sendContentControlEvent(mpDoc, pArguments);
+    }
+
 #endif // defined LOK_USE_UNSTABLE_API || defined LIBO_INTERNAL_ONLY
 };
 

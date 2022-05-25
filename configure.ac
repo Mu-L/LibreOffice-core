@@ -9,7 +9,7 @@ dnl in order to create a configure script.
 # several non-alphanumeric characters, those are split off and used only for the
 # ABOUTBOXPRODUCTVERSIONSUFFIX in openoffice.lst. Why that is necessary, no idea.
 
-AC_INIT([LibreOffice],[7.4.0.0.alpha0+],[],[],[http://documentfoundation.org/])
+AC_INIT([LibreOffice],[7.4.0.0.alpha1+],[],[],[http://documentfoundation.org/])
 
 dnl libnumbertext needs autoconf 2.68, but that can pick up autoconf268 just fine if it is installed
 dnl whereas aclocal (as run by autogen.sh) insists on using autoconf and fails hard
@@ -2939,6 +2939,10 @@ if test -z "$COMPRESSIONTOOL"; then
 fi
 AC_SUBST(COMPRESSIONTOOL)
 
+# use GNU parallel for packaging, if available
+AC_PATH_PROG(GNUPARALLEL, parallel)
+AC_SUBST(GNUPARALLEL)
+
 AC_MSG_CHECKING([for GNU or BSD tar])
 for a in $GNUTAR gtar gnutar tar bsdtar /usr/sfw/bin/gtar; do
     $a --version 2> /dev/null | egrep "GNU|bsdtar"  2>&1 > /dev/null
@@ -3641,8 +3645,8 @@ dnl ===================================================================
 
 if test $_os = iOS; then
     AC_MSG_CHECKING([what iOS SDK to use])
-    current_sdk_ver=15.4
-    older_sdk_vers="15.2 15.0 14.5"
+    current_sdk_ver=15.5
+    older_sdk_vers="15.4 15.2 15.0 14.5"
     if test "$enable_ios_simulator" = "yes"; then
         platform=iPhoneSimulator
         versionmin=-mios-simulator-version-min=13.6
@@ -7419,6 +7423,34 @@ AC_LANG_POP([C++])
 AC_SUBST([HAVE_LIBSTDCPP])
 AC_SUBST([HAVE_LIBCPP])
 
+HAVE_LIBCPP_DEBUG=
+if test -z "$CROSS_COMPILING" -a -n "$HAVE_LIBCPP" -a -n "$ENABLE_DBGUTIL"; then
+    # Libc++ supports debug mode only if built for it, Mac libc++ isn't,
+    # and there would be undefined references to debug functions.
+    # Moreover std::to_string() has a bug (https://reviews.llvm.org/D125184).
+    AC_MSG_CHECKING([if libc++ has a usable debug mode])
+    AC_LANG_PUSH([C++])
+    AC_RUN_IFELSE([AC_LANG_SOURCE([[
+#define _LIBCPP_DEBUG 1
+#include <string>
+#include <vector>
+int foo(const std::vector<int>& v) { return *v.begin(); }
+int main()
+{
+    std::vector<int> v{ 1, 2 };
+    std::string s = "xxxxxxxxxxxxxxxxxxxxxxxxx" + std::to_string(10);
+    return (foo(v) + s.size()) != 0 ? 0 : 1;
+}
+]])],
+    [AC_MSG_RESULT(yes)
+     HAVE_LIBCPP_DEBUG=1
+    ],
+    [AC_MSG_RESULT(no)]
+    )
+    AC_LANG_POP([C++])
+fi
+AC_SUBST([HAVE_LIBCPP_DEBUG])
+
 dnl ===================================================================
 dnl Check for gperf
 dnl ===================================================================
@@ -9524,7 +9556,7 @@ libo_CHECK_SYSTEM_MODULE([libcdr],[CDR],[libcdr-0.1])
 
 libo_CHECK_SYSTEM_MODULE([libmspub],[MSPUB],[libmspub-0.1])
 
-libo_CHECK_SYSTEM_MODULE([libmwaw],[MWAW],[libmwaw-0.3 >= 0.3.1])
+libo_CHECK_SYSTEM_MODULE([libmwaw],[MWAW],[libmwaw-0.3 >= 0.3.21])
 libo_PKG_VERSION([MWAW], [libmwaw-0.3], [0.3.21])
 
 libo_CHECK_SYSTEM_MODULE([libetonyek],[ETONYEK],[libetonyek-0.1])
@@ -10687,7 +10719,7 @@ fi
 dnl ===================================================================
 dnl Check for system icu
 dnl ===================================================================
-ICU_MAJOR=70
+ICU_MAJOR=71
 ICU_MINOR=1
 ICU_RECLASSIFIED_PREPEND_SET_EMPTY="TRUE"
 ICU_RECLASSIFIED_CONDITIONAL_JAPANESE_STARTER="TRUE"
@@ -12995,7 +13027,7 @@ then
     if test -n "$QT6DIR"; then
         AC_PATH_PROG(QMAKE6, [qmake], no, [$QT6DIR/bin])
     else
-        AC_PATH_PROGS(QMAKE6, [qmake-qt6 qmake], no)
+        AC_PATH_PROGS(QMAKE6, [qmake-qt6 qmake6 qmake], no)
     fi
     if test "$QMAKE6" = "no"; then
         AC_MSG_ERROR([Qmake not found.  Please specify the root of your Qt6 installation by exporting QT6DIR before running "configure".])
@@ -13072,7 +13104,14 @@ then
 
     dnl Check for Meta Object Compiler
 
-    AC_PATH_PROGS( MOC6, [moc-qt6 moc], no, [`dirname $qt6_libdir`/libexec:$QT6DIR/libexec:$PATH])
+    for lib_dir in $qt6_libdirs; do
+        if test -z "$qt6_libexec_dirs"; then
+            qt6_libexec_dirs="$lib_dir/libexec"
+        else
+            qt6_libexec_dirs="$qt6_libexec_dirs:$lib_dir/libexec"
+        fi
+    done
+    AC_PATH_PROGS( MOC6, [moc-qt6 moc], no, [`dirname $qt6_libdir`/libexec:$QT6DIR/libexec:$qt6_libexec_dirs:$PATH])
     if test "$MOC6" = "no"; then
         AC_MSG_ERROR([Qt Meta Object Compiler not found.  Please specify
 the root of your Qt installation by exporting QT6DIR before running "configure".])
@@ -13526,6 +13565,12 @@ dnl ===================================================================
 LIBPNG_CFLAGS_internal="-I${WORKDIR}/UnpackedTarball/libpng"
 LIBPNG_LIBS_internal="-L${WORKDIR}/LinkTarget/StaticLibrary -llibpng"
 libo_CHECK_SYSTEM_MODULE([libpng],[LIBPNG],[libpng])
+
+dnl ===================================================================
+dnl Test whether to build libtiff or rely on the system version
+dnl ===================================================================
+
+libo_CHECK_SYSTEM_MODULE([libtiff],[LIBTIFF],[libtiff-4])
 
 dnl ===================================================================
 dnl Test whether to build libwebp or rely on the system version

@@ -56,7 +56,12 @@ IMPL_LINK(SfxPasswordDialog, InsertTextHdl, OUString&, rTest, bool)
     }
 
     if (bReset)
+    {
         rTest = aFilter.makeStringAndClear();
+        // upgrade from "Normal" to "Warning" if a invalid letter was
+        // discarded
+        m_xOnlyAsciiFT->set_label_type(weld::LabelType::Warning);
+    }
 
     return true;
 }
@@ -97,6 +102,7 @@ SfxPasswordDialog::SfxPasswordDialog(weld::Widget* pParent, const OUString* pGro
     , m_xConfirm2FT(m_xBuilder->weld_label("confirm2ft"))
     , m_xConfirm2ED(m_xBuilder->weld_entry("confirm2ed"))
     , m_xMinLengthFT(m_xBuilder->weld_label("minlenft"))
+    , m_xOnlyAsciiFT(m_xBuilder->weld_label("onlyascii"))
     , m_xOKBtn(m_xBuilder->weld_button("ok"))
     , maMinLenPwdStr(SfxResId(STR_PASSWD_MIN_LEN))
     , maMinLenPwdStr1(SfxResId(STR_PASSWD_MIN_LEN1))
@@ -111,6 +117,8 @@ SfxPasswordDialog::SfxPasswordDialog(weld::Widget* pParent, const OUString* pGro
     Link<OUString&,bool> aLink2 = LINK(this, SfxPasswordDialog, InsertTextHdl);
     m_xPassword1ED->connect_insert_text(aLink2);
     m_xPassword2ED->connect_insert_text(aLink2);
+    m_xConfirm1ED->connect_insert_text(aLink2);
+    m_xConfirm2ED->connect_insert_text(aLink2);
     m_xOKBtn->connect_clicked(LINK(this, SfxPasswordDialog, OKHdl));
 
     if (pGroupText)
@@ -149,6 +157,12 @@ void SfxPasswordDialog::SetMinLen( sal_uInt16 nLen )
 void SfxPasswordDialog::ShowMinLengthText(bool bShow)
 {
     m_xMinLengthFT->set_visible(bShow);
+}
+
+void SfxPasswordDialog::AllowAsciiOnly()
+{
+    mbAsciiOnly = true;
+    m_xOnlyAsciiFT->show();
 }
 
 short SfxPasswordDialog::run()

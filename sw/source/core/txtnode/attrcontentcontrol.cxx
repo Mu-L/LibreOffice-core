@@ -24,9 +24,11 @@
 #include <sal/log.hxx>
 #include <comphelper/propertyvalue.hxx>
 #include <comphelper/sequenceashashmap.hxx>
+#include <svl/numformat.hxx>
 
 #include <ndtxt.hxx>
 #include <textcontentcontrol.hxx>
+#include <doc.hxx>
 
 using namespace com::sun::star;
 
@@ -207,6 +209,39 @@ void SwContentControl::SwClientNotify(const SwModify&, const SfxHint& rHint)
     }
 }
 
+OUString SwContentControl::GetDateString() const
+{
+    SwDoc& rDoc = m_pTextNode->GetDoc();
+    SvNumberFormatter* pNumberFormatter = rDoc.GetNumberFormatter();
+    sal_uInt32 nFormat = pNumberFormatter->GetEntryKey(
+        m_aDateFormat, LanguageTag(m_aDateLanguage).getLanguageType());
+
+    if (nFormat == NUMBERFORMAT_ENTRY_NOT_FOUND)
+    {
+        // Try to find a format based on just the language.
+        sal_Int32 nCheckPos = 0;
+        SvNumFormatType nType;
+        OUString aFormat = m_aDateFormat;
+        pNumberFormatter->PutEntry(aFormat, nCheckPos, nType, nFormat,
+                                   LanguageTag(m_aDateLanguage).getLanguageType());
+    }
+
+    const Color* pColor = nullptr;
+    OUString aFormatted;
+    if (!m_oSelectedDate)
+    {
+        return OUString();
+    }
+
+    if (nFormat == NUMBERFORMAT_ENTRY_NOT_FOUND)
+    {
+        return OUString();
+    }
+
+    pNumberFormatter->GetOutputString(*m_oSelectedDate, nFormat, aFormatted, &pColor, false);
+    return aFormatted;
+}
+
 void SwContentControl::dumpAsXml(xmlTextWriterPtr pWriter) const
 {
     (void)xmlTextWriterStartElement(pWriter, BAD_CAST("SwContentControl"));
@@ -222,6 +257,14 @@ void SwContentControl::dumpAsXml(xmlTextWriterPtr pWriter) const
                                             BAD_CAST(m_aCheckedState.toUtf8().getStr()));
     (void)xmlTextWriterWriteFormatAttribute(pWriter, BAD_CAST("unchecked-state"), "%s",
                                             BAD_CAST(m_aUncheckedState.toUtf8().getStr()));
+    (void)xmlTextWriterWriteAttribute(pWriter, BAD_CAST("picture"),
+                                      BAD_CAST(OString::boolean(m_bPicture).getStr()));
+    (void)xmlTextWriterWriteAttribute(pWriter, BAD_CAST("date"),
+                                      BAD_CAST(OString::boolean(m_bDate).getStr()));
+    (void)xmlTextWriterWriteAttribute(pWriter, BAD_CAST("date-format"),
+                                      BAD_CAST(m_aDateFormat.toUtf8().getStr()));
+    (void)xmlTextWriterWriteAttribute(pWriter, BAD_CAST("date-language"),
+                                      BAD_CAST(m_aDateLanguage.toUtf8().getStr()));
 
     if (!m_aListItems.empty())
     {
@@ -244,6 +287,21 @@ void SwContentControlListItem::dumpAsXml(xmlTextWriterPtr pWriter) const
                                       BAD_CAST(m_aValue.toUtf8().getStr()));
 
     (void)xmlTextWriterEndElement(pWriter);
+}
+
+OUString SwContentControlListItem::ToString() const
+{
+    if (!m_aDisplayText.isEmpty())
+    {
+        return m_aDisplayText;
+    }
+
+    return m_aValue;
+}
+
+bool SwContentControlListItem::operator==(const SwContentControlListItem& rOther) const
+{
+    return m_aDisplayText == rOther.m_aDisplayText && m_aValue == rOther.m_aValue;
 }
 
 void SwContentControlListItem::ItemsToAny(const std::vector<SwContentControlListItem>& rItems,

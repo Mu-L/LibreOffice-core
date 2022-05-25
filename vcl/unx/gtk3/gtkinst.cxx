@@ -95,8 +95,8 @@
 #include <strings.hrc>
 #include <window.h>
 #include <numeric>
-
 #include <boost/property_tree/ptree.hpp>
+#include <opengl/zone.hxx>
 
 using namespace com::sun::star;
 using namespace com::sun::star::uno;
@@ -1952,8 +1952,54 @@ private:
         glViewport(0, 0, width, height);
     }
 
+    // Use a throw away toplevel to determine the OpenGL version because once
+    // an GdkGLContext is created for a window then it seems that
+    // glGenVertexArrays will always be called when the window gets rendered.
+    static int GetOpenGLVersion()
+    {
+        int nMajorGLVersion(0);
+
+        GtkWidget* pWindow;
+#if !GTK_CHECK_VERSION(4,0,0)
+        pWindow = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+#else
+        pWindow = gtk_window_new();
+#endif
+
+        gtk_widget_realize(pWindow);
+
+        if (GdkSurface* pSurface = widget_get_surface(pWindow))
+        {
+            if (GdkGLContext* pContext = surface_create_gl_context(pSurface))
+            {
+                if (gdk_gl_context_realize(pContext, nullptr))
+                {
+                    OpenGLZone aZone;
+                    gdk_gl_context_make_current(pContext);
+                    gdk_gl_context_get_version(pContext, &nMajorGLVersion, nullptr);
+                    gdk_gl_context_clear_current();
+                }
+                g_object_unref(pContext);
+            }
+        }
+
+#if !GTK_CHECK_VERSION(4,0,0)
+        gtk_widget_destroy(pWindow);
+#else
+        gtk_window_destroy(GTK_WINDOW(pWindow));
+#endif
+        return nMajorGLVersion;
+    }
+
     virtual bool ImplInit() override
     {
+        static int nOpenGLVersion = GetOpenGLVersion();
+        if (nOpenGLVersion < 3)
+        {
+            SAL_WARN("vcl.gtk", "gtk GL requires glGenVertexArrays which is OpenGL 3, while system provides: " << nOpenGLVersion);
+            return false;
+        }
+
         const SystemEnvData* pEnvData = m_pChildWindow->GetSystemData();
         GtkWidget *pParent = static_cast<GtkWidget*>(pEnvData->pWidget);
         m_pGLArea = gtk_gl_area_new();
@@ -14032,12 +14078,13 @@ private:
             return false;
 #endif
         OUString aTooltip = pThis->signal_query_tooltip(GtkInstanceTreeIter(iter));
-        if (aTooltip.isEmpty())
-            return false;
-        gtk_tooltip_set_text(tooltip, OUStringToOString(aTooltip, RTL_TEXTENCODING_UTF8).getStr());
-        gtk_tree_view_set_tooltip_row(pTreeView, tooltip, pPath);
+        if (!aTooltip.isEmpty())
+        {
+            gtk_tooltip_set_text(tooltip, OUStringToOString(aTooltip, RTL_TEXTENCODING_UTF8).getStr());
+            gtk_tree_view_set_tooltip_row(pTreeView, tooltip, pPath);
+        }
         gtk_tree_path_free(pPath);
-        return true;
+        return !aTooltip.isEmpty();
     }
 
     void last_child(GtkTreeModel* pModel, GtkTreeIter* result, GtkTreeIter* pParent, int nChildren) const
@@ -14724,8 +14771,14 @@ public:
     virtual void set_cursor(int pos) override
     {
         disable_notify_events();
-        GtkTreePath* path = pos != -1 ? gtk_tree_path_new_from_indices(pos, -1) : nullptr;
-        gtk_tree_view_scroll_to_cell(m_pTreeView, path, nullptr, false, 0, 0);
+        GtkTreePath* path;
+        if (pos != -1)
+        {
+            path = gtk_tree_path_new_from_indices(pos, -1);
+            gtk_tree_view_scroll_to_cell(m_pTreeView, path, nullptr, false, 0, 0);
+        }
+        else
+            path = gtk_tree_path_new();
         gtk_tree_view_set_cursor(m_pTreeView, path, nullptr, false);
         gtk_tree_path_free(path);
         enable_notify_events();
@@ -22074,6 +22127,7 @@ private:
     gulong m_nSignalId;
 #if !GTK_CHECK_VERSION(4, 0, 0)
     gulong m_nButtonPressEventSignalId;
+    gulong m_nMappedSignalId;
 #endif
 
     static void signalExpanded(GtkExpander* pExpander, GParamSpec*, gpointer widget)
@@ -22121,6 +22175,31 @@ private:
         // doesn't work
         return true;
     }
+
+    /* tdf#141186 if the expander is initially collapsed then when mapped all its
+       children are mapped too. If they are mapped then the mnemonics of the
+       children are taken into account on shortcuts and non-visible children in a
+       collapsed expander can be triggered which is confusing.
+
+       If the expander is expanded and collapsed the child is unmapped and the
+       problem doesn't occur.
+
+       So to avoid the problem of an initially collapsed expander, listen to
+       the map event and if the expander is mapped but collapsed then unmap the
+       child of the expander.
+
+       This problem was seen in gtk3-3.24.33 and not with gtk4-4.6.4 so a gtk3
+       fix only needed.
+    */
+    static void signalMap(GtkWidget*, gpointer widget)
+    {
+        GtkInstanceExpander* pThis = static_cast<GtkInstanceExpander*>(widget);
+        if (!gtk_expander_get_expanded(pThis->m_pExpander))
+        {
+            if (GtkWidget* pChild = gtk_bin_get_child(GTK_BIN(pThis->m_pExpander)))
+                gtk_widget_unmap(pChild);
+        }
+    }
 #endif
 
 public:
@@ -22130,6 +22209,7 @@ public:
         , m_nSignalId(g_signal_connect(m_pExpander, "notify::expanded", G_CALLBACK(signalExpanded), this))
 #if !GTK_CHECK_VERSION(4, 0, 0)
         , m_nButtonPressEventSignalId(g_signal_connect_after(m_pExpander, "button-press-event", G_CALLBACK(signalButton), this))
+        , m_nMappedSignalId(g_signal_connect_after(m_pExpander, "map", G_CALLBACK(signalMap), this))
 #endif
     {
     }
@@ -22157,6 +22237,7 @@ public:
     virtual ~GtkInstanceExpander() override
     {
 #if !GTK_CHECK_VERSION(4, 0, 0)
+        g_signal_handler_disconnect(m_pExpander, m_nMappedSignalId);
         g_signal_handler_disconnect(m_pExpander, m_nButtonPressEventSignalId);
 #endif
         g_signal_handler_disconnect(m_pExpander, m_nSignalId);
@@ -22287,7 +22368,7 @@ private:
         if (!pMouseEnteredAnotherPopup)
             return false;
 
-        return gtk_widget_event(pEventWidget, reinterpret_cast<GdkEvent*>(pEvent));
+        return gtk_widget_event(pEventWidget, pEvent);
     }
 
     static gboolean signalButtonCrossing(GtkWidget*, GdkEvent* pEvent, gpointer widget)

@@ -372,19 +372,14 @@ void DomainMapper::lcl_attribute(Id nName, Value & val)
             if (m_pImpl->GetTopContext())
             {
                 m_pImpl->GetTopContext()->Insert(PROP_CHAR_FONT_NAME, uno::Any( sStringValue ));
-                if (m_pImpl->GetTopContextOfType(CONTEXT_PARAGRAPH) && m_pImpl->GetTopContextOfType(CONTEXT_PARAGRAPH)->isSet(PROP_NUMBERING_RULES))
-                {
-                    // Font of the paragraph mark should be used for the numbering as well.
-                    uno::Reference<beans::XPropertySet> xCharStyle(m_pImpl->GetCurrentNumberingCharStyle());
-                    if (xCharStyle.is())
-                        xCharStyle->setPropertyValue("CharFontName", uno::Any(sStringValue));
-                }
             }
             break;
         case NS_ooxml::LN_CT_Fonts_asciiTheme:
             m_pImpl->appendGrabBag(m_pImpl->m_aSubInteropGrabBag, "asciiTheme", ThemeTable::getStringForTheme(nIntValue));
             if (m_pImpl->GetTopContext())
             {
+                // note: overwrite Fonts_ascii with Fonts_asciiTheme *even if*
+                // theme font is empty - this is apparently what Word 2013 does
                 uno::Any aPropValue( m_pImpl->GetThemeTable()->getFontNameForTheme( nIntValue ) );
                 m_pImpl->GetTopContext()->Insert(PROP_CHAR_FONT_NAME, aPropValue );
                 m_pImpl->GetTopContext()->Insert(PROP_CHAR_THEME_FONT_NAME_ASCII, aPropValue, true, CHAR_GRAB_BAG );
@@ -1098,6 +1093,7 @@ void DomainMapper::lcl_attribute(Id nName, Value & val)
                     case SdtControlType::richText:
                     case SdtControlType::checkBox:
                     case SdtControlType::dropDown:
+                    case SdtControlType::picture:
                         m_pImpl->PopSdt();
                         break;
                     default:
@@ -1816,9 +1812,6 @@ void DomainMapper::sprmWithProps( Sprm& rSprm, const PropertyMapPtr& rContext )
                         if( nSprmId != NS_ooxml::LN_EG_RPrBase_bCs )
                             rContext->Insert(PROP_CHAR_WEIGHT_ASIAN, aBold );
 
-                        uno::Reference<beans::XPropertySet> xCharStyle(m_pImpl->GetCurrentNumberingCharStyle());
-                        if (xCharStyle.is())
-                            xCharStyle->setPropertyValue(getPropertyName(PROP_CHAR_WEIGHT), aBold);
                         if (nSprmId == NS_ooxml::LN_EG_RPrBase_b)
                             m_pImpl->appendGrabBag(m_pImpl->m_aInteropGrabBag, "b", OUString::number(nIntValue));
                         else if (nSprmId == NS_ooxml::LN_EG_RPrBase_bCs)
@@ -1896,10 +1889,6 @@ void DomainMapper::sprmWithProps( Sprm& rSprm, const PropertyMapPtr& rContext )
                 //Asian get the same value as Western
                 rContext->Insert( PROP_CHAR_HEIGHT, aVal );
                 rContext->Insert( PROP_CHAR_HEIGHT_ASIAN, aVal );
-
-                uno::Reference<beans::XPropertySet> xCharStyle(m_pImpl->GetCurrentNumberingCharStyle());
-                if (xCharStyle.is())
-                    xCharStyle->setPropertyValue(getPropertyName(PROP_CHAR_HEIGHT), aVal);
             }
             m_pImpl->appendGrabBag(m_pImpl->m_aInteropGrabBag, (nSprmId == NS_ooxml::LN_EG_RPrBase_sz ? OUString("sz") : OUString("szCs")), OUString::number(nIntValue));
         }
@@ -2780,6 +2769,16 @@ void DomainMapper::sprmWithProps( Sprm& rSprm, const PropertyMapPtr& rContext )
             if (nSprmId == NS_ooxml::LN_CT_SdtPr_checkbox)
             {
                 m_pImpl->m_pSdtHelper->setControlType(SdtControlType::checkBox);
+                writerfilter::Reference<Properties>::Pointer_t pProperties = rSprm.getProps();
+                if (pProperties)
+                {
+                    pProperties->resolve(*this);
+                }
+                break;
+            }
+            else if (nSprmId == NS_ooxml::LN_CT_SdtPr_picture)
+            {
+                m_pImpl->m_pSdtHelper->setControlType(SdtControlType::picture);
                 writerfilter::Reference<Properties>::Pointer_t pProperties = rSprm.getProps();
                 if (pProperties)
                 {

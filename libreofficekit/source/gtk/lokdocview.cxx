@@ -1397,9 +1397,9 @@ callback (gpointer pData)
 
     case LOK_CALLBACK_CONTENT_CONTROL:
     {
-        std::stringstream aStream(pCallback->m_aPayload);
+        std::stringstream aPayloadStream(pCallback->m_aPayload);
         boost::property_tree::ptree aTree;
-        boost::property_tree::read_json(aStream, aTree);
+        boost::property_tree::read_json(aPayloadStream, aTree);
         auto aAction = aTree.get<std::string>("action");
         if (aAction == "show")
         {
@@ -1410,8 +1410,31 @@ callback (gpointer pData)
         {
             priv->m_aContentControlRectangles.clear();
         }
-        bool bIsTextSelected = !priv->m_aContentControlRectangles.empty();
-        g_signal_emit(pDocView, doc_view_signals[CONTENT_CONTROL], 0, bIsTextSelected);
+        else if (aAction == "change-picture")
+        {
+            GtkWidget* pDialog = gtk_file_chooser_dialog_new(
+                "Open File", GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(pDocView))),
+                GTK_FILE_CHOOSER_ACTION_OPEN, "Cancel", GTK_RESPONSE_CANCEL, "Open",
+                GTK_RESPONSE_ACCEPT, nullptr);
+            gint nRet = gtk_dialog_run(GTK_DIALOG(pDialog));
+            if (nRet == GTK_RESPONSE_ACCEPT)
+            {
+                GtkFileChooser* pChooser = GTK_FILE_CHOOSER(pDialog);
+                char* pFilename = gtk_file_chooser_get_uri(pChooser);
+                boost::property_tree::ptree aValues;
+                aValues.put("type", "picture");
+                aValues.put("changed", pFilename);
+                std::stringstream aStream;
+                boost::property_tree::write_json(aStream, aValues);
+                std::string aJson = aStream.str();
+                lok_doc_view_send_content_control_event(pDocView, aJson.c_str());
+
+                g_free(pFilename);
+            }
+            gtk_widget_destroy(pDialog);
+        }
+        g_signal_emit(pCallback->m_pDocView, doc_view_signals[CONTENT_CONTROL], 0,
+                      pCallback->m_aPayload.c_str());
         gtk_widget_queue_draw(GTK_WIDGET(pDocView));
     }
     break;
@@ -1439,6 +1462,7 @@ callback (gpointer pData)
     case LOK_CALLBACK_DOCUMENT_BACKGROUND_COLOR:
     case LOK_COMMAND_BLOCKED:
     case LOK_CALLBACK_SC_FOLLOW_JUMP:
+    case LOK_CALLBACK_PRINT_RANGES:
     {
         // TODO: Implement me
         break;
@@ -3325,7 +3349,7 @@ static void lok_doc_view_class_init (LOKDocViewClass* pClass)
     /**
      * LOKDocView::content-control:
      * @pDocView: the #LOKDocView on which the signal is emitted
-     * @bIsTextSelected: whether current content control is non-null
+     * @pPayload: the JSON string containing the information about ruler properties
      */
     doc_view_signals[CONTENT_CONTROL] =
         g_signal_new("content-control",
@@ -3333,9 +3357,9 @@ static void lok_doc_view_class_init (LOKDocViewClass* pClass)
                      G_SIGNAL_RUN_FIRST,
                      0,
                      nullptr, nullptr,
-                     g_cclosure_marshal_VOID__BOOLEAN,
+                     g_cclosure_marshal_generic,
                      G_TYPE_NONE, 1,
-                     G_TYPE_BOOLEAN);
+                     G_TYPE_STRING);
 
     /**
      * LOKDocView::password-required:
@@ -3724,6 +3748,23 @@ lok_doc_view_set_part (LOKDocView* pDocView, int nPart)
     }
     g_object_unref(task);
     priv->m_nPartId = nPart;
+}
+
+SAL_DLLPUBLIC_EXPORT void lok_doc_view_send_content_control_event(LOKDocView* pDocView,
+                                                                  const gchar* pArguments)
+{
+    LOKDocViewPrivate& priv = getPrivate(pDocView);
+    if (!priv->m_pDocument)
+    {
+        return;
+    }
+
+    std::scoped_lock<std::mutex> aGuard(g_aLOKMutex);
+    std::stringstream ss;
+    ss << "lok::Document::sendContentControlEvent('" << pArguments << "')";
+    g_info("%s", ss.str().c_str());
+    priv->m_pDocument->pClass->setView(priv->m_pDocument, priv->m_nViewId);
+    return priv->m_pDocument->pClass->sendContentControlEvent(priv->m_pDocument, pArguments);
 }
 
 SAL_DLLPUBLIC_EXPORT gchar*

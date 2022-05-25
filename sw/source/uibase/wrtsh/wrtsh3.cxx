@@ -28,6 +28,11 @@
 #include <com/sun/star/form/FormButtonType.hpp>
 #include <com/sun/star/beans/XPropertySet.hpp>
 #include <osl/diagnose.h>
+#include <sfx2/dispatch.hxx>
+#include <comphelper/lok.hxx>
+#include <tools/json_writer.hxx>
+#include <LibreOfficeKit/LibreOfficeKitEnums.h>
+
 #include <swmodule.hxx>
 #include <wrtsh.hxx>
 #include <view.hxx>
@@ -90,11 +95,36 @@ bool SwWrtShell::GotoField( const SwFormatField& rField )
 
 bool SwWrtShell::GotoContentControl(const SwFormatContentControl& rContentControl)
 {
+    std::shared_ptr<SwContentControl> pContentControl = rContentControl.GetContentControl();
+    if (IsFrameSelected() && pContentControl && pContentControl->GetPicture())
+    {
+        // A frame is already selected, and its anchor is inside a picture content control.
+        if (pContentControl->GetShowingPlaceHolder())
+        {
+            // Replace the placeholder image with a real one.
+            GetView().StopShellTimer();
+            if (comphelper::LibreOfficeKit::isActive())
+            {
+                tools::JsonWriter aJson;
+                aJson.put("action", "change-picture");
+                std::unique_ptr<char, o3tl::free_delete> pJson(aJson.extractData());
+                GetSfxViewShell()->libreOfficeKitViewCallback(LOK_CALLBACK_CONTENT_CONTROL,
+                                                              pJson.get());
+            }
+            else
+            {
+                GetView().GetViewFrame()->GetDispatcher()->Execute(SID_CHANGE_PICTURE,
+                                                                   SfxCallMode::SYNCHRON);
+            }
+            pContentControl->SetShowingPlaceHolder(false);
+        }
+        return true;
+    }
+
     (this->*m_fnKillSel)(nullptr, false);
 
     bool bRet = SwCursorShell::GotoFormatContentControl(rContentControl);
 
-    auto pContentControl = const_cast<SwContentControl*>(rContentControl.GetContentControl());
     if (bRet && pContentControl && pContentControl->GetCheckbox())
     {
         // Checkbox: GotoFormatContentControl() selected the old state.
@@ -132,7 +162,7 @@ bool SwWrtShell::GotoContentControl(const SwFormatContentControl& rContentContro
         size_t nSelectedListItem = *pContentControl->GetSelectedListItem();
         LockView(/*bViewLocked=*/true);
         OUString aOldState = GetCursorDescr();
-        OUString aNewState = pContentControl->GetListItems()[nSelectedListItem].m_aDisplayText;
+        OUString aNewState = pContentControl->GetListItems()[nSelectedListItem].ToString();
         SwRewriter aRewriter;
         aRewriter.AddRule(UndoArg1, aOldState);
         aRewriter.AddRule(UndoArg2, SwResId(STR_YIELDS));
@@ -142,6 +172,27 @@ bool SwWrtShell::GotoContentControl(const SwFormatContentControl& rContentContro
         // Update the content.
         DelLeft();
         pContentControl->SetSelectedListItem(std::nullopt);
+        Insert(aNewState);
+
+        GetIDocumentUndoRedo().EndUndo(SwUndoId::REPLACE, &aRewriter);
+        LockView(/*bViewLocked=*/false);
+        ShowCursor();
+    }
+    else if (bRet && pContentControl && pContentControl->GetSelectedDate())
+    {
+        // Date: GotoFormatContentControl() selected the old content.
+        LockView(/*bViewLocked=*/true);
+        OUString aOldState = GetCursorDescr();
+        OUString aNewState = pContentControl->GetDateString();
+        SwRewriter aRewriter;
+        aRewriter.AddRule(UndoArg1, aOldState);
+        aRewriter.AddRule(UndoArg2, SwResId(STR_YIELDS));
+        aRewriter.AddRule(UndoArg3, SwResId(STR_START_QUOTE) + aNewState + SwResId(STR_END_QUOTE));
+        GetIDocumentUndoRedo().StartUndo(SwUndoId::REPLACE, &aRewriter);
+
+        // Update the content.
+        DelLeft();
+        pContentControl->SetSelectedDate(std::nullopt);
         Insert(aNewState);
 
         GetIDocumentUndoRedo().EndUndo(SwUndoId::REPLACE, &aRewriter);

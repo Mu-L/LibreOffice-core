@@ -16,22 +16,25 @@
  *   except in compliance with the License. You may obtain a copy of
  *   the License at http://www.apache.org/licenses/LICENSE-2.0 .
  */
-
 #pragma once
 
-#include <memory>
+#include <vcl/weld.hxx>
 
-#include <QtFrame.hxx>
-#include <QtSvpGraphics.hxx>
+class SwContentControlListItem;
 
-class QWidget;
-
-class KF5SalFrame : public QtFrame
+/// Edits the properties of a sing list item in a (drop-down) content control.
+class SwContentControlListItemDlg final : public weld::GenericDialogController
 {
-public:
-    KF5SalFrame(KF5SalFrame* pParent, SalFrameStyleFlags nStyle, bool bUseCairo);
+    SwContentControlListItem& m_rItem;
 
-    virtual void UpdateSettings(AllSettings& rSettings) override;
+    std::unique_ptr<weld::Entry> m_xDisplayNameED;
+    std::unique_ptr<weld::Entry> m_xValueED;
+    std::unique_ptr<weld::Button> m_xOk;
+
+    DECL_LINK(OkHdl, weld::Button&, void);
+
+public:
+    SwContentControlListItemDlg(weld::Widget* pParent, SwContentControlListItem& rItem);
 };
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

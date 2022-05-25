@@ -19,6 +19,7 @@
 
 #include <appluno.hxx>
 #include <sal/types.h>
+#include <o3tl/safeint.hxx>
 #include <osl/diagnose.h>
 #include <formula/funcvarargs.h>
 
@@ -544,7 +545,7 @@ uno::Any SAL_CALL ScFunctionListObj::getByIndex( sal_Int32 nIndex )
     if ( !pFuncList )
         throw uno::RuntimeException();                  // should not happen
 
-    if ( nIndex >= 0 && nIndex < static_cast<sal_Int32>(pFuncList->GetCount()) )
+    if ( nIndex >= 0 && o3tl::make_unsigned(nIndex) < pFuncList->GetCount() )
     {
         const ScFuncDesc* pDesc = pFuncList->GetFunction(nIndex);
         if ( pDesc )
@@ -570,7 +571,6 @@ uno::Reference<container::XEnumeration> SAL_CALL ScFunctionListObj::createEnumer
 
 uno::Type SAL_CALL ScFunctionListObj::getElementType()
 {
-    SolarMutexGuard aGuard;
     return cppu::UnoType<uno::Sequence<beans::PropertyValue>>::get();
 }
 

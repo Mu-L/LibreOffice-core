@@ -197,7 +197,7 @@ void SwTextShell::ExecInsert(SfxRequest &rReq)
 
     case FN_INSERT_BREAK:
         {
-            if( !rSh.CursorInsideInputField() )
+            if (!rSh.CursorInsideInputField() && !rSh.CursorInsideContentControl())
             {
                 rSh.SplitNode();
             }
@@ -228,6 +228,28 @@ void SwTextShell::ExecInsert(SfxRequest &rReq)
         rSh.InsertContentControl(SwContentControlType::CHECKBOX);
         rReq.Done();
         break;
+
+    case FN_INSERT_DROPDOWN_CONTENT_CONTROL:
+        rSh.InsertContentControl(SwContentControlType::DROP_DOWN_LIST);
+        rReq.Done();
+        break;
+
+    case FN_INSERT_PICTURE_CONTENT_CONTROL:
+        rSh.InsertContentControl(SwContentControlType::PICTURE);
+        rReq.Done();
+        break;
+
+    case FN_CONTENT_CONTROL_PROPERTIES:
+    {
+        SwWrtShell& rWrtSh = GetShell();
+        SwAbstractDialogFactory* pFact = SwAbstractDialogFactory::Create();
+        ScopedVclPtr<VclAbstractDialog> pDlg(pFact->CreateSwContentControlDlg(GetView().GetFrameWeld(), rWrtSh));
+        VclAbstractDialog::AsyncContext aContext;
+        aContext.maEndDialogFn = [](sal_Int32){};
+        pDlg->StartExecuteAsync(aContext);
+        rReq.Done();
+        break;
+    }
 
     case FN_INSERT_COLUMN_BREAK:
         rSh.InsertColumnBreak();
