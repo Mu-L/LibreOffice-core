@@ -32,10 +32,13 @@
 #include <com/sun/star/uno/Exception.hpp>
 #include <com/sun/star/lang/XMultiServiceFactory.hpp>
 #include <com/sun/star/lang/XInitialization.hpp>
+#include <com/sun/star/util/XCacheInfo.hpp>
 
 #include <rtl/ustring.hxx>
+#include <utility>
 #include <vcl/svapp.hxx>
 #include <sal/log.hxx>
+#include <framework/dispatchhelper.hxx>
 
 namespace framework{
 
@@ -53,9 +56,9 @@ namespace framework{
     @param      xFrame
                     reference to our owner frame.
 */
-DispatchProvider::DispatchProvider( const css::uno::Reference< css::uno::XComponentContext >& rxContext  ,
-                                    const css::uno::Reference< css::frame::XFrame >&              xFrame    )
-        : m_xContext    ( rxContext                     )
+DispatchProvider::DispatchProvider( css::uno::Reference< css::uno::XComponentContext >  xContext  ,
+                                    const css::uno::Reference< css::frame::XFrame >&    xFrame    )
+        : m_xContext    (std::move( xContext                     ))
         , m_xFrame      ( xFrame                        )
 {
 }
@@ -451,7 +454,13 @@ css::uno::Reference< css::frame::XDispatch > DispatchProvider::implts_searchProt
                         css::uno::Reference<css::lang::XMultiServiceFactory>(m_xContext->getServiceManager(), css::uno::UNO_QUERY_THROW)
                           ->createInstance(aHandler.m_sUNOName),
                         css::uno::UNO_QUERY);
-                    m_aProtocolHandlers.emplace(aHandler.m_sUNOName, xHandler);
+
+                    // Check if the handler explicitly requested to avoid caching.
+                    css::uno::Reference<css::util::XCacheInfo> xCacheInfo(xHandler, css::uno::UNO_QUERY);
+                    if (!xCacheInfo.is() || xCacheInfo->isCachingAllowed())
+                    {
+                        m_aProtocolHandlers.emplace(aHandler.m_sUNOName, xHandler);
+                    }
                 }
                 else
                 {

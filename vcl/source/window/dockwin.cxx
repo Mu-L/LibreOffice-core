@@ -833,7 +833,7 @@ void DockingWindow::setPosSizePixel( tools::Long nX, tools::Long nY,
     {
         if (!mpFloatWin)
             Window::setPosSizePixel( nX, nY, nWidth, nHeight, nFlags );
-        else
+        else if (comphelper::LibreOfficeKit::isActive())
         {
             mpFloatWin->SetOutputSizePixel(Size(nWidth, nHeight));
             mpFloatWin->SetPosPixel(Point(nX, nY));

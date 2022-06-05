@@ -62,6 +62,7 @@
 #include <comphelper/sequence.hxx>
 #include <svtools/miscopt.hxx>
 #include <svtools/imgdef.hxx>
+#include <utility>
 #include <vcl/event.hxx>
 #include <vcl/graph.hxx>
 #include <vcl/svapp.hxx>
@@ -138,7 +139,7 @@ class VclToolBarManager : public ToolBarManagerImpl
 
 public:
     VclToolBarManager(VclPtr<ToolBox> pToolbar)
-    : m_pToolBar(pToolbar)
+    : m_pToolBar(std::move(pToolbar))
     , m_bAddedToTaskPaneList(true)
     , m_pManager(nullptr)
     {}
@@ -565,7 +566,7 @@ IMPL_LINK(WeldToolBarManager, ToggleMenuHdl, const OString&, rCommand, void)
 
 ToolBarManager::ToolBarManager( const Reference< XComponentContext >& rxContext,
                                 const Reference< XFrame >& rFrame,
-                                const OUString& rResourceName,
+                                OUString aResourceName,
                                 ToolBox* pToolBar ) :
     m_bDisposed( false ),
     m_bFrameActionRegistered( false ),
@@ -573,7 +574,7 @@ ToolBarManager::ToolBarManager( const Reference< XComponentContext >& rxContext,
     m_eSymbolSize(SvtMiscOptions().GetCurrentSymbolsSize()),
     m_pImpl( new VclToolBarManager( pToolBar ) ),
     m_pToolBar( pToolBar ),
-    m_aResourceName( rResourceName ),
+    m_aResourceName(std::move( aResourceName )),
     m_xFrame( rFrame ),
     m_xContext( rxContext ),
     m_aAsyncUpdateControllersTimer( "framework::ToolBarManager m_aAsyncUpdateControllersTimer" ),
@@ -584,7 +585,7 @@ ToolBarManager::ToolBarManager( const Reference< XComponentContext >& rxContext,
 
 ToolBarManager::ToolBarManager( const Reference< XComponentContext >& rxContext,
                                 const Reference< XFrame >& rFrame,
-                                const OUString& rResourceName,
+                                OUString aResourceName,
                                 weld::Toolbar* pToolBar,
                                 weld::Builder* pBuilder ) :
     m_bDisposed( false ),
@@ -593,7 +594,7 @@ ToolBarManager::ToolBarManager( const Reference< XComponentContext >& rxContext,
     m_eSymbolSize( SvtMiscOptions().GetCurrentSymbolsSize() ),
     m_pImpl( new WeldToolBarManager( pToolBar, pBuilder ) ),
     m_pToolBar( nullptr ),
-    m_aResourceName( rResourceName ),
+    m_aResourceName(std::move( aResourceName )),
     m_xFrame( rFrame ),
     m_xContext( rxContext ),
     m_aAsyncUpdateControllersTimer( "framework::ToolBarManager m_aAsyncUpdateControllersTimer" ),
@@ -1196,30 +1197,16 @@ void ToolBarManager::CreateControllers()
         {
             if ( bInit )
             {
-                PropertyValue aPropValue;
-                std::vector< Any > aPropertyVector;
-
-                aPropValue.Name = "Frame";
-                aPropValue.Value <<= m_xFrame;
-                aPropertyVector.push_back( Any( aPropValue ));
-                aPropValue.Name = "CommandURL";
-                aPropValue.Value <<= aCommandURL;
-                aPropertyVector.push_back( Any( aPropValue ));
-                aPropValue.Name = "ServiceManager";
                 Reference<XMultiServiceFactory> xMSF(m_xContext->getServiceManager(), UNO_QUERY_THROW);
-                aPropValue.Value <<= xMSF;
-                aPropertyVector.push_back( Any( aPropValue ));
-                aPropValue.Name = "ParentWindow";
-                aPropValue.Value <<= xToolbarWindow;
-                aPropertyVector.push_back( Any( aPropValue ));
-                aPropValue.Name = "ModuleIdentifier";
-                aPropValue.Value <<= m_aModuleIdentifier;
-                aPropertyVector.push_back( Any( aPropValue ));
-                aPropValue.Name     = "Identifier";
-                aPropValue.Value    <<= sal_uInt16(nId);
-                aPropertyVector.push_back( uno::Any( aPropValue ) );
+                Sequence< Any > aArgs {
+                    Any( comphelper::makePropertyValue("Frame", m_xFrame) ),
+                    Any( comphelper::makePropertyValue("CommandURL", aCommandURL) ),
+                    Any( comphelper::makePropertyValue("ServiceManager", xMSF) ),
+                    Any( comphelper::makePropertyValue("ParentWindow", xToolbarWindow) ),
+                    Any( comphelper::makePropertyValue("ModuleIdentifier", m_aModuleIdentifier) ),
+                    Any( comphelper::makePropertyValue("Identifier", sal_uInt16(nId)) ),
+                };
 
-                Sequence< Any > aArgs( comphelper::containerToSequence( aPropertyVector ));
                 xInit->initialize( aArgs );
 
                 if (pController)

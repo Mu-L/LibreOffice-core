@@ -2836,7 +2836,7 @@ void SwXFrame::attachToRange(uno::Reference<text::XTextRange> const& xTextRange,
                 pFormat->DelFrames();
                 pAnchorItem->SetAnchor( pCopySource->Start() );
                 SfxItemSetFixed<RES_ANCHOR, RES_ANCHOR> aAnchorSet( pDoc->GetAttrPool() );
-                aAnchorSet.Put( *pAnchorItem );
+                aAnchorSet.Put( std::move(pAnchorItem) );
                 pDoc->SetFlyFrameAttr( *pFormat, aAnchorSet );
             }
         }
@@ -3167,7 +3167,6 @@ void SwXFrame::attach(const uno::Reference< text::XTextRange > & xTextRange)
 
 awt::Point SwXFrame::getPosition()
 {
-    SolarMutexGuard aGuard;
     uno::RuntimeException aRuntime;
     aRuntime.Message = "position cannot be determined with this method";
     throw aRuntime;
@@ -3175,7 +3174,6 @@ awt::Point SwXFrame::getPosition()
 
 void SwXFrame::setPosition(const awt::Point& /*aPosition*/)
 {
-    SolarMutexGuard aGuard;
     uno::RuntimeException aRuntime;
     aRuntime.Message = "position cannot be changed with this method";
     throw aRuntime;

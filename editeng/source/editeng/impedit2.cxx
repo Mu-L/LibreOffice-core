@@ -380,7 +380,8 @@ bool ImpEditEngine::Command( const CommandEvent& rCEvt, EditView* pView )
             }
 
             ParaPortion* pPortion = FindParaPortion( mpIMEInfos->aPos.GetNode() );
-            pPortion->MarkSelectionInvalid( mpIMEInfos->aPos.GetIndex() );
+            if (pPortion)
+                pPortion->MarkSelectionInvalid( mpIMEInfos->aPos.GetIndex() );
 
             bool bWasCursorOverwrite = mpIMEInfos->bWasCursorOverwrite;
 
@@ -3486,7 +3487,7 @@ tools::Long ImpEditEngine::Calc1ColumnTextHeight(tools::Long* pHeightNTP)
     comphelper::ValueRestorationGuard aGuard(nCurTextHeight,
                                              std::numeric_limits<tools::Long>::max());
 
-    auto FindLastLineBottom = [&](const LineAreaInfo& rInfo) {
+    IterateLinesAreasFunc FindLastLineBottom = [&](const LineAreaInfo& rInfo) {
         if (rInfo.pLine)
         {
             // bottom coordinate does not belong to area, so no need to do +1
@@ -4243,7 +4244,7 @@ tools::Long ImpEditEngine::GetXPos(
             if( !pLine->GetCharPosArray().empty() )
             {
                 sal_Int32 nPos = nIndex - 1 - pLine->GetStart();
-                if (nPos < 0 || nPos >= static_cast<sal_Int32>(pLine->GetCharPosArray().size()))
+                if (nPos < 0 || o3tl::make_unsigned(nPos) >= pLine->GetCharPosArray().size())
                 {
                     nPos = pLine->GetCharPosArray().size()-1;
                     OSL_FAIL("svx::ImpEditEngine::GetXPos(), index out of range!");

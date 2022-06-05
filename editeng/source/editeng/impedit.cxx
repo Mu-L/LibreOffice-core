@@ -242,9 +242,6 @@ const OutlinerViewShell* ImpEditView::GetViewShell() const
 
 void ImpEditView::SetEditSelection( const EditSelection& rEditSelection )
 {
-    if (aEditSelection == rEditSelection)
-        return;
-
     // set state before notification
     aEditSelection = rEditSelection;
 
@@ -1742,8 +1739,11 @@ bool ImpEditView::MouseButtonDown( const MouseEvent& rMouseEvent )
     nTravelXPos         = TRAVEL_X_DONTKNOW;
     nExtraCursorFlags   = GetCursorFlags::NONE;
     nCursorBidiLevel    = CURSOR_BIDILEVEL_DONTKNOW;
+    bool bPrevUpdateLayout = pEditEngine->pImpEditEngine->SetUpdateLayout(true);
     bClickedInSelection = IsSelectionAtPoint( rMouseEvent.GetPosPixel() );
-    return pEditEngine->pImpEditEngine->MouseButtonDown( rMouseEvent, GetEditViewPtr() );
+    bool bRet = pEditEngine->pImpEditEngine->MouseButtonDown( rMouseEvent, GetEditViewPtr() );
+    pEditEngine->pImpEditEngine->SetUpdateLayout(bPrevUpdateLayout);
+    return bRet;
 }
 
 bool ImpEditView::MouseMove( const MouseEvent& rMouseEvent )
@@ -2693,18 +2693,18 @@ void ImpEditView::RemoveDragAndDropListeners()
     else if (auto xWindow = GetWindow())
         xDropTarget = xWindow->GetDropTarget();
 
-    if (!xDropTarget.is())
-        return;
-
-    css::uno::Reference<css::datatransfer::dnd::XDragGestureRecognizer> xDragGestureRecognizer(xDropTarget, uno::UNO_QUERY);
-    if (xDragGestureRecognizer.is())
+    if (xDropTarget.is())
     {
-        uno::Reference<datatransfer::dnd::XDragGestureListener> xDGL(mxDnDListener, uno::UNO_QUERY);
-        xDragGestureRecognizer->removeDragGestureListener(xDGL);
-    }
+        css::uno::Reference<css::datatransfer::dnd::XDragGestureRecognizer> xDragGestureRecognizer(xDropTarget, uno::UNO_QUERY);
+        if (xDragGestureRecognizer.is())
+        {
+            uno::Reference<datatransfer::dnd::XDragGestureListener> xDGL(mxDnDListener, uno::UNO_QUERY);
+            xDragGestureRecognizer->removeDragGestureListener(xDGL);
+        }
 
-    uno::Reference<datatransfer::dnd::XDropTargetListener> xDTL(mxDnDListener, uno::UNO_QUERY);
-    xDropTarget->removeDropTargetListener(xDTL);
+        uno::Reference<datatransfer::dnd::XDropTargetListener> xDTL(mxDnDListener, uno::UNO_QUERY);
+        xDropTarget->removeDropTargetListener(xDTL);
+    }
 
     if ( mxDnDListener.is() )
     {

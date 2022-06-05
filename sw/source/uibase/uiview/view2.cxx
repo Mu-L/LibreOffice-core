@@ -287,11 +287,11 @@ ErrCode SwView::InsertGraphic( const OUString &rPath, const OUString &rFilter,
                 OUString sURL = URIHelper::SmartRel2Abs(
                     aTemp, rPath, URIHelper::GetMaybeFileHdl() );
                 aGraphic.setOriginURL(sURL);
-                rShell.Insert( sURL, rFilter, aGraphic, &aFrameManager );
+                rShell.InsertGraphic( sURL, rFilter, aGraphic, &aFrameManager );
             }
             else
             {
-                rShell.Insert( OUString(), OUString(), aGraphic, &aFrameManager );
+                rShell.InsertGraphic( OUString(), OUString(), aGraphic, &aFrameManager );
             }
 
             // it is too late after "EndAction" because the Shell can already be destroyed.
@@ -380,7 +380,7 @@ bool SwView::InsertGraphicDlg( SfxRequest& rReq )
     bool bShowError = !pName;
     if( pName
 #if HAVE_FEATURE_DESKTOP
-        || ERRCODE_NONE == pFileDlg->Execute()
+        || (!Application::IsHeadlessModeEnabled() && ERRCODE_NONE == pFileDlg->Execute())
 #endif
         )
     {

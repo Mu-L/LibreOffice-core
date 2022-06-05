@@ -27,6 +27,7 @@
 #include <tools/urlobj.hxx>
 #include <tools/solar.h>
 #include <ucbhelper/interactionrequest.hxx>
+#include <com/sun/star/lang/XUnoTunnel.hpp>
 #include <com/sun/star/task/XInteractionAbort.hpp>
 #include <com/sun/star/ucb/InteractiveNetworkConnectException.hpp>
 #include <com/sun/star/ucb/CommandFailedException.hpp>
@@ -55,9 +56,11 @@
 #include <com/sun/star/io/XTruncate.hpp>
 #include <com/sun/star/lang/IllegalArgumentException.hpp>
 
+#include <comphelper/bytereader.hxx>
 #include <comphelper/storagehelper.hxx>
 #include <ucbhelper/content.hxx>
 #include <mutex>
+#include <utility>
 
 using namespace ::com::sun::star::uno;
 using namespace ::com::sun::star::io;
@@ -154,8 +157,8 @@ class UcbPropertiesChangeListener_Impl : public ::cppu::WeakImplHelper< XPropert
 public:
     UcbLockBytesRef         m_xLockBytes;
 
-    explicit UcbPropertiesChangeListener_Impl( UcbLockBytesRef const & rRef )
-        : m_xLockBytes( rRef )
+    explicit UcbPropertiesChangeListener_Impl( UcbLockBytesRef xRef )
+        : m_xLockBytes(std::move( xRef ))
     {}
 
     virtual void SAL_CALL   disposing ( const EventObject &/*rEvent*/) override {}
@@ -191,7 +194,7 @@ public:
     Moderator(
         Reference < XContent > const & xContent,
         Reference < XInteractionHandler > const & xInteract,
-        const Command& rArg
+        Command aArg
     );
 
     enum class ResultType {
@@ -417,14 +420,14 @@ ModeratorsInteractionHandler::handle(
 Moderator::Moderator(
     Reference < XContent > const & xContent,
     Reference < XInteractionHandler > const & xInteract,
-    const Command& rArg
+    Command aArg
 )
     : m_aRes(m_aMutex,*this),
       m_aResultType(ResultType::NORESULT),
       m_nIOErrorCode(IOErrorCode_ABORT),
       m_aRep(m_aMutex,*this),
       m_aReplyType(NOREPLY),
-      m_aArg(rArg),
+      m_aArg(std::move(aArg)),
       m_aContent(
           xContent,
           new UcbTaskEnvironment(
@@ -1092,7 +1095,6 @@ ErrCode UcbLockBytes::ReadAt(sal_uInt64 const nPos,
         return ERRCODE_IO_CANTSEEK;
     }
 
-    Sequence<sal_Int8> aData;
     sal_Int32          nSize;
 
     if(nCount > 0x7FFFFFFF)
@@ -1108,14 +1110,27 @@ ErrCode UcbLockBytes::ReadAt(sal_uInt64 const nPos,
                 return ERRCODE_IO_PENDING;
         }
 
-        nSize = xStream->readBytes( aData, sal_Int32(nCount) );
+        Reference< css::lang::XUnoTunnel > xTunnel( xStream, UNO_QUERY );
+        comphelper::ByteReader* pByteReader = nullptr;
+        if (xTunnel)
+            pByteReader = reinterpret_cast< comphelper::ByteReader* >( xTunnel->getSomething( comphelper::ByteReader::getUnoTunnelId() ) );
+
+        if (pByteReader)
+        {
+            nSize = pByteReader->readSomeBytes( static_cast<sal_Int8*>(pBuffer), sal_Int32(nCount) );
+        }
+        else
+        {
+            Sequence<sal_Int8> aData;
+            nSize = xStream->readBytes( aData, sal_Int32(nCount) );
+            memcpy (pBuffer, aData.getConstArray(), nSize);
+        }
     }
     catch (const IOException&)
     {
         return ERRCODE_IO_CANTREAD;
     }
 
-    memcpy (pBuffer, aData.getConstArray(), nSize);
     if (pRead)
         *pRead = static_cast<std::size_t>(nSize);
 

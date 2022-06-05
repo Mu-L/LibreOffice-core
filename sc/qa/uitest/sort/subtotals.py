@@ -7,14 +7,14 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 
-from libreoffice.uno.propertyvalue import mkPropertyValues
 from uitest.framework import UITestCase
-from libreoffice.calc.document import get_column
 from uitest.uihelper.calc import enter_text_to_cell
+from uitest.uihelper.common import select_by_text, select_pos
+from uitest.uihelper.common import get_url_for_data_file
+
 from libreoffice.calc.document import get_cell_by_position
-from uitest.uihelper.common import select_pos
-from uitest.uihelper.common import select_by_text
-from uitest.uihelper.common import get_state_as_dict, get_url_for_data_file
+from libreoffice.uno.propertyvalue import mkPropertyValues
+
 
 class Subtotals(UITestCase):
 
@@ -71,8 +71,6 @@ class Subtotals(UITestCase):
 
     def test_tdf88735(self):
         with self.ui_test.load_file(get_url_for_data_file("tdf88735.ods")) as calc_doc:
-            XcalcDoc = self.xUITest.getTopFocusWindow()
-            gridwin = XcalcDoc.getChild("grid_window")
             # 1 select all cells
             self.xUITest.executeCommand(".uno:SelectAll")#use uno command Menu Edit->Select All
             # 2 invoke sub-total menu and select none
@@ -88,8 +86,6 @@ class Subtotals(UITestCase):
 
     def test_tdf56958(self):
         with self.ui_test.load_file(get_url_for_data_file("tdf56958.ods")) as calc_doc:
-            XcalcDoc = self.xUITest.getTopFocusWindow()
-            gridwin = XcalcDoc.getChild("grid_window")
             # 1. Open the test file
             # 2. Data->Subtotals
             with self.ui_test.execute_dialog_through_command(".uno:DataSubTotals") as xDialog:

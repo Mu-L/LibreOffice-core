@@ -922,6 +922,13 @@ namespace
         {
             m_rSpinButton.SpinField::Modify();
         }
+
+        virtual void UpdateCurrentValue(double dCurrentValue) override
+        {
+            Formatter::UpdateCurrentValue(dCurrentValue);
+            m_rSpinButton.SetUpperEnabled(!m_bHasMax || dCurrentValue < m_dMaxValue);
+            m_rSpinButton.SetLowerEnabled(!m_bHasMin || dCurrentValue > m_dMinValue);
+        }
     };
 
     class DoubleNumericFormatter : public FieldFormatter
@@ -1180,7 +1187,7 @@ void FormattedField::Up()
 
     sal_Int64 nValue = std::round(rFormatter.GetValue() * nScale);
     sal_Int64 nSpinSize = std::round(rFormatter.GetSpinSize() * nScale);
-    sal_Int64 nRemainder = rFormatter.GetDisableRemainderFactor() ? 0 : nValue % nSpinSize;
+    sal_Int64 nRemainder = rFormatter.GetDisableRemainderFactor() || nSpinSize == 0 ? 0 : nValue % nSpinSize;
     if (nValue >= 0)
         nValue = (nRemainder == 0) ? nValue + nSpinSize : nValue + nSpinSize - nRemainder;
     else
@@ -1201,7 +1208,7 @@ void FormattedField::Down()
 
     sal_Int64 nValue = std::round(rFormatter.GetValue() * nScale);
     sal_Int64 nSpinSize = std::round(rFormatter.GetSpinSize() * nScale);
-    sal_Int64 nRemainder = rFormatter.GetDisableRemainderFactor() ? 0 : nValue % nSpinSize;
+    sal_Int64 nRemainder = rFormatter.GetDisableRemainderFactor() || nSpinSize == 0 ? 0 : nValue % nSpinSize;
     if (nValue >= 0)
         nValue = (nRemainder == 0) ? nValue - nSpinSize : nValue - nRemainder;
     else

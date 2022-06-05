@@ -372,19 +372,14 @@ void DomainMapper::lcl_attribute(Id nName, Value & val)
             if (m_pImpl->GetTopContext())
             {
                 m_pImpl->GetTopContext()->Insert(PROP_CHAR_FONT_NAME, uno::Any( sStringValue ));
-                if (m_pImpl->GetTopContextOfType(CONTEXT_PARAGRAPH) && m_pImpl->GetTopContextOfType(CONTEXT_PARAGRAPH)->isSet(PROP_NUMBERING_RULES))
-                {
-                    // Font of the paragraph mark should be used for the numbering as well.
-                    uno::Reference<beans::XPropertySet> xCharStyle(m_pImpl->GetCurrentNumberingCharStyle());
-                    if (xCharStyle.is())
-                        xCharStyle->setPropertyValue("CharFontName", uno::Any(sStringValue));
-                }
             }
             break;
         case NS_ooxml::LN_CT_Fonts_asciiTheme:
             m_pImpl->appendGrabBag(m_pImpl->m_aSubInteropGrabBag, "asciiTheme", ThemeTable::getStringForTheme(nIntValue));
             if (m_pImpl->GetTopContext())
             {
+                // note: overwrite Fonts_ascii with Fonts_asciiTheme *even if*
+                // theme font is empty - this is apparently what Word 2013 does
                 uno::Any aPropValue( m_pImpl->GetThemeTable()->getFontNameForTheme( nIntValue ) );
                 m_pImpl->GetTopContext()->Insert(PROP_CHAR_FONT_NAME, aPropValue );
                 m_pImpl->GetTopContext()->Insert(PROP_CHAR_THEME_FONT_NAME_ASCII, aPropValue, true, CHAR_GRAB_BAG );
@@ -632,7 +627,7 @@ void DomainMapper::lcl_attribute(Id nName, Value & val)
             }
             break;
         case NS_ooxml::LN_CT_PageSz_orient:
-            CT_PageSz.orient = (nIntValue != static_cast<sal_Int32>(NS_ooxml::LN_Value_ST_PageOrientation_portrait));
+            CT_PageSz.orient = (nIntValue != NS_ooxml::LN_Value_ST_PageOrientation_portrait);
             break;
         case NS_ooxml::LN_CT_PageSz_w:
             {
@@ -1003,7 +998,7 @@ void DomainMapper::lcl_attribute(Id nName, Value & val)
                         pSectionContext->SetdxaLnn( nIntValue );
                 break;
                 case NS_ooxml::LN_CT_LineNumber_restart:
-                    aSettings.bRestartAtEachPage = nIntValue == static_cast<sal_Int32>(NS_ooxml::LN_Value_ST_LineNumberRestart_newPage);
+                    aSettings.bRestartAtEachPage = nIntValue == NS_ooxml::LN_Value_ST_LineNumberRestart_newPage;
                     OSL_ENSURE(pSectionContext, "SectionContext unavailable!");
                     if( pSectionContext )
                         pSectionContext->SetLnc( nIntValue );
@@ -1079,12 +1074,12 @@ void DomainMapper::lcl_attribute(Id nName, Value & val)
             {
                 // Still not determined content type? and it is even not unsupported? Then it is plain text field
                 m_pImpl->m_pSdtHelper->setControlType(SdtControlType::plainText);
-                if (nName == NS_ooxml::LN_CT_SdtRun_sdtContent)
-                {
-                    m_pImpl->m_pSdtHelper->setControlType(SdtControlType::richText);
-                    m_pImpl->PushSdt();
-                    break;
-                }
+            }
+            if (nName == NS_ooxml::LN_CT_SdtRun_sdtContent)
+            {
+                m_pImpl->m_pSdtHelper->setControlType(SdtControlType::richText);
+                m_pImpl->PushSdt();
+                break;
             }
             m_pImpl->SetSdt(true);
         break;
@@ -1098,6 +1093,8 @@ void DomainMapper::lcl_attribute(Id nName, Value & val)
                     case SdtControlType::richText:
                     case SdtControlType::checkBox:
                     case SdtControlType::dropDown:
+                    case SdtControlType::picture:
+                    case SdtControlType::datePicker:
                         m_pImpl->PopSdt();
                         break;
                     default:
@@ -1184,9 +1181,11 @@ void DomainMapper::lcl_attribute(Id nName, Value & val)
             break;
         case NS_ooxml::LN_CT_SdtPlaceholder_docPart_val:
             m_pImpl->appendGrabBag(m_pImpl->m_aInteropGrabBag, "ooxml:CT_SdtPlaceholder_docPart_val", sStringValue);
+            m_pImpl->m_pSdtHelper->SetPlaceholderDocPart(sStringValue);
             break;
         case NS_ooxml::LN_CT_SdtColor_val:
             m_pImpl->appendGrabBag(m_pImpl->m_aInteropGrabBag, "ooxml:CT_SdtColor_val", sStringValue);
+            m_pImpl->m_pSdtHelper->SetColor(sStringValue);
             break;
         case NS_ooxml::LN_CT_SdtText_multiLine:
             m_pImpl->appendGrabBag(m_pImpl->m_aInteropGrabBag, "ooxml:CT_SdtText_multiLine", sStringValue);
@@ -1816,9 +1815,6 @@ void DomainMapper::sprmWithProps( Sprm& rSprm, const PropertyMapPtr& rContext )
                         if( nSprmId != NS_ooxml::LN_EG_RPrBase_bCs )
                             rContext->Insert(PROP_CHAR_WEIGHT_ASIAN, aBold );
 
-                        uno::Reference<beans::XPropertySet> xCharStyle(m_pImpl->GetCurrentNumberingCharStyle());
-                        if (xCharStyle.is())
-                            xCharStyle->setPropertyValue(getPropertyName(PROP_CHAR_WEIGHT), aBold);
                         if (nSprmId == NS_ooxml::LN_EG_RPrBase_b)
                             m_pImpl->appendGrabBag(m_pImpl->m_aInteropGrabBag, "b", OUString::number(nIntValue));
                         else if (nSprmId == NS_ooxml::LN_EG_RPrBase_bCs)
@@ -1896,10 +1892,6 @@ void DomainMapper::sprmWithProps( Sprm& rSprm, const PropertyMapPtr& rContext )
                 //Asian get the same value as Western
                 rContext->Insert( PROP_CHAR_HEIGHT, aVal );
                 rContext->Insert( PROP_CHAR_HEIGHT_ASIAN, aVal );
-
-                uno::Reference<beans::XPropertySet> xCharStyle(m_pImpl->GetCurrentNumberingCharStyle());
-                if (xCharStyle.is())
-                    xCharStyle->setPropertyValue(getPropertyName(PROP_CHAR_HEIGHT), aVal);
             }
             m_pImpl->appendGrabBag(m_pImpl->m_aInteropGrabBag, (nSprmId == NS_ooxml::LN_EG_RPrBase_sz ? OUString("sz") : OUString("szCs")), OUString::number(nIntValue));
         }
@@ -2003,7 +1995,7 @@ void DomainMapper::sprmWithProps( Sprm& rSprm, const PropertyMapPtr& rContext )
         {
             //continuous break only allowed if it is not the only section break
             SectionPropertyMap* pLastContext = m_pImpl->GetLastSectionContext();
-            if ( nIntValue != static_cast<sal_Int32>(NS_ooxml::LN_Value_ST_SectionMark_continuous) || pLastContext || m_pImpl->GetParaSectpr() )
+            if ( nIntValue != NS_ooxml::LN_Value_ST_SectionMark_continuous || pLastContext || m_pImpl->GetParaSectpr() )
                 pSectionContext->SetBreakType( nIntValue );
         }
         break;
@@ -2777,9 +2769,39 @@ void DomainMapper::sprmWithProps( Sprm& rSprm, const PropertyMapPtr& rContext )
     {
         if (!m_pImpl->GetSdtStarts().empty())
         {
+            if (nSprmId == NS_ooxml::LN_CT_SdtPr_color)
+            {
+                writerfilter::Reference<Properties>::Pointer_t pProperties = rSprm.getProps();
+                if (pProperties)
+                {
+                    pProperties->resolve(*this);
+                }
+                break;
+            }
+
             if (nSprmId == NS_ooxml::LN_CT_SdtPr_checkbox)
             {
                 m_pImpl->m_pSdtHelper->setControlType(SdtControlType::checkBox);
+                writerfilter::Reference<Properties>::Pointer_t pProperties = rSprm.getProps();
+                if (pProperties)
+                {
+                    pProperties->resolve(*this);
+                }
+                break;
+            }
+            else if (nSprmId == NS_ooxml::LN_CT_SdtPr_picture)
+            {
+                m_pImpl->m_pSdtHelper->setControlType(SdtControlType::picture);
+                writerfilter::Reference<Properties>::Pointer_t pProperties = rSprm.getProps();
+                if (pProperties)
+                {
+                    pProperties->resolve(*this);
+                }
+                break;
+            }
+            else if (nSprmId == NS_ooxml::LN_CT_SdtPr_date)
+            {
+                m_pImpl->m_pSdtHelper->setControlType(SdtControlType::datePicker);
                 writerfilter::Reference<Properties>::Pointer_t pProperties = rSprm.getProps();
                 if (pProperties)
                 {

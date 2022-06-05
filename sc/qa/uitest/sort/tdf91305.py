@@ -7,15 +7,15 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 from uitest.framework import UITestCase
+from uitest.uihelper.calc import enter_text_to_cell
 from uitest.uihelper.common import get_state_as_dict
 from uitest.uihelper.common import select_pos
-from uitest.uihelper.calc import enter_text_to_cell
-from libreoffice.calc.document import get_sheet_from_doc
-from libreoffice.calc.conditional_format import get_conditional_format_from_sheet
+
 from libreoffice.calc.document import get_cell_by_position
 from libreoffice.uno.propertyvalue import mkPropertyValues
-#Bug 91305 - Sort button does not sort first cell if it has text format
 
+
+# Bug 91305 - Sort button does not sort first cell if it has text format
 class tdf91305(UITestCase):
 
     def test_tdf91305_sort_text_cells_columns(self):
@@ -31,8 +31,8 @@ class tdf91305(UITestCase):
             #Open sort dialog by DATA - SORT
             with self.ui_test.execute_dialog_through_command(".uno:DataSort") as xDialog:
                 xTabs = xDialog.getChild("tabcontrol")
-                xleftright = xDialog.getChild("leftright")
-                select_pos(xTabs, "1")
+                xleftright = xDialog.getChild("rbLeftRight")
+                select_pos(xTabs, "0")
                 xleftright.executeAction("CLICK", tuple())
             #verify
             self.assertEqual(get_cell_by_position(document, 0, 0, 0).getString(), "aa")
@@ -41,11 +41,10 @@ class tdf91305(UITestCase):
             #Open sort dialog by DATA - SORT
             with self.ui_test.execute_dialog_through_command(".uno:DataSort") as xDialog:
                 xTabs = xDialog.getChild("tabcontrol")
-                xleftright = xDialog.getChild("leftright")
+                xleftright = xDialog.getChild("rbLeftRight")
                 xdown = xDialog.getChild("down")
-                select_pos(xTabs, "1")
-                xleftright.executeAction("CLICK", tuple())
                 select_pos(xTabs, "0")
+                xleftright.executeAction("CLICK", tuple())
                 xdown.executeAction("CLICK", tuple())
             self.assertEqual(get_cell_by_position(document, 0, 0, 0).getString(), "ff")
             self.assertEqual(get_cell_by_position(document, 0, 1, 0).getString(), "cc")

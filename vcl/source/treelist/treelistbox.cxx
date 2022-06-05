@@ -31,6 +31,7 @@
 #include <vcl/toolkit/edit.hxx>
 #include <vcl/settings.hxx>
 #include <vcl/commandevent.hxx>
+#include <vcl/decoview.hxx>
 #include <vcl/uitest/uiobject.hxx>
 #include <sot/formats.hxx>
 #include <unotools/accessiblestatesethelper.hxx>
@@ -1592,7 +1593,7 @@ void SvTreeListBox::SetExpandedEntryBmp( SvTreeListEntry* pEntry, const Image& a
     pItem->SetBitmap2( aBmp );
 
     ModelHasEntryInvalidated(pEntry);
-    SetEntryHeight( pEntry );
+    CalcEntryHeight( pEntry );
     Size aSize = aBmp.GetSizePixel();
     short nWidth = pImpl->UpdateContextBmpWidthVector( pEntry, static_cast<short>(aSize.Width()) );
     if( nWidth > nContextBmpWidthMax )
@@ -1610,7 +1611,7 @@ void SvTreeListBox::SetCollapsedEntryBmp(SvTreeListEntry* pEntry,const Image& aB
     pItem->SetBitmap1( aBmp );
 
     ModelHasEntryInvalidated(pEntry);
-    SetEntryHeight( pEntry );
+    CalcEntryHeight( pEntry );
     Size aSize = aBmp.GetSizePixel();
     short nWidth = pImpl->UpdateContextBmpWidthVector( pEntry, static_cast<short>(aSize.Width()) );
     if( nWidth > nContextBmpWidthMax )
@@ -1662,7 +1663,7 @@ void SvTreeListBox::ImpEntryInserted( SvTreeListEntry* pEntry )
             nTreeFlags |= SvTreeFlags::RECALCTABS;
         }
     }
-    SetEntryHeight( pEntry );
+    CalcEntryHeight( pEntry );
 
     if( !(nTreeFlags & SvTreeFlags::CHKBTN) )
         return;
@@ -1808,10 +1809,10 @@ const Image& SvTreeListBox::GetDefaultCollapsedNodeImage( )
     return SvImpLBox::GetDefaultCollapsedNodeImage( );
 }
 
-void SvTreeListBox::SetNodeBitmaps( const Image& rCollapsedNodeBmp, const Image& rExpandedNodeBmp )
+void SvTreeListBox::SetNodeDefaultImages()
 {
-    SetExpandedNodeBmp( rExpandedNodeBmp );
-    SetCollapsedNodeBmp( rCollapsedNodeBmp );
+    SetExpandedNodeBmp(GetDefaultExpandedNodeImage());
+    SetCollapsedNodeBmp(GetDefaultCollapsedNodeImage());
     SetTabs();
 }
 
@@ -1975,7 +1976,7 @@ void SvTreeListBox::SetDragDropMode( DragDropMode nDDMode )
     pImpl->SetDragDropMode( nDDMode );
 }
 
-void SvTreeListBox::SetEntryHeight( SvTreeListEntry const * pEntry )
+void SvTreeListBox::CalcEntryHeight( SvTreeListEntry const * pEntry )
 {
     short nHeightMax=0;
     sal_uInt16 nCount = pEntry->ItemCount();
@@ -2028,10 +2029,10 @@ void SvTreeListBox::AdjustEntryHeight( const Image& rBmp )
 
 void SvTreeListBox::AdjustEntryHeight()
 {
-    Size aSize( GetTextWidth(OUString('X')), GetTextHeight() );
-    if( aSize.Height()  >  nEntryHeight )
+    tools::Long nHeight = GetTextHeight();
+    if( nHeight  >  nEntryHeight )
     {
-        nEntryHeight = static_cast<short>(aSize.Height()) + nEntryHeightOffs;
+        nEntryHeight = static_cast<short>(nHeight) + nEntryHeightOffs;
         pImpl->SetEntryHeight();
     }
 }
@@ -2798,48 +2799,67 @@ void SvTreeListBox::PaintEntry1(SvTreeListEntry& rEntry, tools::Long nLine, vcl:
 
     const Image* pImg = nullptr;
 
-    if (IsExpanded(&rEntry))
+    const bool bExpanded = IsExpanded(&rEntry);
+    if (bExpanded)
         pImg = &pImpl->GetExpandedNodeBmp();
     else
         pImg = &pImpl->GetCollapsedNodeBmp();
+    const bool bDefaultImage = bExpanded ? *pImg == GetDefaultExpandedNodeImage()
+                                         : *pImg == GetDefaultCollapsedNodeImage();
     aPos.AdjustY((nTempEntryHeight - pImg->GetSizePixel().Height()) / 2 );
 
-    DrawImageFlags nStyle = DrawImageFlags::NONE;
-    if (!IsEnabled())
-        nStyle |= DrawImageFlags::Disable;
-
-    //native
-    bool bNativeOK = false;
-    if (rRenderContext.IsNativeControlSupported(ControlType::ListNode, ControlPart::Entire))
+    if (!bDefaultImage)
     {
-        ImplControlValue aControlValue;
-        tools::Rectangle aCtrlRegion(aPos,  pImg->GetSizePixel());
-        ControlState nState = ControlState::NONE;
-
-        if (IsEnabled())
-            nState |= ControlState::ENABLED;
-
-        if (IsExpanded(&rEntry))
-            aControlValue.setTristateVal(ButtonValue::On); //expanded node
-        else
+        // If it's a custom image then draw what was explicitly set to use
+        DrawImageFlags nStyle = DrawImageFlags::NONE;
+        if (!IsEnabled())
+            nStyle |= DrawImageFlags::Disable;
+        rRenderContext.DrawImage(aPos, *pImg, nStyle);
+    }
+    else
+    {
+        bool bNativeOK = false;
+        // native
+        if (rRenderContext.IsNativeControlSupported(ControlType::ListNode, ControlPart::Entire))
         {
-            if ((!rEntry.HasChildren()) && rEntry.HasChildrenOnDemand() &&
-                (!(rEntry.GetFlags() & SvTLEntryFlags::HAD_CHILDREN)))
-            {
-                aControlValue.setTristateVal( ButtonValue::DontKnow ); //don't know
-            }
+            ImplControlValue aControlValue;
+            tools::Rectangle aCtrlRegion(aPos,  pImg->GetSizePixel());
+            ControlState nState = ControlState::NONE;
+
+            if (IsEnabled())
+                nState |= ControlState::ENABLED;
+
+            if (bExpanded)
+                aControlValue.setTristateVal(ButtonValue::On); //expanded node
             else
             {
-                aControlValue.setTristateVal( ButtonValue::Off ); //collapsed node
+                if ((!rEntry.HasChildren()) && rEntry.HasChildrenOnDemand() &&
+                    (!(rEntry.GetFlags() & SvTLEntryFlags::HAD_CHILDREN)))
+                {
+                    aControlValue.setTristateVal( ButtonValue::DontKnow ); //don't know
+                }
+                else
+                {
+                    aControlValue.setTristateVal( ButtonValue::Off ); //collapsed node
+                }
             }
+
+            bNativeOK = rRenderContext.DrawNativeControl(ControlType::ListNode, ControlPart::Entire, aCtrlRegion, nState, aControlValue, OUString());
         }
+        if (!bNativeOK)
+        {
+            DecorationView aDecoView(&rRenderContext);
+            DrawSymbolFlags nSymbolStyle = DrawSymbolFlags::NONE;
+            if (!IsEnabled())
+                nSymbolStyle |= DrawSymbolFlags::Disable;
 
-        bNativeOK = rRenderContext.DrawNativeControl(ControlType::ListNode, ControlPart::Entire, aCtrlRegion, nState, aControlValue, OUString());
-    }
+            Color aCol = aBackupTextColor;
+            if (pViewDataEntry->IsHighlighted())
+                aCol = aHighlightTextColor;
 
-    if (!bNativeOK)
-    {
-        rRenderContext.DrawImage(aPos, *pImg ,nStyle);
+            SymbolType eSymbol = bExpanded ? SymbolType::SPIN_DOWN : SymbolType::SPIN_RIGHT;
+            aDecoView.DrawSymbol(tools::Rectangle(aPos, pImg->GetSizePixel()), eSymbol, aCol, nSymbolStyle);
+        }
     }
 }
 

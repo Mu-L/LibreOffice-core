@@ -86,6 +86,37 @@ void XMLContentControlContext::startFastElement(
                 m_aUncheckedState = rIter.toString();
                 break;
             }
+            case XML_ELEMENT(LO_EXT, XML_PICTURE):
+            {
+                if (sax::Converter::convertBool(bTmp, rIter.toView()))
+                {
+                    m_bPicture = bTmp;
+                }
+                break;
+            }
+            case XML_ELEMENT(LO_EXT, XML_DATE):
+            {
+                if (sax::Converter::convertBool(bTmp, rIter.toView()))
+                {
+                    m_bDate = bTmp;
+                }
+                break;
+            }
+            case XML_ELEMENT(LO_EXT, XML_DATE_FORMAT):
+            {
+                m_aDateFormat = rIter.toString();
+                break;
+            }
+            case XML_ELEMENT(LO_EXT, XML_DATE_RFC_LANGUAGE_TAG):
+            {
+                m_aDateLanguage = rIter.toString();
+                break;
+            }
+            case XML_ELEMENT(LO_EXT, XML_CURRENT_DATE):
+            {
+                m_aCurrentDate = rIter.toString();
+                break;
+            }
             default:
                 XMLOFF_WARN_UNKNOWN("xmloff", rIter);
         }
@@ -148,6 +179,28 @@ void XMLContentControlContext::endFastElement(sal_Int32)
     {
         xPropertySet->setPropertyValue("ListItems",
                                        uno::Any(comphelper::containerToSequence(m_aListItems)));
+    }
+
+    if (m_bPicture)
+    {
+        xPropertySet->setPropertyValue("Picture", uno::Any(m_bPicture));
+    }
+
+    if (m_bDate)
+    {
+        xPropertySet->setPropertyValue("Date", uno::Any(m_bDate));
+    }
+    if (!m_aDateFormat.isEmpty())
+    {
+        xPropertySet->setPropertyValue("DateFormat", uno::Any(m_aDateFormat));
+    }
+    if (!m_aDateLanguage.isEmpty())
+    {
+        xPropertySet->setPropertyValue("DateLanguage", uno::Any(m_aDateLanguage));
+    }
+    if (!m_aCurrentDate.isEmpty())
+    {
+        xPropertySet->setPropertyValue("CurrentDate", uno::Any(m_aCurrentDate));
     }
 }
 

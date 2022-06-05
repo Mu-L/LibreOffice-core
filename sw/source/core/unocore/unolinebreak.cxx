@@ -37,6 +37,7 @@
 
 using namespace com::sun::star;
 
+/// The inner part SwXLineBreak, which is deleted with a locked SolarMutex.
 class SwXLineBreak::Impl : public SvtListener
 {
 public:
@@ -183,8 +184,6 @@ uno::Reference<text::XTextRange> SAL_CALL SwXLineBreak::getAnchor()
 
 void SAL_CALL SwXLineBreak::dispose()
 {
-    SolarMutexGuard aGuard;
-
     SAL_WARN("sw.uno", "SwXLineBreak::dispose: not implemented");
 }
 

@@ -1238,10 +1238,12 @@ void ScTabView::MoveCursorAbs( SCCOL nCurX, SCROW nCurY, ScFollowMode eMode,
     {
         if (!bShift)
         {
-            // Remove all marked data on cursor movement unless the Shift is locked.
+            // Remove all marked data on cursor movement unless the Shift is
+            // locked or while editing a formula. It is cheaper to check for
+            // marks first and then formula mode.
             ScMarkData& rMark = aViewData.GetMarkData();
             bool bMarked = rMark.IsMarked() || rMark.IsMultiMarked();
-            if (bMarked)
+            if (bMarked && !SC_MOD()->IsFormulaMode())
             {
                 rMark.ResetMark();
                 DoneBlockMode();
@@ -2413,11 +2415,11 @@ void ScTabView::PaintArea( SCCOL nStartCol, SCROW nStartRow, SCCOL nEndCol, SCRO
         bool bMarkClipped = aViewData.GetOptions().GetOption( VOPT_CLIPMARKS );
         if (bMarkClipped)
         {
-            // ScColumn::IsEmptyBlock has to be optimized for this
+            // ScColumn::IsEmptyData has to be optimized for this
             //  (switch to Search() )
             //!if ( nCol1 > 0 && !aViewData.GetDocument()->IsBlockEmpty(
-            //!                     aViewData.GetTabNo(),
-            //!                     0, nRow1, nCol1-1, nRow2 ) )
+            //!                     0, nRow1, nCol1-1, nRow2.
+            //!                     aViewData.GetTabNo() ) )
             tools::Long nMarkPixel = static_cast<tools::Long>( SC_CLIPMARK_SIZE * aViewData.GetPPTX() );
             aStart.AdjustX( -(nMarkPixel * nLayoutSign) );
         }

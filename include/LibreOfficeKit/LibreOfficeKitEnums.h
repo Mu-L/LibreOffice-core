@@ -53,7 +53,7 @@ typedef enum
 {
     LOK_SELTYPE_NONE,
     LOK_SELTYPE_TEXT,
-    LOK_SELTYPE_LARGE_TEXT,
+    LOK_SELTYPE_LARGE_TEXT, // unused (same as LOK_SELTYPE_COMPLEX)
     LOK_SELTYPE_COMPLEX
 }
 LibreOfficeKitSelectionType;
@@ -799,18 +799,67 @@ typedef enum
     /**
      * Sends all information for displaying metadata for a text based content control.
      *
-     * The payload example:
+     * Examples:
+     * Entered a rich text content control:
      * {
-     *      "action": "show",
-     *      "rectangles": "1418, 1694, 720, 551; 10291, 1418, 1099, 275"
+     *     "action": "show",
+     *     "rectangles": "1418, 1694, 720, 551; 10291, 1418, 1099, 275"
      * }
      *
-     * or
+     * Left a rich text content control:
      * {
-     *      "action": "hide"
+     *     "action": "hide"
+     * }
+     *
+     * Entered a dropdown content control:
+     * {
+     *     "action": "show",
+     *     "rectangles": "...",
+     *     "items": ["red", "green", "blue"]
+     * }
+     *
+     * Clicked on a picture content control's placeholder:
+     * {
+     *     "action": "change-picture"
+     * }
+     *
+     * Entered a date content control:
+     * {
+     *     "action": "show",
+     *     "rectangles": "...",
+     *     "date": "true"
      * }
      */
     LOK_CALLBACK_CONTENT_CONTROL = 55,
+
+    /**
+     * This is Calc specific. The payload contains print ranges of all
+     * sheets in the document.
+     *
+     * Payload example:
+     * {
+     *     "printranges" : [
+     *         {
+     *             "sheet": 0,
+     *             "ranges": [
+     *                 [0, 0, 4, 5],
+     *                 [5, 100, 8, 150]
+     *             ]
+     *         },
+     *         {
+     *             "sheet": 3,
+     *             "ranges": [
+     *                 [1, 0, 6, 10],
+     *                 [3, 200, 6, 230]
+     *             ]
+     *         }
+     *     ]
+     * }
+     *
+     * The format of the inner "ranges" array for each sheet is
+     * [<startColumn>, <startRow>, <endColumn>, <endRow>]
+     */
+    LOK_CALLBACK_PRINT_RANGES = 56,
 }
 LibreOfficeKitCallbackType;
 
@@ -951,6 +1000,8 @@ static inline const char* lokCallbackTypeToString(int nType)
         return "LOK_CALLBACK_SC_FOLLOW_JUMP";
     case LOK_CALLBACK_CONTENT_CONTROL:
         return "LOK_CALLBACK_CONTENT_CONTROL";
+    case LOK_CALLBACK_PRINT_RANGES:
+        return "LOK_CALLBACK_PRINT_RANGES";
     }
 
     assert(!"Unknown LibreOfficeKitCallbackType type.");

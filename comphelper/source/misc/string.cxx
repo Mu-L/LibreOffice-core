@@ -21,9 +21,12 @@
 
 #include <cstddef>
 #include <string_view>
+#include <utility>
 #include <vector>
 #include <algorithm>
 
+#include <o3tl/safeint.hxx>
+#include <o3tl/string_view.hxx>
 #include <rtl/character.hxx>
 #include <rtl/ustring.hxx>
 #include <rtl/ustrbuf.hxx>
@@ -327,69 +330,21 @@ OUString convertCommaSeparated(
     return buf.makeStringAndClear();
 }
 
-/* copy of getToken from sal/, modified to take a string_view */
-static sal_Int32 getToken( OUString& ppThis,
-                        std::u16string_view pStr,
-                        sal_Int32 nToken,
-                        sal_Unicode cTok,
-                        sal_Int32 nIndex )
-{
-    assert(nIndex <= static_cast<sal_Int32>(pStr.size()));
-
-    // Set ppThis to an empty string and return -1 if either nToken or nIndex is
-    // negative:
-    if (nIndex >= 0 && nToken >= 0)
-    {
-        const auto* pOrgCharStr = pStr.data();
-        const auto* pCharStr = pOrgCharStr + nIndex;
-        sal_Int32 nLen = pStr.size() - nIndex;
-        sal_Int32 nTokCount = 0;
-        const auto* pCharStrStart = pCharStr;
-        while (nLen > 0)
-        {
-            if (*pCharStr == cTok)
-            {
-                nTokCount++;
-
-                if (nTokCount > nToken)
-                    break;
-                if (nTokCount == nToken)
-                    pCharStrStart = pCharStr + 1;
-            }
-
-            pCharStr++;
-            nLen--;
-        }
-        if (nTokCount >= nToken)
-        {
-            ppThis = OUString(pCharStrStart, pCharStr - pCharStrStart);
-            if (nLen > 0)
-                return pCharStr - pOrgCharStr + 1;
-            else
-                return -1;
-        }
-    }
-
-    ppThis.clear();
-    return -1;
-}
-
 std::vector<OUString>
     split(std::u16string_view rStr, sal_Unicode cSeparator)
 {
     std::vector< OUString > vec;
-    sal_Int32 idx = 0;
+    std::size_t idx = 0;
     do
     {
-        OUString kw;
-        idx = getToken(kw, rStr, 0, cSeparator, idx);
-        kw = kw.trim();
-        if (!kw.isEmpty())
+        std::u16string_view kw = o3tl::getToken(rStr, cSeparator, idx);
+        kw = o3tl::trim(kw);
+        if (!kw.empty())
         {
-            vec.push_back(kw);
+            vec.push_back(OUString(kw));
         }
 
-    } while (idx >= 0);
+    } while (idx != std::u16string_view::npos);
 
     return vec;
 }
@@ -425,33 +380,50 @@ sal_Int32 compareNatural( const OUString & rLHS, const OUString & rRHS,
     sal_Int32 nLHSFirstDigitPos = 0;
     sal_Int32 nRHSFirstDigitPos = 0;
 
+    // Check if the string starts with a digit
+    sal_Int32 nStartsDigitLHS = rBI->endOfCharBlock(rLHS, nLHSFirstDigitPos, rLocale, i18n::CharType::DECIMAL_DIGIT_NUMBER);
+    sal_Int32 nStartsDigitRHS = rBI->endOfCharBlock(rRHS, nRHSFirstDigitPos, rLocale, i18n::CharType::DECIMAL_DIGIT_NUMBER);
+
+    if (nStartsDigitLHS > 0 && nStartsDigitRHS > 0)
+    {
+        sal_uInt32 nLHS = comphelper::string::decimalStringToNumber(rLHS, 0, nStartsDigitLHS);
+        sal_uInt32 nRHS = comphelper::string::decimalStringToNumber(rRHS, 0, nStartsDigitRHS);
+
+        if (nLHS != nRHS)
+            return nLHS < nRHS ? -1 : 1;
+        nLHSLastNonDigitPos = nStartsDigitLHS;
+        nRHSLastNonDigitPos = nStartsDigitRHS;
+    }
+    else if (nStartsDigitLHS > 0)
+        return -1;
+    else if (nStartsDigitRHS > 0)
+        return 1;
+
     while (nLHSFirstDigitPos < rLHS.getLength() || nRHSFirstDigitPos < rRHS.getLength())
     {
         sal_Int32 nLHSChunkLen;
         sal_Int32 nRHSChunkLen;
 
         //Compare non digit block as normal strings
-        nLHSFirstDigitPos = rBI->nextCharBlock(rLHS, nLHSLastNonDigitPos,
-            rLocale, i18n::CharType::DECIMAL_DIGIT_NUMBER);
-        nRHSFirstDigitPos = rBI->nextCharBlock(rRHS, nRHSLastNonDigitPos,
-            rLocale, i18n::CharType::DECIMAL_DIGIT_NUMBER);
+        nLHSFirstDigitPos = rBI->nextCharBlock(rLHS, nLHSLastNonDigitPos, rLocale, i18n::CharType::DECIMAL_DIGIT_NUMBER);
+        nRHSFirstDigitPos = rBI->nextCharBlock(rRHS, nRHSLastNonDigitPos, rLocale, i18n::CharType::DECIMAL_DIGIT_NUMBER);
+
         if (nLHSFirstDigitPos == -1)
             nLHSFirstDigitPos = rLHS.getLength();
+
         if (nRHSFirstDigitPos == -1)
             nRHSFirstDigitPos = rRHS.getLength();
+
         nLHSChunkLen = nLHSFirstDigitPos - nLHSLastNonDigitPos;
         nRHSChunkLen = nRHSFirstDigitPos - nRHSLastNonDigitPos;
 
-        nRet = rCollator->compareSubstring(rLHS, nLHSLastNonDigitPos,
-            nLHSChunkLen, rRHS, nRHSLastNonDigitPos, nRHSChunkLen);
+        nRet = rCollator->compareSubstring(rLHS, nLHSLastNonDigitPos, nLHSChunkLen, rRHS, nRHSLastNonDigitPos, nRHSChunkLen);
         if (nRet != 0)
             break;
 
         //Compare digit block as one number vs another
-        nLHSLastNonDigitPos = rBI->endOfCharBlock(rLHS, nLHSFirstDigitPos,
-            rLocale, i18n::CharType::DECIMAL_DIGIT_NUMBER);
-        nRHSLastNonDigitPos = rBI->endOfCharBlock(rRHS, nRHSFirstDigitPos,
-            rLocale, i18n::CharType::DECIMAL_DIGIT_NUMBER);
+        nLHSLastNonDigitPos = rBI->endOfCharBlock(rLHS, nLHSFirstDigitPos, rLocale, i18n::CharType::DECIMAL_DIGIT_NUMBER);
+        nRHSLastNonDigitPos = rBI->endOfCharBlock(rRHS, nRHSFirstDigitPos, rLocale, i18n::CharType::DECIMAL_DIGIT_NUMBER);
         if (nLHSLastNonDigitPos == -1)
             nLHSLastNonDigitPos = rLHS.getLength();
         if (nRHSLastNonDigitPos == -1)
@@ -478,7 +450,7 @@ sal_Int32 compareNatural( const OUString & rLHS, const OUString & rRHS,
 
 NaturalStringSorter::NaturalStringSorter(
     const uno::Reference< uno::XComponentContext > &rContext,
-    const lang::Locale &rLocale) : m_aLocale(rLocale)
+    lang::Locale aLocale) : m_aLocale(std::move(aLocale))
 {
     m_xCollator = i18n::Collator::create( rContext );
     m_xCollator->loadDefaultCollator(m_aLocale, 0);
@@ -605,6 +577,36 @@ OUString setToken(const OUString& rIn, sal_Int32 nToken, sal_Unicode cTok,
     if (nTok >= nToken)
         return rIn.replaceAt(nFirstChar, i-nFirstChar, rNewToken);
     return rIn;
+}
+
+/** Similar to OUString::replaceAt, but for an OUStringBuffer.
+
+    Replace n = count characters
+    from position index in this string with newStr.
+ */
+void replaceAt(OUStringBuffer& rIn, sal_Int32 nIndex, sal_Int32 nCount, std::u16string_view newStr )
+{
+    assert(nIndex >= 0 && nIndex <= rIn.getLength());
+    assert(nCount >= 0);
+    assert(nCount <= rIn.getLength() - nIndex);
+
+    /* Append? */
+    const sal_Int32 nOldLength = rIn.getLength();
+    if ( nIndex == nOldLength )
+    {
+        rIn.append(newStr);
+        return;
+    }
+
+    sal_Int32 nNewLength = nOldLength + newStr.size() - nCount;
+    if (newStr.size() > o3tl::make_unsigned(nCount))
+        rIn.ensureCapacity(nOldLength + newStr.size() - nCount);
+
+    sal_Unicode* pStr = const_cast<sal_Unicode*>(rIn.getStr());
+    memmove(pStr + nIndex + newStr.size(), pStr + nIndex + nCount, nOldLength - nIndex + nCount);
+    memcpy(pStr + nIndex, newStr.data(), newStr.size());
+
+    rIn.setLength(nNewLength);
 }
 
 }

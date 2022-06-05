@@ -64,7 +64,7 @@ WriterInspectorTextPanel::WriterInspectorTextPanel(weld::Widget* pParent)
     : InspectorTextPanel(pParent)
     , m_nParIdx(0)
 {
-    SwDocShell* pDocSh = static_cast<SwDocShell*>(SfxObjectShell::Current());
+    SwDocShell* pDocSh = dynamic_cast<SwDocShell*>(SfxObjectShell::Current());
     m_pShell = pDocSh ? pDocSh->GetWrtShell() : nullptr;
     if (m_pShell)
     {
@@ -79,7 +79,11 @@ WriterInspectorTextPanel::WriterInspectorTextPanel(weld::Widget* pParent)
     updateEntries(aStore, m_nParIdx);
 }
 
-WriterInspectorTextPanel::~WriterInspectorTextPanel() { m_pShell->SetChgLnk(m_oldLink); }
+WriterInspectorTextPanel::~WriterInspectorTextPanel()
+{
+    if (m_pShell)
+        m_pShell->SetChgLnk(m_oldLink);
+}
 
 static OUString PropertyNametoRID(const OUString& rName)
 {
@@ -252,6 +256,9 @@ static OUString PropertyNametoRID(const OUString& rName)
         { "ParaHyphenationMaxLeadingChars", RID_PARA_HYPHENATION_MAX_LEADING_CHARS },
         { "ParaHyphenationMaxTrailingChars", RID_PARA_HYPHENATION_MAX_TRAILING_CHARS },
         { "ParaHyphenationNoCaps", RID_PARA_HYPHENATION_NO_CAPS },
+        { "ParaHyphenationNoLastWord", RID_PARA_HYPHENATION_NO_LAST_WORD },
+        { "ParaHyphenationMinWordLength", RID_PARA_HYPHENATION_MIN_WORD_LENGTH },
+        { "ParaHyphenationZone", RID_PARA_HYPHENATION_ZONE },
         { "ParaInteropGrabBag", RID_PARA_INTEROP_GRAB_BAG },
         { "ParaIsAutoFirstLineIndent", RID_PARA_IS_AUTO_FIRST_LINE_INDENT },
         { "ParaIsCharacterDistance", RID_PARA_IS_CHARACTER_DISTANCE },

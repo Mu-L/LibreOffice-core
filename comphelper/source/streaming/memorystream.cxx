@@ -18,16 +18,22 @@
  */
 
 #include <algorithm>
+#include <memory>
+
+#include <boost/core/noinit_adaptor.hpp>
 
 #include <com/sun/star/lang/IllegalArgumentException.hpp>
 #include <com/sun/star/lang/XServiceInfo.hpp>
+#include <com/sun/star/lang/XUnoTunnel.hpp>
 #include <com/sun/star/io/IOException.hpp>
 #include <com/sun/star/io/XStream.hpp>
 #include <com/sun/star/io/XSeekableInputStream.hpp>
 #include <com/sun/star/io/XTruncate.hpp>
 //#include <com/sun/star/uno/XComponentContext.hpp>
+#include <comphelper/bytereader.hxx>
 #include <cppuhelper/implbase.hxx>
 #include <cppuhelper/supportsservice.hxx>
+#include <o3tl/safeint.hxx>
 #include <osl/diagnose.h>
 
 #include <string.h>
@@ -47,7 +53,9 @@ namespace comphelper
 
 namespace {
 
-class UNOMemoryStream : public WeakImplHelper<XServiceInfo, XStream, XSeekableInputStream, XOutputStream, XTruncate>
+class UNOMemoryStream :
+    public WeakImplHelper<XServiceInfo, XStream, XSeekableInputStream, XOutputStream, XTruncate, XUnoTunnel>,
+    public comphelper::ByteWriter
 {
 public:
     UNOMemoryStream();
@@ -81,8 +89,14 @@ public:
     // XTruncate
     virtual void SAL_CALL truncate() override;
 
+    // XUnoTunnel
+    virtual sal_Int64 SAL_CALL getSomething( const css::uno::Sequence< sal_Int8 >& aIdentifier ) override;
+
+    // comphelper::ByteWriter
+    virtual sal_Int32 writeSomeBytes(const sal_Int8* aData, sal_Int32 nBytesToWrite) override;
+
 private:
-    std::vector< sal_Int8 > maData;
+    std::vector< sal_Int8, boost::noinit_adaptor<std::allocator<sal_Int8>> > maData;
     sal_Int32 mnCursor;
 };
 
@@ -134,7 +148,7 @@ sal_Int32 SAL_CALL UNOMemoryStream::readBytes( Sequence< sal_Int8 >& aData, sal_
     {
         sal_Int8* pData = &(*maData.begin());
         sal_Int8* pCursor = &(pData[mnCursor]);
-        memcpy( static_cast<void*>(aData.getArray()), static_cast<void*>(pCursor), nBytesToRead );
+        memcpy( aData.getArray(), pCursor, nBytesToRead );
 
         mnCursor += nBytesToRead;
     }
@@ -172,7 +186,7 @@ void SAL_CALL UNOMemoryStream::seek( sal_Int64 location )
         throw IllegalArgumentException("this implementation does not support more than 2GB!", static_cast<OWeakObject*>(this), 0 );
 
     // seek operation should be able to resize the stream
-    if ( location > static_cast< sal_Int64 >( maData.size() ) )
+    if ( o3tl::make_unsigned(location) > maData.size() )
         maData.resize( static_cast< sal_Int32 >( location ) );
 
     mnCursor = static_cast< sal_Int32 >( location );
@@ -207,9 +221,33 @@ void SAL_CALL UNOMemoryStream::writeBytes( const Sequence< sal_Int8 >& aData )
 
     sal_Int8* pData = &(*maData.begin());
     sal_Int8* pCursor = &(pData[mnCursor]);
-    memcpy( pCursor, aData.getConstArray(), nBytesToWrite );
+    memcpy(pCursor, aData.getConstArray(), nBytesToWrite);
 
     mnCursor += nBytesToWrite;
+}
+
+sal_Int32 UNOMemoryStream::writeSomeBytes( const sal_Int8* pInData, sal_Int32 nBytesToWrite )
+{
+    if( !nBytesToWrite )
+        return 0;
+
+    sal_Int64 nNewSize = static_cast<sal_Int64>(mnCursor) + nBytesToWrite;
+    if( nNewSize > SAL_MAX_INT32 )
+    {
+        OSL_ASSERT(false);
+        throw IOException("this implementation does not support more than 2GB!", static_cast<OWeakObject*>(this) );
+    }
+
+    if( static_cast< sal_Int32 >( nNewSize ) > static_cast< sal_Int32 >( maData.size() ) )
+        maData.resize( nNewSize );
+
+    sal_Int8* pData = &(*maData.begin());
+    sal_Int8* pCursor = &(pData[mnCursor]);
+    // cast to avoid -Werror=class-memaccess
+    memcpy(pCursor, pInData, nBytesToWrite);
+
+    mnCursor += nBytesToWrite;
+    return nBytesToWrite;
 }
 
 void SAL_CALL UNOMemoryStream::flush()
@@ -226,6 +264,13 @@ void SAL_CALL UNOMemoryStream::truncate()
 {
     maData.clear();
     mnCursor = 0;
+}
+
+sal_Int64 SAL_CALL UNOMemoryStream::getSomething( const css::uno::Sequence< sal_Int8 >& rIdentifier )
+{
+    if (rIdentifier == comphelper::ByteWriter::getUnoTunnelId())
+        return reinterpret_cast<sal_Int64>(static_cast<comphelper::ByteWriter*>(this));
+    return 0;
 }
 
 } // namespace comphelper

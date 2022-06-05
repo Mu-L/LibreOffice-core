@@ -60,6 +60,7 @@
 #include <cppuhelper/exc_hlp.hxx>
 #include <cppuhelper/implbase.hxx>
 #include <comphelper/interfacecontainer3.hxx>
+#include <o3tl/safeint.hxx>
 #include <rtl/ustrbuf.hxx>
 #include <sal/log.hxx>
 #include <svtools/genericunodialog.hxx>
@@ -571,8 +572,7 @@ namespace
         // see whether the document model can provide a handler
         if ( xDocumentModel.is() )
         {
-            ::comphelper::NamedValueCollection aModelArgs( xDocumentModel->getArgs() );
-            xHandler = aModelArgs.getOrDefault( "InteractionHandler", xHandler );
+            xHandler = ::comphelper::NamedValueCollection::getOrDefault( xDocumentModel->getArgs(), u"InteractionHandler", xHandler );
         }
 
         return xHandler;
@@ -1151,7 +1151,7 @@ void CopyTableWizard::impl_copyRows_throw( const Reference< XResultSet >& _rxSou
                     continue;
                 }
 
-                if ( ( nSourceColumn < 1 ) || ( nSourceColumn >= static_cast<sal_Int32>(aSourceColTypes.size()) ) )
+                if ( ( nSourceColumn < 1 ) || ( o3tl::make_unsigned(nSourceColumn) >= aSourceColTypes.size() ) )
                 {   // ( we have to check here against 1 because the parameters are 1 based)
                     ::dbtools::throwSQLException("Internal error: invalid column type index.",
                                                  ::dbtools::StandardSQLState::INVALID_DESCRIPTOR_INDEX, *this);
@@ -1441,7 +1441,7 @@ OUString CopyTableWizard::impl_getServerSideCopyStatement_throw(const Reference<
         }
     }
     const OUString sComposedTableName = ::dbtools::composeTableName( xDestMetaData, _xTable, ::dbtools::EComposeRule::InDataManipulation, true );
-    OUString sSql("INSERT INTO " + sComposedTableName + " ( " + sColumns.makeStringAndClear() + " ) " + m_pSourceObject->getSelectStatement());
+    OUString sSql("INSERT INTO " + sComposedTableName + " ( " + sColumns + " ) " + m_pSourceObject->getSelectStatement());
 
     return sSql;
 }

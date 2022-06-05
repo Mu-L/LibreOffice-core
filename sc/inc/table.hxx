@@ -157,7 +157,7 @@ class ScTable
 private:
     typedef ::std::vector< ScRange > ScRangeVec;
 
-    mutable ScColContainer aCol;
+    ScColContainer aCol;
 
     OUString aName;
     OUString aCodeName;
@@ -216,8 +216,8 @@ private:
 
     ScRangeVec      aPrintRanges;
 
-    std::unique_ptr<ScRange> pRepeatColRange;
-    std::unique_ptr<ScRange> pRepeatRowRange;
+    std::optional<ScRange> moRepeatColRange;
+    std::optional<ScRange> moRepeatRowRange;
 
     sal_uInt16          nLockCount;
 
@@ -286,14 +286,14 @@ public:
 
     ScOutlineTable* GetOutlineTable()               { return pOutlineTable.get(); }
 
-    ScColumn& CreateColumnIfNotExists( const SCCOL nScCol ) const
+    ScColumn& CreateColumnIfNotExists( const SCCOL nScCol )
     {
         if ( nScCol >= aCol.size() )
             CreateColumnIfNotExistsImpl(nScCol);
         return aCol[nScCol];
     }
     // out-of-line the cold part of the function
-    void CreateColumnIfNotExistsImpl( const SCCOL nScCol ) const;
+    void CreateColumnIfNotExistsImpl( const SCCOL nScCol );
     sal_uInt64      GetCellCount() const;
     sal_uInt64      GetWeightedCount() const;
     sal_uInt64      GetWeightedCount(SCROW nStartRow, SCROW nEndRow) const;
@@ -411,7 +411,8 @@ public:
                                         bool bNoMatrixAtAll = false ) const;
     bool        HasSelectionMatrixFragment( const ScMarkData& rMark ) const;
 
-    bool        IsBlockEmpty( SCCOL nCol1, SCROW nRow1, SCCOL nCol2, SCROW nRow2, bool bIgnoreNotes ) const;
+    // This also includes e.g. notes. Use IsEmptyData() for cell data only.
+    bool        IsBlockEmpty( SCCOL nCol1, SCROW nRow1, SCCOL nCol2, SCROW nRow2 ) const;
 
     bool        SetString( SCCOL nCol, SCROW nRow, SCTAB nTab, const OUString& rString,
                            const ScSetStringParam * pParam = nullptr );
@@ -583,7 +584,7 @@ public:
                             SCCOL nDestCol, SCROW nDestRow, SCTAB nDestTab );
 
     void        CopyScenarioFrom( const ScTable* pSrcTab );
-    void        CopyScenarioTo( const ScTable* pDestTab ) const;
+    void        CopyScenarioTo( ScTable* pDestTab ) const;
     bool        TestCopyScenarioTo( const ScTable* pDestTab ) const;
     void        MarkScenarioIn(ScMarkData& rMark, ScScenarioFlags nNeededBits) const;
     bool        HasScenarioRange( const ScRange& rRange ) const;
@@ -621,7 +622,7 @@ public:
     SCROW       GetLastDataRow( SCCOL nCol1, SCCOL nCol2, SCROW nLastRow,
                                 ScDataAreaExtras* pDataAreaExtras = nullptr ) const;
 
-    bool        IsEmptyBlock(SCCOL nStartCol, SCROW nStartRow, SCCOL nEndCol, SCROW nEndRow) const;
+    bool        IsEmptyData(SCCOL nStartCol, SCROW nStartRow, SCCOL nEndCol, SCROW nEndRow) const;
     SCSIZE      GetEmptyLinesInBlock( SCCOL nStartCol, SCROW nStartRow,
                                         SCCOL nEndCol, SCROW nEndRow, ScDirection eDir ) const;
 
@@ -792,10 +793,10 @@ public:
     void        ClearSelectionItems( const sal_uInt16* pWhich, const ScMarkData& rMark );
     void        ChangeSelectionIndent( bool bIncrement, const ScMarkData& rMark );
 
-    const ScRange*  GetRepeatColRange() const   { return pRepeatColRange.get(); }
-    const ScRange*  GetRepeatRowRange() const   { return pRepeatRowRange.get(); }
-    void            SetRepeatColRange( std::unique_ptr<ScRange> pNew );
-    void            SetRepeatRowRange( std::unique_ptr<ScRange> pNew );
+    const std::optional<ScRange>& GetRepeatColRange() const { return moRepeatColRange; }
+    const std::optional<ScRange>& GetRepeatRowRange() const { return moRepeatRowRange; }
+    void            SetRepeatColRange( std::optional<ScRange> oNew );
+    void            SetRepeatRowRange( std::optional<ScRange> oNew );
 
     sal_uInt16          GetPrintRangeCount() const          { return static_cast< sal_uInt16 >( aPrintRanges.size() ); }
     const ScRange*  GetPrintRange(sal_uInt16 nPos) const;

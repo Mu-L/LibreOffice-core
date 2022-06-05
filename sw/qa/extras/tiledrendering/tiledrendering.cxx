@@ -66,6 +66,10 @@
 #include <docsh.hxx>
 #include <txtfrm.hxx>
 #include <rootfrm.hxx>
+#include <fmtanchr.hxx>
+#include <textcontentcontrol.hxx>
+#include <swmodule.hxx>
+#include <swdll.hxx>
 
 constexpr OUStringLiteral DATA_DIRECTORY = u"/sw/qa/extras/tiledrendering/data/";
 
@@ -82,183 +86,8 @@ public:
     SwTiledRenderingTest();
     virtual void setUp() override;
     virtual void tearDown() override;
-    void testRegisterCallback();
-    void testPostKeyEvent();
-    void testPostMouseEvent();
-    void testSetTextSelection();
-    void testGetTextSelection();
-    void testGetTextSelectionLineLimit();
-    void testSetGraphicSelection();
-    void testResetSelection();
-    void testInsertShape();
-    void testSearch();
-    void testSearchViewArea();
-    void testSearchTextFrame();
-    void testSearchTextFrameWrapAround();
-    void testDocumentSizeChanged();
-    void testSearchAll();
-    void testSearchAllNotifications();
-    void testPageDownInvalidation();
-    void testPartHash();
-    void testViewCursors();
-    void testShapeViewCursors();
-    void testMissingInvalidation();
-    void testViewCursorVisibility();
-    void testViewCursorCleanup();
-    void testViewLock();
-    void testTextEditViewInvalidations();
-    void testUndoInvalidations();
-    void testUndoLimiting();
-    void testUndoReordering();
-    void testUndoReorderingRedo();
-    void testUndoReorderingMulti();
-    void testUndoShapeLimiting();
-    void testUndoDispatch();
-    void testUndoRepairDispatch();
-    void testShapeTextUndoShells();
-    void testShapeTextUndoGroupShells();
-    void testTrackChanges();
-    void testTrackChangesCallback();
-    void testRedlineUpdateCallback();
-    void testSetViewGraphicSelection();
-    void testCreateViewGraphicSelection();
-    void testCreateViewTextSelection();
-    void testRedlineColors();
-    void testCommentEndTextEdit();
-    void testCommentInsert();
-    void testCursorPosition();
-    void testPaintCallbacks();
-    void testUndoRepairResult();
-    void testRedoRepairResult();
-    void testDisableUndoRepair();
-    void testAllTrackedChanges();
-    void testDocumentRepair();
-    void testPageHeader();
-    void testPageFooter();
-    void testTdf115088();
-    void testRedlineField();
-    void testIMESupport();
-    void testIMEFormattingAtEndOfParagraph();
-    void testIMEFormattingAfterHeader();
-    void testSplitNodeRedlineCallback();
-    void testDeleteNodeRedlineCallback();
-    void testVisCursorInvalidation();
-    void testDeselectCustomShape();
-    void testSemiTransparent();
-    void testHighlightNumbering();
-    void testHighlightNumbering_shd();
-    void testPilcrowRedlining();
-    void testClipText();
-    void testAnchorTypes();
-    void testLanguageStatus();
-    void testRedlineNotificationDuringSave();
-    void testHyperlink();
-    void testFieldmark();
-    void testDropDownFormFieldButton();
-    void testDropDownFormFieldButtonEditing();
-    void testDropDownFormFieldButtonNoSelection();
-    void testDropDownFormFieldButtonNoItem();
-    void testTablePaintInvalidate();
-    void testSpellOnlineRenderParameter();
-    void testExtTextInputReadOnly();
-    void testBulletDeleteInvalidation();
-    void testBulletNoNumInvalidation();
-    void testBulletMultiDeleteInvalidation();
-    void testCondCollCopy();
-    void testMoveShapeHandle();
-    void testRedlinePortions();
-    void testContentControl();
 
-    CPPUNIT_TEST_SUITE(SwTiledRenderingTest);
-    CPPUNIT_TEST(testRegisterCallback);
-    CPPUNIT_TEST(testPostKeyEvent);
-    CPPUNIT_TEST(testPostMouseEvent);
-    CPPUNIT_TEST(testSetTextSelection);
-    CPPUNIT_TEST(testGetTextSelection);
-    CPPUNIT_TEST(testGetTextSelectionLineLimit);
-    CPPUNIT_TEST(testSetGraphicSelection);
-    CPPUNIT_TEST(testResetSelection);
-    CPPUNIT_TEST(testInsertShape);
-    CPPUNIT_TEST(testSearch);
-    CPPUNIT_TEST(testSearchViewArea);
-    CPPUNIT_TEST(testSearchTextFrame);
-    CPPUNIT_TEST(testSearchTextFrameWrapAround);
-    CPPUNIT_TEST(testDocumentSizeChanged);
-    CPPUNIT_TEST(testSearchAll);
-    CPPUNIT_TEST(testSearchAllNotifications);
-    CPPUNIT_TEST(testPageDownInvalidation);
-    CPPUNIT_TEST(testPartHash);
-    CPPUNIT_TEST(testViewCursors);
-    CPPUNIT_TEST(testShapeViewCursors);
-    CPPUNIT_TEST(testMissingInvalidation);
-    CPPUNIT_TEST(testViewCursorVisibility);
-    CPPUNIT_TEST(testViewCursorCleanup);
-    CPPUNIT_TEST(testViewLock);
-    CPPUNIT_TEST(testTextEditViewInvalidations);
-    CPPUNIT_TEST(testUndoInvalidations);
-    CPPUNIT_TEST(testUndoLimiting);
-    CPPUNIT_TEST(testUndoReordering);
-    CPPUNIT_TEST(testUndoReorderingRedo);
-    CPPUNIT_TEST(testUndoReorderingMulti);
-    CPPUNIT_TEST(testUndoShapeLimiting);
-    CPPUNIT_TEST(testUndoDispatch);
-    CPPUNIT_TEST(testUndoRepairDispatch);
-    CPPUNIT_TEST(testShapeTextUndoShells);
-    CPPUNIT_TEST(testShapeTextUndoGroupShells);
-    CPPUNIT_TEST(testTrackChanges);
-    CPPUNIT_TEST(testTrackChangesCallback);
-    CPPUNIT_TEST(testRedlineUpdateCallback);
-    CPPUNIT_TEST(testSetViewGraphicSelection);
-    CPPUNIT_TEST(testCreateViewGraphicSelection);
-    CPPUNIT_TEST(testCreateViewTextSelection);
-    CPPUNIT_TEST(testRedlineColors);
-    CPPUNIT_TEST(testCommentEndTextEdit);
-    CPPUNIT_TEST(testCommentInsert);
-    CPPUNIT_TEST(testCursorPosition);
-    CPPUNIT_TEST(testPaintCallbacks);
-    CPPUNIT_TEST(testUndoRepairResult);
-    CPPUNIT_TEST(testRedoRepairResult);
-    CPPUNIT_TEST(testDisableUndoRepair);
-    CPPUNIT_TEST(testAllTrackedChanges);
-    CPPUNIT_TEST(testDocumentRepair);
-    CPPUNIT_TEST(testPageHeader);
-    CPPUNIT_TEST(testPageFooter);
-    CPPUNIT_TEST(testTdf115088);
-    CPPUNIT_TEST(testRedlineField);
-    CPPUNIT_TEST(testIMESupport);
-    CPPUNIT_TEST(testIMEFormattingAtEndOfParagraph);
-    CPPUNIT_TEST(testIMEFormattingAfterHeader);
-    CPPUNIT_TEST(testSplitNodeRedlineCallback);
-    CPPUNIT_TEST(testDeleteNodeRedlineCallback);
-    CPPUNIT_TEST(testVisCursorInvalidation);
-    CPPUNIT_TEST(testDeselectCustomShape);
-    CPPUNIT_TEST(testSemiTransparent);
-    CPPUNIT_TEST(testHighlightNumbering);
-    CPPUNIT_TEST(testHighlightNumbering_shd);
-    CPPUNIT_TEST(testPilcrowRedlining);
-    CPPUNIT_TEST(testClipText);
-    CPPUNIT_TEST(testAnchorTypes);
-    CPPUNIT_TEST(testLanguageStatus);
-    CPPUNIT_TEST(testRedlineNotificationDuringSave);
-    CPPUNIT_TEST(testHyperlink);
-    CPPUNIT_TEST(testFieldmark);
-    CPPUNIT_TEST(testDropDownFormFieldButton);
-    CPPUNIT_TEST(testDropDownFormFieldButtonEditing);
-    CPPUNIT_TEST(testDropDownFormFieldButtonNoSelection);
-    CPPUNIT_TEST(testDropDownFormFieldButtonNoItem);
-    CPPUNIT_TEST(testTablePaintInvalidate);
-    CPPUNIT_TEST(testSpellOnlineRenderParameter);
-    CPPUNIT_TEST(testExtTextInputReadOnly);
-    CPPUNIT_TEST(testBulletDeleteInvalidation);
-    CPPUNIT_TEST(testBulletNoNumInvalidation);
-    CPPUNIT_TEST(testBulletMultiDeleteInvalidation);
-    CPPUNIT_TEST(testCondCollCopy);
-    CPPUNIT_TEST(testMoveShapeHandle);
-    CPPUNIT_TEST(testRedlinePortions);
-    CPPUNIT_TEST(testContentControl);
-    CPPUNIT_TEST_SUITE_END();
-
-private:
+protected:
     SwXTextDocument* createDoc(const char* pName = nullptr);
     void setupLibreOfficeKitViewCallback(SfxViewShell* pViewShell);
     static void callback(int nType, const char* pPayload, void* pData);
@@ -301,6 +130,9 @@ SwTiledRenderingTest::SwTiledRenderingTest()
 void SwTiledRenderingTest::setUp()
 {
     SwModelTestBase::setUp();
+
+    SwGlobals::ensure();
+    SW_MOD()->ClearRedlineAuthors();
 
     comphelper::LibreOfficeKit::setActive(true);
 }
@@ -465,7 +297,7 @@ void SwTiledRenderingTest::callbackImpl(int nType, const char* pPayload)
 
 }
 
-void SwTiledRenderingTest::testRegisterCallback()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testRegisterCallback)
 {
     SwXTextDocument* pXTextDocument = createDoc("dummy.fodt");
     SwWrtShell* pWrtShell = pXTextDocument->GetDocShell()->GetWrtShell();
@@ -480,7 +312,7 @@ void SwTiledRenderingTest::testRegisterCallback()
     CPPUNIT_ASSERT(m_aInvalidation.Overlaps(aTopLeft));
 }
 
-void SwTiledRenderingTest::testPostKeyEvent()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testPostKeyEvent)
 {
     SwXTextDocument* pXTextDocument = createDoc("dummy.fodt");
     SwWrtShell* pWrtShell = pXTextDocument->GetDocShell()->GetWrtShell();
@@ -496,7 +328,7 @@ void SwTiledRenderingTest::testPostKeyEvent()
     CPPUNIT_ASSERT_EQUAL(OUString("Axaa bbb."), pShellCursor->GetPoint()->nNode.GetNode().GetTextNode()->GetText());
 }
 
-void SwTiledRenderingTest::testPostMouseEvent()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testPostMouseEvent)
 {
     SwXTextDocument* pXTextDocument = createDoc("dummy.fodt");
     SwWrtShell* pWrtShell = pXTextDocument->GetDocShell()->GetWrtShell();
@@ -514,7 +346,7 @@ void SwTiledRenderingTest::testPostMouseEvent()
     CPPUNIT_ASSERT_EQUAL(static_cast<sal_Int32>(0), pShellCursor->GetPoint()->nContent.GetIndex());
 }
 
-void SwTiledRenderingTest::testSetTextSelection()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testSetTextSelection)
 {
     SwXTextDocument* pXTextDocument = createDoc("dummy.fodt");
     SwWrtShell* pWrtShell = pXTextDocument->GetDocShell()->GetWrtShell();
@@ -539,7 +371,7 @@ void SwTiledRenderingTest::testSetTextSelection()
     CPPUNIT_ASSERT_EQUAL(OUString("Aaa b"), pShellCursor->GetText());
 }
 
-void SwTiledRenderingTest::testGetTextSelection()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testGetTextSelection)
 {
     SwXTextDocument* pXTextDocument = createDoc("shape-with-text.fodt");
     // No crash, just empty output for unexpected mime type.
@@ -569,7 +401,7 @@ void SwTiledRenderingTest::testGetTextSelection()
     CPPUNIT_ASSERT_EQUAL(OString("Shape"), apitest::helper::transferable::getTextSelection(pXTextDocument->getSelection(), "text/plain;charset=utf-8"));
 }
 
-void SwTiledRenderingTest::testGetTextSelectionLineLimit()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testGetTextSelectionLineLimit)
 {
     static OStringLiteral sOriginalText(u8"Estonian employs the Latin script as the basis for its alphabet, which adds the letters ä, ö, ü, and õ, plus the later additions š and ž. The letters c, q, w, x and y are limited to proper names of foreign origin, and f, z, š, and ž appear in loanwords and foreign names only. Ö and Ü are pronounced similarly to their equivalents in Swedish and German. Unlike in standard German but like Swedish (when followed by 'r') and Finnish, Ä is pronounced [æ], as in English mat. The vowels Ä, Ö and Ü are clearly separate phonemes and inherent in Estonian, although the letter shapes come from German. The letter õ denotes /ɤ/, unrounded /o/, or a close-mid back unrounded vowel. It is almost identical to the Bulgarian ъ /ɤ̞/ and the Vietnamese ơ, and is also used to transcribe the Russian ы.");
     static OStringLiteral sExpectedHtml(u8"Estonian employs the <a href=\"https://en.wikipedia.org/wiki/Latin_script\">Latin script</a> as the basis for <a href=\"https://en.wikipedia.org/wiki/Estonian_alphabet\">its alphabet</a>, which adds the letters <a href=\"https://en.wikipedia.org/wiki/%C3%84\"><i>ä</i></a>, <a href=\"https://en.wikipedia.org/wiki/%C3%96\"><i>ö</i></a>, <a href=\"https://en.wikipedia.org/wiki/%C3%9C\"><i>ü</i></a>, and <a href=\"https://en.wikipedia.org/wiki/%C3%95\"><i>õ</i></a>, plus the later additions <a href=\"https://en.wikipedia.org/wiki/%C5%A0\"><i>š</i></a> and <a href=\"https://en.wikipedia.org/wiki/%C5%BD\"><i>ž</i></a>. The letters <i>c</i>, <i>q</i>, <i>w</i>, <i>x</i> and <i>y</i> are limited to <a href=\"https://en.wikipedia.org/wiki/Proper_names\">proper names</a> of foreign origin, and <i>f</i>, <i>z</i>, <i>š</i>, and <i>ž</i> appear in loanwords and foreign names only. <i>Ö</i> and <i>Ü</i> are pronounced similarly to their equivalents in Swedish and German. Unlike in standard German but like Swedish (when followed by 'r') and Finnish, <i>Ä</i> is pronounced [æ], as in English <i>mat</i>. The vowels Ä, Ö and Ü are clearly separate <a href=\"https://en.wikipedia.org/wiki/Phonemes\">phonemes</a> and inherent in Estonian, although the letter shapes come from German. The letter <a href=\"https://en.wikipedia.org/wiki/%C3%95\"><i>õ</i></a> denotes /ɤ/, unrounded /o/, or a <a href=\"https://en.wikipedia.org/wiki/Close-mid_back_unrounded_vowel\">close-mid back unrounded vowel</a>. It is almost identical to the <a href=\"https://en.wikipedia.org/wiki/Bulgarian_language\">Bulgarian</a> <a href=\"https://en.wikipedia.org/wiki/%D0%AA\">ъ</a> /ɤ̞/ and the <a href=\"https://en.wikipedia.org/wiki/Vietnamese_language\">Vietnamese</a> <a href=\"https://en.wikipedia.org/wiki/%C6%A0\">ơ</a>, and is also used to transcribe the Russian <a href=\"https://en.wikipedia.org/wiki/%D0%AB\">ы</a>.");
@@ -593,7 +425,7 @@ void SwTiledRenderingTest::testGetTextSelectionLineLimit()
     CPPUNIT_ASSERT(sHtmlText.match(sExpectedHtml, nStart));
 }
 
-void SwTiledRenderingTest::testSetGraphicSelection()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testSetGraphicSelection)
 {
     SwXTextDocument* pXTextDocument = createDoc("shape.fodt");
     SwWrtShell* pWrtShell = pXTextDocument->GetDocShell()->GetWrtShell();
@@ -617,7 +449,7 @@ void SwTiledRenderingTest::testSetGraphicSelection()
     CPPUNIT_ASSERT_EQUAL(aShapeBefore.getHeight() + 1000, aShapeAfter.getHeight());
 }
 
-void SwTiledRenderingTest::testResetSelection()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testResetSelection)
 {
     SwXTextDocument* pXTextDocument = createDoc("shape.fodt");
     SwWrtShell* pWrtShell = pXTextDocument->GetDocShell()->GetWrtShell();
@@ -644,7 +476,7 @@ void SwTiledRenderingTest::testResetSelection()
     CPPUNIT_ASSERT(!pWrtShell->IsSelFrameMode());
 }
 
-void SwTiledRenderingTest::testInsertShape()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testInsertShape)
 {
     SwXTextDocument* pXTextDocument = createDoc("2-pages.odt");
     SwWrtShell* pWrtShell = pXTextDocument->GetDocShell()->GetWrtShell();
@@ -673,7 +505,7 @@ static void lcl_search(bool bBackward)
     comphelper::dispatchCommand(".uno:ExecuteSearch", aPropertyValues);
 }
 
-void SwTiledRenderingTest::testSearch()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testSearch)
 {
     SwXTextDocument* pXTextDocument = createDoc("search.odt");
     SwWrtShell* pWrtShell = pXTextDocument->GetDocShell()->GetWrtShell();
@@ -713,7 +545,7 @@ void SwTiledRenderingTest::testSearch()
     CPPUNIT_ASSERT_EQUAL(nNode + 1, nActual);
 }
 
-void SwTiledRenderingTest::testSearchViewArea()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testSearchViewArea)
 {
     SwXTextDocument* pXTextDocument = createDoc("search.odt");
     SwWrtShell* pWrtShell = pXTextDocument->GetDocShell()->GetWrtShell();
@@ -738,7 +570,7 @@ void SwTiledRenderingTest::testSearchViewArea()
     CPPUNIT_ASSERT_EQUAL(OUString("Heading on second page"), pShellCursor->GetPoint()->nNode.GetNode().GetTextNode()->GetText());
 }
 
-void SwTiledRenderingTest::testSearchTextFrame()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testSearchTextFrame)
 {
     SwXTextDocument* pXTextDocument = createDoc("search.odt");
     SwWrtShell* pWrtShell = pXTextDocument->GetDocShell()->GetWrtShell();
@@ -753,7 +585,7 @@ void SwTiledRenderingTest::testSearchTextFrame()
     CPPUNIT_ASSERT(!m_aTextSelection.isEmpty());
 }
 
-void SwTiledRenderingTest::testSearchTextFrameWrapAround()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testSearchTextFrameWrapAround)
 {
     SwXTextDocument* pXTextDocument = createDoc("search.odt");
     SwWrtShell* pWrtShell = pXTextDocument->GetDocShell()->GetWrtShell();
@@ -770,7 +602,7 @@ void SwTiledRenderingTest::testSearchTextFrameWrapAround()
     CPPUNIT_ASSERT(m_bFound);
 }
 
-void SwTiledRenderingTest::testDocumentSizeChanged()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testDocumentSizeChanged)
 {
     // Get the current document size.
     SwXTextDocument* pXTextDocument = createDoc("2-pages.odt");
@@ -787,7 +619,7 @@ void SwTiledRenderingTest::testDocumentSizeChanged()
     CPPUNIT_ASSERT(aSize.getHeight() > m_aDocumentSize.getHeight());
 }
 
-void SwTiledRenderingTest::testSearchAll()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testSearchAll)
 {
     SwXTextDocument* pXTextDocument = createDoc("search.odt");
     SwWrtShell* pWrtShell = pXTextDocument->GetDocShell()->GetWrtShell();
@@ -805,7 +637,7 @@ void SwTiledRenderingTest::testSearchAll()
     CPPUNIT_ASSERT_EQUAL(0, m_aSearchResultPart[0]);
 }
 
-void SwTiledRenderingTest::testSearchAllNotifications()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testSearchAllNotifications)
 {
     SwXTextDocument* pXTextDocument = createDoc("search.odt");
     SwWrtShell* pWrtShell = pXTextDocument->GetDocShell()->GetWrtShell();
@@ -827,7 +659,7 @@ void SwTiledRenderingTest::testSearchAllNotifications()
     CPPUNIT_ASSERT(m_nSelectionAfterSearchResult > 0);
 }
 
-void SwTiledRenderingTest::testPageDownInvalidation()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testPageDownInvalidation)
 {
     SwXTextDocument* pXTextDocument = createDoc("pagedown-invalidation.odt");
     uno::Sequence<beans::PropertyValue> aPropertyValues(comphelper::InitPropertySequence(
@@ -843,7 +675,7 @@ void SwTiledRenderingTest::testPageDownInvalidation()
     CPPUNIT_ASSERT_EQUAL(0, m_nInvalidations);
 }
 
-void SwTiledRenderingTest::testPartHash()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testPartHash)
 {
     SwXTextDocument* pXTextDocument = createDoc("pagedown-invalidation.odt");
     int nParts = pXTextDocument->getParts();
@@ -1069,7 +901,7 @@ namespace {
 
 }
 
-void SwTiledRenderingTest::testMissingInvalidation()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testMissingInvalidation)
 {
     // Create two views.
     SwXTextDocument* pXTextDocument = createDoc("dummy.fodt");
@@ -1102,7 +934,7 @@ void SwTiledRenderingTest::testMissingInvalidation()
     CPPUNIT_ASSERT(aView2.m_bTilesInvalidated);
 }
 
-void SwTiledRenderingTest::testViewCursors()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testViewCursors)
 {
     SwXTextDocument* pXTextDocument = createDoc("dummy.fodt");
     ViewCallback aView1;
@@ -1140,7 +972,7 @@ void SwTiledRenderingTest::testViewCursors()
     CPPUNIT_ASSERT(!aView2.m_bViewSelectionSet);
 }
 
-void SwTiledRenderingTest::testShapeViewCursors()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testShapeViewCursors)
 {
     // Load a document and create a view, so we have 2 ones.
     SwXTextDocument* pXTextDocument = createDoc("shape.fodt");
@@ -1179,7 +1011,7 @@ void SwTiledRenderingTest::testShapeViewCursors()
     CPPUNIT_ASSERT_EQUAL(aLastViewCursor2, aView2.m_aViewCursor);
 }
 
-void SwTiledRenderingTest::testViewCursorVisibility()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testViewCursorVisibility)
 {
     // Load a document that has a shape and create two views.
     SwXTextDocument* pXTextDocument = createDoc("shape.fodt");
@@ -1203,7 +1035,7 @@ void SwTiledRenderingTest::testViewCursorVisibility()
     CPPUNIT_ASSERT(!aView1.m_bViewCursorVisible);
 }
 
-void SwTiledRenderingTest::testViewCursorCleanup()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testViewCursorCleanup)
 {
     // Load a document that has a shape and create two views.
     SwXTextDocument* pXTextDocument = createDoc("shape.fodt");
@@ -1233,7 +1065,7 @@ void SwTiledRenderingTest::testViewCursorCleanup()
     CPPUNIT_ASSERT(!aView1.m_bGraphicViewSelection);
 }
 
-void SwTiledRenderingTest::testViewLock()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testViewLock)
 {
     // Load a document that has a shape and create two views.
     SwXTextDocument* pXTextDocument = createDoc("shape.fodt");
@@ -1258,7 +1090,7 @@ void SwTiledRenderingTest::testViewLock()
     CPPUNIT_ASSERT(!aView1.m_bViewLock);
 }
 
-void SwTiledRenderingTest::testTextEditViewInvalidations()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testTextEditViewInvalidations)
 {
     // Load a document that has a shape and create two views.
     SwXTextDocument* pXTextDocument = createDoc("shape.fodt");
@@ -1288,7 +1120,7 @@ void SwTiledRenderingTest::testTextEditViewInvalidations()
     pWrtShell->EndTextEdit();
 }
 
-void SwTiledRenderingTest::testUndoInvalidations()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testUndoInvalidations)
 {
     // Load a document and create two views.
     SwXTextDocument* pXTextDocument = createDoc("dummy.fodt");
@@ -1321,7 +1153,7 @@ void SwTiledRenderingTest::testUndoInvalidations()
     CPPUNIT_ASSERT(aView2.m_bTilesInvalidated);
 }
 
-void SwTiledRenderingTest::testUndoLimiting()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testUndoLimiting)
 {
     // Load a document and create two views.
     SwXTextDocument* pXTextDocument = createDoc("dummy.fodt");
@@ -1349,7 +1181,7 @@ void SwTiledRenderingTest::testUndoLimiting()
     SfxViewShell::Current()->setLibreOfficeKitViewCallback(nullptr);
 }
 
-void SwTiledRenderingTest::testUndoReordering()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testUndoReordering)
 {
     // Create two views and a document of 2 paragraphs.
     SwXTextDocument* pXTextDocument = createDoc();
@@ -1394,7 +1226,7 @@ void SwTiledRenderingTest::testUndoReordering()
     SfxViewShell::Current()->setLibreOfficeKitViewCallback(nullptr);
 }
 
-void SwTiledRenderingTest::testUndoReorderingRedo()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testUndoReorderingRedo)
 {
     // Create two views and a document of 2 paragraphs.
     SwXTextDocument* pXTextDocument = createDoc();
@@ -1448,7 +1280,7 @@ void SwTiledRenderingTest::testUndoReorderingRedo()
     SfxViewShell::Current()->setLibreOfficeKitViewCallback(nullptr);
 }
 
-void SwTiledRenderingTest::testUndoReorderingMulti()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testUndoReorderingMulti)
 {
     // Create two views and a document of 2 paragraphs.
     SwXTextDocument* pXTextDocument = createDoc();
@@ -1498,7 +1330,7 @@ void SwTiledRenderingTest::testUndoReorderingMulti()
     SfxViewShell::Current()->setLibreOfficeKitViewCallback(nullptr);
 }
 
-void SwTiledRenderingTest::testUndoShapeLimiting()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testUndoShapeLimiting)
 {
     // Load a document and create a view.
     SwXTextDocument* pXTextDocument = createDoc("shape.fodt");
@@ -1535,7 +1367,7 @@ void SwTiledRenderingTest::testUndoShapeLimiting()
     SfxViewShell::Current()->setLibreOfficeKitViewCallback(nullptr);
 }
 
-void SwTiledRenderingTest::testUndoDispatch()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testUndoDispatch)
 {
     // Load a document and create two views.
     SwXTextDocument* pXTextDocument = createDoc("dummy.fodt");
@@ -1574,7 +1406,7 @@ void SwTiledRenderingTest::testUndoDispatch()
     SfxViewShell::Current()->setLibreOfficeKitViewCallback(nullptr);
 }
 
-void SwTiledRenderingTest::testUndoRepairDispatch()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testUndoRepairDispatch)
 {
     // Load a document and create two views.
     SwXTextDocument* pXTextDocument = createDoc("dummy.fodt");
@@ -1616,7 +1448,7 @@ void SwTiledRenderingTest::testUndoRepairDispatch()
     SfxViewShell::Current()->setLibreOfficeKitViewCallback(nullptr);
 }
 
-void SwTiledRenderingTest::testShapeTextUndoShells()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testShapeTextUndoShells)
 {
     // Load a document and create a view.
     SwXTextDocument* pXTextDocument = createDoc("shape.fodt");
@@ -1643,7 +1475,7 @@ void SwTiledRenderingTest::testShapeTextUndoShells()
     CPPUNIT_ASSERT_EQUAL(ViewShellId(nView1), rUndoManager.GetUndoAction()->GetViewShellId());
 }
 
-void SwTiledRenderingTest::testShapeTextUndoGroupShells()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testShapeTextUndoGroupShells)
 {
     // Load a document and create a view.
     SwXTextDocument* pXTextDocument = createDoc("shape.fodt");
@@ -1701,7 +1533,7 @@ void SwTiledRenderingTest::testShapeTextUndoGroupShells()
     CPPUNIT_ASSERT(aView2.m_bViewLock);
 }
 
-void SwTiledRenderingTest::testTrackChanges()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testTrackChanges)
 {
     // Load a document.
     SwXTextDocument* pXTextDocument = createDoc("dummy.fodt");
@@ -1734,7 +1566,7 @@ void SwTiledRenderingTest::testTrackChanges()
     CPPUNIT_ASSERT_EQUAL(OUString("Aaa bbb."), pShellCursor->GetPoint()->nNode.GetNode().GetTextNode()->GetText());
 }
 
-void SwTiledRenderingTest::testTrackChangesCallback()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testTrackChangesCallback)
 {
     // Load a document.
     SwXTextDocument* pXTextDocument = createDoc("dummy.fodt");
@@ -1761,7 +1593,7 @@ void SwTiledRenderingTest::testTrackChangesCallback()
     CPPUNIT_ASSERT_EQUAL(0, m_nTrackedChangeIndex);
 }
 
-void SwTiledRenderingTest::testRedlineUpdateCallback()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testRedlineUpdateCallback)
 {
     // Load a document.
     SwXTextDocument* pXTextDocument = createDoc("dummy.fodt");
@@ -1800,7 +1632,7 @@ void SwTiledRenderingTest::testRedlineUpdateCallback()
     CPPUNIT_ASSERT_EQUAL(3, m_nRedlineTableEntryModified);
 }
 
-void SwTiledRenderingTest::testSetViewGraphicSelection()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testSetViewGraphicSelection)
 {
     // Load a document.
     SwXTextDocument* pXTextDocument = createDoc("frame.odt");
@@ -1825,7 +1657,7 @@ void SwTiledRenderingTest::testSetViewGraphicSelection()
     CPPUNIT_ASSERT(!pView->areMarkHandlesHidden());
 }
 
-void SwTiledRenderingTest::testCreateViewGraphicSelection()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testCreateViewGraphicSelection)
 {
     // Load a document.
     SwXTextDocument* pXTextDocument = createDoc("frame.odt");
@@ -1858,7 +1690,7 @@ void SwTiledRenderingTest::testCreateViewGraphicSelection()
     CPPUNIT_ASSERT(aView2.m_bGraphicViewSelection);
 }
 
-void SwTiledRenderingTest::testCreateViewTextSelection()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testCreateViewTextSelection)
 {
     // Load a document.
     SwXTextDocument* pXTextDocument = createDoc("dummy.fodt");
@@ -1883,7 +1715,7 @@ void SwTiledRenderingTest::testCreateViewTextSelection()
     CPPUNIT_ASSERT(!aView2.m_aViewSelection.isEmpty());
 }
 
-void SwTiledRenderingTest::testRedlineColors()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testRedlineColors)
 {
     // Load a document.
     SwXTextDocument* pXTextDocument = createDoc("dummy.fodt");
@@ -1904,7 +1736,7 @@ void SwTiledRenderingTest::testRedlineColors()
     CPPUNIT_ASSERT_EQUAL(static_cast<size_t>(1), aTree.get_child("authors").size());
 }
 
-void SwTiledRenderingTest::testCommentEndTextEdit()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testCommentEndTextEdit)
 {
     // Create a document, type a character and remember the cursor position.
     SwXTextDocument* pXTextDocument = createDoc();
@@ -1941,7 +1773,7 @@ void SwTiledRenderingTest::testCommentEndTextEdit()
     CPPUNIT_ASSERT(aView1.m_bTilesInvalidated);
 }
 
-void SwTiledRenderingTest::testCommentInsert()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testCommentInsert)
 {
     // Load a document with an as-char image in it.
     comphelper::LibreOfficeKit::setTiledAnnotations(false);
@@ -1974,7 +1806,7 @@ void SwTiledRenderingTest::testCommentInsert()
     comphelper::LibreOfficeKit::setTiledAnnotations(true);
 }
 
-void SwTiledRenderingTest::testCursorPosition()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testCursorPosition)
 {
     // Load a document and register a callback, should get an own cursor.
     SwXTextDocument* pXTextDocument = createDoc();
@@ -1991,7 +1823,7 @@ void SwTiledRenderingTest::testCursorPosition()
     CPPUNIT_ASSERT_EQUAL(aView1.m_aOwnCursor.toString(), aView1.m_aViewCursor.toString());
 }
 
-void SwTiledRenderingTest::testPaintCallbacks()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testPaintCallbacks)
 {
     // Test that paintTile() never results in callbacks, which can cause a
     // paint <-> invalidate loop.
@@ -2014,7 +1846,7 @@ void SwTiledRenderingTest::testPaintCallbacks()
     CPPUNIT_ASSERT(!aView1.m_bCalled);
 }
 
-void SwTiledRenderingTest::testUndoRepairResult()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testUndoRepairResult)
 {
     // Load a document and create two views.
     SwXTextDocument* pXTextDocument = createDoc("dummy.fodt");
@@ -2048,7 +1880,7 @@ void SwTiledRenderingTest::testUndoRepairResult()
     SfxViewShell::Current()->setLibreOfficeKitViewCallback(nullptr);
 }
 
-void SwTiledRenderingTest::testRedoRepairResult()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testRedoRepairResult)
 {
     // Load a document and create two views.
     SwXTextDocument* pXTextDocument = createDoc("dummy.fodt");
@@ -2106,7 +1938,7 @@ namespace {
 
 }
 
-void SwTiledRenderingTest::testDisableUndoRepair()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testDisableUndoRepair)
 {
     // Create two views.
     SwXTextDocument* pXTextDocument = createDoc("dummy.fodt");
@@ -2165,7 +1997,7 @@ void SwTiledRenderingTest::testDisableUndoRepair()
     checkUndoRepairStates(pXTextDocument, pView1, pView2);
 }
 
-void SwTiledRenderingTest::testAllTrackedChanges()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testAllTrackedChanges)
 {
     // Load a document.
     createDoc("dummy.fodt");
@@ -2239,7 +2071,7 @@ void SwTiledRenderingTest::testAllTrackedChanges()
     SfxViewShell::Current()->setLibreOfficeKitViewCallback(nullptr);
 }
 
-void SwTiledRenderingTest::testDocumentRepair()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testDocumentRepair)
 {
     // Create two views.
     SwXTextDocument* pXTextDocument = createDoc("dummy.fodt");
@@ -2305,7 +2137,7 @@ namespace {
 
 }
 
-void SwTiledRenderingTest::testPageHeader()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testPageHeader)
 {
     createDoc("dummy.fodt");
     SfxViewShell* pViewShell = SfxViewShell::Current();
@@ -2330,7 +2162,7 @@ void SwTiledRenderingTest::testPageHeader()
     checkPageHeaderOrFooter(pViewShell, FN_INSERT_PAGEHEADER, false);
 }
 
-void SwTiledRenderingTest::testPageFooter()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testPageFooter)
 {
     createDoc("dummy.fodt");
     SfxViewShell* pViewShell = SfxViewShell::Current();
@@ -2355,7 +2187,7 @@ void SwTiledRenderingTest::testPageFooter()
     checkPageHeaderOrFooter(pViewShell, FN_INSERT_PAGEFOOTER, false);
 }
 
-void SwTiledRenderingTest::testTdf115088()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testTdf115088)
 {
     // We have three lines in the test document and we try to copy the second and third line
     // To the beginning of the document
@@ -2388,7 +2220,7 @@ void SwTiledRenderingTest::testTdf115088()
     comphelper::LibreOfficeKit::setActive(false);
 }
 
-void SwTiledRenderingTest::testRedlineField()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testRedlineField)
 {
     // Load a document.
     SwXTextDocument* pXTextDocument = createDoc("dummy.fodt");
@@ -2409,7 +2241,7 @@ void SwTiledRenderingTest::testRedlineField()
     CPPUNIT_ASSERT(pRedline->GetDescr().indexOf(aDate.GetFieldName())!= -1);
 }
 
-void SwTiledRenderingTest::testIMESupport()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testIMESupport)
 {
     SwXTextDocument* pXTextDocument = createDoc("dummy.fodt");
     VclPtr<vcl::Window> pDocWindow = pXTextDocument->getDocWindow();
@@ -2439,7 +2271,7 @@ void SwTiledRenderingTest::testIMESupport()
     CPPUNIT_ASSERT_EQUAL(OUString(aInputs[aInputs.size() - 1] + "Aaa bbb."), pShellCursor->GetPoint()->nNode.GetNode().GetTextNode()->GetText());
 }
 
-void SwTiledRenderingTest::testIMEFormattingAtEndOfParagraph()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testIMEFormattingAtEndOfParagraph)
 {
     comphelper::LibreOfficeKit::setActive();
     SwXTextDocument* pXTextDocument = createDoc("dummy.fodt");
@@ -2544,7 +2376,7 @@ void SwTiledRenderingTest::testIMEFormattingAtEndOfParagraph()
     CPPUNIT_ASSERT_EQUAL(OUString("bab"), pShellCursor->GetPoint()->nNode.GetNode().GetTextNode()->GetText());
 }
 
-void SwTiledRenderingTest::testIMEFormattingAfterHeader()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testIMEFormattingAfterHeader)
 {
     comphelper::LibreOfficeKit::setActive();
     SwXTextDocument* pXTextDocument = createDoc("dummy.fodt");
@@ -2612,7 +2444,7 @@ void SwTiledRenderingTest::testIMEFormattingAfterHeader()
     CPPUNIT_ASSERT_EQUAL(FontWeight::WEIGHT_NORMAL, pWeightItem2->GetWeight());
 }
 
-void SwTiledRenderingTest::testSplitNodeRedlineCallback()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testSplitNodeRedlineCallback)
 {
     // Load a document.
     SwXTextDocument* pXTextDocument = createDoc("splitnode_redline_callback.fodt");
@@ -2670,7 +2502,7 @@ void SwTiledRenderingTest::testSplitNodeRedlineCallback()
     CPPUNIT_ASSERT_EQUAL(0, m_nRedlineTableEntryModified);
 }
 
-void SwTiledRenderingTest::testDeleteNodeRedlineCallback()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testDeleteNodeRedlineCallback)
 {
     // Load a document.
     SwXTextDocument* pXTextDocument = createDoc("removenode_redline_callback.fodt");
@@ -2729,7 +2561,7 @@ void SwTiledRenderingTest::testDeleteNodeRedlineCallback()
 }
 
 
-void SwTiledRenderingTest::testVisCursorInvalidation()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testVisCursorInvalidation)
 {
     SwXTextDocument* pXTextDocument = createDoc("dummy.fodt");
     ViewCallback aView1;
@@ -2812,7 +2644,7 @@ void SwTiledRenderingTest::testVisCursorInvalidation()
     comphelper::LibreOfficeKit::setViewIdForVisCursorInvalidation(false);
 }
 
-void SwTiledRenderingTest::testDeselectCustomShape()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testDeselectCustomShape)
 {
     SwXTextDocument* pXTextDocument = createDoc("dummy.fodt");
     SwWrtShell* pWrtShell = pXTextDocument->GetDocShell()->GetWrtShell();
@@ -2831,7 +2663,7 @@ void SwTiledRenderingTest::testDeselectCustomShape()
     CPPUNIT_ASSERT_EQUAL(static_cast<size_t>(0), pWrtShell->GetDrawView()->GetMarkedObjectList().GetMarkCount());
 }
 
-void SwTiledRenderingTest::testSemiTransparent()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testSemiTransparent)
 {
     // Load a document where the top left tile contains a semi-transparent rectangle shape.
     SwXTextDocument* pXTextDocument = createDoc("semi-transparent.odt");
@@ -2860,7 +2692,7 @@ void SwTiledRenderingTest::testSemiTransparent()
     CPPUNIT_ASSERT_GREATEREQUAL(190, static_cast<int>(aColor.GetBlue()));
 }
 
-void SwTiledRenderingTest::testHighlightNumbering()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testHighlightNumbering)
 {
     // Load a document where the top left tile contains a semi-transparent rectangle shape.
     SwXTextDocument* pXTextDocument = createDoc("tdf114799_highlight.docx");
@@ -2885,7 +2717,7 @@ void SwTiledRenderingTest::testHighlightNumbering()
     CPPUNIT_ASSERT_EQUAL(COL_YELLOW, aColor);
 }
 
-void SwTiledRenderingTest::testHighlightNumbering_shd()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testHighlightNumbering_shd)
 {
     // Load a document where the top left tile contains a semi-transparent rectangle shape.
     SwXTextDocument* pXTextDocument = createDoc("tdf114799_shd.docx");
@@ -2910,7 +2742,7 @@ void SwTiledRenderingTest::testHighlightNumbering_shd()
     CPPUNIT_ASSERT_EQUAL(COL_WHITE, aColor);
 }
 
-void SwTiledRenderingTest::testPilcrowRedlining()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testPilcrowRedlining)
 {
     // Load a document where the top left tile contains
     // paragraph and line break symbols with redlining.
@@ -2977,7 +2809,7 @@ void SwTiledRenderingTest::testPilcrowRedlining()
     comphelper::dispatchCommand(".uno:ControlCodes", {});
 }
 
-void SwTiledRenderingTest::testClipText()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testClipText)
 {
     // Load a document where the top left tile contains table text with
     // too small line height, but with top and bottom paragraph margins,
@@ -3028,7 +2860,7 @@ void SwTiledRenderingTest::testClipText()
 #endif
 }
 
-void SwTiledRenderingTest::testAnchorTypes()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testAnchorTypes)
 {
     SwXTextDocument* pXTextDocument = createDoc("shape.fodt");
     SwDoc* pDoc = pXTextDocument->GetDocShell()->GetDoc();
@@ -3044,7 +2876,7 @@ void SwTiledRenderingTest::testAnchorTypes()
     CPPUNIT_ASSERT(!aSet.HasItem(FN_TOOL_ANCHOR_PAGE));
 }
 
-void SwTiledRenderingTest::testLanguageStatus()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testLanguageStatus)
 {
     SwXTextDocument* pXTextDocument = createDoc("dummy.fodt");
     SwView* pView = pXTextDocument->GetDocShell()->GetView();
@@ -3058,7 +2890,7 @@ void SwTiledRenderingTest::testLanguageStatus()
     CPPUNIT_ASSERT_EQUAL(OUString("English (USA);en-US"), aList[0]);
 }
 
-void SwTiledRenderingTest::testRedlineNotificationDuringSave()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testRedlineNotificationDuringSave)
 {
     // Load a document with redlines which are hidden at a layout level.
     // It's an empty document, just settings.xml and content.xml are custom.
@@ -3075,7 +2907,7 @@ void SwTiledRenderingTest::testRedlineNotificationDuringSave()
     xStorable->storeToURL(maTempFile.GetURL(), aMediaDescriptor.getAsConstPropertyValueList());
 }
 
-void SwTiledRenderingTest::testHyperlink()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testHyperlink)
 {
     comphelper::LibreOfficeKit::setViewIdForVisCursorInvalidation(true);
     SwXTextDocument* pXTextDocument = createDoc("hyperlink.odt");
@@ -3096,13 +2928,13 @@ void SwTiledRenderingTest::testHyperlink()
     CPPUNIT_ASSERT_EQUAL(OString("http://example.com/"), m_sHyperlinkLink);
 }
 
-void SwTiledRenderingTest::testFieldmark()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testFieldmark)
 {
     // Without the accompanying fix in place, this crashed on load.
     createDoc("fieldmark.docx");
 }
 
-void SwTiledRenderingTest::testDropDownFormFieldButton()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testDropDownFormFieldButton)
 {
     SwXTextDocument* pXTextDocument = createDoc("drop_down_form_field.odt");
     pXTextDocument->setClientVisibleArea(tools::Rectangle(0, 0, 10000, 4000));
@@ -3175,7 +3007,7 @@ void SwTiledRenderingTest::testDropDownFormFieldButton()
     }
 }
 
-void SwTiledRenderingTest::testDropDownFormFieldButtonEditing()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testDropDownFormFieldButtonEditing)
 {
     SwXTextDocument* pXTextDocument = createDoc("drop_down_form_field2.odt");
     pXTextDocument->setClientVisibleArea(tools::Rectangle(0, 0, 10000, 4000));
@@ -3232,7 +3064,7 @@ void SwTiledRenderingTest::testDropDownFormFieldButtonEditing()
     }
 }
 
-void SwTiledRenderingTest::testDropDownFormFieldButtonNoSelection()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testDropDownFormFieldButtonNoSelection)
 {
     SwXTextDocument* pXTextDocument = createDoc("drop_down_form_field_noselection.odt");
     pXTextDocument->setClientVisibleArea(tools::Rectangle(0, 0, 10000, 4000));
@@ -3285,7 +3117,7 @@ static void lcl_extractHandleParameters(std::string_view selection, sal_Int32& i
     y = handle0.get_child("point").get_child("y").get_value<int>();
 }
 
-void SwTiledRenderingTest::testMoveShapeHandle()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testMoveShapeHandle)
 {
     comphelper::LibreOfficeKit::setActive();
     SwXTextDocument* pXTextDocument = createDoc("shape.fodt");
@@ -3318,7 +3150,7 @@ void SwTiledRenderingTest::testMoveShapeHandle()
     }
 }
 
-void SwTiledRenderingTest::testDropDownFormFieldButtonNoItem()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testDropDownFormFieldButtonNoItem)
 {
     SwXTextDocument* pXTextDocument = createDoc("drop_down_form_field_noitem.odt");
     pXTextDocument->setClientVisibleArea(tools::Rectangle(0, 0, 10000, 4000));
@@ -3356,7 +3188,7 @@ void SwTiledRenderingTest::testDropDownFormFieldButtonNoItem()
     }
 }
 
-void SwTiledRenderingTest::testTablePaintInvalidate()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testTablePaintInvalidate)
 {
     // Load a document with a table in it.
     SwXTextDocument* pXTextDocument = createDoc("table-paint-invalidate.odt");
@@ -3387,7 +3219,7 @@ void SwTiledRenderingTest::testTablePaintInvalidate()
     CPPUNIT_ASSERT_EQUAL(0, m_nInvalidations);
 }
 
-void SwTiledRenderingTest::testSpellOnlineRenderParameter()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testSpellOnlineRenderParameter)
 {
     SwXTextDocument* pXTextDocument = createDoc("dummy.fodt");
     SwWrtShell* pWrtShell = pXTextDocument->GetDocShell()->GetWrtShell();
@@ -3402,7 +3234,7 @@ void SwTiledRenderingTest::testSpellOnlineRenderParameter()
     CPPUNIT_ASSERT_EQUAL(!bSet, pOpt->IsOnlineSpell());
 }
 
-void SwTiledRenderingTest::testExtTextInputReadOnly()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testExtTextInputReadOnly)
 {
     // Create a document with a protected section + a normal paragraph after it.
     SwXTextDocument* pXTextDocument = createDoc();
@@ -3442,7 +3274,7 @@ void SwTiledRenderingTest::testExtTextInputReadOnly()
     CPPUNIT_ASSERT_EQUAL(OUString("x"), getParagraph(2)->getString());
 }
 
-void SwTiledRenderingTest::testBulletDeleteInvalidation()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testBulletDeleteInvalidation)
 {
     // Given a document with 3 paragraphs: first 2 is bulleted, the last is not.
     SwXTextDocument* pXTextDocument = createDoc();
@@ -3474,7 +3306,7 @@ void SwTiledRenderingTest::testBulletDeleteInvalidation()
     CPPUNIT_ASSERT(!aFirstTextRect.Overlaps(m_aInvalidations));
 }
 
-void SwTiledRenderingTest::testBulletNoNumInvalidation()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testBulletNoNumInvalidation)
 {
     // Given a document with 3 paragraphs: all are bulleted.
     SwXTextDocument* pXTextDocument = createDoc();
@@ -3506,7 +3338,7 @@ void SwTiledRenderingTest::testBulletNoNumInvalidation()
     CPPUNIT_ASSERT(!aFirstTextRect.Overlaps(m_aInvalidations));
 }
 
-void SwTiledRenderingTest::testBulletMultiDeleteInvalidation()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testBulletMultiDeleteInvalidation)
 {
     // Given a document with 5 paragraphs: all are bulleted.
     SwXTextDocument* pXTextDocument = createDoc();
@@ -3542,7 +3374,7 @@ void SwTiledRenderingTest::testBulletMultiDeleteInvalidation()
     CPPUNIT_ASSERT(!aFirstTextRect.Overlaps(m_aInvalidations));
 }
 
-void SwTiledRenderingTest::testCondCollCopy()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testCondCollCopy)
 {
     // Given a document with a custom Text Body cond style:
     SwXTextDocument* pXTextDocument = createDoc("cond-coll-copy.odt");
@@ -3564,7 +3396,7 @@ void SwTiledRenderingTest::testCondCollCopy()
     xTransferable->getTransferData(aFlavor);
 }
 
-void SwTiledRenderingTest::testRedlinePortions()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testRedlinePortions)
 {
     // Given a document with 3 portions: before insert redline (foo), the insert redline (ins) and after insert
     // redline (bar):
@@ -3601,7 +3433,7 @@ void SwTiledRenderingTest::testRedlinePortions()
     assertXPath(pXmlDoc, "//SwParaPortion/SwLineLayout/SwLinePortion[4]", "portion", " after");
 }
 
-void SwTiledRenderingTest::testContentControl()
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testContentControl)
 {
     // Given a document with a content control:
     SwXTextDocument* pXTextDocument = createDoc("content-control.odt");
@@ -3637,7 +3469,201 @@ void SwTiledRenderingTest::testContentControl()
     CPPUNIT_ASSERT_EQUAL(OString("hide"), sAction);
 }
 
-CPPUNIT_TEST_SUITE_REGISTRATION(SwTiledRenderingTest);
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testDropDownContentControl)
+{
+    // Given a document with a dropdown content control:
+    SwXTextDocument* pXTextDocument = createDoc();
+    SwWrtShell* pWrtShell = pXTextDocument->GetDocShell()->GetWrtShell();
+    setupLibreOfficeKitViewCallback(pWrtShell->GetSfxViewShell());
+    uno::Reference<lang::XMultiServiceFactory> xMSF(mxComponent, uno::UNO_QUERY);
+    uno::Reference<text::XTextDocument> xTextDocument(mxComponent, uno::UNO_QUERY);
+    uno::Reference<text::XText> xText = xTextDocument->getText();
+    uno::Reference<text::XTextCursor> xCursor = xText->createTextCursor();
+    xText->insertString(xCursor, "choose an item", /*bAbsorb=*/false);
+    xCursor->gotoStart(/*bExpand=*/false);
+    xCursor->gotoEnd(/*bExpand=*/true);
+    uno::Reference<text::XTextContent> xContentControl(
+        xMSF->createInstance("com.sun.star.text.ContentControl"), uno::UNO_QUERY);
+    uno::Reference<beans::XPropertySet> xContentControlProps(xContentControl, uno::UNO_QUERY);
+    {
+        uno::Sequence<beans::PropertyValues> aListItems = {
+            {
+                comphelper::makePropertyValue("DisplayText", uno::Any(OUString("red"))),
+                comphelper::makePropertyValue("Value", uno::Any(OUString("R"))),
+            },
+            {
+                comphelper::makePropertyValue("DisplayText", uno::Any(OUString("green"))),
+                comphelper::makePropertyValue("Value", uno::Any(OUString("G"))),
+            },
+            {
+                comphelper::makePropertyValue("DisplayText", uno::Any(OUString("blue"))),
+                comphelper::makePropertyValue("Value", uno::Any(OUString("B"))),
+            },
+        };
+        xContentControlProps->setPropertyValue("ListItems", uno::Any(aListItems));
+    }
+    xText->insertTextContent(xCursor, xContentControl, /*bAbsorb=*/true);
+    pWrtShell->SttEndDoc(/*bStt=*/true);
+    m_aContentControl.clear();
+
+    // When entering that content control:
+    pWrtShell->Right(CRSR_SKIP_CHARS, /*bSelect=*/false, /*nCount=*/1, /*bBasicCall=*/false);
+
+    // Then make sure that the callback is emitted:
+    CPPUNIT_ASSERT(!m_aContentControl.isEmpty());
+    {
+        std::stringstream aStream(m_aContentControl.getStr());
+        boost::property_tree::ptree aTree;
+        boost::property_tree::read_json(aStream, aTree);
+        OString sAction = aTree.get_child("action").get_value<std::string>().c_str();
+        CPPUNIT_ASSERT_EQUAL(OString("show"), sAction);
+        OString sRectangles = aTree.get_child("rectangles").get_value<std::string>().c_str();
+        CPPUNIT_ASSERT(!sRectangles.isEmpty());
+        boost::optional<boost::property_tree::ptree&> oItems = aTree.get_child_optional("items");
+        CPPUNIT_ASSERT(oItems);
+        static const std::vector<std::string> vExpected = { "red", "green", "blue" };
+        size_t i = 0;
+        for (const auto& rItem : *oItems)
+        {
+            CPPUNIT_ASSERT_EQUAL(vExpected[i++], rItem.second.get_value<std::string>());
+        }
+    }
+
+    // And when selecting the 2nd item (green):
+    std::map<OUString, OUString> aArguments;
+    aArguments.emplace("type", "drop-down");
+    aArguments.emplace("selected", "1");
+    pXTextDocument->executeContentControlEvent(aArguments);
+
+    // Then make sure that the document is updated accordingly:
+    SwTextNode* pTextNode = pWrtShell->GetCursor()->GetNode().GetTextNode();
+    // Without the accompanying fix in place, this test would have failed with:
+    // - Expected: green
+    // - Actual  : choose an item
+    // i.e. the document text was not updated.
+    CPPUNIT_ASSERT_EQUAL(OUString("green"), pTextNode->GetExpandText(pWrtShell->GetLayout()));
+}
+
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testPictureContentControl)
+{
+    // Given a document with a picture content control:
+    SwXTextDocument* pXTextDocument = createDoc();
+    SwWrtShell* pWrtShell = pXTextDocument->GetDocShell()->GetWrtShell();
+    setupLibreOfficeKitViewCallback(pWrtShell->GetSfxViewShell());
+    uno::Reference<lang::XMultiServiceFactory> xMSF(mxComponent, uno::UNO_QUERY);
+    uno::Reference<text::XTextDocument> xTextDocument(mxComponent, uno::UNO_QUERY);
+    uno::Reference<text::XText> xText = xTextDocument->getText();
+    uno::Reference<text::XTextCursor> xCursor = xText->createTextCursor();
+    uno::Reference<beans::XPropertySet> xTextGraphic(
+        xMSF->createInstance("com.sun.star.text.TextGraphicObject"), uno::UNO_QUERY);
+    xTextGraphic->setPropertyValue("AnchorType",
+                                   uno::Any(text::TextContentAnchorType_AS_CHARACTER));
+    uno::Reference<text::XTextContent> xTextContent(xTextGraphic, uno::UNO_QUERY);
+    xText->insertTextContent(xCursor, xTextContent, false);
+    xCursor->gotoStart(/*bExpand=*/false);
+    xCursor->gotoEnd(/*bExpand=*/true);
+    uno::Reference<text::XTextContent> xContentControl(
+        xMSF->createInstance("com.sun.star.text.ContentControl"), uno::UNO_QUERY);
+    uno::Reference<beans::XPropertySet> xContentControlProps(xContentControl, uno::UNO_QUERY);
+    xContentControlProps->setPropertyValue("ShowingPlaceHolder", uno::Any(true));
+    xContentControlProps->setPropertyValue("Picture", uno::Any(true));
+    xText->insertTextContent(xCursor, xContentControl, /*bAbsorb=*/true);
+    pWrtShell->SttEndDoc(/*bStt=*/true);
+    m_aContentControl.clear();
+
+    // When clicking on that content control:
+    pWrtShell->GotoObj(/*bNext=*/true, GotoObjFlags::Any);
+    pWrtShell->EnterSelFrameMode();
+    const SwFrameFormat* pFlyFormat = pWrtShell->GetFlyFrameFormat();
+    const SwFormatAnchor& rFormatAnchor = pFlyFormat->GetAnchor();
+    const SwPosition* pAnchorPos = rFormatAnchor.GetContentAnchor();
+    SwTextNode* pTextNode = pAnchorPos->nNode.GetNode().GetTextNode();
+    SwTextAttr* pAttr = pTextNode->GetTextAttrForCharAt(0, RES_TXTATR_CONTENTCONTROL);
+    auto pTextContentControl = static_txtattr_cast<SwTextContentControl*>(pAttr);
+    auto& rFormatContentControl
+        = static_cast<SwFormatContentControl&>(pTextContentControl->GetAttr());
+    pWrtShell->GotoContentControl(rFormatContentControl);
+
+    // Then make sure that the callback is emitted:
+    // Without the accompanying fix in place, this test would have failed, no callback was emitted.
+    CPPUNIT_ASSERT(!m_aContentControl.isEmpty());
+    std::stringstream aStream(m_aContentControl.getStr());
+    boost::property_tree::ptree aTree;
+    boost::property_tree::read_json(aStream, aTree);
+    OString sAction = aTree.get_child("action").get_value<std::string>().c_str();
+    CPPUNIT_ASSERT_EQUAL(OString("change-picture"), sAction);
+
+    // And when replacing the image:
+    std::map<OUString, OUString> aArguments;
+    aArguments.emplace("type", "picture");
+    OUString aURL = m_directories.getURLFromSrc(u"sw/qa/extras/uiwriter/data/ole2.png");
+    aArguments.emplace("changed", aURL);
+    pXTextDocument->executeContentControlEvent(aArguments);
+
+    // Then make sure that the document is updated accordingly:
+    uno::Reference<drawing::XShape> xShape = getShape(1);
+    auto xGraphic = getProperty<uno::Reference<beans::XPropertySet>>(xShape, "Graphic");
+    // Without the accompanying fix in place, this test would have failed, xGraphic was empty after
+    // executeContentControlEvent().
+    CPPUNIT_ASSERT(xGraphic.is());
+    CPPUNIT_ASSERT_EQUAL(OUString("image/png"), getProperty<OUString>(xGraphic, "MimeType"));
+
+}
+
+CPPUNIT_TEST_FIXTURE(SwTiledRenderingTest, testDateContentControl)
+{
+    // Given a document with a date content control:
+    SwXTextDocument* pXTextDocument = createDoc();
+    SwWrtShell* pWrtShell = pXTextDocument->GetDocShell()->GetWrtShell();
+    setupLibreOfficeKitViewCallback(pWrtShell->GetSfxViewShell());
+    uno::Reference<lang::XMultiServiceFactory> xMSF(mxComponent, uno::UNO_QUERY);
+    uno::Reference<text::XTextDocument> xTextDocument(mxComponent, uno::UNO_QUERY);
+    uno::Reference<text::XText> xText = xTextDocument->getText();
+    uno::Reference<text::XTextCursor> xCursor = xText->createTextCursor();
+    xText->insertString(xCursor, "choose a date", /*bAbsorb=*/false);
+    xCursor->gotoStart(/*bExpand=*/false);
+    xCursor->gotoEnd(/*bExpand=*/true);
+    uno::Reference<text::XTextContent> xContentControl(
+        xMSF->createInstance("com.sun.star.text.ContentControl"), uno::UNO_QUERY);
+    uno::Reference<beans::XPropertySet> xContentControlProps(xContentControl, uno::UNO_QUERY);
+    xContentControlProps->setPropertyValue("Date", uno::Any(true));
+    xContentControlProps->setPropertyValue("DateFormat", uno::Any(OUString("YYYY-MM-DD")));
+    xContentControlProps->setPropertyValue("DateLanguage", uno::Any(OUString("en-US")));
+    xText->insertTextContent(xCursor, xContentControl, /*bAbsorb=*/true);
+    pWrtShell->SttEndDoc(/*bStt=*/true);
+    m_aContentControl.clear();
+
+    // When entering that content control:
+    pWrtShell->Right(CRSR_SKIP_CHARS, /*bSelect=*/false, /*nCount=*/1, /*bBasicCall=*/false);
+
+    // Then make sure that the callback is emitted:
+    CPPUNIT_ASSERT(!m_aContentControl.isEmpty());
+    {
+        std::stringstream aStream(m_aContentControl.getStr());
+        boost::property_tree::ptree aTree;
+        boost::property_tree::read_json(aStream, aTree);
+        OString sAction = aTree.get_child("action").get_value<std::string>().c_str();
+        CPPUNIT_ASSERT_EQUAL(OString("show"), sAction);
+        OString sRectangles = aTree.get_child("rectangles").get_value<std::string>().c_str();
+        CPPUNIT_ASSERT(!sRectangles.isEmpty());
+        boost::optional<boost::property_tree::ptree&> oDate = aTree.get_child_optional("date");
+        CPPUNIT_ASSERT(oDate);
+    }
+
+    // And when selecting a date:
+    std::map<OUString, OUString> aArguments;
+    aArguments.emplace("type", "date");
+    aArguments.emplace("selected", "2022-05-30T00:00:00Z");
+    pXTextDocument->executeContentControlEvent(aArguments);
+
+    // Then make sure that the document is updated accordingly:
+    SwTextNode* pTextNode = pWrtShell->GetCursor()->GetNode().GetTextNode();
+    // Without the accompanying fix in place, this test would have failed with:
+    // - Expected: 2022-05-30
+    // - Actual  : choose a date
+    // i.e. the document text was not updated.
+    CPPUNIT_ASSERT_EQUAL(OUString("2022-05-30"), pTextNode->GetExpandText(pWrtShell->GetLayout()));
+}
 
 CPPUNIT_PLUGIN_IMPLEMENT();
 

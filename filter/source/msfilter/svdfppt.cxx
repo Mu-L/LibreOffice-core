@@ -20,6 +20,7 @@
 #include <sal/config.h>
 
 #include <osl/endian.h>
+#include <utility>
 #include <vcl/svapp.hxx>
 #include <unotools/tempfile.hxx>
 #include <tools/diagnose_ex.h>
@@ -124,7 +125,6 @@
 
 #include <algorithm>
 #include <cassert>
-#include <utility>
 #include <rtl/strbuf.hxx>
 #include <tools/time.hxx>
 #include <memory>
@@ -3188,9 +3188,9 @@ void SdrEscherImport::ImportHeaderFooterContainer( DffRecordHeader const & rHd, 
     }
 }
 
-PPTBuGraEntry::PPTBuGraEntry( Graphic const & rGraphic, sal_uInt32 nInst ) :
+PPTBuGraEntry::PPTBuGraEntry( Graphic aGraphic, sal_uInt32 nInst ) :
     nInstance       ( nInst ),
-    aBuGra          ( rGraphic )  {}
+    aBuGra          (std::move( aGraphic ))  {}
 
 PPTExtParaLevel::PPTExtParaLevel()
 : mnExtParagraphMask( 0 )

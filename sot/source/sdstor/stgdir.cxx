@@ -28,6 +28,7 @@
 #include <sal/log.hxx>
 
 #include <memory>
+#include <utility>
 
 //////////////////////////// class StgDirEntry
 
@@ -52,7 +53,7 @@ StgDirEntry::StgDirEntry( const void* pBuffer, sal_uInt32 nBufferLen, sal_uInt64
     InitMembers();
 }
 
-StgDirEntry::StgDirEntry( const StgEntry& r ) :  m_aEntry( r )
+StgDirEntry::StgDirEntry( StgEntry r ) :  m_aEntry(std::move( r ))
 {
     InitMembers();
 }
@@ -705,7 +706,8 @@ StgDirStrm::StgDirStrm( StgIo& r )
     {
         StgEntry aRoot;
         aRoot.Init();
-        aRoot.SetName( "Root Entry" );
+        static constexpr OUStringLiteral sRootEntry = u"Root Entry";
+        aRoot.SetName( sRootEntry );
         aRoot.SetType( STG_ROOT );
         m_pRoot = new StgDirEntry( aRoot );
         m_pRoot->SetDirty();

@@ -35,6 +35,7 @@
 #include <com/sun/star/uno/XCurrentContext.hpp>
 #include <com/sun/star/uno/XInterface.hpp>
 #include <cppu/unotype.hxx>
+#include <o3tl/safeint.hxx>
 #include <rtl/byteseq.h>
 #include <rtl/ustring.hxx>
 #include <sal/log.hxx>
@@ -70,11 +71,11 @@ css::uno::Sequence< sal_Int8 > read(
     if (n == 0 && eofOk) {
         return css::uno::Sequence< sal_Int8 >();
     }
-    if (n != static_cast< sal_Int32 >(size)) {
+    if (o3tl::make_unsigned(n) != size) {
         throw css::io::IOException(
             "binaryurp::Reader: premature end of input");
     }
-    assert(buf.getLength() == static_cast< sal_Int32 >(size));
+    assert(o3tl::make_unsigned(buf.getLength()) == size);
     return buf;
 }
 

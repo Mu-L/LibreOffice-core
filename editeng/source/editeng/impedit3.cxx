@@ -69,6 +69,7 @@
 #include <o3tl/sorted_vector.hxx>
 #include <osl/diagnose.h>
 #include <comphelper/string.hxx>
+#include <cstddef>
 #include <memory>
 #include <set>
 
@@ -376,9 +377,11 @@ void ImpEditEngine::FormatDoc()
 
     // Here already, so that not always in CreateLines...
     bool bMapChanged = ImpCheckRefMapMode();
-    std::set<sal_Int32> aRepaintParas;
+    sal_Int32 nParaCount = GetParaPortions().Count();
+    o3tl::sorted_vector<sal_Int32> aRepaintParas;
+    aRepaintParas.reserve(nParaCount);
 
-    for ( sal_Int32 nPara = 0; nPara < GetParaPortions().Count(); nPara++ )
+    for ( sal_Int32 nPara = 0; nPara < nParaCount; nPara++ )
     {
         ParaPortion* pParaPortion = GetParaPortions()[nPara];
         if ( pParaPortion->MustRepaint() || ( pParaPortion->IsInvalid() && pParaPortion->IsVisible() ) )
@@ -2410,7 +2413,7 @@ void ImpEditEngine::CreateTextPortions( ParaPortion* pParaPortion, sal_Int32& rS
     o3tl::sorted_vector< sal_Int32 > aPositions;
     aPositions.insert( 0 );
 
-    for (sal_uInt16 nAttr = 0;; ++nAttr)
+    for (std::size_t nAttr = 0;; ++nAttr)
     {
         // Insert Start and End into the Array...
         // The Insert method does not allow for duplicate values...

@@ -75,6 +75,7 @@
 #include <scopetools.hxx>
 
 #include <com/sun/star/i18n/DirectionProperty.hpp>
+#include <comphelper/scopeguard.hxx>
 #include <comphelper/string.hxx>
 
 #include <memory>
@@ -593,7 +594,7 @@ void ScDrawStringsVars::RepeatToFill( tools::Long nColWidth )
     sal_Int32 nCharsToInsert = nSpaceToFill / nCharWidth;
     OUStringBuffer aFill(nCharsToInsert);
     comphelper::string::padToLength(aFill, nCharsToInsert, nRepeatChar);
-    aString = aString.replaceAt( nRepeatPos, 0, aFill.makeStringAndClear() );
+    aString = aString.replaceAt( nRepeatPos, 0, aFill );
     TextChanged();
 }
 
@@ -1472,6 +1473,12 @@ void ScOutputData::DrawStrings( bool bPixelToLogic )
 
 tools::Rectangle ScOutputData::LayoutStrings(bool bPixelToLogic, bool bPaint, const ScAddress &rAddress)
 {
+    bool bOrigIsInLayoutStrings = mpDoc->IsInLayoutStrings();
+    mpDoc->SetLayoutStrings(true);
+    comphelper::ScopeGuard g([this, bOrigIsInLayoutStrings] {
+        mpDoc->SetLayoutStrings(bOrigIsInLayoutStrings);
+    });
+
     OSL_ENSURE( mpDev == mpRefDevice ||
                 mpDev->GetMapMode().GetMapUnit() == mpRefDevice->GetMapMode().GetMapUnit(),
                 "LayoutStrings: different MapUnits ?!?!" );

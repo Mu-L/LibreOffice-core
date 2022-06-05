@@ -20,6 +20,8 @@
 #include <sal/config.h>
 
 #include <o3tl/any.hxx>
+#include <o3tl/safeint.hxx>
+#include <utility>
 #include <vcl/svapp.hxx>
 #include <vcl/errcode.hxx>
 #include <svl/hint.hxx>
@@ -1533,7 +1535,7 @@ static Any invokeAutomationMethod( const OUString& Name, Sequence< Any > const &
         for( sal_uInt32 j = 0 ; j < nLen ; j++ )
         {
             sal_Int16 iTarget = pIndices[ j ];
-            if( iTarget >= static_cast<sal_Int16>(nParamCount) )
+            if( o3tl::make_unsigned(iTarget) >= nParamCount )
                 break;
             unoToSbxValue(pParams->Get(j + 1), pNewValues[j]);
         }
@@ -2563,13 +2565,13 @@ SbUnoProperty::SbUnoProperty
     const OUString& aName_,
     SbxDataType eSbxType,
     SbxDataType eRealSbxType,
-    const Property& aUnoProp_,
+    Property aUnoProp_,
     sal_Int32 nId_,
     bool bInvocation,
     bool bUnoStruct
 )
     : SbxProperty( aName_, eSbxType )
-    , aUnoProp( aUnoProp_ )
+    , aUnoProp(std::move( aUnoProp_ ))
     , nId( nId_ )
     , mbInvocation( bInvocation )
     , mRealType( eRealSbxType )
@@ -3781,7 +3783,7 @@ public:
     SbxObjectRef    xSbxObj;
     OUString        aPrefixName;
 
-    explicit BasicAllListener_Impl( const OUString& aPrefixName );
+    explicit BasicAllListener_Impl( OUString aPrefixName );
 
     // Methods of XAllListener
     virtual void SAL_CALL firing(const AllEventObject& Event) override;
@@ -3793,8 +3795,8 @@ public:
 
 }
 
-BasicAllListener_Impl::BasicAllListener_Impl(const OUString& aPrefixName_)
-    : aPrefixName( aPrefixName_ )
+BasicAllListener_Impl::BasicAllListener_Impl(OUString aPrefixName_)
+    : aPrefixName(std::move( aPrefixName_ ))
 {
 }
 
@@ -3879,7 +3881,7 @@ class InvocationToAllListenerMapper : public WeakImplHelper< XInvocation >
 {
 public:
     InvocationToAllListenerMapper( const Reference< XIdlClass >& ListenerType,
-        const Reference< XAllListener >& AllListener, const Any& Helper );
+        const Reference< XAllListener >& AllListener, Any Helper );
 
     // XInvocation
     virtual Reference< XIntrospectionAccess > SAL_CALL getIntrospection() override;
@@ -3920,10 +3922,10 @@ static Reference< XInterface > createAllListenerAdapter
 
 // InvocationToAllListenerMapper
 InvocationToAllListenerMapper::InvocationToAllListenerMapper
-    ( const Reference< XIdlClass >& ListenerType, const Reference< XAllListener >& AllListener, const Any& Helper )
+    ( const Reference< XIdlClass >& ListenerType, const Reference< XAllListener >& AllListener, Any Helper )
         : m_xAllListener( AllListener )
         , m_xListenerType( ListenerType )
-        , m_Helper( Helper )
+        , m_Helper(std::move( Helper ))
 {
 }
 
@@ -4629,7 +4631,7 @@ TypeClass StructRefInfo::getTypeClass() const
     return maType.getTypeClass();
 }
 
-SbUnoStructRefObject::SbUnoStructRefObject( const OUString& aName_, const StructRefInfo& rMemberInfo ) :  SbxObject( aName_ ), maMemberInfo( rMemberInfo ), mbMemberCacheInit( false )
+SbUnoStructRefObject::SbUnoStructRefObject( const OUString& aName_, StructRefInfo aMemberInfo ) :  SbxObject( aName_ ), maMemberInfo(std::move( aMemberInfo )), mbMemberCacheInit( false )
 {
    SetClassName( maMemberInfo.getTypeName() );
 }

@@ -24,11 +24,18 @@
 #include <sal/log.hxx>
 #include <comphelper/propertyvalue.hxx>
 #include <comphelper/sequenceashashmap.hxx>
+#include <svl/numformat.hxx>
 
 #include <ndtxt.hxx>
 #include <textcontentcontrol.hxx>
+#include <doc.hxx>
 
 using namespace com::sun::star;
+
+namespace
+{
+inline constexpr OUStringLiteral CURRENT_DATE_FORMAT = u"YYYY-MM-DD";
+}
 
 SwFormatContentControl* SwFormatContentControl::CreatePoolDefault(sal_uInt16 nWhich)
 {
@@ -207,6 +214,93 @@ void SwContentControl::SwClientNotify(const SwModify&, const SfxHint& rHint)
     }
 }
 
+OUString SwContentControl::GetDateString() const
+{
+    SwDoc& rDoc = m_pTextNode->GetDoc();
+    SvNumberFormatter* pNumberFormatter = rDoc.GetNumberFormatter();
+    sal_uInt32 nFormat = pNumberFormatter->GetEntryKey(
+        m_aDateFormat, LanguageTag(m_aDateLanguage).getLanguageType());
+
+    if (nFormat == NUMBERFORMAT_ENTRY_NOT_FOUND)
+    {
+        // If not found, then create it.
+        sal_Int32 nCheckPos = 0;
+        SvNumFormatType nType;
+        OUString aFormat = m_aDateFormat;
+        pNumberFormatter->PutEntry(aFormat, nCheckPos, nType, nFormat,
+                                   LanguageTag(m_aDateLanguage).getLanguageType());
+    }
+
+    const Color* pColor = nullptr;
+    OUString aFormatted;
+    if (!m_oSelectedDate)
+    {
+        return OUString();
+    }
+
+    if (nFormat == NUMBERFORMAT_ENTRY_NOT_FOUND)
+    {
+        return OUString();
+    }
+
+    pNumberFormatter->GetOutputString(*m_oSelectedDate, nFormat, aFormatted, &pColor, false);
+    return aFormatted;
+}
+
+void SwContentControl::SetCurrentDateValue(double fCurrentDate)
+{
+    SwDoc& rDoc = m_pTextNode->GetDoc();
+    SvNumberFormatter* pNumberFormatter = rDoc.GetNumberFormatter();
+    OUString aFormatted;
+    sal_uInt32 nFormat = pNumberFormatter->GetEntryKey(CURRENT_DATE_FORMAT, LANGUAGE_ENGLISH_US);
+    if (nFormat == NUMBERFORMAT_ENTRY_NOT_FOUND)
+    {
+        // If not found, then create it.
+        sal_Int32 nCheckPos = 0;
+        SvNumFormatType nType;
+        OUString sFormat = CURRENT_DATE_FORMAT;
+        pNumberFormatter->PutEntry(sFormat, nCheckPos, nType, nFormat, LANGUAGE_ENGLISH_US);
+    }
+
+    if (nFormat == NUMBERFORMAT_ENTRY_NOT_FOUND)
+    {
+        return;
+    }
+
+    const Color* pColor = nullptr;
+    pNumberFormatter->GetOutputString(fCurrentDate, nFormat, aFormatted, &pColor, false);
+    m_aCurrentDate = aFormatted + "T00:00:00Z";
+}
+
+double SwContentControl::GetCurrentDateValue() const
+{
+    if (m_aCurrentDate.isEmpty())
+    {
+        return 0;
+    }
+
+    SwDoc& rDoc = m_pTextNode->GetDoc();
+    SvNumberFormatter* pNumberFormatter = rDoc.GetNumberFormatter();
+    sal_uInt32 nFormat = pNumberFormatter->GetEntryKey(CURRENT_DATE_FORMAT, LANGUAGE_ENGLISH_US);
+    if (nFormat == NUMBERFORMAT_ENTRY_NOT_FOUND)
+    {
+        sal_Int32 nCheckPos = 0;
+        SvNumFormatType nType;
+        OUString sFormat = CURRENT_DATE_FORMAT;
+        pNumberFormatter->PutEntry(sFormat, nCheckPos, nType, nFormat, LANGUAGE_ENGLISH_US);
+    }
+
+    if (nFormat == NUMBERFORMAT_ENTRY_NOT_FOUND)
+    {
+        return 0;
+    }
+
+    double dCurrentDate = 0;
+    OUString aCurrentDate = m_aCurrentDate.replaceAll("T00:00:00Z", "");
+    (void)pNumberFormatter->IsNumberFormat(aCurrentDate, nFormat, dCurrentDate);
+    return dCurrentDate;
+}
+
 void SwContentControl::dumpAsXml(xmlTextWriterPtr pWriter) const
 {
     (void)xmlTextWriterStartElement(pWriter, BAD_CAST("SwContentControl"));
@@ -222,6 +316,26 @@ void SwContentControl::dumpAsXml(xmlTextWriterPtr pWriter) const
                                             BAD_CAST(m_aCheckedState.toUtf8().getStr()));
     (void)xmlTextWriterWriteFormatAttribute(pWriter, BAD_CAST("unchecked-state"), "%s",
                                             BAD_CAST(m_aUncheckedState.toUtf8().getStr()));
+    (void)xmlTextWriterWriteAttribute(pWriter, BAD_CAST("picture"),
+                                      BAD_CAST(OString::boolean(m_bPicture).getStr()));
+    (void)xmlTextWriterWriteAttribute(pWriter, BAD_CAST("date"),
+                                      BAD_CAST(OString::boolean(m_bDate).getStr()));
+    (void)xmlTextWriterWriteAttribute(pWriter, BAD_CAST("date-format"),
+                                      BAD_CAST(m_aDateFormat.toUtf8().getStr()));
+    (void)xmlTextWriterWriteAttribute(pWriter, BAD_CAST("date-language"),
+                                      BAD_CAST(m_aDateLanguage.toUtf8().getStr()));
+    (void)xmlTextWriterWriteAttribute(pWriter, BAD_CAST("current-date"),
+                                      BAD_CAST(m_aCurrentDate.toUtf8().getStr()));
+    (void)xmlTextWriterWriteAttribute(pWriter, BAD_CAST("placeholder-doc-part"),
+                                      BAD_CAST(m_aPlaceholderDocPart.toUtf8().getStr()));
+    (void)xmlTextWriterWriteAttribute(pWriter, BAD_CAST("data-binding-prefix-mappings"),
+                                      BAD_CAST(m_aDataBindingPrefixMappings.toUtf8().getStr()));
+    (void)xmlTextWriterWriteAttribute(pWriter, BAD_CAST("data-binding-xpath"),
+                                      BAD_CAST(m_aDataBindingXpath.toUtf8().getStr()));
+    (void)xmlTextWriterWriteAttribute(pWriter, BAD_CAST("data-binding-store-item-id"),
+                                      BAD_CAST(m_aDataBindingStoreItemID.toUtf8().getStr()));
+    (void)xmlTextWriterWriteAttribute(pWriter, BAD_CAST("color"),
+                                      BAD_CAST(m_aColor.toUtf8().getStr()));
 
     if (!m_aListItems.empty())
     {
@@ -244,6 +358,21 @@ void SwContentControlListItem::dumpAsXml(xmlTextWriterPtr pWriter) const
                                       BAD_CAST(m_aValue.toUtf8().getStr()));
 
     (void)xmlTextWriterEndElement(pWriter);
+}
+
+OUString SwContentControlListItem::ToString() const
+{
+    if (!m_aDisplayText.isEmpty())
+    {
+        return m_aDisplayText;
+    }
+
+    return m_aValue;
+}
+
+bool SwContentControlListItem::operator==(const SwContentControlListItem& rOther) const
+{
+    return m_aDisplayText == rOther.m_aDisplayText && m_aValue == rOther.m_aValue;
 }
 
 void SwContentControlListItem::ItemsToAny(const std::vector<SwContentControlListItem>& rItems,

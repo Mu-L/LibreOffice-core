@@ -26,6 +26,9 @@
 #include <TextLayoutCache.hxx>
 #include <officecfg/Office/Common.hxx>
 
+#include <unicode/ubidi.h>
+#include <unicode/uchar.h>
+
 // These need being explicit because of SalLayoutGlyphsImpl being private in vcl.
 SalLayoutGlyphs::SalLayoutGlyphs() {}
 
@@ -98,11 +101,19 @@ SalLayoutGlyphsImpl* SalLayoutGlyphsImpl::cloneCharRange(sal_Int32 index, sal_In
     copy->SetFlags(GetFlags());
     if (empty())
         return copy.release();
+    bool rtl = front().IsRTLGlyph();
+    // Avoid mixing LTR/RTL or layouts that do not have it set explicitly (BiDiStrong). Otherwise
+    // the subset may not quite match what would a real layout call give (e.g. some characters with neutral
+    // direction such as space might have different LTR/RTL flag). It seems bailing out here mostly
+    // avoid relatively rare corner cases and doesn't matter for performance.
+    // This is also checked in SalLayoutGlyphsCache::GetLayoutGlyphs() below.
+    if (!(GetFlags() & SalLayoutFlags::BiDiStrong)
+        || rtl != bool(GetFlags() & SalLayoutFlags::BiDiRtl))
+        return nullptr;
     copy->reserve(std::min<size_t>(size(), length));
     sal_Int32 beginPos = index;
     sal_Int32 endPos = index + length;
     const_iterator pos;
-    bool rtl = front().IsRTLGlyph();
     if (rtl)
     {
         // Glyphs are in reverse order for RTL.
@@ -164,16 +175,6 @@ SalLayoutGlyphsImpl* SalLayoutGlyphsImpl::cloneCharRange(sal_Int32 index, sal_In
         if (!isSafeToBreak(pos, rtl))
             return nullptr;
     }
-    // HACK: If mode is se to be RTL, but the last glyph is a non-RTL space,
-    // then making a subset would give a different result than the actual layout,
-    // because the weak BiDi mode code in ImplLayoutArgs ctor would interpret
-    // the string subset ending with space as the space being RTL, but it would
-    // treat it as non-RTL for the whole string if there would be more non-RTL
-    // characters after the space. So bail out.
-    if (GetFlags() & SalLayoutFlags::BiDiRtl && !rtl && !copy->empty() && copy->back().IsSpacing())
-    {
-        return nullptr;
-    }
     return copy.release();
 }
 
@@ -229,6 +230,8 @@ bool SalLayoutGlyphsImpl::IsValid() const
     return true;
 }
 
+void SalLayoutGlyphsCache::clear() { mCachedGlyphs.clear(); }
+
 SalLayoutGlyphsCache* SalLayoutGlyphsCache::self()
 {
     static vcl::DeleteOnDeinit<SalLayoutGlyphsCache> cache(
@@ -238,16 +241,56 @@ SalLayoutGlyphsCache* SalLayoutGlyphsCache::self()
     return cache.get();
 }
 
+static UBiDiDirection getBiDiDirection(const OUString& text, sal_Int32 index, sal_Int32 len)
+{
+    // Return whether all character are LTR, RTL, neutral or whether it's mixed.
+    // This is sort of ubidi_getBaseDirection() and ubidi_getDirection(),
+    // but it's meant to be fast but also check all characters.
+    sal_Int32 end = index + len;
+    UBiDiDirection direction = UBIDI_NEUTRAL;
+    while (index < end)
+    {
+        switch (u_charDirection(text.iterateCodePoints(&index)))
+        {
+            // Only characters with strong direction.
+            case U_LEFT_TO_RIGHT:
+                if (direction == UBIDI_RTL)
+                    return UBIDI_MIXED;
+                direction = UBIDI_LTR;
+                break;
+            case U_RIGHT_TO_LEFT:
+            case U_RIGHT_TO_LEFT_ARABIC:
+                if (direction == UBIDI_LTR)
+                    return UBIDI_MIXED;
+                direction = UBIDI_RTL;
+                break;
+            default:
+                break;
+        }
+    }
+    return direction;
+}
+
 static SalLayoutGlyphs makeGlyphsSubset(const SalLayoutGlyphs& source,
-                                        const OutputDevice* outputDevice, std::u16string_view text,
+                                        const OutputDevice* outputDevice, const OUString& text,
                                         sal_Int32 index, sal_Int32 len)
 {
+    // tdf#149264: We need to check if the text is LTR, RTL or mixed. Apparently
+    // harfbuzz doesn't give reproducible results (or possibly HB_GLYPH_FLAG_UNSAFE_TO_BREAK
+    // is not reliable?) when asked to lay out RTL text as LTR. So require that the whole
+    // subset ir either LTR or RTL.
+    UBiDiDirection direction = getBiDiDirection(text, index, len);
+    if (direction == UBIDI_MIXED)
+        return SalLayoutGlyphs();
     SalLayoutGlyphs ret;
     for (int level = 0;; ++level)
     {
         const SalLayoutGlyphsImpl* sourceLevel = source.Impl(level);
         if (sourceLevel == nullptr)
             break;
+        bool sourceRtl = bool(sourceLevel->GetFlags() & SalLayoutFlags::BiDiRtl);
+        if ((direction == UBIDI_LTR && sourceRtl) || (direction == UBIDI_RTL && !sourceRtl))
+            return SalLayoutGlyphs();
         SalLayoutGlyphsImpl* cloned = sourceLevel->cloneCharRange(index, len);
         // If the glyphs range cannot be cloned, bail out.
         if (cloned == nullptr)
@@ -318,10 +361,12 @@ SalLayoutGlyphsCache::GetLayoutGlyphs(VclPtr<const OutputDevice> outputDevice, c
         // So in that case this is a cached failure.
         return nullptr;
     }
-    const SalLayoutFlags glyphItemsOnlyLayout = SalLayoutFlags::GlyphItemsOnly;
     bool resetLastSubstringKey = true;
     const sal_Unicode nbSpace = 0xa0; // non-breaking space
-    if (nIndex != 0 || nLen != text.getLength())
+    // SalLayoutGlyphsImpl::cloneCharRange() requires BiDiStrong, so if not set, do not even try.
+    bool skipGlyphSubsets
+        = !(outputDevice->GetLayoutMode() & vcl::text::ComplexTextLayoutFlags::BiDiStrong);
+    if ((nIndex != 0 || nLen != text.getLength()) && !skipGlyphSubsets)
     {
         // The glyphs functions are often called first for an entire string
         // and then with an increasing starting index until the end of the string.
@@ -392,7 +437,7 @@ SalLayoutGlyphsCache::GetLayoutGlyphs(VclPtr<const OutputDevice> outputDevice, c
                 // to make sure corner cases are handled well (see SalLayoutGlyphsImpl::cloneCharRange()).
                 std::unique_ptr<SalLayout> layout
                     = outputDevice->ImplLayout(text, nIndex, nLen, Point(0, 0), nLogicWidth, {},
-                                               glyphItemsOnlyLayout, layoutCache);
+                                               SalLayoutFlags::GlyphItemsOnly, layoutCache);
                 assert(layout);
                 checkGlyphsEqual(mLastTemporaryGlyphs, layout->GetGlyphs());
 #endif
@@ -415,8 +460,9 @@ SalLayoutGlyphsCache::GetLayoutGlyphs(VclPtr<const OutputDevice> outputDevice, c
         tmpLayoutCache = vcl::text::TextLayoutCache::Create(text);
         layoutCache = tmpLayoutCache.get();
     }
-    std::unique_ptr<SalLayout> layout = outputDevice->ImplLayout(
-        text, nIndex, nLen, Point(0, 0), nLogicWidth, {}, glyphItemsOnlyLayout, layoutCache);
+    std::unique_ptr<SalLayout> layout
+        = outputDevice->ImplLayout(text, nIndex, nLen, Point(0, 0), nLogicWidth, {},
+                                   SalLayoutFlags::GlyphItemsOnly, layoutCache);
     if (layout)
     {
         SalLayoutGlyphs glyphs = layout->GetGlyphs();
@@ -450,7 +496,7 @@ SalLayoutGlyphsCache::CachedGlyphsKey::CachedGlyphsKey(
     , logicWidth(w)
     // we also need to save things used in OutputDevice::ImplPrepareLayoutArgs(), in case they
     // change in the output device, plus mapMode affects the sizes.
-    , font(outputDevice->GetFont())
+    , fontMetric(outputDevice->GetFontMetric())
     // TODO It would be possible to get a better hit ratio if mapMode wasn't part of the key
     // and results that differ only in mapmode would have coordinates adjusted based on that.
     // That would occasionally lead to rounding errors (at least differences that would
@@ -471,7 +517,7 @@ SalLayoutGlyphsCache::CachedGlyphsKey::CachedGlyphsKey(
     o3tl::hash_combine(hashValue, outputDevice.get());
     // Need to use IgnoreColor, because sometimes the color changes, but it's irrelevant
     // for text layout (and also obsolete in vcl::Font).
-    o3tl::hash_combine(hashValue, font.GetHashValueIgnoreColor());
+    o3tl::hash_combine(hashValue, fontMetric.GetHashValueIgnoreColor());
     // For some reason font scale may differ even if vcl::Font is the same,
     // so explicitly check it too.
     o3tl::hash_combine(hashValue, fontScaleX);
@@ -488,7 +534,7 @@ inline bool SalLayoutGlyphsCache::CachedGlyphsKey::operator==(const CachedGlyphs
            && logicWidth == other.logicWidth && mapMode == other.mapMode && rtl == other.rtl
            && layoutMode == other.layoutMode && digitLanguage == other.digitLanguage
            && fontScaleX == other.fontScaleX && fontScaleY == other.fontScaleY
-           && font.EqualIgnoreColor(other.font)
+           && fontMetric.EqualIgnoreColor(other.fontMetric)
            && vcl::text::FastStringCompareEqual()(text, other.text);
     // Slower things last in the comparison.
 }

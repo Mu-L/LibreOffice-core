@@ -2569,6 +2569,11 @@ void SalInstanceNotebook::set_tab_label_text(const OString& rIdent, const OUStri
     return m_xNotebook->SetPageText(m_xNotebook->GetPageId(rIdent), rText);
 }
 
+void SalInstanceNotebook::set_show_tabs(bool bShow)
+{
+    m_xNotebook->set_property("show-tabs", OUString::boolean(bShow));
+}
+
 SalInstanceNotebook::~SalInstanceNotebook()
 {
     for (auto& rItem : m_aAddedPages)
@@ -2690,6 +2695,12 @@ public:
     virtual OUString get_tab_label_text(const OString& rIdent) const override
     {
         return m_xNotebook->GetPageText(rIdent);
+    }
+
+    virtual void set_show_tabs(bool /*bShow*/) override
+    {
+        // if someone needs this they will have to to implement it in VerticalTabControl
+        assert(false && "not implemented");
     }
 
     virtual ~SalInstanceVerticalNotebook() override
@@ -4437,7 +4448,7 @@ void SalInstanceTreeView::set_image(SvTreeListEntry* pEntry, const Image& rImage
         static_cast<SvLBoxContextBmp&>(rItem).SetBitmap2(rImage);
     }
 
-    m_xTreeView->SetEntryHeight(pEntry);
+    m_xTreeView->CalcEntryHeight(pEntry);
     InvalidateModelEntry(pEntry);
 }
 
@@ -5308,6 +5319,13 @@ SalInstanceIconView::SalInstanceIconView(::IconView* pIconView, SalInstanceBuild
     m_xIconView->SetPopupMenuHdl(LINK(this, SalInstanceIconView, CommandHdl));
 }
 
+int SalInstanceIconView::get_item_width() const { return m_xIconView->GetEntryWidth(); }
+void SalInstanceIconView::set_item_width(int width)
+{
+    m_xIconView->SetEntryWidth(width);
+    m_xIconView->Resize();
+}
+
 void SalInstanceIconView::freeze()
 {
     bool bIsFirstFreeze = IsFirstFreeze();
@@ -5381,7 +5399,7 @@ void SalInstanceIconView::insert(int pos, const OUString* pStr, const OUString* 
     if (pIcon)
     {
         const Point aNull(0, 0);
-        const Size aSize = pIcon->GetOutputSizePixel();
+        const Size aSize = pIcon->GetOutputSize();
         Image aImage(pIcon->GetBitmapEx(aNull, aSize));
         pEntry->AddItem(std::make_unique<SvLBoxContextBmp>(aImage, aImage, false));
     }
@@ -5402,6 +5420,47 @@ void SalInstanceIconView::insert(int pos, const OUString* pStr, const OUString* 
     }
 
     enable_notify_events();
+}
+
+void SalInstanceIconView::insert_separator(int pos, const OUString* /* pId */)
+{
+    const auto nInsertPos = pos == -1 ? TREELIST_APPEND : pos;
+    const OUString sSep(VclResId(STR_SEPARATOR));
+    SvTreeListEntry* pEntry = new SvTreeListEntry;
+    pEntry->SetFlags(pEntry->GetFlags() | SvTLEntryFlags::IS_SEPARATOR);
+    const Image aDummy;
+    pEntry->AddItem(std::make_unique<SvLBoxContextBmp>(aDummy, aDummy, false));
+    pEntry->AddItem(std::make_unique<SvLBoxString>(sSep));
+    pEntry->SetUserData(nullptr);
+    m_xIconView->Insert(pEntry, nullptr, nInsertPos);
+    SvViewDataEntry* pViewData = m_xIconView->GetViewDataEntry(pEntry);
+    pViewData->SetSelectable(false);
+}
+
+IMPL_LINK(SalInstanceIconView, TooltipHdl, const HelpEvent&, rHEvt, bool)
+{
+    if (notify_events_disabled())
+        return false;
+    Point aPos(m_xIconView->ScreenToOutputPixel(rHEvt.GetMousePosPixel()));
+    SvTreeListEntry* pEntry = m_xIconView->GetEntry(aPos);
+    if (pEntry)
+    {
+        SalInstanceTreeIter aIter(pEntry);
+        OUString aTooltip = signal_query_tooltip(aIter);
+        if (aTooltip.isEmpty())
+            return false;
+        Size aSize(m_xIconView->GetOutputSizePixel().Width(), m_xIconView->GetEntryHeight());
+        tools::Rectangle aScreenRect(
+            m_xIconView->OutputToScreenPixel(m_xIconView->GetEntryPosition(pEntry)), aSize);
+        Help::ShowQuickHelp(m_xIconView, aScreenRect, aTooltip);
+    }
+    return true;
+}
+
+void SalInstanceIconView::connect_query_tooltip(const Link<const weld::TreeIter&, OUString>& rLink)
+{
+    weld::IconView::connect_query_tooltip(rLink);
+    m_xIconView->SetTooltipHdl(LINK(this, SalInstanceIconView, TooltipHdl));
 }
 
 OUString SalInstanceIconView::get_selected_id() const
@@ -7373,6 +7432,56 @@ weld::Window* SalFrame::GetFrameWeld() const
         }
     }
     return m_xFrameWeld.get();
+}
+
+Selection SalFrame::CalcDeleteSurroundingSelection(const OUString& rSurroundingText,
+                                                   sal_Int32 nCursorIndex, int nOffset, int nChars)
+{
+    Selection aInvalid(SAL_MAX_UINT32, SAL_MAX_UINT32);
+
+    if (nCursorIndex == -1)
+        return aInvalid;
+
+    if (nOffset > 0)
+    {
+        while (nOffset && nCursorIndex < rSurroundingText.getLength())
+        {
+            rSurroundingText.iterateCodePoints(&nCursorIndex, 1);
+            --nOffset;
+        }
+    }
+    else if (nOffset < 0)
+    {
+        while (nOffset && nCursorIndex > 0)
+        {
+            rSurroundingText.iterateCodePoints(&nCursorIndex, -1);
+            ++nOffset;
+        }
+    }
+
+    if (nOffset)
+    {
+        SAL_WARN("vcl",
+                 "SalFrame::CalcDeleteSurroundingSelection, unable to move to offset: " << nOffset);
+        return aInvalid;
+    }
+
+    sal_Int32 nCursorEndIndex(nCursorIndex);
+    sal_Int32 nCount(0);
+    while (nCount < nChars && nCursorEndIndex < rSurroundingText.getLength())
+    {
+        rSurroundingText.iterateCodePoints(&nCursorEndIndex, 1);
+        ++nCount;
+    }
+
+    if (nCount != nChars)
+    {
+        SAL_WARN("vcl", "SalFrame::CalcDeleteSurroundingSelection, unable to select: "
+                            << nChars << " characters");
+        return aInvalid;
+    }
+
+    return Selection(nCursorIndex, nCursorEndIndex);
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

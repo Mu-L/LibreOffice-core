@@ -1066,7 +1066,7 @@ void SwFormatCol::Calc( sal_uInt16 nGutterWidth, sal_uInt16 nAct )
     {
         tools::Long nTmp = rCol.GetWishWidth();
         nTmp *= GetWishWidth();
-        nTmp /= nAct;
+        nTmp = nAct == 0 ? nTmp : nTmp / nAct;
         rCol.SetWishWidth(sal_uInt16(nTmp));
     }
 }
@@ -3253,8 +3253,7 @@ bool SwFlyFrameFormat::IsBackgroundTransparent() const
     //     and there is no background graphic, it "inherites" the background
     //     from its anchor.
     std::unique_ptr<SvxBrushItem> aBackground(makeBackgroundBrushItem());
-    if ( aBackground &&
-         aBackground->GetColor().IsTransparent() &&
+    if ( aBackground->GetColor().IsTransparent() &&
          aBackground->GetColor() != COL_TRANSPARENT
        )
     {
@@ -3293,8 +3292,7 @@ bool SwFlyFrameFormat::IsBackgroundBrushInherited() const
     else
     {
         std::unique_ptr<SvxBrushItem> aBackground(makeBackgroundBrushItem());
-        if ( aBackground &&
-             (aBackground->GetColor() == COL_TRANSPARENT) &&
+        if ( (aBackground->GetColor() == COL_TRANSPARENT) &&
              !(aBackground->GetGraphicObject()) )
         {
             return true;

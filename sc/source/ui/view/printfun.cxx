@@ -1001,8 +1001,8 @@ void ScPrintFunc::InitParam( const ScPrintOptions* pOptions )
 
     //! walk through all PrintAreas of the table !!!
     const ScRange*  pPrintArea = rDoc.GetPrintRange( nPrintTab, 0 );
-    const ScRange*  pRepeatCol = rDoc.GetRepeatColRange( nPrintTab );
-    const ScRange*  pRepeatRow = rDoc.GetRepeatRowRange( nPrintTab );
+    std::optional<ScRange> oRepeatCol = rDoc.GetRepeatColRange( nPrintTab );
+    std::optional<ScRange> oRepeatRow = rDoc.GetRepeatRowRange( nPrintTab );
 
     //  ignoring ATTR_PAGE_PRINTTABLES
 
@@ -1055,11 +1055,11 @@ void ScPrintFunc::InitParam( const ScPrintOptions* pOptions )
         }
     }
 
-    if ( pRepeatCol )
+    if ( oRepeatCol )
     {
         aAreaParam.bRepeatCol = true;
-        nRepeatStartCol = pRepeatCol->aStart.Col();
-        nRepeatEndCol   = pRepeatCol->aEnd  .Col();
+        nRepeatStartCol = oRepeatCol->aStart.Col();
+        nRepeatEndCol   = oRepeatCol->aEnd  .Col();
     }
     else
     {
@@ -1067,11 +1067,11 @@ void ScPrintFunc::InitParam( const ScPrintOptions* pOptions )
         nRepeatStartCol = nRepeatEndCol = SCCOL_REPEAT_NONE;
     }
 
-    if ( pRepeatRow )
+    if ( oRepeatRow )
     {
         aAreaParam.bRepeatRow = true;
-        nRepeatStartRow = pRepeatRow->aStart.Row();
-        nRepeatEndRow   = pRepeatRow->aEnd  .Row();
+        nRepeatStartRow = oRepeatRow->aStart.Row();
+        nRepeatEndRow   = oRepeatRow->aEnd  .Row();
     }
     else
     {
@@ -3020,7 +3020,7 @@ static void lcl_SetHidden( const ScDocument& rDoc, SCTAB nPrintTab, ScPageRowEnt
     {
         OSL_ENSURE(i < rPageEndX.size(), "vector access error for aPageEndX");
         SCCOL nEndCol = rPageEndX[i];
-        if ( rDoc.IsPrintEmpty( nPrintTab, nStartCol, nStartRow, nEndCol, nEndRow,
+        if ( rDoc.IsPrintEmpty( nStartCol, nStartRow, nEndCol, nEndRow, nPrintTab,
                                     bLeftIsEmpty, &aTempRange, &aTempRect ) )
         {
             rPageRowEntry.SetHidden(i);
@@ -3165,7 +3165,7 @@ void PrintPageRanges::calculate(ScDocument& rDoc,
             (*m_xPageEndY)[m_nTotalY] = nRow - 1;
             ++m_nTotalY;
 
-            if (!bSkipEmpty || !rDoc.IsPrintEmpty(nPrintTab, nStartCol, nPageStartRow, nEndCol, nRow-1))
+            if (!bSkipEmpty || !rDoc.IsPrintEmpty(nStartCol, nPageStartRow, nEndCol, nRow-1, nPrintTab))
             {
                 auto& rPageRow = (*m_xPageRows)[m_nPagesY];
                 rPageRow.SetStartRow(nPageStartRow);
@@ -3209,7 +3209,7 @@ void PrintPageRanges::calculate(ScDocument& rDoc,
     (*m_xPageEndY)[m_nTotalY] = nEndRow;
     ++m_nTotalY;
 
-    if (!bSkipEmpty || !rDoc.IsPrintEmpty(nPrintTab, nStartCol, nPageStartRow, nEndCol, nEndRow))
+    if (!bSkipEmpty || !rDoc.IsPrintEmpty(nStartCol, nPageStartRow, nEndCol, nEndRow, nPrintTab))
     {
         auto& rPageRow = (*m_xPageRows)[m_nPagesY];
         rPageRow.SetStartRow(nPageStartRow);

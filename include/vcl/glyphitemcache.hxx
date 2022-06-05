@@ -26,6 +26,7 @@
 #include <o3tl/lru_map.hxx>
 #include <o3tl/hash_combine.hxx>
 #include <vcl/glyphitem.hxx>
+#include <vcl/metric.hxx>
 #include <vcl/outdev.hxx>
 #include <vcl/vclptr.hxx>
 #include <tools/gen.hxx>
@@ -54,7 +55,7 @@ public:
                                            const OUString& text, sal_Int32 nIndex, sal_Int32 nLen,
                                            tools::Long nLogicWidth = 0,
                                            const vcl::text::TextLayoutCache* layoutCache = nullptr);
-    void clear() { mCachedGlyphs.clear(); }
+    void clear();
 
     static SalLayoutGlyphsCache* self();
     SalLayoutGlyphsCache(int size) // needs to be public for vcl::DeleteOnDeinit
@@ -69,7 +70,7 @@ private:
         sal_Int32 index;
         sal_Int32 len;
         tools::Long logicWidth;
-        vcl::Font font;
+        FontMetric fontMetric;
         double fontScaleX;
         double fontScaleY;
         MapMode mapMode;

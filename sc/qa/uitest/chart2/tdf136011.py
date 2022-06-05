@@ -7,10 +7,10 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 from uitest.framework import UITestCase
-from uitest.uihelper.calc import enter_text_to_cell
-from libreoffice.calc.document import get_cell_by_position
-from libreoffice.uno.propertyvalue import mkPropertyValues
 from uitest.uihelper.common import get_url_for_data_file
+
+from libreoffice.uno.propertyvalue import mkPropertyValues
+
 
 class tdf136011(UITestCase):
 
@@ -24,7 +24,7 @@ class tdf136011(UITestCase):
         # Test both charts
         for i, name in enumerate(xObjectNames):
 
-            with self.ui_test.load_file(get_url_for_data_file("tdf136011.ods")) as calc_doc:
+            with self.ui_test.load_file(get_url_for_data_file("tdf136011.ods")):
                 xCalcDoc = self.xUITest.getTopFocusWindow()
                 gridwin = xCalcDoc.getChild("grid_window")
 
@@ -38,9 +38,6 @@ class tdf136011(UITestCase):
                 self.xUITest.executeCommand(".uno:Copy")
 
             with self.ui_test.load_empty_file("calc") as calc_document:
-                xCalcDoc = self.xUITest.getTopFocusWindow()
-                gridwin = xCalcDoc.getChild("grid_window")
-
                 self.xUITest.executeCommand(".uno:Paste")
 
                 xData = calc_document.Sheets[0].Charts[0].getEmbeddedObject().Data

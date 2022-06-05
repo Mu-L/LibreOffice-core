@@ -470,9 +470,13 @@ public:
 
     virtual bool set_property(const OString &rKey, const OUString &rValue) override;
 
+    VCL_DLLPRIVATE void SetCollapsedNodeBmp( const Image& );
+    VCL_DLLPRIVATE void SetExpandedNodeBmp( const Image& );
+    VCL_DLLPRIVATE Image const & GetExpandedNodeBmp( ) const;
+
 protected:
 
-    VCL_DLLPRIVATE void         SetEntryHeight( SvTreeListEntry const * pEntry );
+    virtual void                CalcEntryHeight(SvTreeListEntry const* pEntry);
                    void         AdjustEntryHeight( const Image& rBmp );
     VCL_DLLPRIVATE void         AdjustEntryHeight();
 
@@ -530,7 +534,6 @@ public:
 
     void            EnableCheckButton( SvLBoxButtonData* );
     void            SetCheckButtonData( SvLBoxButtonData* );
-    void            SetNodeBitmaps( const Image& rCollapsedNodeBmp, const Image& rExpandedNodeBmp );
 
     /** Returns the default image which clients should use for expanded nodes, to have a consistent user
         interface experience in the whole product.
@@ -544,13 +547,7 @@ public:
 
     /** Sets default bitmaps for collapsed and expanded nodes.
     */
-    void    SetNodeDefaultImages( )
-    {
-        SetNodeBitmaps(
-            GetDefaultCollapsedNodeImage( ),
-            GetDefaultExpandedNodeImage( )
-        );
-    }
+    void    SetNodeDefaultImages();
 
     virtual SvTreeListEntry*    InsertEntry( const OUString& rText, SvTreeListEntry* pParent = nullptr,
                                          bool bChildrenOnDemand = false,
@@ -617,10 +614,6 @@ public:
     Point           GetEntryPosition(const SvTreeListEntry*) const;
     void            MakeVisible( SvTreeListEntry* pEntry );
     void            MakeVisible( SvTreeListEntry* pEntry, bool bMoveToTop );
-
-    void            SetCollapsedNodeBmp( const Image& );
-    void            SetExpandedNodeBmp( const Image& );
-    Image const &   GetExpandedNodeBmp( ) const;
 
     void            SetFont( const vcl::Font& rFont );
 

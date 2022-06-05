@@ -3933,6 +3933,45 @@ void XMLTextParagraphExport::ExportContentControl(
         {
             GetExport().AddAttribute(XML_NAMESPACE_LO_EXT, XML_UNCHECKED_STATE, aUncheckedState);
         }
+
+        bool bPicture = false;
+        xPropertySet->getPropertyValue("Picture") >>= bPicture;
+        if (bPicture)
+        {
+            OUStringBuffer aBuffer;
+            sax::Converter::convertBool(aBuffer, bPicture);
+            GetExport().AddAttribute(XML_NAMESPACE_LO_EXT, XML_PICTURE,
+                                     aBuffer.makeStringAndClear());
+        }
+
+        bool bDate = false;
+        xPropertySet->getPropertyValue("Date") >>= bDate;
+        if (bDate)
+        {
+            OUStringBuffer aBuffer;
+            sax::Converter::convertBool(aBuffer, bDate);
+            GetExport().AddAttribute(XML_NAMESPACE_LO_EXT, XML_DATE, aBuffer.makeStringAndClear());
+        }
+
+        OUString aDateFormat;
+        xPropertySet->getPropertyValue("DateFormat") >>= aDateFormat;
+        if (!aDateFormat.isEmpty())
+        {
+            GetExport().AddAttribute(XML_NAMESPACE_LO_EXT, XML_DATE_FORMAT, aDateFormat);
+        }
+
+        OUString aDateLanguage;
+        xPropertySet->getPropertyValue("DateLanguage") >>= aDateLanguage;
+        if (!aDateLanguage.isEmpty())
+        {
+            GetExport().AddAttribute(XML_NAMESPACE_LO_EXT, XML_DATE_RFC_LANGUAGE_TAG, aDateLanguage);
+        }
+        OUString aCurrentDate;
+        xPropertySet->getPropertyValue("CurrentDate") >>= aCurrentDate;
+        if (!aCurrentDate.isEmpty())
+        {
+            GetExport().AddAttribute(XML_NAMESPACE_LO_EXT, XML_CURRENT_DATE, aCurrentDate);
+        }
     }
 
     SvXMLElementExport aElem(GetExport(), bExport, XML_NAMESPACE_LO_EXT, XML_CONTENT_CONTROL, false,
@@ -3946,7 +3985,7 @@ void XMLTextParagraphExport::ExportContentControl(
         comphelper::SequenceAsHashMap aMap(rListItem);
         auto it = aMap.find("DisplayText");
         OUString aValue;
-        if (it != aMap.end() && (it->second >>= aValue))
+        if (it != aMap.end() && (it->second >>= aValue) && !aValue.isEmpty())
         {
             GetExport().AddAttribute(XML_NAMESPACE_LO_EXT, XML_DISPLAY_TEXT, aValue);
         }

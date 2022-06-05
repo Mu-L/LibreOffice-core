@@ -66,10 +66,10 @@
 #include <com/sun/star/lang/XInitialization.hpp>
 #include <com/sun/star/lang/ServiceNotRegisteredException.hpp>
 #include <com/sun/star/document/XDocumentEventBroadcaster.hpp>
-#include <com/sun/star/document/IndexedPropertyValues.hpp>
 #include <com/sun/star/script/XInvocation.hpp>
 #include <com/sun/star/script/vba/XVBAEventProcessor.hpp>
 #include <com/sun/star/beans/XFastPropertySet.hpp>
+#include <comphelper/indexedpropertyvalues.hxx>
 #include <comphelper/lok.hxx>
 #include <comphelper/processfactory.hxx>
 #include <comphelper/profilezone.hxx>
@@ -1683,7 +1683,7 @@ bool ScModelObj::FillRenderMarkData( const uno::Any& aSelection,
 
     // restrict to selected sheets if a view is available
     uno::Reference<sheet::XSelectedSheetsSupplier> xSelectedSheets(xView, uno::UNO_QUERY);
-    if (bSelectedSheetsOnly && xSelectedSheets.is())
+    if (bSelectedSheetsOnly && pDocShell && xSelectedSheets.is())
     {
         const uno::Sequence<sal_Int32> aSelected = xSelectedSheets->getSelectedSheets();
         ScMarkData::MarkedTabsType aSelectedTabs;
@@ -2615,8 +2615,8 @@ uno::Reference< container::XIndexAccess > SAL_CALL ScModelObj::getViewData(  )
         SolarMutexGuard aGuard;
         if (pDocShell && pDocShell->GetCreateMode() == SfxObjectCreateMode::EMBEDDED)
         {
-            uno::Reference < container::XIndexContainer > xCont = document::IndexedPropertyValues::create( ::comphelper::getProcessComponentContext() );
-            xRet.set( xCont, uno::UNO_QUERY_THROW );
+            rtl::Reference< comphelper::IndexedPropertyValuesContainer > xCont = new comphelper::IndexedPropertyValuesContainer();
+            xRet = xCont;
 
             OUString sName;
             pDocShell->GetDocument().GetName( pDocShell->GetDocument().GetVisibleTab(), sName );
@@ -3591,7 +3591,6 @@ uno::Any SAL_CALL ScDrawPagesObj::getByIndex( sal_Int32 nIndex )
 
 uno::Type SAL_CALL ScDrawPagesObj::getElementType()
 {
-    SolarMutexGuard aGuard;
     return cppu::UnoType<drawing::XDrawPage>::get();
 }
 
@@ -3920,7 +3919,6 @@ uno::Any SAL_CALL ScTableSheetsObj::getByIndex( sal_Int32 nIndex )
 
 uno::Type SAL_CALL ScTableSheetsObj::getElementType()
 {
-    SolarMutexGuard aGuard;
     return cppu::UnoType<sheet::XSpreadsheet>::get();
 }
 
@@ -4017,8 +4015,8 @@ rtl::Reference<ScTableColumnObj> ScTableColumnsObj::GetObjectByIndex_Impl(sal_In
 rtl::Reference<ScTableColumnObj> ScTableColumnsObj::GetObjectByName_Impl(const OUString& aName) const
 {
     SCCOL nCol = 0;
-    if ( ::AlphaToCol( pDocShell->GetDocument(), nCol, aName) )
-        if ( pDocShell && nCol >= nStartCol && nCol <= nEndCol )
+    if (pDocShell && ::AlphaToCol(pDocShell->GetDocument(), nCol, aName))
+        if (nCol >= nStartCol && nCol <= nEndCol)
             return new ScTableColumnObj( pDocShell, nCol, nTab );
 
     return nullptr;
@@ -4091,7 +4089,6 @@ uno::Any SAL_CALL ScTableColumnsObj::getByIndex( sal_Int32 nIndex )
 
 uno::Type SAL_CALL ScTableColumnsObj::getElementType()
 {
-    SolarMutexGuard aGuard;
     return cppu::UnoType<table::XCellRange>::get();
 }
 
@@ -4127,8 +4124,8 @@ sal_Bool SAL_CALL ScTableColumnsObj::hasByName( const OUString& aName )
 {
     SolarMutexGuard aGuard;
     SCCOL nCol = 0;
-    if ( ::AlphaToCol( pDocShell->GetDocument(), nCol, aName) )
-        if ( pDocShell && nCol >= nStartCol && nCol <= nEndCol )
+    if (pDocShell && ::AlphaToCol(pDocShell->GetDocument(), nCol, aName))
+        if (nCol >= nStartCol && nCol <= nEndCol)
             return true;
 
     return false;       // not found
@@ -4138,7 +4135,6 @@ sal_Bool SAL_CALL ScTableColumnsObj::hasByName( const OUString& aName )
 
 uno::Reference<beans::XPropertySetInfo> SAL_CALL ScTableColumnsObj::getPropertySetInfo()
 {
-    SolarMutexGuard aGuard;
     static uno::Reference<beans::XPropertySetInfo> aRef(
         new SfxItemPropertySetInfo( lcl_GetColumnsPropertyMap() ));
     return aRef;
@@ -4334,7 +4330,6 @@ uno::Any SAL_CALL ScTableRowsObj::getByIndex( sal_Int32 nIndex )
 
 uno::Type SAL_CALL ScTableRowsObj::getElementType()
 {
-    SolarMutexGuard aGuard;
     return cppu::UnoType<table::XCellRange>::get();
 }
 
@@ -4348,7 +4343,6 @@ sal_Bool SAL_CALL ScTableRowsObj::hasElements()
 
 uno::Reference<beans::XPropertySetInfo> SAL_CALL ScTableRowsObj::getPropertySetInfo()
 {
-    SolarMutexGuard aGuard;
     static uno::Reference<beans::XPropertySetInfo> aRef(
         new SfxItemPropertySetInfo( lcl_GetRowsPropertyMap() ));
     return aRef;
@@ -4645,7 +4639,6 @@ uno::Any SAL_CALL ScAnnotationsObj::getByIndex( sal_Int32 nIndex )
 
 uno::Type SAL_CALL ScAnnotationsObj::getElementType()
 {
-    SolarMutexGuard aGuard;
     return cppu::UnoType<sheet::XSheetAnnotation>::get();
 }
 
@@ -4800,7 +4793,6 @@ uno::Any SAL_CALL ScScenariosObj::getByIndex( sal_Int32 nIndex )
 
 uno::Type SAL_CALL ScScenariosObj::getElementType()
 {
-    SolarMutexGuard aGuard;
     return cppu::UnoType<sheet::XScenario>::get();
 }
 

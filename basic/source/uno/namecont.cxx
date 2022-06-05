@@ -30,6 +30,7 @@
 #include <com/sun/star/lang/XServiceInfo.hpp>
 #include <com/sun/star/ucb/ContentCreationException.hpp>
 #include <com/sun/star/xml/sax/SAXException.hpp>
+#include <utility>
 #include <vcl/svapp.hxx>
 #include <o3tl/string_view.hxx>
 #include <osl/mutex.hxx>
@@ -588,10 +589,10 @@ void SfxLibraryContainer::init_Impl( const OUString& rInitialDocumentURL,
     uno::Reference< embed::XStorage > xStorage = rxInitialStorage;
 
     maInitialDocumentURL = rInitialDocumentURL;
-    maInfoFileName = OUString::createFromAscii( getInfoFileName() );
-    maOldInfoFileName = OUString::createFromAscii( getOldInfoFileName() );
-    maLibElementFileExtension = OUString::createFromAscii( getLibElementFileExtension() );
-    maLibrariesDir = OUString::createFromAscii( getLibrariesDir() );
+    maInfoFileName = getInfoFileName();
+    maOldInfoFileName = getOldInfoFileName();
+    maLibElementFileExtension = getLibElementFileExtension();
+    maLibrariesDir = getLibrariesDir();
 
     meInitMode = DEFAULT;
     INetURLObject aInitUrlInetObj( maInitialDocumentURL );
@@ -2950,7 +2951,7 @@ SfxLibrary::SfxLibrary( ModifiableHelper& _rModifiable, const Type& aType,
 
 SfxLibrary::SfxLibrary( ModifiableHelper& _rModifiable, const Type& aType,
     const Reference< XSimpleFileAccess3 >& xSFI,
-    const OUString& aLibInfoFileURL, const OUString& aStorageURL, bool ReadOnly )
+    OUString aLibInfoFileURL, OUString aStorageURL, bool ReadOnly )
         : OComponentHelper( m_aMutex )
         , mxSFI( xSFI )
         , mrModifiable( _rModifiable )
@@ -2958,8 +2959,8 @@ SfxLibrary::SfxLibrary( ModifiableHelper& _rModifiable, const Type& aType,
         , mbLoaded( false )
         , mbIsModified( true )
         , mbInitialised( false )
-        , maLibInfoFileURL( aLibInfoFileURL )
-        , maStorageURL( aStorageURL )
+        , maLibInfoFileURL(std::move( aLibInfoFileURL ))
+        , maStorageURL(std::move( aStorageURL ))
         , mbLink( true )
         , mbReadOnly( false )
         , mbReadOnlyLink( ReadOnly )

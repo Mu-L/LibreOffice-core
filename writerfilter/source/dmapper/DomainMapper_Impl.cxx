@@ -32,7 +32,6 @@
 #include <com/sun/star/beans/XPropertyState.hpp>
 #include <com/sun/star/container/XNamed.hpp>
 #include <com/sun/star/document/PrinterIndependentLayout.hpp>
-#include <com/sun/star/document/IndexedPropertyValues.hpp>
 #include <com/sun/star/drawing/XDrawPageSupplier.hpp>
 #include <com/sun/star/embed/XEmbeddedObject.hpp>
 #include <com/sun/star/i18n/NumberFormatMapper.hpp>
@@ -82,6 +81,7 @@
 #include <com/sun/star/embed/ElementModes.hpp>
 #include <com/sun/star/document/XImporter.hpp>
 #include <com/sun/star/document/XFilter.hpp>
+#include <comphelper/indexedpropertyvalues.hxx>
 #include <editeng/flditem.hxx>
 #include <editeng/unotext.hxx>
 #include <o3tl/safeint.hxx>
@@ -875,7 +875,15 @@ void DomainMapper_Impl::PopSdt()
 
     if (aPosition.m_bIsStartOfText)
     {
-        xCursor->gotoStart(/*bExpand=*/false);
+        // Go to the start of the end's paragraph. This helps in case
+        // DomainMapper_Impl::AddDummyParaForTableInSection() would make our range multi-paragraph,
+        // while the intention is to keep start/end inside the same paragraph for run SDTs.
+        uno::Reference<text::XParagraphCursor> xParagraphCursor(xCursor, uno::UNO_QUERY);
+        if (xParagraphCursor.is())
+        {
+            xCursor->gotoRange(xEnd, /*bExpand=*/false);
+            xParagraphCursor->gotoStartOfParagraph(/*bExpand=*/false);
+        }
     }
     else
     {
@@ -890,6 +898,34 @@ void DomainMapper_Impl::PopSdt()
     {
         xContentControlProps->setPropertyValue("ShowingPlaceHolder",
                                                uno::Any(m_pSdtHelper->GetShowingPlcHdr()));
+    }
+
+    if (!m_pSdtHelper->GetPlaceholderDocPart().isEmpty())
+    {
+        xContentControlProps->setPropertyValue("PlaceholderDocPart",
+                                               uno::Any(m_pSdtHelper->GetPlaceholderDocPart()));
+    }
+
+    if (!m_pSdtHelper->GetDataBindingPrefixMapping().isEmpty())
+    {
+        xContentControlProps->setPropertyValue("DataBindingPrefixMappings",
+                                               uno::Any(m_pSdtHelper->GetDataBindingPrefixMapping()));
+    }
+    if (!m_pSdtHelper->GetDataBindingXPath().isEmpty())
+    {
+        xContentControlProps->setPropertyValue("DataBindingXpath",
+                                               uno::Any(m_pSdtHelper->GetDataBindingXPath()));
+    }
+    if (!m_pSdtHelper->GetDataBindingStoreItemID().isEmpty())
+    {
+        xContentControlProps->setPropertyValue("DataBindingStoreItemID",
+                                               uno::Any(m_pSdtHelper->GetDataBindingStoreItemID()));
+    }
+
+    if (!m_pSdtHelper->GetColor().isEmpty())
+    {
+        xContentControlProps->setPropertyValue("Color",
+                                               uno::Any(m_pSdtHelper->GetColor()));
     }
 
     if (m_pSdtHelper->getControlType() == SdtControlType::checkBox)
@@ -923,6 +959,23 @@ void DomainMapper_Impl::PopSdt()
             }
             xContentControlProps->setPropertyValue("ListItems", uno::Any(aItems));
         }
+    }
+
+    if (m_pSdtHelper->getControlType() == SdtControlType::picture)
+    {
+        xContentControlProps->setPropertyValue("Picture", uno::Any(true));
+    }
+
+    if (m_pSdtHelper->getControlType() == SdtControlType::datePicker)
+    {
+        xContentControlProps->setPropertyValue("Date", uno::Any(true));
+        OUString aDateFormat = m_pSdtHelper->getDateFormat().makeStringAndClear();
+        xContentControlProps->setPropertyValue("DateFormat",
+                                               uno::Any(aDateFormat.replaceAll("'", "\"")));
+        xContentControlProps->setPropertyValue("DateLanguage",
+                                               uno::Any(m_pSdtHelper->getLocale().makeStringAndClear()));
+        xContentControlProps->setPropertyValue("CurrentDate",
+                                               uno::Any(m_pSdtHelper->getDate().makeStringAndClear()));
     }
 
     xText->insertTextContent(xCursor, xContentControl, /*bAbsorb=*/true);
@@ -2096,8 +2149,7 @@ void DomainMapper_Impl::finishParagraph( const PropertyMapPtr& pPropertyMap, con
             {
                 aProperties = comphelper::sequenceToContainer< std::vector<beans::PropertyValue> >(pPropertyMap->GetPropertyValues());
             }
-            // TODO: this *should* work for RTF but there are test failures, maybe rtftok doesn't distinguish between formatting for the paragraph marker and for the paragraph as a whole; needs investigation
-            if (pPropertyMap && IsOOXMLImport())
+            if (pPropertyMap)
             {
                 // tdf#64222 filter out the "paragraph marker" formatting and
                 // set it as a separate paragraph property, not a empty hint at
@@ -2278,9 +2330,15 @@ void DomainMapper_Impl::finishParagraph( const PropertyMapPtr& pPropertyMap, con
                                     }
                                 }
                             }
-                            if (pList->GetCurrentLevel())
+
+                            sal_Int16 nCurrentLevel = GetListLevel(pEntry, pPropertyMap);
+                            if (nCurrentLevel == -1)
+                                nCurrentLevel = 0;
+
+                            const ListLevel::Pointer pListLevel = pList->GetLevel(nCurrentLevel);
+                            if (pListLevel)
                             {
-                                sal_Int16 nOverrideLevel = pList->GetCurrentLevel()->GetStartOverride();
+                                sal_Int16 nOverrideLevel = pListLevel->GetStartOverride();
                                 if (nOverrideLevel != -1 && m_aListOverrideApplied.find(nListId) == m_aListOverrideApplied.end())
                                 {
                                     // Apply override: we have override instruction for this level
@@ -3494,13 +3552,11 @@ void DomainMapper_Impl::PopFootOrEndnote()
         uno::Reference< text::XFootnote > xFootnoteFirst, xFootnoteLast;
         auto xFootnotes = xFootnotesSupplier->getFootnotes();
         auto xEndnotes = xEndnotesSupplier->getEndnotes();
-        if (IsInFootnote())
-            xFootnotes->getByIndex(xFootnotes->getCount()-1) >>= xFootnoteLast;
-        else
-            xEndnotes->getByIndex(xEndnotes->getCount()-1) >>= xFootnoteLast;
-        if ( ( ( IsInFootnote() && xFootnotes->getCount() > 1 ) ||
-             ( !IsInFootnote() && xEndnotes->getCount() > 1 ) ) &&
-                        xFootnoteLast->getLabel().isEmpty() )
+        if ( ( ( IsInFootnote() && xFootnotes->getCount() > 1 &&
+                       ( xFootnotes->getByIndex(xFootnotes->getCount()-1) >>= xFootnoteLast ) ) ||
+               ( !IsInFootnote() && xEndnotes->getCount() > 1 &&
+                       ( xEndnotes->getByIndex(xEndnotes->getCount()-1) >>= xFootnoteLast ) )
+             ) && xFootnoteLast->getLabel().isEmpty() )
         {
             // copy content of the first remaining temporary footnote
             if ( IsInFootnote() )
@@ -8255,7 +8311,7 @@ void DomainMapper_Impl::ApplySettingsTable()
                                         uno::Any(m_pSettingsTable->GetZoomType()),
                                         beans::PropertyState_DIRECT_VALUE);
             }
-            uno::Reference<container::XIndexContainer> xBox = document::IndexedPropertyValues::create(m_xComponentContext);
+            rtl::Reference< comphelper::IndexedPropertyValuesContainer > xBox = new comphelper::IndexedPropertyValuesContainer();
             xBox->insertByIndex(sal_Int32(0), uno::Any(comphelper::containerToSequence(aViewProps)));
             uno::Reference<document::XViewDataSupplier> xViewDataSupplier(m_xTextDocument, uno::UNO_QUERY);
             xViewDataSupplier->setViewData(xBox);
@@ -8331,70 +8387,6 @@ uno::Reference<container::XIndexAccess> DomainMapper_Impl::GetCurrentNumberingRu
     catch (const uno::Exception&)
     {
         TOOLS_WARN_EXCEPTION("writerfilter.dmapper", "GetCurrentNumberingRules: exception caught");
-    }
-    return xRet;
-}
-
-uno::Reference<beans::XPropertySet> DomainMapper_Impl::GetCurrentNumberingCharStyle()
-{
-    uno::Reference<beans::XPropertySet> xRet;
-    try
-    {
-        sal_Int32 nListLevel = -1;
-        uno::Reference<container::XIndexAccess> xLevels;
-        if ( GetTopContextType() == CONTEXT_PARAGRAPH )
-            xLevels = GetCurrentNumberingRules(&nListLevel);
-        if (!xLevels.is())
-        {
-            if (IsOOXMLImport())
-                return xRet;
-
-            PropertyMapPtr pContext = m_pTopContext;
-            if (IsRTFImport() && !IsOpenField())
-            {
-                // Looking up the paragraph context explicitly (and not just taking
-                // the top context) is necessary for RTF, where formatting of a run
-                // and of the paragraph mark is not separated.
-                // We know that the formatting inside a field won't affect the
-                // paragraph marker formatting, though.
-                pContext = GetTopContextOfType(CONTEXT_PARAGRAPH);
-                if (!pContext)
-                    return xRet;
-            }
-
-            // In case numbering rules is not found via a style, try the direct formatting instead.
-            std::optional<PropertyMap::Property> oProp = pContext->getProperty(PROP_NUMBERING_RULES);
-            if (oProp)
-            {
-                xLevels.set(oProp->second, uno::UNO_QUERY);
-                // Found the rules, then also try to look up our numbering level.
-                oProp = pContext->getProperty(PROP_NUMBERING_LEVEL);
-                if (oProp)
-                    oProp->second >>= nListLevel;
-                else
-                    nListLevel = 0;
-            }
-
-            if (!xLevels.is())
-                return xRet;
-        }
-        uno::Sequence<beans::PropertyValue> aProps;
-        xLevels->getByIndex(nListLevel) >>= aProps;
-        auto pProp = std::find_if(std::cbegin(aProps), std::cend(aProps),
-            [](const beans::PropertyValue& rProp) { return rProp.Name == "CharStyleName"; });
-        if (pProp != std::cend(aProps))
-        {
-            OUString aCharStyle;
-            pProp->Value >>= aCharStyle;
-            uno::Reference<container::XNameAccess> xCharacterStyles;
-            uno::Reference< style::XStyleFamiliesSupplier > xStylesSupplier(GetTextDocument(), uno::UNO_QUERY);
-            uno::Reference< container::XNameAccess > xStyleFamilies = xStylesSupplier->getStyleFamilies();
-            xStyleFamilies->getByName("CharacterStyles") >>= xCharacterStyles;
-            xRet.set(xCharacterStyles->getByName(aCharStyle), uno::UNO_QUERY_THROW);
-        }
-    }
-    catch( const uno::Exception& )
-    {
     }
     return xRet;
 }

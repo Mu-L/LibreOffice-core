@@ -68,6 +68,7 @@
 #include <comphelper/processfactory.hxx>
 #include <comphelper/string.hxx>
 #include <comphelper/types.hxx>
+#include <o3tl/safeint.hxx>
 #include <sal/macros.h>
 #include <svl/numformat.hxx>
 #include <tools/diagnose_ex.h>
@@ -947,7 +948,7 @@ void ScDPObject::RefreshAfterLoad()
         ++nInitial;
 
     if ( nInitial + 1 < nOutRows &&
-        pDoc->IsBlockEmpty( nTab, nFirstCol, nFirstRow + nInitial, nFirstCol, nFirstRow + nInitial ) &&
+        pDoc->IsBlockEmpty( nFirstCol, nFirstRow + nInitial, nFirstCol, nFirstRow + nInitial, nTab ) &&
         aOutRange.aEnd.Col() > nFirstCol )
     {
         nHeaderRows = nInitial;
@@ -1341,11 +1342,13 @@ public:
     {
         size_t nRank1 = mrDimOrder.size();
         size_t nRank2 = mrDimOrder.size();
-        ScDPSaveData::DimOrderType::const_iterator it1 = mrDimOrder.find(r1.FieldName);
+        ScDPSaveData::DimOrderType::const_iterator it1 = mrDimOrder.find(
+            ScGlobal::getCharClass().uppercase(r1.FieldName));
         if (it1 != mrDimOrder.end())
             nRank1 = it1->second;
 
-        ScDPSaveData::DimOrderType::const_iterator it2 = mrDimOrder.find(r2.FieldName);
+        ScDPSaveData::DimOrderType::const_iterator it2 = mrDimOrder.find(
+            ScGlobal::getCharClass().uppercase(r2.FieldName));
         if (it2 != mrDimOrder.end())
             nRank2 = it2->second;
 
@@ -1391,7 +1394,7 @@ double ScDPObject::GetPivotData(const OUString& rDataFieldName, std::vector<shee
         aFiltersRange[i] = rFilters[i];
 
     uno::Sequence<double> aRes = xDPResults->getFilteredResults(aFilters);
-    if (static_cast<sal_Int32>(nDataIndex) >= aRes.getLength())
+    if (nDataIndex >= o3tl::make_unsigned(aRes.getLength()))
         return std::numeric_limits<double>::quiet_NaN();
 
     return aRes[nDataIndex];

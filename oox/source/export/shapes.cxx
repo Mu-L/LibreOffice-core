@@ -818,10 +818,10 @@ ShapeExport& ShapeExport::WriteCustomShape( const Reference< XShape >& xShape )
             mAny >>= isVisible;
         }
         pFS->startElementNS( mnXmlNamespace, XML_nvSpPr );
-        pFS->startElementNS( mnXmlNamespace, XML_cNvPr,
-                XML_id, OString::number(GetNewShapeID(xShape)),
-                XML_name, GetShapeName(xShape),
-                XML_hidden, sax_fastparser::UseIf("1", !isVisible));
+        pFS->startElementNS(
+            mnXmlNamespace, XML_cNvPr, XML_id,
+            OString::number(GetShapeID(xShape) == -1 ? GetNewShapeID(xShape) : GetShapeID(xShape)),
+            XML_name, GetShapeName(xShape), XML_hidden, sax_fastparser::UseIf("1", !isVisible));
 
         if( GETA( URL ) )
         {
@@ -1662,12 +1662,12 @@ ShapeExport& ShapeExport::WriteConnectorShape( const Reference< XShape >& xShape
         case ConnectorType_CURVE:
             sGeometry = "curvedConnector";
             break;
+        case ConnectorType_LINES:
         case ConnectorType_STANDARD:
             sGeometry = "bentConnector";
             break;
         default:
         case ConnectorType_LINE:
-        case ConnectorType_LINES:
             sGeometry = "straightConnector1";
             break;
     }
@@ -1692,7 +1692,7 @@ ShapeExport& ShapeExport::WriteConnectorShape( const Reference< XShape >& xShape
     }
     EscherConnectorListEntry aConnectorEntry( xShape, aStartPoint, rXShapeA, aEndPoint, rXShapeB );
 
-    if (eConnectorType == ConnectorType_CURVE || eConnectorType == ConnectorType_STANDARD)
+    if (eConnectorType != ConnectorType_LINE)
     {
         tools::PolyPolygon aPolyPolygon = EscherPropertyContainer::GetPolyPolygon(xShape);
         if (aPolyPolygon.Count() > 0)
@@ -1745,6 +1745,11 @@ ShapeExport& ShapeExport::WriteConnectorShape( const Reference< XShape >& xShape
             XML_name, GetShapeName(xShape));
         // non visual connector shape drawing properties
         pFS->startElementNS(mnXmlNamespace, XML_cNvCxnSpPr);
+
+        if (GetShapeID(rXShapeA) == -1)
+            GetNewShapeID(rXShapeA);
+        if (GetShapeID(rXShapeB) == -1)
+            GetNewShapeID(rXShapeB);
         WriteConnectorConnections(aConnectorEntry, GetShapeID(rXShapeA), GetShapeID(rXShapeB));
         pFS->endElementNS(mnXmlNamespace, XML_cNvCxnSpPr);
         if (GetDocumentType() == DOCUMENT_PPTX)
@@ -1944,6 +1949,9 @@ static const NameToConvertMapType& lcl_GetConverters()
 
 ShapeExport& ShapeExport::WriteShape( const Reference< XShape >& xShape )
 {
+    if (!xShape)
+        throw lang::IllegalArgumentException();
+
     OUString sShapeType = xShape->getShapeType();
     SAL_INFO("oox.shape", "write shape: " << sShapeType);
     NameToConvertMapType::const_iterator aConverter
@@ -1953,6 +1961,16 @@ ShapeExport& ShapeExport::WriteShape( const Reference< XShape >& xShape )
         SAL_INFO("oox.shape", "unknown shape");
         return WriteUnknownShape( xShape );
     }
+
+    if (GetDocumentType() == DOCUMENT_PPTX)
+    {
+        Reference< XPropertySet > xShapeProperties(xShape, UNO_QUERY);
+        if (xShapeProperties && xShapeProperties->getPropertySetInfo()
+            && xShapeProperties->getPropertySetInfo()->hasPropertyByName("IsPresentationObject")
+            && xShapeProperties->getPropertyValue("IsPresentationObject").hasValue())
+            mbPlaceholder = xShapeProperties->getPropertyValue("IsPresentationObject").get<bool>();
+    }
+
     (this->*(aConverter->second))( xShape );
 
     return *this;

@@ -1505,7 +1505,7 @@ void ScInputHandler::ShowFuncList( const ::std::vector< OUString > & rFuncStrVec
     {
         OUString aMessage( ScResId( STR_FUNCTIONS_FOUND ) );
         aMessage = aMessage.replaceFirst("%2", OUString::number(nRemainNumber));
-        aMessage = aMessage.replaceFirst("%1", aTipStr.makeStringAndClear());
+        aMessage = aMessage.replaceFirst("%1", aTipStr);
         aTipStr = aMessage;
     }
     FormulaHelper aHelper(ScGlobal::GetStarCalcFunctionMgr());
@@ -3133,6 +3133,8 @@ void ScInputHandler::EnterHandler( ScEnterMode nBlockMode, bool bBeforeSavingInL
     }
 
     std::vector<editeng::MisspellRanges> aMisspellRanges;
+    // UpdateLayout must be true during CompleteOnlineSpelling
+    const bool bUpdateLayout = mpEditEngine->SetUpdateLayout( true );
     mpEditEngine->CompleteOnlineSpelling();
     bool bSpellErrors = !bFormulaMode && mpEditEngine->HasOnlineSpellErrors();
     if ( bSpellErrors )
@@ -3399,6 +3401,8 @@ void ScInputHandler::EnterHandler( ScEnterMode nBlockMode, bool bBeforeSavingInL
 
     bInOwnChange = false;
     bInEnterHandler = false;
+    if (bUpdateLayout)
+        mpEditEngine->SetUpdateLayout( true );
 }
 
 void ScInputHandler::CancelHandler()

@@ -23,6 +23,7 @@
 #include <bitmaps.hlst>
 #include <strings.hrc>
 #include <tools/urlobj.hxx>
+#include <utility>
 #include <vcl/graph.hxx>
 #include <vcl/svapp.hxx>
 #include <vcl/weld.hxx>
@@ -363,7 +364,9 @@ uno::Reference< media::XPlayer > MediaWindow::createPlayer( const OUString& rURL
     return priv::MediaWindowImpl::createPlayer( rURL, rReferer, pMimeType );
 }
 
-uno::Reference< graphic::XGraphic > MediaWindow::grabFrame(const css::uno::Reference<css::media::XPlayer>& xPlayer)
+uno::Reference<graphic::XGraphic>
+MediaWindow::grabFrame(const uno::Reference<media::XPlayer>& xPlayer,
+                       const uno::Reference<graphic::XGraphic>& rGraphic)
 {
     uno::Reference< graphic::XGraphic > xRet;
     std::unique_ptr< Graphic > xGraphic;
@@ -401,7 +404,11 @@ uno::Reference< graphic::XGraphic > MediaWindow::grabFrame(const css::uno::Refer
     }
 
     if (xGraphic)
+    {
+        if (rGraphic)
+            xGraphic.reset(new Graphic(rGraphic));
         xRet = xGraphic->GetXGraphic();
+    }
 
     return xRet;
 }
@@ -453,9 +460,9 @@ void MediaWindow::dispatchInsertAVMedia(const css::uno::Reference<css::frame::XD
     xDispatch->dispatch(aDispatchURL, aArgs);
 }
 
-PlayerListener::PlayerListener(const std::function<void(const css::uno::Reference<css::media::XPlayer>&)> &rFn)
+PlayerListener::PlayerListener(std::function<void(const css::uno::Reference<css::media::XPlayer>&)> fn)
     : PlayerListener_BASE(m_aMutex)
-    , m_aFn(rFn)
+    , m_aFn(std::move(fn))
 {
 }
 

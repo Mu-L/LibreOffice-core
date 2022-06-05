@@ -52,9 +52,8 @@ public:
     ScModelObj* saveAndReload(css::uno::Reference<css::lang::XComponent>& xComponent,
                               const OUString& rFilter);
     void goToCell(const OUString& rCell);
-    void insertString(ScModelObj& rModelObj, const std::string& rStr);
-    void insertStringToCell(ScModelObj& rModelObj, const OUString& rCell, const std::string& rStr,
-                            bool bUseReturn = true);
+    void typeString(ScModelObj& rModelObj, const std::string& rStr);
+    void insertStringToCell(ScModelObj& rModelObj, const OUString& rCell, const std::string& rStr);
     void insertArrayToCell(ScModelObj& rModelObj, const OUString& rCell, const std::string& rStr);
     void insertNewSheet(ScDocument& rDoc);
 
@@ -109,7 +108,7 @@ void ScUiCalcTest::goToCell(const OUString& rCell)
     dispatchCommand(mxComponent, ".uno:GoToCell", aArgs);
 }
 
-void ScUiCalcTest::insertString(ScModelObj& rModelObj, const std::string& rStr)
+void ScUiCalcTest::typeString(ScModelObj& rModelObj, const std::string& rStr)
 {
     for (const char c : rStr)
     {
@@ -120,24 +119,23 @@ void ScUiCalcTest::insertString(ScModelObj& rModelObj, const std::string& rStr)
 }
 
 void ScUiCalcTest::insertStringToCell(ScModelObj& rModelObj, const OUString& rCell,
-                                      const std::string& rStr, bool bUseReturn)
+                                      const std::string& rStr)
 {
     goToCell(rCell);
 
-    insertString(rModelObj, rStr);
+    typeString(rModelObj, rStr);
 
-    if (bUseReturn)
-    {
-        rModelObj.postKeyEvent(LOK_KEYEVENT_KEYINPUT, 0, awt::Key::RETURN);
-        rModelObj.postKeyEvent(LOK_KEYEVENT_KEYUP, 0, awt::Key::RETURN);
-        Scheduler::ProcessEventsToIdle();
-    }
+    rModelObj.postKeyEvent(LOK_KEYEVENT_KEYINPUT, 0, awt::Key::RETURN);
+    rModelObj.postKeyEvent(LOK_KEYEVENT_KEYUP, 0, awt::Key::RETURN);
+    Scheduler::ProcessEventsToIdle();
 }
 
 void ScUiCalcTest::insertArrayToCell(ScModelObj& rModelObj, const OUString& rCell,
                                      const std::string& rStr)
 {
-    insertStringToCell(rModelObj, rCell, rStr, false);
+    goToCell(rCell);
+
+    typeString(rModelObj, rStr);
 
     rModelObj.postKeyEvent(LOK_KEYEVENT_KEYINPUT, 0, KEY_MOD1 | KEY_SHIFT | awt::Key::RETURN);
     rModelObj.postKeyEvent(LOK_KEYEVENT_KEYUP, 0, KEY_MOD1 | KEY_SHIFT | awt::Key::RETURN);
@@ -728,14 +726,16 @@ CPPUNIT_TEST_FIXTURE(ScUiCalcTest, testTdf56036)
     ScDocument* pDoc = pModelObj->GetDocument();
     CPPUNIT_ASSERT(pDoc);
 
-    insertStringToCell(*pModelObj, "A1", "=SUM( 1 + 2 ", /*bUseReturn*/ false);
+    goToCell("A1");
+
+    typeString(*pModelObj, "=SUM( 1 + 2 ");
 
     // Insert Newline
     pModelObj->postKeyEvent(LOK_KEYEVENT_KEYINPUT, 0, KEY_MOD1 | awt::Key::RETURN);
     pModelObj->postKeyEvent(LOK_KEYEVENT_KEYUP, 0, KEY_MOD1 | awt::Key::RETURN);
     Scheduler::ProcessEventsToIdle();
 
-    insertString(*pModelObj, "+ 3)");
+    typeString(*pModelObj, "+ 3)");
 
     pModelObj->postKeyEvent(LOK_KEYEVENT_KEYINPUT, 0, awt::Key::RETURN);
     pModelObj->postKeyEvent(LOK_KEYEVENT_KEYUP, 0, awt::Key::RETURN);
@@ -755,7 +755,9 @@ CPPUNIT_TEST_FIXTURE(ScUiCalcTest, testTdf119162)
     ScDocument* pDoc = pModelObj->GetDocument();
     CPPUNIT_ASSERT(pDoc);
 
-    insertStringToCell(*pModelObj, "A1", "Test", /*bUseReturn*/ false);
+    goToCell("A1");
+
+    typeString(*pModelObj, "Test");
 
     // Insert Newline
     pModelObj->postKeyEvent(LOK_KEYEVENT_KEYINPUT, 0, KEY_MOD1 | awt::Key::RETURN);
@@ -783,6 +785,67 @@ CPPUNIT_TEST_FIXTURE(ScUiCalcTest, testTdf119162)
 
     CPPUNIT_ASSERT_EQUAL(OUString(u"test" + OUStringChar(u'\xA')),
                          pDoc->GetString(ScAddress(0, 0, 0)));
+}
+
+CPPUNIT_TEST_FIXTURE(ScUiCalcTest, testTdf90579)
+{
+    mxComponent = loadFromDesktop("private:factory/scalc");
+    ScModelObj* pModelObj = dynamic_cast<ScModelObj*>(mxComponent.get());
+    CPPUNIT_ASSERT(pModelObj);
+    ScDocument* pDoc = pModelObj->GetDocument();
+    CPPUNIT_ASSERT(pDoc);
+
+    insertStringToCell(*pModelObj, "A1", "2300");
+    insertStringToCell(*pModelObj, "A2", "Libre");
+    insertStringToCell(*pModelObj, "B1", "10");
+    insertStringToCell(*pModelObj, "B2", "Office");
+    insertStringToCell(*pModelObj, "C1", "=SUM(A1:B1)");
+    insertStringToCell(*pModelObj, "C2", "=A2&B2");
+
+    CPPUNIT_ASSERT_EQUAL(OUString("2310"), pDoc->GetString(ScAddress(2, 0, 0)));
+    CPPUNIT_ASSERT_EQUAL(OUString("LibreOffice"), pDoc->GetString(ScAddress(2, 1, 0)));
+
+    goToCell("C1:C2");
+
+    dispatchCommand(mxComponent, ".uno:ConvertFormulaToValue", {});
+    Scheduler::ProcessEventsToIdle();
+
+    CPPUNIT_ASSERT_EQUAL(OUString("2310"), pDoc->GetString(ScAddress(2, 0, 0)));
+    CPPUNIT_ASSERT_EQUAL(OUString("LibreOffice"), pDoc->GetString(ScAddress(2, 1, 0)));
+    CPPUNIT_ASSERT_EQUAL(OUString(""), pDoc->GetFormula(2, 0, 0));
+    CPPUNIT_ASSERT_EQUAL(OUString(""), pDoc->GetFormula(2, 1, 0));
+
+    dispatchCommand(mxComponent, ".uno:Undo", {});
+    Scheduler::ProcessEventsToIdle();
+
+    CPPUNIT_ASSERT_EQUAL(OUString("2310"), pDoc->GetString(ScAddress(2, 0, 0)));
+    CPPUNIT_ASSERT_EQUAL(OUString("LibreOffice"), pDoc->GetString(ScAddress(2, 1, 0)));
+    CPPUNIT_ASSERT_EQUAL(OUString("=SUM(A1:B1)"), pDoc->GetFormula(2, 0, 0));
+    CPPUNIT_ASSERT_EQUAL(OUString("=A2&B2"), pDoc->GetFormula(2, 1, 0));
+}
+
+CPPUNIT_TEST_FIXTURE(ScUiCalcTest, testTdf124820)
+{
+    ScModelObj* pModelObj = createDoc("tdf124820.xlsx");
+    ScDocument* pDoc = pModelObj->GetDocument();
+    CPPUNIT_ASSERT(pDoc);
+
+    goToCell("B2");
+
+    dispatchCommand(mxComponent, ".uno:Strikeout", {});
+    Scheduler::ProcessEventsToIdle();
+
+    pModelObj = saveAndReload(mxComponent, "Calc Office Open XML");
+    pDoc = pModelObj->GetDocument();
+    CPPUNIT_ASSERT(pDoc);
+
+    vcl::Font aFont;
+    const ScPatternAttr* pPattern = pDoc->GetPattern(1, 1, 0);
+    pPattern->GetFont(aFont, SC_AUTOCOL_RAW);
+
+    // Without the fix in place, this test would have failed here
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("font should be striked out", STRIKEOUT_SINGLE,
+                                 aFont.GetStrikeout());
 }
 
 CPPUNIT_TEST_FIXTURE(ScUiCalcTest, testTdf119155)
@@ -915,7 +978,9 @@ CPPUNIT_TEST_FIXTURE(ScUiCalcTest, testTdf138432)
     dispatchCommand(mxComponent, ".uno:Copy", {});
     Scheduler::ProcessEventsToIdle();
 
-    insertStringToCell(*pModelObj, "A2", "=", /*bUseReturn*/ false);
+    goToCell("A2");
+
+    typeString(*pModelObj, "=");
 
     dispatchCommand(mxComponent, ".uno:Paste", {});
     Scheduler::ProcessEventsToIdle();
@@ -968,6 +1033,26 @@ CPPUNIT_TEST_FIXTURE(ScUiCalcTest, testTdf145085)
     // - Expected:
     // - Actual  : a
     CPPUNIT_ASSERT_EQUAL(OUString(""), pDoc->GetString(ScAddress(0, 1, 0)));
+}
+
+CPPUNIT_TEST_FIXTURE(ScUiCalcTest, testTdf148863)
+{
+    mxComponent = loadFromDesktop("private:factory/scalc");
+    ScModelObj* pModelObj = dynamic_cast<ScModelObj*>(mxComponent.get());
+    CPPUNIT_ASSERT(pModelObj);
+    ScDocument* pDoc = pModelObj->GetDocument();
+    CPPUNIT_ASSERT(pDoc);
+
+    insertArrayToCell(*pModelObj, "A1", "=TRANSPOSE(IF({0|0|0}=0;RANDBETWEEN.NV(1;1000000)))");
+
+    double nA1 = pDoc->GetValue(ScAddress(0, 0, 0));
+    double nB1 = pDoc->GetValue(ScAddress(1, 0, 0));
+    double nC1 = pDoc->GetValue(ScAddress(2, 0, 0));
+
+    // Without the fix in place, this test would have failed here
+    CPPUNIT_ASSERT(nA1 != nB1);
+    CPPUNIT_ASSERT(nA1 != nC1);
+    CPPUNIT_ASSERT(nB1 != nC1);
 }
 
 CPPUNIT_TEST_FIXTURE(ScUiCalcTest, testTdf144244)
@@ -1910,7 +1995,7 @@ CPPUNIT_TEST_FIXTURE(ScUiCalcTest, testTdf119793)
     CPPUNIT_ASSERT_EQUAL(static_cast<sal_Int32>(1381), xShape->getPosition().Y);
 
     // Type into the shape
-    insertString(*pModelObj, "x");
+    typeString(*pModelObj, "x");
     pModelObj->postKeyEvent(LOK_KEYEVENT_KEYINPUT, 0, KEY_ESCAPE);
     pModelObj->postKeyEvent(LOK_KEYEVENT_KEYUP, 0, KEY_ESCAPE);
     Scheduler::ProcessEventsToIdle();
@@ -2863,6 +2948,46 @@ CPPUNIT_TEST_FIXTURE(ScUiCalcTest, testTdf99386)
     // - Expected: This
     // - Actual  : 0
     CPPUNIT_ASSERT_EQUAL(OUString("This"), pDoc->GetString(ScAddress(1, 1, 0)));
+}
+
+CPPUNIT_TEST_FIXTURE(ScUiCalcTest, testTdf149378)
+{
+    mxComponent = loadFromDesktop("private:factory/scalc");
+    ScModelObj* pModelObj = dynamic_cast<ScModelObj*>(mxComponent.get());
+    CPPUNIT_ASSERT(pModelObj);
+    ScDocument* pDoc = pModelObj->GetDocument();
+    CPPUNIT_ASSERT(pDoc);
+
+    insertStringToCell(*pModelObj, "A1", "=MINVERSE(A1:C3)");
+
+    // Without the fix in place, this test would have failed with
+    // - Expected: {=MINVERSE(A1:C3)}
+    // - Actual  : =MINVERSE(A1:C3)
+    CPPUNIT_ASSERT_EQUAL(OUString("{=MINVERSE(A1:C3)}"), pDoc->GetFormula(0, 0, 0));
+
+    insertStringToCell(*pModelObj, "B1", "={1;2}");
+    CPPUNIT_ASSERT_EQUAL(OUString("{={1;2}}"), pDoc->GetFormula(1, 0, 0));
+
+    insertStringToCell(*pModelObj, "C1", "={1;2}+3");
+    CPPUNIT_ASSERT_EQUAL(OUString("{={1;2}+3}"), pDoc->GetFormula(2, 0, 0));
+
+    insertStringToCell(*pModelObj, "D1", "={1;2}+{3;4}");
+    CPPUNIT_ASSERT_EQUAL(OUString("{={1;2}+{3;4}}"), pDoc->GetFormula(3, 0, 0));
+
+    insertStringToCell(*pModelObj, "E1", "={1;2}+A1");
+    CPPUNIT_ASSERT_EQUAL(OUString("{={1;2}+A1}"), pDoc->GetFormula(4, 0, 0));
+
+    insertStringToCell(*pModelObj, "F1", "={1;2}+A1:A2");
+    CPPUNIT_ASSERT_EQUAL(OUString("={1;2}+A1:A2"), pDoc->GetFormula(5, 0, 0));
+
+    insertStringToCell(*pModelObj, "G1", "=SUM(MUNIT(3))");
+    CPPUNIT_ASSERT_EQUAL(OUString("=SUM(MUNIT(3))"), pDoc->GetFormula(6, 0, 0));
+
+    insertStringToCell(*pModelObj, "H1", "=SUM({1;2})");
+    CPPUNIT_ASSERT_EQUAL(OUString("=SUM({1;2})"), pDoc->GetFormula(7, 0, 0));
+
+    insertStringToCell(*pModelObj, "I1", "=ABS({-1;-2})");
+    CPPUNIT_ASSERT_EQUAL(OUString("{=ABS({-1;-2})}"), pDoc->GetFormula(8, 0, 0));
 }
 
 CPPUNIT_TEST_FIXTURE(ScUiCalcTest, testTdf126926)

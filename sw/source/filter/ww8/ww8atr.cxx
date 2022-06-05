@@ -917,8 +917,7 @@ void MSWordExportBase::OutputFormat( const SwFormat& rFormat, bool bPapFormat, b
                     case drawing::FillStyle_SOLID:
                     {
                         // Construct an SvxBrushItem, as expected by the exporters.
-                        std::unique_ptr<SvxBrushItem> aBrush(getSvxBrushItemFromSourceSet(rFrameFormat.GetAttrSet(), RES_BACKGROUND));
-                        aSet.Put(*aBrush);
+                        aSet.Put(getSvxBrushItemFromSourceSet(rFrameFormat.GetAttrSet(), RES_BACKGROUND));
                         break;
                     }
                     default:
@@ -2601,6 +2600,11 @@ bool MSWordExportBase::GetNumberFormat(const SwField& rField, OUString& rStr)
     if( pNumFormat )
     {
         LanguageType nLng = rField.GetLanguage();
+        SAL_WARN_IF(nLng == LANGUAGE_DONTKNOW, "sw.ww8", "unexpected LANGUAGE_DONTKNOW");
+        if (nLng == LANGUAGE_NONE || nLng == LANGUAGE_DONTKNOW)
+        {
+            nLng = pNumFormat->GetLanguage();
+        }
         LocaleDataWrapper aLocDat(pNFormatr->GetComponentContext(),
                                   LanguageTag(nLng));
 
@@ -4213,25 +4217,25 @@ void WW8AttributeOutput::FormatULSpace( const SvxULSpaceItem& rUL )
         {
             //sprmSDyaHdrTop
             m_rWW8Export.InsUInt16( NS_sprm::SDyaHdrTop::val );
-            m_rWW8Export.InsUInt16( aDistances.dyaHdrTop );
+            m_rWW8Export.InsUInt16( aDistances.m_DyaHdrTop );
         }
 
         // sprmSDyaTop
         m_rWW8Export.InsUInt16( NS_sprm::SDyaTop::val );
-        m_rWW8Export.InsUInt16( aDistances.dyaTop );
-        m_pageMargins.nTop = aDistances.dyaTop;
+        m_rWW8Export.InsUInt16( aDistances.m_DyaTop );
+        m_pageMargins.nTop = aDistances.m_DyaTop;
 
         if ( aDistances.HasFooter() )
         {
             //sprmSDyaHdrBottom
             m_rWW8Export.InsUInt16( NS_sprm::SDyaHdrBottom::val );
-            m_rWW8Export.InsUInt16( aDistances.dyaHdrBottom );
+            m_rWW8Export.InsUInt16( aDistances.m_DyaHdrBottom );
         }
 
         //sprmSDyaBottom
         m_rWW8Export.InsUInt16( NS_sprm::SDyaBottom::val );
-        m_rWW8Export.InsUInt16( aDistances.dyaBottom );
-        m_pageMargins.nBottom = aDistances.dyaBottom;
+        m_rWW8Export.InsUInt16( aDistances.m_DyaBottom );
+        m_pageMargins.nBottom = aDistances.m_DyaBottom;
     }
     else
     {
@@ -5635,7 +5639,7 @@ void AttributeOutputBase::OutputStyleItemSet( const SfxItemSet& rSet, bool bTest
         sal_uInt16 nWhich = aIter.FirstWhich();
         while ( nWhich )
         {
-            if ( SfxItemState::SET == pSet->GetItemState( nWhich, true/*bDeep*/, &pItem ) &&
+            if ( SfxItemState::SET == aIter.GetItemState( true/*bDeep*/, &pItem ) &&
                  ( !bTestForDefault ||
                    nWhich == RES_UL_SPACE ||
                    nWhich == RES_LR_SPACE ||

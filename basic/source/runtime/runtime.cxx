@@ -38,6 +38,7 @@
 #include <tools/wldcrd.hxx>
 #include <tools/diagnose_ex.h>
 
+#include <utility>
 #include <vcl/svapp.hxx>
 #include <vcl/settings.hxx>
 
@@ -143,8 +144,8 @@ struct SbiArgv {                   // Argv stack:
     SbxArrayRef    refArgv;             // Argv
     short nArgc;                        // Argc
 
-    SbiArgv(SbxArrayRef const & refArgv_, short nArgc_) :
-        refArgv(refArgv_),
+    SbiArgv(SbxArrayRef refArgv_, short nArgc_) :
+        refArgv(std::move(refArgv_)),
         nArgc(nArgc_) {}
 };
 
@@ -1774,10 +1775,10 @@ struct DimAsNewRecoverItem
         , m_pClassModule( nullptr )
     {}
 
-    DimAsNewRecoverItem( const OUString& rObjClass, const OUString& rObjName,
+    DimAsNewRecoverItem( OUString aObjClass, OUString aObjName,
                          SbxObject* pObjParent, SbModule* pClassModule )
-            : m_aObjClass( rObjClass )
-            , m_aObjName( rObjName )
+            : m_aObjClass(std::move( aObjClass ))
+            , m_aObjName(std::move( aObjName ))
             , m_pObjParent( pObjParent )
             , m_pClassModule( pClassModule )
     {}
@@ -2847,7 +2848,7 @@ void SbiRuntime::StepLOADNC( sal_uInt32 nOp1 )
     // tdf#143707 - check if the data type character was added after the string termination symbol
     SbxDataType eTypeStr;
     // #57844 use localized function
-    OUString aStr = pImg->GetString(static_cast<short>(nOp1), &eTypeStr);
+    OUString aStr = pImg->GetString(nOp1, &eTypeStr);
     // also allow , !!!
     sal_Int32 iComma = aStr.indexOf(',');
     if( iComma >= 0 )
@@ -2893,7 +2894,7 @@ void SbiRuntime::StepLOADNC( sal_uInt32 nOp1 )
 void SbiRuntime::StepLOADSC( sal_uInt32 nOp1 )
 {
     SbxVariable* p = new SbxVariable;
-    p->PutString( pImg->GetString( static_cast<short>( nOp1 ) ) );
+    p->PutString( pImg->GetString( nOp1 ) );
     PushVar( p );
 }
 
@@ -2915,7 +2916,7 @@ void SbiRuntime::StepARGN( sal_uInt32 nOp1 )
         StarBASIC::FatalError( ERRCODE_BASIC_INTERNAL_ERROR );
     else
     {
-        OUString aAlias( pImg->GetString( static_cast<short>( nOp1 ) ) );
+        OUString aAlias( pImg->GetString( nOp1 ) );
         SbxVariableRef pVal = PopVar();
         if( bVBAEnabled &&
                 ( dynamic_cast<const SbxMethod*>( pVal.get()) != nullptr
@@ -3426,7 +3427,7 @@ void SbiRuntime::StepSETCLASS_impl( sal_uInt32 nOp1, bool bHandleDflt )
 {
     SbxVariableRef refVal = PopVar();
     SbxVariableRef refVar = PopVar();
-    OUString aClass( pImg->GetString( static_cast<short>( nOp1 ) ) );
+    OUString aClass( pImg->GetString( nOp1 ) );
 
     bool bOk = checkClass_Impl( refVal, aClass, true, true );
     if( bOk )
@@ -3448,7 +3449,7 @@ void SbiRuntime::StepSETCLASS( sal_uInt32 nOp1 )
 void SbiRuntime::StepTESTCLASS( sal_uInt32 nOp1 )
 {
     SbxVariableRef xObjVal = PopVar();
-    OUString aClass( pImg->GetString( static_cast<short>( nOp1 ) ) );
+    OUString aClass( pImg->GetString( nOp1 ) );
     bool bDefault = !bVBAEnabled;
     bool bOk = checkClass_Impl( xObjVal, aClass, false, bDefault );
 
@@ -3461,7 +3462,7 @@ void SbiRuntime::StepTESTCLASS( sal_uInt32 nOp1 )
 
 void SbiRuntime::StepLIB( sal_uInt32 nOp1 )
 {
-    aLibName = pImg->GetString( static_cast<short>( nOp1 ) );
+    aLibName = pImg->GetString( nOp1 );
 }
 
 // TOS is incremented by BASE, BASE is pushed before (+BASE)
@@ -3515,7 +3516,7 @@ SbxVariable* SbiRuntime::FindElement( SbxObject* pObj, sal_uInt32 nOp1, sal_uInt
     {
         bool bFatalError = false;
         SbxDataType t = static_cast<SbxDataType>(nOp2);
-        OUString aName( pImg->GetString( static_cast<short>( nOp1 & 0x7FFF ) ) );
+        OUString aName( pImg->GetString( nOp1 & 0x7FFF ) );
         // Hacky capture of Evaluate [] syntax
         // this should be tackled I feel at the pcode level
         if ( bIsVBAInterOp && aName.startsWith("[") )
@@ -4307,7 +4308,7 @@ void SbiRuntime::StepCASEIS( sal_uInt32 nOp1, sal_uInt32 nOp2 )
 
 void SbiRuntime::StepCALL( sal_uInt32 nOp1, sal_uInt32 nOp2 )
 {
-    OUString aName = pImg->GetString( static_cast<short>( nOp1 & 0x7FFF ) );
+    OUString aName = pImg->GetString( nOp1 & 0x7FFF );
     SbxArray* pArgs = nullptr;
     if( nOp1 & 0x8000 )
     {
@@ -4325,7 +4326,7 @@ void SbiRuntime::StepCALL( sal_uInt32 nOp1, sal_uInt32 nOp2 )
 
 void SbiRuntime::StepCALLC( sal_uInt32 nOp1, sal_uInt32 nOp2 )
 {
-    OUString aName = pImg->GetString( static_cast<short>( nOp1 & 0x7FFF ) );
+    OUString aName = pImg->GetString( nOp1 & 0x7FFF );
     SbxArray* pArgs = nullptr;
     if( nOp1 & 0x8000 )
     {
@@ -4458,7 +4459,7 @@ void SbiRuntime::StepOPEN( sal_uInt32 nOp1, sal_uInt32 nOp2 )
 
 void SbiRuntime::StepCREATE( sal_uInt32 nOp1, sal_uInt32 nOp2 )
 {
-    OUString aClass( pImg->GetString( static_cast<short>( nOp2 ) ) );
+    OUString aClass( pImg->GetString( nOp2 ) );
     SbxObjectRef pObj = SbxBase::CreateObject( aClass );
     if( !pObj )
     {
@@ -4466,7 +4467,7 @@ void SbiRuntime::StepCREATE( sal_uInt32 nOp1, sal_uInt32 nOp2 )
     }
     else
     {
-        OUString aName( pImg->GetString( static_cast<short>( nOp1 ) ) );
+        OUString aName( pImg->GetString( nOp1 ) );
         pObj->SetName( aName );
         // the object must be able to call the BASIC
         pObj->SetParent( &rBasic );
@@ -4528,7 +4529,7 @@ void SbiRuntime::StepDCREATE_IMPL( sal_uInt32 nOp1, sal_uInt32 nOp2 )
         nTotalSize = 0; // on error, don't create objects
 
     // create objects and insert them into the array
-    OUString aClass( pImg->GetString( static_cast<short>( nOp2 ) ) );
+    OUString aClass( pImg->GetString( nOp2 ) );
     OUString aName;
     for( sal_Int32 i = 0 ; i < nTotalSize ; ++i )
     {
@@ -4543,7 +4544,7 @@ void SbiRuntime::StepDCREATE_IMPL( sal_uInt32 nOp1, sal_uInt32 nOp2 )
             else
             {
                 if (aName.isEmpty())
-                    aName = pImg->GetString(static_cast<short>(nOp1));
+                    aName = pImg->GetString(nOp1);
                 pClassObj->SetName(aName);
                 // the object must be able to call the basic
                 pClassObj->SetParent(&rBasic);
@@ -4555,8 +4556,8 @@ void SbiRuntime::StepDCREATE_IMPL( sal_uInt32 nOp1, sal_uInt32 nOp2 )
 
 void SbiRuntime::StepTCREATE( sal_uInt32 nOp1, sal_uInt32 nOp2 )
 {
-    OUString aName( pImg->GetString( static_cast<short>( nOp1 ) ) );
-    OUString aClass( pImg->GetString( static_cast<short>( nOp2 ) ) );
+    OUString aName( pImg->GetString( nOp1 ) );
+    OUString aClass( pImg->GetString( nOp2 ) );
 
     SbxObjectRef pCopyObj = createUserTypeImpl( aClass );
     if( pCopyObj )
@@ -4605,7 +4606,7 @@ void SbiRuntime::StepLOCAL( sal_uInt32 nOp1, sal_uInt32 nOp2 )
     {
         refLocals = new SbxArray;
     }
-    OUString aName( pImg->GetString( static_cast<short>( nOp1 ) ) );
+    OUString aName( pImg->GetString( nOp1 ) );
     if( refLocals->Find( aName, SbxClassType::DontCare ) == nullptr )
     {
         SbxDataType t = static_cast<SbxDataType>(nOp2 & 0xffff);
@@ -4620,7 +4621,7 @@ void SbiRuntime::StepLOCAL( sal_uInt32 nOp1, sal_uInt32 nOp2 )
 
 void SbiRuntime::StepPUBLIC_Impl( sal_uInt32 nOp1, sal_uInt32 nOp2, bool bUsedForClassModule )
 {
-    OUString aName( pImg->GetString( static_cast<short>( nOp1 ) ) );
+    OUString aName( pImg->GetString( nOp1 ) );
     SbxDataType t = static_cast<SbxDataType>(nOp2 & 0xffff);
     bool bFlag = pMod->IsSet( SbxFlagBits::NoModify );
     pMod->SetFlag( SbxFlagBits::NoModify );
@@ -4672,7 +4673,7 @@ void SbiRuntime::StepGLOBAL( sal_uInt32 nOp1, sal_uInt32 nOp2 )
     {
         StepPUBLIC_Impl( nOp1, nOp2, true );
     }
-    OUString aName( pImg->GetString( static_cast<short>( nOp1 ) ) );
+    OUString aName( pImg->GetString( nOp1 ) );
     SbxDataType t = static_cast<SbxDataType>(nOp2 & 0xffff);
 
     // Store module scope variables at module scope
@@ -4732,7 +4733,7 @@ void SbiRuntime::StepFIND_G( sal_uInt32 nOp1, sal_uInt32 nOp2 )
     {
         // Return dummy variable
         SbxDataType t = static_cast<SbxDataType>(nOp2);
-        OUString aName( pImg->GetString( static_cast<short>( nOp1 & 0x7FFF ) ) );
+        OUString aName( pImg->GetString( nOp1 & 0x7FFF ) );
 
         SbxVariable* pDummyVar = new SbxVariable( t );
         pDummyVar->SetName( aName );
@@ -4765,7 +4766,7 @@ SbxVariable* SbiRuntime::StepSTATIC_Impl(
 // establishing a static variable (+StringID+type)
 void SbiRuntime::StepSTATIC( sal_uInt32 nOp1, sal_uInt32 nOp2 )
 {
-    OUString aName( pImg->GetString( static_cast<short>( nOp1 ) ) );
+    OUString aName( pImg->GetString( nOp1 ) );
     SbxDataType t = static_cast<SbxDataType>(nOp2 & 0xffff);
     StepSTATIC_Impl( aName, t, nOp2 );
 }

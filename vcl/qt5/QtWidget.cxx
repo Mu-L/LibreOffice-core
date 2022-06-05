@@ -98,38 +98,35 @@ void QtWidget::resizeEvent(QResizeEvent* pEvent)
 
     if (m_rFrame.m_bUseCairo)
     {
-        if (m_rFrame.m_pSvpGraphics)
+        if (m_rFrame.m_pSurface)
         {
-            cairo_surface_t* pSurface
-                = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, nWidth, nHeight);
-            cairo_surface_set_user_data(pSurface, SvpSalGraphics::getDamageKey(),
-                                        &m_rFrame.m_aDamageHandler, nullptr);
-            m_rFrame.m_pSvpGraphics->setSurface(pSurface, basegfx::B2IVector(nWidth, nHeight));
-            UniqueCairoSurface old_surface(m_rFrame.m_pSurface.release());
-            m_rFrame.m_pSurface.reset(pSurface);
+            const int nOldWidth = cairo_image_surface_get_width(m_rFrame.m_pSurface.get());
+            const int nOldHeight = cairo_image_surface_get_height(m_rFrame.m_pSurface.get());
+            if (nOldWidth != nWidth || nOldHeight != nHeight)
+            {
+                cairo_surface_t* pSurface
+                    = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, nWidth, nHeight);
+                cairo_surface_set_user_data(pSurface, SvpSalGraphics::getDamageKey(),
+                                            &m_rFrame.m_aDamageHandler, nullptr);
+                m_rFrame.m_pSvpGraphics->setSurface(pSurface, basegfx::B2IVector(nWidth, nHeight));
+                UniqueCairoSurface old_surface(m_rFrame.m_pSurface.release());
+                m_rFrame.m_pSurface.reset(pSurface);
 
-            int min_width = qMin(cairo_image_surface_get_width(old_surface.get()), nWidth);
-            int min_height = qMin(cairo_image_surface_get_height(old_surface.get()), nHeight);
-
-            SalTwoRect rect(0, 0, min_width, min_height, 0, 0, min_width, min_height);
-
-            m_rFrame.m_pSvpGraphics->copySource(rect, old_surface.get());
+                const int nMinWidth = qMin(nOldWidth, nWidth);
+                const int nMinHeight = qMin(nOldHeight, nHeight);
+                SalTwoRect rect(0, 0, nMinWidth, nMinHeight, 0, 0, nMinWidth, nMinHeight);
+                m_rFrame.m_pSvpGraphics->copySource(rect, old_surface.get());
+            }
         }
     }
     else
     {
-        QImage* pImage = nullptr;
-
-        if (m_rFrame.m_pQImage)
-            pImage = new QImage(m_rFrame.m_pQImage->copy(0, 0, nWidth, nHeight));
-        else
+        if (m_rFrame.m_pQImage && m_rFrame.m_pQImage->size() != QSize(nWidth, nHeight))
         {
-            pImage = new QImage(nWidth, nHeight, Qt_DefaultFormat32);
-            pImage->fill(Qt::transparent);
+            QImage* pImage = new QImage(m_rFrame.m_pQImage->copy(0, 0, nWidth, nHeight));
+            m_rFrame.m_pQtGraphics->ChangeQImage(pImage);
+            m_rFrame.m_pQImage.reset(pImage);
         }
-
-        m_rFrame.m_pQtGraphics->ChangeQImage(pImage);
-        m_rFrame.m_pQImage.reset(pImage);
     }
 
     m_rFrame.CallCallback(SalEvent::Resize, nullptr);
@@ -493,6 +490,33 @@ void QtWidget::commitText(QtFrame& rFrame, const QString& aText)
         rFrame.CallCallback(SalEvent::EndExtTextInput, nullptr);
 }
 
+void QtWidget::deleteReplacementText(QtFrame& rFrame, int nReplacementStart, int nReplacementLength)
+{
+    // get the surrounding text
+    SolarMutexGuard aGuard;
+    SalSurroundingTextRequestEvent aSurroundingTextEvt;
+    aSurroundingTextEvt.maText.clear();
+    aSurroundingTextEvt.mnStart = aSurroundingTextEvt.mnEnd = 0;
+    rFrame.CallCallback(SalEvent::SurroundingTextRequest, &aSurroundingTextEvt);
+
+    // Turn nReplacementStart, nReplacementLength into a UTF-16 selection
+    const Selection aSelection = SalFrame::CalcDeleteSurroundingSelection(
+        aSurroundingTextEvt.maText, aSurroundingTextEvt.mnStart, nReplacementStart,
+        nReplacementLength);
+
+    const Selection aInvalid(SAL_MAX_UINT32, SAL_MAX_UINT32);
+    if (aSelection == aInvalid)
+    {
+        SAL_WARN("vcl.qt", "Invalid selection when deleting IM replacement text");
+        return;
+    }
+
+    SalSurroundingTextSelectionChangeEvent aEvt;
+    aEvt.mnStart = aSelection.Min();
+    aEvt.mnEnd = aSelection.Max();
+    rFrame.CallCallback(SalEvent::DeleteSurroundingTextRequest, &aEvt);
+}
+
 bool QtWidget::handleKeyEvent(QtFrame& rFrame, const QWidget& rWidget, QKeyEvent* pEvent,
                               const ButtonKeyState eState)
 {
@@ -694,6 +718,9 @@ QtWidget::QtWidget(QtFrame& rFrame, Qt::WindowFlags f)
     , m_nDeltaX(0)
     , m_nDeltaY(0)
 {
+    setAttribute(Qt::WA_TranslucentBackground);
+    setAttribute(Qt::WA_OpaquePaintEvent);
+    setAttribute(Qt::WA_NoSystemBackground);
     setMouseTracking(true);
     if (!rFrame.isPopup())
         setFocusPolicy(Qt::StrongFocus);
@@ -721,8 +748,16 @@ static ExtTextInputAttr lcl_MapUnderlineStyle(QTextCharFormat::UnderlineStyle us
 
 void QtWidget::inputMethodEvent(QInputMethodEvent* pEvent)
 {
-    if (!pEvent->commitString().isEmpty())
-        commitText(m_rFrame, pEvent->commitString());
+    const bool bHasCommitText = !pEvent->commitString().isEmpty();
+    const int nReplacementLength = pEvent->replacementLength();
+
+    if (nReplacementLength > 0 || bHasCommitText)
+    {
+        if (nReplacementLength > 0)
+            deleteReplacementText(m_rFrame, pEvent->replacementStart(), nReplacementLength);
+        if (bHasCommitText)
+            commitText(m_rFrame, pEvent->commitString());
+    }
     else
     {
         SalExtTextInputEvent aInputEvent;

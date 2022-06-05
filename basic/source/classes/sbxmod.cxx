@@ -18,6 +18,7 @@
  */
 
 
+#include <utility>
 #include <vcl/svapp.hxx>
 #include <tools/stream.hxx>
 #include <tools/diagnose_ex.h>
@@ -1450,7 +1451,7 @@ const sal_uInt8* SbModule::FindNextStmnt( const sal_uInt8* p, sal_uInt16& nLine,
 const sal_uInt8* SbModule::FindNextStmnt( const sal_uInt8* p, sal_uInt16& nLine, sal_uInt16& nCol,
     bool bFollowJumps, const SbiImage* pImg ) const
 {
-    sal_uInt32 nPC = static_cast<sal_uInt32>( p - reinterpret_cast<const sal_uInt8*>(pImage->GetCode()) );
+    sal_uInt32 nPC = static_cast<sal_uInt32>( p - pImage->GetCode() );
     while( nPC < pImage->GetCodeSize() )
     {
         SbiOpcode eOp = static_cast<SbiOpcode>( *p++ );
@@ -1460,7 +1461,7 @@ const sal_uInt8* SbModule::FindNextStmnt( const sal_uInt8* p, sal_uInt16& nLine,
             SAL_WARN_IF( !pImg, "basic", "FindNextStmnt: pImg==NULL with FollowJumps option" );
             sal_uInt32 nOp1 = *p++; nOp1 |= *p++ << 8;
             nOp1 |= *p++ << 16; nOp1 |= *p++ << 24;
-            p = reinterpret_cast<const sal_uInt8*>(pImg->GetCode()) + nOp1;
+            p = pImg->GetCode() + nOp1;
         }
         else if( eOp >= SbiOpcode::SbOP1_START && eOp <= SbiOpcode::SbOP1_END )
         {
@@ -1497,7 +1498,7 @@ bool SbModule::IsBreakable( sal_uInt16 nLine ) const
 {
     if( !pImage )
         return false;
-    const sal_uInt8* p = reinterpret_cast<const sal_uInt8*>(pImage->GetCode());
+    const sal_uInt8* p = pImage->GetCode();
     sal_uInt16 nl, nc;
     while( ( p = FindNextStmnt( p, nl, nc ) ) != nullptr )
         if( nl == nLine )
@@ -2212,8 +2213,8 @@ class FormObjEventListenerImpl:
 public:
     FormObjEventListenerImpl(const FormObjEventListenerImpl&) = delete;
     const FormObjEventListenerImpl& operator=(const FormObjEventListenerImpl&) = delete;
-    FormObjEventListenerImpl( SbUserFormModule* pUserForm, const uno::Reference< lang::XComponent >& xComponent, const uno::Reference< frame::XModel >& xModel ) :
-        mpUserForm( pUserForm ), mxComponent( xComponent), mxModel( xModel ),
+    FormObjEventListenerImpl( SbUserFormModule* pUserForm, uno::Reference< lang::XComponent > xComponent, uno::Reference< frame::XModel > xModel ) :
+        mpUserForm( pUserForm ), mxComponent(std::move( xComponent)), mxModel(std::move( xModel )),
         mbDisposed( false ), mbOpened( false ), mbActivated( false ), mbShowing( false )
     {
         if ( mxComponent.is() )

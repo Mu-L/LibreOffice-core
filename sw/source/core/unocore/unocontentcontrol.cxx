@@ -161,6 +161,16 @@ public:
     OUString m_aCheckedState;
     OUString m_aUncheckedState;
     std::vector<SwContentControlListItem> m_aListItems;
+    bool m_bPicture;
+    bool m_bDate;
+    OUString m_aDateFormat;
+    OUString m_aDateLanguage;
+    OUString m_aCurrentDate;
+    OUString m_aPlaceholderDocPart;
+    OUString m_aDataBindingPrefixMappings;
+    OUString m_aDataBindingXpath;
+    OUString m_aDataBindingStoreItemID;
+    OUString m_aColor;
 
     Impl(SwXContentControl& rThis, SwDoc& rDoc, SwContentControl* pContentControl,
          const uno::Reference<text::XText>& xParentText,
@@ -174,6 +184,8 @@ public:
         , m_bShowingPlaceHolder(false)
         , m_bCheckbox(false)
         , m_bChecked(false)
+        , m_bPicture(false)
+        , m_bDate(false)
     {
         if (m_pContentControl)
         {
@@ -519,6 +531,16 @@ void SwXContentControl::AttachImpl(const uno::Reference<text::XTextRange>& xText
     pContentControl->SetCheckedState(m_pImpl->m_aCheckedState);
     pContentControl->SetUncheckedState(m_pImpl->m_aUncheckedState);
     pContentControl->SetListItems(m_pImpl->m_aListItems);
+    pContentControl->SetPicture(m_pImpl->m_bPicture);
+    pContentControl->SetDate(m_pImpl->m_bDate);
+    pContentControl->SetDateFormat(m_pImpl->m_aDateFormat);
+    pContentControl->SetDateLanguage(m_pImpl->m_aDateLanguage);
+    pContentControl->SetCurrentDate(m_pImpl->m_aCurrentDate);
+    pContentControl->SetPlaceholderDocPart(m_pImpl->m_aPlaceholderDocPart);
+    pContentControl->SetDataBindingPrefixMappings(m_pImpl->m_aDataBindingPrefixMappings);
+    pContentControl->SetDataBindingXpath(m_pImpl->m_aDataBindingXpath);
+    pContentControl->SetDataBindingStoreItemID(m_pImpl->m_aDataBindingStoreItemID);
+    pContentControl->SetColor(m_pImpl->m_aColor);
 
     SwFormatContentControl aContentControl(pContentControl, nWhich);
     bool bSuccess
@@ -758,6 +780,156 @@ void SAL_CALL SwXContentControl::setPropertyValue(const OUString& rPropertyName,
             m_pImpl->m_pContentControl->SetListItems(aItems);
         }
     }
+    else if (rPropertyName == UNO_NAME_PICTURE)
+    {
+        bool bValue;
+        if (rValue >>= bValue)
+        {
+            if (m_pImpl->m_bIsDescriptor)
+            {
+                m_pImpl->m_bPicture = bValue;
+            }
+            else
+            {
+                m_pImpl->m_pContentControl->SetPicture(bValue);
+            }
+        }
+    }
+    else if (rPropertyName == UNO_NAME_DATE)
+    {
+        bool bValue;
+        if (rValue >>= bValue)
+        {
+            if (m_pImpl->m_bIsDescriptor)
+            {
+                m_pImpl->m_bDate = bValue;
+            }
+            else
+            {
+                m_pImpl->m_pContentControl->SetDate(bValue);
+            }
+        }
+    }
+    else if (rPropertyName == UNO_NAME_DATE_FORMAT)
+    {
+        OUString aValue;
+        if (rValue >>= aValue)
+        {
+            if (m_pImpl->m_bIsDescriptor)
+            {
+                m_pImpl->m_aDateFormat = aValue;
+            }
+            else
+            {
+                m_pImpl->m_pContentControl->SetDateFormat(aValue);
+            }
+        }
+    }
+    else if (rPropertyName == UNO_NAME_DATE_LANGUAGE)
+    {
+        OUString aValue;
+        if (rValue >>= aValue)
+        {
+            if (m_pImpl->m_bIsDescriptor)
+            {
+                m_pImpl->m_aDateLanguage = aValue;
+            }
+            else
+            {
+                m_pImpl->m_pContentControl->SetDateLanguage(aValue);
+            }
+        }
+    }
+    else if (rPropertyName == UNO_NAME_CURRENT_DATE)
+    {
+        OUString aValue;
+        if (rValue >>= aValue)
+        {
+            if (m_pImpl->m_bIsDescriptor)
+            {
+                m_pImpl->m_aCurrentDate = aValue;
+            }
+            else
+            {
+                m_pImpl->m_pContentControl->SetCurrentDate(aValue);
+            }
+        }
+    }
+    else if (rPropertyName == UNO_NAME_PLACEHOLDER_DOC_PART)
+    {
+        OUString aValue;
+        if (rValue >>= aValue)
+        {
+            if (m_pImpl->m_bIsDescriptor)
+            {
+                m_pImpl->m_aPlaceholderDocPart = aValue;
+            }
+            else
+            {
+                m_pImpl->m_pContentControl->SetPlaceholderDocPart(aValue);
+            }
+        }
+    }
+    else if (rPropertyName == UNO_NAME_DATA_BINDING_PREFIX_MAPPINGS)
+    {
+        OUString aValue;
+        if (rValue >>= aValue)
+        {
+            if (m_pImpl->m_bIsDescriptor)
+            {
+                m_pImpl->m_aDataBindingPrefixMappings = aValue;
+            }
+            else
+            {
+                m_pImpl->m_pContentControl->SetDataBindingPrefixMappings(aValue);
+            }
+        }
+    }
+    else if (rPropertyName == UNO_NAME_DATA_BINDING_XPATH)
+    {
+        OUString aValue;
+        if (rValue >>= aValue)
+        {
+            if (m_pImpl->m_bIsDescriptor)
+            {
+                m_pImpl->m_aDataBindingXpath = aValue;
+            }
+            else
+            {
+                m_pImpl->m_pContentControl->SetDataBindingXpath(aValue);
+            }
+        }
+    }
+    else if (rPropertyName == UNO_NAME_DATA_BINDING_STORE_ITEM_ID)
+    {
+        OUString aValue;
+        if (rValue >>= aValue)
+        {
+            if (m_pImpl->m_bIsDescriptor)
+            {
+                m_pImpl->m_aDataBindingStoreItemID = aValue;
+            }
+            else
+            {
+                m_pImpl->m_pContentControl->SetDataBindingStoreItemID(aValue);
+            }
+        }
+    }
+    else if (rPropertyName == UNO_NAME_COLOR)
+    {
+        OUString aValue;
+        if (rValue >>= aValue)
+        {
+            if (m_pImpl->m_bIsDescriptor)
+            {
+                m_pImpl->m_aColor = aValue;
+            }
+            else
+            {
+                m_pImpl->m_pContentControl->SetColor(aValue);
+            }
+        }
+    }
     else
     {
         throw beans::UnknownPropertyException();
@@ -836,6 +1008,116 @@ uno::Any SAL_CALL SwXContentControl::getPropertyValue(const OUString& rPropertyN
             aItems = m_pImpl->m_pContentControl->GetListItems();
         }
         SwContentControlListItem::ItemsToAny(aItems, aRet);
+    }
+    else if (rPropertyName == UNO_NAME_PICTURE)
+    {
+        if (m_pImpl->m_bIsDescriptor)
+        {
+            aRet <<= m_pImpl->m_bPicture;
+        }
+        else
+        {
+            aRet <<= m_pImpl->m_pContentControl->GetPicture();
+        }
+    }
+    else if (rPropertyName == UNO_NAME_DATE)
+    {
+        if (m_pImpl->m_bIsDescriptor)
+        {
+            aRet <<= m_pImpl->m_bDate;
+        }
+        else
+        {
+            aRet <<= m_pImpl->m_pContentControl->GetDate();
+        }
+    }
+    else if (rPropertyName == UNO_NAME_DATE_FORMAT)
+    {
+        if (m_pImpl->m_bIsDescriptor)
+        {
+            aRet <<= m_pImpl->m_aDateFormat;
+        }
+        else
+        {
+            aRet <<= m_pImpl->m_pContentControl->GetDateFormat();
+        }
+    }
+    else if (rPropertyName == UNO_NAME_DATE_LANGUAGE)
+    {
+        if (m_pImpl->m_bIsDescriptor)
+        {
+            aRet <<= m_pImpl->m_aDateLanguage;
+        }
+        else
+        {
+            aRet <<= m_pImpl->m_pContentControl->GetDateLanguage();
+        }
+    }
+    else if (rPropertyName == UNO_NAME_CURRENT_DATE)
+    {
+        if (m_pImpl->m_bIsDescriptor)
+        {
+            aRet <<= m_pImpl->m_aCurrentDate;
+        }
+        else
+        {
+            aRet <<= m_pImpl->m_pContentControl->GetCurrentDate();
+        }
+    }
+    else if (rPropertyName == UNO_NAME_PLACEHOLDER_DOC_PART)
+    {
+        if (m_pImpl->m_bIsDescriptor)
+        {
+            aRet <<= m_pImpl->m_aPlaceholderDocPart;
+        }
+        else
+        {
+            aRet <<= m_pImpl->m_pContentControl->GetCurrentDate();
+        }
+    }
+    else if (rPropertyName == UNO_NAME_DATA_BINDING_PREFIX_MAPPINGS)
+    {
+        if (m_pImpl->m_bIsDescriptor)
+        {
+            aRet <<= m_pImpl->m_aDataBindingPrefixMappings;
+        }
+        else
+        {
+            aRet <<= m_pImpl->m_pContentControl->GetDataBindingPrefixMappings();
+        }
+    }
+    else if (rPropertyName == UNO_NAME_DATA_BINDING_XPATH)
+    {
+        if (m_pImpl->m_bIsDescriptor)
+        {
+            aRet <<= m_pImpl->m_aDataBindingXpath;
+        }
+        else
+        {
+            aRet <<= m_pImpl->m_pContentControl->GetDataBindingXpath();
+        }
+    }
+    else if (rPropertyName == UNO_NAME_DATA_BINDING_STORE_ITEM_ID)
+    {
+        if (m_pImpl->m_bIsDescriptor)
+        {
+            aRet <<= m_pImpl->m_aDataBindingStoreItemID;
+        }
+        else
+        {
+            aRet <<= m_pImpl->m_pContentControl->GetDataBindingStoreItemID();
+        }
+    }
+    else if (rPropertyName == UNO_NAME_COLOR)
+    {
+        if (m_pImpl->m_bIsDescriptor)
+        {
+            aRet <<= m_pImpl->m_aColor;
+        }
+        else
+        {
+            aRet <<= m_pImpl->m_pContentControl->GetColor();
+        }
     }
     else
     {

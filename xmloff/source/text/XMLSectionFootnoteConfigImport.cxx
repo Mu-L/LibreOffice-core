@@ -101,19 +101,19 @@ void XMLSectionFootnoteConfigImport::startFastElement(
                 bNumOwn = true;
                 break;
             }
-            case XML_ELEMENT(TEXT, XML_NUM_SUFFIX):
+            case XML_ELEMENT(STYLE, XML_NUM_SUFFIX):
             {
                 sNumSuffix = aIter.toString();
                 bNumOwn = true;
                 break;
             }
-            case XML_ELEMENT(TEXT, XML_NUM_FORMAT):
+            case XML_ELEMENT(STYLE, XML_NUM_FORMAT):
             {
                 sNumFormat = aIter.toString();
                 bNumOwn = true;
                 break;
             }
-            case XML_ELEMENT(TEXT, XML_NUM_LETTER_SYNC):
+            case XML_ELEMENT(STYLE, XML_NUM_LETTER_SYNC):
             {
                 sNumLetterSync = aIter.toString();
                 bNumOwn = true;

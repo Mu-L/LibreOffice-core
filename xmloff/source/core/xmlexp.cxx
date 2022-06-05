@@ -538,9 +538,9 @@ SvXMLExport::~SvXMLExport()
             {
                 if (mpProgressBarHelper)
                 {
-                    OUString sProgressMax(XML_PROGRESSMAX);
-                    OUString sProgressCurrent(XML_PROGRESSCURRENT);
-                    OUString sRepeat(XML_PROGRESSREPEAT);
+                    static constexpr OUStringLiteral sProgressMax(XML_PROGRESSMAX);
+                    static constexpr OUStringLiteral sProgressCurrent(XML_PROGRESSCURRENT);
+                    static constexpr OUStringLiteral sRepeat(XML_PROGRESSREPEAT);
                     if (xPropertySetInfo->hasPropertyByName(sProgressMax) &&
                         xPropertySetInfo->hasPropertyByName(sProgressCurrent))
                     {
@@ -554,7 +554,7 @@ SvXMLExport::~SvXMLExport()
                 }
                 if (mpNumExport && (mnExportFlags & (SvXMLExportFlags::AUTOSTYLES | SvXMLExportFlags::STYLES)))
                 {
-                    OUString sWrittenNumberFormats(XML_WRITTENNUMBERSTYLES);
+                    static constexpr OUStringLiteral sWrittenNumberFormats(XML_WRITTENNUMBERSTYLES);
                     if (xPropertySetInfo->hasPropertyByName(sWrittenNumberFormats))
                     {
                         mxExportInfo->setPropertyValue(sWrittenNumberFormats, Any(mpNumExport->GetWasUsed()));
@@ -699,27 +699,26 @@ void SAL_CALL SvXMLExport::initialize( const uno::Sequence< uno::Any >& aArgumen
 
     uno::Reference< beans::XPropertySetInfo > xPropertySetInfo =
         mxExportInfo->getPropertySetInfo();
-    OUString sPropName(
-            "BaseURI"  );
-    if( xPropertySetInfo->hasPropertyByName(sPropName) )
+    static constexpr OUStringLiteral sBaseURI = u"BaseURI";
+    if( xPropertySetInfo->hasPropertyByName(sBaseURI) )
     {
-        uno::Any aAny = mxExportInfo->getPropertyValue(sPropName);
+        uno::Any aAny = mxExportInfo->getPropertyValue(sBaseURI);
         aAny >>= msOrigFileName;
         mpImpl->msPackageURI = msOrigFileName;
         mpImpl->SetSchemeOf( msOrigFileName );
     }
     OUString sRelPath;
-    sPropName = "StreamRelPath";
-    if( xPropertySetInfo->hasPropertyByName(sPropName) )
+    static constexpr OUStringLiteral sStreamRelPath = u"StreamRelPath";
+    if( xPropertySetInfo->hasPropertyByName(sStreamRelPath) )
     {
-        uno::Any aAny = mxExportInfo->getPropertyValue(sPropName);
+        uno::Any aAny = mxExportInfo->getPropertyValue(sStreamRelPath);
         aAny >>= sRelPath;
     }
     OUString sName;
-    sPropName = "StreamName";
-    if( xPropertySetInfo->hasPropertyByName(sPropName) )
+    static constexpr OUStringLiteral sStreamName = u"StreamName";
+    if( xPropertySetInfo->hasPropertyByName(sStreamName) )
     {
-        uno::Any aAny = mxExportInfo->getPropertyValue(sPropName);
+        uno::Any aAny = mxExportInfo->getPropertyValue(sStreamName);
         aAny >>= sName;
     }
     if( !msOrigFileName.isEmpty() && !sName.isEmpty() )
@@ -1255,7 +1254,6 @@ ErrCode SvXMLExport::exportDoc( enum ::xmloff::token::XMLTokenEnum eClass )
                 { OUString("Class"), 0,
                     ::cppu::UnoType<OUString>::get(),
                       PropertyAttribute::MAYBEVOID, 0},
-                { OUString(), 0, css::uno::Type(), 0, 0 }
             };
             Reference< XPropertySet > xConvPropSet(
                 ::comphelper::GenericPropertySet_CreateInstance(
@@ -1406,7 +1404,7 @@ ErrCode SvXMLExport::exportDoc( enum ::xmloff::token::XMLTokenEnum eClass )
 
 void SvXMLExport::ResetNamespaceMap()
 {
-    mpNamespaceMap.reset( new SvXMLNamespaceMap );
+    mpNamespaceMap->Clear();
 }
 
 OUString const & SvXMLExport::GetSourceShellID() const
@@ -1726,7 +1724,8 @@ void SvXMLExport::GetViewSettingsAndViews(uno::Sequence<beans::PropertyValue>& r
     xViewDataSupplier->setViewData( xIndexAccess ); // make sure we get a newly created sequence
     {
         // tdf#130559: don't export preview view data if active
-        css::uno::ContextLayer layer(comphelper::NewFlagContext("NoPreviewData"));
+        static constexpr OUStringLiteral sNoPreviewData = u"NoPreviewData";
+        css::uno::ContextLayer layer(comphelper::NewFlagContext(sNoPreviewData));
         xIndexAccess = xViewDataSupplier->getViewData();
     }
     bool bAdd = false;

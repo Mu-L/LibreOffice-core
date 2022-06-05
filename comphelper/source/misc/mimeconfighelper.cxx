@@ -33,14 +33,15 @@
 #include <comphelper/documentconstants.hxx>
 #include <comphelper/propertysequence.hxx>
 #include <rtl/ustrbuf.hxx>
+#include <utility>
 
 
 using namespace ::com::sun::star;
 using namespace comphelper;
 
 
-MimeConfigurationHelper::MimeConfigurationHelper( const uno::Reference< uno::XComponentContext >& rxContext )
-: m_xContext( rxContext )
+MimeConfigurationHelper::MimeConfigurationHelper( uno::Reference< uno::XComponentContext > xContext )
+: m_xContext(std::move( xContext ))
 {
     if ( !m_xContext.is() )
         throw uno::RuntimeException();
@@ -728,8 +729,19 @@ OUString MimeConfigurationHelper::GetDefaultFilterFromServiceName( const OUStrin
                     uno::Sequence< beans::PropertyValue > aProps;
                     if ( xFilterEnum->nextElement() >>= aProps )
                     {
-                        SequenceAsHashMap aPropsHM( aProps );
-                        SfxFilterFlags nFlags = static_cast<SfxFilterFlags>(aPropsHM.getUnpackedValueOrDefault( "Flags", sal_Int32(0) ));
+                        SfxFilterFlags nFlags = SfxFilterFlags::NONE;
+                        OUString sName;
+                        for (const auto & rPropVal : aProps)
+                        {
+                            if (rPropVal.Name == "Flags")
+                            {
+                                sal_Int32 nTmp(0);
+                                if (rPropVal.Value >>= nTmp)
+                                    nFlags = static_cast<SfxFilterFlags>(nTmp);
+                            }
+                            else if (rPropVal.Name == "Name")
+                                rPropVal.Value >>= sName;
+                        }
 
                         // that should be import, export, own filter and not a template filter ( TemplatePath flag )
                         SfxFilterFlags const nRequired = SfxFilterFlags::OWN
@@ -743,7 +755,7 @@ OUString MimeConfigurationHelper::GetDefaultFilterFromServiceName( const OUStrin
                             // if there are more than one filter the preferred one should be used
                             // if there is no preferred filter the first one will be used
                             if ( aResult.isEmpty() || ( nFlags & SfxFilterFlags::PREFERED ) )
-                                aResult = aPropsHM.getUnpackedValueOrDefault( "Name", OUString() );
+                                aResult = sName;
                             if ( nFlags & SfxFilterFlags::PREFERED )
                                 break; // the preferred filter was found
                         }

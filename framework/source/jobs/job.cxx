@@ -32,6 +32,7 @@
 #include <comphelper/sequence.hxx>
 #include <sal/log.hxx>
 #include <tools/diagnose_ex.h>
+#include <utility>
 #include <vcl/svapp.hxx>
 
 namespace framework{
@@ -50,10 +51,10 @@ namespace framework{
                 (May be null!)
 */
 Job::Job( /*IN*/ const css::uno::Reference< css::uno::XComponentContext >& xContext  ,
-          /*IN*/ const css::uno::Reference< css::frame::XFrame >&              xFrame )
+          /*IN*/ css::uno::Reference< css::frame::XFrame >               xFrame )
     : m_aJobCfg            (xContext                     )
     , m_xContext           (xContext                     )
-    , m_xFrame             (xFrame                       )
+    , m_xFrame             (std::move(xFrame                       ))
     , m_bListenOnDesktop   (false                    )
     , m_bListenOnFrame     (false                    )
     , m_bListenOnModel     (false                    )
@@ -77,10 +78,10 @@ Job::Job( /*IN*/ const css::uno::Reference< css::uno::XComponentContext >& xCont
                 (May be null!)
 */
 Job::Job( /*IN*/ const css::uno::Reference< css::uno::XComponentContext >& xContext  ,
-          /*IN*/ const css::uno::Reference< css::frame::XModel >&              xModel )
+          /*IN*/ css::uno::Reference< css::frame::XModel >               xModel )
     : m_aJobCfg            (xContext                     )
     , m_xContext           (xContext                     )
-    , m_xModel             (xModel                       )
+    , m_xModel             (std::move(xModel                       ))
     , m_bListenOnDesktop   (false                    )
     , m_bListenOnFrame     (false                    )
     , m_bListenOnModel     (false                    )
@@ -156,6 +157,18 @@ void Job::setJobData( const JobData& aData )
 void Job::execute( /*IN*/ const css::uno::Sequence< css::beans::NamedValue >& lDynamicArgs )
 {
     /* SAFE { */
+    class SolarMutexAntiGuard {
+        SolarMutexResettableGuard & m_rGuard;
+    public:
+        SolarMutexAntiGuard(SolarMutexResettableGuard & rGuard) : m_rGuard(rGuard)
+        {
+            m_rGuard.clear();
+        }
+        ~SolarMutexAntiGuard()
+        {
+            m_rGuard.reset();
+        }
+    };
     SolarMutexResettableGuard aWriteLock;
 
     // reject dangerous calls
@@ -191,23 +204,24 @@ void Job::execute( /*IN*/ const css::uno::Sequence< css::beans::NamedValue >& lD
         if (xAJob.is())
         {
             m_aAsyncWait.reset();
-            aWriteLock.clear();
+            SolarMutexAntiGuard const ag(aWriteLock);
             /* } SAFE */
             xAJob->executeAsync(lJobArgs, xThis);
             // wait for finishing this job - so this method
             // does the same for synchronous and asynchronous jobs!
             m_aAsyncWait.wait();
-            aWriteLock.reset();
             /* SAFE { */
             // Note: Result handling was already done inside the callback!
         }
         // execute it synchron
         else if (xSJob.is())
         {
-            aWriteLock.clear();
-            /* } SAFE */
-            css::uno::Any aResult = xSJob->execute(lJobArgs);
-            aWriteLock.reset();
+            css::uno::Any aResult;
+            {
+                SolarMutexAntiGuard const ag(aWriteLock);
+                /* } SAFE */
+                aResult = xSJob->execute(lJobArgs);
+            }
             /* SAFE { */
             impl_reactForJobResult(aResult);
         }

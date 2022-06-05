@@ -63,7 +63,8 @@ public:
                               OInterfaceContainerHelper4<ListenerT>& rCont_)
         : rCont(rCont_)
         , maData(rCont.maData)
-        , nRemain(maData->size())
+        // const_cast so we don't trigger make_unique via o3tl::cow_wrapper::operator->
+        , nRemain(std::as_const(maData)->size())
     {
     }
 
@@ -85,7 +86,9 @@ public:
 
 private:
     OInterfaceContainerHelper4<ListenerT>& rCont;
-    o3tl::cow_wrapper<std::vector<css::uno::Reference<ListenerT>>> maData;
+    o3tl::cow_wrapper<std::vector<css::uno::Reference<ListenerT>>,
+                      o3tl::ThreadSafeRefCountingPolicy>
+        maData;
     sal_Int32 nRemain;
 
     OInterfaceIteratorHelper4(const OInterfaceIteratorHelper4&) = delete;
@@ -96,13 +99,13 @@ template <class ListenerT>
 const css::uno::Reference<ListenerT>& OInterfaceIteratorHelper4<ListenerT>::next()
 {
     nRemain--;
-    return (*maData)[nRemain];
+    return (*std::as_const(maData))[nRemain];
 }
 
 template <class ListenerT>
 void OInterfaceIteratorHelper4<ListenerT>::remove(::std::unique_lock<::std::mutex>& rGuard)
 {
-    rCont.removeInterface(rGuard, (*maData)[nRemain]);
+    rCont.removeInterface(rGuard, (*std::as_const(maData))[nRemain]);
 }
 
 /**
@@ -227,13 +230,19 @@ public:
 
 private:
     friend class OInterfaceIteratorHelper4<ListenerT>;
-    o3tl::cow_wrapper<std::vector<css::uno::Reference<ListenerT>>> maData;
+    o3tl::cow_wrapper<std::vector<css::uno::Reference<ListenerT>>,
+                      o3tl::ThreadSafeRefCountingPolicy>
+        maData;
     OInterfaceContainerHelper4(const OInterfaceContainerHelper4&) = delete;
     OInterfaceContainerHelper4& operator=(const OInterfaceContainerHelper4&) = delete;
 
-    static o3tl::cow_wrapper<std::vector<css::uno::Reference<ListenerT>>>& DEFAULT()
+    static o3tl::cow_wrapper<std::vector<css::uno::Reference<ListenerT>>,
+                             o3tl::ThreadSafeRefCountingPolicy>&
+    DEFAULT()
     {
-        static o3tl::cow_wrapper<std::vector<css::uno::Reference<ListenerT>>> SINGLETON;
+        static o3tl::cow_wrapper<std::vector<css::uno::Reference<ListenerT>>,
+                                 o3tl::ThreadSafeRefCountingPolicy>
+            SINGLETON;
         return SINGLETON;
     }
 

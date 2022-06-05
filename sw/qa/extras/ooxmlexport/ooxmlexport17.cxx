@@ -9,14 +9,18 @@
 
 #include <com/sun/star/beans/NamedValue.hpp>
 #include <com/sun/star/text/XBookmarksSupplier.hpp>
+#include <com/sun/star/text/XFootnotesSupplier.hpp>
 #include <com/sun/star/text/XTextFieldsSupplier.hpp>
 #include <com/sun/star/text/XTextField.hpp>
 #include <com/sun/star/drawing/XShapes.hpp>
 #include <com/sun/star/util/XRefreshable.hpp>
 #include <com/sun/star/text/XTextDocument.hpp>
 #include <com/sun/star/frame/XStorable.hpp>
+#include <com/sun/star/awt/FontSlant.hpp>
+#include <com/sun/star/awt/FontWeight.hpp>
 
 #include <comphelper/scopeguard.hxx>
+#include <comphelper/sequenceashashmap.hxx>
 #include <officecfg/Office/Common.hxx>
 #include <o3tl/string_view.hxx>
 #include <comphelper/propertyvalue.hxx>
@@ -282,7 +286,7 @@ CPPUNIT_TEST_FIXTURE(Test, testCheckboxContentControlExport)
 
 CPPUNIT_TEST_FIXTURE(Test, testDropdownContentControlExport)
 {
-    // Given a document with a checkbox content control around a text portion:
+    // Given a document with a dropdown content control around a text portion:
     mxComponent = loadFromDesktop("private:factory/swriter");
     uno::Reference<lang::XMultiServiceFactory> xMSF(mxComponent, uno::UNO_QUERY);
     uno::Reference<text::XTextDocument> xTextDocument(mxComponent, uno::UNO_QUERY);
@@ -330,6 +334,87 @@ CPPUNIT_TEST_FIXTURE(Test, testDropdownContentControlExport)
     assertXPath(pXmlDoc, "//w:sdt/w:sdtPr/w:dropDownList/w:listItem[2]", "value", "G");
     assertXPath(pXmlDoc, "//w:sdt/w:sdtPr/w:dropDownList/w:listItem[3]", "displayText", "blue");
     assertXPath(pXmlDoc, "//w:sdt/w:sdtPr/w:dropDownList/w:listItem[3]", "value", "B");
+}
+
+CPPUNIT_TEST_FIXTURE(Test, testPictureContentControlExport)
+{
+    // Given a document with a picture content control around a text portion:
+    mxComponent = loadFromDesktop("private:factory/swriter");
+    uno::Reference<lang::XMultiServiceFactory> xMSF(mxComponent, uno::UNO_QUERY);
+    uno::Reference<text::XTextDocument> xTextDocument(mxComponent, uno::UNO_QUERY);
+    uno::Reference<text::XText> xText = xTextDocument->getText();
+    uno::Reference<text::XTextCursor> xCursor = xText->createTextCursor();
+    uno::Reference<beans::XPropertySet> xTextGraphic(
+        xMSF->createInstance("com.sun.star.text.TextGraphicObject"), uno::UNO_QUERY);
+    xTextGraphic->setPropertyValue("AnchorType",
+                                   uno::Any(text::TextContentAnchorType_AS_CHARACTER));
+    uno::Reference<text::XTextContent> xTextContent(xTextGraphic, uno::UNO_QUERY);
+    xText->insertTextContent(xCursor, xTextContent, false);
+    xCursor->gotoStart(/*bExpand=*/false);
+    xCursor->gotoEnd(/*bExpand=*/true);
+    uno::Reference<text::XTextContent> xContentControl(
+        xMSF->createInstance("com.sun.star.text.ContentControl"), uno::UNO_QUERY);
+    uno::Reference<beans::XPropertySet> xContentControlProps(xContentControl, uno::UNO_QUERY);
+    xContentControlProps->setPropertyValue("Picture", uno::Any(true));
+    xText->insertTextContent(xCursor, xContentControl, /*bAbsorb=*/true);
+
+    // When exporting to DOCX:
+    save("Office Open XML Text", maTempFile);
+    mbExported = true;
+
+    // Then make sure the expected markup is used:
+    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
+    // Without the fix in place, this test would have failed with:
+    // - Expected: 1
+    // - Actual  : 0
+    // i.e. <w:picture> was lost on export.
+    assertXPath(pXmlDoc, "//w:sdt/w:sdtPr/w:picture", 1);
+}
+
+CPPUNIT_TEST_FIXTURE(Test, testDateContentControlExport)
+{
+    // Given a document with a date content control around a text portion:
+    mxComponent = loadFromDesktop("private:factory/swriter");
+    uno::Reference<lang::XMultiServiceFactory> xMSF(mxComponent, uno::UNO_QUERY);
+    uno::Reference<text::XTextDocument> xTextDocument(mxComponent, uno::UNO_QUERY);
+    uno::Reference<text::XText> xText = xTextDocument->getText();
+    uno::Reference<text::XTextCursor> xCursor = xText->createTextCursor();
+    xText->insertString(xCursor, "test", /*bAbsorb=*/false);
+    xCursor->gotoStart(/*bExpand=*/false);
+    xCursor->gotoEnd(/*bExpand=*/true);
+    uno::Reference<text::XTextContent> xContentControl(
+        xMSF->createInstance("com.sun.star.text.ContentControl"), uno::UNO_QUERY);
+    uno::Reference<beans::XPropertySet> xContentControlProps(xContentControl, uno::UNO_QUERY);
+    xContentControlProps->setPropertyValue("Date", uno::Any(true));
+    xContentControlProps->setPropertyValue("DateFormat", uno::Any(OUString("M/d/yyyy")));
+    xContentControlProps->setPropertyValue("DateLanguage", uno::Any(OUString("en-US")));
+    xContentControlProps->setPropertyValue("CurrentDate", uno::Any(OUString("2022-05-26T00:00:00Z")));
+    xContentControlProps->setPropertyValue("PlaceholderDocPart", uno::Any(OUString("DefaultPlaceholder_-1854013437")));
+    xContentControlProps->setPropertyValue("DataBindingPrefixMappings", uno::Any(OUString("xmlns:ns0='http://schemas.microsoft.com/vsto/samples' ")));
+    xContentControlProps->setPropertyValue("DataBindingXpath", uno::Any(OUString("/ns0:employees[1]/ns0:employee[1]/ns0:hireDate[1]")));
+    xContentControlProps->setPropertyValue("DataBindingStoreItemID", uno::Any(OUString("{241A8A02-7FFD-488D-8827-63FBE74E8BC9}")));
+    xContentControlProps->setPropertyValue("Color", uno::Any(OUString("008000")));
+    xText->insertTextContent(xCursor, xContentControl, /*bAbsorb=*/true);
+
+    // When exporting to DOCX:
+    save("Office Open XML Text", maTempFile);
+    mbExported = true;
+
+    // Then make sure the expected markup is used:
+    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
+    // Without the fix in place, this test would have failed with:
+    // - Expected: 1
+    // - Actual  : 0
+    // - XPath '//w:sdt/w:sdtPr/w:date/w:dateFormat' number of nodes is incorrect
+    // i.e. the <w:date> was lost on export.
+    assertXPath(pXmlDoc, "//w:sdt/w:sdtPr/w:date/w:dateFormat", "val", "M/d/yyyy");
+    assertXPath(pXmlDoc, "//w:sdt/w:sdtPr/w:date/w:lid", "val", "en-US");
+    assertXPath(pXmlDoc, "//w:sdt/w:sdtPr/w:date", "fullDate", "2022-05-26T00:00:00Z");
+    assertXPath(pXmlDoc, "//w:sdt/w:sdtPr/w:placeholder/w:docPart", "val", "DefaultPlaceholder_-1854013437");
+    assertXPath(pXmlDoc, "//w:sdt/w:sdtPr/w:dataBinding", "prefixMappings", "xmlns:ns0='http://schemas.microsoft.com/vsto/samples' ");
+    assertXPath(pXmlDoc, "//w:sdt/w:sdtPr/w:dataBinding", "xpath", "/ns0:employees[1]/ns0:employee[1]/ns0:hireDate[1]");
+    assertXPath(pXmlDoc, "//w:sdt/w:sdtPr/w:dataBinding", "storeItemID", "{241A8A02-7FFD-488D-8827-63FBE74E8BC9}");
+    assertXPath(pXmlDoc, "//w:sdt/w:sdtPr/w15:color", "val", "008000");
 }
 
 CPPUNIT_TEST_FIXTURE(Test, testTdf148494)
@@ -442,6 +527,65 @@ DECLARE_OOXMLEXPORT_TEST(TestWPGZOrder, "testWPGZOrder.docx")
     }
 }
 
+DECLARE_OOXMLEXPORT_TEST(testTdf148720, "tdf148720.odt")
+{
+    const auto& pLayout = parseLayoutDump();
+
+    const OString sShapeXPaths[] =
+    {
+        OString("/root/page/body/txt/anchored/SwAnchoredDrawObject/SdrObjGroup/SdrObjList/SdrObject[1]"),
+        OString("/root/page/body/txt/anchored/SwAnchoredDrawObject/SdrObjGroup/SdrObjList/SdrObjGroup/SdrObjList/SdrObjGroup/SdrObjList/SdrObject[1]"),
+        OString("/root/page/body/txt/anchored/SwAnchoredDrawObject/SdrObjGroup/SdrObjList/SdrObjGroup/SdrObjList/SdrObjGroup/SdrObjList/SdrObject[2]"),
+        OString("/root/page/body/txt/anchored/SwAnchoredDrawObject/SdrObjGroup/SdrObjList/SdrObject[2]")
+    };
+
+    const OString sTextXPaths[] =
+    {
+        OString("/root/page/body/txt/anchored/fly[1]/infos/bounds"),
+        OString("/root/page/body/txt/anchored/fly[2]/infos/bounds"),
+        OString("/root/page/body/txt/anchored/fly[3]/infos/bounds"),
+        OString("/root/page/body/txt/anchored/fly[4]/infos/bounds")
+    };
+
+    const OString sAttribs[] =
+    {
+        OString("left"),
+        OString("top"),
+        OString("width"),
+        OString("height")
+    };
+
+    for (sal_Int32 i = 0; i < 4; ++i)
+    {
+        OUString aShapeVals[4];
+        int aTextVals[4] = {0, 0, 0, 0};
+
+        const auto aOutRect = getXPath(pLayout, sShapeXPaths[i], "aOutRect");
+
+        sal_uInt16 nCommaPos[4] = {0, 0, 0, 0};
+        nCommaPos[1] = aOutRect.indexOf(",");
+        nCommaPos[2] = aOutRect.indexOf(",", nCommaPos[1] + 1);
+        nCommaPos[3] = aOutRect.indexOf(",", nCommaPos[2] + 1);
+
+
+        aShapeVals[0] = aOutRect.copy(nCommaPos[0], nCommaPos[1] - nCommaPos[0]);
+        aShapeVals[1] = aOutRect.copy(nCommaPos[1] + 2, nCommaPos[2] - nCommaPos[1] - 2);
+        aShapeVals[2] = aOutRect.copy(nCommaPos[2] + 2, nCommaPos[3] - nCommaPos[2] - 2);
+        aShapeVals[3] = aOutRect.copy(nCommaPos[3] + 2, aOutRect.getLength() - nCommaPos[3] - 2);
+
+        for (int ii = 0; ii < 4; ++ii)
+        {
+            aTextVals[ii] = getXPath(pLayout, sTextXPaths[i], sAttribs[ii]).toInt32();
+        }
+
+        tools::Rectangle ShapeArea(Point(aShapeVals[0].toInt32(), aShapeVals[1].toInt32()), Size(aShapeVals[2].toInt32() + 5, aShapeVals[3].toInt32() + 5));
+
+        tools::Rectangle TextArea(Point(aTextVals[0], aTextVals[1]), Size(aTextVals[2], aTextVals[3]));
+
+        CPPUNIT_ASSERT(ShapeArea.Contains(TextArea));
+    }
+}
+
 DECLARE_OOXMLEXPORT_TEST(testTdf126287, "tdf126287.docx")
 {
     CPPUNIT_ASSERT_EQUAL(2, getPages());
@@ -501,7 +645,7 @@ DECLARE_OOXMLEXPORT_TEST(testWPGBodyPr, "WPGbodyPr.docx")
     CPPUNIT_ASSERT_EQUAL(2, getShapes());
 
     // Get the WPG shape
-    uno::Reference<drawing::XShapes> xGroup(getShape(2), uno::UNO_QUERY);
+    uno::Reference<drawing::XShapes> xGroup(getShape(1), uno::UNO_QUERY);
     // And the embed WPG
     uno::Reference<drawing::XShapes> xEmbedGroup(xGroup->getByIndex(1), uno::UNO_QUERY);
 
@@ -716,6 +860,17 @@ DECLARE_OOXMLEXPORT_TEST(testTdf144563, "tdf144563.docx")
     }
 }
 
+// broken test document?
+#if !defined(_WIN32)
+DECLARE_OOXMLEXPORT_TEST(testTdf146955, "tdf146955.odt")
+{
+    // import of a (broken?) DOCX export with dozens of frames raised a SAX exception,
+    // when the code tried to access to a non-existent footnote
+    uno::Reference<text::XFootnotesSupplier> xNotes(mxComponent, uno::UNO_QUERY);
+    CPPUNIT_ASSERT_EQUAL(sal_Int32(2), xNotes->getFootnotes()->getCount());
+}
+#endif
+
 DECLARE_OOXMLEXPORT_TEST(testTdf144668, "tdf144668.odt")
 {
     uno::Reference<beans::XPropertySet> xPara1(getParagraph(1, u"level1"), uno::UNO_QUERY);
@@ -723,6 +878,30 @@ DECLARE_OOXMLEXPORT_TEST(testTdf144668, "tdf144668.odt")
 
     uno::Reference<beans::XPropertySet> xPara2(getParagraph(2, u"level2"), uno::UNO_QUERY);
     CPPUNIT_ASSERT_EQUAL(OUString("[001]"), getProperty<OUString>(xPara2, "ListLabelString"));
+}
+
+DECLARE_OOXMLEXPORT_TEST(testTdf148455_1, "tdf148455_1.docx")
+{
+    uno::Reference<beans::XPropertySet> xPara2(getParagraph(3, u"1.1.1"), uno::UNO_QUERY);
+    CPPUNIT_ASSERT_EQUAL(OUString("1.1.1."), getProperty<OUString>(xPara2, "ListLabelString"));
+}
+
+DECLARE_OOXMLEXPORT_TEST(testTdf148455_2, "tdf148455_2.docx")
+{
+    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
+    if (!pXmlDoc)
+       return; // initial import, no further checks
+
+    // Find list id for restarted list
+    sal_Int32 nListId = getXPath(pXmlDoc, "/w:document/w:body/w:p[3]/w:pPr/w:numPr/w:numId", "val").toInt32();
+
+    xmlDocUniquePtr pNumberingDoc = parseExport("word/numbering.xml");
+
+    // Ensure we have empty lvlOverride for levels 0 - 1
+    getXPath(pNumberingDoc, "/w:numbering/w:num[@w:numId='" + OString::number(nListId) +"']/w:lvlOverride[@w:ilvl='0']", "");
+    getXPath(pNumberingDoc, "/w:numbering/w:num[@w:numId='" + OString::number(nListId) +"']/w:lvlOverride[@w:ilvl='1']", "");
+    // And normal override for level 2
+    getXPath(pNumberingDoc, "/w:numbering/w:num[@w:numId='" + OString::number(nListId) +"']/w:lvlOverride[@w:ilvl='2']/w:startOverride", "val");
 }
 
 CPPUNIT_TEST_FIXTURE(Test, testTdf147978enhancedPathABVW)
@@ -739,6 +918,50 @@ CPPUNIT_TEST_FIXTURE(Test, testTdf147978enhancedPathABVW)
         uno::Reference<drawing::XShape> xShape = getShape(i);
         CPPUNIT_ASSERT_EQUAL(sal_Int32(506), getProperty<awt::Rectangle>(xShape, "BoundRect").Height);
     }
+}
+
+DECLARE_OOXMLEXPORT_TEST(testTdf148132, "tdf148132.docx")
+{
+    {
+        uno::Reference<text::XTextRange> xParagraph = getParagraph(1);
+        auto xLevels = getProperty< uno::Reference<container::XIndexAccess> >(xParagraph, "NumberingRules");
+        // Get level 2 char style
+        comphelper::SequenceAsHashMap levelProps(xLevels->getByIndex(1));
+        OUString aCharStyleName = levelProps["CharStyleName"].get<OUString>();
+        // Ensure that numbering in this paragraph is 24pt bold italic
+        // Previously it got overridden by paragraph properties and became 6pt, no bold, no italic
+        uno::Reference<beans::XPropertySet> xStyle(getStyles("CharacterStyles")->getByName(aCharStyleName), uno::UNO_QUERY);
+        CPPUNIT_ASSERT_EQUAL(24.f, getProperty<float>(xStyle, "CharHeight"));
+        CPPUNIT_ASSERT_EQUAL(awt::FontWeight::BOLD, getProperty<float>(xStyle, "CharWeight"));
+        CPPUNIT_ASSERT_EQUAL(awt::FontSlant_ITALIC, getProperty<awt::FontSlant>(xStyle, "CharPosture"));
+    }
+    // And do the same for second paragraph. Numbering should be identical
+    {
+        uno::Reference<text::XTextRange> xParagraph = getParagraph(2);
+        auto xLevels = getProperty< uno::Reference<container::XIndexAccess> >(xParagraph, "NumberingRules");
+        comphelper::SequenceAsHashMap levelProps(xLevels->getByIndex(1));
+        OUString aCharStyleName = levelProps["CharStyleName"].get<OUString>();
+
+        uno::Reference<beans::XPropertySet> xStyle(getStyles("CharacterStyles")->getByName(aCharStyleName), uno::UNO_QUERY);
+        CPPUNIT_ASSERT_EQUAL(24.f, getProperty<float>(xStyle, "CharHeight"));
+        CPPUNIT_ASSERT_EQUAL(awt::FontWeight::BOLD, getProperty<float>(xStyle, "CharWeight"));
+        CPPUNIT_ASSERT_EQUAL(awt::FontSlant_ITALIC, getProperty<awt::FontSlant>(xStyle, "CharPosture"));
+    }
+}
+
+CPPUNIT_TEST_FIXTURE(Test, testTdf149200)
+{
+    loadAndSave("tdf149200.docx");
+    CPPUNIT_ASSERT_EQUAL(1, getPages());
+    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
+
+    // Ensure there is no unexpected invalid structure <w14:textFill>
+    // There is just one run property
+    xmlXPathObjectPtr pXmlObj = getXPathNode(pXmlDoc, "count(/w:document/w:body/w:p[1]/w:r[1]/w:rPr/*)");
+    CPPUNIT_ASSERT(pXmlObj);
+    CPPUNIT_ASSERT_EQUAL(double(1), pXmlObj->floatval);
+    // And it is a color definition with themeColor
+    CPPUNIT_ASSERT_EQUAL(OUString("dark1"), getXPath(pXmlDoc, "/w:document/w:body/w:p[1]/w:r[1]/w:rPr/w:color", "themeColor"));
 }
 
 DECLARE_OOXMLEXPORT_TEST(testTdf135923, "tdf135923-min.docx")

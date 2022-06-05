@@ -7,18 +7,16 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 from uitest.framework import UITestCase
-from uitest.uihelper.common import select_pos
 from uitest.uihelper.common import change_measurement_unit
-from uitest.uihelper.calc import enter_text_to_cell
-from libreoffice.calc.document import get_cell_by_position
+from uitest.uihelper.common import get_state_as_dict, get_url_for_data_file
+
 from libreoffice.uno.propertyvalue import mkPropertyValues
-from uitest.uihelper.common import get_state_as_dict, get_url_for_data_file, type_text
 
-#Chart Display Legend dialog
 
+# Chart Display Legend dialog
 class chartLegend(UITestCase):
    def test_chart_display_legend_dialog(self):
-    with self.ui_test.load_file(get_url_for_data_file("tdf98390.ods")) as calc_doc:
+    with self.ui_test.load_file(get_url_for_data_file("tdf98390.ods")):
       xCalcDoc = self.xUITest.getTopFocusWindow()
       gridwin = xCalcDoc.getChild("grid_window")
 
@@ -29,9 +27,6 @@ class chartLegend(UITestCase):
       xSeriesObj =  xChartMain.getChild("CID/D=0:CS=0:CT=0:Series=0")
       with self.ui_test.execute_dialog_through_action(xSeriesObj, "COMMAND", mkPropertyValues({"COMMAND": "InsertMenuLegend"})) as xDialog:
         left = xDialog.getChild("left")
-        right = xDialog.getChild("right")
-        top = xDialog.getChild("top")
-        bottom = xDialog.getChild("bottom")
 
         left.executeAction("CLICK", tuple())
 
@@ -77,7 +72,7 @@ class chartLegend(UITestCase):
 
    def test_legends_move_with_arrows_keys(self):
 
-    with self.ui_test.load_file(get_url_for_data_file("dataLabels.ods")) as calc_doc:
+    with self.ui_test.load_file(get_url_for_data_file("dataLabels.ods")):
       xCalcDoc = self.xUITest.getTopFocusWindow()
       gridwin = xCalcDoc.getChild("grid_window")
 

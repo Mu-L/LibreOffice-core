@@ -73,8 +73,9 @@ ScSortedRangeCache::ScSortedRangeCache(ScDocument* pDoc, const ScRange& rRange,
     SCROW endRow = maRange.aEnd.Row();
     SCCOL startCol = maRange.aStart.Col();
     SCCOL endCol = maRange.aEnd.Col();
-    if (!pDoc->ShrinkToDataArea(nTab, startCol, startRow, endCol, endRow))
-        return;
+    if (!item.mbMatchEmpty)
+        if (!pDoc->ShrinkToDataArea(nTab, startCol, startRow, endCol, endRow))
+            return;
 
     if (mValues == ValueType::Values)
     {
@@ -109,6 +110,7 @@ ScSortedRangeCache::ScSortedRangeCache(ScDocument* pDoc, const ScRange& rRange,
         std::vector<RowData> rowData;
         // Try to reuse as much ScQueryEvaluator code as possible, this should
         // basically do the same comparisons.
+        assert(pDoc->FetchTable(nTab) != nullptr);
         ScQueryEvaluator evaluator(*pDoc, *pDoc->FetchTable(nTab), param, context);
         for (SCROW nRow = startRow; nRow <= endRow; ++nRow)
         {

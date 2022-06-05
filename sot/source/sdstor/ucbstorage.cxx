@@ -43,6 +43,7 @@
 
 #include <memory>
 #include <optional>
+#include <o3tl/safeint.hxx>
 #include <osl/diagnose.h>
 #include <osl/file.hxx>
 #include <sal/log.hxx>
@@ -64,6 +65,7 @@
 #include <comphelper/classids.hxx>
 
 #include <mutex>
+#include <utility>
 #include <vector>
 
 namespace com::sun::star::ucb { class XCommandEnvironment; }
@@ -93,7 +95,7 @@ protected:
     std::unique_ptr<SvStream> m_pSvStream;
 
 public:
-    explicit FileStreamWrapper_Impl(const OUString& rName);
+    explicit FileStreamWrapper_Impl(OUString aName);
     virtual ~FileStreamWrapper_Impl() override;
 
     virtual void SAL_CALL seek( sal_Int64 _nLocation ) override;
@@ -112,8 +114,8 @@ protected:
 
 }
 
-FileStreamWrapper_Impl::FileStreamWrapper_Impl( const OUString& rName )
-    : m_aURL( rName )
+FileStreamWrapper_Impl::FileStreamWrapper_Impl( OUString aName )
+    : m_aURL(std::move( aName ))
 {
     // if no URL is provided the stream is empty
 }
@@ -156,7 +158,7 @@ sal_Int32 SAL_CALL FileStreamWrapper_Impl::readBytes(Sequence< sal_Int8 >& aData
     checkError();
 
     // if read characters < MaxLength, adjust sequence
-    if (static_cast<sal_Int32>(nRead) < aData.getLength())
+    if (nRead < o3tl::make_unsigned(aData.getLength()))
         aData.realloc( nRead );
 
     return nRead;

@@ -1876,7 +1876,8 @@ KEYINPUT_CHECKTABLE_INSDEL:
                 case KEY_RETURN:
                 {
                     if ( !rSh.HasReadonlySel()
-                         && !rSh.CursorInsideInputField() )
+                         && !rSh.CursorInsideInputField()
+                         && !rSh.CursorInsideContentControl() )
                     {
                         const SelectionType nSelectionType = rSh.GetSelectionType();
                         if(nSelectionType & SelectionType::Ole)
@@ -2050,20 +2051,13 @@ KEYINPUT_CHECKTABLE_INSDEL:
                              && rSh.IsSttOfPara()
                              && !rSh.HasReadonlySel() )
                     {
-                        if ( !rSh.IsMultiSelection()
-                             && rSh.IsFirstOfNumRuleAtCursorPos()
-                             && numfunc::ChangeIndentOnTabAtFirstPosOfFirstListItem() )
-                            eKeyState = SwKeyState::NumIndentInc;
+                        if (numfunc::NumDownChangesIndent(rSh))
+                        {
+                            eKeyState = SwKeyState::NumDown;
+                        }
                         else
                         {
-                            if (numfunc::NumDownChangesIndent(rSh))
-                            {
-                                eKeyState = SwKeyState::NumDown;
-                            }
-                            else
-                            {
-                                eKeyState = SwKeyState::InsTab;
-                            }
+                            eKeyState = SwKeyState::InsTab;
                         }
                     }
                     else if (rSh.GetSelectionType() &
@@ -2115,12 +2109,7 @@ KEYINPUT_CHECKTABLE_INSDEL:
                              && rSh.IsSttOfPara()
                              && !rSh.HasReadonlySel() )
                     {
-                        if ( !rSh.IsMultiSelection()
-                             && rSh.IsFirstOfNumRuleAtCursorPos()
-                             && numfunc::ChangeIndentOnTabAtFirstPosOfFirstListItem() )
-                            eKeyState = SwKeyState::NumIndentDec;
-                        else
-                            eKeyState = SwKeyState::NumUp;
+                        eKeyState = SwKeyState::NumUp;
                     }
                     else if (rSh.GetSelectionType() &
                              (SelectionType::Graphic |
@@ -2175,7 +2164,9 @@ KEYINPUT_CHECKTABLE_INSDEL:
                             eKeyState = SwKeyState::EnterDrawHandleMode;
                         else
                         {
-                            eKeyState = SwKeyState::InsTab;
+                            if ( !rSh.IsMultiSelection()
+                                && numfunc::ChangeIndentOnTabAtFirstPosOfFirstListItem() )
+                                eKeyState = SwKeyState::NumIndentInc;
                         }
                     }
                     break;
@@ -2195,6 +2186,12 @@ KEYINPUT_CHECKTABLE_INSDEL:
                                 rSh.GetDrawView()->AreObjectsMarked())
                         {
                             eKeyState = SwKeyState::EnterDrawHandleMode;
+                        }
+                        else
+                        {
+                            if ( !rSh.IsMultiSelection()
+                                && numfunc::ChangeIndentOnTabAtFirstPosOfFirstListItem() )
+                                eKeyState = SwKeyState::NumIndentDec;
                         }
                     }
                     break;
@@ -4682,6 +4679,32 @@ void SwEditWin::MouseButtonUp(const MouseEvent& rMEvt)
                             rSh.ExecMacro( *pMacro, nullptr, xArgs.get() );
 
                             CaptureMouse();
+                        }
+
+                        if (pFlyFormat)
+                        {
+                            // See if the fly frame's anchor is in a content control. If so,
+                            // interact with it.
+                            const SwFormatAnchor& rFormatAnchor = pFlyFormat->GetAnchor();
+                            const SwPosition* pAnchorPos = rFormatAnchor.GetContentAnchor();
+                            if (pAnchorPos)
+                            {
+                                SwTextNode* pTextNode = pAnchorPos->nNode.GetNode().GetTextNode();
+                                if (pTextNode)
+                                {
+                                    SwTextAttr* pAttr = pTextNode->GetTextAttrAt(
+                                        pAnchorPos->nContent.GetIndex(), RES_TXTATR_CONTENTCONTROL,
+                                        SwTextNode::PARENT);
+                                    if (pAttr)
+                                    {
+                                        SwTextContentControl* pTextContentControl
+                                            = static_txtattr_cast<SwTextContentControl*>(pAttr);
+                                        const SwFormatContentControl& rFormatContentControl
+                                            = pTextContentControl->GetContentControl();
+                                        rSh.GotoContentControl(rFormatContentControl);
+                                    }
+                                }
+                            }
                         }
                     }
                     rSh.EndDrag( &aDocPt, false );

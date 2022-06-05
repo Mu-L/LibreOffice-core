@@ -193,6 +193,11 @@ public:
         Signature
     };
 
+    enum FormatType
+    {
+        Text, Number, Time, Date
+    };
+
     enum ErrorCode
     {
         // transparent object occurred and was draw opaque because
@@ -333,6 +338,7 @@ public:
     {
         bool                Checked;
         OUString            OnValue; // the value of the checkbox if it is selected
+        OUString            OffValue; // the value of the checkbox if it is not selected
 
         CheckBoxWidget()
                 : AnyWidget( vcl::PDFWriter::CheckBox ),
@@ -350,6 +356,7 @@ public:
         bool                Selected;
         sal_Int32           RadioGroup;
         OUString       OnValue; // the value of the radio button if it is selected
+        OUString       OffValue; // the value of the radio button if it is not selected
 
         RadioButtonWidget()
                 : AnyWidget( vcl::PDFWriter::RadioButton ),
@@ -377,13 +384,22 @@ public:
         bool                Password;   // visible echo off
         bool                FileSelect; // field is a file selector
         sal_Int32           MaxLen;     // maximum field length in characters, 0 means unlimited
+        FormatType          Format;
+        OUString            CurrencySymbol;
+        sal_Int32           DecimalAccuracy;
+        bool                PrependCurrencySymbol;
+        OUString            TimeFormat;
+        OUString            DateFormat;
 
         EditWidget()
                 : AnyWidget( vcl::PDFWriter::Edit ),
                   MultiLine( false ),
                   Password( false ),
                   FileSelect( false ),
-                  MaxLen( 0 )
+                  MaxLen( 0 ),
+                  Format( FormatType::Text ),
+                  DecimalAccuracy ( 0 ),
+                  PrependCurrencySymbol( false )
         {}
 
         virtual std::shared_ptr<AnyWidget> Clone() const override

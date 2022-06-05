@@ -19,6 +19,7 @@
 
 #include <tools/diagnose_ex.h>
 #include <tools/debug.hxx>
+#include <utility>
 #include <vcl/svapp.hxx>
 #include <comphelper/propertysequence.hxx>
 #include <comphelper/propertyvalue.hxx>
@@ -66,7 +67,6 @@
 #include "polypolyaction.hxx"
 #include "textaction.hxx"
 #include "transparencygroupaction.hxx"
-#include <utility>
 #include <vector>
 #include <algorithm>
 #include <memory>
@@ -2607,8 +2607,8 @@ namespace cppcanvas::internal
             class ActionRenderer
             {
             public:
-                explicit ActionRenderer( const ::basegfx::B2DHomMatrix& rTransformation ) :
-                    maTransformation( rTransformation ),
+                explicit ActionRenderer( ::basegfx::B2DHomMatrix aTransformation ) :
+                    maTransformation(std::move( aTransformation )),
                     mbRet( true )
                 {
                 }
@@ -2642,8 +2642,8 @@ namespace cppcanvas::internal
             class AreaQuery
             {
             public:
-                explicit AreaQuery( const ::basegfx::B2DHomMatrix& rTransformation ) :
-                    maTransformation( rTransformation )
+                explicit AreaQuery( ::basegfx::B2DHomMatrix aTransformation ) :
+                    maTransformation(std::move( aTransformation ))
                 {
                 }
 

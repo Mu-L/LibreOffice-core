@@ -25,6 +25,7 @@
 #include <strings.hrc>
 #include <stringarrays.hrc>
 #include <comphelper/extract.hxx>
+#include <o3tl/safeint.hxx>
 #include <osl/diagnose.h>
 #include <sal/macros.h>
 #include <algorithm>
@@ -410,6 +411,10 @@ namespace pcr
         OSL_ENSURE( ( ( getPropertyUIFlags( _nId ) & PROP_FLAG_ENUM ) != 0 ) || ( _nId == PROPERTY_ID_TARGET_FRAME ),
             "OPropertyInfoService::getPropertyEnumRepresentations: this is no enum property!" );
 
+        if (_nId == PROPERTY_ID_SUBMIT_METHOD)
+        {
+            return { "Get", "Post" };
+        }
         const TranslateId* pStringItemsResId = nullptr;
         int nElements = 0;
         switch ( _nId )
@@ -449,10 +454,6 @@ namespace pcr
             case PROPERTY_ID_PUSHBUTTONTYPE:
                 pStringItemsResId = RID_RSC_ENUM_PUSHBUTTONTYPE;
                 nElements = SAL_N_ELEMENTS(RID_RSC_ENUM_PUSHBUTTONTYPE);
-                break;
-            case PROPERTY_ID_SUBMIT_METHOD:
-                pStringItemsResId = RID_RSC_ENUM_SUBMIT_METHOD;
-                nElements = SAL_N_ELEMENTS(RID_RSC_ENUM_SUBMIT_METHOD);
                 break;
             case PROPERTY_ID_SUBMIT_ENCODING:
                 pStringItemsResId = RID_RSC_ENUM_SUBMIT_ENCODING;
@@ -675,7 +676,7 @@ namespace pcr
             --nIntValue;
 
         std::vector< OUString > aEnumStrings = m_rMetaData.getPropertyEnumRepresentations( m_nPropertyId );
-        if ( ( nIntValue >= 0 ) && ( nIntValue < static_cast<sal_Int32>(aEnumStrings.size()) ) )
+        if ( ( nIntValue >= 0 ) && ( o3tl::make_unsigned(nIntValue) < aEnumStrings.size() ) )
         {
             sReturn = aEnumStrings[ nIntValue ];
         }

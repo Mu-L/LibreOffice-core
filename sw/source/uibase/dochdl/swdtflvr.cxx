@@ -1494,6 +1494,11 @@ bool SwTransferable::Paste(SwWrtShell& rSh, TransferableDataHelper& rData, RndSt
                                     &nActionFlags );
     }
 
+    // when HTML is just an image don't generate new section
+    if (rData.HasFormat(SotClipboardFormatId::HTML_SIMPLE) && rData.HasFormat(SotClipboardFormatId::HTML_NO_COMMENT)
+        && rData.HasFormat(SotClipboardFormatId::BITMAP) && nFormat == SotClipboardFormatId::FILE_LIST)
+        nFormat = SotClipboardFormatId::BITMAP;
+
     // tdf#37223 avoid non-native insertion of Calc worksheets in the following cases:
     // content of 1-cell worksheets are inserted as simple text using RTF format,
     // bigger worksheets within native (Writer) table cells are inserted as native tables,
@@ -2499,7 +2504,7 @@ bool SwTransferable::PasteTargetURL( const TransferableDataHelper& rData,
                 {
                 case SwPasteSdr::Insert:
                     SwTransferable::SetSelInShell( rSh, false, pPt );
-                    rSh.Insert(sURL, OUString(), aGraphic);
+                    rSh.InsertGraphic(sURL, OUString(), aGraphic);
                     break;
 
                 case SwPasteSdr::Replace:
@@ -2521,7 +2526,7 @@ bool SwTransferable::PasteTargetURL( const TransferableDataHelper& rData,
                     else
                     {
                         SwTransferable::SetSelInShell( rSh, false, pPt );
-                        rSh.Insert(sURL, OUString(), aGraphic);
+                        rSh.InsertGraphic(sURL, OUString(), aGraphic);
                     }
                     break;
                 default:
@@ -2627,7 +2632,7 @@ bool SwTransferable::PasteDDE( const TransferableDataHelper& rData,
             if ( bReReadGrf )
                 rWrtShell.ReRead( aCmd, sLnkTyp, &aGrf );
             else
-                rWrtShell.Insert( aCmd, sLnkTyp, aGrf );
+                rWrtShell.InsertGraphic( aCmd, sLnkTyp, aGrf );
         }
         return bRet;
     }
@@ -2922,7 +2927,7 @@ bool SwTransferable::PasteGrf( const TransferableDataHelper& rData, SwWrtShell& 
             case SwPasteSdr::Insert:
             {
                 SwTransferable::SetSelInShell( rSh, false, pPt );
-                rSh.Insert(sURL, OUString(), aGraphic, nullptr, nAnchorType);
+                rSh.InsertGraphic(sURL, OUString(), aGraphic, nullptr, nAnchorType);
                 break;
             }
 
@@ -2976,7 +2981,7 @@ bool SwTransferable::PasteGrf( const TransferableDataHelper& rData, SwWrtShell& 
                 else
                 {
                     SwTransferable::SetSelInShell( rSh, false, pPt );
-                    rSh.Insert(aBkmk.GetURL(), OUString(), aGraphic);
+                    rSh.InsertGraphic(aBkmk.GetURL(), OUString(), aGraphic);
                 }
                 break;
             }

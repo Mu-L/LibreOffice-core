@@ -13,6 +13,7 @@ $(eval $(call gb_CppunitTest_CppunitTest,sd_filter_eppt))
 
 $(eval $(call gb_CppunitTest_use_externals,sd_filter_eppt,\
 	boost_headers \
+	libxml2 \
 ))
 
 $(eval $(call gb_CppunitTest_add_exception_objects,sd_filter_eppt, \
@@ -41,5 +42,9 @@ $(eval $(call gb_CppunitTest_use_custom_headers,sd_filter_eppt,\
 ))
 
 $(eval $(call gb_CppunitTest_use_configuration,sd_filter_eppt))
+
+$(eval $(call gb_CppunitTest_add_arguments,sd_filter_eppt, \
+    -env:arg-env=$(gb_Helper_LIBRARY_PATH_VAR)"$$$${$(gb_Helper_LIBRARY_PATH_VAR)+=$$$$$(gb_Helper_LIBRARY_PATH_VAR)}" \
+))
 
 # vim: set noet sw=4 ts=4:

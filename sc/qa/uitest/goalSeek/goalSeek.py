@@ -7,11 +7,11 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 from uitest.framework import UITestCase
-from uitest.uihelper.common import get_state_as_dict, get_url_for_data_file
-from uitest.uihelper.common import select_pos
-from uitest.uihelper.calc import enter_text_to_cell
+from uitest.uihelper.common import get_url_for_data_file
+
 from libreoffice.calc.document import get_cell_by_position
 from libreoffice.uno.propertyvalue import mkPropertyValues
+
 
 class goalSeek(UITestCase):
     def test_goalSeek(self):
@@ -20,7 +20,6 @@ class goalSeek(UITestCase):
             gridwin = xCalcDoc.getChild("grid_window")
             gridwin.executeAction("SELECT", mkPropertyValues({"CELL": "B4"}))
             with self.ui_test.execute_modeless_dialog_through_command(".uno:GoalSeekDialog", close_button="") as xDialog:
-                xformulaedit = xDialog.getChild("formulaedit")
                 xtarget = xDialog.getChild("target")
                 xvaredit = xDialog.getChild("varedit")
                 xtarget.executeAction("TYPE", mkPropertyValues({"TEXT":"15000"}))

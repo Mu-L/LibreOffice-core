@@ -659,10 +659,7 @@ void RTFDocumentImpl::sectBreak(bool bFinal)
     bool bNeedSect = m_bNeedSect;
     RTFValue::Pointer_t pBreak
         = m_aStates.top().getSectionSprms().find(NS_ooxml::LN_EG_SectPrContents_type);
-    bool bContinuous
-        = pBreak
-          && pBreak->getInt()
-                 == static_cast<sal_Int32>(NS_ooxml::LN_Value_ST_SectionMark_continuous);
+    bool bContinuous = pBreak && pBreak->getInt() == NS_ooxml::LN_Value_ST_SectionMark_continuous;
     // If there is no paragraph in this section, then insert a dummy one, as required by Writer,
     // unless this is the end of the doc, we had nothing since the last section break and this is not a continuous one.
     // Also, when pasting, it's fine to not have any paragraph inside the document at all.
@@ -1971,7 +1968,14 @@ RTFError RTFDocumentImpl::dispatchToggle(RTFKeyword nKeyword, bool bParam, int n
     }
     if (nSprm >= 0)
     {
-        m_aStates.top().getCharacterSprms().set(nSprm, pBoolValue);
+        if (m_aStates.top().getDestination() == Destination::LISTLEVEL)
+        {
+            m_aStates.top().getTableSprms().set(nSprm, pBoolValue);
+        }
+        else
+        {
+            m_aStates.top().getCharacterSprms().set(nSprm, pBoolValue);
+        }
         return RTFError::OK;
     }
 

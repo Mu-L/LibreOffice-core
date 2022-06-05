@@ -782,7 +782,7 @@ ScViewData::ScViewData(ScDocument* pDoc, ScDocShell* pDocSh, ScTabViewShell* pVi
         nPPTY(0.0),
         maMarkData  (pDocSh ? pDocSh->GetDocument().GetSheetLimits() : pDoc->GetSheetLimits()),
         pDocShell   ( pDocSh ),
-        mrDoc       (pDoc ? *pDoc : pDocSh->GetDocument()),
+        mrDoc       (pDocSh ? pDocSh->GetDocument() : *pDoc),
         pView       ( pViewSh ),
         maOptions   (pDocSh ? pDocSh->GetDocument().GetViewOptions() : DefaultOptions()),
         pSpellingView ( nullptr ),
@@ -1004,10 +1004,10 @@ void ScViewData::SetZoomType( SvxZoomType eNew, std::vector< SCTAB >& tabs )
 
     if ( bAll )
     {
-        for ( SCTAB i = 0; i < static_cast<SCTAB>(maTabData.size()); ++i )
+        for ( auto & i: maTabData )
         {
-            if ( maTabData[i] )
-                maTabData[i]->eZoomType = eNew;
+            if ( i )
+                i->eZoomType = eNew;
         }
         eDefZoomType = eNew;
     }
@@ -1046,19 +1046,19 @@ void ScViewData::SetZoom( const Fraction& rNewX, const Fraction& rNewY, std::vec
 
     if ( bAll )
     {
-        for ( SCTAB i = 0; i < static_cast<SCTAB>(maTabData.size()); ++i )
+        for ( auto & i: maTabData )
         {
-            if ( maTabData[i] )
+            if ( i )
             {
                 if ( bPagebreak )
                 {
-                    maTabData[i]->aPageZoomX = rNewX;
-                    maTabData[i]->aPageZoomY = rNewY;
+                    i->aPageZoomX = rNewX;
+                    i->aPageZoomY = rNewY;
                 }
                 else
                 {
-                    maTabData[i]->aZoomX = rNewX;
-                    maTabData[i]->aZoomY = rNewY;
+                    i->aZoomX = rNewX;
+                    i->aZoomY = rNewY;
                 }
             }
         }

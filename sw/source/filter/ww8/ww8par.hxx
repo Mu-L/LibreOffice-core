@@ -166,13 +166,13 @@ public:
 
 private:
     wwSprmParser maSprmParser;
-    SwWW8ImplReader& rReader;
-    SwDoc&           rDoc;
-    const WW8Fib&    rFib;
-    SvStream&        rSt;
+    SwWW8ImplReader& m_rReader;
+    SwDoc&           m_rDoc;
+    const WW8Fib&    m_rFib;
+    SvStream&        m_rSt;
     std::vector<std::unique_ptr<WW8LSTInfo>> maLSTInfos;
     std::vector<std::unique_ptr<WW8LFOInfo>> m_LFOInfos;// D. from PLF LFO, sorted exactly like in the WW8 Stream
-    sal_uInt16       nUniqueList; // current number for creating unique list names
+    sal_uInt16       m_nUniqueList; // current number for creating unique list names
     SprmResult GrpprlHasSprm(sal_uInt16 nId, sal_uInt8& rSprms, sal_uInt8 nLen);
     WW8LSTInfo* GetLSTByListId(    sal_uInt32  nIdLst     ) const;
     //the rParaSprms returns back the original word paragraph indent
@@ -193,7 +193,7 @@ private:
 
     WW8ListManager(const WW8ListManager&) = delete;
     WW8ListManager& operator=(const WW8ListManager&) = delete;
-    sal_uInt16 nLastLFOPosition;
+    sal_uInt16 m_nLastLFOPosition;
 };
 
 struct WW8FlyPara
@@ -367,10 +367,10 @@ public:
 class SwWW8FltControlStack : public SwFltControlStack
 {
 private:
-    SwWW8ImplReader& rReader;
+    SwWW8ImplReader& m_rReader;
     std::unique_ptr<SfxItemSet> m_xScratchSet;
-    sal_uInt16 nToggleAttrFlags;
-    sal_uInt16 nToggleBiDiAttrFlags;
+    sal_uInt16 m_nToggleAttrFlags;
+    sal_uInt16 m_nToggleBiDiAttrFlags;
     SwWW8FltControlStack(const SwWW8FltControlStack&) = delete;
     SwWW8FltControlStack& operator=(const SwWW8FltControlStack&) = delete;
     const SwNumFormat* GetNumFormatFromStack(const SwPosition &rPos,
@@ -381,8 +381,8 @@ protected:
 
 public:
     SwWW8FltControlStack(SwDoc& rDo, sal_uLong nFieldFl, SwWW8ImplReader& rReader_ )
-        : SwFltControlStack( rDo, nFieldFl ), rReader( rReader_ ),
-        nToggleAttrFlags(0), nToggleBiDiAttrFlags(0)
+        : SwFltControlStack( rDo, nFieldFl ), m_rReader( rReader_ ),
+        m_nToggleAttrFlags(0), m_nToggleBiDiAttrFlags(0)
     {}
 
     void NewAttr(const SwPosition& rPos, const SfxPoolItem& rAttr);
@@ -392,24 +392,24 @@ public:
     void SetToggleAttr(sal_uInt8 nId, bool bOn)
     {
         if( bOn )
-            nToggleAttrFlags |= (1 << nId);
+            m_nToggleAttrFlags |= (1 << nId);
         else
-            nToggleAttrFlags &= ~(1 << nId);
+            m_nToggleAttrFlags &= ~(1 << nId);
     }
 
-    sal_uInt16 GetToggleAttrFlags() const { return nToggleAttrFlags; }
+    sal_uInt16 GetToggleAttrFlags() const { return m_nToggleAttrFlags; }
 
     void SetToggleBiDiAttr(sal_uInt8 nId, bool bOn)
     {
         if( bOn )
-            nToggleBiDiAttrFlags |= (1 << nId);
+            m_nToggleBiDiAttrFlags |= (1 << nId);
         else
-            nToggleBiDiAttrFlags &= ~(1 << nId);
+            m_nToggleBiDiAttrFlags &= ~(1 << nId);
     }
 
-    sal_uInt16 GetToggleBiDiAttrFlags() const { return nToggleBiDiAttrFlags; }
-    void SetToggleAttrFlags(sal_uInt16 nFlags) { nToggleAttrFlags = nFlags; }
-    void SetToggleBiDiAttrFlags(sal_uInt16 nFlags) {nToggleBiDiAttrFlags = nFlags;}
+    sal_uInt16 GetToggleBiDiAttrFlags() const { return m_nToggleBiDiAttrFlags; }
+    void SetToggleAttrFlags(sal_uInt16 nFlags) { m_nToggleAttrFlags = nFlags; }
+    void SetToggleBiDiAttrFlags(sal_uInt16 nFlags) {m_nToggleBiDiAttrFlags = nFlags;}
 
     const SfxPoolItem* GetFormatAttr(const SwPosition& rPos, sal_uInt16 nWhich);
     template<class T> const T* GetFormatAttr( const SwPosition& rPos, TypedWhichId<T> nWhich )
@@ -451,12 +451,12 @@ class SwWW8ReferencedFltEndStack : public SwFltEndStack
 public:
     SwWW8ReferencedFltEndStack( SwDoc& rDo, sal_uLong nFieldFl )
         : SwFltEndStack( rDo, nFieldFl )
-        , aReferencedTOCBookmarks()
+        , m_aReferencedTOCBookmarks()
     {}
 
     // Keep track of referenced TOC bookmarks in order to suppress the import
     // of unreferenced ones.
-    std::set<OUString, SwWW8::ltstr> aReferencedTOCBookmarks;
+    std::set<OUString, SwWW8::ltstr> m_aReferencedTOCBookmarks;
 protected:
     virtual void SetAttrInDoc( const SwPosition& rTmpPos,
                                SwFltStackEntry& rEntry ) override;
@@ -467,14 +467,14 @@ class SwWW8FltRefStack final : public SwFltEndStack
 public:
     SwWW8FltRefStack(SwDoc& rDo, sal_uLong nFieldFl)
         : SwFltEndStack( rDo, nFieldFl )
-        , aFieldVarNames()
+        , m_aFieldVarNames()
     {}
     bool IsFootnoteEdnBkmField(const SwFormatField& rFormatField, sal_uInt16& rBkmNo);
 
     //Keep track of variable names created with fields, and the bookmark
     //mapped to their position, hopefully the same, but very possibly
     //an additional pseudo bookmark
-    std::map<OUString, OUString, SwWW8::ltstr> aFieldVarNames;
+    std::map<OUString, OUString, SwWW8::ltstr> m_aFieldVarNames;
 private:
     SwFltStackEntry *RefToVar(const SwField* pField,SwFltStackEntry& rEntry);
     virtual void SetAttrInDoc(const SwPosition& rTmpPos,
@@ -620,7 +620,7 @@ enum class eF_ResT { OK, TEXT, TAGIGN, READ_FSPA };
 class SwWW8Shade
 {
 public:
-    Color aColor;
+    Color m_aColor;
     SwWW8Shade(bool bVer67, const WW8_SHD& rSHD);
     SwWW8Shade(Color nFore, Color nBack, sal_uInt16 nIndex)
     {
@@ -745,9 +745,9 @@ private:
 class SwMSDffManager : public SvxMSDffManager
 {
 private:
-    SwWW8ImplReader& rReader;
-    SvStream *pFallbackStream;
-    std::unordered_map<sal_uInt32, Graphic> aOldEscherBlipCache;
+    SwWW8ImplReader& m_rReader;
+    SvStream *m_pFallbackStream;
+    std::unordered_map<sal_uInt32, Graphic> m_aOldEscherBlipCache;
 
     virtual bool GetOLEStorageName( sal_uInt32 nOLEId, OUString& rStorageName,
         tools::SvRef<SotStorage>& rSrcStorage, css::uno::Reference < css::embed::XStorage >& rDestStorage ) const override;
@@ -778,16 +778,16 @@ class wwSection
 public:
     explicit wwSection(const SwPosition &rPos);
     SEPr maSep;
-    WW8_BRCVer9 brc[4];
+    WW8_BRCVer9 m_brc[4];
     SwNodeIndex maStart;
     SwSection *mpSection;
     SwPageDesc *mpPage;
     SvxFrameDirection meDir;
 
-    sal_uInt32 nPgWidth;
-    sal_uInt32 nPgLeft;
-    sal_uInt32 nPgRight;
-    sal_uInt32 nPgGutter;
+    sal_uInt32 m_nPgWidth;
+    sal_uInt32 m_nPgLeft;
+    sal_uInt32 m_nPgRight;
+    sal_uInt32 m_nPgGutter;
     bool m_bRtlGutter = false;
 
     css::drawing::TextVerticalAdjust mnVerticalAdjustment;
@@ -803,12 +803,12 @@ public:
     sal_uInt16 PageStartAt() const { return maSep.pgnStart; }
     bool PageRestartNo() const { return maSep.fPgnRestart != 0; }
     bool IsBiDi() const { return maSep.fBiDi != 0; }
-    sal_uInt32 GetPageWidth() const { return nPgWidth; }
+    sal_uInt32 GetPageWidth() const { return m_nPgWidth; }
     sal_uInt32 GetTextAreaWidth() const
-        { return GetPageWidth() - GetPageLeft() - nPgGutter - GetPageRight(); }
+        { return GetPageWidth() - GetPageLeft() - m_nPgGutter - GetPageRight(); }
     sal_uInt32 GetPageHeight() const { return maSep.yaPage; }
-    sal_uInt32 GetPageLeft() const { return nPgLeft; }
-    sal_uInt32 GetPageRight() const { return nPgRight; }
+    sal_uInt32 GetPageLeft() const { return m_nPgLeft; }
+    sal_uInt32 GetPageRight() const { return m_nPgRight; }
     bool IsLandScape() const { return maSep.dmOrientPage != 0; }
     bool IsFixedHeightHeader() const { return maSep.dyaTop < 0; }
     bool IsFixedHeightFooter() const { return maSep.dyaBottom < 0; }

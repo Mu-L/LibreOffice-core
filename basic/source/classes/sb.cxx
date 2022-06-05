@@ -18,6 +18,7 @@
  */
 
 #include <sb.hxx>
+#include <o3tl/safeint.hxx>
 #include <rtl/ustrbuf.hxx>
 #include <tools/stream.hxx>
 #include <tools/debug.hxx>
@@ -1305,7 +1306,7 @@ SbxVariable* StarBASIC::Find( const OUString& rName, SbxClassType t )
             }
         }
     }
-    OUString aMainStr("Main");
+    static constexpr OUStringLiteral aMainStr(u"Main");
     if( !pRes && pNamed && ( t == SbxClassType::Method || t == SbxClassType::DontCare ) &&
         !pNamed->GetName().equalsIgnoreAsciiCase( aMainStr ) )
     {
@@ -2172,7 +2173,7 @@ void BasicCollection::CollItem( SbxArray* pPar_ )
     SbxVariable* pRes = nullptr;
     SbxVariable* p = pPar_->Get(1);
     sal_Int32 nIndex = implGetIndex( p );
-    if (nIndex >= 0 && nIndex < static_cast<sal_Int32>(xItemArray->Count()))
+    if (nIndex >= 0 && o3tl::make_unsigned(nIndex) < xItemArray->Count())
     {
         pRes = xItemArray->Get(nIndex);
     }
@@ -2196,7 +2197,7 @@ void BasicCollection::CollRemove( SbxArray* pPar_ )
 
     SbxVariable* p = pPar_->Get(1);
     sal_Int32 nIndex = implGetIndex( p );
-    if (nIndex >= 0 && nIndex < static_cast<sal_Int32>(xItemArray->Count()))
+    if (nIndex >= 0 && o3tl::make_unsigned(nIndex) < xItemArray->Count())
     {
         xItemArray->Remove( nIndex );
 

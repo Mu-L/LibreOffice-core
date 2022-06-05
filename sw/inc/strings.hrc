@@ -564,7 +564,7 @@
 /*undo: STR_PARAGRAPHS, string.text*/
 #define STR_PARAGRAPHS                          NC_("STR_PARAGRAPHS", "Paragraphs")
 #define STR_FRAME                               NC_("STR_FRAME", "frame")
-#define STR_OLE                                 NC_("STR_OLE", "OLE-object")
+#define STR_OLE                                 NC_("STR_OLE", "OLE object")
 #define STR_MATH_FORMULA                        NC_("STR_MATH_FORMULA", "formula")
 #define STR_CHART                               NC_("STR_CHART", "chart")
 #define STR_NOTE                                NC_("STR_NOTE", "comment")
@@ -955,7 +955,7 @@
 #define FLD_STAT_WORD                           NC_("FLD_STAT_WORD", "Words")
 #define FLD_STAT_PARA                           NC_("FLD_STAT_PARA", "Paragraphs")
 #define FLD_STAT_GRF                            NC_("FLD_STAT_GRF", "Image")
-#define FLD_STAT_OBJ                            NC_("FLD_STAT_OBJ", "Objects")
+#define FLD_STAT_OBJ                            NC_("FLD_STAT_OBJ", "OLE objects")
 #define FLD_STAT_PAGE                           NC_("FLD_STAT_PAGE", "Pages")
 //  SubCmd DDETypes
 #define FMT_DDE_HOT                             NC_("FMT_DDE_HOT", "DDE automatic")
@@ -1343,8 +1343,8 @@
 #define STR_FRMUI_TOP_BASE                      NC_("STR_FRMUI_TOP_BASE", "Base line at ~top")
 #define STR_FRMUI_BOTTOM_BASE                   NC_("STR_FRMUI_BOTTOM_BASE", "~Base line at bottom")
 #define STR_FRMUI_CENTER_BASE                   NC_("STR_FRMUI_CENTER_BASE", "Base line ~centered")
-#define STR_FRMUI_OLE_INSERT                    NC_("STR_FRMUI_OLE_INSERT", "Insert object")
-#define STR_FRMUI_OLE_EDIT                      NC_("STR_FRMUI_OLE_EDIT", "Edit object")
+#define STR_FRMUI_OLE_INSERT                    NC_("STR_FRMUI_OLE_INSERT", "Insert OLE object")
+#define STR_FRMUI_OLE_EDIT                      NC_("STR_FRMUI_OLE_EDIT", "Edit OLE object")
 #define STR_FRMUI_COLL_HEADER                   NC_("STR_FRMUI_COLL_HEADER", " (Template: ")
 #define STR_FRMUI_BORDER                        NC_("STR_FRMUI_BORDER", "Borders")
 #define STR_FRMUI_PATTERN                       NC_("STR_FRMUI_PATTERN", "Background")
@@ -1430,6 +1430,8 @@
 
 #define STR_WRAP_PANEL_CUSTOM_STR               NC_("sidebarwrap|customlabel", "Custom")
 #define STR_CONTENT_CONTROL_PLACEHOLDER         NC_("STR_CONTENT_CONTROL_PLACEHOLDER", "Click here to enter text")
+#define STR_DROPDOWN_CONTENT_CONTROL_PLACEHOLDER NC_("STR_DROPDOWN_CONTENT_CONTROL_PLACEHOLDER", "Choose an item")
+#define STR_DATE_CONTENT_CONTROL_PLACEHOLDER NC_("STR_DATE_CONTENT_CONTROL_PLACEHOLDER", "Choose a date")
 
 #endif
 

@@ -7,13 +7,11 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 from uitest.framework import UITestCase
-from uitest.uihelper.common import get_state_as_dict
-from uitest.uihelper.common import select_pos
 from uitest.uihelper.calc import enter_text_to_cell
-from libreoffice.calc.document import get_sheet_from_doc
-from libreoffice.calc.conditional_format import get_conditional_format_from_sheet
+
 from libreoffice.calc.document import get_cell_by_position
 from libreoffice.uno.propertyvalue import mkPropertyValues
+
 
 class exponentialSmoothing(UITestCase):
     def test_exponential_smoothing_column(self):
@@ -52,8 +50,6 @@ class exponentialSmoothing(UITestCase):
             with self.ui_test.execute_modeless_dialog_through_command(".uno:ExponentialSmoothingDialog") as xDialog:
                 xinputrangeedit = xDialog.getChild("input-range-edit")
                 xoutputrangeedit = xDialog.getChild("output-range-edit")
-                xgroupedbyrowsradio = xDialog.getChild("groupedby-rows-radio")
-                xgroupedbycolumnsradio = xDialog.getChild("groupedby-columns-radio")
                 xmoothingfactorspin = xDialog.getChild("smoothing-factor-spin")
 
                 xinputrangeedit.executeAction("TYPE", mkPropertyValues({"KEYCODE":"CTRL+A"}))
@@ -146,7 +142,6 @@ class exponentialSmoothing(UITestCase):
                 xinputrangeedit = xDialog.getChild("input-range-edit")
                 xoutputrangeedit = xDialog.getChild("output-range-edit")
                 xgroupedbyrowsradio = xDialog.getChild("groupedby-rows-radio")
-                xgroupedbycolumnsradio = xDialog.getChild("groupedby-columns-radio")
                 xmoothingfactorspin = xDialog.getChild("smoothing-factor-spin")
 
                 xinputrangeedit.executeAction("TYPE", mkPropertyValues({"KEYCODE":"CTRL+A"}))

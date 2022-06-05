@@ -532,7 +532,7 @@ uno::Any SwXStyleFamilies::getByIndex(sal_Int32 nIndex)
 {
     auto pEntries(lcl_GetStyleFamilyEntries());
     SolarMutexGuard aGuard;
-    if(nIndex < 0 || nIndex >= static_cast<sal_Int32>(pEntries->size()))
+    if(nIndex < 0 || o3tl::make_unsigned(nIndex) >= pEntries->size())
         throw lang::IndexOutOfBoundsException();
     if(!IsValid())
         throw uno::RuntimeException();
@@ -599,7 +599,6 @@ void SwXStyleFamilies::loadStylesFromURL(const OUString& rURL,
 
 uno::Sequence< beans::PropertyValue > SwXStyleFamilies::getStyleLoaderOptions()
 {
-    SolarMutexGuard aGuard;
     const uno::Any aVal(true);
     return comphelper::InitPropertySequence({
         { UNO_NAME_LOAD_TEXT_STYLES, aVal },
@@ -1838,7 +1837,7 @@ void SwXStyle::SetPropertyValue<sal_uInt16(RES_PAGEDESC)>(const SfxItemPropertyM
         if(!pPageDesc)
             throw lang::IllegalArgumentException();
         pNewDesc->RegisterToPageDesc(*pPageDesc);
-        rStyleSet.Put(*pNewDesc);
+        rStyleSet.Put(std::move(pNewDesc));
     }
 }
 template<>
@@ -1955,7 +1954,7 @@ void SwXStyle::SetPropertyValue<sal_uInt16(RES_TXTATR_CJK_RUBY)>(const SfxItemPr
         const sal_uInt16 nId(SwStyleNameMapper::GetPoolIdFromUIName(sValue, SwGetPoolIdFromName::ChrFmt));
         pRuby->SetCharFormatId(nId);
     }
-    rStyleSet.Put(*pRuby);
+    rStyleSet.Put(std::move(pRuby));
     SetPropertyValue<HINT_BEGIN>(rEntry, rPropSet, rValue, o_rStyleBase);
 }
 template<>
@@ -1984,7 +1983,7 @@ void SwXStyle::SetPropertyValue<sal_uInt16(RES_PARATR_DROP)>(const SfxItemProper
         throw lang::IllegalArgumentException();
     }
     pDrop->SetCharFormat(pStyle->GetCharFormat());
-    rStyleSet.Put(*pDrop);
+    rStyleSet.Put(std::move(pDrop));
 }
 template<>
 void SwXStyle::SetPropertyValue<sal_uInt16(RES_PARATR_NUMRULE)>(const SfxItemPropertyMapEntry& rEntry, const SfxItemPropertySet& rPropSet, const uno::Any& rValue, SwStyleBase_Impl& o_rStyleBase)
@@ -2841,7 +2840,7 @@ SwXPageStyle::SwXPageStyle(SwDocShell* pDocSh)
 void SwXStyle::PutItemToSet(const SvxSetItem* pSetItem, const SfxItemPropertySet& rPropSet, const SfxItemPropertyMapEntry& rEntry, const uno::Any& rVal, SwStyleBase_Impl& rBaseImpl)
 {
     // create a new SvxSetItem and get it's ItemSet as new target
-    const std::unique_ptr<SvxSetItem> pNewSetItem(pSetItem->Clone());
+    std::unique_ptr<SvxSetItem> pNewSetItem(pSetItem->Clone());
     SfxItemSet& rSetSet = pNewSetItem->GetItemSet();
 
     // set parent to ItemSet to ensure XFILL_NONE as XFillStyleItem
@@ -2858,7 +2857,7 @@ void SwXStyle::PutItemToSet(const SvxSetItem* pSetItem, const SfxItemPropertySet
     rSetSet.SetParent(nullptr);
 
     // set the new SvxSetItem at the real target and delete it
-    rBaseImpl.GetItemSet().Put(*pNewSetItem);
+    rBaseImpl.GetItemSet().Put(std::move(pNewSetItem));
 }
 
 void SwXPageStyle::SetPropertyValues_Impl(const uno::Sequence<OUString>& rPropertyNames, const uno::Sequence<uno::Any>& rValues)
@@ -3011,7 +3010,7 @@ void SwXPageStyle::SetPropertyValues_Impl(const uno::Sequence<OUString>& rProper
                         rSetSet.SetParent(nullptr);
 
                         // set the new SvxSetItem at the real target and delete it
-                        aBaseImpl.GetItemSet().Put(*pNewSetItem);
+                        aBaseImpl.GetItemSet().Put(std::move(pNewSetItem));
                     }
                 }
                 continue;
@@ -4588,13 +4587,11 @@ uno::Any SAL_CALL SwXTextTableStyle::getByName(const OUString& rName)
 
 css::uno::Sequence<OUString> SAL_CALL SwXTextTableStyle::getElementNames()
 {
-    SolarMutexGuard aGuard;
     return comphelper::mapKeysToSequence(GetCellStyleNameMap());
 }
 
 sal_Bool SAL_CALL SwXTextTableStyle::hasByName(const OUString& rName)
 {
-    SolarMutexGuard aGuard;
     const CellStyleNameMap& rMap = GetCellStyleNameMap();
     CellStyleNameMap::const_iterator iter = rMap.find(rName);
     return iter != rMap.end();
@@ -4840,7 +4837,6 @@ OUString SAL_CALL SwXTextCellStyle::getParentStyle()
 
 void SAL_CALL SwXTextCellStyle::setParentStyle(const OUString& /*sParentStyle*/)
 {
-    SolarMutexGuard aGuard;
     // Changing parent to one which is unaware of it will lead to a something unexpected. getName() rely on a parent.
     SAL_INFO("sw.uno", "Changing SwXTextCellStyle parent");
 }

@@ -193,8 +193,8 @@ namespace
     class impPolygonParagraphHandler
     {
         const drawinglayer::attribute::SdrFormTextAttribute         maSdrFormTextAttribute; // FormText parameters
-        std::vector< drawinglayer::primitive2d::BasePrimitive2D* >& mrDecomposition;        // destination primitive list
-        std::vector< drawinglayer::primitive2d::BasePrimitive2D* >& mrShadowDecomposition;  // destination primitive list for shadow
+        drawinglayer::primitive2d::Primitive2DContainer&            mrDecomposition;        // destination primitive list
+        drawinglayer::primitive2d::Primitive2DContainer&            mrShadowDecomposition;  // destination primitive list for shadow
         Reference < css::i18n::XBreakIterator >                     mxBreak;                // break iterator
 
         static double getParagraphTextLength(const ::std::vector< const impPathTextPortion* >& rTextPortions)
@@ -231,8 +231,8 @@ namespace
     public:
         impPolygonParagraphHandler(
             const drawinglayer::attribute::SdrFormTextAttribute& rSdrFormTextAttribute,
-            std::vector< drawinglayer::primitive2d::BasePrimitive2D* >& rDecomposition,
-            std::vector< drawinglayer::primitive2d::BasePrimitive2D* >& rShadowDecomposition)
+            drawinglayer::primitive2d::Primitive2DContainer& rDecomposition,
+            drawinglayer::primitive2d::Primitive2DContainer& rShadowDecomposition)
         :   maSdrFormTextAttribute(rSdrFormTextAttribute),
             mrDecomposition(rDecomposition),
             mrShadowDecomposition(rShadowDecomposition)
@@ -547,7 +547,7 @@ namespace
         const basegfx::B2DHomMatrix& rTransform,
         const drawinglayer::attribute::LineAttribute& rLineAttribute,
         const drawinglayer::attribute::StrokeAttribute& rStrokeAttribute,
-        std::vector< drawinglayer::primitive2d::BasePrimitive2D* >& rTarget)
+        drawinglayer::primitive2d::Primitive2DContainer& rTarget)
     {
         for(const auto& rB2DPolyPolygon : rB2DPolyPolyVector)
         {
@@ -566,14 +566,14 @@ namespace
     }
 
     drawinglayer::primitive2d::Primitive2DContainer impAddPathTextOutlines(
-        const std::vector< drawinglayer::primitive2d::BasePrimitive2D* >& rSource,
+        const drawinglayer::primitive2d::Primitive2DContainer& rSource,
         const drawinglayer::attribute::SdrFormTextOutlineAttribute& rOutlineAttribute)
     {
-        std::vector< drawinglayer::primitive2d::BasePrimitive2D* > aNewPrimitives;
+        drawinglayer::primitive2d::Primitive2DContainer aNewPrimitives;
 
-        for(drawinglayer::primitive2d::BasePrimitive2D* a : rSource)
+        for(const drawinglayer::primitive2d::Primitive2DReference& a : rSource)
         {
-            const drawinglayer::primitive2d::TextSimplePortionPrimitive2D* pTextCandidate = dynamic_cast< const drawinglayer::primitive2d::TextSimplePortionPrimitive2D* >(a);
+            const drawinglayer::primitive2d::TextSimplePortionPrimitive2D* pTextCandidate = dynamic_cast< const drawinglayer::primitive2d::TextSimplePortionPrimitive2D* >(a.get());
 
             if(pTextCandidate)
             {
@@ -586,7 +586,7 @@ namespace
                 if(!aB2DPolyPolyVector.empty())
                 {
                     // create stroke primitives
-                    std::vector< drawinglayer::primitive2d::BasePrimitive2D* > aStrokePrimitives;
+                    drawinglayer::primitive2d::Primitive2DContainer aStrokePrimitives;
                     impAddPolygonStrokePrimitives(
                         aB2DPolyPolyVector,
                         aPolygonTransform,
@@ -600,45 +600,22 @@ namespace
                         if(rOutlineAttribute.getTransparence())
                         {
                             // create UnifiedTransparencePrimitive2D
-                            drawinglayer::primitive2d::Primitive2DContainer aStrokePrimitiveSequence(nStrokeCount);
-
-                            for(sal_uInt32 b(0); b < nStrokeCount; b++)
-                            {
-                                aStrokePrimitiveSequence[b] = drawinglayer::primitive2d::Primitive2DReference(aStrokePrimitives[b]);
-                            }
-
                             aNewPrimitives.push_back(
                                 new drawinglayer::primitive2d::UnifiedTransparencePrimitive2D(
-                                    std::move(aStrokePrimitiveSequence),
+                                    std::move(aStrokePrimitives),
                                     static_cast<double>(rOutlineAttribute.getTransparence()) / 100.0) );
                         }
                         else
                         {
                             // add polygons to rDecomposition as polygonStrokePrimitives
-                            aNewPrimitives.insert(aNewPrimitives.end(), aStrokePrimitives.begin(), aStrokePrimitives.end());
+                            aNewPrimitives.append( std::move(aStrokePrimitives) );
                         }
                     }
                 }
             }
         }
 
-        const sal_uInt32 nNewCount(aNewPrimitives.size());
-
-        if(nNewCount)
-        {
-            drawinglayer::primitive2d::Primitive2DContainer aRetval(nNewCount);
-
-            for(sal_uInt32 a(0); a < nNewCount; a++)
-            {
-                aRetval[a] = drawinglayer::primitive2d::Primitive2DReference(aNewPrimitives[a]);
-            }
-
-            return aRetval;
-        }
-        else
-        {
-            return drawinglayer::primitive2d::Primitive2DContainer();
-        }
+        return aNewPrimitives;
     }
 } // end of anonymous namespace
 
@@ -684,8 +661,8 @@ void SdrTextObj::impDecomposePathTextPrimitive(
         if(nLoopCount)
         {
             // prepare common decomposition stuff
-            std::vector< drawinglayer::primitive2d::BasePrimitive2D* > aRegularDecomposition;
-            std::vector< drawinglayer::primitive2d::BasePrimitive2D* > aShadowDecomposition;
+            drawinglayer::primitive2d::Primitive2DContainer aRegularDecomposition;
+            drawinglayer::primitive2d::Primitive2DContainer aShadowDecomposition;
             impPolygonParagraphHandler aPolygonParagraphHandler(
                 rFormTextAttribute,
                 aRegularDecomposition,
@@ -718,17 +695,12 @@ void SdrTextObj::impDecomposePathTextPrimitive(
             if(nShadowCount)
             {
                 // add shadow primitives to decomposition
-                aRetvalA.resize(nShadowCount);
-
-                for(a = 0; a < nShadowCount; a++)
-                {
-                    aRetvalA[a] = drawinglayer::primitive2d::Primitive2DReference(aShadowDecomposition[a]);
-                }
 
                 // if necessary, add shadow outlines
                 if(rFormTextAttribute.getFormTextOutline()
                     && !rFormTextAttribute.getShadowOutline().isDefault())
                 {
+                    aRetvalA = aShadowDecomposition;
                     const drawinglayer::primitive2d::Primitive2DContainer aOutlines(
                         impAddPathTextOutlines(
                             aShadowDecomposition,
@@ -736,22 +708,19 @@ void SdrTextObj::impDecomposePathTextPrimitive(
 
                     aRetvalA.append(aOutlines);
                 }
+                else
+                    aRetvalA = std::move(aShadowDecomposition);
             }
 
             if(nRegularCount)
             {
                 // add normal primitives to decomposition
-                aRetvalB.resize(nRegularCount);
-
-                for(a = 0; a < nRegularCount; a++)
-                {
-                    aRetvalB[a] = drawinglayer::primitive2d::Primitive2DReference(aRegularDecomposition[a]);
-                }
 
                 // if necessary, add outlines
                 if(rFormTextAttribute.getFormTextOutline()
                     && !rFormTextAttribute.getOutline().isDefault())
                 {
+                    aRetvalB = aRegularDecomposition;
                     const drawinglayer::primitive2d::Primitive2DContainer aOutlines(
                         impAddPathTextOutlines(
                             aRegularDecomposition,
@@ -759,6 +728,8 @@ void SdrTextObj::impDecomposePathTextPrimitive(
 
                     aRetvalB.append(aOutlines);
                 }
+                else
+                    aRetvalB = std::move(aRegularDecomposition);
             }
         }
     }
@@ -769,8 +740,8 @@ void SdrTextObj::impDecomposePathTextPrimitive(
     rOutliner.setVisualizedPage(nullptr);
 
     // concatenate all results
-    rTarget.append(aRetvalA);
-    rTarget.append(aRetvalB);
+    rTarget.append(std::move(aRetvalA));
+    rTarget.append(std::move(aRetvalB));
 }
 
 

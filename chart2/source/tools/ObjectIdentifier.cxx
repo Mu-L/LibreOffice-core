@@ -19,6 +19,7 @@
 
 #include <sal/config.h>
 
+#include <cstddef>
 #include <map>
 
 #include <ObjectIdentifier.hxx>
@@ -42,6 +43,7 @@
 
 #include <rtl/ustrbuf.hxx>
 #include <tools/diagnose_ex.h>
+#include <o3tl/safeint.hxx>
 #include <o3tl/string_view.hxx>
 
 namespace com::sun::star::drawing { class XShape; }
@@ -222,7 +224,7 @@ void lcl_getDiagramAndCooSys( const OUString& rObjectCID
     if( nCooSysIndex > -1 )
     {
         const std::vector< rtl::Reference< BaseCoordinateSystem > > aCooSysList( xDiagram->getBaseCoordinateSystems() );
-        if( nCooSysIndex < static_cast<sal_Int32>(aCooSysList.size()) )
+        if( o3tl::make_unsigned(nCooSysIndex) < aCooSysList.size() )
             xCooSys = aCooSysList[nCooSysIndex];
     }
 }
@@ -438,7 +440,7 @@ OUString ObjectIdentifier::createClassifiedIdentifierForParticles(
 
     OUStringBuffer aRet( m_aProtocol );
     aRet.append( lcl_createClassificationStringForType( eObjectType, rDragMethodServiceName, rDragParameterString ));
-    if(aRet.getLength() > static_cast<sal_Int32>(std::size(m_aProtocol)-1))
+    if(o3tl::make_unsigned(aRet.getLength()) >= std::size(m_aProtocol))
         aRet.append("/");
 
     if(!rParentParticle.empty())
@@ -467,9 +469,9 @@ OUString ObjectIdentifier::createParticleForCoordinateSystem(
     rtl::Reference< Diagram > xDiagram( ChartModelHelper::findDiagram( xChartModel ) );
     if( xDiagram.is() )
     {
-        sal_Int32 nCooSysIndex = 0;
+        std::size_t nCooSysIndex = 0;
         const std::vector< rtl::Reference< BaseCoordinateSystem > > & aCooSysList( xDiagram->getBaseCoordinateSystems() );
-        for( ; nCooSysIndex < static_cast<sal_Int32>(aCooSysList.size()); ++nCooSysIndex )
+        for( ; nCooSysIndex < aCooSysList.size(); ++nCooSysIndex )
         {
             if( xCooSys == aCooSysList[nCooSysIndex] )
             {
@@ -562,7 +564,7 @@ OUString ObjectIdentifier::createClassifiedIdentifierWithParent(
 
     OUStringBuffer aRet( m_aProtocol );
     aRet.append( lcl_createClassificationStringForType( eObjectType, rDragMethodServiceName, rDragParameterString ));
-    if(aRet.getLength() > static_cast<sal_Int32>(std::size(m_aProtocol)-1))
+    if(o3tl::make_unsigned(aRet.getLength()) >= std::size(m_aProtocol))
         aRet.append("/");
     aRet.append(rParentPartical);
     if(!rParentPartical.empty())
@@ -1211,7 +1213,7 @@ Reference< beans::XPropertySet > ObjectIdentifier::getObjectPropertySet(
                         sal_Int32 nIndex = o3tl::toInt32(aParticleID);
                         const std::vector< rtl::Reference< RegressionCurveModel > > & aCurveList =
                             xRegressionContainer->getRegressionCurves2();
-                        if( nIndex >= 0 && nIndex < static_cast<sal_Int32>(aCurveList.size()) )
+                        if( nIndex >= 0 && o3tl::make_unsigned(nIndex) < aCurveList.size() )
                         {
                             if( eObjectType == OBJECTTYPE_DATA_CURVE_EQUATION )
                                 xObjectProperties = aCurveList[nIndex]->getEquationProperties();
@@ -1281,7 +1283,7 @@ rtl::Reference< DataSeries > ObjectIdentifier::getDataSeriesForCID(
     if( xDataSeriesContainer.is() )
     {
         const std::vector< rtl::Reference< DataSeries > > & aDataSeriesSeq( xDataSeriesContainer->getDataSeries2() );
-        if( nSeriesIndex >= 0 && nSeriesIndex < static_cast<sal_Int32>(aDataSeriesSeq.size()) )
+        if( nSeriesIndex >= 0 && o3tl::make_unsigned(nSeriesIndex) < aDataSeriesSeq.size() )
             xSeries = aDataSeriesSeq[nSeriesIndex];
     }
 

@@ -20,16 +20,19 @@
 #pragma once
 
 #include "address.hxx"
-#include <vector>
+#include <optional>
 #include <memory>
+#include <vector>
+
+namespace tools { class JsonWriter; }
 
 class ScPrintSaverTab
 {
     typedef ::std::vector< ScRange > ScRangeVec;
 
     ScRangeVec  maPrintRanges;      ///< Array
-    std::unique_ptr<ScRange> mpRepeatCol;        ///< single
-    std::unique_ptr<ScRange> mpRepeatRow;        ///< single
+    std::optional<ScRange> moRepeatCol;        ///< single
+    std::optional<ScRange> moRepeatRow;        ///< single
     bool        mbEntireSheet;
 
 public:
@@ -37,12 +40,12 @@ public:
             ~ScPrintSaverTab();
 
     void            SetAreas( ScRangeVec&& rRanges, bool bEntireSheet );
-    void            SetRepeat( const ScRange* pCol, const ScRange* pRow );
+    void            SetRepeat( std::optional<ScRange> oCol, std::optional<ScRange> oRow );
 
     const ScRangeVec&   GetPrintRanges() const  { return maPrintRanges; }
     bool                IsEntireSheet() const   { return mbEntireSheet; }
-    const ScRange*      GetRepeatCol() const    { return mpRepeatCol.get(); }
-    const ScRange*      GetRepeatRow() const    { return mpRepeatRow.get(); }
+    const std::optional<ScRange>& GetRepeatCol() const { return moRepeatCol; }
+    const std::optional<ScRange>& GetRepeatRow() const { return moRepeatRow; }
 
     bool    operator==( const ScPrintSaverTab& rCmp ) const;
 };
@@ -59,6 +62,7 @@ public:
     SCTAB                   GetTabCount() const     { return nTabCount; }
     ScPrintSaverTab&        GetTabData(SCTAB nTab);
     const ScPrintSaverTab&  GetTabData(SCTAB nTab) const;
+    void GetPrintRangesInfo(tools::JsonWriter& rPrintRanges) const;
 
     bool    operator==( const ScPrintRangeSaver& rCmp ) const;
 };

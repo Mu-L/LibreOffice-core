@@ -127,7 +127,7 @@ static oslFileError osl_setup_base_directory_impl_(
 
     if (error == osl_File_E_None)
     {
-        error = osl_getSystemPathFromFileURL_Ex(dir_url, &dir);
+        error = getSystemPathFromFileURL_Ex(dir_url, &dir);
         rtl_uString_release(dir_url);
     }
 
@@ -278,7 +278,7 @@ oslFileError SAL_CALL osl_createTempFile(
     rtl_uString**  ppustrTempFileURL)
 {
     rtl_uString*  base_directory     = nullptr;
-    oslFileHandle temp_file_handle;
+    oslFileHandle temp_file_handle = nullptr;
     bool      b_delete_on_close;
     oslFileError  osl_error;
 

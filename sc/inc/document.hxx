@@ -323,7 +323,6 @@ class ScDocument
 friend class ScValueIterator;
 friend class ScHorizontalValueIterator;
 friend class ScDBQueryDataIterator;
-friend class ScFormulaGroupIterator;
 friend class ScCellIterator;
 template< ScQueryCellIteratorAccess accessType, ScQueryCellIteratorType queryType >
 friend class ScQueryCellIteratorBase;
@@ -332,22 +331,15 @@ friend class ScQueryCellIteratorAccessSpecific;
 friend class ScHorizontalCellIterator;
 friend class ScHorizontalAttrIterator;
 friend class ScDocAttrIterator;
-friend class ScAccessibleTableBase;
 friend class ScAttrRectIterator;
 friend class ScDocShell;
 friend class ScDocRowHeightUpdater;
 friend class ScColumnTextWidthIterator;
-friend class ScFormulaCell;
 friend class ScTable;
 friend class ScColumn;
 friend struct ScRefCellValue;
 friend class ScDocumentImport;
-friend class sc::DocumentStreamAccess;
-friend class sc::ColumnSpanSet;
-friend class sc::RangeColumnSpanSet;
 friend class sc::EditTextIterator;
-friend class sc::FormulaGroupAreaListener;
-friend class sc::TableColumnBlockPositionSet;
 friend struct ScMutationGuard;
 friend struct ScMutationDisable;
 
@@ -577,6 +569,8 @@ private:
     bool                mbFinalTrackFormulas    : 1;
     // This indicates if a ScDocShell::DoRecalc() or ScDocShell::DoHardRecalc() is in progress.
     bool                mbDocShellRecalc        : 1;
+    // This indicates if a ScOutputData::LayoutStrings() is in progress.
+    bool                mbLayoutStrings         : 1;
 
     size_t              mnMutationGuardFlags;
 
@@ -1325,19 +1319,20 @@ public:
     bool              RefreshAutoFilter( SCCOL nStartCol, SCROW nStartRow,
                                          SCCOL nEndCol, SCROW nEndRow, SCTAB nTab );
 
-    SC_DLLPUBLIC void DoMergeContents( SCTAB nTab, SCCOL nStartCol, SCROW nStartRow,
-                                       SCCOL nEndCol, SCROW nEndRow );
-    SC_DLLPUBLIC void DoEmptyBlock( SCTAB nTab, SCCOL nStartCol, SCROW nStartRow,
-                                    SCCOL nEndCol, SCROW nEndRow );
+    SC_DLLPUBLIC void DoMergeContents( SCCOL nStartCol, SCROW nStartRow,
+                                       SCCOL nEndCol, SCROW nEndRow, SCTAB nTab );
+    SC_DLLPUBLIC void DoEmptyBlock( SCCOL nStartCol, SCROW nStartRow,
+                                    SCCOL nEndCol, SCROW nEndRow, SCTAB nTab );
                     //  without checking:
-    SC_DLLPUBLIC void DoMerge( SCTAB nTab, SCCOL nStartCol, SCROW nStartRow,
-                               SCCOL nEndCol, SCROW nEndRow, bool bDeleteCaptions = true );
+    SC_DLLPUBLIC void DoMerge( SCCOL nStartCol, SCROW nStartRow,
+                               SCCOL nEndCol, SCROW nEndRow, SCTAB nTab, bool bDeleteCaptions = true );
     void              RemoveMerge( SCCOL nCol, SCROW nRow, SCTAB nTab );
 
-    bool              IsBlockEmpty( SCTAB nTab, SCCOL nStartCol, SCROW nStartRow,
-                                    SCCOL nEndCol, SCROW nEndRow, bool bIgnoreNotes = false ) const;
-    bool              IsPrintEmpty( SCTAB nTab, SCCOL nStartCol, SCROW nStartRow,
-                                    SCCOL nEndCol, SCROW nEndRow,
+    // This also includes e.g. notes. Use IsEmptyData() for cell data only.
+    bool              IsBlockEmpty( SCCOL nStartCol, SCROW nStartRow,
+                                    SCCOL nEndCol, SCROW nEndRow, SCTAB nTab ) const;
+    bool              IsPrintEmpty( SCCOL nStartCol, SCROW nStartRow,
+                                    SCCOL nEndCol, SCROW nEndRow, SCTAB nTab,
                                     bool bLeftIsEmpty = false,
                                     ScRange* pLastRange = nullptr,
                                     tools::Rectangle* pLastMM = nullptr ) const;
@@ -1489,7 +1484,7 @@ public:
      * non-empty row position in the upward direction if the start row
      * position is empty.</p>
      */
-    SCROW GetLastDataRow( SCTAB nTab, SCCOL nCol1, SCCOL nCol2, SCROW nLastRow ) const;
+    SC_DLLPUBLIC SCROW GetLastDataRow( SCTAB nTab, SCCOL nCol1, SCCOL nCol2, SCROW nLastRow ) const;
 
     /**
      * Return the smallest area containing at least all contiguous cells
@@ -1541,8 +1536,8 @@ public:
     void                        ExtendPrintArea( OutputDevice* pDev, SCTAB nTab,
                                                  SCCOL nStartCol, SCROW nStartRow,
                                                  SCCOL& rEndCol, SCROW nEndRow ) const;
-    SC_DLLPUBLIC bool           IsEmptyBlock(SCCOL nStartCol, SCROW nStartRow,
-                                             SCCOL nEndCol, SCROW nEndRow, SCTAB nTab) const;
+    SC_DLLPUBLIC bool           IsEmptyData(SCCOL nStartCol, SCROW nStartRow,
+                                            SCCOL nEndCol, SCROW nEndRow, SCTAB nTab) const;
     // I think this returns the number of empty cells starting from the given direction.
     SC_DLLPUBLIC SCSIZE         GetEmptyLinesInBlock( SCCOL nStartCol, SCROW nStartRow, SCTAB nStartTab,
                                                       SCCOL nEndCol, SCROW nEndRow, SCTAB nEndTab,
@@ -2107,8 +2102,8 @@ public:
     SC_DLLPUBLIC bool           HasPrintRange();
     SC_DLLPUBLIC sal_uInt16     GetPrintRangeCount( SCTAB nTab );
     SC_DLLPUBLIC const ScRange* GetPrintRange( SCTAB nTab, sal_uInt16 nPos );
-    SC_DLLPUBLIC const ScRange* GetRepeatColRange( SCTAB nTab );
-    SC_DLLPUBLIC const ScRange* GetRepeatRowRange( SCTAB nTab );
+    SC_DLLPUBLIC std::optional<ScRange> GetRepeatColRange( SCTAB nTab );
+    SC_DLLPUBLIC std::optional<ScRange> GetRepeatRowRange( SCTAB nTab );
     /** Returns true, if the specified sheet is always printed. */
     bool                        IsPrintEntireSheet( SCTAB nTab ) const;
 
@@ -2118,8 +2113,8 @@ public:
     SC_DLLPUBLIC void            AddPrintRange( SCTAB nTab, const ScRange& rNew );
     /** Marks the specified sheet to be printed completely. Deletes old print ranges on the sheet! */
     SC_DLLPUBLIC void            SetPrintEntireSheet( SCTAB nTab );
-    SC_DLLPUBLIC void            SetRepeatColRange( SCTAB nTab, std::unique_ptr<ScRange> pNew );
-    SC_DLLPUBLIC void            SetRepeatRowRange( SCTAB nTab, std::unique_ptr<ScRange> pNew );
+    SC_DLLPUBLIC void            SetRepeatColRange( SCTAB nTab, std::optional<ScRange> oNew );
+    SC_DLLPUBLIC void            SetRepeatRowRange( SCTAB nTab, std::optional<ScRange> oNew );
     std::unique_ptr<ScPrintRangeSaver> CreatePrintRangeSaver() const;
     void                         RestorePrintRanges( const ScPrintRangeSaver& rSaver );
 
@@ -2630,6 +2625,9 @@ public:
 
     bool IsInDocShellRecalc() const   { return mbDocShellRecalc; }
     void SetDocShellRecalc(bool bSet) { mbDocShellRecalc = bSet; }
+
+    bool IsInLayoutStrings() const   { return mbLayoutStrings; }
+    void SetLayoutStrings(bool bSet) { mbLayoutStrings = bSet; }
 
     /**
      * Serializes the specified sheet's geometry data.

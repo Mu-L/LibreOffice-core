@@ -7,14 +7,13 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 from uitest.framework import UITestCase
-from uitest.uihelper.common import get_state_as_dict
-from uitest.uihelper.common import select_pos
 from uitest.uihelper.calc import enter_text_to_cell
+
 from libreoffice.calc.document import get_cell_by_position
 from libreoffice.uno.propertyvalue import mkPropertyValues
 
-#Bug 125051 - EDITING: CRASH when start SpellCheck
 
+# Bug 125051 - EDITING: CRASH when start SpellCheck
 class tdf125051(UITestCase):
     def test_tdf125051_crash_spelling_dialog(self):
         with self.ui_test.create_doc_in_start_center("calc") as document:
@@ -22,9 +21,8 @@ class tdf125051(UITestCase):
             gridwin = xCalcDoc.getChild("grid_window")
             enter_text_to_cell(gridwin, "A1", "text")
             gridwin.executeAction("SELECT", mkPropertyValues({"CELL": "A1"}))
-            with self.ui_test.execute_dialog_through_command(".uno:SpellDialog") as xDialog2:
+            with self.ui_test.execute_dialog_through_command(".uno:SpellDialog"):
                 pass
-
 
             xDialog = self.xUITest.getTopFocusWindow()  #Spelling dialog
             #open options

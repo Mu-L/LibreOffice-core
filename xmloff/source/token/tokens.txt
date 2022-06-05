@@ -964,6 +964,9 @@ hyphenation-ladder-count
 hyphenation-push-char-count
 hyphenation-remain-char-count
 hyphenation-no-caps
+hyphenation-no-last-word
+hyphenation-word-char-count
+hyphenation-zone
 i
 icon
 icon-set
@@ -3240,4 +3243,7 @@ showing-place-holder
 checked-state
 unchecked-state
 display-text
+picture
+date-format
+date-rfc-language-tag
 TOKEN_END_DUMMY

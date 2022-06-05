@@ -682,6 +682,14 @@ IMPL_LINK_NOARG(SwMMResultSaveDialog, SaveOutputHdl_Impl, weld::Button&, void)
             pTempView->GetDocShell()->GetDoc()->ReplaceDefaults( *pTargetView->GetDocShell()->GetDoc());
             pTempView->GetDocShell()->GetDoc()->ReplaceDocumentProperties( *pTargetView->GetDocShell()->GetDoc(), true );
 
+            uno::Reference<beans::XPropertySet> const xThisSet(
+                pTargetView->GetDocShell()->GetBaseModel(), uno::UNO_QUERY_THROW);
+            uno::Reference<beans::XPropertySet> const xRetSet(
+                pTempView->GetDocShell()->GetBaseModel(), uno::UNO_QUERY_THROW);
+            uno::Sequence<beans::PropertyValue> aInteropGrabBag;
+            xThisSet->getPropertyValue("InteropGrabBag") >>= aInteropGrabBag;
+            xRetSet->setPropertyValue("InteropGrabBag", uno::Any(aInteropGrabBag));
+
             pTargetView->GetWrtShell().PastePages(
                 pTempView->GetWrtShell(), documentStartPageNumber(xConfigItem.get(), nDoc, false),
                 documentEndPageNumber(xConfigItem.get(), nDoc, false));
@@ -1187,7 +1195,7 @@ IMPL_LINK_NOARG(SwMMResultEmailDialog, SendDocumentsHdl_Impl, weld::Button&, voi
                     OSL_FAIL("no output file created?");
                     continue;
                 }
-                OString sLine;
+                OStringBuffer sLine;
                 bool bDone = pInStream->ReadLine( sLine );
                 while ( bDone )
                 {

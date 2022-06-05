@@ -46,6 +46,7 @@
 #include <comphelper/property.hxx>
 
 #include <algorithm>
+#include <cstddef>
 #include <limits>
 
 using namespace ::com::sun::star;
@@ -137,7 +138,7 @@ lcl_tSharedSeqVec lcl_getSharedSequences( const std::vector< rtl::Reference< Dat
     {
         Reference< chart2::data::XDataSequence > xValues( labeledDataSeq->getValues());
         bool bShared = true;
-        for( sal_Int32 nSeriesIdx=1; nSeriesIdx<static_cast<sal_Int32>(rSeries.size()); ++nSeriesIdx )
+        for( std::size_t nSeriesIdx=1; nSeriesIdx<rSeries.size(); ++nSeriesIdx )
         {
             bShared = lcl_SequenceOfSeriesIsShared( rSeries[nSeriesIdx], xValues );
             if( !bShared )
@@ -791,10 +792,10 @@ void DataBrowserModel::updateFromModel()
         const std::vector< rtl::Reference< ChartType > > aChartTypes( coords->getChartTypes2());
         sal_Int32 nXAxisNumberFormat = DataSeriesHelper::getNumberFormatKeyFromAxis( nullptr, coords, 0, 0 );
 
-        for( sal_Int32 nCTIdx=0; nCTIdx < static_cast<sal_Int32>(aChartTypes.size()); ++nCTIdx )
+        for( auto const & CT: aChartTypes )
         {
-            rtl::Reference< ChartType > xSeriesCnt( aChartTypes[nCTIdx] );
-            OUString aRoleForDataLabelNumberFormat = ChartTypeHelper::getRoleOfSequenceForDataLabelNumberFormatDetection( aChartTypes[nCTIdx] );
+            rtl::Reference< ChartType > xSeriesCnt( CT );
+            OUString aRoleForDataLabelNumberFormat = ChartTypeHelper::getRoleOfSequenceForDataLabelNumberFormatDetection( CT );
 
             const std::vector< rtl::Reference< DataSeries > > & aSeries( xSeriesCnt->getDataSeries2());
             lcl_tSharedSeqVec aSharedSequences( lcl_getSharedSequences( aSeries ));
@@ -871,7 +872,7 @@ void DataBrowserModel::updateFromModel()
 
                     m_aHeaders.emplace_back(
                             dataSeries,
-                            aChartTypes[nCTIdx],
+                            CT,
                             bSwapXAndYAxis,
                             nHeaderStart,
                             nHeaderEnd - 1 );

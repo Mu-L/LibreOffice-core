@@ -157,6 +157,7 @@ public:
     void testFormulaPosition();
     void testFormulaWizardSubformula();
     void testDiagonalBorders();
+    void testWholeDocBorders();
 
     /**
      * Make sure the sheet streams are invalidated properly.
@@ -290,6 +291,7 @@ public:
     CPPUNIT_TEST(testFormulaPosition);
     CPPUNIT_TEST(testFormulaWizardSubformula);
     CPPUNIT_TEST(testDiagonalBorders);
+    CPPUNIT_TEST(testWholeDocBorders);
     CPPUNIT_TEST(testJumpToPrecedentsDependents);
     CPPUNIT_TEST(testSetBackgroundColor);
     CPPUNIT_TEST(testRenameTable);
@@ -2602,8 +2604,8 @@ void Test::testDataArea()
     m_pDoc->InsertTab(0, "Data");
 
     // Totally empty sheet should be rightfully considered empty in all accounts.
-    CPPUNIT_ASSERT_MESSAGE("Sheet is expected to be empty.", m_pDoc->IsPrintEmpty(0, 0, 0, 100, 100));
-    CPPUNIT_ASSERT_MESSAGE("Sheet is expected to be empty.", m_pDoc->IsBlockEmpty(0, 0, 0, 100, 100));
+    CPPUNIT_ASSERT_MESSAGE("Sheet is expected to be empty.", m_pDoc->IsPrintEmpty(0, 0, 100, 100, 0));
+    CPPUNIT_ASSERT_MESSAGE("Sheet is expected to be empty.", m_pDoc->IsBlockEmpty(0, 0, 100, 100, 0));
 
     // Now, set borders in some cells...
     ::editeng::SvxBorderLine aLine(nullptr, 50, SvxBorderLineStyle::SOLID);
@@ -2619,12 +2621,12 @@ void Test::testDataArea()
     CPPUNIT_ASSERT_MESSAGE("Empty sheet with borders should be printable.",
                            !m_pDoc->IsPrintEmpty(0, 0, 0, 100, 100));
     CPPUNIT_ASSERT_MESSAGE("But it should still be considered empty in all the other cases.",
-                           m_pDoc->IsBlockEmpty(0, 0, 0, 100, 100));
+                           m_pDoc->IsBlockEmpty(0, 0, 100, 100, 0));
 
     // Adding a real cell content should turn the block non-empty.
     m_pDoc->SetString(0, 0, 0, "Some text");
     CPPUNIT_ASSERT_MESSAGE("Now the block should not be empty with a real cell content.",
-                           !m_pDoc->IsBlockEmpty(0, 0, 0, 100, 100));
+                           !m_pDoc->IsBlockEmpty(0, 0, 100, 100, 0));
 
     // TODO: Add more tests for normal data area calculation.
 
@@ -4138,7 +4140,7 @@ void Test::testMergedCells()
     //test merge and unmerge
     //TODO: an undo/redo test for this would be a good idea
     m_pDoc->InsertTab(0, "Sheet1");
-    m_pDoc->DoMerge(0, 1, 1, 3, 3, false);
+    m_pDoc->DoMerge(1, 1, 3, 3, 0, false);
     SCCOL nEndCol = 1;
     SCROW nEndRow = 1;
     m_pDoc->ExtendMerge( 1, 1, nEndCol, nEndRow, 0);
@@ -4895,7 +4897,7 @@ void Test::testShiftCells()
     m_pDoc->InsertCol(3, 0, 3, 0, 3, 1);
     OUString aStr = m_pDoc->GetString(5, 3, 0);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("We should have a string cell here.", aTestVal, aStr);
-    CPPUNIT_ASSERT_MESSAGE("D5 is supposed to be blank.", m_pDoc->IsBlockEmpty(0, 3, 4, 3, 4));
+    CPPUNIT_ASSERT_MESSAGE("D5 is supposed to be blank.", m_pDoc->IsBlockEmpty(3, 4, 3, 4, 0));
 
     CPPUNIT_ASSERT_MESSAGE("there should be NO note", !m_pDoc->HasNote(4, 3, 0));
     CPPUNIT_ASSERT_MESSAGE("there should be a note", m_pDoc->HasNote(5, 3, 0));
@@ -4904,7 +4906,7 @@ void Test::testShiftCells()
     m_pDoc->DeleteCol(3, 0, 3, 0, 3, 1);
     aStr = m_pDoc->GetString(4, 3, 0);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("We should have a string cell here.", aTestVal, aStr);
-    CPPUNIT_ASSERT_MESSAGE("E5 is supposed to be blank.", m_pDoc->IsBlockEmpty(0, 4, 4, 4, 4));
+    CPPUNIT_ASSERT_MESSAGE("E5 is supposed to be blank.", m_pDoc->IsBlockEmpty(4, 4, 4, 4, 0));
 
     CPPUNIT_ASSERT_MESSAGE("there should be NO note", !m_pDoc->HasNote(5, 3, 0));
     CPPUNIT_ASSERT_MESSAGE("there should be a note", m_pDoc->HasNote(4, 3, 0));
@@ -5008,10 +5010,8 @@ void Test::testNoteDeleteRow()
     CPPUNIT_ASSERT_MESSAGE("there should be a note", m_pDoc->HasNote(1, 1, 0));
 
     // test with IsBlockEmpty
-    bool bIgnoreNotes = true;
-    CPPUNIT_ASSERT_MESSAGE("The Block should be detected as empty (no Notes)", m_pDoc->IsBlockEmpty(0, 0, 0, 100, 100, bIgnoreNotes));
-    bIgnoreNotes = false;
-    CPPUNIT_ASSERT_MESSAGE("The Block should NOT be detected as empty", !m_pDoc->IsBlockEmpty(0, 0, 0, 100, 100, bIgnoreNotes));
+    CPPUNIT_ASSERT_MESSAGE("The Block should be detected as empty (no Notes)", m_pDoc->IsEmptyData(0, 0, 100, 100, 0));
+    CPPUNIT_ASSERT_MESSAGE("The Block should NOT be detected as empty", !m_pDoc->IsBlockEmpty(0, 0, 100, 100, 0));
 
     m_pDoc->DeleteRow(0, 0, m_pDoc->MaxCol(), 0, 1, 1);
 
@@ -6308,6 +6308,78 @@ void Test::testDiagonalBorders()
     CPPUNIT_ASSERT_MESSAGE("Diagonal down border was not expected, but is found!", !pLine);
     pLine = pPat->GetItem(ATTR_BORDER_BLTR).GetLine();
     CPPUNIT_ASSERT_MESSAGE("Diagonal up border was not expected, but is found!", !pLine);
+
+    m_pDoc->DeleteTab(0);
+}
+
+void Test::testWholeDocBorders()
+{
+    m_pDoc->InsertTab(0, "Borders");
+
+    // Set outside border to be on all sides, and inside borders to be only vertical.
+    // This should result in edge borders of the spreadsheets being set, but internal
+    // borders between cells should be only vertical, not horizontal.
+    ::editeng::SvxBorderLine line(nullptr, 50, SvxBorderLineStyle::SOLID);
+    SvxBoxItem borderItem(ATTR_BORDER);
+    borderItem.SetLine(&line, SvxBoxItemLine::LEFT);
+    borderItem.SetLine(&line, SvxBoxItemLine::RIGHT);
+    borderItem.SetLine(&line, SvxBoxItemLine::TOP);
+    borderItem.SetLine(&line, SvxBoxItemLine::BOTTOM);
+    SvxBoxInfoItem boxInfoItem(ATTR_BORDER);
+    boxInfoItem.SetLine(&line, SvxBoxInfoItemLine::VERT);
+
+    ScMarkData mark( m_pDoc->GetSheetLimits(), ScRange( 0, 0, 0, m_pDoc->MaxCol(), m_pDoc->MaxRow(), 0 ));
+    m_pDoc->ApplySelectionFrame( mark, borderItem, &boxInfoItem );
+
+    const ScPatternAttr* attr;
+    attr = m_pDoc->GetPattern( 0, 0, 0 );
+    CPPUNIT_ASSERT(attr);
+    CPPUNIT_ASSERT(attr->GetItem(ATTR_BORDER).GetTop());
+    CPPUNIT_ASSERT(attr->GetItem(ATTR_BORDER).GetLeft());
+    CPPUNIT_ASSERT(attr->GetItem(ATTR_BORDER).GetRight());
+    CPPUNIT_ASSERT(!attr->GetItem(ATTR_BORDER).GetBottom());
+
+    attr = m_pDoc->GetPattern( 1, 0, 0 );
+    CPPUNIT_ASSERT(attr);
+    CPPUNIT_ASSERT(attr->GetItem(ATTR_BORDER).GetTop());
+    CPPUNIT_ASSERT(attr->GetItem(ATTR_BORDER).GetLeft());
+    CPPUNIT_ASSERT(attr->GetItem(ATTR_BORDER).GetRight());
+    CPPUNIT_ASSERT(!attr->GetItem(ATTR_BORDER).GetBottom());
+
+    attr = m_pDoc->GetPattern( 0, 1, 0 );
+    CPPUNIT_ASSERT(attr);
+    CPPUNIT_ASSERT(!attr->GetItem(ATTR_BORDER).GetTop());
+    CPPUNIT_ASSERT(attr->GetItem(ATTR_BORDER).GetLeft());
+    CPPUNIT_ASSERT(attr->GetItem(ATTR_BORDER).GetRight());
+    CPPUNIT_ASSERT(!attr->GetItem(ATTR_BORDER).GetBottom());
+
+    attr = m_pDoc->GetPattern( 1, 1, 0 );
+    CPPUNIT_ASSERT(attr);
+    CPPUNIT_ASSERT(!attr->GetItem(ATTR_BORDER).GetTop());
+    CPPUNIT_ASSERT(attr->GetItem(ATTR_BORDER).GetLeft());
+    CPPUNIT_ASSERT(attr->GetItem(ATTR_BORDER).GetRight());
+    CPPUNIT_ASSERT(!attr->GetItem(ATTR_BORDER).GetBottom());
+
+    attr = m_pDoc->GetPattern( m_pDoc->MaxCol(), 0, 0 );
+    CPPUNIT_ASSERT(attr);
+    CPPUNIT_ASSERT(attr->GetItem(ATTR_BORDER).GetTop());
+    CPPUNIT_ASSERT(attr->GetItem(ATTR_BORDER).GetLeft());
+    CPPUNIT_ASSERT(attr->GetItem(ATTR_BORDER).GetRight());
+    CPPUNIT_ASSERT(!attr->GetItem(ATTR_BORDER).GetBottom());
+
+    attr = m_pDoc->GetPattern( 0, m_pDoc->MaxRow(), 0 );
+    CPPUNIT_ASSERT(attr);
+    CPPUNIT_ASSERT(!attr->GetItem(ATTR_BORDER).GetTop());
+    CPPUNIT_ASSERT(attr->GetItem(ATTR_BORDER).GetLeft());
+    CPPUNIT_ASSERT(attr->GetItem(ATTR_BORDER).GetRight());
+    CPPUNIT_ASSERT(attr->GetItem(ATTR_BORDER).GetBottom());
+
+    attr = m_pDoc->GetPattern( m_pDoc->MaxCol(), m_pDoc->MaxRow(), 0 );
+    CPPUNIT_ASSERT(attr);
+    CPPUNIT_ASSERT(!attr->GetItem(ATTR_BORDER).GetTop());
+    CPPUNIT_ASSERT(attr->GetItem(ATTR_BORDER).GetLeft());
+    CPPUNIT_ASSERT(attr->GetItem(ATTR_BORDER).GetRight());
+    CPPUNIT_ASSERT(attr->GetItem(ATTR_BORDER).GetBottom());
 
     m_pDoc->DeleteTab(0);
 }

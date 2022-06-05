@@ -175,7 +175,7 @@ void FormulaToken::SetByte( sal_uInt8 )
 ParamClass FormulaToken::GetInForceArray() const
 {
     // ok to be called for any derived class
-    return ParamClass::Unknown;
+    return (eOp == ocPush && eType == svMatrix) ? ParamClass::ForceArrayReturn : ParamClass::Unknown;
 }
 
 void FormulaToken::SetInForceArray( ParamClass )
@@ -510,6 +510,13 @@ FormulaToken* FormulaTokenArray::FirstRPNToken() const
     if (!pRPN || nRPN == 0)
         return nullptr;
     return pRPN[0];
+}
+
+FormulaToken* FormulaTokenArray::LastRPNToken() const
+{
+    if (!pRPN || nRPN == 0)
+        return nullptr;
+    return pRPN[nRPN - 1];
 }
 
 bool FormulaTokenArray::HasReferences() const

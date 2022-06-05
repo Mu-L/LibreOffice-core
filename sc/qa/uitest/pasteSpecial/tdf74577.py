@@ -8,8 +8,9 @@
 #
 from uitest.framework import UITestCase
 from uitest.uihelper.common import get_state_as_dict, get_url_for_data_file
-from libreoffice.uno.propertyvalue import mkPropertyValues
+
 from libreoffice.calc.document import get_cell_by_position
+
 
 class tdf74577(UITestCase):
 
@@ -25,10 +26,6 @@ class tdf74577(UITestCase):
             self.xUITest.executeCommand(".uno:Copy")
 
         with self.ui_test.load_empty_file("calc") as calc_document:
-
-            xCalcDoc = self.xUITest.getTopFocusWindow()
-            gridwin = xCalcDoc.getChild("grid_window")
-
             with self.ui_test.execute_dialog_through_command(".uno:PasteSpecial", close_button="") as xDialog:
 
                 xList = xDialog.getChild('list')

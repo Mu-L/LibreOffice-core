@@ -47,6 +47,10 @@ public:
     sal_uInt16 GetFirstPos() const { return m_nStart; }
     sal_uInt16 GetLastPos() const { return m_nEnd; }
 
+    SfxItemState GetItemState(bool bSrchInParent = true,
+                              const SfxPoolItem** ppItem = nullptr) const;
+    void ClearItem();
+
 private:
     const SfxPoolItem* ImplNextItem();
 };

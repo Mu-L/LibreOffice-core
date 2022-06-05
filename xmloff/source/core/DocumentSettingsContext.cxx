@@ -19,6 +19,7 @@
 
 #include <sal/config.h>
 
+#include <o3tl/string_view.hxx>
 #include <officecfg/Office/Common.hxx>
 #include <sax/tools/converter.hxx>
 
@@ -40,9 +41,9 @@
 #include <com/sun/star/util/DateTime.hpp>
 #include <com/sun/star/document/XViewDataSupplier.hpp>
 #include <com/sun/star/document/PrinterIndependentLayout.hpp>
-#include <com/sun/star/document/IndexedPropertyValues.hpp>
 #include <com/sun/star/document/NamedPropertyValues.hpp>
 #include <com/sun/star/beans/XPropertySet.hpp>
+#include <comphelper/indexedpropertyvalues.hxx>
 #include <sal/log.hxx>
 #include <osl/diagnose.h>
 #include <tools/diagnose_ex.h>
@@ -109,7 +110,7 @@ uno::Reference<container::XNameContainer> XMLMyList::GetNameContainer()
 
 uno::Reference<container::XIndexContainer> XMLMyList::GetIndexContainer()
 {
-    uno::Reference<container::XIndexContainer> xIndexContainer = document::IndexedPropertyValues::create(m_xContext);
+    rtl::Reference< comphelper::IndexedPropertyValuesContainer > xIndexContainer = new comphelper::IndexedPropertyValuesContainer();
     sal_uInt32 i(0);
     for (auto const& prop : aProps)
     {
@@ -408,9 +409,10 @@ void XMLConfigItemContext::endFastElement(sal_Int32 )
     uno::Sequence<sal_Int8> aDecoded;
     if (IsXMLToken(msType, XML_BASE64BINARY))
     {
-        OUString sChars = maCharBuffer.makeStringAndClear().trim();
-        if( !sChars.isEmpty() )
+        std::u16string_view sChars = o3tl::trim(maCharBuffer);
+        if( !sChars.empty() )
             ::comphelper::Base64::decodeSomeChars( aDecoded, sChars );
+        maCharBuffer.setLength(0);
     }
     else
         sValue = maCharBuffer.makeStringAndClear();

@@ -159,8 +159,9 @@ protected:
 class ShapeSizeProvider : public PropertyValueProvider
 {
 public:
+    static constexpr OUStringLiteral sSize = u"Size";
     explicit ShapeSizeProvider( SvxShape& _shape )
-        :PropertyValueProvider( _shape, "Size" )
+        :PropertyValueProvider( _shape, sSize )
     {
     }
 
@@ -1273,10 +1274,6 @@ void SAL_CALL SvxShape::dispose()
 
     if ( pObject->IsInserted() && pObject->getSdrPageFromSdrObject() )
     {
-        OSL_ENSURE( HasSdrObjectOwnership(), "SvxShape::dispose: is the below code correct?" );
-            // normally, we are allowed to free the SdrObject only if we have its ownership.
-            // Why isn't this checked here?
-
         SdrPage* pPage = pObject->getSdrPageFromSdrObject();
         // delete the SdrObject from the page
         const size_t nCount = pPage->GetObjCount();
@@ -1285,7 +1282,10 @@ void SAL_CALL SvxShape::dispose()
             if ( pPage->GetObj( nNum ) == pObject )
             {
                 OSL_VERIFY( pPage->RemoveObject( nNum ) == pObject );
-                bFreeSdrObject = true;
+                if (HasSdrObjectOwnership())
+                {
+                    bFreeSdrObject = true;
+                }
                 break;
             }
         }

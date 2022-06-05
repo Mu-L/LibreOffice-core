@@ -20,6 +20,7 @@
 #include <algorithm>
 #include <cmath>
 
+#include <o3tl/safeint.hxx>
 #include <svl/hint.hxx>
 #include <vcl/svapp.hxx>
 #include <sal/log.hxx>
@@ -295,8 +296,8 @@ static sal_Int32 lcl_GetObjectIndex( ScDPObject* pDPObj, const ScFieldIdentifier
     return -1;  // none
 }
 
-ScDataPilotTablesObj::ScDataPilotTablesObj(ScDocShell* pDocSh, SCTAB nT) :
-    pDocShell( pDocSh ),
+ScDataPilotTablesObj::ScDataPilotTablesObj(ScDocShell& rDocSh, SCTAB nT) :
+    pDocShell( &rDocSh ),
     nTab( nT )
 {
     pDocShell->GetDocument().AddUnoObject(*this);
@@ -340,7 +341,7 @@ rtl::Reference<ScDataPilotTableObj> ScDataPilotTablesObj::GetObjectByIndex_Impl(
                 {
                     if ( nFound == nIndex )
                     {
-                        return new ScDataPilotTableObj( pDocShell, nTab, rDPObj.GetName() );
+                        return new ScDataPilotTableObj(*pDocShell, nTab, rDPObj.GetName());
                     }
                     ++nFound;
                 }
@@ -353,7 +354,7 @@ rtl::Reference<ScDataPilotTableObj> ScDataPilotTablesObj::GetObjectByIndex_Impl(
 rtl::Reference<ScDataPilotTableObj> ScDataPilotTablesObj::GetObjectByName_Impl(const OUString& rName)
 {
     if (hasByName(rName))
-        return new ScDataPilotTableObj( pDocShell, nTab, rName );
+        return new ScDataPilotTableObj(*pDocShell, nTab, rName);
     return nullptr;
 }
 
@@ -361,7 +362,7 @@ Reference<XDataPilotDescriptor> SAL_CALL ScDataPilotTablesObj::createDataPilotDe
 {
     SolarMutexGuard aGuard;
     if (pDocShell)
-        return new ScDataPilotDescriptor(pDocShell);
+        return new ScDataPilotDescriptor(*pDocShell);
     return nullptr;
 }
 
@@ -499,7 +500,6 @@ Any SAL_CALL ScDataPilotTablesObj::getByIndex( sal_Int32 nIndex )
 
 uno::Type SAL_CALL ScDataPilotTablesObj::getElementType()
 {
-    SolarMutexGuard aGuard;
     return cppu::UnoType<XDataPilotTable2>::get();
 }
 
@@ -579,9 +579,9 @@ sal_Bool SAL_CALL ScDataPilotTablesObj::hasByName( const OUString& aName )
     return false;
 }
 
-ScDataPilotDescriptorBase::ScDataPilotDescriptorBase(ScDocShell* pDocSh) :
+ScDataPilotDescriptorBase::ScDataPilotDescriptorBase(ScDocShell& rDocSh) :
     maPropSet( lcl_GetDataPilotDescriptorBaseMap() ),
-    pDocShell( pDocSh )
+    pDocShell( &rDocSh )
 {
     pDocShell->GetDocument().AddUnoObject(*this);
 }
@@ -989,8 +989,8 @@ const Sequence<sal_Int8>& ScDataPilotDescriptorBase::getUnoTunnelId()
     return theScDataPilotDescriptorBaseUnoTunnelId.getSeq();
 }
 
-ScDataPilotTableObj::ScDataPilotTableObj(ScDocShell* pDocSh, SCTAB nT, const OUString& rN) :
-    ScDataPilotDescriptorBase( pDocSh ),
+ScDataPilotTableObj::ScDataPilotTableObj(ScDocShell& rDocSh, SCTAB nT, const OUString& rN) :
+    ScDataPilotDescriptorBase( rDocSh ),
     nTab( nT ),
     aName( rN ),
     aModifyListeners( 0 )
@@ -1259,9 +1259,9 @@ void ScDataPilotTableObj::Refreshed_Impl()
         rDoc.AddUnoListenerCall( xModifyListener, aEvent );
 }
 
-ScDataPilotDescriptor::ScDataPilotDescriptor(ScDocShell* pDocSh) :
-    ScDataPilotDescriptorBase( pDocSh ),
-    mpDPObject(new ScDPObject(pDocSh ? &pDocSh->GetDocument() : nullptr) )
+ScDataPilotDescriptor::ScDataPilotDescriptor(ScDocShell& rDocSh) :
+    ScDataPilotDescriptorBase( rDocSh ),
+    mpDPObject(new ScDPObject(&rDocSh.GetDocument()))
 {
     ScDPSaveData aSaveData;
     // set defaults like in ScPivotParam constructor
@@ -1270,7 +1270,7 @@ ScDataPilotDescriptor::ScDataPilotDescriptor(ScDocShell* pDocSh) :
     aSaveData.SetIgnoreEmptyRows( false );
     aSaveData.SetRepeatIfEmpty( false );
     mpDPObject->SetSaveData(aSaveData);
-    ScSheetSourceDesc aSheetDesc(pDocSh ? &pDocSh->GetDocument() : nullptr);
+    ScSheetSourceDesc aSheetDesc(&rDocSh.GetDocument());
     mpDPObject->SetSheetDesc(aSheetDesc);
 }
 
@@ -1580,7 +1580,6 @@ Any SAL_CALL ScDataPilotFieldsObj::getByIndex( sal_Int32 nIndex )
 
 uno::Type SAL_CALL ScDataPilotFieldsObj::getElementType()
 {
-    SolarMutexGuard aGuard;
     return cppu::UnoType<XPropertySet>::get();
 }
 
@@ -2834,7 +2833,7 @@ sal_Int32 SAL_CALL ScDataPilotFieldGroupsObj::getCount()
 Any SAL_CALL ScDataPilotFieldGroupsObj::getByIndex( sal_Int32 nIndex )
 {
     SolarMutexGuard aGuard;
-    if ((nIndex < 0) || (nIndex >= static_cast< sal_Int32 >( maGroups.size() )))
+    if ((nIndex < 0) || (o3tl::make_unsigned(nIndex) >= maGroups.size()))
         throw IndexOutOfBoundsException();
     return Any( Reference< XNameAccess >( new ScDataPilotFieldGroupObj( *this, maGroups[ nIndex ].maName ) ) );
 }
@@ -2851,7 +2850,6 @@ Reference<XEnumeration> SAL_CALL ScDataPilotFieldGroupsObj::createEnumeration()
 
 uno::Type SAL_CALL ScDataPilotFieldGroupsObj::getElementType()
 {
-    SolarMutexGuard aGuard;
     return cppu::UnoType<XNameAccess>::get();
 }
 
@@ -3007,7 +3005,7 @@ Any SAL_CALL ScDataPilotFieldGroupObj::getByIndex( sal_Int32 nIndex )
 {
     SolarMutexGuard aGuard;
     ScFieldGroupMembers& rMembers = mxParent->getFieldGroup( maGroupName ).maMembers;
-    if ((nIndex < 0) || (nIndex >= static_cast< sal_Int32 >( rMembers.size() )))
+    if ((nIndex < 0) || (o3tl::make_unsigned(nIndex) >= rMembers.size()))
         throw IndexOutOfBoundsException();
     return Any( Reference< XNamed >( new ScDataPilotFieldGroupItemObj( *this, rMembers[ nIndex ] ) ) );
 }
@@ -3024,7 +3022,6 @@ Reference< XEnumeration > SAL_CALL ScDataPilotFieldGroupObj::createEnumeration()
 
 uno::Type SAL_CALL ScDataPilotFieldGroupObj::getElementType()
 {
-    SolarMutexGuard aGuard;
     return cppu::UnoType<XNamed>::get();
 }
 
@@ -3176,7 +3173,6 @@ Any SAL_CALL ScDataPilotItemsObj::getByIndex( sal_Int32 nIndex )
 
 uno::Type SAL_CALL ScDataPilotItemsObj::getElementType()
 {
-    SolarMutexGuard aGuard;
     return cppu::UnoType<XPropertySet>::get();
 }
 

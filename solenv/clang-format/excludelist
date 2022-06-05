@@ -1067,6 +1067,7 @@ chart2/source/inc/Scaling.hxx
 chart2/source/inc/SceneProperties.hxx
 chart2/source/inc/StatisticsHelper.hxx
 chart2/source/inc/ThreeDHelper.hxx
+chart2/source/inc/Title.hxx
 chart2/source/inc/TitleHelper.hxx
 chart2/source/inc/UncachedDataSequence.hxx
 chart2/source/inc/UserDefinedProperties.hxx
@@ -1107,7 +1108,6 @@ chart2/source/model/main/PageBackground.hxx
 chart2/source/model/main/PolarCoordinateSystem.cxx
 chart2/source/model/main/StockBar.cxx
 chart2/source/model/main/Title.cxx
-chart2/source/model/main/Title.hxx
 chart2/source/model/main/UndoManager.cxx
 chart2/source/model/main/UndoManager.hxx
 chart2/source/model/main/Wall.cxx
@@ -2368,6 +2368,7 @@ cui/source/customize/eventdlg.cxx
 cui/source/customize/eventdlg.hxx
 cui/source/customize/macropg.cxx
 cui/source/customize/macropg_impl.hxx
+cui/source/dialogs/DiagramDialog.cxx
 cui/source/dialogs/SpellAttrib.hxx
 cui/source/dialogs/SpellDialog.cxx
 cui/source/dialogs/about.cxx
@@ -5950,6 +5951,7 @@ include/svx/sdmetitm.hxx
 include/svx/sdooitm.hxx
 include/svx/sdprcitm.hxx
 include/svx/diagram/datamodel.hxx
+include/svx/diagram/IDiagramHelper.hxx
 include/svx/sdr/animation/animationstate.hxx
 include/svx/sdr/animation/objectanimator.hxx
 include/svx/sdr/animation/scheduler.hxx
@@ -6024,6 +6026,7 @@ include/svx/svdocapt.hxx
 include/svx/svdocirc.hxx
 include/svx/svdoedge.hxx
 include/svx/svdograf.hxx
+include/svx/svdogrp.hxx
 include/svx/svdomeas.hxx
 include/svx/svdomedia.hxx
 include/svx/svdoole2.hxx
@@ -10319,7 +10322,6 @@ setup_native/source/win32/customactions/shellextensions/migrateinstallpath.cxx
 setup_native/source/win32/customactions/shellextensions/shlxtmsi.hxx
 setup_native/source/win32/customactions/shellextensions/startmenuicon.cxx
 setup_native/source/win32/customactions/shellextensions/upgrade.cxx
-setup_native/source/win32/customactions/shellextensions/vistaspecial.cxx
 setup_native/source/win32/customactions/tools/checkversion.cxx
 setup_native/source/win32/customactions/tools/seterror.cxx
 setup_native/source/win32/customactions/tools/seterror.hxx
@@ -11516,6 +11518,7 @@ svx/source/customshapes/EnhancedCustomShapeHandle.cxx
 svx/source/customshapes/EnhancedCustomShapeHandle.hxx
 svx/source/customshapes/EnhancedCustomShapeTypeNames.cxx
 svx/source/diagram/datamodel.cxx
+svx/source/diagram/IDiagramHelper.cxx
 svx/source/dialog/ClassificationDialog.cxx
 svx/source/dialog/ClassificationEditView.cxx
 svx/source/dialog/ClassificationEditView.hxx
@@ -14834,10 +14837,7 @@ vcl/source/filter/ixbm/xbmread.cxx
 vcl/source/filter/ixpm/rgbtable.hxx
 vcl/source/filter/ixpm/xpmread.cxx
 vcl/source/filter/itga/itga.cxx
-vcl/source/filter/itiff/ccidecom.cxx
-vcl/source/filter/itiff/ccidecom.hxx
 vcl/source/filter/itiff/itiff.cxx
-vcl/source/filter/itiff/lzwdecom.cxx
 vcl/source/filter/jpeg/Exif.cxx
 vcl/source/filter/jpeg/Exif.hxx
 vcl/source/filter/jpeg/JpegReader.cxx

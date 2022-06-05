@@ -33,16 +33,6 @@ class Test : public SwModelTestBase
 {
 public:
     Test() : SwModelTestBase("/sw/qa/extras/ooxmlexport/data/", "Office Open XML Text") {}
-
-protected:
-    /**
-     * Denylist handling
-     */
-    bool mustTestImportOf(const char* filename) const override {
-        // If the testcase is stored in some other format, it's pointless to test.
-        return o3tl::ends_with(filename, ".docx")
-            || filename == std::string_view("ooo39250-1-min.rtf");
-    }
 };
 
 // TODO: the re-import doesn't work just yet, but that isn't a regression...
@@ -68,8 +58,9 @@ DECLARE_OOXMLEXPORT_TEST(testTdf126994_lostPageBreak, "tdf126994_lostPageBreak.d
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Number of Pages", 3, getPages() );
 }
 
-DECLARE_OOXMLEXPORT_TEST(testTdf121374_sectionHF, "tdf121374_sectionHF.odt")
+CPPUNIT_TEST_FIXTURE(Test, testTdf121374_sectionHF)
 {
+    loadAndReload("tdf121374_sectionHF.odt");
     uno::Reference<beans::XPropertySet> xPageStyle(getStyles("PageStyles")->getByName("Standard"), uno::UNO_QUERY);
     uno::Reference<text::XTextRange> xFooterText = getProperty< uno::Reference<text::XTextRange> >(xPageStyle, "FooterText");
     CPPUNIT_ASSERT_EQUAL( OUString("footer"), xFooterText->getString() );
@@ -78,8 +69,9 @@ DECLARE_OOXMLEXPORT_TEST(testTdf121374_sectionHF, "tdf121374_sectionHF.odt")
     CPPUNIT_ASSERT_EQUAL_MESSAGE( "Number of Pages", 6, getPages() );
 }
 
-DECLARE_OOXMLEXPORT_TEST(testTdf121374_sectionHF2, "tdf121374_sectionHF2.doc")
+CPPUNIT_TEST_FIXTURE(Test, testTdf121374_sectionHF2)
 {
+    loadAndReload("tdf121374_sectionHF2.doc");
     uno::Reference<beans::XPropertySet> xPageStyle(getStyles("PageStyles")->getByName("Standard"), uno::UNO_QUERY);
     uno::Reference<text::XTextRange> xHeaderText = getProperty< uno::Reference<text::XTextRange> >(xPageStyle, "HeaderText");
     CPPUNIT_ASSERT( xHeaderText->getString().startsWith("virkamatka-anomus") );
@@ -343,8 +335,9 @@ DECLARE_OOXMLEXPORT_TEST(testBtlrShape, "btlr-textbox.docx")
                          rFormats[1]->GetAttrSet().GetFrameDir().GetValue());
 }
 
-DECLARE_OOXMLEXPORT_TEST(testTdf127316_autoEscapement, "tdf127316_autoEscapement.odt")
+CPPUNIT_TEST_FIXTURE(Test, testTdf127316_autoEscapement)
 {
+    loadAndReload("tdf127316_autoEscapement.odt");
     CPPUNIT_ASSERT_EQUAL(1, getPages());
     // This should be roughly .8*35% of the ORIGINAL(non-reduced) size. However, during export the
     // proportional height has to be changed into direct formatting, which then changes the relative percent.
@@ -385,8 +378,9 @@ DECLARE_OOXMLEXPORT_TEST(testTdf99602_charStyleSubscript, "tdf99602_charStyleSub
     CPPUNIT_ASSERT_EQUAL( sal_Int16(DFLT_ESC_PROP), getProperty<sal_Int16>(getRun(xPara, 2), "CharEscapementHeight") );
 }
 
-DECLARE_OOXMLEXPORT_TEST(testTdf99602_charStyleSubscript2, "tdf99602_charStyleSubscript2.odt")
+CPPUNIT_TEST_FIXTURE(Test, testTdf99602_charStyleSubscript2)
 {
+    loadAndReload("tdf99602_charStyleSubscript2.odt");
     CPPUNIT_ASSERT_EQUAL(1, getPages());
     // *_In styles_*, don't let the proportionality/escapement affect the fontsize - otherwise it starts doubling up,
     // so instead just throw away the values and use the default settings instead - meaning fontsize is unaffected.
@@ -496,8 +490,9 @@ DECLARE_OOXMLEXPORT_TEST(testTdf118947_tableStyle2, "tdf118947_tableStyle2.docx"
                                  static_cast<style::ParagraphAdjust>(getProperty<sal_Int16>(xPara, "ParaAdjust")));
 }
 
-DECLARE_OOXMLEXPORT_TEST(tdf123912_protectedForm, "tdf123912_protectedForm.odt")
+CPPUNIT_TEST_FIXTURE(Test, tdf123912_protectedForm)
 {
+    loadAndReload("tdf123912_protectedForm.odt");
     CPPUNIT_ASSERT_EQUAL(1, getPages());
     SwXTextDocument* pTextDoc = dynamic_cast<SwXTextDocument *>(mxComponent.get());
     CPPUNIT_ASSERT(pTextDoc);
@@ -528,47 +523,34 @@ CPPUNIT_TEST_FIXTURE(Test, testDateControl)
     // Check that we exported the empty date control correctly
     // Date form field is converted to date content control.
 
-    SwXTextDocument* pTextDoc = dynamic_cast<SwXTextDocument *>(mxComponent.get());
-    CPPUNIT_ASSERT(pTextDoc);
-    SwDoc* pDoc = pTextDoc->GetDocShell()->GetDoc();
-    IDocumentMarkAccess* pMarkAccess = pDoc->getIDocumentMarkAccess();
+    uno::Reference<beans::XPropertySet> xTextPortion(getRun(getParagraph(1), 1), uno::UNO_QUERY);
+    OUString aPortionType;
+    xTextPortion->getPropertyValue("TextPortionType") >>= aPortionType;
+    CPPUNIT_ASSERT_EQUAL(OUString("ContentControl"), aPortionType);
+    uno::Reference<text::XTextContent> xContentControl;
+    xTextPortion->getPropertyValue("ContentControl") >>= xContentControl;
+    uno::Reference<beans::XPropertySet> xContentControlProps(xContentControl, uno::UNO_QUERY);
+    bool bDate{};
+    xContentControlProps->getPropertyValue("Date") >>= bDate;
+    CPPUNIT_ASSERT(bDate);
 
-
-    CPPUNIT_ASSERT_EQUAL(sal_Int32(1), pMarkAccess->getAllMarksCount());
-    ::sw::mark::IFieldmark* pFieldmark = dynamic_cast<::sw::mark::IFieldmark*>(*pMarkAccess->getAllMarksBegin());
-
-    CPPUNIT_ASSERT(pFieldmark);
-    CPPUNIT_ASSERT_EQUAL(OUString(ODF_FORMDATE), pFieldmark->GetFieldname());
-
-    const sw::mark::IFieldmark::parameter_map_t* const pParameters = pFieldmark->GetParameters();
     OUString sDateFormat;
-    auto pResult = pParameters->find(ODF_FORMDATE_DATEFORMAT);
-    if (pResult != pParameters->end())
-    {
-        pResult->second >>= sDateFormat;
-    }
+    xContentControlProps->getPropertyValue("DateFormat") >>= sDateFormat;
 
     OUString sLang;
-    pResult = pParameters->find(ODF_FORMDATE_DATEFORMAT_LANGUAGE);
-    if (pResult != pParameters->end())
-    {
-        pResult->second >>= sLang;
-    }
+    xContentControlProps->getPropertyValue("DateLanguage") >>= sLang;
 
     OUString sCurrentDate;
-    pResult = pParameters->find(ODF_FORMDATE_CURRENTDATE);
-    if (pResult != pParameters->end())
-    {
-        pResult->second >>= sCurrentDate;
-    }
+    xContentControlProps->getPropertyValue("CurrentDate") >>= sCurrentDate;
 
     CPPUNIT_ASSERT_EQUAL(OUString("dd/MM/yyyy"), sDateFormat);
     CPPUNIT_ASSERT_EQUAL(OUString("en-US"), sLang);
     CPPUNIT_ASSERT_EQUAL(OUString(""), sCurrentDate);
 }
 
-DECLARE_OOXMLEXPORT_TEST(testTdf121867, "tdf121867.odt")
+CPPUNIT_TEST_FIXTURE(Test, testTdf121867)
 {
+    loadAndReload("tdf121867.odt");
     CPPUNIT_ASSERT_EQUAL(1, getPages());
     SwXTextDocument* pTextDoc = dynamic_cast<SwXTextDocument*>(mxComponent.get());
     SwEditShell* pEditShell = pTextDoc->GetDocShell()->GetEditShell();
@@ -597,8 +579,9 @@ DECLARE_OOXMLEXPORT_TEST(testParaAdjustDistribute, "para-adjust-distribute.docx"
                              getProperty<sal_Int16>(getParagraph(2), "ParaLastLineAdjust")));
 }
 
-DECLARE_OOXMLEXPORT_TEST(testInputListExport, "tdf122186_input_list.odt")
+CPPUNIT_TEST_FIXTURE(Test, testInputListExport)
 {
+    loadAndReload("tdf122186_input_list.odt");
     if (!mbExported) // importing the ODT, an input field
     {
         uno::Reference<text::XTextFieldsSupplier> xTextFieldsSupplier(mxComponent, uno::UNO_QUERY);
@@ -644,8 +627,9 @@ DECLARE_OOXMLEXPORT_TEST(testTdf123435, "tdf123435.docx")
     CPPUNIT_ASSERT_EQUAL(2, getShapes());
 }
 
-DECLARE_OOXMLEXPORT_TEST(testTdf116371, "tdf116371.odt")
+CPPUNIT_TEST_FIXTURE(Test, testTdf116371)
 {
+    loadAndReload("tdf116371.odt");
     CPPUNIT_ASSERT_EQUAL(1, getShapes());
     CPPUNIT_ASSERT_EQUAL(1, getPages());
     // Make sure the rotation is exported correctly, and size not distorted
@@ -1033,45 +1017,36 @@ CPPUNIT_TEST_FIXTURE(Test, testTdf121663)
 DECLARE_OOXMLEXPORT_TEST(testInvalidDateFormField, "invalid_date_form_field.docx")
 {
 
-    SwXTextDocument* pTextDoc = dynamic_cast<SwXTextDocument *>(mxComponent.get());
-    CPPUNIT_ASSERT(pTextDoc);
-    SwDoc* pDoc = pTextDoc->GetDocShell()->GetDoc();
-    IDocumentMarkAccess* pMarkAccess = pDoc->getIDocumentMarkAccess();
-    CPPUNIT_ASSERT_EQUAL(sal_Int32(6), pMarkAccess->getAllMarksCount());
+    uno::Reference<container::XEnumerationAccess> xParagraph(getParagraph(1), uno::UNO_QUERY);
+    uno::Reference<container::XEnumeration> xPortions = xParagraph->createEnumeration();
 
     int nIndex = 0;
-    for(auto aIter = pMarkAccess->getAllMarksBegin(); aIter != pMarkAccess->getAllMarksEnd(); ++aIter)
+    while (xPortions->hasMoreElements())
     {
-        ::sw::mark::IFieldmark* pFieldmark = dynamic_cast<::sw::mark::IFieldmark*>(*aIter);
-
-        if(!pFieldmark)
-            continue;
-
-        CPPUNIT_ASSERT(pFieldmark);
-        CPPUNIT_ASSERT_EQUAL(OUString(ODF_FORMDATE), pFieldmark->GetFieldname());
-
-        // Check date field's parameters.
-        const sw::mark::IFieldmark::parameter_map_t* const pParameters = pFieldmark->GetParameters();
-        OUString sDateFormat;
-        auto pResult = pParameters->find(ODF_FORMDATE_DATEFORMAT);
-        if (pResult != pParameters->end())
+        uno::Reference<beans::XPropertySet> xTextPortion(xPortions->nextElement(), uno::UNO_QUERY);
+        OUString aPortionType;
+        xTextPortion->getPropertyValue("TextPortionType") >>= aPortionType;
+        if (aPortionType != "ContentControl")
         {
-            pResult->second >>= sDateFormat;
+            continue;
         }
+
+        uno::Reference<text::XTextContent> xContentControl;
+        xTextPortion->getPropertyValue("ContentControl") >>= xContentControl;
+        uno::Reference<beans::XPropertySet> xContentControlProps(xContentControl, uno::UNO_QUERY);
+        bool bDate{};
+        xContentControlProps->getPropertyValue("Date") >>= bDate;
+        CPPUNIT_ASSERT(bDate);
+
+        // Check date content control's parameters.
+        OUString sDateFormat;
+        xContentControlProps->getPropertyValue("DateFormat") >>= sDateFormat;
 
         OUString sLang;
-        pResult = pParameters->find(ODF_FORMDATE_DATEFORMAT_LANGUAGE);
-        if (pResult != pParameters->end())
-        {
-            pResult->second >>= sLang;
-        }
+        xContentControlProps->getPropertyValue("DateLanguage") >>= sLang;
 
         OUString sCurrentDate;
-        pResult = pParameters->find(ODF_FORMDATE_CURRENTDATE);
-        if (pResult != pParameters->end())
-        {
-            pResult->second >>= sCurrentDate;
-        }
+        xContentControlProps->getPropertyValue("CurrentDate") >>= sCurrentDate;
 
         // The first one has invalid date format (invalid = LO can't parse it)
         if(nIndex == 0)
@@ -1081,26 +1056,20 @@ DECLARE_OOXMLEXPORT_TEST(testInvalidDateFormField, "invalid_date_form_field.docx
             CPPUNIT_ASSERT_EQUAL(OUString("en-US"), sLang);
             CPPUNIT_ASSERT_EQUAL(OUString(""), sCurrentDate);
 
-            CPPUNIT_ASSERT_EQUAL(SwNodeOffset(9), pFieldmark->GetMarkStart().nNode.GetIndex());
-            CPPUNIT_ASSERT_EQUAL(sal_Int32(5), pFieldmark->GetMarkStart().nContent.GetIndex());
         }
         else if (nIndex == 1) // The second has wrong date
         {
             CPPUNIT_ASSERT_EQUAL(OUString("MM/DD/YY"), sDateFormat);
             CPPUNIT_ASSERT_EQUAL(OUString("en-US"), sLang);
-            CPPUNIT_ASSERT_EQUAL(OUString("2019.06.34"), sCurrentDate);
+            CPPUNIT_ASSERT_EQUAL(OUString("2019.06.34T00:00:00Z"), sCurrentDate);
 
-            CPPUNIT_ASSERT_EQUAL(SwNodeOffset(9), pFieldmark->GetMarkStart().nNode.GetIndex());
-            CPPUNIT_ASSERT_EQUAL(sal_Int32(15), pFieldmark->GetMarkStart().nContent.GetIndex());
         }
         else // The third one has wrong local
         {
             CPPUNIT_ASSERT_EQUAL(OUString("[NatNum12 MMMM=abbreviation]YYYY\". \"MMMM D."), sDateFormat);
             CPPUNIT_ASSERT_EQUAL(OUString("xxxx"), sLang);
-            CPPUNIT_ASSERT_EQUAL(OUString("2019.06.11"), sCurrentDate);
+            CPPUNIT_ASSERT_EQUAL(OUString("2019.06.11T00:00:00Z"), sCurrentDate);
 
-            CPPUNIT_ASSERT_EQUAL(SwNodeOffset(9), pFieldmark->GetMarkStart().nNode.GetIndex());
-            CPPUNIT_ASSERT_EQUAL(sal_Int32(35), pFieldmark->GetMarkStart().nContent.GetIndex());
         }
         ++nIndex;
     }
@@ -1291,8 +1260,9 @@ CPPUNIT_TEST_FIXTURE(Test, testTdf127579)
     assertXPath(pXmlDoc, "/w:document/w:body/w:p/w:hyperlink/w:r/w:rPr/w:rStyle", "val", "InternetLink");
 }
 
-DECLARE_OOXMLEXPORT_TEST(testTdf128304, "tdf128304.odt")
+CPPUNIT_TEST_FIXTURE(Test, testTdf128304)
 {
+    loadAndReload("tdf128304.odt");
     CPPUNIT_ASSERT_EQUAL(4, getShapes());
     CPPUNIT_ASSERT_EQUAL(1, getPages());
     css::text::WritingMode eMode;

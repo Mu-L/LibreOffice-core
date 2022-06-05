@@ -651,15 +651,13 @@ void SwContentType::FillMemberList(bool* pbContentChanged)
                         SwPosition bPos(bTextNode, b->GetStart());
                         // use anchor position for entries that are located in flys
                         if (nEndOfExtrasIndex >= aTextNode.GetIndex())
-                        {
                             if (auto pFlyFormat = aTextNode.GetFlyFormat())
-                                aPos = *pFlyFormat->GetAnchor().GetContentAnchor();
-                        }
+                                if (const SwPosition* pPos = pFlyFormat->GetAnchor().GetContentAnchor())
+                                    aPos = *pPos;
                         if (nEndOfExtrasIndex >= bTextNode.GetIndex())
-                        {
                             if (auto pFlyFormat = bTextNode.GetFlyFormat())
-                                bPos = *pFlyFormat->GetAnchor().GetContentAnchor();
-                        }
+                                if (const SwPosition* pPos = pFlyFormat->GetAnchor().GetContentAnchor())
+                                    bPos = *pPos;
                         return aPos < bPos;});
                 }
             }
@@ -856,15 +854,13 @@ void SwContentType::FillMemberList(bool* pbContentChanged)
                     SwPosition bPos(const_cast<SwTextNode&>(bTextNode), b->rINetAttr.GetStart());
                     // use anchor position for entries that are located in flys
                     if (nEndOfExtrasIndex >= aTextNode.GetIndex())
-                    {
                         if (auto pFlyFormat = aTextNode.GetFlyFormat())
-                            aPos = *pFlyFormat->GetAnchor().GetContentAnchor();
-                    }
+                            if (const SwPosition* pPos = pFlyFormat->GetAnchor().GetContentAnchor())
+                                aPos = *pPos;
                     if (nEndOfExtrasIndex >= bTextNode.GetIndex())
-                    {
                         if (auto pFlyFormat = bTextNode.GetFlyFormat())
-                            bPos = *pFlyFormat->GetAnchor().GetContentAnchor();
-                    }
+                            if (const SwPosition* pPos = pFlyFormat->GetAnchor().GetContentAnchor())
+                                bPos = *pPos;
                     return aPos < bPos;});
             }
 
@@ -3705,14 +3701,17 @@ void SwContentTree::UpdateTracking()
         // footnotes and endnotes
         if (SwContentAtPos aContentAtPos(IsAttrAtPos::Ftn);
                 m_pActiveShell->GetContentAtPos(m_pActiveShell->GetCursorDocPos(), aContentAtPos)
-            && !(m_bIsRoot
-                && (m_nRootType != ContentTypeId::FOOTNOTE
-                    && m_nRootType != ContentTypeId::ENDNOTE)))
+                && aContentAtPos.pFndTextAttr &&
+                !(m_bIsRoot && (m_nRootType != ContentTypeId::FOOTNOTE &&
+                                m_nRootType != ContentTypeId::ENDNOTE)))
         {
-            if (mTrackContentType[ContentTypeId::FOOTNOTE])
-                lcl_SelectByContentTypeAndAddress(this, *m_xTreeView, ContentTypeId::FOOTNOTE,
-                                                  aContentAtPos.pFndTextAttr);
-            if (mTrackContentType[ContentTypeId::ENDNOTE])
+            if (!aContentAtPos.pFndTextAttr->GetFootnote().IsEndNote())
+            {
+                if (mTrackContentType[ContentTypeId::FOOTNOTE])
+                    lcl_SelectByContentTypeAndAddress(this, *m_xTreeView, ContentTypeId::FOOTNOTE,
+                                                      aContentAtPos.pFndTextAttr);
+            }
+            else if (mTrackContentType[ContentTypeId::ENDNOTE])
                 lcl_SelectByContentTypeAndAddress(this, *m_xTreeView, ContentTypeId::ENDNOTE,
                                                   aContentAtPos.pFndTextAttr);
             return;

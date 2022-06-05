@@ -198,12 +198,25 @@ sal_uInt16 SfxItemSet::ClearItem( sal_uInt16 nWhich )
 {
     if( !Count() )
         return 0;
-
-    sal_uInt16 nDel = 0;
-    SfxPoolItem const** ppFnd = m_ppItems;
-
     if( nWhich )
+        return ClearSingleItemImpl(nWhich, std::nullopt);
+    else
+        return ClearAllItemsImpl();
+}
+
+sal_uInt16 SfxItemSet::ClearSingleItemImpl( sal_uInt16 nWhich, std::optional<sal_uInt16> oItemOffsetHint )
+{
+    sal_uInt16 nDel = 0;
+    SfxPoolItem const** pFoundOne = nullptr;
+
+    if (oItemOffsetHint)
     {
+        pFoundOne = m_ppItems + *oItemOffsetHint;
+        assert(!*pFoundOne || IsInvalidItem(*pFoundOne) || (*pFoundOne)->IsVoidItem() || (*pFoundOne)->Which() == nWhich);
+    }
+    else
+    {
+        SfxPoolItem const** ppFnd = m_ppItems;
         for (const WhichPair& rPair : m_pWhichRanges)
         {
             // Within this range?
@@ -211,28 +224,7 @@ sal_uInt16 SfxItemSet::ClearItem( sal_uInt16 nWhich )
             {
                 // Actually set?
                 ppFnd += nWhich - rPair.first;
-                if( *ppFnd )
-                {
-                    // Due to the assertions in the sub calls, we need to do the following
-                    --m_nCount;
-                    const SfxPoolItem *pItemToClear = *ppFnd;
-                    *ppFnd = nullptr;
-
-                    if ( !IsInvalidItem(pItemToClear) )
-                    {
-                        if (SfxItemPool::IsWhich(nWhich))
-                        {
-                            const SfxPoolItem& rNew = m_pParent
-                                    ? m_pParent->Get( nWhich )
-                                    : m_pPool->GetDefaultItem( nWhich );
-
-                            Changed( *pItemToClear, rNew );
-                        }
-                        if ( pItemToClear->Which() )
-                            m_pPool->Remove( *pItemToClear );
-                    }
-                    ++nDel;
-                }
+                pFoundOne = ppFnd;
 
                 // found => break
                 break;
@@ -240,45 +232,73 @@ sal_uInt16 SfxItemSet::ClearItem( sal_uInt16 nWhich )
             ppFnd += rPair.second - rPair.first + 1;
         }
     }
-    else
+    if (pFoundOne && *pFoundOne)
     {
-        nDel = m_nCount;
+        // Due to the assertions in the sub calls, we need to do the following
+        --m_nCount;
+        const SfxPoolItem *pItemToClear = *pFoundOne;
+        *pFoundOne = nullptr;
 
-        for (const WhichPair& rPair : m_pWhichRanges)
+        if ( !IsInvalidItem(pItemToClear) )
         {
-            for( nWhich = rPair.first; nWhich <= rPair.second; ++nWhich, ++ppFnd )
-                if( *ppFnd )
-                {
-                    // Due to the assertions in the sub calls, we need to do this
-                    --m_nCount;
-                    const SfxPoolItem *pItemToClear = *ppFnd;
-                    *ppFnd = nullptr;
+            if (SfxItemPool::IsWhich(nWhich))
+            {
+                const SfxPoolItem& rNew = m_pParent
+                        ? m_pParent->Get( nWhich )
+                        : m_pPool->GetDefaultItem( nWhich );
 
-                    if ( !IsInvalidItem(pItemToClear) )
-                    {
-                        if (SfxItemPool::IsWhich(nWhich))
-                        {
-                            const SfxPoolItem& rNew = m_pParent
-                                    ? m_pParent->Get( nWhich )
-                                    : m_pPool->GetDefaultItem( nWhich );
+                Changed( *pItemToClear, rNew );
+            }
+            if ( pItemToClear->Which() )
+                m_pPool->Remove( *pItemToClear );
+        }
+        ++nDel;
+    }
+    return nDel;
+}
 
-                            Changed( *pItemToClear, rNew );
-                        }
 
-                        // #i32448#
-                        // Take care of disabled items, too.
-                        if (!pItemToClear->m_nWhich)
-                        {
-                            // item is disabled, delete it
-                            delete pItemToClear;
-                        }
-                        else
-                        {
-                            // remove item from pool
-                            m_pPool->Remove( *pItemToClear );
-                        }
-                    }
-                }
+sal_uInt16 SfxItemSet::ClearAllItemsImpl()
+{
+    sal_uInt16 nDel = m_nCount;
+    SfxPoolItem const** ppFnd = m_ppItems;
+
+    for (const WhichPair& rPair : m_pWhichRanges)
+    {
+        for( sal_uInt16 nWhich = rPair.first; nWhich <= rPair.second; ++nWhich, ++ppFnd )
+        {
+            if( !*ppFnd )
+                continue;
+
+            // Due to the assertions in the sub calls, we need to do this
+            --m_nCount;
+            const SfxPoolItem *pItemToClear = *ppFnd;
+            *ppFnd = nullptr;
+
+            if ( IsInvalidItem(pItemToClear) )
+                continue;
+
+            if (SfxItemPool::IsWhich(nWhich))
+            {
+                const SfxPoolItem& rNew = m_pParent
+                        ? m_pParent->Get( nWhich )
+                        : m_pPool->GetDefaultItem( nWhich );
+
+                Changed( *pItemToClear, rNew );
+            }
+
+            // #i32448#
+            // Take care of disabled items, too.
+            if (!pItemToClear->m_nWhich)
+            {
+                // item is disabled, delete it
+                delete pItemToClear;
+            }
+            else
+            {
+                // remove item from pool
+                m_pPool->Remove( *pItemToClear );
+            }
         }
     }
     return nDel;
@@ -309,40 +329,65 @@ SfxItemState SfxItemSet::GetItemState( sal_uInt16 nWhich,
                                         bool bSrchInParent,
                                         const SfxPoolItem **ppItem ) const
 {
+    return GetItemStateImpl(nWhich, bSrchInParent, ppItem, std::nullopt);
+}
+
+SfxItemState SfxItemSet::GetItemStateImpl( sal_uInt16 nWhich,
+                                           bool bSrchInParent,
+                                           const SfxPoolItem **ppItem,
+                                           std::optional<sal_uInt16> oItemsOffsetHint) const
+{
     // Find the range in which the Which is located
     const SfxItemSet* pCurrentSet = this;
     SfxItemState eRet = SfxItemState::UNKNOWN;
     do
     {
-        SfxPoolItem const** ppFnd = pCurrentSet->m_ppItems;
-        for (const WhichPair& rPair : pCurrentSet->m_pWhichRanges)
+        SfxPoolItem const** pFoundOne = nullptr;
+        if (oItemsOffsetHint)
         {
-            if ( rPair.first <= nWhich && nWhich <= rPair.second )
+            pFoundOne = pCurrentSet->m_ppItems + *oItemsOffsetHint;
+            assert(!*pFoundOne || IsInvalidItem(*pFoundOne) || (*pFoundOne)->IsVoidItem() || (*pFoundOne)->Which() == nWhich);
+            oItemsOffsetHint.reset(); // in case we need to search parent
+        }
+        else
+        {
+            SfxPoolItem const** ppFnd = pCurrentSet->m_ppItems;
+            for (const WhichPair& rPair : pCurrentSet->m_pWhichRanges)
             {
-                // Within this range
-                ppFnd += nWhich - rPair.first;
-                if ( !*ppFnd )
+                if ( rPair.first <= nWhich && nWhich <= rPair.second )
                 {
-                    eRet = SfxItemState::DEFAULT;
-                    if( !bSrchInParent )
-                        return eRet; // Not present
-                    break; // Keep searching in the parents!
+                    // Within this range
+                    pFoundOne = ppFnd + nWhich - rPair.first;
+                    break;
                 }
+                ppFnd += rPair.second - rPair.first + 1;
+            }
+        }
 
-                if ( IsInvalidItem(*ppFnd) )
+        if (pFoundOne)
+        {
+            if ( !*pFoundOne )
+            {
+                eRet = SfxItemState::DEFAULT;
+                if( !bSrchInParent )
+                    return eRet; // Not present
+                // Keep searching in the parents!
+            }
+            else
+            {
+                if ( IsInvalidItem(*pFoundOne) )
                     // Different ones are present
                     return SfxItemState::DONTCARE;
 
-                if ( (*ppFnd)->IsVoidItem() )
+                if ( (*pFoundOne)->IsVoidItem() )
                     return SfxItemState::DISABLED;
 
                 if (ppItem)
                 {
-                    *ppItem = *ppFnd;
+                    *ppItem = *pFoundOne;
                 }
                 return SfxItemState::SET;
             }
-            ppFnd += rPair.second - rPair.first + 1;
         }
         if (!bSrchInParent)
             break;
@@ -707,14 +752,29 @@ bool SfxItemSet::Set
         ClearItem();
     if ( bDeep )
     {
-        SfxWhichIter aIter(*this);
-        sal_uInt16 nWhich = aIter.FirstWhich();
-        while ( nWhich )
+        SfxWhichIter aIter1(*this);
+        SfxWhichIter aIter2(rSet);
+        sal_uInt16 nWhich1 = aIter1.FirstWhich();
+        sal_uInt16 nWhich2 = aIter2.FirstWhich();
+        for (;;)
         {
+            if (!nWhich1 || !nWhich2)
+                break;
+            if (nWhich1 > nWhich2)
+            {
+                nWhich2 = aIter2.NextWhich();
+                continue;
+            }
+            if (nWhich1 < nWhich2)
+            {
+                nWhich1 = aIter1.NextWhich();
+                continue;
+            }
             const SfxPoolItem* pItem;
-            if( SfxItemState::SET == rSet.GetItemState( nWhich, true, &pItem ) )
+            if( SfxItemState::SET == aIter2.GetItemState( true, &pItem ) )
                 bRet |= nullptr != Put( *pItem, pItem->Which() );
-            nWhich = aIter.NextWhich();
+            nWhich1 = aIter1.NextWhich();
+            nWhich2 = aIter2.NextWhich();
         }
     }
     else
@@ -847,17 +907,14 @@ void SfxItemSet::Intersect( const SfxItemSet& rSet )
     }
     else
     {
-        SfxItemIter aIter( *this );
-        const SfxPoolItem* pItem = aIter.GetCurItem();
-        do
+        SfxWhichIter aIter( *this );
+        sal_uInt16 nWhich = aIter.FirstWhich();
+        while ( nWhich )
         {
-            sal_uInt16 nWhich = IsInvalidItem( pItem )
-                                ? GetWhichByPos( aIter.GetCurPos() )
-                                : pItem->Which();
             if( SfxItemState::UNKNOWN == rSet.GetItemState( nWhich, false ) )
-                ClearItem( nWhich );        // Delete
-            pItem = aIter.NextItem();
-        } while (pItem);
+                aIter.ClearItem(); // Delete
+            nWhich = aIter.NextWhich();
+        }
     }
 }
 
@@ -896,18 +953,14 @@ void SfxItemSet::Differentiate( const SfxItemSet& rSet )
     }
     else
     {
-        SfxItemIter aIter( *this );
-        const SfxPoolItem* pItem = aIter.GetCurItem();
-        do
+        SfxWhichIter aIter( *this );
+        sal_uInt16 nWhich = aIter.FirstWhich();
+        while ( nWhich )
         {
-            sal_uInt16 nWhich = IsInvalidItem( pItem )
-                                ? GetWhichByPos( aIter.GetCurPos() )
-                                : pItem->Which();
             if( SfxItemState::SET == rSet.GetItemState( nWhich, false ) )
-                ClearItem( nWhich ); // Delete
-            pItem = aIter.NextItem();
-        } while (pItem);
-
+                aIter.ClearItem(); // Delete
+            nWhich = aIter.NextWhich();
+        }
     }
 }
 
@@ -1076,7 +1129,7 @@ void SfxItemSet::MergeValues( const SfxItemSet& rSet )
         while( 0 != ( nWhich = aIter.NextWhich() ) )
         {
             const SfxPoolItem* pItem = nullptr;
-            (void)rSet.GetItemState( nWhich, true, &pItem );
+            (void)aIter.GetItemState( true, &pItem );
             if( !pItem )
             {
                 // Not set, so default

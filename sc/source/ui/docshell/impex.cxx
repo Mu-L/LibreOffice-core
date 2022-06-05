@@ -1751,7 +1751,7 @@ bool ScImportExport::ExtText2Doc( SvStream& rStrm )
             aRange.aEnd.SetRow( nRow );
 
             if ( !mbApi && nStartCol != nEndCol &&
-                 !rDoc.IsBlockEmpty( nTab, nStartCol + 1, nStartRow, nEndCol, nRow ) )
+                 !rDoc.IsBlockEmpty( nStartCol + 1, nStartRow, nEndCol, nRow, nTab ) )
             {
                 ScReplaceWarnBox aBox(ScDocShell::GetActiveDialogParent());
                 if (aBox.run() != RET_YES)
@@ -2053,7 +2053,7 @@ bool ScImportExport::Sylk2Doc( SvStream& rStrm )
     {
         OUString aLine;
         OUString aText;
-        OString aByteLine;
+        OStringBuffer aByteLine;
         SCCOL nCol = nStartCol;
         SCROW nRow = nStartRow;
         SCCOL nRefCol = nCol;
@@ -2294,7 +2294,7 @@ bool ScImportExport::Sylk2Doc( SvStream& rStrm )
                     if( nCol > nEndCol )
                         nEndCol = nCol;
                 }
-                if ( 0 <= nFormat && nFormat < static_cast<sal_Int32>(aFormats.size()) && !bInvalidCol && !bInvalidRow )
+                if ( 0 <= nFormat && o3tl::make_unsigned(nFormat) < aFormats.size() && !bInvalidCol && !bInvalidRow )
                 {
                     sal_uInt32 nKey = aFormats[nFormat];
                     rDoc.ApplyAttr( nCol, nRow, aRange.aStart.Tab(),

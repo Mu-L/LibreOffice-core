@@ -335,8 +335,8 @@ ScTable::~ScTable() COVERITY_NOEXCEPT_FALSE
     pSheetEvents.reset();
     pOutlineTable.reset();
     pSearchText.reset();
-    pRepeatColRange.reset();
-    pRepeatRowRange.reset();
+    moRepeatColRange.reset();
+    moRepeatRowRange.reset();
     pScenarioRanges.reset();
     mpRangeName.reset();
     pDBDataNoName.reset();
@@ -720,7 +720,7 @@ bool ScTable::GetPrintAreaHor( SCROW nStartRow, SCROW nEndRow,
 
     for (i=0; i<aCol.size(); i++)               // test the data
     {
-        if (!aCol[i].IsEmptyBlock( nStartRow, nEndRow ))        //TODO: bNotes ??????
+        if (!aCol[i].IsEmptyData( nStartRow, nEndRow ))        //TODO: bNotes ??????
         {
             bFound = true;
             if (i > nMaxX)
@@ -906,7 +906,7 @@ void ScTable::GetDataArea( SCCOL& rStartCol, SCROW& rStartRow, SCCOL& rEndCol, S
             if (nEnd<rDocument.MaxRow()) ++nEnd;
 
             if (rEndCol < (aCol.size()-1))
-                if (!aCol[rEndCol+1].IsEmptyBlock(nStart,nEnd))
+                if (!aCol[rEndCol+1].IsEmptyData(nStart,nEnd))
                 {
                     assert( int( blockPos.size()) == rEndCol + 1 );
                     ++rEndCol;
@@ -917,7 +917,7 @@ void ScTable::GetDataArea( SCCOL& rStartCol, SCROW& rStartRow, SCCOL& rEndCol, S
                 }
 
             if (rStartCol > 0)
-                if (!aCol[rStartCol-1].IsEmptyBlock(nStart,nEnd))
+                if (!aCol[rStartCol-1].IsEmptyData(nStart,nEnd))
                 {
                     --rStartCol;
                     bChanged = true;
@@ -960,11 +960,11 @@ void ScTable::GetDataArea( SCCOL& rStartCol, SCROW& rStartRow, SCCOL& rEndCol, S
     if ( !bIncludeOld && !bOnlyDown )
     {
         if ( !bLeft )
-            while ( rStartCol < rEndCol && rStartCol < (aCol.size()-1) && aCol[rStartCol].IsEmptyBlock(rStartRow,rEndRow) )
+            while ( rStartCol < rEndCol && rStartCol < (aCol.size()-1) && aCol[rStartCol].IsEmptyData(rStartRow,rEndRow) )
                 ++rStartCol;
 
         if ( !bRight )
-            while ( rEndCol > 0 && rStartCol < rEndCol && aCol[rEndCol].IsEmptyBlock(rStartRow,rEndRow) )
+            while ( rEndCol > 0 && rStartCol < rEndCol && aCol[rEndCol].IsEmptyData(rStartRow,rEndRow) )
                 --rEndCol;
 
         if ( !bTop && rStartRow < rDocument.MaxRow() && rStartRow < rEndRow )
@@ -1067,7 +1067,7 @@ bool ScTable::ShrinkToUsedDataArea( bool& o_bShrunk, SCCOL& rStartCol, SCROW& rS
 
     while (rStartCol < rEndCol)
     {
-        if (aCol[rEndCol].IsEmptyBlock( rStartRow, rEndRow))
+        if (aCol[rEndCol].IsEmptyData( rStartRow, rEndRow))
         {
             if (pDataAreaExtras && pDataAreaExtras->mnEndCol < rEndCol)
             {
@@ -1093,7 +1093,7 @@ bool ScTable::ShrinkToUsedDataArea( bool& o_bShrunk, SCCOL& rStartCol, SCROW& rS
     {
         while (rStartCol < rEndCol)
         {
-            if (aCol[rStartCol].IsEmptyBlock( rStartRow, rEndRow))
+            if (aCol[rStartCol].IsEmptyData( rStartRow, rEndRow))
             {
                 if (pDataAreaExtras && pDataAreaExtras->mnStartCol > rStartCol)
                 {
@@ -1152,7 +1152,7 @@ bool ScTable::ShrinkToUsedDataArea( bool& o_bShrunk, SCCOL& rStartCol, SCROW& rS
     }
 
     return rStartCol != rEndCol || (bColumnsOnly ?
-            !aCol[rStartCol].IsEmptyBlock( rStartRow, rEndRow) :
+            !aCol[rStartCol].IsEmptyData( rStartRow, rEndRow) :
             (rStartRow != rEndRow ||
                 aCol[rStartCol].HasDataAt( rStartRow, pDataAreaExtras)));
 }
@@ -1175,11 +1175,11 @@ SCROW ScTable::GetLastDataRow( SCCOL nCol1, SCCOL nCol2, SCROW nLastRow, ScDataA
     return nNewLastRow;
 }
 
-bool ScTable::IsEmptyBlock( SCCOL nStartCol, SCROW nStartRow,
+bool ScTable::IsEmptyData( SCCOL nStartCol, SCROW nStartRow,
                             SCCOL nEndCol, SCROW nEndRow ) const
 {
     for( SCCOL col : GetAllocatedColumnsRange( nStartCol, nEndCol ))
-        if( !aCol[col].IsEmptyBlock( nStartRow, nEndRow ))
+        if( !aCol[col].IsEmptyData( nStartRow, nEndRow ))
             return false;
     return true;
 }
@@ -1211,7 +1211,7 @@ SCSIZE ScTable::GetEmptyLinesInBlock( SCCOL nStartCol, SCROW nStartRow,
     {
         nCol = nEndCol;
         while ((nCol >= nStartCol) &&
-                 aCol[nCol].IsEmptyBlock(nStartRow, nEndRow))
+                 aCol[nCol].IsEmptyData(nStartRow, nEndRow))
         {
             nCount++;
             nCol--;
@@ -1221,7 +1221,7 @@ SCSIZE ScTable::GetEmptyLinesInBlock( SCCOL nStartCol, SCROW nStartRow,
     else
     {
         nCol = nStartCol;
-        while ((nCol <= nEndCol) && aCol[nCol].IsEmptyBlock(nStartRow, nEndRow))
+        while ((nCol <= nEndCol) && aCol[nCol].IsEmptyData(nStartRow, nEndRow))
         {
             nCount++;
             nCol++;
@@ -1254,10 +1254,10 @@ void ScTable::LimitChartArea( SCCOL& rStartCol, SCROW& rStartRow, SCCOL& rEndCol
     rStartCol = std::min<SCCOL>( rStartCol, aCol.size()-1 );
     rEndCol   = std::min<SCCOL>( rEndCol,   aCol.size()-1 );
 
-    while ( rStartCol<rEndCol && aCol[rStartCol].IsEmptyBlock(rStartRow,rEndRow) )
+    while ( rStartCol<rEndCol && aCol[rStartCol].IsEmptyData(rStartRow,rEndRow) )
         ++rStartCol;
 
-    while ( rStartCol<rEndCol && aCol[rEndCol].IsEmptyBlock(rStartRow,rEndRow) )
+    while ( rStartCol<rEndCol && aCol[rEndCol].IsEmptyData(rStartRow,rEndRow) )
         --rEndCol;
 
     while ( rStartRow<rEndRow && IsEmptyLine(rStartRow, rStartCol, rEndCol) )
@@ -1819,19 +1819,6 @@ void ScTable::UpdateReference(
     sc::RefUpdateContext& rCxt, ScDocument* pUndoDoc, bool bIncludeDraw, bool bUpdateNoteCaptionPos )
 {
     bool bUpdated = false;
-    SCCOL i;
-    SCCOL iMax;
-    if (rCxt.meMode == URM_COPY )
-    {
-        i = rCxt.maRange.aStart.Col();
-        iMax = rCxt.maRange.aEnd.Col();
-    }
-    else
-    {
-        i = 0;
-        iMax = rDocument.MaxCol();
-    }
-
     UpdateRefMode eUpdateRefMode = rCxt.meMode;
     SCCOL nDx = rCxt.mnColDelta;
     SCROW nDy = rCxt.mnRowDelta;
@@ -1844,8 +1831,16 @@ void ScTable::UpdateReference(
     if (mpRangeName)
         mpRangeName->UpdateReference(rCxt, nTab);
 
-    for ( ; i<=iMax; i++)
-        bUpdated |= CreateColumnIfNotExists(i).UpdateReference(rCxt, pUndoDoc);
+    if (rCxt.meMode == URM_COPY )
+    {
+        for( SCCOL col : GetAllocatedColumnsRange( rCxt.maRange.aStart.Col(), rCxt.maRange.aEnd.Col()))
+            bUpdated |= aCol[col].UpdateReference(rCxt, pUndoDoc);
+    }
+    else
+    {
+        for( SCCOL col : GetAllocatedColumnsRange( 0, rDocument.MaxCol()))
+            bUpdated |= aCol[col].UpdateReference(rCxt, pUndoDoc);
+    }
 
     if ( bIncludeDraw )
         UpdateDrawRef( eUpdateRefMode, nCol1, nRow1, nTab1, nCol2, nRow2, nTab2, nDx, nDy, nDz, bUpdateNoteCaptionPos );
@@ -1878,12 +1873,12 @@ void ScTable::UpdateReference(
             }
         }
 
-        if ( pRepeatColRange )
+        if ( moRepeatColRange )
         {
-            nSCol = pRepeatColRange->aStart.Col();
-            nSRow = pRepeatColRange->aStart.Row();
-            nECol = pRepeatColRange->aEnd.Col();
-            nERow = pRepeatColRange->aEnd.Row();
+            nSCol = moRepeatColRange->aStart.Col();
+            nSRow = moRepeatColRange->aStart.Row();
+            nECol = moRepeatColRange->aEnd.Col();
+            nERow = moRepeatColRange->aEnd.Row();
 
             // do not try to modify sheet index of repeat range
             if ( ScRefUpdate::Update( &rDocument, eUpdateRefMode,
@@ -1891,19 +1886,19 @@ void ScTable::UpdateReference(
                                       nDx,nDy,0,
                                       nSCol,nSRow,nSTab, nECol,nERow,nETab ) )
             {
-                *pRepeatColRange = ScRange( nSCol, nSRow, 0, nECol, nERow, 0 );
+                *moRepeatColRange = ScRange( nSCol, nSRow, 0, nECol, nERow, 0 );
                 bRecalcPages = true;
                 nRepeatStartX = nSCol;  // for UpdatePageBreaks
                 nRepeatEndX = nECol;
             }
         }
 
-        if ( pRepeatRowRange )
+        if ( moRepeatRowRange )
         {
-            nSCol = pRepeatRowRange->aStart.Col();
-            nSRow = pRepeatRowRange->aStart.Row();
-            nECol = pRepeatRowRange->aEnd.Col();
-            nERow = pRepeatRowRange->aEnd.Row();
+            nSCol = moRepeatRowRange->aStart.Col();
+            nSRow = moRepeatRowRange->aStart.Row();
+            nECol = moRepeatRowRange->aEnd.Col();
+            nERow = moRepeatRowRange->aEnd.Row();
 
             // do not try to modify sheet index of repeat range
             if ( ScRefUpdate::Update( &rDocument, eUpdateRefMode,
@@ -1911,7 +1906,7 @@ void ScTable::UpdateReference(
                                       nDx,nDy,0,
                                       nSCol,nSRow,nSTab, nECol,nERow,nETab ) )
             {
-                *pRepeatRowRange = ScRange( nSCol, nSRow, 0, nECol, nERow, 0 );
+                *moRepeatRowRange = ScRange( nSCol, nSRow, 0, nECol, nERow, 0 );
                 bRecalcPages = true;
                 nRepeatStartY = nSRow;  // for UpdatePageBreaks
                 nRepeatEndY = nERow;
@@ -2257,35 +2252,35 @@ void ScTable::CopyPrintRange(const ScTable& rTable)
 
     bPrintEntireSheet = rTable.bPrintEntireSheet;
 
-    pRepeatColRange.reset();
-    if (rTable.pRepeatColRange)
+    moRepeatColRange.reset();
+    if (rTable.moRepeatColRange)
     {
-        pRepeatColRange.reset(new ScRange(*rTable.pRepeatColRange));
-        pRepeatColRange->aStart.SetTab(nTab);
-        pRepeatColRange->aEnd.SetTab(nTab);
+        moRepeatColRange.emplace(*rTable.moRepeatColRange);
+        moRepeatColRange->aStart.SetTab(nTab);
+        moRepeatColRange->aEnd.SetTab(nTab);
     }
 
-    pRepeatRowRange.reset();
-    if (rTable.pRepeatRowRange)
+    moRepeatRowRange.reset();
+    if (rTable.moRepeatRowRange)
     {
-        pRepeatRowRange.reset(new ScRange(*rTable.pRepeatRowRange));
-        pRepeatRowRange->aStart.SetTab(nTab);
-        pRepeatRowRange->aEnd.SetTab(nTab);
+        moRepeatRowRange.emplace(*rTable.moRepeatRowRange);
+        moRepeatRowRange->aStart.SetTab(nTab);
+        moRepeatRowRange->aEnd.SetTab(nTab);
     }
 }
 
-void ScTable::SetRepeatColRange( std::unique_ptr<ScRange> pNew )
+void ScTable::SetRepeatColRange( std::optional<ScRange> oNew )
 {
-    pRepeatColRange = std::move(pNew);
+    moRepeatColRange = std::move(oNew);
 
     SetStreamValid(false);
 
     InvalidatePageBreaks();
 }
 
-void ScTable::SetRepeatRowRange( std::unique_ptr<ScRange> pNew )
+void ScTable::SetRepeatRowRange( std::optional<ScRange> oNew )
 {
-    pRepeatRowRange = std::move(pNew);
+    moRepeatRowRange = std::move(oNew);
 
     SetStreamValid(false);
 
@@ -2330,17 +2325,15 @@ const ScRange* ScTable::GetPrintRange(sal_uInt16 nPos) const
 void ScTable::FillPrintSaver( ScPrintSaverTab& rSaveTab ) const
 {
     rSaveTab.SetAreas( std::vector(aPrintRanges), bPrintEntireSheet );
-    rSaveTab.SetRepeat( pRepeatColRange.get(), pRepeatRowRange.get() );
+    rSaveTab.SetRepeat( moRepeatColRange, moRepeatRowRange );
 }
 
 void ScTable::RestorePrintRanges( const ScPrintSaverTab& rSaveTab )
 {
     aPrintRanges = rSaveTab.GetPrintRanges();
     bPrintEntireSheet = rSaveTab.IsEntireSheet();
-    auto p = rSaveTab.GetRepeatCol();
-    SetRepeatColRange( std::unique_ptr<ScRange>(p ? new ScRange(*p) : nullptr) );
-    p = rSaveTab.GetRepeatRow();
-    SetRepeatRowRange( std::unique_ptr<ScRange>(p ? new ScRange(*p) : nullptr) );
+    SetRepeatColRange( rSaveTab.GetRepeatCol() );
+    SetRepeatRowRange( rSaveTab.GetRepeatRow() );
 
     InvalidatePageBreaks();     // #i117952# forget page breaks for an old print range
     UpdatePageBreaks(nullptr);
@@ -2594,8 +2587,9 @@ void ScTable::DeleteEmptyBroadcasters()
 void ScTable::FillMatrix( ScMatrix& rMat, SCCOL nCol1, SCROW nRow1, SCCOL nCol2, SCROW nRow2, svl::SharedStringPool* pPool ) const
 {
     size_t nMatCol = 0;
+    nCol2 = ClampToAllocatedColumns(nCol2);
     for (SCCOL nCol = nCol1; nCol <= nCol2; ++nCol, ++nMatCol)
-        CreateColumnIfNotExists(nCol).FillMatrix(rMat, nMatCol, nRow1, nRow2, pPool);
+        aCol[nCol].FillMatrix(rMat, nMatCol, nRow1, nRow2, pPool);
 }
 
 void ScTable::InterpretDirtyCells( SCCOL nCol1, SCROW nRow1, SCCOL nCol2, SCROW nRow2 )
@@ -2718,7 +2712,7 @@ ScColumnsRange ScTable::GetColumnsRange(SCCOL nColBegin, SCCOL nColEnd) const
 }
 
 // out-of-line the cold part of the CreateColumnIfNotExists function
-void ScTable::CreateColumnIfNotExistsImpl( const SCCOL nScCol ) const
+void ScTable::CreateColumnIfNotExistsImpl( const SCCOL nScCol )
 {
     // When doing multi-threaded load of, e.g. XLS files, we can hit this, which calls
     // into SfxItemPool::Put, in parallel with other code that calls into SfxItemPool::Put,

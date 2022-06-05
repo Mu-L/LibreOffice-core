@@ -1108,7 +1108,8 @@ void SdrMarkView::SetMarkHandlesForLOKit(tools::Rectangle const & rRect, const S
                 sSelectionTextView = sSelectionText + ", " + aExtraInfo + "}";
                 aExtraInfo.append(handleArrayStr);
                 aExtraInfo.append("}");
-                sSelectionText += ", " + aExtraInfo.makeStringAndClear();
+                sSelectionText += ", " + aExtraInfo;
+                aExtraInfo.setLength(0);
             }
         }
 
@@ -1330,6 +1331,13 @@ void SdrMarkView::SetMarkHandles(SfxViewShell* pOtherShell)
                         maHdlList.AddHdl(std::make_unique<SdrHdl>(aRect.BottomRight(), SdrHdlKind::LowerRight));
                     }
                 }
+            }
+
+            // Diagram selection visualization support
+            // Caution: CppunitTest_sd_tiledrendering shows that mpMarkedObj *can* actually be nullptr (!)
+            if(nullptr != mpMarkedObj && mpMarkedObj->isDiagram())
+            {
+                mpMarkedObj->AddToHdlList(maHdlList);
             }
 
             const size_t nSiz1(maHdlList.GetHdlCount());

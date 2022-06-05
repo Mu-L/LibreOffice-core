@@ -27,6 +27,7 @@
 #include <svl/poolitem.hxx>
 
 #include "calbck.hxx"
+#include "swdllapi.h"
 
 class SwContentControl;
 class SwTextContentControl;
@@ -38,10 +39,12 @@ enum class SwContentControlType
     RICH_TEXT,
     CHECKBOX,
     DROP_DOWN_LIST,
+    PICTURE,
+    DATE,
 };
 
 /// SfxPoolItem subclass that wraps an SwContentControl.
-class SAL_DLLPUBLIC_RTTI SwFormatContentControl final : public SfxPoolItem
+class SW_DLLPUBLIC SwFormatContentControl final : public SfxPoolItem
 {
     std::shared_ptr<SwContentControl> m_pContentControl;
     SwTextContentControl* m_pTextAttr;
@@ -69,20 +72,26 @@ public:
      */
     void NotifyChangeTextNode(SwTextNode* pTextNode);
     static SwFormatContentControl* CreatePoolDefault(sal_uInt16 nWhich);
-    SwContentControl* GetContentControl() { return m_pContentControl.get(); }
-    const SwContentControl* GetContentControl() const { return m_pContentControl.get(); }
+    std::shared_ptr<SwContentControl> GetContentControl() { return m_pContentControl; }
+    const std::shared_ptr<SwContentControl>& GetContentControl() const { return m_pContentControl; }
 
     void dumpAsXml(xmlTextWriterPtr pWriter) const override;
 };
 
 /// Represents one list item in a content control dropdown list.
-class SwContentControlListItem
+class SW_DLLPUBLIC SwContentControlListItem
 {
 public:
+    /// This may be empty, ToString() falls back to m_aValue.
     OUString m_aDisplayText;
+    /// This must not be empty.
     OUString m_aValue;
 
     void dumpAsXml(xmlTextWriterPtr pWriter) const;
+
+    OUString ToString() const;
+
+    bool operator==(const SwContentControlListItem& rOther) const;
 
     static void ItemsToAny(const std::vector<SwContentControlListItem>& rItems,
                            css::uno::Any& rVal);
@@ -91,7 +100,7 @@ public:
 };
 
 /// Stores the properties of a content control.
-class SAL_DLLPUBLIC_RTTI SwContentControl : public sw::BroadcastingModify
+class SW_DLLPUBLIC SwContentControl : public sw::BroadcastingModify
 {
     css::uno::WeakReference<css::text::XTextContent> m_wXContentControl;
 
@@ -117,8 +126,39 @@ class SAL_DLLPUBLIC_RTTI SwContentControl : public sw::BroadcastingModify
 
     std::vector<SwContentControlListItem> m_aListItems;
 
+    bool m_bPicture = false;
+
+    bool m_bDate = false;
+
+    /// If m_bDate is true, the date format in a syntax accepted by SvNumberFormatter::PutEntry().
+    OUString m_aDateFormat;
+
+    /// If m_bDate is true, the date's BCP 47 language tag.
+    OUString m_aDateLanguage;
+
+    /// Date in YYYY-MM-DDT00:00:00Z format.
+    OUString m_aCurrentDate;
+
+    /// The placeholder's doc part: just remembered.
+    OUString m_aPlaceholderDocPart;
+
+    /// The data bindings's prefix mappings: just remembered.
+    OUString m_aDataBindingPrefixMappings;
+
+    /// The data bindings's XPath: just remembered.
+    OUString m_aDataBindingXpath;
+
+    /// The data bindings's store item ID: just remembered.
+    OUString m_aDataBindingStoreItemID;
+
+    /// The color: just remembered.
+    OUString m_aColor;
+
     /// Stores a list item index, in case the doc model is not yet updated.
     std::optional<size_t> m_oSelectedListItem;
+
+    /// Stores a date timestamp, in case the doc model is not yet updated.
+    std::optional<double> m_oSelectedDate;
 
 public:
     SwTextContentControl* GetTextAttr() const;
@@ -179,6 +219,42 @@ public:
         m_aListItems = rListItems;
     }
 
+    void SetPicture(bool bPicture) { m_bPicture = bPicture; }
+
+    bool GetPicture() const { return m_bPicture; }
+
+    void SetDate(bool bDate) { m_bDate = bDate; }
+
+    bool GetDate() const { return m_bDate; }
+
+    void SetDateFormat(const OUString& rDateFormat) { m_aDateFormat = rDateFormat; }
+
+    OUString GetDateFormat() const { return m_aDateFormat; }
+
+    void SetDateLanguage(const OUString& rDateLanguage) { m_aDateLanguage = rDateLanguage; }
+
+    OUString GetDateLanguage() const { return m_aDateLanguage; }
+
+    void SetCurrentDate(const OUString& rCurrentDate) { m_aCurrentDate = rCurrentDate; }
+
+    OUString GetCurrentDate() const { return m_aCurrentDate; }
+
+    /// Formats fCurrentDate and sets it.
+    void SetCurrentDateValue(double fCurrentDate);
+
+    /// Parses m_aCurrentDate and returns it.
+    double GetCurrentDateValue() const;
+
+    /// Formats m_oSelectedDate, taking m_aDateFormat and m_aDateLanguage into account.
+    OUString GetDateString() const;
+
+    void SetPlaceholderDocPart(const OUString& rPlaceholderDocPart)
+    {
+        m_aPlaceholderDocPart = rPlaceholderDocPart;
+    }
+
+    OUString GetPlaceholderDocPart() const { return m_aPlaceholderDocPart; }
+
     void SetSelectedListItem(std::optional<size_t> oSelectedListItem)
     {
         m_oSelectedListItem = oSelectedListItem;
@@ -186,7 +262,36 @@ public:
 
     std::optional<size_t> GetSelectedListItem() const { return m_oSelectedListItem; }
 
+    void SetSelectedDate(std::optional<double> oSelectedDate) { m_oSelectedDate = oSelectedDate; }
+
+    std::optional<double> GetSelectedDate() const { return m_oSelectedDate; }
+
     virtual void dumpAsXml(xmlTextWriterPtr pWriter) const;
+
+    void SetDataBindingPrefixMappings(const OUString& rDataBindingPrefixMappings)
+    {
+        m_aDataBindingPrefixMappings = rDataBindingPrefixMappings;
+    }
+
+    OUString GetDataBindingPrefixMappings() const { return m_aDataBindingPrefixMappings; }
+
+    void SetDataBindingXpath(const OUString& rDataBindingXpath)
+    {
+        m_aDataBindingXpath = rDataBindingXpath;
+    }
+
+    OUString GetDataBindingXpath() const { return m_aDataBindingXpath; }
+
+    void SetDataBindingStoreItemID(const OUString& rDataBindingStoreItemID)
+    {
+        m_aDataBindingStoreItemID = rDataBindingStoreItemID;
+    }
+
+    OUString GetDataBindingStoreItemID() const { return m_aDataBindingStoreItemID; }
+
+    void SetColor(const OUString& rColor) { m_aColor = rColor; }
+
+    OUString GetColor() const { return m_aColor; }
 };
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

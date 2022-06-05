@@ -362,6 +362,9 @@ bool SwAuthorField::QueryValue( uno::Any& rAny, sal_uInt16 nWhichId ) const
         rAny <<= m_aContent;
         break;
 
+    case FIELD_PROP_TITLE:
+        break;
+
     default:
         assert(false);
     }
@@ -385,6 +388,9 @@ bool SwAuthorField::PutValue( const uno::Any& rAny, sal_uInt16 nWhichId )
 
     case FIELD_PROP_PAR1:
         rAny >>= m_aContent;
+        break;
+
+    case FIELD_PROP_TITLE:
         break;
 
     default:
@@ -1828,6 +1834,11 @@ void SwPostItField::SetTextObject( std::optional<OutlinerParaObject> pText )
 sal_Int32 SwPostItField::GetNumberOfParagraphs() const
 {
     return mpText ? mpText->Count() : 1;
+}
+
+void SwPostItField::SetPostItId(const sal_uInt32 nPostItId)
+{
+    m_nPostItId = nPostItId == 0 ? s_nLastPostItId++ : nPostItId;
 }
 
 bool SwPostItField::QueryValue( uno::Any& rAny, sal_uInt16 nWhichId ) const

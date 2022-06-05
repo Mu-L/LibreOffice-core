@@ -919,7 +919,7 @@ void SwBaseShell::Execute(SfxRequest &rReq)
                 if ( nSelType & SelectionType::Graphic )
                     rSh.ReRead( aGrfName, aFltName, &aGrf );
                 else
-                    rSh.Insert( aGrfName, aFltName, aGrf );
+                    rSh.InsertGraphic( aGrfName, aFltName, aGrf );
 
                 GetView().GetEditWin().GrabFocus();
             }
@@ -1903,7 +1903,7 @@ void SwBaseShell::GetState( SfxItemSet &rSet )
                         break;
                         case FN_FRAME_WRAP_CONTOUR:
                             bDisable |= bHtmlMode;
-                            //no contour available whenn no wrap or wrap through is set
+                            //no contour available when no wrap or wrap through is set
                             bDisable |= (nSurround == css::text::WrapTextMode_NONE || nSurround == css::text::WrapTextMode_THROUGH);
                             if( !bDisable )
                             {
@@ -2755,7 +2755,7 @@ void SwBaseShell::ExecDlg(SfxRequest &rReq)
                 std::unique_ptr<SvxBrushItem> aBrush(std::make_unique<SvxBrushItem>(RES_BACKGROUND));
                 rSh.GetBoxBackground( aBrush );
                 pDlg.disposeAndReset(pFact->CreateSwBackgroundDialog(pMDI, aSet));
-                aSet.Put( *aBrush );
+                aSet.Put( std::move(aBrush) );
                 if ( pDlg->Execute() == RET_OK )
                 {
 

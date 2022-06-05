@@ -38,6 +38,7 @@
 #include <unonames.hxx>
 #include <BaseCoordinateSystem.hxx>
 
+#include <o3tl/safeint.hxx>
 #include <unotools/saveopt.hxx>
 
 #include <com/sun/star/chart/ChartAxisPosition.hpp>
@@ -50,6 +51,7 @@
 #include <comphelper/sequence.hxx>
 #include <tools/diagnose_ex.h>
 
+#include <cstddef>
 #include <map>
 
 namespace chart
@@ -561,7 +563,7 @@ rtl::Reference< ::chart::BaseCoordinateSystem > AxisHelper::getCoordinateSystemB
     if(!xDiagram.is())
         return nullptr;
     auto & rCooSysList = xDiagram->getBaseCoordinateSystems();
-    if(0<=nIndex && nIndex < static_cast<sal_Int32>(rCooSysList.size()))
+    if(0<=nIndex && o3tl::make_unsigned(nIndex) < rCooSysList.size())
         return rCooSysList[nIndex];
     return nullptr;
 }
@@ -785,7 +787,7 @@ bool AxisHelper::getIndicesForAxis( const rtl::Reference< Axis >& xAxis, const r
     rOutAxisIndex = -1;
 
     const std::vector< rtl::Reference< BaseCoordinateSystem > > & aCooSysList = xDiagram->getBaseCoordinateSystems();
-    for( sal_Int32 nC=0; nC < static_cast<sal_Int32>(aCooSysList.size()); ++nC )
+    for( std::size_t nC=0; nC < aCooSysList.size(); ++nC )
     {
         if( AxisHelper::getIndicesForAxis( xAxis, aCooSysList[nC], rOutDimensionIndex, rOutAxisIndex ) )
         {
@@ -1048,7 +1050,7 @@ rtl::Reference< ChartType > AxisHelper::getChartTypeByIndex( const rtl::Referenc
     if( xCooSys.is() )
     {
         const std::vector< rtl::Reference< ChartType > > aChartTypeList( xCooSys->getChartTypes2() );
-        if( nIndex >= 0 && nIndex < static_cast<sal_Int32>(aChartTypeList.size()) )
+        if( nIndex >= 0 && o3tl::make_unsigned(nIndex) < aChartTypeList.size() )
             xChartType = aChartTypeList[nIndex];
     }
 

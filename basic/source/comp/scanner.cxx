@@ -28,9 +28,10 @@
 #include <svl/zforlist.hxx>
 #include <rtl/character.hxx>
 #include <o3tl/string_view.hxx>
+#include <utility>
 
-SbiScanner::SbiScanner(const OUString& rBuf, StarBASIC* p)
-    : aBuf(rBuf)
+SbiScanner::SbiScanner(OUString _aBuf, StarBASIC* p)
+    : aBuf(std::move(_aBuf))
     , nLineIdx(-1)
     , nSaveLineIdx(-1)
     , pBasic(p)
@@ -702,6 +703,8 @@ eoln:
         aSym = "\n";
         nColLock = 0;
         bClosingUnderscore = false;
+        // tdf#149157 - break multiline continuation in a comment after a new line
+        bPrevLineExtentsComment = false;
         return true;
     }
 }

@@ -19,22 +19,23 @@
 
 
 #include "cacheupdatelistener.hxx"
+#include "configflush.hxx"
 
 #include <com/sun/star/util/XChangesNotifier.hpp>
 #include <com/sun/star/util/XRefreshable.hpp>
-#include <com/sun/star/document/FilterConfigRefresh.hpp>
 #include <unotools/configpaths.hxx>
 #include <rtl/ustring.hxx>
 #include <comphelper/processfactory.hxx>
+#include <utility>
 
 
 namespace filter::config{
 
 CacheUpdateListener::CacheUpdateListener(FilterCache &rFilterCache,
-                                         const css::uno::Reference< css::uno::XInterface >& xConfigAccess,
+                                         css::uno::Reference< css::uno::XInterface > xConfigAccess,
                                          FilterCache::EItemType eConfigType)
     : m_rCache(rFilterCache)
-    , m_xConfig(xConfigAccess)
+    , m_xConfig(std::move(xConfigAccess))
     , m_eConfigType(eConfigType)
 {
 }
@@ -161,9 +162,7 @@ void SAL_CALL  CacheUpdateListener::changesOccurred(const css::util::ChangesEven
     // notify sfx cache about the changed filter cache .-)
     if (bNotifyRefresh)
     {
-        css::uno::Reference< css::uno::XComponentContext > xContext = comphelper::getProcessComponentContext();
-        css::uno::Reference< css::util::XRefreshable > xRefreshBroadcaster =
-            css::document::FilterConfigRefresh::create(xContext);
+        rtl::Reference< ConfigFlush > xRefreshBroadcaster = new ConfigFlush();
         xRefreshBroadcaster->refresh();
     }
 }

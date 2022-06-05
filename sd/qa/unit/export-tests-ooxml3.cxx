@@ -56,6 +56,7 @@ public:
     void testTdf130058();
     void testTdf111789();
     void testTdf145162();
+    void testZeroIndentExport();
     void testTdf100348_convert_Fontwork2TextWarp();
     void testTdf1225573_FontWorkScaleX();
     void testTdf99497_keepAppearanceOfCircleKind();
@@ -76,6 +77,7 @@ public:
     void testTdf99213();
     void testPotxExport();
     void testTdf44223();
+    void testTdf135843();
     void testSmartArtPreserve();
     void testTdf125346();
     void testTdf125346_2();
@@ -138,6 +140,7 @@ public:
     CPPUNIT_TEST(testTdf130058);
     CPPUNIT_TEST(testTdf111789);
     CPPUNIT_TEST(testTdf145162);
+    CPPUNIT_TEST(testZeroIndentExport);
     CPPUNIT_TEST(testTdf100348_convert_Fontwork2TextWarp);
     CPPUNIT_TEST(testTdf1225573_FontWorkScaleX);
     CPPUNIT_TEST(testTdf99497_keepAppearanceOfCircleKind);
@@ -157,6 +160,7 @@ public:
     CPPUNIT_TEST(testTdf99213);
     CPPUNIT_TEST(testPotxExport);
     CPPUNIT_TEST(testTdf44223);
+    CPPUNIT_TEST(testTdf135843);
     CPPUNIT_TEST(testSmartArtPreserve);
     CPPUNIT_TEST(testTdf125346);
     CPPUNIT_TEST(testTdf125346_2);
@@ -656,6 +660,42 @@ void SdOOXMLExportTest3::testTdf145162()
 
     assertXPath(pXmlDocContent, "/p:sld/p:cSld/p:spTree/p:sp[2]/p:txBody/a:p[2]/a:pPr/a:buNone");
     // Before the fix, that tag was missing so PP put bullet to each para.
+
+    xDocShRef->DoClose();
+}
+
+void SdOOXMLExportTest3::testZeroIndentExport()
+{
+    // Load the bugdoc and save to pptx then.
+    sd::DrawDocShellRef xDocShRef
+        = loadURL(m_directories.getURLFromSrc(u"sd/qa/unit/data/odp/testZeroIndent.odp"), ODP);
+    utl::TempFile tempFile;
+    xDocShRef = saveAndReload(xDocShRef.get(), PPTX, &tempFile);
+    // There are 3 slides, get them
+    xmlDocUniquePtr pSlide1 = parseExport(tempFile, "ppt/slides/slide1.xml");
+    xmlDocUniquePtr pSlide2 = parseExport(tempFile, "ppt/slides/slide2.xml");
+    xmlDocUniquePtr pSlide3 = parseExport(tempFile, "ppt/slides/slide3.xml");
+
+    CPPUNIT_ASSERT(pSlide1);
+    CPPUNIT_ASSERT(pSlide2);
+    CPPUNIT_ASSERT(pSlide3);
+
+    // Each slide has 3 paragraphs, one full line, an empty and a normal para.
+    // Check the indent and bullet. These have to match with PP. Before the fix,
+    // they were different.
+    assertXPath(pSlide1, "/p:sld/p:cSld/p:spTree/p:sp[2]/p:txBody/a:p[2]/a:pPr/a:buNone");
+
+    assertXPath(pSlide2, "/p:sld/p:cSld/p:spTree/p:sp[2]/p:txBody/a:p[1]/a:pPr/a:buNone");
+    assertXPath(pSlide2, "/p:sld/p:cSld/p:spTree/p:sp[2]/p:txBody/a:p[1]/a:pPr", "indent", "0");
+    assertXPath(pSlide2, "/p:sld/p:cSld/p:spTree/p:sp[2]/p:txBody/a:p[2]/a:pPr/a:buNone");
+    assertXPath(pSlide2, "/p:sld/p:cSld/p:spTree/p:sp[2]/p:txBody/a:p[2]/a:pPr", "indent", "0");
+    assertXPath(pSlide2, "/p:sld/p:cSld/p:spTree/p:sp[2]/p:txBody/a:p[3]/a:pPr/a:buNone");
+    assertXPath(pSlide2, "/p:sld/p:cSld/p:spTree/p:sp[2]/p:txBody/a:p[3]/a:pPr", "indent", "0");
+
+    assertXPath(pSlide3, "/p:sld/p:cSld/p:spTree/p:sp[2]/p:txBody/a:p[1]/a:pPr", "indent", "0");
+    assertXPath(pSlide3, "/p:sld/p:cSld/p:spTree/p:sp[2]/p:txBody/a:p[2]/a:pPr/a:buNone");
+    assertXPath(pSlide3, "/p:sld/p:cSld/p:spTree/p:sp[2]/p:txBody/a:p[2]/a:pPr", "indent", "0");
+    assertXPath(pSlide3, "/p:sld/p:cSld/p:spTree/p:sp[2]/p:txBody/a:p[3]/a:pPr", "indent", "0");
 
     xDocShRef->DoClose();
 }
@@ -1167,6 +1207,31 @@ void SdOOXMLExportTest3::testTdf44223()
     assertXPath(pRels1, "//rels:Relationship[@Id='rId1']", "Target", "../media/audio1.wav");
 
     xDocShRef->DoClose();
+}
+
+void SdOOXMLExportTest3::testTdf135843()
+{
+    ::sd::DrawDocShellRef xDocShRef
+        = loadURL(m_directories.getURLFromSrc(u"sd/qa/unit/data/pptx/tdf135843_export.pptx"), PPTX);
+    utl::TempFile tempFile;
+    xDocShRef = saveAndReload(xDocShRef.get(), PPTX, &tempFile);
+
+    xmlDocUniquePtr pXmlDoc = parseExport(tempFile, "ppt/slides/slide1.xml");
+    const OString sPathStart("/p:sld/p:cSld/p:spTree/p:graphicFrame/a:graphic/a:graphicData/a:tbl");
+    assertXPath(pXmlDoc, sPathStart + "/a:tr[1]/a:tc[1]/a:tcPr/a:lnL/a:noFill");
+    assertXPath(pXmlDoc, sPathStart + "/a:tr[1]/a:tc[1]/a:tcPr/a:lnR/a:noFill");
+    assertXPath(pXmlDoc, sPathStart + "/a:tr[1]/a:tc[1]/a:tcPr/a:lnT/a:noFill");
+    assertXPath(pXmlDoc, sPathStart + "/a:tr[1]/a:tc[1]/a:tcPr/a:lnB/a:noFill");
+
+    assertXPath(pXmlDoc, sPathStart + "/a:tr[2]/a:tc[1]/a:tcPr/a:lnL/a:noFill");
+    assertXPath(pXmlDoc, sPathStart + "/a:tr[2]/a:tc[1]/a:tcPr/a:lnR/a:noFill");
+    assertXPath(pXmlDoc, sPathStart + "/a:tr[2]/a:tc[1]/a:tcPr/a:lnT/a:noFill");
+    assertXPath(pXmlDoc, sPathStart + "/a:tr[2]/a:tc[1]/a:tcPr/a:lnB/a:noFill");
+
+    assertXPath(pXmlDoc, sPathStart + "/a:tr[3]/a:tc[1]/a:tcPr/a:lnL/a:noFill");
+    assertXPath(pXmlDoc, sPathStart + "/a:tr[3]/a:tc[1]/a:tcPr/a:lnR/a:noFill");
+    assertXPath(pXmlDoc, sPathStart + "/a:tr[3]/a:tc[1]/a:tcPr/a:lnT/a:noFill");
+    assertXPath(pXmlDoc, sPathStart + "/a:tr[3]/a:tc[1]/a:tcPr/a:lnB/a:noFill");
 }
 
 void SdOOXMLExportTest3::testSmartArtPreserve()

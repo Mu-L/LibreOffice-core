@@ -401,10 +401,8 @@ uno::Reference< ::graphic::XGraphic > SAL_CALL GraphicProvider::queryGraphic( co
             aExtHeader.xExt = nExtWidth;
             aExtHeader.yExt = nExtHeight;
             aExtHeader.mapMode = nExtMapMode;
-            WmfExternal *pExtHeader = nullptr;
             if ( nExtMapMode > 0 )
             {
-                pExtHeader = &aExtHeader;
                 bLazyRead = false;
             }
 
@@ -416,8 +414,7 @@ uno::Reference< ::graphic::XGraphic > SAL_CALL GraphicProvider::queryGraphic( co
                     aVCLGraphic = aGraphic;
             }
             if (aVCLGraphic.IsNone())
-                error = rFilter.ImportGraphic(aVCLGraphic, aPath, *pIStm, GRFILTER_FORMAT_DONTKNOW,
-                                              nullptr, GraphicFilterImportFlags::NONE, pExtHeader);
+                error = rFilter.ImportGraphic(aVCLGraphic, aPath, *pIStm, GRFILTER_FORMAT_DONTKNOW, nullptr, GraphicFilterImportFlags::NONE);
 
             if( (error == ERRCODE_NONE ) &&
                 ( aVCLGraphic.GetType() != GraphicType::NONE ) )
@@ -441,8 +438,6 @@ uno::Reference< ::graphic::XGraphic > SAL_CALL GraphicProvider::queryGraphic( co
 
 uno::Sequence< uno::Reference<graphic::XGraphic> > SAL_CALL GraphicProvider::queryGraphics(const uno::Sequence< uno::Sequence<beans::PropertyValue> >& rMediaPropertiesSeq)
 {
-    SolarMutexGuard aGuard;
-
     // Turn properties into streams.
     std::vector< std::unique_ptr<SvStream> > aStreams;
     for (const auto& rMediaProperties : rMediaPropertiesSeq)
@@ -704,8 +699,6 @@ void ImplApplyFilterData( ::Graphic& rGraphic, const uno::Sequence< beans::Prope
 
 void SAL_CALL GraphicProvider::storeGraphic( const uno::Reference< ::graphic::XGraphic >& rxGraphic, const uno::Sequence< beans::PropertyValue >& rMediaProperties )
 {
-    SolarMutexGuard g;
-
     std::unique_ptr<SvStream> pOStm;
     OUString    aPath;
 

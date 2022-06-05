@@ -83,9 +83,10 @@ void ScChartsObj::Notify( SfxBroadcaster&, const SfxHint& rHint )
 
 rtl::Reference<ScChartObj> ScChartsObj::GetObjectByIndex_Impl(tools::Long nIndex) const
 {
-    OUString aName;
     if ( pDocShell )
     {
+        OUString aName;
+
         ScDocument& rDoc = pDocShell->GetDocument();
         ScDrawLayer* pDrawLayer = rDoc.GetDrawLayer();
         if (pDrawLayer)
@@ -114,10 +115,11 @@ rtl::Reference<ScChartObj> ScChartsObj::GetObjectByIndex_Impl(tools::Long nIndex
                 }
             }
         }
+
+        if (!aName.isEmpty())
+            return new ScChartObj( pDocShell, nTab, aName );
     }
 
-    if (!aName.isEmpty())
-        return new ScChartObj( pDocShell, nTab, aName );
     return nullptr;
 }
 
@@ -331,7 +333,6 @@ uno::Any SAL_CALL ScChartsObj::getByIndex( sal_Int32 nIndex )
 
 uno::Type SAL_CALL ScChartsObj::getElementType()
 {
-    SolarMutexGuard aGuard;
     return cppu::UnoType<table::XTableChart>::get();
 }
 
@@ -724,7 +725,6 @@ OUString SAL_CALL ScChartObj::getName()
 
 void SAL_CALL ScChartObj::setName( const OUString& /* aName */ )
 {
-    SolarMutexGuard aGuard;
     throw uno::RuntimeException();      // name cannot be changed
 }
 

@@ -1064,6 +1064,9 @@ namespace xmloff::token {
         TOKEN( "hyphenation-push-char-count",     XML_HYPHENATION_PUSH_CHAR_COUNT ),
         TOKEN( "hyphenation-remain-char-count",       XML_HYPHENATION_REMAIN_CHAR_COUNT ),
         TOKEN( "hyphenation-no-caps",             XML_HYPHENATION_NO_CAPS ),
+        TOKEN( "hyphenation-no-last-word",        XML_HYPHENATION_NO_LAST_WORD ),
+        TOKEN( "hyphenation-word-char-count",     XML_HYPHENATION_WORD_CHAR_COUNT ),
+        TOKEN( "hyphenation-zone",                XML_HYPHENATION_ZONE ),
         TOKEN( "i",                               XML_I ),
         TOKEN( "icon",                            XML_ICON ),
         TOKEN( "icon-set",                        XML_ICON_SET ),
@@ -3497,6 +3500,9 @@ namespace xmloff::token {
         TOKEN("checked-state", XML_CHECKED_STATE),
         TOKEN("unchecked-state", XML_UNCHECKED_STATE),
         TOKEN("display-text", XML_DISPLAY_TEXT),
+        TOKEN("picture", XML_PICTURE),
+        TOKEN("date-format", XML_DATE_FORMAT),
+        TOKEN("date-rfc-language-tag", XML_DATE_RFC_LANGUAGE_TAG),
 
 
 #if OSL_DEBUG_LEVEL > 0

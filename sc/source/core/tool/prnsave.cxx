@@ -21,6 +21,7 @@
 #include <address.hxx>
 
 #include <osl/diagnose.h>
+#include <tools/json_writer.hxx>
 
 //      Data per table
 
@@ -31,8 +32,6 @@ ScPrintSaverTab::ScPrintSaverTab() :
 
 ScPrintSaverTab::~ScPrintSaverTab()
 {
-    mpRepeatCol.reset();
-    mpRepeatRow.reset();
 }
 
 void ScPrintSaverTab::SetAreas( ScRangeVec&& rRanges, bool bEntireSheet )
@@ -41,22 +40,17 @@ void ScPrintSaverTab::SetAreas( ScRangeVec&& rRanges, bool bEntireSheet )
     mbEntireSheet = bEntireSheet;
 }
 
-void ScPrintSaverTab::SetRepeat( const ScRange* pCol, const ScRange* pRow )
+void ScPrintSaverTab::SetRepeat( std::optional<ScRange> oCol, std::optional<ScRange> oRow )
 {
-    mpRepeatCol.reset(pCol ? new ScRange(*pCol) : nullptr);
-    mpRepeatRow.reset(pRow ? new ScRange(*pRow) : nullptr);
-}
-
-static bool PtrEqual( const ScRange* p1, const ScRange* p2 )
-{
-    return ( !p1 && !p2 ) || ( p1 && p2 && *p1 == *p2 );
+    moRepeatCol = std::move(oCol);
+    moRepeatRow = std::move(oRow);
 }
 
 bool ScPrintSaverTab::operator==( const ScPrintSaverTab& rCmp ) const
 {
     return
-        PtrEqual( mpRepeatCol.get(), rCmp.mpRepeatCol.get() ) &&
-        PtrEqual( mpRepeatRow.get(), rCmp.mpRepeatRow.get() ) &&
+        (moRepeatCol == rCmp.moRepeatCol) &&
+        (moRepeatRow == rCmp.moRepeatRow) &&
         (mbEntireSheet == rCmp.mbEntireSheet) &&
         (maPrintRanges == rCmp.maPrintRanges);
 }
@@ -84,6 +78,37 @@ const ScPrintSaverTab& ScPrintRangeSaver::GetTabData(SCTAB nTab) const
 {
     OSL_ENSURE(nTab<nTabCount,"ScPrintRangeSaver Tab too big");
     return pData[nTab];
+}
+
+void ScPrintRangeSaver::GetPrintRangesInfo(tools::JsonWriter& rPrintRanges) const
+{
+    // Array for sheets in the document.
+    auto printRanges = rPrintRanges.startArray("printranges");
+    for (SCTAB nTab = 0; nTab < nTabCount; nTab++)
+    {
+        auto sheetNode = rPrintRanges.startStruct();
+        const ScPrintSaverTab& rPsTab = pData[nTab];
+        const std::vector<ScRange>& rRangeVec = rPsTab.GetPrintRanges();
+
+        rPrintRanges.put("sheet", static_cast<sal_Int32>(nTab));
+
+        // Array for ranges within each sheet.
+        auto sheetRanges = rPrintRanges.startArray("ranges");
+        OStringBuffer aRanges;
+        sal_Int32 nLast = rRangeVec.size() - 1;
+        for (sal_Int32 nIdx = 0; nIdx <= nLast; ++nIdx)
+        {
+            const ScRange& rRange = rRangeVec[nIdx];
+            aRanges.append("[ " +
+                OString::number(rRange.aStart.Col()) + ", " +
+                OString::number(rRange.aStart.Row()) + ", " +
+                OString::number(rRange.aEnd.Col()) + ", " +
+                OString::number(rRange.aEnd.Row()) +
+                (nLast == nIdx ? std::string_view("]") : std::string_view("], ")));
+        }
+
+        rPrintRanges.putRaw(aRanges.getStr());
+    }
 }
 
 bool ScPrintRangeSaver::operator==( const ScPrintRangeSaver& rCmp ) const

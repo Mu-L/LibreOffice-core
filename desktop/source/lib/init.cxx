@@ -40,6 +40,7 @@
 #include <LibreOfficeKit/LibreOfficeKitEnums.h>
 
 #include <sal/log.hxx>
+#include <utility>
 #include <vcl/errinf.hxx>
 #include <vcl/lok.hxx>
 #include <o3tl/any.hxx>
@@ -1048,6 +1049,10 @@ static char* doc_getTextSelection(LibreOfficeKitDocument* pThis,
                                   const char* pMimeType,
                                   char** pUsedMimeType);
 static int doc_getSelectionType(LibreOfficeKitDocument* pThis);
+static int doc_getSelectionTypeAndText(LibreOfficeKitDocument* pThis,
+                                       const char* pMimeType,
+                                       char** pText,
+                                       char** pUsedMimeType);
 static int doc_getClipboard (LibreOfficeKitDocument* pThis,
                              const char **pMimeTypes,
                              size_t      *pOutCount,
@@ -1143,6 +1148,8 @@ static bool doc_renderSearchResult(LibreOfficeKitDocument* pThis,
                                  const char* pSearchResult, unsigned char** pBitmapBuffer,
                                  int* pWidth, int* pHeight, size_t* pByteSize);
 
+static void doc_sendContentControlEvent(LibreOfficeKitDocument* pThis, const char* pArguments);
+
 } // extern "C"
 
 namespace {
@@ -1195,8 +1202,8 @@ vcl::Font FindFont_FallbackToDefault(std::u16string_view rFontName)
 }
 } // anonymous namespace
 
-LibLODocument_Impl::LibLODocument_Impl(const uno::Reference <css::lang::XComponent> &xComponent, int nDocumentId)
-    : mxComponent(xComponent)
+LibLODocument_Impl::LibLODocument_Impl(uno::Reference <css::lang::XComponent> xComponent, int nDocumentId)
+    : mxComponent(std::move(xComponent))
     , mnDocumentId(nDocumentId)
 {
     assert(nDocumentId != -1 && "Cannot set mnDocumentId to -1");
@@ -1240,6 +1247,7 @@ LibLODocument_Impl::LibLODocument_Impl(const uno::Reference <css::lang::XCompone
         m_pDocumentClass->setWindowTextSelection = doc_setWindowTextSelection;
         m_pDocumentClass->getTextSelection = doc_getTextSelection;
         m_pDocumentClass->getSelectionType = doc_getSelectionType;
+        m_pDocumentClass->getSelectionTypeAndText = doc_getSelectionTypeAndText;
         m_pDocumentClass->getClipboard = doc_getClipboard;
         m_pDocumentClass->setClipboard = doc_setClipboard;
         m_pDocumentClass->paste = doc_paste;
@@ -1285,6 +1293,8 @@ LibLODocument_Impl::LibLODocument_Impl(const uno::Reference <css::lang::XCompone
         m_pDocumentClass->renderSearchResult = doc_renderSearchResult;
 
         m_pDocumentClass->setBlockedCommandList = doc_setBlockedCommandList;
+
+        m_pDocumentClass->sendContentControlEvent = doc_sendContentControlEvent;
 
         gDocumentClass = m_pDocumentClass;
     }
@@ -3579,6 +3589,7 @@ static void doc_paintPartTile(LibreOfficeKitDocument* pThis,
         int nOrigPart = 0;
         const bool isText = (doc_getDocumentType(pThis) == LOK_DOCTYPE_TEXT);
         int nViewId = nOrigViewId;
+        int nLastNonEditorView = nViewId;
         if (!isText)
         {
             // Check if just switching to another view is enough, that has
@@ -3588,14 +3599,28 @@ static void doc_paintPartTile(LibreOfficeKitDocument* pThis,
                 SfxViewShell* pViewShell = SfxViewShell::GetFirst();
                 while (pViewShell)
                 {
-                    if (pViewShell->getPart() == nPart)
+                    bool bIsInEdit = pViewShell->GetDrawView() &&
+                        pViewShell->GetDrawView()->GetTextEditOutliner();
+                    if (!bIsInEdit)
+                        nLastNonEditorView = pViewShell->GetViewShellId().get();
+
+                    if (pViewShell->getPart() == nPart && !bIsInEdit)
                     {
                         nViewId = pViewShell->GetViewShellId().get();
+                        nLastNonEditorView = nViewId;
                         doc_setView(pThis, nViewId);
                         break;
                     }
                     pViewShell = SfxViewShell::GetNext(*pViewShell);
                 }
+            }
+
+            // if not found view with correct part - at least avoid rendering active textbox
+            SfxViewShell* pCurrentViewShell = SfxViewShell::Current();
+            if (pCurrentViewShell && pCurrentViewShell->GetDrawView() &&
+                pCurrentViewShell->GetDrawView()->GetTextEditOutliner())
+            {
+                doc_setView(pThis, nLastNonEditorView);
             }
 
             nOrigPart = doc_getPart(pThis);
@@ -4008,9 +4033,9 @@ class DispatchResultListener : public cppu::WeakImplHelper<css::frame::XDispatch
     std::shared_ptr<CallbackFlushHandler> mpCallback; ///< Callback to call.
 
 public:
-    DispatchResultListener(const char* pCommand, std::shared_ptr<CallbackFlushHandler> const & pCallback)
+    DispatchResultListener(const char* pCommand, std::shared_ptr<CallbackFlushHandler> pCallback)
         : maCommand(pCommand)
-        , mpCallback(pCallback)
+        , mpCallback(std::move(pCallback))
     {
         assert(mpCallback);
     }
@@ -4643,14 +4668,15 @@ static int doc_getSelectionType(LibreOfficeKitDocument* pThis)
         return LOK_SELTYPE_NONE;
     }
 
-    css::uno::Reference<css::datatransfer::XTransferable2> xTransferable(pDoc->getSelection(), css::uno::UNO_QUERY);
+    css::uno::Reference<css::datatransfer::XTransferable> xTransferable = pDoc->getSelection();
     if (!xTransferable)
     {
         SetLastExceptionMsg("No selection available");
         return LOK_SELTYPE_NONE;
     }
 
-    if (xTransferable->isComplex())
+    css::uno::Reference<css::datatransfer::XTransferable2> xTransferable2(xTransferable, css::uno::UNO_QUERY);
+    if (xTransferable2.is() && xTransferable2->isComplex())
         return LOK_SELTYPE_COMPLEX;
 
     OString aRet;
@@ -4661,7 +4687,63 @@ static int doc_getSelectionType(LibreOfficeKitDocument* pThis)
     if (aRet.getLength() > 10000)
         return LOK_SELTYPE_COMPLEX;
 
-    return aRet.getLength() ? LOK_SELTYPE_TEXT : LOK_SELTYPE_NONE;
+    return !aRet.isEmpty() ? LOK_SELTYPE_TEXT : LOK_SELTYPE_NONE;
+}
+
+static int doc_getSelectionTypeAndText(LibreOfficeKitDocument* pThis, const char* pMimeType, char** pText, char** pUsedMimeType)
+{
+    // The purpose of this function is to avoid double call to pDoc->getSelection(),
+    // which may be expensive.
+    comphelper::ProfileZone aZone("doc_getSelectionTypeAndText");
+
+    SolarMutexGuard aGuard;
+    SetLastExceptionMsg();
+
+    ITiledRenderable* pDoc = getTiledRenderable(pThis);
+    if (!pDoc)
+    {
+        SetLastExceptionMsg("Document doesn't support tiled rendering");
+        return LOK_SELTYPE_NONE;
+    }
+
+    css::uno::Reference<css::datatransfer::XTransferable> xTransferable = pDoc->getSelection();
+    if (!xTransferable)
+    {
+        SetLastExceptionMsg("No selection available");
+        return LOK_SELTYPE_NONE;
+    }
+
+    css::uno::Reference<css::datatransfer::XTransferable2> xTransferable2(xTransferable, css::uno::UNO_QUERY);
+    if (xTransferable2.is() && xTransferable2->isComplex())
+        return LOK_SELTYPE_COMPLEX;
+
+    const char *pType = pMimeType;
+    if (!pType || pType[0] == '\0')
+        pType = "text/plain;charset=utf-8";
+
+    OString aRet;
+    bool bSuccess = getFromTransferrable(xTransferable, OString(pType), aRet);
+    if (!bSuccess)
+        return LOK_SELTYPE_NONE;
+
+    if (aRet.getLength() > 10000)
+        return LOK_SELTYPE_COMPLEX;
+
+    if (aRet.isEmpty())
+        return LOK_SELTYPE_NONE;
+
+    if (pText)
+        *pText = convertOString(aRet);
+
+    if (pUsedMimeType) // legacy
+    {
+        if (pMimeType)
+            *pUsedMimeType = strdup(pMimeType);
+        else
+            *pUsedMimeType = nullptr;
+    }
+
+    return LOK_SELTYPE_TEXT;
 }
 
 static int doc_getClipboard(LibreOfficeKitDocument* pThis,
@@ -6070,6 +6152,34 @@ static bool doc_renderSearchResult(LibreOfficeKitDocument* pThis,
     return true;
 }
 
+static void doc_sendContentControlEvent(LibreOfficeKitDocument* pThis, const char* pArguments)
+{
+    SolarMutexGuard aGuard;
+
+    // Supported in Writer only
+    if (doc_getDocumentType(pThis) != LOK_DOCTYPE_TEXT)
+    {
+        return;
+    }
+
+    StringMap aMap(jsdialog::jsonToStringMap(pArguments));
+    ITiledRenderable* pDoc = getTiledRenderable(pThis);
+    if (!pDoc)
+    {
+        SetLastExceptionMsg("Document doesn't support tiled rendering");
+        return;
+    }
+
+    // Sanity check
+    if (aMap.find("type") == aMap.end())
+    {
+        SetLastExceptionMsg("Missing 'type' argument for sendContentControlEvent");
+        return;
+    }
+
+    pDoc->executeContentControlEvent(aMap);
+}
+
 static char* lo_getError (LibreOfficeKit *pThis)
 {
     comphelper::ProfileZone aZone("lo_getError");
@@ -6810,7 +6920,7 @@ int lok_preinit(const char* install_path, const char* user_profile_url)
 }
 
 SAL_JNI_EXPORT
-int lok_preinit_2(const char* install_path, const char* user_profile_url, LibLibreOffice_Impl** kit)
+int lok_preinit_2(const char* install_path, const char* user_profile_url, LibreOfficeKit** kit)
 {
     lok_preinit_2_called = true;
     int result = lo_initialize(nullptr, install_path, user_profile_url);

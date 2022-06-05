@@ -108,6 +108,7 @@
 #include <comphelper/xmltools.hxx>
 #include <o3tl/any.hxx>
 #include <o3tl/safeint.hxx>
+#include <o3tl/string_view.hxx>
 #include <tools/stream.hxx>
 #include <unotools/fontdefs.hxx>
 #include <vcl/cvtgrf.hxx>
@@ -121,6 +122,7 @@
 #include <editeng/unoprnms.hxx>
 #include <editeng/flditem.hxx>
 #include <editeng/escapementitem.hxx>
+#include <editeng/unonrule.hxx>
 #include <svx/svdoashp.hxx>
 #include <svx/svdomedia.hxx>
 #include <svx/unoshape.hxx>
@@ -563,7 +565,7 @@ void DrawingML::WriteSolidFill( const Reference< XPropertySet >& rXPropSet )
     else if ( nFillColor != nOriginalColor )
     {
         // the user has set a different color for the shape
-        if (aTransformations.hasElements() || !WriteFillColor(rXPropSet))
+        if (!WriteFillColor(rXPropSet))
         {
             WriteSolidFill(::Color(ColorTransparency, nFillColor & 0xffffff), nAlpha);
         }
@@ -598,7 +600,23 @@ bool DrawingML::WriteFillColor(const uno::Reference<beans::XPropertySet>& xPrope
     const char* pColorName = g_aPredefinedClrNames[nFillColorTheme];
 
     mpFS->startElementNS(XML_a, XML_solidFill);
-    mpFS->singleElementNS(XML_a, XML_schemeClr, XML_val, pColorName);
+    mpFS->startElementNS(XML_a, XML_schemeClr, XML_val, pColorName);
+
+    sal_Int32 nFillColorLumMod{};
+    xPropertySet->getPropertyValue("FillColorLumMod") >>= nFillColorLumMod;
+    if (nFillColorLumMod != 10000)
+    {
+        mpFS->singleElementNS(XML_a, XML_lumMod, XML_val, OString::number(nFillColorLumMod * 10));
+    }
+
+    sal_Int32 nFillColorLumOff{};
+    xPropertySet->getPropertyValue("FillColorLumOff") >>= nFillColorLumOff;
+    if (nFillColorLumOff != 0)
+    {
+        mpFS->singleElementNS(XML_a, XML_lumOff, XML_val, OString::number(nFillColorLumOff * 10));
+    }
+
+    mpFS->endElementNS(XML_a, XML_schemeClr);
     mpFS->endElementNS(XML_a, XML_solidFill);
 
     return true;
@@ -2688,13 +2706,7 @@ static OUString GetAutoNumType(SvxNumType nNumberingType, bool bSDot, bool bPBeh
 void DrawingML::WriteParagraphNumbering(const Reference< XPropertySet >& rXPropSet, float fFirstCharHeight, sal_Int16 nLevel )
 {
     if (nLevel < 0 || !GetProperty(rXPropSet, "NumberingRules"))
-    {
-        if (GetDocumentType() == DOCUMENT_PPTX)
-        {
-            mpFS->singleElementNS(XML_a, XML_buNone);
-        }
         return;
-    }
 
     Reference< XIndexAccess > rXIndexAccess;
 
@@ -2998,6 +3010,32 @@ bool DrawingML::WriteParagraphProperties( const Reference< XTextContent >& rPara
     if (GetProperty(rXPropSet, "NumberingLevel"))
         mAny >>= nLevel;
 
+    bool bWriteNumbering = true;
+    bool bForceZeroIndent = false;
+    if (mbPlaceholder)
+    {
+        Reference< text::XTextRange > xParaText(rParagraph, UNO_QUERY);
+        if (xParaText)
+        {
+            bool bNumberingOnThisLevel = false;
+            if (nLevel > -1)
+            {
+                Reference< XIndexAccess > xNumberingRules(rXPropSet->getPropertyValue("NumberingRules"), UNO_QUERY);
+                const PropertyValues& rNumRuleOfLevel = xNumberingRules->getByIndex(nLevel).get<PropertyValues>();
+                for (const PropertyValue& rRule : rNumRuleOfLevel)
+                    if (rRule.Name == "NumberingType" && rRule.Value.hasValue())
+                        bNumberingOnThisLevel = rRule.Value.get<sal_uInt16>() != style::NumberingType::NUMBER_NONE;
+            }
+
+            const bool bIsNumberingVisible = rXPropSet->getPropertyValue("NumberingIsNumber").get<bool>();
+            const bool bIsLineEmpty = !xParaText->getString().getLength();
+
+            bWriteNumbering = !bIsLineEmpty && bIsNumberingVisible && (nLevel != -1);
+            bForceZeroIndent = (!bIsNumberingVisible || bIsLineEmpty || !bNumberingOnThisLevel);
+        }
+
+    }
+
     sal_Int16 nTmp = sal_Int16(style::ParagraphAdjust_LEFT);
     if (GetProperty(rXPropSet, "ParaAdjust"))
         mAny >>= nTmp;
@@ -3041,23 +3079,26 @@ bool DrawingML::WriteParagraphProperties( const Reference< XTextContent >& rPara
     sal_Int32 nLeftMargin =  getBulletMarginIndentation ( rXPropSet, nLevel,u"LeftMargin");
     sal_Int32 nLineIndentation = getBulletMarginIndentation ( rXPropSet, nLevel,u"FirstLineOffset");
 
-    if( !(nLevel != -1
-        || nAlignment != style::ParagraphAdjust_LEFT
-        || bHasLinespacing) )
-        return false;
+    if (bWriteNumbering && !bForceZeroIndent)
+    {
+        if (!(nLevel != -1
+            || nAlignment != style::ParagraphAdjust_LEFT
+            || bHasLinespacing))
+            return false;
+    }
 
     if (nParaLeftMargin) // For Paragraph
         mpFS->startElementNS( XML_a, nElement,
                            XML_lvl, sax_fastparser::UseIf(OString::number(nLevel), nLevel > 0),
                            XML_marL, sax_fastparser::UseIf(OString::number(oox::drawingml::convertHmmToEmu(nParaLeftMargin)), nParaLeftMargin > 0),
-                           XML_indent, sax_fastparser::UseIf(OString::number(oox::drawingml::convertHmmToEmu(nParaFirstLineIndent)), nParaFirstLineIndent != 0),
+                           XML_indent, sax_fastparser::UseIf(OString::number(!bForceZeroIndent ? oox::drawingml::convertHmmToEmu(nParaFirstLineIndent) : 0), (bForceZeroIndent || (nParaFirstLineIndent != 0))),
                            XML_algn, GetAlignment( nAlignment ),
                            XML_rtl, sax_fastparser::UseIf(ToPsz10(bRtl), bRtl));
     else
         mpFS->startElementNS( XML_a, nElement,
                            XML_lvl, sax_fastparser::UseIf(OString::number(nLevel), nLevel > 0),
                            XML_marL, sax_fastparser::UseIf(OString::number(oox::drawingml::convertHmmToEmu(nLeftMargin)), nLeftMargin > 0),
-                           XML_indent, sax_fastparser::UseIf(OString::number(oox::drawingml::convertHmmToEmu(nLineIndentation)), nLineIndentation != 0),
+                           XML_indent, sax_fastparser::UseIf(OString::number(!bForceZeroIndent ? oox::drawingml::convertHmmToEmu(nLineIndentation) : 0), (bForceZeroIndent || ( nLineIndentation != 0))),
                            XML_algn, GetAlignment( nAlignment ),
                            XML_rtl, sax_fastparser::UseIf(ToPsz10(bRtl), bRtl));
 
@@ -3089,7 +3130,10 @@ bool DrawingML::WriteParagraphProperties( const Reference< XTextContent >& rPara
         mpFS->endElementNS( XML_a, XML_spcAft );
     }
 
-    WriteParagraphNumbering( rXPropSet, fFirstCharHeight, nLevel );
+    if (!bWriteNumbering)
+        mpFS->singleElementNS(XML_a, XML_buNone);
+    else
+        WriteParagraphNumbering( rXPropSet, fFirstCharHeight, nLevel );
 
     WriteParagraphTabStops( rXPropSet );
 
@@ -3691,14 +3735,14 @@ static std::map< OString, std::vector<OString> > lcl_getAdjNames()
     SvFileStream aStream(aPath, StreamMode::READ);
     if (aStream.GetError() != ERRCODE_NONE)
         SAL_WARN("oox.shape", "failed to open oox-drawingml-adj-names");
-    OString aLine;
+    OStringBuffer aLine;
     bool bNotDone = aStream.ReadLine(aLine);
     while (bNotDone)
     {
         sal_Int32 nIndex = 0;
         // Each line is in a "key\tvalue" format: read the key, the rest is the value.
-        OString aKey = aLine.getToken(0, '\t', nIndex);
-        OString aValue = aLine.copy(nIndex);
+        OString aKey( o3tl::getToken(aLine, 0, '\t', nIndex) );
+        OString aValue( std::string_view(aLine).substr(nIndex) );
         aRet[aKey].push_back(aValue);
         bNotDone = aStream.ReadLine(aLine);
     }
