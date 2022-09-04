@@ -18,6 +18,7 @@
  */
 
 #include <memory>
+#include <utility>
 #include <string_view>
 #include <sal/config.h>
 
@@ -30,7 +31,6 @@
 #include <i18nutil/transliteration.hxx>
 #include <sal/log.hxx>
 #include <osl/diagnose.h>
-#include <utility>
 #include <vcl/svapp.hxx>
 #include <vcl/settings.hxx>
 #include <svl/fstathelper.hxx>
@@ -1633,14 +1633,14 @@ SvxAutoCorrectLanguageLists& SvxAutoCorrect::GetLanguageList_(
     LanguageTag aLanguageTag( eLang);
     if (m_aLangTable.find(aLanguageTag) == m_aLangTable.end())
         (void)CreateLanguageFile(aLanguageTag);
-    return *(m_aLangTable.find(aLanguageTag)->second);
+    return m_aLangTable.find(aLanguageTag)->second;
 }
 
 void SvxAutoCorrect::SaveCplSttExceptList( LanguageType eLang )
 {
     auto const iter = m_aLangTable.find(LanguageTag(eLang));
-    if (iter != m_aLangTable.end() && iter->second)
-        iter->second->SaveCplSttExceptList();
+    if (iter != m_aLangTable.end())
+        iter->second.SaveCplSttExceptList();
     else
     {
         SAL_WARN("editeng", "Save an empty list? ");
@@ -1650,8 +1650,8 @@ void SvxAutoCorrect::SaveCplSttExceptList( LanguageType eLang )
 void SvxAutoCorrect::SaveWordStartExceptList(LanguageType eLang)
 {
     auto const iter = m_aLangTable.find(LanguageTag(eLang));
-    if (iter != m_aLangTable.end() && iter->second)
-        iter->second->SaveWordStartExceptList();
+    if (iter != m_aLangTable.end())
+        iter->second.SaveWordStartExceptList();
     else
     {
         SAL_WARN("editeng", "Save an empty list? ");
@@ -1666,15 +1666,15 @@ bool SvxAutoCorrect::AddCplSttException( const OUString& rNew,
     // either the right language is present or it will be this in the general list
     auto iter = m_aLangTable.find(LanguageTag(eLang));
     if (iter != m_aLangTable.end())
-        pLists = iter->second.get();
+        pLists = &iter->second;
     else
     {
         LanguageTag aLangTagUndetermined( LANGUAGE_UNDETERMINED);
         iter = m_aLangTable.find(aLangTagUndetermined);
         if (iter != m_aLangTable.end())
-            pLists = iter->second.get();
+            pLists = &iter->second;
         else if(CreateLanguageFile(aLangTagUndetermined))
-            pLists = m_aLangTable.find(aLangTagUndetermined)->second.get();
+            pLists = &m_aLangTable.find(aLangTagUndetermined)->second;
     }
     OSL_ENSURE(pLists, "No auto correction data");
     return pLists && pLists->AddToCplSttExceptList(rNew);
@@ -1688,15 +1688,15 @@ bool SvxAutoCorrect::AddWordStartException( const OUString& rNew,
     //either the right language is present or it is set in the general list
     auto iter = m_aLangTable.find(LanguageTag(eLang));
     if (iter != m_aLangTable.end())
-        pLists = iter->second.get();
+        pLists = &iter->second;
     else
     {
         LanguageTag aLangTagUndetermined( LANGUAGE_UNDETERMINED);
         iter = m_aLangTable.find(aLangTagUndetermined);
         if (iter != m_aLangTable.end())
-            pLists = iter->second.get();
+            pLists = &iter->second;
         else if(CreateLanguageFile(aLangTagUndetermined))
-            pLists = m_aLangTable.find(aLangTagUndetermined)->second.get();
+            pLists = &m_aLangTable.find(aLangTagUndetermined)->second;
     }
     OSL_ENSURE(pLists, "No auto correction file!");
     return pLists && pLists->AddToWordStartExceptList(rNew);
@@ -1799,9 +1799,10 @@ bool SvxAutoCorrect::CreateLanguageFile( const LanguageTag& rLanguageTag, bool b
         if( bNewFile )
         {
             sShareDirFile = sUserDirFile;
-            pLists = new SvxAutoCorrectLanguageLists( *this, sShareDirFile, sUserDirFile );
-            LanguageTag aTmp(rLanguageTag);     // this insert() needs a non-const reference
-            m_aLangTable.insert(std::make_pair(aTmp, std::unique_ptr<SvxAutoCorrectLanguageLists>(pLists)));
+            auto itBool = m_aLangTable.emplace(std::piecewise_construct,
+                            std::forward_as_tuple(rLanguageTag),
+                            std::forward_as_tuple(*this, sShareDirFile, sUserDirFile));
+            pLists = &itBool.first->second;
             aLastFileTable.erase(nFndPos);
         }
     }
@@ -1815,9 +1816,10 @@ bool SvxAutoCorrect::CreateLanguageFile( const LanguageTag& rLanguageTag, bool b
         ( sShareDirFile = sUserDirFile, bNewFile )
           )
     {
-        pLists = new SvxAutoCorrectLanguageLists( *this, sShareDirFile, sUserDirFile );
-        LanguageTag aTmp(rLanguageTag);     // this insert() needs a non-const reference
-        m_aLangTable.insert(std::make_pair(aTmp, std::unique_ptr<SvxAutoCorrectLanguageLists>(pLists)));
+        auto itBool = m_aLangTable.emplace(std::piecewise_construct,
+                        std::forward_as_tuple(rLanguageTag),
+                        std::forward_as_tuple(*this, sShareDirFile, sUserDirFile));
+        pLists = &itBool.first->second;
         if (nFndPos != aLastFileTable.end())
             aLastFileTable.erase(nFndPos);
     }
@@ -1834,9 +1836,9 @@ bool SvxAutoCorrect::PutText( const OUString& rShort, const OUString& rLong,
     LanguageTag aLanguageTag( eLang);
     auto const iter = m_aLangTable.find(aLanguageTag);
     if (iter != m_aLangTable.end())
-        return iter->second->PutText(rShort, rLong);
+        return iter->second.PutText(rShort, rLong);
     if(CreateLanguageFile(aLanguageTag))
-        return m_aLangTable.find(aLanguageTag)->second->PutText(rShort, rLong);
+        return m_aLangTable.find(aLanguageTag)->second.PutText(rShort, rLong);
     return false;
 }
 
@@ -1848,11 +1850,11 @@ void SvxAutoCorrect::MakeCombinedChanges( std::vector<SvxAutocorrWord>& aNewEntr
     auto const iter = m_aLangTable.find(aLanguageTag);
     if (iter != m_aLangTable.end())
     {
-        iter->second->MakeCombinedChanges( aNewEntries, aDeleteEntries );
+        iter->second.MakeCombinedChanges( aNewEntries, aDeleteEntries );
     }
     else if(CreateLanguageFile( aLanguageTag ))
     {
-        m_aLangTable.find( aLanguageTag )->second->MakeCombinedChanges( aNewEntries, aDeleteEntries );
+        m_aLangTable.find( aLanguageTag )->second.MakeCombinedChanges( aNewEntries, aDeleteEntries );
     }
 }
 
@@ -1937,8 +1939,8 @@ const SvxAutocorrWord* SvxAutoCorrect::SearchWordsInList(
     if (m_aLangTable.find(aLanguageTag) != m_aLangTable.end() || CreateLanguageFile(aLanguageTag, false))
     {
         //the language is available - so bring it on
-        std::unique_ptr<SvxAutoCorrectLanguageLists> const& pList = m_aLangTable.find(aLanguageTag)->second;
-        pRet = lcl_SearchWordsInList( pList.get(), rTxt, rStt, nEndPos );
+        SvxAutoCorrectLanguageLists & rList = m_aLangTable.find(aLanguageTag)->second;
+        pRet = lcl_SearchWordsInList( &rList, rTxt, rStt, nEndPos );
         if( pRet )
         {
             rLang = aLanguageTag;
@@ -1958,8 +1960,8 @@ const SvxAutocorrWord* SvxAutoCorrect::SearchWordsInList(
                  CreateLanguageFile(aLanguageTag, false)))
     {
         //the language is available - so bring it on
-        std::unique_ptr<SvxAutoCorrectLanguageLists> const& pList = m_aLangTable.find(aLanguageTag)->second;
-        pRet = lcl_SearchWordsInList( pList.get(), rTxt, rStt, nEndPos );
+        SvxAutoCorrectLanguageLists& rList = m_aLangTable.find(aLanguageTag)->second;
+        pRet = lcl_SearchWordsInList( &rList, rTxt, rStt, nEndPos );
         if( pRet )
         {
             rLang = aLanguageTag;
@@ -1971,8 +1973,8 @@ const SvxAutocorrWord* SvxAutoCorrect::SearchWordsInList(
             CreateLanguageFile(aLanguageTag, false))
     {
         //the language is available - so bring it on
-        std::unique_ptr<SvxAutoCorrectLanguageLists> const& pList = m_aLangTable.find(aLanguageTag)->second;
-        pRet = lcl_SearchWordsInList( pList.get(), rTxt, rStt, nEndPos );
+        SvxAutoCorrectLanguageLists& rList = m_aLangTable.find(aLanguageTag)->second;
+        pRet = lcl_SearchWordsInList( &rList, rTxt, rStt, nEndPos );
         if( pRet )
         {
             rLang = aLanguageTag;
@@ -1995,8 +1997,8 @@ bool SvxAutoCorrect::FindInWordStartExceptList( LanguageType eLang,
     if (m_aLangTable.find(aLanguageTag) != m_aLangTable.end() || CreateLanguageFile(aLanguageTag, false))
     {
         //the language is available - so bring it on
-        auto const& pList = m_aLangTable.find(aLanguageTag)->second;
-        if(pList->GetWordStartExceptList()->find(sWord) != pList->GetWordStartExceptList()->end() )
+        auto& rList = m_aLangTable.find(aLanguageTag)->second;
+        if(rList.GetWordStartExceptList()->find(sWord) != rList.GetWordStartExceptList()->end() )
             return true;
     }
 
@@ -2009,8 +2011,8 @@ bool SvxAutoCorrect::FindInWordStartExceptList( LanguageType eLang,
                  CreateLanguageFile(aLanguageTag, false)))
     {
         //the language is available - so bring it on
-        auto const& pList = m_aLangTable.find(aLanguageTag)->second;
-        if(pList->GetWordStartExceptList()->find(sWord) != pList->GetWordStartExceptList()->end() )
+        auto& rList = m_aLangTable.find(aLanguageTag)->second;
+        if(rList.GetWordStartExceptList()->find(sWord) != rList.GetWordStartExceptList()->end() )
             return true;
     }
 
@@ -2018,8 +2020,8 @@ bool SvxAutoCorrect::FindInWordStartExceptList( LanguageType eLang,
             CreateLanguageFile(aLanguageTag, false))
     {
         //the language is available - so bring it on
-        auto const& pList = m_aLangTable.find(aLanguageTag)->second;
-        if(pList->GetWordStartExceptList()->find(sWord) != pList->GetWordStartExceptList()->end() )
+        auto& rList = m_aLangTable.find(aLanguageTag)->second;
+        if(rList.GetWordStartExceptList()->find(sWord) != rList.GetWordStartExceptList()->end() )
             return true;
     }
     return false;
@@ -2071,7 +2073,7 @@ bool SvxAutoCorrect::FindInCplSttExceptList(LanguageType eLang,
     if (m_aLangTable.find(aLanguageTag) != m_aLangTable.end() || CreateLanguageFile(aLanguageTag, false))
     {
         //the language is available - so bring it on
-        const SvStringsISortDtor* pList = m_aLangTable.find(aLanguageTag)->second->GetCplSttExceptList();
+        const SvStringsISortDtor* pList = m_aLangTable.find(aLanguageTag)->second.GetCplSttExceptList();
         if(bAbbreviation ? lcl_FindAbbreviation(pList, sWord) : pList->find(sWord) != pList->end() )
             return true;
     }
@@ -2085,7 +2087,7 @@ bool SvxAutoCorrect::FindInCplSttExceptList(LanguageType eLang,
                  CreateLanguageFile(aLanguageTag, false)))
     {
         //the language is available - so bring it on
-        const SvStringsISortDtor* pList = m_aLangTable.find(aLanguageTag)->second->GetCplSttExceptList();
+        const SvStringsISortDtor* pList = m_aLangTable.find(aLanguageTag)->second.GetCplSttExceptList();
         if(bAbbreviation ? lcl_FindAbbreviation(pList, sWord) : pList->find(sWord) != pList->end() )
             return true;
     }
@@ -2094,7 +2096,7 @@ bool SvxAutoCorrect::FindInCplSttExceptList(LanguageType eLang,
             CreateLanguageFile(aLanguageTag, false))
     {
         //the language is available - so bring it on
-        const SvStringsISortDtor* pList = m_aLangTable.find(aLanguageTag)->second->GetCplSttExceptList();
+        const SvStringsISortDtor* pList = m_aLangTable.find(aLanguageTag)->second.GetCplSttExceptList();
         if(bAbbreviation ? lcl_FindAbbreviation(pList, sWord) : pList->find(sWord) != pList->end() )
             return true;
     }

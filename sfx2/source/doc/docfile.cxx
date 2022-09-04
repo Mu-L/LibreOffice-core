@@ -2144,7 +2144,7 @@ void SfxMedium::TransactedTransferForFS_Impl( const INetURLObject& aSource,
                 pImpl->pTempFile.reset();
             }
         }
-        else if ( bTransactStarted )
+        else if ( bTransactStarted && pImpl->m_eError != ERRCODE_ABORT )
         {
             UseBackupToRestore_Impl( aOriginalContent, xDummyEnv );
         }
@@ -2934,7 +2934,7 @@ void SfxMedium::Init_Impl()
         }
     }
 
-    if ( pSalvageItem && !pSalvageItem->GetValue().isEmpty() )
+    if ( pSalvageItem )
     {
         std::unique_lock<std::recursive_mutex> chkEditLock;
         if (pImpl->m_pCheckEditableWorkerMutex != nullptr)

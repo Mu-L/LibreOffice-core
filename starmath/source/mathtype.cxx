@@ -3191,8 +3191,9 @@ void MathType::HandleAttributes(SmNode *pNode,int nLevel)
             break;
         case TOVERLINE: //If the next node is not text
                         //or text with more than one char
-            if ((pIsText->GetToken().eType != TTEXT) ||
-                (pIsText->GetText().getLength() > 1))
+            if (!pIsText ||
+                pIsText->GetToken().eType != TTEXT ||
+                pIsText->GetText().getLength() > 1)
                 nOldPending = StartTemplate(0x11);
             break;
         default:
@@ -3204,19 +3205,23 @@ void MathType::HandleAttributes(SmNode *pNode,int nLevel)
     if (pIsText)
         HandleNodes(pIsText,nLevel+1);
 
-    switch (pTemp->GetToken().eType)
+    if (pTemp)
     {
-        case TWIDEVEC:
-        case TUNDERLINE:
-            EndTemplate(nOldPending);
-            break;
-        case TOVERLINE:
-            if ((pIsText->GetToken().eType != TTEXT) ||
-                (pIsText->GetText().getLength() > 1))
+        switch (pTemp->GetToken().eType)
+        {
+            case TWIDEVEC:
+            case TUNDERLINE:
                 EndTemplate(nOldPending);
-            break;
-        default:
-            break;
+                break;
+            case TOVERLINE:
+                if (!pIsText ||
+                    pIsText->GetToken().eType != TTEXT ||
+                    pIsText->GetText().getLength() > 1)
+                    EndTemplate(nOldPending);
+                break;
+            default:
+                break;
+        }
     }
 
     //if there was no suitable place to put the attribute,
@@ -3258,8 +3263,9 @@ void MathType::HandleAttributes(SmNode *pNode,int nLevel)
                 pS->WriteUChar( 16 );
                 break;
             case TOVERLINE:
-                if ((pIsText->GetToken().eType == TTEXT) &&
-                    (pIsText->GetText().getLength() == 1))
+                if (pIsText &&
+                    (pIsText->GetToken().eType == TTEXT &&
+                     pIsText->GetText().getLength() == 1))
                     pS->WriteUChar( 17 );
                 break;
             case TBREVE:

@@ -16,7 +16,7 @@
 using namespace formula;
 
 namespace sc::opencl {
-void OpVar::GenSlidingWindowFunction(std::stringstream &ss,
+void OpVar::GenSlidingWindowFunction(outputstream &ss,
             const std::string &sSymName, SubArguments &vSubArguments)
 {
     ss << "\ndouble " << sSymName;
@@ -110,7 +110,7 @@ void OpVar::GenSlidingWindowFunction(std::stringstream &ss,
         }
         if (i == 0)
         {
-            ss << "    fMean = fSum * pow(fCount,-1.0);\n";
+            ss << "    fMean = fSum / fCount;\n";
         }
     }
     i = vSubArguments.size();
@@ -190,7 +190,7 @@ void OpVar::GenSlidingWindowFunction(std::stringstream &ss,
     ss << "    if (fCount <= 1.0)\n";
     ss << "        return CreateDoubleError(DivisionByZero);\n";
     ss << "    else\n";
-    ss << "        return vSum * pow(fCount - 1.0,-1.0);\n";
+    ss << "        return vSum / (fCount - 1.0);\n";
     ss << "}\n";
 }
 void OpZTest::BinInlineFun(std::set<std::string>& decls,
@@ -203,7 +203,7 @@ void OpZTest::BinInlineFun(std::set<std::string>& decls,
     decls.insert(gaussDecl);
     funs.insert(gauss);
 }
-void OpZTest::GenSlidingWindowFunction(std::stringstream &ss,
+void OpZTest::GenSlidingWindowFunction(outputstream &ss,
             const std::string &sSymName, SubArguments &vSubArguments)
 {
     ss << "\ndouble " << sSymName;
@@ -275,9 +275,8 @@ void OpZTest::GenSlidingWindowFunction(std::stringstream &ss,
             ss << "    }\n";
             ss << "    if(fCount <= 1.0)\n";
             ss << "        return DBL_MAX;\n";
-            ss << "    mue = fSum *pow(fCount,-1.0);\n";
-            ss << "    sigma = (fSumSqr-fSum*fSum*";
-            ss << "pow(fCount,-1.0))*pow(fCount-1.0,-1.0);\n";
+            ss << "    mue = fSum / fCount;\n";
+            ss << "    sigma = (fSumSqr-fSum*fSum/fCount)/(fCount-1.0);\n";
         }
         else
         {
@@ -367,7 +366,7 @@ void OpZTest::GenSlidingWindowFunction(std::stringstream &ss,
             ss << "    }\n";
             ss << "    if(fCount <= 1.0)\n";
             ss << "        return DBL_MAX;\n";
-            ss << "    mue = fSum * pow(fCount,-1.0);\n";
+            ss << "    mue = fSum / fCount;\n";
         }
         else
         {
@@ -463,9 +462,10 @@ void OpTTest::BinInlineFun(std::set<std::string>& decls,
     funs.insert(GetTDist);
 }
 
-void OpTTest::GenSlidingWindowFunction(std::stringstream &ss,
+void OpTTest::GenSlidingWindowFunction(outputstream &ss,
             const std::string &sSymName, SubArguments &vSubArguments)
 {
+    CHECK_PARAMETER_COUNT( 4, 4 );
     ss << "\ndouble " << sSymName;
     ss << "_" << BinFuncName() << "(";
     for (size_t i = 0; i < vSubArguments.size(); i++)
@@ -494,73 +494,167 @@ void OpTTest::GenSlidingWindowFunction(std::stringstream &ss,
         ss << "}\n";
         return ;
     }
-    if(vSubArguments.size() != 4)
-        return;
-
-    FormulaToken *pCur  = vSubArguments[0]->GetFormulaToken();
-    FormulaToken *pCur1 = vSubArguments[1]->GetFormulaToken();
-    FormulaToken *pCur2 = vSubArguments[2]->GetFormulaToken();
-    FormulaToken *pCur3 = vSubArguments[3]->GetFormulaToken();
-    assert(pCur);
-    assert(pCur1);
-    assert(pCur2);
-    assert(pCur3);
-    if(ocPush == vSubArguments[2]->GetFormulaToken()->GetOpCode())
+    if(vSubArguments.size() == 4)
     {
-        if(pCur2->GetType() == formula::svSingleVectorRef)
+        FormulaToken *pCur  = vSubArguments[0]->GetFormulaToken();
+        FormulaToken *pCur1 = vSubArguments[1]->GetFormulaToken();
+        FormulaToken *pCur2 = vSubArguments[2]->GetFormulaToken();
+        FormulaToken *pCur3 = vSubArguments[3]->GetFormulaToken();
+        assert(pCur);
+        assert(pCur1);
+        assert(pCur2);
+        assert(pCur3);
+        if(ocPush == vSubArguments[2]->GetFormulaToken()->GetOpCode())
         {
-            const formula::SingleVectorRefToken* pSVR =
-                static_cast< const formula::SingleVectorRefToken*>(pCur2);
-            ss << "    if (gid0 < " << pSVR->GetArrayLength() << ")\n";
-            ss << "    {\n";
-            ss << "        mode = " ;
-            ss << vSubArguments[2]->GenSlidingWindowDeclRef() << ";\n";
-            ss << "        if (isnan(mode))\n";
-            ss << "            mode = 0.0;\n";
-            ss << "        else\n";
-            ss << "            mode = floor(mode);\n";
-            ss << "    }\n";
-        }
-        else if(pCur2->GetType() == formula::svDouble)
-        {
-            ss << "    mode = floor(convert_double(";
-            ss << pCur2->GetDouble() << "));\n";
+            if(pCur2->GetType() == formula::svSingleVectorRef)
+            {
+                const formula::SingleVectorRefToken* pSVR =
+                    static_cast< const formula::SingleVectorRefToken*>(pCur2);
+                ss << "    if (gid0 < " << pSVR->GetArrayLength() << ")\n";
+                ss << "    {\n";
+                ss << "        mode = " ;
+                ss << vSubArguments[2]->GenSlidingWindowDeclRef() << ";\n";
+                ss << "        if (isnan(mode))\n";
+                ss << "            mode = 0.0;\n";
+                ss << "        else\n";
+                ss << "            mode = floor(mode);\n";
+                ss << "    }\n";
+            }
+            else if(pCur2->GetType() == formula::svDouble)
+            {
+                ss << "    mode = floor(convert_double(";
+                ss << pCur2->GetDouble() << "));\n";
+            }
+            else
+            {
+                ss << "    return DBL_MAX;\n";
+                ss << "}\n";
+                return ;
+            }
         }
         else
         {
-            ss << "    return DBL_MAX;\n";
-            ss << "}\n";
-            return ;
+            ss << "    mode = floor(" ;
+            ss << vSubArguments[2]->GenSlidingWindowDeclRef() << ");\n";
         }
-    }
-    else
-    {
-        ss << "    mode = floor(" ;
-        ss << vSubArguments[2]->GenSlidingWindowDeclRef() << ");\n";
-    }
-    ss << "    if(!(mode == 1.0 || mode == 2.0))\n";
-    ss << "        return DBL_MAX;\n";
-    if(ocPush==vSubArguments[3]->GetFormulaToken()->GetOpCode())
-    {
-        if(pCur3->GetType() == formula::svSingleVectorRef)
+        ss << "    if(!(mode == 1.0 || mode == 2.0))\n";
+        ss << "        return DBL_MAX;\n";
+        if(ocPush==vSubArguments[3]->GetFormulaToken()->GetOpCode())
         {
-            const formula::SingleVectorRefToken* pSVR =
-                static_cast< const formula::SingleVectorRefToken*>(pCur3);
-            assert(pSVR);
-            ss << "    if (gid0 < " << pSVR->GetArrayLength() << ")\n";
-            ss << "    {\n";
-            ss << "        if (isnan(";
-            ss << vSubArguments[3]->GenSlidingWindowDeclRef() << "))\n";
-            ss << "            type=0.0;\n";
-            ss << "        else\n";
-            ss << "            type=floor(";
+            if(pCur3->GetType() == formula::svSingleVectorRef)
+            {
+                const formula::SingleVectorRefToken* pSVR =
+                    static_cast< const formula::SingleVectorRefToken*>(pCur3);
+                assert(pSVR);
+                ss << "    if (gid0 < " << pSVR->GetArrayLength() << ")\n";
+                ss << "    {\n";
+                ss << "        if (isnan(";
+                ss << vSubArguments[3]->GenSlidingWindowDeclRef() << "))\n";
+                ss << "            type=0.0;\n";
+                ss << "        else\n";
+                ss << "            type=floor(";
+                ss << vSubArguments[3]->GenSlidingWindowDeclRef() << ");\n";
+                ss << "    }\n";
+            }
+            else if(pCur3->GetType() == formula::svDouble)
+            {
+                ss << "    type = floor(convert_double(" << pCur3->GetDouble() <<
+                "));\n";
+            }
+            else
+            {
+                ss << "    return DBL_MAX;\n";
+                ss << "}\n";
+                return ;
+            }
+        }
+        else
+        {
+            ss << "    type=floor(";
             ss << vSubArguments[3]->GenSlidingWindowDeclRef() << ");\n";
-            ss << "    }\n";
         }
-        else if(pCur3->GetType() == formula::svDouble)
+        ss << "    if(!(type == 1.0||type == 2.0||type == 3.0))\n";
+        ss << "        return DBL_MAX;\n";
+
+        if(pCur->GetType() == formula::svDoubleVectorRef &&
+               pCur1->GetType() == formula::svDoubleVectorRef)
         {
-            ss << "    type = floor(convert_double(" << pCur3->GetDouble() <<
-            "));\n";
+            const formula::DoubleVectorRefToken* pDVR =
+                static_cast<const formula::DoubleVectorRefToken *>(pCur);
+            const formula::DoubleVectorRefToken* pDVR1 =
+                static_cast<const formula::DoubleVectorRefToken *>(pCur1);
+
+            size_t nCurWindowSize  = pDVR->GetRefRowSize();
+            size_t nCurWindowSize1 = pDVR1->GetRefRowSize();
+
+            if(nCurWindowSize == nCurWindowSize1)
+            {
+                ss << "    if(type == 1.0)\n";
+                ss << "    {\n";
+                ss << "        for (int i = ";
+                if ((!pDVR->IsStartFixed() && pDVR->IsEndFixed()) &&
+                         (!pDVR1->IsStartFixed() && pDVR1->IsEndFixed()))
+                {
+                    ss << "gid0; i < " << pDVR->GetArrayLength();
+                    ss << " && i < " << nCurWindowSize  << "; i++)\n";
+                    ss << "        {\n";
+                }
+                else if ((pDVR->IsStartFixed() && !pDVR->IsEndFixed()) &&
+                             (pDVR1->IsStartFixed() && !pDVR1->IsEndFixed()))
+                {
+                    ss << "0; i < " << pDVR->GetArrayLength();
+                    ss << " && i < gid0+"<< nCurWindowSize << "; i++)\n";
+                    ss << "        {\n";
+                }
+                else if ((!pDVR->IsStartFixed() && !pDVR->IsEndFixed()) &&
+                             (!pDVR1->IsStartFixed() && !pDVR1->IsEndFixed()))
+                {
+                    ss << "0; i + gid0 < " << pDVR->GetArrayLength();
+                    ss << " &&  i < " << nCurWindowSize << "; i++)\n";
+                    ss << "        {\n";
+                }
+                else if ((pDVR->IsStartFixed() && pDVR->IsEndFixed()) &&
+                             (pDVR1->IsStartFixed() && pDVR1->IsEndFixed()))
+                {
+                    ss << "0; i < " << nCurWindowSize << "; i++)\n";
+                    ss << "        {\n";
+                }
+                else
+                {
+                    ss << "0; i < " << nCurWindowSize << "; i++)\n";
+                    ss << "        {\n";
+                    ss << "            break;\n";
+                    ss << "        }";
+                    ss << "        return DBL_MAX;\n";
+                    ss << "    }\n";
+                    ss << "}\n";
+                    return ;
+                }
+
+                ss << "            arg1 = ";
+                ss << vSubArguments[0]->GenSlidingWindowDeclRef(true) << ";\n";
+                ss << "            arg2 = ";
+                ss << vSubArguments[1]->GenSlidingWindowDeclRef(true) << ";\n";
+                ss << "            if (isnan(arg1)||isnan(arg2))\n";
+                ss << "                continue;\n";
+                ss << "            fSum1 += arg1;\n";
+                ss << "            fSum2 += arg2;\n";
+                ss << "            fSumSqr1 += (arg1 - arg2)*(arg1 - arg2);\n";
+                ss << "            fCount1 += 1;\n";
+                ss << "        }\n";
+                ss << "        if(fCount1 < 1.0)\n";
+                ss << "            return DBL_MAX;\n";
+                ss << "        fT = sqrt(fCount1-1.0) * fabs(fSum1 - fSum2)\n";
+                ss << "            /sqrt(fCount1 * fSumSqr1 - (fSum1-fSum2)\n";
+                ss << "             *(fSum1-fSum2));\n";
+                ss << "        fF = fCount1 - 1.0;\n";
+            }
+            else
+            {
+                ss << "    return DBL_MAX;\n";
+                ss << "}\n";
+                return ;
+            }
         }
         else
         {
@@ -568,227 +662,133 @@ void OpTTest::GenSlidingWindowFunction(std::stringstream &ss,
             ss << "}\n";
             return ;
         }
-    }
-    else
-    {
-        ss << "    type=floor(";
-        ss << vSubArguments[3]->GenSlidingWindowDeclRef() << ");\n";
-    }
-    ss << "    if(!(type == 1.0||type == 2.0||type == 3.0))\n";
-    ss << "        return DBL_MAX;\n";
+        ss << "    }\n";
+        ss << "    if(type == 2.0 || type == 3.0)\n";
+        ss << "    {\n";
 
-    if(pCur->GetType() == formula::svDoubleVectorRef &&
-           pCur1->GetType() == formula::svDoubleVectorRef)
-    {
-        const formula::DoubleVectorRefToken* pDVR =
-            static_cast<const formula::DoubleVectorRefToken *>(pCur);
-        const formula::DoubleVectorRefToken* pDVR1 =
-            static_cast<const formula::DoubleVectorRefToken *>(pCur1);
-
-        size_t nCurWindowSize  = pDVR->GetRefRowSize();
-        size_t nCurWindowSize1 = pDVR1->GetRefRowSize();
-
-        if(nCurWindowSize == nCurWindowSize1)
+        if(pCur->GetType() == formula::svDoubleVectorRef &&
+               pCur1->GetType() == formula::svDoubleVectorRef)
         {
-            ss << "    if(type == 1.0)\n";
-            ss << "    {\n";
+            const formula::DoubleVectorRefToken* pDVR =
+                static_cast<const formula::DoubleVectorRefToken *>(pCur);
+            const formula::DoubleVectorRefToken* pDVR1 =
+                static_cast<const formula::DoubleVectorRefToken *>(pCur1);
+
+            size_t nCurWindowSize  = pDVR->GetRefRowSize();
+            size_t nCurWindowSize1 = pDVR1->GetRefRowSize();
             ss << "        for (int i = ";
-            if ((!pDVR->IsStartFixed() && pDVR->IsEndFixed()) &&
-                     (!pDVR1->IsStartFixed() && pDVR1->IsEndFixed()))
+            if (!pDVR->IsStartFixed() && pDVR->IsEndFixed())
             {
                 ss << "gid0; i < " << pDVR->GetArrayLength();
                 ss << " && i < " << nCurWindowSize  << "; i++)\n";
                 ss << "        {\n";
             }
-            else if ((pDVR->IsStartFixed() && !pDVR->IsEndFixed()) &&
-                         (pDVR1->IsStartFixed() && !pDVR1->IsEndFixed()))
+            else if (pDVR->IsStartFixed() && !pDVR->IsEndFixed())
             {
                 ss << "0; i < " << pDVR->GetArrayLength();
                 ss << " && i < gid0+"<< nCurWindowSize << "; i++)\n";
                 ss << "        {\n";
             }
-            else if ((!pDVR->IsStartFixed() && !pDVR->IsEndFixed()) &&
-                         (!pDVR1->IsStartFixed() && !pDVR1->IsEndFixed()))
+            else if (!pDVR->IsStartFixed() && !pDVR->IsEndFixed())
             {
                 ss << "0; i + gid0 < " << pDVR->GetArrayLength();
                 ss << " &&  i < " << nCurWindowSize << "; i++)\n";
-                ss << "        {\n";
-            }
-            else if ((pDVR->IsStartFixed() && pDVR->IsEndFixed()) &&
-                         (pDVR1->IsStartFixed() && pDVR1->IsEndFixed()))
-            {
-                ss << "0; i < " << nCurWindowSize << "; i++)\n";
                 ss << "        {\n";
             }
             else
             {
                 ss << "0; i < " << nCurWindowSize << "; i++)\n";
                 ss << "        {\n";
-                ss << "            break;\n";
-                ss << "        }";
-                ss << "        return DBL_MAX;\n";
-                ss << "    }\n";
-                ss << "}\n";
-                return ;
             }
 
             ss << "            arg1 = ";
             ss << vSubArguments[0]->GenSlidingWindowDeclRef(true) << ";\n";
-            ss << "            arg2 = ";
-            ss << vSubArguments[1]->GenSlidingWindowDeclRef(true) << ";\n";
-            ss << "            if (isnan(arg1)||isnan(arg2))\n";
+            ss << "            if (isnan(arg1))\n";
             ss << "                continue;\n";
             ss << "            fSum1 += arg1;\n";
-            ss << "            fSum2 += arg2;\n";
-            ss << "            fSumSqr1 += (arg1 - arg2)*(arg1 - arg2);\n";
+            ss << "            fSumSqr1 += arg1 * arg1;\n";
             ss << "            fCount1 += 1;\n";
             ss << "        }\n";
-            ss << "        if(fCount1 < 1.0)\n";
-            ss << "            return DBL_MAX;\n";
-            ss << "        fT = sqrt(fCount1-1.0) * fabs(fSum1 - fSum2)\n";
-            ss << "            /sqrt(fCount1 * fSumSqr1 - (fSum1-fSum2)\n";
-            ss << "             *(fSum1-fSum2));\n";
-            ss << "        fF = fCount1 - 1.0;\n";
+
+            ss << "        for (int i = ";
+            if (!pDVR1->IsStartFixed() && pDVR1->IsEndFixed())
+            {
+                ss << "gid0; i < " << pDVR1->GetArrayLength();
+                ss << " && i < " << nCurWindowSize1  << "; i++)\n";
+                ss << "        {\n";
+            }
+            else if (pDVR1->IsStartFixed() && !pDVR1->IsEndFixed())
+            {
+                ss << "0; i < " << pDVR1->GetArrayLength();
+                ss << " && i < gid0+"<< nCurWindowSize1 << "; i++)\n";
+                ss << "        {\n";
+            }
+            else if (!pDVR1->IsStartFixed() && !pDVR1->IsEndFixed())
+            {
+                ss << "0; i + gid0 < " << pDVR1->GetArrayLength();
+                ss << " &&  i < " << nCurWindowSize1 << "; i++)\n";
+                ss << "        {\n";
+            }
+            else
+            {
+                ss << "0; i < " << nCurWindowSize1 << "; i++)\n";
+                ss << "        {\n";
+            }
+            ss << "            arg2 = ";
+            ss << vSubArguments[1]->GenSlidingWindowDeclRef(true) << ";\n";
+            ss << "            if (isnan(arg2))\n";
+            ss << "                continue;\n";
+            ss << "            fSum2 += arg2;\n";
+            ss << "            fSumSqr2 += arg2 * arg2;\n";
+            ss << "            fCount2 += 1;\n";
+            ss << "        }\n";
         }
         else
         {
-            ss << "    return DBL_MAX;\n";
+            ss << "        return DBL_MAX;\n";
+            ss << "    }\n";
             ss << "}\n";
             return ;
         }
-    }
-    else
-    {
-        ss << "    return DBL_MAX;\n";
-        ss << "}\n";
-        return ;
-    }
-    ss << "    }\n";
-    ss << "    if(type == 2.0 || type == 3.0)\n";
-    ss << "    {\n";
-
-    if(pCur->GetType() == formula::svDoubleVectorRef &&
-           pCur1->GetType() == formula::svDoubleVectorRef)
-    {
-        const formula::DoubleVectorRefToken* pDVR =
-            static_cast<const formula::DoubleVectorRefToken *>(pCur);
-        const formula::DoubleVectorRefToken* pDVR1 =
-            static_cast<const formula::DoubleVectorRefToken *>(pCur1);
-
-        size_t nCurWindowSize  = pDVR->GetRefRowSize();
-        size_t nCurWindowSize1 = pDVR1->GetRefRowSize();
-        ss << "        for (int i = ";
-        if (!pDVR->IsStartFixed() && pDVR->IsEndFixed())
-        {
-            ss << "gid0; i < " << pDVR->GetArrayLength();
-            ss << " && i < " << nCurWindowSize  << "; i++)\n";
-            ss << "        {\n";
-        }
-        else if (pDVR->IsStartFixed() && !pDVR->IsEndFixed())
-        {
-            ss << "0; i < " << pDVR->GetArrayLength();
-            ss << " && i < gid0+"<< nCurWindowSize << "; i++)\n";
-            ss << "        {\n";
-        }
-        else if (!pDVR->IsStartFixed() && !pDVR->IsEndFixed())
-        {
-            ss << "0; i + gid0 < " << pDVR->GetArrayLength();
-            ss << " &&  i < " << nCurWindowSize << "; i++)\n";
-            ss << "        {\n";
-        }
-        else
-        {
-            ss << "0; i < " << nCurWindowSize << "; i++)\n";
-            ss << "        {\n";
-        }
-
-        ss << "            arg1 = ";
-        ss << vSubArguments[0]->GenSlidingWindowDeclRef(true) << ";\n";
-        ss << "            if (isnan(arg1))\n";
-        ss << "                continue;\n";
-        ss << "            fSum1 += arg1;\n";
-        ss << "            fSumSqr1 += arg1 * arg1;\n";
-        ss << "            fCount1 += 1;\n";
-        ss << "        }\n";
-
-        ss << "        for (int i = ";
-        if (!pDVR1->IsStartFixed() && pDVR1->IsEndFixed())
-        {
-            ss << "gid0; i < " << pDVR1->GetArrayLength();
-            ss << " && i < " << nCurWindowSize1  << "; i++)\n";
-            ss << "        {\n";
-        }
-        else if (pDVR1->IsStartFixed() && !pDVR1->IsEndFixed())
-        {
-            ss << "0; i < " << pDVR1->GetArrayLength();
-            ss << " && i < gid0+"<< nCurWindowSize1 << "; i++)\n";
-            ss << "        {\n";
-        }
-        else if (!pDVR1->IsStartFixed() && !pDVR1->IsEndFixed())
-        {
-            ss << "0; i + gid0 < " << pDVR1->GetArrayLength();
-            ss << " &&  i < " << nCurWindowSize1 << "; i++)\n";
-            ss << "        {\n";
-        }
-        else
-        {
-            ss << "0; i < " << nCurWindowSize1 << "; i++)\n";
-            ss << "        {\n";
-        }
-        ss << "            arg2 = ";
-        ss << vSubArguments[1]->GenSlidingWindowDeclRef(true) << ";\n";
-        ss << "            if (isnan(arg2))\n";
-        ss << "                continue;\n";
-        ss << "            fSum2 += arg2;\n";
-        ss << "            fSumSqr2 += arg2 * arg2;\n";
-        ss << "            fCount2 += 1;\n";
-        ss << "        }\n";
-    }
-    else
-    {
-        ss << "        return DBL_MAX;\n";
+        ss << "        if (fCount1 < 2.0 || fCount2 < 2.0)\n";
+        ss << "            return DBL_MAX;\n";
         ss << "    }\n";
-        ss << "}\n";
-        return ;
-    }
-    ss << "        if (fCount1 < 2.0 || fCount2 < 2.0)\n";
-    ss << "            return DBL_MAX;\n";
-    ss << "    }\n";
-    ss << "    if(type == 3.0)\n";
-    ss << "    {\n";
-    ss << "        double fS1 = (fSumSqr1-fSum1*fSum1/fCount1)\n";
-    ss << "            /(fCount1-1.0)/fCount1;\n";
-    ss << "        double fS2 = (fSumSqr2-fSum2*fSum2/fCount2)\n";
-    ss << "            /(fCount2-1.0)/fCount2;\n";
-    ss << "        if (fS1 + fS2 == 0.0)\n";
-    ss << "            return DBL_MAX;\n";
-    ss << "        fT = fabs(fSum1/fCount1 - fSum2/fCount2)\n";
-    ss << "             /sqrt(fS1+fS2);\n";
-    ss << "        double c = fS1/(fS1+fS2);\n";
-    ss << "        fF = 1.0/(c*c/(fCount1-1.0)+(1.0-c)*(1.0-c)\n";
-    ss << "             /(fCount2-1.0));\n";
-    ss << "    }\n";
-    ss << "    if(type == 2.0)\n";
-    ss << "    {\n";
-    ss << "        double fS1 = (fSumSqr1 - fSum1*fSum1/fCount1)\n";
-    ss << "             /(fCount1 - 1.0);\n";
-    ss << "        double fS2 = (fSumSqr2 - fSum2*fSum2/fCount2)\n";
-    ss << "             /(fCount2 - 1.0);\n";
-    ss << "        fT = fabs( fSum1/fCount1 - fSum2/fCount2 )\n";
-    ss << "            /sqrt( (fCount1-1.0)*fS1 + (fCount2-1.0)*fS2 )\n";
-    ss << "            *sqrt( fCount1*fCount2*(fCount1+fCount2-2)\n";
-    ss << "            /(fCount1+fCount2) );\n";
-    ss << "        fF = fCount1 + fCount2 - 2;\n";
-    ss << "    }\n";
+        ss << "    if(type == 3.0)\n";
+        ss << "    {\n";
+        ss << "        double fS1 = (fSumSqr1-fSum1*fSum1/fCount1)\n";
+        ss << "            /(fCount1-1.0)/fCount1;\n";
+        ss << "        double fS2 = (fSumSqr2-fSum2*fSum2/fCount2)\n";
+        ss << "            /(fCount2-1.0)/fCount2;\n";
+        ss << "        if (fS1 + fS2 == 0.0)\n";
+        ss << "            return DBL_MAX;\n";
+        ss << "        fT = fabs(fSum1/fCount1 - fSum2/fCount2)\n";
+        ss << "             /sqrt(fS1+fS2);\n";
+        ss << "        double c = fS1/(fS1+fS2);\n";
+        ss << "        fF = 1.0/(c*c/(fCount1-1.0)+(1.0-c)*(1.0-c)\n";
+        ss << "             /(fCount2-1.0));\n";
+        ss << "    }\n";
+        ss << "    if(type == 2.0)\n";
+        ss << "    {\n";
+        ss << "        double fS1 = (fSumSqr1 - fSum1*fSum1/fCount1)\n";
+        ss << "             /(fCount1 - 1.0);\n";
+        ss << "        double fS2 = (fSumSqr2 - fSum2*fSum2/fCount2)\n";
+        ss << "             /(fCount2 - 1.0);\n";
+        ss << "        fT = fabs( fSum1/fCount1 - fSum2/fCount2 )\n";
+        ss << "            /sqrt( (fCount1-1.0)*fS1 + (fCount2-1.0)*fS2 )\n";
+        ss << "            *sqrt( fCount1*fCount2*(fCount1+fCount2-2)\n";
+        ss << "            /(fCount1+fCount2) );\n";
+        ss << "        fF = fCount1 + fCount2 - 2;\n";
+        ss << "    }\n";
 
-    ss << "    double tdist=GetTDist(fT, fF);\n";
-    ss << "    if (mode==1)\n";
-    ss << "        return tdist;\n";
-    ss << "    else\n";
-    ss << "        return 2.0*tdist;\n";
-    ss << "}\n";
+        ss << "    double tdist=GetTDist(fT, fF);\n";
+        ss << "    if (mode==1)\n";
+        ss << "        return tdist;\n";
+        ss << "    else\n";
+        ss << "        return 2.0*tdist;\n";
+        ss << "}\n";
+    }
 }
-void OpVarP::GenSlidingWindowFunction(std::stringstream &ss,
+void OpVarP::GenSlidingWindowFunction(outputstream &ss,
             const std::string &sSymName, SubArguments &vSubArguments)
 {
     ss << "\ndouble " << sSymName;
@@ -882,7 +882,7 @@ void OpVarP::GenSlidingWindowFunction(std::stringstream &ss,
         }
         if (i == 0)
         {
-            ss << "    fMean = fSum * pow(fCount,-1.0);\n";
+            ss << "    fMean = fSum / fCount;\n";
         }
     }
     i = vSubArguments.size();
@@ -960,7 +960,7 @@ void OpVarP::GenSlidingWindowFunction(std::stringstream &ss,
     ss << "    if (fCount == 0.0)\n";
     ss << "        return DBL_MAX;\n";
     ss << "    else\n";
-    ss << "        return vSum * pow(fCount,-1.0);\n";
+    ss << "        return vSum / fCount;\n";
     ss << "}\n";
 }
 
@@ -986,7 +986,7 @@ void OpTDist::BinInlineFun(std::set<std::string>& decls,
     decls.insert(GetTDistDecl);
     funs.insert(GetTDist);
 }
-void OpTDist::GenSlidingWindowFunction(std::stringstream &ss,
+void OpTDist::GenSlidingWindowFunction(outputstream &ss,
             const std::string &sSymName, SubArguments &vSubArguments)
 {
     ss << "\ndouble " << sSymName;
@@ -1120,7 +1120,7 @@ void OpTDist::GenSlidingWindowFunction(std::stringstream &ss,
     ss << "        return 2.0 * R;\n";
     ss << "}\n";
 }
-void OpExponDist::GenSlidingWindowFunction(std::stringstream &ss,
+void OpExponDist::GenSlidingWindowFunction(outputstream &ss,
         const std::string &sSymName, SubArguments &vSubArguments)
 {
     ss << "\ndouble " << sSymName;
@@ -1207,7 +1207,7 @@ void OpFdist::BinInlineFun(std::set<std::string>& decls,
     funs.insert(GetLogBeta);
     funs.insert(lcl_getLanczosSum);
 }
-void OpFdist::GenSlidingWindowFunction(std::stringstream &ss,
+void OpFdist::GenSlidingWindowFunction(outputstream &ss,
         const std::string &sSymName, SubArguments &vSubArguments)
 {
     ss << "\ndouble " << sSymName;
@@ -1268,7 +1268,7 @@ void OpFdist::GenSlidingWindowFunction(std::stringstream &ss,
     ss <<"}";
 }
 
-void OpStandard::GenSlidingWindowFunction(std::stringstream &ss,
+void OpStandard::GenSlidingWindowFunction(outputstream &ss,
             const std::string &sSymName, SubArguments &vSubArguments)
 {
     ss << "\ndouble " << sSymName;
@@ -1389,13 +1389,14 @@ void OpStandard::GenSlidingWindowFunction(std::stringstream &ss,
     ss << "    if(sigma <= 0.0)\n";
     ss << "        return DBL_MAX;\n";
     ss << "    else\n";
-    ss << "        return (x - mu)*pow(sigma,-1.0);\n";
+    ss << "        return (x - mu)/sigma;\n";
     ss << "}";
 }
 
-void OpWeibull::GenSlidingWindowFunction(std::stringstream &ss,
+void OpWeibull::GenSlidingWindowFunction(outputstream &ss,
             const std::string &sSymName, SubArguments &vSubArguments)
 {
+    CHECK_PARAMETER_COUNT( 4, 4 );
     ss << "\ndouble " << sSymName;
     ss << "_" << BinFuncName() << "(";
     for (size_t i = 0; i < vSubArguments.size(); i++)
@@ -1555,7 +1556,7 @@ void OpWeibull::GenSlidingWindowFunction(std::stringstream &ss,
     ss << "}\n";
 }
 
-void OpSkew::GenSlidingWindowFunction(std::stringstream &ss,
+void OpSkew::GenSlidingWindowFunction(outputstream &ss,
             const std::string &sSymName, SubArguments &vSubArguments)
 {
     ss << "\ndouble " << sSymName;
@@ -1653,7 +1654,7 @@ void OpSkew::GenSlidingWindowFunction(std::stringstream &ss,
             ss << "    if(fCount <= 2.0)\n";
             ss << "        return DBL_MAX;\n";
             ss << "    else\n";
-            ss << "        fMean = fSum * pow(fCount,-1.0);\n";
+            ss << "        fMean = fSum / fCount;\n";
         }
     }
     i = vSubArguments.size();
@@ -1727,7 +1728,7 @@ void OpSkew::GenSlidingWindowFunction(std::stringstream &ss,
             ss << "    vSum += (arg - fMean) * (arg - fMean);\n";
         }
     }
-    ss << "    double fStdDev = sqrt(vSum * pow(fCount - 1.0,-1.0));\n";
+    ss << "    double fStdDev = sqrt(vSum / (fCount - 1.0));\n";
     ss << "    double dx = 0.0;\n";
     ss << "    double xcube = 0.0;\n";
     ss << "    if(fStdDev == 0.0)\n";
@@ -1773,7 +1774,7 @@ void OpSkew::GenSlidingWindowFunction(std::stringstream &ss,
                 ss << vSubArguments[i]->GenSlidingWindowDeclRef() << ";\n";
                 ss << "        if (isnan(arg))\n";
                 ss << "            continue;\n";
-                ss << "        dx = (arg - fMean) * pow(fStdDev,-1.0);\n";
+                ss << "        dx = (arg - fMean) / fStdDev;\n";
                 ss << "        xcube = xcube + dx * dx * dx;\n";
                 ss << "    }\n";
             }
@@ -1787,7 +1788,7 @@ void OpSkew::GenSlidingWindowFunction(std::stringstream &ss,
                 ss << vSubArguments[i]->GenSlidingWindowDeclRef() << ";\n";
                 ss << "        if (!isnan(arg))\n";
                 ss << "        {\n";
-                ss << "            dx = (arg - fMean) * pow(fStdDev,-1.0);\n";
+                ss << "            dx = (arg - fMean) / fStdDev;\n";
                 ss << "            xcube = xcube + dx * dx * dx;\n";
                 ss << "        }\n";
                 ss << "    }\n";
@@ -1795,7 +1796,7 @@ void OpSkew::GenSlidingWindowFunction(std::stringstream &ss,
             else
             {
                 ss << "    arg = " << pCur->GetDouble() << ";\n";
-                ss << "    dx = (arg - fMean) * pow(fStdDev,-1.0);\n";
+                ss << "    dx = (arg - fMean) / fStdDev;\n";
                 ss << "    xcube = xcube + dx * dx * dx;\n";
             }
         }
@@ -1803,16 +1804,16 @@ void OpSkew::GenSlidingWindowFunction(std::stringstream &ss,
         {
             ss << "    arg = ";
             ss << vSubArguments[i]->GenSlidingWindowDeclRef() << ";\n";
-            ss << "    dx = (arg - fMean) * pow(fStdDev,-1.0);\n";
+            ss << "    dx = (arg - fMean) / fStdDev;\n";
             ss << "    xcube = xcube + dx * dx * dx;\n";
         }
     }
-    ss << "    return ((xcube * fCount) * pow(fCount - 1.0,-1.0))";
-    ss << " * pow(fCount - 2.0,-1.0);\n";
+    ss << "    return ((xcube * fCount) / (fCount - 1.0))";
+    ss << " / (fCount - 2.0);\n";
     ss << "}\n";
 }
 
-void OpSkewp::GenSlidingWindowFunction(std::stringstream &ss,
+void OpSkewp::GenSlidingWindowFunction(outputstream &ss,
             const std::string &sSymName, SubArguments &vSubArguments)
 {
     ss << "\ndouble " << sSymName;
@@ -1910,7 +1911,7 @@ void OpSkewp::GenSlidingWindowFunction(std::stringstream &ss,
             ss << "    if(fCount <= 2.0)\n";
             ss << "        return DBL_MAX;\n";
             ss << "    else\n";
-            ss << "        fMean = fSum * pow(fCount,-1.0);\n";
+            ss << "        fMean = fSum / fCount;\n";
         }
     }
     i = vSubArguments.size();
@@ -1984,7 +1985,7 @@ void OpSkewp::GenSlidingWindowFunction(std::stringstream &ss,
             ss << "    vSum += (arg - fMean) * (arg - fMean);\n";
         }
     }
-    ss << "    double fStdDev = sqrt(vSum * pow(fCount,-1.0));\n";
+    ss << "    double fStdDev = sqrt(vSum / fCount);\n";
     ss << "    double dx = 0.0;\n";
     ss << "    double xcube = 0.0;\n";
     ss << "    if(fStdDev == 0.0)\n";
@@ -2030,7 +2031,7 @@ void OpSkewp::GenSlidingWindowFunction(std::stringstream &ss,
                 ss << vSubArguments[i]->GenSlidingWindowDeclRef() << ";\n";
                 ss << "        if (isnan(arg))\n";
                 ss << "            continue;\n";
-                ss << "        dx = (arg - fMean) * pow(fStdDev,-1.0);\n";
+                ss << "        dx = (arg - fMean) / fStdDev;\n";
                 ss << "        xcube = xcube + dx * dx * dx;\n";
                 ss << "    }\n";
             }
@@ -2044,7 +2045,7 @@ void OpSkewp::GenSlidingWindowFunction(std::stringstream &ss,
                 ss << vSubArguments[i]->GenSlidingWindowDeclRef() << ";\n";
                 ss << "        if (!isnan(arg))\n";
                 ss << "        {\n";
-                ss << "            dx = (arg - fMean) * pow(fStdDev,-1.0);\n";
+                ss << "            dx = (arg - fMean) / fStdDev;\n";
                 ss << "            xcube = xcube + dx * dx * dx;\n";
                 ss << "        }\n";
                 ss << "    }\n";
@@ -2052,7 +2053,7 @@ void OpSkewp::GenSlidingWindowFunction(std::stringstream &ss,
             else
             {
                 ss << "    arg = " << pCur->GetDouble() << ";\n";
-                ss << "    dx = (arg - fMean) * pow(fStdDev,-1.0);\n";
+                ss << "    dx = (arg - fMean) / fStdDev;\n";
                 ss << "    xcube = xcube + dx * dx * dx;\n";
             }
         }
@@ -2060,11 +2061,11 @@ void OpSkewp::GenSlidingWindowFunction(std::stringstream &ss,
         {
             ss << "    arg = ";
             ss << vSubArguments[i]->GenSlidingWindowDeclRef() << ";\n";
-            ss << "    dx = (arg - fMean) * pow(fStdDev,-1.0);\n";
+            ss << "    dx = (arg - fMean) / fStdDev;\n";
             ss << "    xcube = xcube + dx * dx * dx;\n";
         }
     }
-    ss << "    return xcube * pow(fCount,-1.0);\n";
+    ss << "    return xcube / fCount;\n";
     ss << "}\n";
 }
 
@@ -2097,7 +2098,7 @@ void OpTInv::BinInlineFun(std::set<std::string>& decls,
     funs.insert(lcl_IterateInverse);
 }
 
-void OpTInv::GenSlidingWindowFunction(std::stringstream &ss,
+void OpTInv::GenSlidingWindowFunction(outputstream &ss,
             const std::string &sSymName, SubArguments &vSubArguments)
 {
     ss << "\ndouble " << sSymName;
@@ -2195,7 +2196,7 @@ void OpTInv::GenSlidingWindowFunction(std::stringstream &ss,
     ss << "}\n";
 }
 
-void OpStDev::GenSlidingWindowFunction(std::stringstream &ss,
+void OpStDev::GenSlidingWindowFunction(outputstream &ss,
             const std::string &sSymName, SubArguments &vSubArguments)
 {
     ss << "\ndouble " << sSymName;
@@ -2289,7 +2290,7 @@ void OpStDev::GenSlidingWindowFunction(std::stringstream &ss,
         }
         if (i == 0)
         {
-            ss << "    fMean = fSum * pow(fCount,-1.0);\n";
+            ss << "    fMean = fSum / fCount;\n";
         }
     }
     i = vSubArguments.size();
@@ -2365,11 +2366,11 @@ void OpStDev::GenSlidingWindowFunction(std::stringstream &ss,
     ss << "    if (fCount <= 1.0)\n";
     ss << "        return DBL_MAX;\n";
     ss << "    else\n";
-    ss << "        return sqrt(vSum * pow(fCount - 1.0,-1.0));\n";
+    ss << "        return sqrt(vSum / (fCount - 1.0));\n";
     ss << "}\n";
 }
 
-void OpStDevP::GenSlidingWindowFunction(std::stringstream &ss,
+void OpStDevP::GenSlidingWindowFunction(outputstream &ss,
             const std::string &sSymName, SubArguments &vSubArguments)
 {
     ss << "\ndouble " << sSymName;
@@ -2464,7 +2465,7 @@ void OpStDevP::GenSlidingWindowFunction(std::stringstream &ss,
         }
         if (i == 0)
         {
-            ss << "    fMean = fSum * pow(fCount,-1.0);\n";
+            ss << "    fMean = fSum / fCount;\n";
         }
     }
     i = vSubArguments.size();
@@ -2541,11 +2542,11 @@ void OpStDevP::GenSlidingWindowFunction(std::stringstream &ss,
     ss << "    if (fCount == 0.0)\n";
     ss << "        return DBL_MAX;\n";
     ss << "    else\n";
-    ss << "        return sqrt(vSum * pow(fCount,-1.0));\n";
+    ss << "        return sqrt(vSum / fCount);\n";
     ss << "}\n";
 }
 
-void OpSlope::GenSlidingWindowFunction(std::stringstream &ss,
+void OpSlope::GenSlidingWindowFunction(outputstream &ss,
             const std::string &sSymName, SubArguments &vSubArguments)
 {
     CHECK_PARAMETER_COUNT(2,2);
@@ -2572,123 +2573,124 @@ void OpSlope::GenSlidingWindowFunction(std::stringstream &ss,
     FormulaToken *pCur1 = vSubArguments[0]->GetFormulaToken();
     assert(pCur);
     assert(pCur1);
-    if (pCur->GetType() != formula::svDoubleVectorRef ||
-        pCur1->GetType() != formula::svDoubleVectorRef)
+    if (pCur->GetType() == formula::svDoubleVectorRef&&
+        pCur1->GetType() == formula::svDoubleVectorRef)
     {
-        throw Unhandled(__FILE__, __LINE__);
-    }
+        const formula::DoubleVectorRefToken* pDVR =
+            static_cast<const formula::DoubleVectorRefToken *>(pCur);
+        const formula::DoubleVectorRefToken* pDVR1 =
+            static_cast<const formula::DoubleVectorRefToken *>(pCur1);
 
-    const formula::DoubleVectorRefToken* pDVR =
-        static_cast<const formula::DoubleVectorRefToken *>(pCur);
-    const formula::DoubleVectorRefToken* pDVR1 =
-        static_cast<const formula::DoubleVectorRefToken *>(pCur1);
+        size_t nCurWindowSize = pDVR->GetRefRowSize();
+        size_t nCurWindowSize1 = pDVR1->GetRefRowSize();
+        size_t arrayLength = pDVR->GetArrayLength()<
+               pDVR1->GetArrayLength() ? pDVR->GetArrayLength():
+                    pDVR1->GetArrayLength();
+        if(nCurWindowSize != nCurWindowSize1)
+            throw Unhandled(__FILE__, __LINE__);
+        ss << "    for (int i = ";
+        if ((!pDVR->IsStartFixed() && pDVR->IsEndFixed())
+            &&(!pDVR1->IsStartFixed() && pDVR1->IsEndFixed()))
+        {
+            ss << "gid0; i < " << arrayLength;
+            ss << " && i < " << nCurWindowSize  << "; i++)\n";
+            ss << "    {\n";
+        }
+        else if ((pDVR->IsStartFixed() && !pDVR->IsEndFixed())
+            &&(pDVR1->IsStartFixed() && !pDVR1->IsEndFixed()))
+        {
+            ss << "0; i < " << arrayLength ;
+            ss << " && i < gid0+" << nCurWindowSize << "; i++)\n";
+            ss << "    {\n";
+        }
+        else if ((!pDVR->IsStartFixed() && !pDVR->IsEndFixed())
+            &&(!pDVR1->IsStartFixed() && !pDVR1->IsEndFixed()))
+        {
+            ss << "0; i + gid0 < " << arrayLength;
+            ss << " &&  i < " << nCurWindowSize << "; i++)\n";
+            ss << "    {\n";
+        }
+        else if ((pDVR->IsStartFixed() && pDVR->IsEndFixed())
+            &&(pDVR1->IsStartFixed() && pDVR1->IsEndFixed()))
+        {
+            ss << "0; i < " << arrayLength << "; i++)\n";
+            ss << "    {\n";
+        }
+        else
+        {
+            throw Unhandled(__FILE__, __LINE__);
+        }
 
-    size_t nCurWindowSize = pDVR->GetRefRowSize();
-    size_t nCurWindowSize1 = pDVR1->GetRefRowSize();
-    size_t arrayLength = pDVR->GetArrayLength()<
-           pDVR1->GetArrayLength() ? pDVR->GetArrayLength():
-                pDVR1->GetArrayLength();
-    if(nCurWindowSize != nCurWindowSize1)
-        throw Unhandled(__FILE__, __LINE__);
-    ss << "    for (int i = ";
-    if ((!pDVR->IsStartFixed() && pDVR->IsEndFixed())
-        &&(!pDVR1->IsStartFixed() && pDVR1->IsEndFixed()))
-    {
-        ss << "gid0; i < " << arrayLength;
-        ss << " && i < " << nCurWindowSize  << "; i++)\n";
+        ss << "        argX = ";
+        ss << vSubArguments[1]->GenSlidingWindowDeclRef() << ";\n";
+        ss << "        argY = ";
+        ss << vSubArguments[0]->GenSlidingWindowDeclRef() << ";\n";
+        ss << "        if (isnan(argX) || isnan(argY))\n";
+        ss << "            continue;\n";
+        ss << "        fSumX += argX;\n";
+        ss << "        fSumY += argY;\n";
+        ss << "        fCount += 1.0;\n";
+        ss << "    }\n";
+
+        ss << "    if (fCount < 1.0)\n";
+        ss << "        return CreateDoubleError(NoValue);\n";
+        ss << "    else\n";
         ss << "    {\n";
-    }
-    else if ((pDVR->IsStartFixed() && !pDVR->IsEndFixed())
-        &&(pDVR1->IsStartFixed() && !pDVR1->IsEndFixed()))
-    {
-        ss << "0; i < " << arrayLength ;
-        ss << " && i < gid0+" << nCurWindowSize << "; i++)\n";
-        ss << "    {\n";
-    }
-    else if ((!pDVR->IsStartFixed() && !pDVR->IsEndFixed())
-        &&(!pDVR1->IsStartFixed() && !pDVR1->IsEndFixed()))
-    {
-        ss << "0; i + gid0 < " << arrayLength;
-        ss << " &&  i < " << nCurWindowSize << "; i++)\n";
-        ss << "    {\n";
-    }
-    else if ((pDVR->IsStartFixed() && pDVR->IsEndFixed())
-        &&(pDVR1->IsStartFixed() && pDVR1->IsEndFixed()))
-    {
-        ss << "0; i < " << arrayLength << "; i++)\n";
-        ss << "    {\n";
+        ss << "        fMeanX = fSumX / fCount;\n";
+        ss << "        fMeanY = fSumY / fCount;\n";
+
+        ss << "        for (int i = ";
+        if ((!pDVR->IsStartFixed() && pDVR->IsEndFixed())
+            &&(!pDVR1->IsStartFixed() && pDVR1->IsEndFixed()))
+        {
+            ss << "gid0; i < " << arrayLength;
+            ss << " && i < " << nCurWindowSize  << "; i++)\n";
+            ss << "        {\n";
+        }
+        else if ((pDVR->IsStartFixed() && !pDVR->IsEndFixed())
+            &&(pDVR1->IsStartFixed() && !pDVR1->IsEndFixed()))
+        {
+            ss << "0; i < " << arrayLength ;
+            ss << " && i < gid0+" << nCurWindowSize << "; i++)\n";
+            ss << "        {\n";
+        }
+        else if ((!pDVR->IsStartFixed() && !pDVR->IsEndFixed())
+            &&(!pDVR1->IsStartFixed() && !pDVR1->IsEndFixed()))
+        {
+            ss << "0; i + gid0 < " << arrayLength;
+            ss << " &&  i < " << nCurWindowSize << "; i++)\n";
+            ss << "        {\n";
+        }
+        else
+        {
+            ss << "0; i < " << arrayLength << "; i++)\n";
+            ss << "        {\n";
+        }
+
+        ss << "            argX = ";
+        ss << vSubArguments[1]->GenSlidingWindowDeclRef() << ";\n";
+        ss << "            argY = ";
+        ss << vSubArguments[0]->GenSlidingWindowDeclRef() << ";\n";
+        ss << "            if (isnan(argX) || isnan(argY))\n";
+        ss << "                 continue;\n";
+        ss << "            fSumDeltaXDeltaY += (argX-fMeanX)*(argY-fMeanY);\n";
+        ss << "            fSumSqrDeltaX += (argX-fMeanX) * (argX-fMeanX);\n";
+        ss << "        }\n";
+        ss << "        if(fSumSqrDeltaX == 0.0)\n";
+        ss << "            return CreateDoubleError(DivisionByZero);\n";
+        ss << "        else\n";
+        ss << "        {\n";
+        ss << "            return fSumDeltaXDeltaY / fSumSqrDeltaX;\n";
+        ss << "        }\n";
+        ss << "    }\n";
+        ss << "}\n";
     }
     else
     {
         throw Unhandled(__FILE__, __LINE__);
     }
-
-    ss << "        argX = ";
-    ss << vSubArguments[1]->GenSlidingWindowDeclRef() << ";\n";
-    ss << "        argY = ";
-    ss << vSubArguments[0]->GenSlidingWindowDeclRef() << ";\n";
-    ss << "        if (isnan(argX) || isnan(argY))\n";
-    ss << "            continue;\n";
-    ss << "        fSumX += argX;\n";
-    ss << "        fSumY += argY;\n";
-    ss << "        fCount += 1.0;\n";
-    ss << "    }\n";
-
-    ss << "    if (fCount < 1.0)\n";
-    ss << "        return CreateDoubleError(NoValue);\n";
-    ss << "    else\n";
-    ss << "    {\n";
-    ss << "        fMeanX = fSumX * pow(fCount,-1.0);\n";
-    ss << "        fMeanY = fSumY * pow(fCount,-1.0);\n";
-
-    ss << "        for (int i = ";
-    if ((!pDVR->IsStartFixed() && pDVR->IsEndFixed())
-        &&(!pDVR1->IsStartFixed() && pDVR1->IsEndFixed()))
-    {
-        ss << "gid0; i < " << arrayLength;
-        ss << " && i < " << nCurWindowSize  << "; i++)\n";
-        ss << "        {\n";
-    }
-    else if ((pDVR->IsStartFixed() && !pDVR->IsEndFixed())
-        &&(pDVR1->IsStartFixed() && !pDVR1->IsEndFixed()))
-    {
-        ss << "0; i < " << arrayLength ;
-        ss << " && i < gid0+" << nCurWindowSize << "; i++)\n";
-        ss << "        {\n";
-    }
-    else if ((!pDVR->IsStartFixed() && !pDVR->IsEndFixed())
-        &&(!pDVR1->IsStartFixed() && !pDVR1->IsEndFixed()))
-    {
-        ss << "0; i + gid0 < " << arrayLength;
-        ss << " &&  i < " << nCurWindowSize << "; i++)\n";
-        ss << "        {\n";
-    }
-    else
-    {
-        ss << "0; i < " << arrayLength << "; i++)\n";
-        ss << "        {\n";
-    }
-
-    ss << "            argX = ";
-    ss << vSubArguments[1]->GenSlidingWindowDeclRef() << ";\n";
-    ss << "            argY = ";
-    ss << vSubArguments[0]->GenSlidingWindowDeclRef() << ";\n";
-    ss << "            if (isnan(argX) || isnan(argY))\n";
-    ss << "                 continue;\n";
-    ss << "            fSumDeltaXDeltaY += (argX-fMeanX)*(argY-fMeanY);\n";
-    ss << "            fSumSqrDeltaX += (argX-fMeanX) * (argX-fMeanX);\n";
-    ss << "        }\n";
-    ss << "        if(fSumSqrDeltaX == 0.0)\n";
-    ss << "            return CreateDoubleError(DivisionByZero);\n";
-    ss << "        else\n";
-    ss << "        {\n";
-    ss << "            return fSumDeltaXDeltaY*pow(fSumSqrDeltaX,-1.0);\n";
-    ss << "        }\n";
-    ss << "    }\n";
-    ss << "}\n";
-
 }
-void OpSTEYX::GenSlidingWindowFunction(std::stringstream &ss,
+void OpSTEYX::GenSlidingWindowFunction(outputstream &ss,
             const std::string &sSymName, SubArguments &vSubArguments)
 {
     ss << "\ndouble " << sSymName;
@@ -2787,8 +2789,8 @@ void OpSTEYX::GenSlidingWindowFunction(std::stringstream &ss,
         ss << "        return DBL_MAX;\n";
         ss << "    else\n";
         ss << "    {\n";
-        ss << "        fMeanX = fSumX * pow(fCount,-1.0);\n";
-        ss << "        fMeanY = fSumY * pow(fCount,-1.0);\n";
+        ss << "        fMeanX = fSumX / fCount;\n";
+        ss << "        fMeanY = fSumY / fCount;\n";
 
         ss << "        for (int i = ";
         if ((!pDVR->IsStartFixed() && pDVR->IsEndFixed())
@@ -2833,8 +2835,8 @@ void OpSTEYX::GenSlidingWindowFunction(std::stringstream &ss,
         ss << "        else\n";
         ss << "        {\n";
         ss << "            return sqrt((fSumSqrDeltaY - fSumDeltaXDeltaY * \n";
-        ss << "                   fSumDeltaXDeltaY*pow(fSumSqrDeltaX,-1.0))\n";
-        ss << "                   *pow(fCount - 2.0,-1.0));\n";
+        ss << "                   fSumDeltaXDeltaY / fSumSqrDeltaX)\n";
+        ss << "                   /(fCount - 2.0));\n";
         ss << "        }\n";
         ss << "    }\n";
         ss << "}\n";
@@ -2846,7 +2848,7 @@ void OpSTEYX::GenSlidingWindowFunction(std::stringstream &ss,
     }
 }
 void OpFisher::GenSlidingWindowFunction(
-    std::stringstream &ss, const std::string &sSymName, SubArguments &
+    outputstream &ss, const std::string &sSymName, SubArguments &
 vSubArguments)
 {
     ss << "\ndouble " << sSymName;
@@ -2892,13 +2894,13 @@ vSubArguments)
     }
     ss << "    if (fabs(arg0) >= 1.0)\n";
     ss << "        return DBL_MAX;\n";
-    ss << "    double tmp=0.5*log((1+arg0)*pow((1-arg0),-1));\n";
+    ss << "    double tmp=0.5*log((1+arg0)/(1-arg0));\n";
     ss << "    return tmp;\n";
     ss << "}\n";
 }
 
 void OpFisherInv::GenSlidingWindowFunction(
-    std::stringstream &ss, const std::string &sSymName, SubArguments &vSubArguments)
+    outputstream &ss, const std::string &sSymName, SubArguments &vSubArguments)
 {
     FormulaToken *tmpCur = vSubArguments[0]->GetFormulaToken();
     const formula::SingleVectorRefToken*tmpCurDVR = static_cast<const
@@ -2925,7 +2927,7 @@ void OpFisherInv::GenSlidingWindowFunction(
 }
 
 void OpGamma::GenSlidingWindowFunction(
-    std::stringstream &ss, const std::string &sSymName, SubArguments &vSubArguments)
+    outputstream &ss, const std::string &sSymName, SubArguments &vSubArguments)
 {
     ss << "\ndouble " << sSymName;
     ss << "_"<< BinFuncName() <<"(";
@@ -2945,7 +2947,7 @@ void OpGamma::GenSlidingWindowFunction(
 }
 
 void OpCorrel::GenSlidingWindowFunction(
-    std::stringstream &ss, const std::string &sSymName, SubArguments &vSubArguments)
+    outputstream &ss, const std::string &sSymName, SubArguments &vSubArguments)
 {
     if( vSubArguments.size() !=2 ||vSubArguments[0]->GetFormulaToken()
         ->GetType() != formula::svDoubleVectorRef||vSubArguments[1]
@@ -3142,7 +3144,7 @@ void OpCorrel::GenSlidingWindowFunction(
 }
 
 void OpNegbinomdist::GenSlidingWindowFunction(
-    std::stringstream &ss, const std::string &sSymName, SubArguments &vSubArguments)
+    outputstream &ss, const std::string &sSymName, SubArguments &vSubArguments)
 {
     ss << "\ndouble " << sSymName;
     ss << "_"<< BinFuncName() <<"(";
@@ -3204,7 +3206,7 @@ void OpNegbinomdist::GenSlidingWindowFunction(
 }
 
 void OpPearson::GenSlidingWindowFunction(
-    std::stringstream &ss, const std::string &sSymName, SubArguments &vSubArguments)
+    outputstream &ss, const std::string &sSymName, SubArguments &vSubArguments)
 {
     if( vSubArguments.size() !=2 ||vSubArguments[0]->GetFormulaToken()
         ->GetType() != formula::svDoubleVectorRef||vSubArguments[1]
@@ -3301,7 +3303,7 @@ void OpPearson::GenSlidingWindowFunction(
 }
 
 void OpGammaLn::GenSlidingWindowFunction(
-    std::stringstream &ss, const std::string &sSymName, SubArguments &vSubArguments)
+    outputstream &ss, const std::string &sSymName, SubArguments &vSubArguments)
 {
     FormulaToken *tmpCur = vSubArguments[0]->GetFormulaToken();
     const formula::SingleVectorRefToken*tmpCurDVR= static_cast<const
@@ -3336,7 +3338,7 @@ void OpGauss::BinInlineFun(std::set<std::string>& decls,
 }
 
 void OpGauss::GenSlidingWindowFunction(
-    std::stringstream &ss, const std::string &sSymName, SubArguments &
+    outputstream &ss, const std::string &sSymName, SubArguments &
 vSubArguments)
 {
     ss << "\ndouble " << sSymName;
@@ -3386,7 +3388,7 @@ vSubArguments)
 }
 
 void OpGeoMean::GenSlidingWindowFunction(
-    std::stringstream &ss, const std::string &sSymName, SubArguments &vSubArguments)
+    outputstream &ss, const std::string &sSymName, SubArguments &vSubArguments)
 {
     ss << "__kernel void ";
     ss << "GeoMean_reduction(  ";
@@ -3551,7 +3553,7 @@ void OpGeoMean::GenSlidingWindowFunction(
 }
 
 void OpHarMean::GenSlidingWindowFunction(
-    std::stringstream &ss, const std::string &sSymName, SubArguments &
+    outputstream &ss, const std::string &sSymName, SubArguments &
 vSubArguments)
 {
 
@@ -3606,7 +3608,7 @@ vSubArguments)
             ss << ";\n";
             ss << "    if(!isnan(tmp))\n";
             ss << "    {\n";
-            ss << "        nVal += (1.0 * pow( tmp,-1));\n";
+            ss << "        nVal += (1.0 / tmp);\n";
             ss << "        totallength +=1;\n";
             ss << "    }\n";
         }
@@ -3615,7 +3617,7 @@ vSubArguments)
            ss << "    tmp = ";
            ss << vSubArguments[i]->GenSlidingWindowDeclRef();
            ss << ";\n";
-           ss << "    nVal += (1.0 *pow( tmp,-1));\n";
+           ss << "    nVal += (1.0 / tmp);\n";
            ss << "    totallength +=1;\n";
         }
         else
@@ -3623,7 +3625,7 @@ vSubArguments)
             ss << "    return DBL_MIN;\n";
         }
     }
-    ss << "    tmp = totallength*pow(nVal,-1);\n";
+    ss << "    tmp = totallength/nVal;\n";
     ss << "    return tmp;\n";
     ss << "}";
 }
@@ -3635,7 +3637,7 @@ void OpConfidence::BinInlineFun(std::set<std::string>& decls,
     funs.insert(gaussinv);
 }
 
-void OpConfidence::GenSlidingWindowFunction(std::stringstream& ss,
+void OpConfidence::GenSlidingWindowFunction(outputstream& ss,
     const std::string &sSymName, SubArguments& vSubArguments)
 {
     ss << "\ndouble " << sSymName;
@@ -3694,8 +3696,7 @@ void OpConfidence::GenSlidingWindowFunction(std::stringstream& ss,
     ss << "|| rn < 1.0)\n";
     ss << "        tmp = -DBL_MAX;\n";
     ss << "    else\n";
-    ss << "        tmp = gaussinv(1.0 - alpha * pow(2.0,-1.0)) * sigma ";
-    ss << "* pow(sqrt( rn ),-1);\n";
+    ss << "        tmp = gaussinv(1.0 - alpha / 2.0) * sigma / sqrt( rn );\n";
     ss << "    return tmp;\n";
     ss << "}";
 }
@@ -3707,7 +3708,7 @@ void OpCritBinom::BinInlineFun(std::set<std::string>& decls,
     funs.insert("");
 }
 
-void OpCritBinom::GenSlidingWindowFunction(std::stringstream& ss,
+void OpCritBinom::GenSlidingWindowFunction(outputstream& ss,
     const std::string &sSymName, SubArguments& vSubArguments)
 {
     ss << "\ndouble " << sSymName;
@@ -3780,8 +3781,7 @@ void OpCritBinom::GenSlidingWindowFunction(std::stringstream& ss,
     ss << "                uint max =(uint)(rn), i;\n";
     ss << "                for (i = 0; i < max && fSum >= alpha; i++)\n";
     ss << "                {\n";
-    ss << " fFactor *= (rn - i) * pow((double)(i + 1),-1.0) *";
-    ss << " rq * pow(p, -1.0);\n";
+    ss << " fFactor *= (rn - i) / (double)(i + 1) * rq / p;\n";
     ss << "                    fSum -= fFactor;\n";
     ss << "                }\n";
     ss << "                tmp = (rn - i);\n";
@@ -3793,8 +3793,8 @@ void OpCritBinom::GenSlidingWindowFunction(std::stringstream& ss,
     ss << "            uint max = (uint)(rn), i;\n";
     ss << "            for (i = 0; i < max && fSum < alpha; i++)\n";
     ss << "            {\n";
-    ss << " fFactor *= (rn - i) * pow((double)(i + 1), -1.0) *";
-    ss << " p * pow(rq, -1.0);\n";
+    ss << " fFactor *= (rn - i) / (double)(i + 1) *";
+    ss << " p / rq;\n";
     ss << "                fSum += fFactor;\n";
     ss << "            }\n";
     ss << "            tmp = (i);\n";
@@ -3805,7 +3805,7 @@ void OpCritBinom::GenSlidingWindowFunction(std::stringstream& ss,
 }
 
 void OpRsq::GenSlidingWindowFunction(
-    std::stringstream &ss, const std::string &sSymName, SubArguments &vSubArguments)
+    outputstream &ss, const std::string &sSymName, SubArguments &vSubArguments)
 {
     if( vSubArguments.size() !=2 ||vSubArguments[0]->GetFormulaToken()
         ->GetType() != formula::svDoubleVectorRef||vSubArguments[1]
@@ -3916,7 +3916,7 @@ void OpChiInv::BinInlineFun(std::set<std::string>& decls,
     funs.insert(GetGammaSeries);
 }
 void OpChiInv::GenSlidingWindowFunction(
-    std::stringstream &ss,const std::string &sSymName,
+    outputstream &ss,const std::string &sSymName,
     SubArguments &vSubArguments)
 {
     ss << "\ndouble " << sSymName;
@@ -3996,7 +3996,7 @@ void OpChiInv::GenSlidingWindowFunction(
     ss << "}\n";
 }
 void OpNormdist::GenSlidingWindowFunction(
-    std::stringstream &ss, const std::string &sSymName,
+    outputstream &ss, const std::string &sSymName,
     SubArguments &vSubArguments)
 {
     CHECK_PARAMETER_COUNT(3,4);
@@ -4062,7 +4062,7 @@ void OpNormdist::GenSlidingWindowFunction(
     ss << "}\n";
 }
 void OpNormsdist::GenSlidingWindowFunction(
-    std::stringstream &ss,const std::string &sSymName,
+    outputstream &ss,const std::string &sSymName,
     SubArguments &vSubArguments)
 {
     ss << "\ndouble " << sSymName;
@@ -4117,7 +4117,7 @@ void OpNormsdist::GenSlidingWindowFunction(
 }
 
 void OpPermut::GenSlidingWindowFunction(
-    std::stringstream &ss,const std::string &sSymName,
+    outputstream &ss,const std::string &sSymName,
     SubArguments &vSubArguments)
 {
     ss << "\ndouble " << sSymName;
@@ -4179,7 +4179,7 @@ void OpPermut::GenSlidingWindowFunction(
     ss << "}\n";
 }
 void OpPermutationA::GenSlidingWindowFunction(
-    std::stringstream &ss,const std::string &sSymName,
+    outputstream &ss,const std::string &sSymName,
     SubArguments &vSubArguments)
 {
     ss << "\ndouble " << sSymName;
@@ -4228,7 +4228,7 @@ void OpPermutationA::GenSlidingWindowFunction(
 }
 
 void OpPhi::GenSlidingWindowFunction(
-    std::stringstream &ss,const std::string &sSymName,
+    outputstream &ss,const std::string &sSymName,
     SubArguments &vSubArguments)
 {
     ss << "\ndouble " << sSymName;
@@ -4283,7 +4283,7 @@ void OpPhi::GenSlidingWindowFunction(
 }
 
 void OpNorminv::GenSlidingWindowFunction(
-    std::stringstream &ss,const std::string &sSymName,
+    outputstream &ss,const std::string &sSymName,
     SubArguments &vSubArguments)
 {
     ss << "\ndouble " << sSymName;
@@ -4495,7 +4495,7 @@ void OpNorminv::GenSlidingWindowFunction(
     ss<<"}\n";
 }
 void OpNormsinv:: GenSlidingWindowFunction
-    (std::stringstream &ss,const std::string &sSymName,
+    (outputstream &ss,const std::string &sSymName,
     SubArguments &vSubArguments)
 {
     ss << "\ndouble " << sSymName;
@@ -4704,7 +4704,7 @@ void OpNormsinv:: GenSlidingWindowFunction
     ss <<"}\n";
 }
 void OpMedian::GenSlidingWindowFunction(
-    std::stringstream &ss, const std::string &sSymName,
+    outputstream &ss, const std::string &sSymName,
     SubArguments &vSubArguments)
 {
     ss << "\ndouble " << sSymName;
@@ -4768,7 +4768,7 @@ void OpMedian::GenSlidingWindowFunction(
     ss <<"     return tmp;\n";
     ss << "}\n";
 }
-void OpKurt:: GenSlidingWindowFunction(std::stringstream &ss,
+void OpKurt:: GenSlidingWindowFunction(outputstream &ss,
             const std::string &sSymName, SubArguments &vSubArguments)
 {
     ss << "\ndouble " << sSymName;
@@ -4839,7 +4839,7 @@ void OpKurt:: GenSlidingWindowFunction(std::stringstream &ss,
             ss << "    return DBL_MIN;\n";
         }
     }
-    ss << "    double fMean = fSum * pow(totallength,-1);\n";
+    ss << "    double fMean = fSum / totallength;\n";
     for (size_t i = 0; i < vSubArguments.size(); i++)
     {
         FormulaToken *pCur = vSubArguments[i]->GetFormulaToken();
@@ -4940,7 +4940,7 @@ void OpKurt:: GenSlidingWindowFunction(std::stringstream &ss,
     ss << "}";
 }
 
-void OpIntercept::GenSlidingWindowFunction(std::stringstream &ss,
+void OpIntercept::GenSlidingWindowFunction(outputstream &ss,
             const std::string &sSymName, SubArguments &vSubArguments)
 {
     ss << "\ndouble " << sSymName;
@@ -5045,8 +5045,8 @@ void OpIntercept::GenSlidingWindowFunction(std::stringstream &ss,
         ss << "        return NAN;\n";
         ss << "    else\n";
         ss << "    {\n";
-        ss << "        fMeanX = fSumX * pow(fCount,-1.0);\n";
-        ss << "        fMeanY = fSumY * pow(fCount,-1.0);\n";
+        ss << "        fMeanX = fSumX / fCount;\n";
+        ss << "        fMeanY = fSumY / fCount;\n";
 
         ss << "        for (int i = ";
         if ((!pDVR->IsStartFixed() && pDVR->IsEndFixed())
@@ -5090,7 +5090,7 @@ void OpIntercept::GenSlidingWindowFunction(std::stringstream &ss,
         ss << "        else\n";
         ss << "        {\n";
         ss << "            return fMeanY -";
-        ss << " (fSumDeltaXDeltaY*pow(fSumSqrDeltaX,-1.0))*fMeanX;\n";
+        ss << " (fSumDeltaXDeltaY/fSumSqrDeltaX)*fMeanX;\n";
         ss << "        }\n";
         ss << "    }\n";
         ss << "}\n";
@@ -5101,7 +5101,7 @@ void OpIntercept::GenSlidingWindowFunction(std::stringstream &ss,
         ss << "}\n";
     }
 }
-void OpLogInv:: GenSlidingWindowFunction(std::stringstream &ss,
+void OpLogInv:: GenSlidingWindowFunction(outputstream &ss,
             const std::string &sSymName, SubArguments &vSubArguments)
 {
     ss << "\ndouble " << sSymName;
@@ -5334,7 +5334,7 @@ void OpLogInv:: GenSlidingWindowFunction(std::stringstream &ss,
     ss << "}\n";
 }
 
-void OpForecast::GenSlidingWindowFunction(std::stringstream &ss,
+void OpForecast::GenSlidingWindowFunction(outputstream &ss,
             const std::string &sSymName, SubArguments &vSubArguments)
 {
     FormulaToken *pCur0 = vSubArguments[0]->GetFormulaToken();
@@ -5446,9 +5446,10 @@ void OpForecast::GenSlidingWindowFunction(std::stringstream &ss,
         ss << "}";
     }
 }
-void OpLogNormDist::GenSlidingWindowFunction(std::stringstream &ss,
+void OpLogNormDist::GenSlidingWindowFunction(outputstream &ss,
             const std::string &sSymName, SubArguments &vSubArguments)
 {
+    CHECK_PARAMETER_COUNT(4,4);
     FormulaToken *tmpCur0 = vSubArguments[0]->GetFormulaToken();
     const formula::SingleVectorRefToken*tmpCurDVR0= static_cast<const
         formula::SingleVectorRefToken *>(tmpCur0);
@@ -5571,7 +5572,7 @@ void OpGammaDist::BinInlineFun(std::set<std::string>& decls,
     funs.insert(GetGammaDistPDF);
 }
 
-void OpGammaDist::GenSlidingWindowFunction(std::stringstream &ss,
+void OpGammaDist::GenSlidingWindowFunction(outputstream &ss,
             const std::string &sSymName, SubArguments &vSubArguments)
 {
     ss << "\ndouble " << sSymName;
@@ -5665,7 +5666,7 @@ void OpChiDist::BinInlineFun(std::set<std::string>& decls,
     funs.insert(GetChiDist);
 }
 void OpChiDist::GenSlidingWindowFunction(
-    std::stringstream &ss,const std::string &sSymName,
+    outputstream &ss,const std::string &sSymName,
     SubArguments &vSubArguments)
 {
     ss << "\ndouble " << sSymName;
@@ -5772,7 +5773,7 @@ void OpBinomdist::BinInlineFun(std::set<std::string>& decls,
     funs.insert(lcl_getLanczosSum);
 }
 void OpBinomdist::GenSlidingWindowFunction(
-    std::stringstream &ss,const std::string &sSymName,
+    outputstream &ss,const std::string &sSymName,
     SubArguments &vSubArguments)
 {
     ss << "\ndouble " << sSymName;
@@ -5887,8 +5888,7 @@ void OpBinomdist::GenSlidingWindowFunction(
     ss << "                        for (uint i = 0; i < max && fFactor > 0.0;";
     ss << " i++)\n";
     ss << "                        {\n";
-    ss << "                           fFactor *= (tmp1 - i)*pow((i + 1),-1.0)*";
-    ss << "rq*pow(tmp2,-1.0);\n";
+    ss << "                           fFactor *= (tmp1 - i)/(i + 1)*rq/tmp2;\n";
     ss << "                            fSum -= fFactor;\n";
     ss << "                        }\n";
     ss << "                         return ( (fSum < 0.0) ? 0.0 : fSum );\n";
@@ -5924,7 +5924,7 @@ void OpChiSqDist::BinInlineFun(std::set<std::string>& decls,
 }
 
 void OpChiSqDist::GenSlidingWindowFunction(
-    std::stringstream &ss, const std::string &sSymName, SubArguments &
+    outputstream &ss, const std::string &sSymName, SubArguments &
 vSubArguments)
 {
     ss << "\ndouble " << sSymName;
@@ -6015,7 +6015,7 @@ vSubArguments)
 }
 
 void OpChiSqInv::GenSlidingWindowFunction(
-    std::stringstream &ss, const std::string &sSymName, SubArguments &
+    outputstream &ss, const std::string &sSymName, SubArguments &
 vSubArguments)
 {
     ss << "\ndouble " << sSymName;
@@ -6098,7 +6098,7 @@ void OpGammaInv::BinInlineFun(std::set<std::string>& decls,
     funs.insert(GetGammaInvValue);
 }
 
-void OpGammaInv::GenSlidingWindowFunction(std::stringstream &ss,
+void OpGammaInv::GenSlidingWindowFunction(outputstream &ss,
             const std::string &sSymName, SubArguments &vSubArguments)
 {
     ss << "\ndouble " << sSymName;
@@ -6240,10 +6240,9 @@ void OpGammaInv::GenSlidingWindowFunction(std::stringstream &ss,
     "            {\n"
     "                if (fPy!=fQy && fQy!=fRy && fRy!=fPy)\n"
     "                {\n"
-    "                    fSx = fPx * fRy * fQy *pow( (fRy-fPy),-1) *pow"
-    "( (fQy-fPy),-1)"
-    "+ fRx * fQy * fPy *pow( (fQy-fRy),-1) *pow( (fPy-fRy),-1)"
-    "+ fQx * fPy * fRy *pow( (fPy-fQy),-1) *pow( (fRy-fQy),-1);\n"
+    "                    fSx = fPx * fRy * fQy / (fRy-fPy) / (fQy-fPy)"
+    "+ fRx * fQy * fPy / (fQy-fRy) / (fPy-fRy)"
+    "+ fQx * fPy * fRy / (fPy-fQy) / (fRy-fQy);\n"
     "                    bHasToInterpolate = (fAx < fSx) && (fSx < fBx);\n"
     "                }\n"
     "                else\n"
@@ -6290,7 +6289,7 @@ void OpFInv::BinInlineFun(std::set<std::string>& decls,
     funs.insert(lcl_GetBetaHelperContFrac);funs.insert(GetFInvValue);
 }
 
-void OpFInv::GenSlidingWindowFunction(std::stringstream &ss,
+void OpFInv::GenSlidingWindowFunction(outputstream &ss,
             const std::string &sSymName, SubArguments &vSubArguments)
 {
     ss << "\ndouble " << sSymName;
@@ -6426,10 +6425,10 @@ void OpFInv::GenSlidingWindowFunction(std::stringstream &ss,
     "        {\n"
     "            if (fPy!=fQy && fQy!=fRy && fRy!=fPy)\n"
     "            {\n"
-    "                fSx = fPx * fRy * fQy *pow( (fRy-fPy),-1)"
-    " *pow( (fQy-fPy),-1)+fRx * fQy * fPy*pow( (fQy-fRy),-1) *"
-    "pow( (fPy-fRy),-1)+ fQx * fPy * fRy *pow( (fPy-fQy),-1)"
-    " *pow((fRy-fQy),-1);\n"
+    "                fSx = fPx * fRy * fQy / (fRy-fPy)"
+    " / (fQy-fPy)+fRx * fQy * fPy / (fQy-fRy)"
+    " / (fPy-fRy)+ fQx * fPy * fRy / (fPy-fQy)"
+    " / (fRy-fQy);\n"
     "                bHasToInterpolate = (fAx < fSx) && (fSx < fBx);\n"
     "            }\n"
     "            else\n"
@@ -6474,7 +6473,7 @@ void OpFTest::BinInlineFun(std::set<std::string>& decls,
     funs.insert(lcl_GetBetaHelperContFrac);funs.insert(GetBetaDist);
     funs.insert(GetFDist);
 }
-void OpFTest::GenSlidingWindowFunction(std::stringstream &ss,
+void OpFTest::GenSlidingWindowFunction(outputstream &ss,
             const std::string &sSymName, SubArguments &vSubArguments)
 {
     FormulaToken *pCur = vSubArguments[0]->GetFormulaToken();
@@ -6532,13 +6531,9 @@ void OpFTest::GenSlidingWindowFunction(std::stringstream &ss,
             ss << "    }\n";
         }
         else if (pCurSub->GetType() == formula::svSingleVectorRef)
-        {
-            ss << "return HUGE_VAL";
-        }
+            throw Unhandled(__FILE__, __LINE__);
         else if (pCurSub->GetType() == formula::svDouble)
-        {
-            ss << "return HUGE_VAL";
-        }
+            throw Unhandled(__FILE__, __LINE__);
     }
     ss << "    double fS1 = (fSumSqr1-fSum1*fSum1/length0)/(length0-1.0);\n"
         "    double fS2 = (fSumSqr2-fSum2*fSum2/length1)/(length1-1.0);\n"
@@ -6574,7 +6569,7 @@ void OpB::BinInlineFun(std::set<std::string>& decls,
     funs.insert(lcl_getLanczosSum);funs.insert(GetBeta);
 }
 
-void OpB::GenSlidingWindowFunction(std::stringstream &ss,
+void OpB::GenSlidingWindowFunction(outputstream &ss,
             const std::string &sSymName, SubArguments &vSubArguments)
 {
     ss << "\ndouble " << sSymName;
@@ -6729,7 +6724,7 @@ void OpPoisson::BinInlineFun(std::set<std::string>& decls,
     funs.insert(GetGammaSeries);
 }
 void OpPoisson::GenSlidingWindowFunction(
-    std::stringstream &ss,const std::string &sSymName,
+    outputstream &ss,const std::string &sSymName,
     SubArguments &vSubArguments)
 {
     ss << "\ndouble " << sSymName;
@@ -6798,7 +6793,7 @@ void OpPoisson::GenSlidingWindowFunction(
     ss << "            {\n";
     ss << "                double fPoissonVar = 1.0;\n";
     ss << "                for ( int f = 0; f < x; ++f )\n";
-    ss << "          fPoissonVar *= lambda * pow(( (double)f + 1.0 ),-1);\n";
+    ss << "          fPoissonVar *= lambda / ( (double)f + 1.0 );\n";
     ss << "                tmp = ( fPoissonVar * exp( -lambda ) );\n";
     ss << "                return tmp;\n";
     ss << "            }\n";
@@ -6830,7 +6825,7 @@ void OpPoisson::GenSlidingWindowFunction(
     ss << "                     int nEnd = (int) (x + 0.5);\n";
     ss << "                     for (int i = 1; i <= nEnd; i++)\n";
     ss << "                     {\n";
-    ss << "                fSummand = (fSummand*lambda)*pow((double)i,-1);\n";
+    ss << "                fSummand = (fSummand*lambda)/((double)i);\n";
     ss << "                         fSum += fSummand;\n";
     ss << "                     }\n";
     ss << "                     tmp = fSum;\n";
@@ -6841,7 +6836,7 @@ void OpPoisson::GenSlidingWindowFunction(
     ss << "     }\n";
     ss << "}\n";
 }
-void OpCovar::GenSlidingWindowFunction(std::stringstream& ss,
+void OpCovar::GenSlidingWindowFunction(outputstream& ss,
     const std::string &sSymName, SubArguments& vSubArguments)
 {
         CHECK_PARAMETER_COUNT(2,2);
@@ -6873,192 +6868,193 @@ void OpCovar::GenSlidingWindowFunction(std::stringstream& ss,
             static_cast<const formula::DoubleVectorRefToken* >(pCurY);
         size_t nCurWindowSizeX = pCurDVRX->GetRefRowSize();
         size_t nCurWindowSizeY = pCurDVRY->GetRefRowSize();
-        if(nCurWindowSizeX != nCurWindowSizeY)
+        if(nCurWindowSizeX == nCurWindowSizeY)
+        {
+            ss << "    for( ";
+            if (!pCurDVRX->IsStartFixed() && pCurDVRX->IsEndFixed()) {
+                ss << "int i = gid0; i < " << nCurWindowSizeX;
+                ss << " && i < " << pCurDVRX->GetArrayLength() << " && i < ";
+                ss << pCurDVRY->GetArrayLength() << "; i++){\n";
+                ss << "        if(isnan(";
+                ss << vSubArguments[0]->GenSlidingWindowDeclRef() << ") ||";
+                ss << " isnan("<< vSubArguments[1]->GenSlidingWindowDeclRef();
+                ss << ")) {\n";
+                ss << "            arg0 = 0.0;\n";
+                ss << "            arg1 = 0.0;\n";
+                ss << "            --cnt;\n";
+                ss << "        }\n";
+                ss << "else{\n";
+                ss << "        arg0 = ";
+                ss << vSubArguments[0]->GenSlidingWindowDeclRef() << ";\n";
+                ss << "        arg1 = ";
+                ss << vSubArguments[1]->GenSlidingWindowDeclRef() << ";\n";
+                ss << "}\n";
+                ss << "        ++cnt;\n";
+                ss << "        vSum0 += arg0;\n";
+                ss << "        vSum1 += arg1;\n";
+                ss << "    }\n";
+            }
+            else if (pCurDVRX->IsStartFixed() && !pCurDVRX->IsEndFixed()) {
+                ss << "int i = 0; i < gid0 + " << nCurWindowSizeX << " && ";
+                ss << " i < " << pCurDVRX->GetArrayLength() << " && ";
+                ss << " i < " << pCurDVRY->GetArrayLength() << "; i++) {\n";
+                ss << "        if(isnan(";
+                ss << vSubArguments[0]->GenSlidingWindowDeclRef() << ") ||";
+                ss << " isnan(" << vSubArguments[1]->GenSlidingWindowDeclRef();
+                ss << ")) {\n";
+                ss << "            arg0 = 0.0;\n";
+                ss << "            arg1 = 0.0;\n";
+                ss << "            --cnt;\n";
+                ss << "        }\n";
+                ss << "else{\n";
+                ss << "        arg0 = ";
+                ss << vSubArguments[0]->GenSlidingWindowDeclRef() << ";\n";
+                ss << "        arg1 = ";
+                ss << vSubArguments[1]->GenSlidingWindowDeclRef() << ";}\n";
+                ss << "        ++cnt;\n";
+                ss << "        vSum0 += arg0;\n";
+                ss << "        vSum1 += arg1;\n";
+                ss << "    }\n";
+            }
+            else if (pCurDVRX->IsStartFixed() && pCurDVRX->IsEndFixed()) {
+                ss << "int i = 0; i < " << nCurWindowSizeX << " && i < ";
+                ss << pCurDVRX->GetArrayLength() << " && i < ";
+                ss << pCurDVRY->GetArrayLength() << "; i++) {\n";
+                ss << "        if(isnan(";
+                ss << vSubArguments[0]->GenSlidingWindowDeclRef() << ") ||";
+                ss << " isnan(" << vSubArguments[1]->GenSlidingWindowDeclRef();
+                ss << ")) {\n";
+                ss << "            arg0 = 0.0;\n";
+                ss << "            arg1 = 0.0;\n";
+                ss << "            --cnt;\n";
+                ss << "        }\n";
+                ss << "else{\n";
+                ss << "        arg0 = ";
+                ss << vSubArguments[0]->GenSlidingWindowDeclRef() << ";\n";
+                ss << "        arg1 = ";
+                ss << vSubArguments[1]->GenSlidingWindowDeclRef() << ";}\n";
+                ss << "        ++cnt;\n";
+                ss << "        vSum0 += arg0;\n";
+                ss << "        vSum1 += arg1;\n";
+                ss << "    }\n";
+            }
+            else {
+                ss << "int i = 0; i < " << nCurWindowSizeX << " && ";
+                ss << " i + gid0 < " << pCurDVRX->GetArrayLength();
+                ss << " && i + gid0 < " << pCurDVRY->GetArrayLength();
+                ss << "; i++) {\n";
+                ss << "if ((isnan(";
+                ss << vSubArguments[0]->GenSlidingWindowDeclRef() << ")) || ";
+                ss << "(isnan("<< vSubArguments[1]->GenSlidingWindowDeclRef();
+                ss << ")))  {\n";
+                ss << "            arg0 = 0.0;\n";
+                ss << "            arg1 = 0.0;\n";
+                ss << "            --cnt;\n";
+                ss << "        }\n";
+                ss << "        else {\n";
+                ss << "            arg0 = ";
+                ss << vSubArguments[0]->GenSlidingWindowDeclRef() << ";\n";
+                ss << "            arg1 = ";
+                ss << vSubArguments[1]->GenSlidingWindowDeclRef() << ";\n";
+                ss << "        }\n";
+                ss << "        ++cnt;\n";
+                ss << "        vSum0 += arg0;\n";
+                ss << "        vSum1 += arg1;\n";
+                ss << "    }\n";
+            }
+            ss << "    if(cnt < 1) {\n";
+            ss << "        return CreateDoubleError(NoValue);\n";
+            ss << "    }\n";
+            ss << "    else {\n";
+            ss << "        vMean0 = vSum0 / cnt;\n";
+            ss << "        vMean1 = vSum1 / cnt;\n";
+            ss << "    for(";
+            if (!pCurDVRX->IsStartFixed() && pCurDVRX->IsEndFixed()) {
+                ss << "int i = gid0; i < " << nCurWindowSizeX;
+                ss << " && i < " << pCurDVRX->GetArrayLength() << " && i < ";
+                ss << pCurDVRY->GetArrayLength() << "; i++){\n";
+                ss << "        if(isnan(";
+                ss << vSubArguments[0]->GenSlidingWindowDeclRef() << ") ||";
+                ss << " isnan(" << vSubArguments[1]->GenSlidingWindowDeclRef();
+                ss << ")){\n";
+                ss << "            arg0 = vMean0;\n";
+                ss << "            arg1 = vMean1;\n";
+                ss << "        }\n";
+                ss << "        else{\n";
+                ss << "            arg0 = ";
+                ss << vSubArguments[0]->GenSlidingWindowDeclRef() << ";\n";
+                ss << "            arg1 = ";
+                ss << vSubArguments[1]->GenSlidingWindowDeclRef() << ";}\n";
+                ss << "        vSum += (arg0 - vMean0) * (arg1 - vMean1);\n";
+                ss << "    }\n";
+            }
+            else if (pCurDVRX->IsStartFixed() && !pCurDVRX->IsEndFixed()) {
+                ss << "int i = 0; i < gid0 + " << nCurWindowSizeX << " && ";
+                ss << " i < " << pCurDVRX->GetArrayLength() << " && ";
+                ss << " i < " << pCurDVRY->GetArrayLength() << "; i++) {\n";
+                ss << "        if(isnan(";
+                ss << vSubArguments[0]->GenSlidingWindowDeclRef() << ") || ";
+                ss << "isnan(" << vSubArguments[1]->GenSlidingWindowDeclRef();
+                ss << ")) {\n";
+                ss << "            arg0 = vMean0;\n";
+                ss << "            arg1 = vMean1;\n";
+                ss << "        }\n";
+                ss << "else{\n";
+                ss << "        arg0 = ";
+                ss << vSubArguments[0]->GenSlidingWindowDeclRef() << ";\n";
+                ss << "        arg1 = ";
+                ss << vSubArguments[1]->GenSlidingWindowDeclRef() << ";}\n";
+                ss << "        vSum += (arg0 - vMean0) * (arg1 - vMean1);\n";
+                ss << "    }\n";
+            }
+            else if (pCurDVRX->IsStartFixed() && pCurDVRX->IsEndFixed()) {
+                ss << "int i = 0; i < " << nCurWindowSizeX << " && i < ";
+                ss << pCurDVRX->GetArrayLength() << " && i < ";
+                ss << pCurDVRY->GetArrayLength() << "; i++) {\n";
+                ss << "        if(isnan(";
+                ss << vSubArguments[0]->GenSlidingWindowDeclRef() << ") || ";
+                ss << "isnan(" << vSubArguments[1]->GenSlidingWindowDeclRef();
+                ss << ")) {\n";
+                ss << "            arg0 = vMean0;\n";
+                ss << "            arg1 = vMean1;\n";
+                ss << "        }\n";
+                ss << "else{\n";
+                ss << "        arg0 = ";
+                ss << vSubArguments[0]->GenSlidingWindowDeclRef() << ";\n";
+                ss << "        arg1 = ";
+                ss << vSubArguments[1]->GenSlidingWindowDeclRef() << ";}\n";
+                ss << "        vSum += (arg0 - vMean0) * (arg1 - vMean1);\n";
+                ss << "    }\n";
+            }
+            else {
+                ss << "int i = 0; i < " << nCurWindowSizeX << " && ";
+                ss << " i + gid0 < " << pCurDVRX->GetArrayLength();
+                ss << " && i + gid0 < " << pCurDVRX->GetArrayLength();
+                ss << "; i++) {\n";
+                ss << "if((isnan(";
+                ss << vSubArguments[0]->GenSlidingWindowDeclRef() << ")) || ";
+                ss << "(isnan(" << vSubArguments[1]->GenSlidingWindowDeclRef();
+                ss << ")))  {\n";
+                ss << "            arg0 = vMean0;\n";
+                ss << "            arg1 = vMean1;\n";
+                ss << "        }\n";
+                ss << "        else{\n";
+                ss << "            arg0 = ";
+                ss << vSubArguments[0]->GenSlidingWindowDeclRef() << ";\n";
+                ss << "            arg1 = ";
+                ss << vSubArguments[1]->GenSlidingWindowDeclRef() << ";\n";
+                ss << "        }\n";
+                ss << "        vSum += (arg0 - vMean0) * (arg1 - vMean1);\n";
+                ss << "    }\n";
+            }
+            ss << "    return vSum / cnt;\n";
+            ss << "    }\n";
+            ss << "}";
+        }
+        else
         {
             throw Unhandled(__FILE__, __LINE__);
         }
-
-        ss << "    for( ";
-        if (!pCurDVRX->IsStartFixed() && pCurDVRX->IsEndFixed()) {
-            ss << "int i = gid0; i < " << nCurWindowSizeX;
-            ss << " && i < " << pCurDVRX->GetArrayLength() << " && i < ";
-            ss << pCurDVRY->GetArrayLength() << "; i++){\n";
-            ss << "        if(isnan(";
-            ss << vSubArguments[0]->GenSlidingWindowDeclRef() << ") ||";
-            ss << " isnan("<< vSubArguments[1]->GenSlidingWindowDeclRef();
-            ss << ")) {\n";
-            ss << "            arg0 = 0.0;\n";
-            ss << "            arg1 = 0.0;\n";
-            ss << "            --cnt;\n";
-            ss << "        }\n";
-            ss << "else{\n";
-            ss << "        arg0 = ";
-            ss << vSubArguments[0]->GenSlidingWindowDeclRef() << ";\n";
-            ss << "        arg1 = ";
-            ss << vSubArguments[1]->GenSlidingWindowDeclRef() << ";\n";
-            ss << "}\n";
-            ss << "        ++cnt;\n";
-            ss << "        vSum0 += arg0;\n";
-            ss << "        vSum1 += arg1;\n";
-            ss << "    }\n";
-        }
-        else if (pCurDVRX->IsStartFixed() && !pCurDVRX->IsEndFixed()) {
-            ss << "int i = 0; i < gid0 + " << nCurWindowSizeX << " && ";
-            ss << " i < " << pCurDVRX->GetArrayLength() << " && ";
-            ss << " i < " << pCurDVRY->GetArrayLength() << "; i++) {\n";
-            ss << "        if(isnan(";
-            ss << vSubArguments[0]->GenSlidingWindowDeclRef() << ") ||";
-            ss << " isnan(" << vSubArguments[1]->GenSlidingWindowDeclRef();
-            ss << ")) {\n";
-            ss << "            arg0 = 0.0;\n";
-            ss << "            arg1 = 0.0;\n";
-            ss << "            --cnt;\n";
-            ss << "        }\n";
-            ss << "else{\n";
-            ss << "        arg0 = ";
-            ss << vSubArguments[0]->GenSlidingWindowDeclRef() << ";\n";
-            ss << "        arg1 = ";
-            ss << vSubArguments[1]->GenSlidingWindowDeclRef() << ";}\n";
-            ss << "        ++cnt;\n";
-            ss << "        vSum0 += arg0;\n";
-            ss << "        vSum1 += arg1;\n";
-            ss << "    }\n";
-        }
-        else if (pCurDVRX->IsStartFixed() && pCurDVRX->IsEndFixed()) {
-            ss << "int i = 0; i < " << nCurWindowSizeX << " && i < ";
-            ss << pCurDVRX->GetArrayLength() << " && i < ";
-            ss << pCurDVRY->GetArrayLength() << "; i++) {\n";
-            ss << "        if(isnan(";
-            ss << vSubArguments[0]->GenSlidingWindowDeclRef() << ") ||";
-            ss << " isnan(" << vSubArguments[1]->GenSlidingWindowDeclRef();
-            ss << ")) {\n";
-            ss << "            arg0 = 0.0;\n";
-            ss << "            arg1 = 0.0;\n";
-            ss << "            --cnt;\n";
-            ss << "        }\n";
-            ss << "else{\n";
-            ss << "        arg0 = ";
-            ss << vSubArguments[0]->GenSlidingWindowDeclRef() << ";\n";
-            ss << "        arg1 = ";
-            ss << vSubArguments[1]->GenSlidingWindowDeclRef() << ";}\n";
-            ss << "        ++cnt;\n";
-            ss << "        vSum0 += arg0;\n";
-            ss << "        vSum1 += arg1;\n";
-            ss << "    }\n";
-        }
-        else {
-            ss << "int i = 0; i < " << nCurWindowSizeX << " && ";
-            ss << " i + gid0 < " << pCurDVRX->GetArrayLength();
-            ss << " && i + gid0 < " << pCurDVRY->GetArrayLength();
-            ss << "; i++) {\n";
-            ss << "if ((isnan(";
-            ss << vSubArguments[0]->GenSlidingWindowDeclRef() << ")) || ";
-            ss << "(isnan("<< vSubArguments[1]->GenSlidingWindowDeclRef();
-            ss << ")))  {\n";
-            ss << "            arg0 = 0.0;\n";
-            ss << "            arg1 = 0.0;\n";
-            ss << "            --cnt;\n";
-            ss << "        }\n";
-            ss << "        else {\n";
-            ss << "            arg0 = ";
-            ss << vSubArguments[0]->GenSlidingWindowDeclRef() << ";\n";
-            ss << "            arg1 = ";
-            ss << vSubArguments[1]->GenSlidingWindowDeclRef() << ";\n";
-            ss << "        }\n";
-            ss << "        ++cnt;\n";
-            ss << "        vSum0 += arg0;\n";
-            ss << "        vSum1 += arg1;\n";
-            ss << "    }\n";
-        }
-        ss << "    if(cnt < 1) {\n";
-        ss << "        return CreateDoubleError(NoValue);\n";
-        ss << "    }\n";
-        ss << "    else {\n";
-        ss << "        vMean0 = vSum0 / cnt;\n";
-        ss << "        vMean1 = vSum1 / cnt;\n";
-        ss << "    for(";
-        if (!pCurDVRX->IsStartFixed() && pCurDVRX->IsEndFixed()) {
-            ss << "int i = gid0; i < " << nCurWindowSizeX;
-            ss << " && i < " << pCurDVRX->GetArrayLength() << " && i < ";
-            ss << pCurDVRY->GetArrayLength() << "; i++){\n";
-            ss << "        if(isnan(";
-            ss << vSubArguments[0]->GenSlidingWindowDeclRef() << ") ||";
-            ss << " isnan(" << vSubArguments[1]->GenSlidingWindowDeclRef();
-            ss << ")){\n";
-            ss << "            arg0 = vMean0;\n";
-            ss << "            arg1 = vMean1;\n";
-            ss << "        }\n";
-            ss << "        else{\n";
-            ss << "            arg0 = ";
-            ss << vSubArguments[0]->GenSlidingWindowDeclRef() << ";\n";
-            ss << "            arg1 = ";
-            ss << vSubArguments[1]->GenSlidingWindowDeclRef() << ";}\n";
-            ss << "        vSum += (arg0 - vMean0) * (arg1 - vMean1);\n";
-            ss << "    }\n";
-        }
-        else if (pCurDVRX->IsStartFixed() && !pCurDVRX->IsEndFixed()) {
-            ss << "int i = 0; i < gid0 + " << nCurWindowSizeX << " && ";
-            ss << " i < " << pCurDVRX->GetArrayLength() << " && ";
-            ss << " i < " << pCurDVRY->GetArrayLength() << "; i++) {\n";
-            ss << "        if(isnan(";
-            ss << vSubArguments[0]->GenSlidingWindowDeclRef() << ") || ";
-            ss << "isnan(" << vSubArguments[1]->GenSlidingWindowDeclRef();
-            ss << ")) {\n";
-            ss << "            arg0 = vMean0;\n";
-            ss << "            arg1 = vMean1;\n";
-            ss << "        }\n";
-            ss << "else{\n";
-            ss << "        arg0 = ";
-            ss << vSubArguments[0]->GenSlidingWindowDeclRef() << ";\n";
-            ss << "        arg1 = ";
-            ss << vSubArguments[1]->GenSlidingWindowDeclRef() << ";}\n";
-            ss << "        vSum += (arg0 - vMean0) * (arg1 - vMean1);\n";
-            ss << "    }\n";
-        }
-        else if (pCurDVRX->IsStartFixed() && pCurDVRX->IsEndFixed()) {
-            ss << "int i = 0; i < " << nCurWindowSizeX << " && i < ";
-            ss << pCurDVRX->GetArrayLength() << " && i < ";
-            ss << pCurDVRY->GetArrayLength() << "; i++) {\n";
-            ss << "        if(isnan(";
-            ss << vSubArguments[0]->GenSlidingWindowDeclRef() << ") || ";
-            ss << "isnan(" << vSubArguments[1]->GenSlidingWindowDeclRef();
-            ss << ")) {\n";
-            ss << "            arg0 = vMean0;\n";
-            ss << "            arg1 = vMean1;\n";
-            ss << "        }\n";
-            ss << "else{\n";
-            ss << "        arg0 = ";
-            ss << vSubArguments[0]->GenSlidingWindowDeclRef() << ";\n";
-            ss << "        arg1 = ";
-            ss << vSubArguments[1]->GenSlidingWindowDeclRef() << ";}\n";
-            ss << "        vSum += (arg0 - vMean0) * (arg1 - vMean1);\n";
-            ss << "    }\n";
-        }
-        else {
-            ss << "int i = 0; i < " << nCurWindowSizeX << " && ";
-            ss << " i + gid0 < " << pCurDVRX->GetArrayLength();
-            ss << " && i + gid0 < " << pCurDVRX->GetArrayLength();
-            ss << "; i++) {\n";
-            ss << "if((isnan(";
-            ss << vSubArguments[0]->GenSlidingWindowDeclRef() << ")) || ";
-            ss << "(isnan(" << vSubArguments[1]->GenSlidingWindowDeclRef();
-            ss << ")))  {\n";
-            ss << "            arg0 = vMean0;\n";
-            ss << "            arg1 = vMean1;\n";
-            ss << "        }\n";
-            ss << "        else{\n";
-            ss << "            arg0 = ";
-            ss << vSubArguments[0]->GenSlidingWindowDeclRef() << ";\n";
-            ss << "            arg1 = ";
-            ss << vSubArguments[1]->GenSlidingWindowDeclRef() << ";\n";
-            ss << "        }\n";
-            ss << "        vSum += (arg0 - vMean0) * (arg1 - vMean1);\n";
-            ss << "    }\n";
-        }
-        ss << "    return vSum / cnt;\n";
-        ss << "    }\n";
-        ss << "}";
-
         }
         else {
         ss << "    int cnt0 = 0,cnt1 = 0;\n";
@@ -7124,7 +7120,7 @@ void OpCovar::GenSlidingWindowFunction(std::stringstream& ss,
         ss << "}";
         }
 }
-void OpBetaDist::GenSlidingWindowFunction(std::stringstream &ss,
+void OpBetaDist::GenSlidingWindowFunction(outputstream &ss,
             const std::string &sSymName, SubArguments &vSubArguments)
 {
     ss << "\ndouble " << sSymName;
@@ -7211,7 +7207,7 @@ void OpBetaDist::GenSlidingWindowFunction(std::stringstream &ss,
     "            tmp = 1.0;\n"
     "            return tmp;\n"
     "        }\n"
-    "        arg0 = (arg0-arg3)*pow(fScale,-1);\n"
+    "        arg0 = (arg0-arg3)/fScale;\n"
     "        tmp =  GetBetaDist(arg0, arg1, arg2);\n"
     "    }\n"
     "    else\n"
@@ -7221,8 +7217,8 @@ void OpBetaDist::GenSlidingWindowFunction(std::stringstream &ss,
     "            tmp = 0.0;\n"
     "            return tmp;\n"
     "        }\n"
-    "        arg0 = (arg0 - arg3)*pow(fScale,-1);\n"
-    "        tmp = GetBetaDistPDF(arg0, arg1, arg2)*pow(fScale,-1);\n"
+    "        arg0 = (arg0 - arg3)/fScale;\n"
+    "        tmp = GetBetaDistPDF(arg0, arg1, arg2)/fScale;\n"
     "    }\n";
     ss << "    return tmp;\n";
     ss << "}\n";
@@ -7256,7 +7252,7 @@ void OpBetainv::BinInlineFun(std::set<std::string>& decls,
     funs.insert(lcl_getLanczosSum);
 }
 void OpBetainv::GenSlidingWindowFunction(
-    std::stringstream &ss,const std::string &sSymName,
+    outputstream &ss,const std::string &sSymName,
     SubArguments &vSubArguments)
 {
     ss << "\ndouble " << sSymName;
@@ -7343,7 +7339,7 @@ void OpBetainv::GenSlidingWindowFunction(
     ss << "    }";
     ss << "}\n";
 }
-void OpDevSq::GenSlidingWindowFunction(std::stringstream& ss,
+void OpDevSq::GenSlidingWindowFunction(outputstream& ss,
     const std::string &sSymName, SubArguments& vSubArguments)
 {
         ss << "\ndouble " << sSymName;
@@ -7533,7 +7529,7 @@ void OpDevSq::GenSlidingWindowFunction(std::stringstream& ss,
         ss << "    return vSum;\n";
         ss << "}";
 }
-void OpHypGeomDist::GenSlidingWindowFunction(std::stringstream &ss,
+void OpHypGeomDist::GenSlidingWindowFunction(outputstream &ss,
             const std::string &sSymName, SubArguments &vSubArguments)
 {
     ss << "\ndouble " << sSymName;
@@ -7635,7 +7631,7 @@ void OpHypGeomDist::GenSlidingWindowFunction(std::stringstream &ss,
     "        }\n"
     "        else\n"
     "            num[i]=0.5*log(2.0*PI)+(num[i]+0.5)*log(num[i])-num[i]+"
-    "(1.0*pow(12.0*num[i],-1)-1.0*pow(360*pow(num[i],3),-1));\n"
+    "(1.0/(12.0*num[i])-1.0/(360*pow(num[i],3)));\n"
     "    }\n";
     ss << "    tmp=pow(M_E,(num[0]+num[3]+num[7]+num[8]";
     ss << "-num[1]-num[2]-num[4]-num[5]-num[6]));\n";
@@ -7661,7 +7657,7 @@ enum MixDoubleString
 }
 
 void OpMinA::GenSlidingWindowFunction(
-    std::stringstream &ss, const std::string &sSymName, SubArguments &vSubArguments)
+    outputstream &ss, const std::string &sSymName, SubArguments &vSubArguments)
 {
     int isMixed = 0;
     ss << "\ndouble " << sSymName;
@@ -7806,7 +7802,7 @@ void OpMinA::GenSlidingWindowFunction(
     ss << "}\n";
 }
 void OpCountA::GenSlidingWindowFunction(
-    std::stringstream &ss, const std::string &sSymName, SubArguments &
+    outputstream &ss, const std::string &sSymName, SubArguments &
 vSubArguments)
 {
     int isMixed = 0;
@@ -7942,7 +7938,7 @@ vSubArguments)
     ss << "}\n";
 }
 void OpMaxA::GenSlidingWindowFunction(
-    std::stringstream &ss, const std::string &sSymName, SubArguments &
+    outputstream &ss, const std::string &sSymName, SubArguments &
 vSubArguments)
 {
     int isMixed = 0;
@@ -8089,7 +8085,7 @@ vSubArguments)
     ss << "}\n";
 }
 void OpAverageA::GenSlidingWindowFunction(
-    std::stringstream &ss, const std::string &sSymName, SubArguments &
+    outputstream &ss, const std::string &sSymName, SubArguments &
 vSubArguments)
 {
     int isMixed = 0;
@@ -8233,10 +8229,10 @@ vSubArguments)
                 ss << "    }\n";
         }
     }
-    ss << "    return tmp0*pow(nCount,-1);\n";
+    ss << "    return tmp0/nCount;\n";
     ss << "}\n";
 }
-void OpVarA::GenSlidingWindowFunction(std::stringstream &ss,
+void OpVarA::GenSlidingWindowFunction(outputstream &ss,
             const std::string &sSymName, SubArguments &vSubArguments)
 {
     int isMixedDV = 0;
@@ -8430,7 +8426,7 @@ void OpVarA::GenSlidingWindowFunction(std::stringstream &ss,
         }
         if (i == 0)
         {
-            ss << "    fMean = fSum * pow(fCount,-1.0);\n";
+            ss << "    fMean = fSum / fCount;\n";
         }
     }
     i = vSubArguments.size();
@@ -8602,11 +8598,11 @@ void OpVarA::GenSlidingWindowFunction(std::stringstream &ss,
     ss << "    if (fCount <= 1.0)\n";
     ss << "        return DBL_MAX;\n";
     ss << "    else\n";
-    ss << "        return vSum * pow(fCount - 1.0,-1.0);\n";
+    ss << "        return vSum / (fCount - 1.0);\n";
     ss << "}\n";
 }
 
-void OpVarPA::GenSlidingWindowFunction(std::stringstream &ss,
+void OpVarPA::GenSlidingWindowFunction(outputstream &ss,
             const std::string &sSymName, SubArguments &vSubArguments)
 {
     int isMixedDV = 0;
@@ -8798,7 +8794,7 @@ void OpVarPA::GenSlidingWindowFunction(std::stringstream &ss,
         }
         if (i == 0)
         {
-            ss << "    fMean = fSum * pow(fCount,-1.0);\n";
+            ss << "    fMean = fSum / fCount;\n";
         }
     }
     i = vSubArguments.size();
@@ -8970,10 +8966,10 @@ void OpVarPA::GenSlidingWindowFunction(std::stringstream &ss,
     ss << "    if (fCount == 0.0)\n";
     ss << "        return DBL_MAX;\n";
     ss << "    else\n";
-    ss << "        return vSum * pow(fCount,-1.0);\n";
+    ss << "        return vSum / fCount;\n";
     ss << "}\n";
 }
-void OpStDevA::GenSlidingWindowFunction(std::stringstream &ss,
+void OpStDevA::GenSlidingWindowFunction(outputstream &ss,
             const std::string &sSymName, SubArguments &vSubArguments)
 {
     int isMixedDV = 0;
@@ -9165,7 +9161,7 @@ void OpStDevA::GenSlidingWindowFunction(std::stringstream &ss,
         }
         if (i == 0)
         {
-            ss << "    fMean = fSum * pow(fCount,-1.0);\n";
+            ss << "    fMean = fSum / fCount;\n";
         }
     }
     i = vSubArguments.size();
@@ -9337,11 +9333,11 @@ void OpStDevA::GenSlidingWindowFunction(std::stringstream &ss,
     ss << "    if (fCount <= 1.0)\n";
     ss << "        return DBL_MAX;\n";
     ss << "    else\n";
-    ss << "        return sqrt(vSum * pow(fCount - 1.0,-1.0));\n";
+    ss << "        return sqrt(vSum / (fCount - 1.0));\n";
     ss << "}\n";
 }
 
-void OpStDevPA::GenSlidingWindowFunction(std::stringstream &ss,
+void OpStDevPA::GenSlidingWindowFunction(outputstream &ss,
             const std::string &sSymName, SubArguments &vSubArguments)
 {
     int isMixedDV = 0;
@@ -9533,7 +9529,7 @@ void OpStDevPA::GenSlidingWindowFunction(std::stringstream &ss,
         }
         if (i == 0)
         {
-            ss << "    fMean = fSum * pow(fCount,-1.0);\n";
+            ss << "    fMean = fSum / fCount;\n";
         }
     }
     i = vSubArguments.size();
@@ -9705,11 +9701,11 @@ void OpStDevPA::GenSlidingWindowFunction(std::stringstream &ss,
     ss << "    if (fCount == 1.0)\n";
     ss << "        return DBL_MAX;\n";
     ss << "    else\n";
-    ss << "        return sqrt(vSum * pow(fCount,-1.0));\n";
+    ss << "        return sqrt(vSum / fCount);\n";
     ss << "}\n";
 }
 
-void OpAveDev:: GenSlidingWindowFunction(std::stringstream &ss,
+void OpAveDev:: GenSlidingWindowFunction(outputstream &ss,
             const std::string &sSymName, SubArguments &vSubArguments)
 {
     ss << "\ndouble " << sSymName;
@@ -9775,7 +9771,7 @@ void OpAveDev:: GenSlidingWindowFunction(std::stringstream &ss,
            ss << "    totallength +=1;\n";
         }
     }
-    ss << "    double mean = sum * pow(totallength,-1);\n";
+    ss << "    double mean = sum / totallength;\n";
     ss << "    sum = 0.0;\n";
     for (size_t i = 0; i < vSubArguments.size(); i++)
     {
@@ -9819,7 +9815,7 @@ void OpAveDev:: GenSlidingWindowFunction(std::stringstream &ss,
            ss << "    sum += fabs(tmp-mean);\n";
         }
     }
-    ss << "    tmp=sum*pow(totallength,-1);\n";
+    ss << "    tmp=sum/totallength;\n";
     ss << "    return tmp;\n";
     ss << "}";
 }

@@ -206,7 +206,7 @@ public:
     virtual bool AdjustTextFrameWidthAndHeight() override;
     virtual OUString TakeObjNameSingul() const override;
     virtual OUString TakeObjNamePlural() const override;
-    virtual SdrTableObj* CloneSdrObject(SdrModel& rTargetModel) const override;
+    virtual rtl::Reference<SdrObject> CloneSdrObject(SdrModel& rTargetModel) const override;
     virtual void RecalcSnapRect() override;
     virtual const tools::Rectangle& GetSnapRect() const override;
     virtual void NbcSetSnapRect(const tools::Rectangle& rRect) override;
@@ -257,6 +257,13 @@ public:
 
     /// Next time layouting would be done, skip it (to layout at the end of multiple actions).
     void SetSkipChangeLayout(bool bSkipChangeLayout);
+
+    /** Tries to get table height if rows with sizes less than the minimum size were expanded
+
+        (i.e. Table height layouted without fitting to an area)
+        Helper for OOXML import
+     */
+    sal_Int32 getHeightWithoutFitting();
 
     virtual void onEditOutlinerStatusEvent( EditStatus* pEditStatus ) override;
 

@@ -1305,6 +1305,38 @@ CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testReqifOle1Paint)
     CPPUNIT_ASSERT_EQUAL(OString("PBrush"), aClassName);
 }
 
+CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testReqifOle1PaintBitmapFormat)
+{
+    // Given a document with a 8bpp bitmap:
+    OUString aURL = m_directories.getURLFromSrc(DATA_DIRECTORY) + "paint-ole-bitmap-format.odt";
+    mxComponent = loadFromDesktop(aURL, "com.sun.star.text.TextDocument", {});
+
+    // When exporting to reqif-xhtml with ExportImagesAsOLE enabled:
+    uno::Reference<frame::XStorable> xStorable(mxComponent, uno::UNO_QUERY);
+    uno::Sequence<beans::PropertyValue> aStoreProperties = {
+        comphelper::makePropertyValue("FilterName", OUString("HTML (StarWriter)")),
+        comphelper::makePropertyValue("FilterOptions", OUString("xhtmlns=reqif-xhtml")),
+        comphelper::makePropertyValue("ExportImagesAsOLE", true),
+    };
+    xStorable->storeToURL(maTempFile.GetURL(), aStoreProperties);
+
+    // Then make sure the resulting bitmap is 24bpp:
+    OUString aRtfUrl = GetOlePath();
+    SvMemoryStream aOle1;
+    ParseOle1FromRtfUrl(aRtfUrl, aOle1);
+    OLE1Reader aOle1Reader(aOle1);
+    Bitmap aBitmap;
+    SvMemoryStream aMemory;
+    aMemory.WriteBytes(aOle1Reader.m_aNativeData.data(), aOle1Reader.m_aNativeData.size());
+    aMemory.Seek(0);
+    CPPUNIT_ASSERT(ReadDIB(aBitmap, aMemory, true));
+    // Without the accompanying fix in place, this test would have failed with:
+    // - Expected: 24
+    // - Actual  : 8
+    // i.e. it was not a pixel format ms paint could handle in OLE mode.
+    CPPUNIT_ASSERT_EQUAL(vcl::PixelFormat::N24_BPP, aBitmap.getPixelFormat());
+}
+
 CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testMultiParaListItem)
 {
     // Create a document with 3 list items: A, B&C and D.
@@ -2385,6 +2417,63 @@ CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testSectionDir)
     // - XPath '//reqif-xhtml:div[@id='mysect']' no attribute 'style' exist
     // i.e. the dir="ltr" HTML attribute was used instead.
     assertXPath(pXmlDoc, "//reqif-xhtml:div[@id='mysect']", "style", "dir: ltr");
+}
+
+CPPUNIT_TEST_FIXTURE(HtmlExportTest, testTdf114769)
+{
+    // Create document from scratch since relative urls to filesystem can be replaced
+    // by absolute during save/load
+    SwDoc* pDoc = createSwDoc();
+    SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
+    pWrtShell->Insert("Hyperlink1");
+    pWrtShell->SplitNode();
+    pWrtShell->Insert("Hyperlink2");
+    pWrtShell->SplitNode();
+    pWrtShell->Insert("Hyperlink3");
+    pWrtShell->SplitNode();
+    pWrtShell->Insert("Hyperlink4");
+    pWrtShell->SplitNode();
+    pWrtShell->Insert("Hyperlink5");
+    pWrtShell->SplitNode();
+
+    // Normal external URL
+    uno::Reference<beans::XPropertySet> xRun(getRun(getParagraph(1), 1), uno::UNO_QUERY);
+    xRun->setPropertyValue("HyperLinkURL", uno::Any(OUString("http://libreoffice.org/")));
+
+    // Bookmark reference
+    xRun.set(getRun(getParagraph(2), 1), uno::UNO_QUERY);
+    xRun->setPropertyValue("HyperLinkURL", uno::Any(OUString("#some_bookmark")));
+
+    // Filesystem absolute link
+    xRun.set(getRun(getParagraph(3), 1), uno::UNO_QUERY);
+    xRun->setPropertyValue("HyperLinkURL", uno::Any(OUString("C:\\test.txt")));
+
+    // Filesystem relative link
+    xRun.set(getRun(getParagraph(4), 1), uno::UNO_QUERY);
+    xRun->setPropertyValue("HyperLinkURL", uno::Any(OUString("..\\..\\test.odt")));
+
+    // Filesystem relative link
+    xRun.set(getRun(getParagraph(5), 1), uno::UNO_QUERY);
+    xRun->setPropertyValue("HyperLinkURL", uno::Any(OUString(".\\another.odt")));
+
+    // Export
+    uno::Reference<frame::XStorable> xStorable(mxComponent, uno::UNO_QUERY);
+    uno::Sequence<beans::PropertyValue> aStoreProperties
+        = { comphelper::makePropertyValue("FilterName", OUString("HTML (StarWriter)")) };
+    xStorable->storeToURL(maTempFile.GetURL(), aStoreProperties);
+
+    htmlDocUniquePtr pHtmlDoc = parseHtml(maTempFile);
+    CPPUNIT_ASSERT(pHtmlDoc);
+
+    CPPUNIT_ASSERT_EQUAL(OUString("http://libreoffice.org/"),
+                         getXPath(pHtmlDoc, "/html/body/p[1]/a", "href"));
+    CPPUNIT_ASSERT_EQUAL(OUString("#some_bookmark"),
+                         getXPath(pHtmlDoc, "/html/body/p[2]/a", "href"));
+    CPPUNIT_ASSERT_EQUAL(OUString("C:\\test.txt"), getXPath(pHtmlDoc, "/html/body/p[3]/a", "href"));
+    CPPUNIT_ASSERT_EQUAL(OUString("..\\..\\test.odt"),
+                         getXPath(pHtmlDoc, "/html/body/p[4]/a", "href"));
+    CPPUNIT_ASSERT_EQUAL(OUString(".\\another.odt"),
+                         getXPath(pHtmlDoc, "/html/body/p[5]/a", "href"));
 }
 
 CPPUNIT_PLUGIN_IMPLEMENT();

@@ -1880,7 +1880,7 @@ void SwXFrame::setPropertyValue(const OUString& rPropertyName, const ::uno::Any&
                     else
                     {
                         SwPosition aPos = *pPosition;
-                        aPos.nNode = *pFlyFormat->GetContent().GetContentIdx();
+                        aPos.Assign( *pFlyFormat->GetContent().GetContentIdx() );
                         aAnchor.SetAnchor(&aPos);
                         aSet.Put(aAnchor);
                     }
@@ -2262,8 +2262,9 @@ uno::Any SwXFrame::getPropertyValue(const OUString& rPropertyName)
         }
         else if(WID_LAYOUT_SIZE == pEntry->nWID)
         {
-            // format document completely in order to get correct value
-            pFormat->GetDoc()->GetEditShell()->CalcLayout();
+            // format document completely in order to get correct value (no EditShell for ole embedded case)
+            if (SwEditShell* pEditShell = pFormat->GetDoc()->GetEditShell())
+                pEditShell->CalcLayout();
 
             SwFrame* pTmpFrame = SwIterator<SwFrame,SwFormat>( *pFormat ).First();
             if ( pTmpFrame )
@@ -3301,7 +3302,7 @@ uno::Reference< text::XTextCursor >  SwXTextFrame::createTextCursor()
     SwTableNode* pTableNode = aPam.GetPointNode().FindTableNode();
     while( pTableNode )
     {
-        aPam.GetPoint()->nNode = *pTableNode->EndOfSectionNode();
+        aPam.GetPoint()->Assign( *pTableNode->EndOfSectionNode() );
         SwContentNode* pCont = GetDoc()->GetNodes().GoNext(aPam.GetPoint());
         pTableNode = pCont->FindTableNode();
     }

@@ -162,26 +162,33 @@ void FeatureCollector::collectForTable(hb_tag_t aTableTag)
                 }
             }
 
-            // Collect lookups in this feature, and input glyphs for each
-            // lookup, and calculate the max number of alternates they have.
-            unsigned int nLookups = hb_ot_layout_feature_get_lookups(
-                m_pHbFace, aTableTag, nFeatureIdx, 0, nullptr, nullptr);
-            std::vector<unsigned int> aLookups(nLookups);
-            hb_ot_layout_feature_get_lookups(m_pHbFace, aTableTag, nFeatureIdx, 0, &nLookups,
-                                             aLookups.data());
             unsigned int nAlternates = 0;
-            for (unsigned int nLookupIdx : aLookups)
+            if (aTableTag == HB_OT_TAG_GSUB)
             {
-                hb_set_t* aGlyphs = hb_set_create();
-                hb_ot_layout_lookup_collect_glyphs(m_pHbFace, aTableTag, nLookupIdx, nullptr,
-                                                   aGlyphs, nullptr, nullptr);
-                hb_codepoint_t nGlyphIdx = HB_SET_VALUE_INVALID;
-                while (hb_set_next(aGlyphs, &nGlyphIdx))
+                // Collect lookups in this feature, and input glyphs for each
+                // lookup, and calculate the max number of alternates they have.
+                unsigned int nLookups = hb_ot_layout_feature_get_lookups(
+                    m_pHbFace, aTableTag, nFeatureIdx, 0, nullptr, nullptr);
+                std::vector<unsigned int> aLookups(nLookups);
+                hb_ot_layout_feature_get_lookups(m_pHbFace, aTableTag, nFeatureIdx, 0, &nLookups,
+                                                 aLookups.data());
+
+                hb_set_t* pGlyphs = hb_set_create();
+                for (unsigned int nLookupIdx : aLookups)
                 {
-                    nAlternates = std::max(
-                        nAlternates, hb_ot_layout_lookup_get_glyph_alternates(
-                                         m_pHbFace, nLookupIdx, nGlyphIdx, 0, nullptr, nullptr));
+                    hb_set_clear(pGlyphs);
+                    hb_ot_layout_lookup_collect_glyphs(m_pHbFace, aTableTag, nLookupIdx, nullptr,
+                                                       pGlyphs, nullptr, nullptr);
+                    hb_codepoint_t nGlyphIdx = HB_SET_VALUE_INVALID;
+                    while (hb_set_next(pGlyphs, &nGlyphIdx))
+                    {
+                        nAlternates
+                            = std::max(nAlternates,
+                                       hb_ot_layout_lookup_get_glyph_alternates(
+                                           m_pHbFace, nLookupIdx, nGlyphIdx, 0, nullptr, nullptr));
+                    }
                 }
+                hb_set_destroy(pGlyphs);
             }
 
             // Append the alternates to the feature parameters, keeping any

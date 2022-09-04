@@ -348,6 +348,15 @@ class GtkSalFrame final : public SalFrame
 
     static gboolean     signalWindowState( GtkWidget*, GdkEvent*, gpointer );
 #endif
+
+    static bool         signalZoomBegin(GtkGesture*, GdkEventSequence*, gpointer);
+    static bool         signalZoomUpdate(GtkGesture*, GdkEventSequence*, gpointer);
+    static bool         signalZoomEnd(GtkGesture*, GdkEventSequence*, gpointer);
+
+    static bool         signalRotateBegin(GtkGesture*, GdkEventSequence*, gpointer);
+    static bool         signalRotateUpdate(GtkGesture*, GdkEventSequence*, gpointer);
+    static bool         signalRotateEnd(GtkGesture*, GdkEventSequence*, gpointer);
+
 #if !GTK_CHECK_VERSION(4, 0, 0)
     static gboolean     signalConfigure( GtkWidget*, GdkEventConfigure*, gpointer );
 #endif

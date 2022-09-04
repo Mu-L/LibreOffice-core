@@ -449,7 +449,14 @@ wrapper_get_n_children( AtkObject *atk_obj )
     if( obj->mpContext.is() )
     {
         try {
-            n = obj->mpContext->getAccessibleChildCount();
+            sal_Int64 nChildCount = obj->mpContext->getAccessibleChildCount();
+            if (nChildCount > std::numeric_limits<gint>::max())
+            {
+                SAL_WARN("vcl.gtk", "wrapper_get_n_children: Child count exceeds maximum gint value, "
+                                    "returning max gint.");
+                nChildCount = std::numeric_limits<gint>::max();
+            }
+            n = nChildCount;
         }
         catch(const uno::Exception&) {
             TOOLS_WARN_EXCEPTION( "vcl", "Exception" );
@@ -514,7 +521,17 @@ wrapper_get_index_in_parent( AtkObject *atk_obj )
     if( obj->mpContext.is() )
     {
         try {
-            i = obj->mpContext->getAccessibleIndexInParent();
+            sal_Int64 nIndex = obj->mpContext->getAccessibleIndexInParent();
+            if (nIndex > std::numeric_limits<gint>::max())
+            {
+                // use -2 when the child index is too large to fit into 32 bit to neither use the
+                // valid index of another child nor -1, which would e.g. make Orca interpret the
+                // object as being a zombie
+                SAL_WARN("vcl.gtk", "wrapper_get_index_in_parent: Child index exceeds maximum gint value, "
+                                    "returning -2.");
+                nIndex = -2;
+            }
+            i = nIndex;
         }
         catch(const uno::Exception&) {
             g_warning( "Exception in getAccessibleIndexInParent()" );
@@ -683,6 +700,7 @@ atk_object_wrapper_init (AtkObjectWrapper      *wrapper,
    wrapper->mpImage = nullptr;
    wrapper->mpSelection = nullptr;
    wrapper->mpTable = nullptr;
+   wrapper->mpTableSelection = nullptr;
    wrapper->mpText = nullptr;
    wrapper->mpValue = nullptr;
 }
@@ -732,6 +750,44 @@ isOfType( uno::XInterface *pInterface, const uno::Type & rType )
     return bIs;
 }
 
+// Whether AtkTableCell can be supported for the interface.
+// Returns true if the corresponding XAccessible has role TABLE_CELL
+// and an XAccessibleTable as parent.
+static bool isTableCell(uno::XInterface* pInterface)
+{
+    g_return_val_if_fail(pInterface != nullptr, false);
+
+    try {
+        auto aType = cppu::UnoType<accessibility::XAccessible>::get().getTypeLibType();
+        uno::Any aAcc = pInterface->queryInterface(aType);
+
+        css::uno::Reference<css::accessibility::XAccessible> xAcc;
+        aAcc >>= xAcc;
+        if (!xAcc.is())
+            return false;
+
+        css::uno::Reference<css::accessibility::XAccessibleContext> xContext = xAcc->getAccessibleContext();
+        if (!xContext.is() || !(xContext->getAccessibleRole() == accessibility::AccessibleRole::TABLE_CELL))
+            return false;
+
+        css::uno::Reference<css::accessibility::XAccessible> xParent = xContext->getAccessibleParent();
+        if (!xParent.is())
+            return false;
+        css::uno::Reference<css::accessibility::XAccessibleContext> xParentContext = xParent->getAccessibleContext();
+        if (!xParentContext.is())
+            return false;
+
+        css::uno::Reference<css::accessibility::XAccessibleTable> xTable(xParentContext, uno::UNO_QUERY);
+        return xTable.is();
+    }
+    catch(const uno::Exception &)
+    {
+        g_warning("Exception in isTableCell()");
+    }
+
+    return false;
+}
+
 extern "C" {
 typedef  GType (* GetGIfaceType ) ();
 }
@@ -768,6 +824,12 @@ const struct {
         cppu::UnoType<accessibility::XAccessibleTable>::get
     },
     {
+        "Cell",  reinterpret_cast<GInterfaceInitFunc>(tablecellIfaceInit),
+        atk_table_cell_get_type,
+        // there is no UNO a11y interface for table cells, so this case is handled separately below
+        nullptr
+    },
+    {
         "Edt",  reinterpret_cast<GInterfaceInitFunc>(editableTextIfaceInit),
         atk_editable_text_get_type,
         cppu::UnoType<accessibility::XAccessibleEditableText>::get
@@ -802,7 +864,17 @@ ensureTypeFor( uno::XInterface *pAccessible )
 
     for( i = 0; i < aTypeTableSize; i++ )
     {
-        if( isOfType( pAccessible, aTypeTable[i].aGetUnoType() ) )
+        if(!g_strcmp0(aTypeTable[i].name, "Cell"))
+        {
+            // there is no UNO interface for table cells, but AtkTableCell can be supported
+            // for table cells via the methods of the parent that is a table
+            if (isTableCell(pAccessible))
+            {
+                aTypeNameBuf.append(aTypeTable[i].name);
+                bTypes[i] = true;
+            }
+        }
+        else if (isOfType( pAccessible, aTypeTable[i].aGetUnoType() ) )
         {
             aTypeNameBuf.append(aTypeTable[i].name);
             bTypes[i] = true;
@@ -996,6 +1068,7 @@ void atk_object_wrapper_dispose(AtkObjectWrapper* wrapper)
     wrapper->mpSelection.clear();
     wrapper->mpMultiLineText.clear();
     wrapper->mpTable.clear();
+    wrapper->mpTableSelection.clear();
     wrapper->mpText.clear();
     wrapper->mpTextMarkup.clear();
     wrapper->mpTextAttributes.clear();

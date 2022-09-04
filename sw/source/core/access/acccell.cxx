@@ -368,28 +368,6 @@ uno::Any SwAccessibleCell::getMinimumIncrement(  )
     return uno::Any();
 }
 
-static OUString ReplaceOneChar(const OUString& oldOUString, std::u16string_view replacedChar, std::u16string_view replaceStr)
-{
-    int iReplace = oldOUString.lastIndexOf(replacedChar);
-    OUString aRet = oldOUString;
-    while(iReplace > -1)
-    {
-        aRet = aRet.replaceAt(iReplace,1, replaceStr);
-        iReplace = aRet.lastIndexOf(replacedChar,iReplace);
-    }
-    return aRet;
-}
-
-static OUString ReplaceFourChar(const OUString& oldOUString)
-{
-    OUString aRet = ReplaceOneChar(oldOUString, u"\\", u"\\\\");
-    aRet = ReplaceOneChar(aRet, u";", u"\\;");
-    aRet = ReplaceOneChar(aRet, u"=", u"\\=");
-    aRet = ReplaceOneChar(aRet, u",", u"\\,");
-    aRet = ReplaceOneChar(aRet, u":", u"\\:");
-    return aRet;
-}
-
 css::uno::Any SAL_CALL SwAccessibleCell::getExtendedAttributes()
 {
     SolarMutexGuard g;
@@ -400,7 +378,12 @@ css::uno::Any SAL_CALL SwAccessibleCell::getExtendedAttributes()
 
     const SwTableBoxFormula& tbl_formula = pFrameFormat->GetTableBoxFormula();
 
-    OUString strFormula = ReplaceFourChar(tbl_formula.GetFormula());
+    OUString strFormula = tbl_formula.GetFormula()
+                              .replaceAll(u"\\", u"\\\\")
+                              .replaceAll(u";", u"\\;")
+                              .replaceAll(u"=", u"\\=")
+                              .replaceAll(u",", u"\\,")
+                              .replaceAll(u":", u"\\:");
     OUString strFor = "Formula:" + strFormula + ";";
     strRet <<= strFor;
 
@@ -431,13 +414,13 @@ sal_Int32 SAL_CALL SwAccessibleCell::getBackground()
 
 // XAccessibleSelection
 void SwAccessibleCell::selectAccessibleChild(
-    sal_Int32 nChildIndex )
+    sal_Int64 nChildIndex )
 {
     m_aSelectionHelper.selectAccessibleChild(nChildIndex);
 }
 
 sal_Bool SwAccessibleCell::isAccessibleChildSelected(
-    sal_Int32 nChildIndex )
+    sal_Int64 nChildIndex )
 {
     return m_aSelectionHelper.isAccessibleChildSelected(nChildIndex);
 }
@@ -451,19 +434,19 @@ void SwAccessibleCell::selectAllAccessibleChildren(  )
     m_aSelectionHelper.selectAllAccessibleChildren();
 }
 
-sal_Int32 SwAccessibleCell::getSelectedAccessibleChildCount(  )
+sal_Int64 SwAccessibleCell::getSelectedAccessibleChildCount(  )
 {
     return m_aSelectionHelper.getSelectedAccessibleChildCount();
 }
 
 uno::Reference<XAccessible> SwAccessibleCell::getSelectedAccessibleChild(
-    sal_Int32 nSelectedChildIndex )
+    sal_Int64 nSelectedChildIndex )
 {
     return m_aSelectionHelper.getSelectedAccessibleChild(nSelectedChildIndex);
 }
 
 void SwAccessibleCell::deselectAccessibleChild(
-    sal_Int32 nSelectedChildIndex )
+    sal_Int64 nSelectedChildIndex )
 {
     m_aSelectionHelper.deselectAccessibleChild(nSelectedChildIndex);
 }

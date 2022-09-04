@@ -26,6 +26,7 @@
 #include <vcl/unohelp.hxx>
 #include <vcl/font/Feature.hxx>
 #include <vcl/font/FeatureParser.hxx>
+#include <vcl/svapp.hxx>
 
 #include <ImplLayoutArgs.hxx>
 #include <TextLayoutCache.hxx>
@@ -68,6 +69,8 @@ GenericSalLayout::GenericSalLayout(LogicalFontInstance &rFont)
 
 GenericSalLayout::~GenericSalLayout()
 {
+    if (mpVertGlyphs)
+        hb_set_destroy(mpVertGlyphs);
 }
 
 void GenericSalLayout::ParseFeatures(std::u16string_view aName)
@@ -248,6 +251,7 @@ bool GenericSalLayout::HasVerticalAlternate(sal_UCS4 aChar, sal_UCS4 aVariationS
                 hb_set_union(mpVertGlyphs, pGlyphs);
             }
         }
+        hb_set_destroy(pLookups);
     }
 
     return hb_set_has(mpVertGlyphs, nGlyphIndex) != 0;
@@ -635,19 +639,101 @@ bool GenericSalLayout::LayoutText(vcl::text::ImplLayoutArgs& rArgs, const SalLay
     return true;
 }
 
-void GenericSalLayout::GetCharWidths(std::vector<DeviceCoordinate>& rCharWidths) const
+void GenericSalLayout::GetCharWidths(std::vector<DeviceCoordinate>& rCharWidths, const OUString& rStr) const
 {
     const int nCharCount = mnEndCharPos - mnMinCharPos;
 
     rCharWidths.clear();
     rCharWidths.resize(nCharCount, 0);
 
+    css::uno::Reference<css::i18n::XBreakIterator> xBreak;
+    auto aLocale(maLanguageTag.getLocale());
+
     for (auto const& aGlyphItem : m_GlyphItems)
     {
-        const int nIndex = aGlyphItem.charPos() - mnMinCharPos;
-        if (nIndex >= nCharCount)
+        if (aGlyphItem.charPos() >= mnEndCharPos)
             continue;
-        rCharWidths[nIndex] += aGlyphItem.newWidth();
+
+        unsigned int nGraphemeCount = 0;
+        if (aGlyphItem.charCount() > 1 && aGlyphItem.newWidth() != 0 && !rStr.isEmpty())
+        {
+            // We are calculating DX array for cursor positions and this is a
+            // ligature, find out how many grapheme clusters are in it.
+            if (!xBreak.is())
+                xBreak = mxBreak.is() ? mxBreak : vcl::unohelper::CreateBreakIterator();
+
+            // Count grapheme clusters in the ligature.
+            sal_Int32 nDone;
+            sal_Int32 nPos = aGlyphItem.charPos();
+            while (nPos < aGlyphItem.charPos() + aGlyphItem.charCount())
+            {
+                nPos = xBreak->nextCharacters(rStr, nPos, aLocale,
+                    css::i18n::CharacterIteratorMode::SKIPCELL, 1, nDone);
+                nGraphemeCount++;
+            }
+        }
+
+        if (nGraphemeCount > 1)
+        {
+            // More than one grapheme cluster, we want to distribute the glyph
+            // width over them.
+            std::vector<DeviceCoordinate> aWidths(nGraphemeCount);
+
+            // Check if the glyph has ligature caret positions.
+            unsigned int nCarets = nGraphemeCount;
+            std::vector<hb_position_t> aCarets(nGraphemeCount);
+            hb_ot_layout_get_ligature_carets(GetFont().GetHbFont(),
+                aGlyphItem.IsRTLGlyph() ? HB_DIRECTION_RTL : HB_DIRECTION_LTR,
+                aGlyphItem.glyphId(), 0, &nCarets, aCarets.data());
+
+            // Carets are 1-less than the grapheme count (since the last
+            // position is defined by glyph width), if the count does not
+            // match, ignore it.
+            if (nCarets == nGraphemeCount - 1)
+            {
+                // Scale the carets and apply glyph offset to them since they
+                // are based on the default glyph metrics.
+                double fScale = 0;
+                GetFont().GetScale(&fScale, nullptr);
+                for (size_t i = 0; i < nCarets; i++)
+                    aCarets[i] = (aCarets[i] * fScale) + aGlyphItem.xOffset();
+
+                // Use the glyph width for the last caret.
+                aCarets[nCarets] = aGlyphItem.newWidth();
+
+                // Carets are absolute from the X origin of the glyph, turn
+                // them to relative widths that we need below.
+                for (size_t i = 0; i < nGraphemeCount; i++)
+                    aWidths[i] = aCarets[i] - (i == 0 ? 0 : aCarets[i - 1]);
+
+                // Carets are in visual order, but we want widths in logical
+                // order.
+                if (aGlyphItem.IsRTLGlyph())
+                    std::reverse(aWidths.begin(), aWidths.end());
+            }
+            else
+            {
+                // The glyph has no carets, distribute the width evenly.
+                auto nWidth = aGlyphItem.newWidth() / nGraphemeCount;
+                std::fill(aWidths.begin(), aWidths.end(), nWidth);
+
+                // Add rounding difference to the last component to maintain
+                // ligature width.
+                aWidths[nGraphemeCount - 1] += aGlyphItem.newWidth() - (nWidth * nGraphemeCount);
+            }
+
+            // Set the width of each grapheme cluster.
+            sal_Int32 nDone;
+            sal_Int32 nPos = aGlyphItem.charPos();
+            for (auto nWidth : aWidths)
+            {
+                rCharWidths[nPos - mnMinCharPos] += nWidth;
+                nPos = xBreak->nextCharacters(rStr, nPos, aLocale,
+                    css::i18n::CharacterIteratorMode::SKIPCELL, 1, nDone);
+            }
+        }
+        else
+            rCharWidths[aGlyphItem.charPos() - mnMinCharPos] += aGlyphItem.newWidth();
     }
 }
 
@@ -662,7 +748,7 @@ void GenericSalLayout::ApplyDXArray(const double* pDXArray, const sal_Bool* pKas
     std::unique_ptr<double[]> const pNewCharWidths(new double[nCharCount]);
 
     // Get the natural character widths (i.e. before applying DX adjustments).
-    GetCharWidths(aOldCharWidths);
+    GetCharWidths(aOldCharWidths, {});
 
     // Calculate the character widths after DX adjustments.
     for (int i = 0; i < nCharCount; ++i)

@@ -3098,7 +3098,7 @@ void CellSaveStruct::EndNoBreak( const SwPosition& rPos )
 {
     if( m_bNoBreak )
     {
-        m_oNoBreakEndNodeIndex.emplace( rPos.nNode );
+        m_oNoBreakEndNodeIndex.emplace( rPos.GetNode() );
         m_nNoBreakEndContentPos = rPos.GetContentIndex();
         m_bNoBreak = false;
     }
@@ -3453,7 +3453,7 @@ void SwHTMLParser::BuildTableCell( HTMLTable *pCurTable, bool bReadOptions,
 
                     pTCntxt->SetFrameFormat( pFrameFormat );
                     const SwFormatContent& rFlyContent = pFrameFormat->GetContent();
-                    m_pPam->GetPoint()->nNode = *rFlyContent.GetContentIdx();
+                    m_pPam->GetPoint()->Assign( *rFlyContent.GetContentIdx() );
                     m_xDoc->GetNodes().GoNext( m_pPam->GetPoint() );
                 }
 
@@ -4729,7 +4729,7 @@ void TableSaveStruct::MakeTable( sal_uInt16 nWidth, SwPosition& rPos, SwDoc *pDo
             SwNodeIndex aIdx( *pTableNd->EndOfSectionNode(), 1 );
             OSL_ENSURE( aIdx.GetIndex() <= pTCntxt->GetPos()->GetNodeIndex(),
                     "unexpected node for table layout" );
-            pTableNd->MakeOwnFrames(&aIdx);
+            pTableNd->MakeOwnFrames();
         }
     }
 
@@ -4942,7 +4942,7 @@ void SwHTMLParser::DeleteSection(SwStartNode* pSttNd)
 {
     //if section to be deleted contains a pending m_pMarquee, it will be deleted
     //so clear m_pMarquee pointer if that's the case
-    SwFrameFormat* pObjectFormat = m_pMarquee ? ::FindFrameFormat(m_pMarquee) : nullptr;
+    SwFrameFormat* pObjectFormat = m_pMarquee ? ::FindFrameFormat(m_pMarquee.get()) : nullptr;
     FrameDeleteWatch aWatch(pObjectFormat);
 
     //similarly for footnotes
@@ -5156,7 +5156,7 @@ std::shared_ptr<HTMLTable> SwHTMLParser::BuildTable(SvxAdjust eParentAdjust,
                         pNd = pTableStNd->EndOfSectionNode();
                     SwNodeIndex aDstIdx( *pNd, bTop ? 0 : 1 );
 
-                    m_xDoc->getIDocumentContentOperations().MoveNodeRange( aSrcRg, aDstIdx,
+                    m_xDoc->getIDocumentContentOperations().MoveNodeRange( aSrcRg, aDstIdx.GetNode(),
                         SwMoveFlags::DEFAULT );
 
                     // If the caption was added before the table, a page style on that table

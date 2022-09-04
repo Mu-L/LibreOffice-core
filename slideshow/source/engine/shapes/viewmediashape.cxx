@@ -37,6 +37,8 @@
 #include <canvas/canvastools.hxx>
 #include <cppcanvas/canvas.hxx>
 #include <avmedia/mediawindow.hxx>
+#include <svx/svdobj.hxx>
+#include <svx/svdomedia.hxx>
 
 #include <com/sun/star/awt/XWindow.hpp>
 #include <com/sun/star/beans/XPropertySet.hpp>
@@ -140,6 +142,14 @@ namespace slideshow::internal
         {
             if (mxPlayer.is())
                 mxPlayer->setMediaTime(fTime);
+        }
+
+        void ViewMediaShape::setLooping(bool bLooping)
+        {
+            if (mxPlayer.is())
+            {
+                mxPlayer->setPlaybackLoop(bLooping);
+            }
         }
 
         bool ViewMediaShape::render( const ::basegfx::B2DRectangle& rBounds ) const
@@ -442,10 +452,20 @@ namespace slideshow::internal
 
                             aAWTRect.X = aAWTRect.Y = 0;
 
+                            SdrObject* pObj = SdrObject::getSdrObjectFromXShape(mxShape);
+                            auto pMediaObj = dynamic_cast<SdrMediaObj*>(pObj);
+                            const avmedia::MediaItem* pMediaItem = nullptr;
+                            if (pMediaObj)
+                            {
+                                pMediaItem = &pMediaObj->getMediaProperties();
+                            }
+
                             uno::Sequence< uno::Any >   aArgs{
                                 uno::Any(nParentWindowHandle),
                                 uno::Any(aAWTRect),
-                                uno::Any(reinterpret_cast< sal_IntPtr >( mpMediaWindow.get() ))
+                                uno::Any(reinterpret_cast< sal_IntPtr >( mpMediaWindow.get() )),
+                                // Media item contains media properties, e.g. cropping.
+                                uno::Any(reinterpret_cast< sal_IntPtr >( pMediaItem ))
                             };
 
                             mxPlayerWindow.set( mxPlayer->createPlayerWindow( aArgs ) );

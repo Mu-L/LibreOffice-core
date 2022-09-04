@@ -86,6 +86,7 @@ SwUnoInternalPaM::~SwUnoInternalPaM()
 {
     while( GetNext() != this)
     {
+        // coverity[deref_arg] - the delete moves a new entry into GetNext()
         delete GetNext();
     }
 }
@@ -992,7 +993,7 @@ SwXTextCursor::gotoStart(sal_Bool Expand)
         SwTableNode * pTableNode = rUnoCursor.GetPointNode().FindTableNode();
         while (pTableNode)
         {
-            rUnoCursor.GetPoint()->nNode = *pTableNode->EndOfSectionNode();
+            rUnoCursor.GetPoint()->Assign( *pTableNode->EndOfSectionNode() );
             SwContentNode* pCNode = GetDoc()->GetNodes().GoNext(rUnoCursor.GetPoint());
             pTableNode = pCNode ? pCNode->FindTableNode() : nullptr;
         }
@@ -2849,19 +2850,19 @@ SwXTextCursor::sort(const uno::Sequence< beans::PropertyValue >& rDescriptor)
 
     // update selection
     rUnoCursor.DeleteMark();
-    rUnoCursor.GetPoint()->nNode.Assign( aPrevIdx.GetNode(), +1 );
+    rUnoCursor.GetPoint()->Assign( aPrevIdx.GetNode(), SwNodeOffset(1) );
     SwContentNode *const pCNd = rUnoCursor.GetPointContentNode();
     sal_Int32 nLen = pCNd->Len();
     if (nLen > nCntStt)
     {
         nLen = nCntStt;
     }
-    rUnoCursor.GetPoint()->nContent.Assign(pCNd, nLen );
+    rUnoCursor.GetPoint()->SetContent( nLen );
     rUnoCursor.SetMark();
 
-    rUnoCursor.GetPoint()->nNode += nOffset;
+    rUnoCursor.GetPoint()->Adjust(nOffset);
     SwContentNode *const pCNd2 = rUnoCursor.GetPointContentNode();
-    rUnoCursor.GetPoint()->nContent.Assign( pCNd2, pCNd2->Len() );
+    rUnoCursor.GetPoint()->SetContent( pCNd2->Len() );
 
 }
 

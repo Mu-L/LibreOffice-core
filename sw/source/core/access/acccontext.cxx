@@ -439,9 +439,11 @@ void SwAccessibleContext::InvalidateFocus_()
 
 void SwAccessibleContext::FireAccessibleEvent( AccessibleEventObject& rEvent )
 {
-    OSL_ENSURE( GetFrame(), "fire event for disposed frame?" );
     if( !GetFrame() )
+    {
+        SAL_WARN("sw.a11y", "SwAccessibleContext::FireAccessibleEvent called for already disposed frame?");
         return;
+    }
 
     if( !rEvent.Source.is() )
     {
@@ -562,7 +564,7 @@ uno::Reference< XAccessibleContext > SAL_CALL
     return xRet;
 }
 
-sal_Int32 SAL_CALL SwAccessibleContext::getAccessibleChildCount()
+sal_Int64 SAL_CALL SwAccessibleContext::getAccessibleChildCount()
 {
     SolarMutexGuard aGuard;
 
@@ -572,11 +574,14 @@ sal_Int32 SAL_CALL SwAccessibleContext::getAccessibleChildCount()
 }
 
 uno::Reference< XAccessible> SAL_CALL
-    SwAccessibleContext::getAccessibleChild( sal_Int32 nIndex )
+    SwAccessibleContext::getAccessibleChild( sal_Int64 nIndex )
 {
     SolarMutexGuard aGuard;
 
     ThrowIfDisposed();
+
+    if (nIndex < 0 || nIndex >= getAccessibleChildCount())
+        throw lang::IndexOutOfBoundsException();
 
     const SwAccessibleChild aChild( GetChild( *(GetMap()), nIndex ) );
     if( !aChild.IsValid() )
@@ -688,7 +693,7 @@ uno::Reference< XAccessible> SAL_CALL SwAccessibleContext::getAccessibleParent()
     return getAccessibleParentImpl();
 }
 
-sal_Int32 SAL_CALL SwAccessibleContext::getAccessibleIndexInParent()
+sal_Int64 SAL_CALL SwAccessibleContext::getAccessibleIndexInParent()
 {
     SolarMutexGuard aGuard;
 
@@ -697,7 +702,7 @@ sal_Int32 SAL_CALL SwAccessibleContext::getAccessibleIndexInParent()
     const SwFrame *pUpper = GetParent();
     OSL_ENSURE( pUpper != nullptr || m_isDisposing, "no upper found" );
 
-    sal_Int32 nIndex = -1;
+    sal_Int64 nIndex = -1;
     if( pUpper )
     {
         ::rtl::Reference < SwAccessibleContext > xAccImpl(

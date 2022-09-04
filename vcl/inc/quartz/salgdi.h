@@ -75,6 +75,8 @@ public:
 
     rtl::Reference<LogicalFontInstance> CreateFontInstance(const vcl::font::FontSelectPattern&) const override;
 
+    virtual hb_blob_t*              GetHbTable(hb_tag_t nTag) const override;
+
 private:
     const sal_IntPtr                mnFontId;
     mutable FontCharMapRef          mxCharMap;
@@ -104,8 +106,10 @@ public:
 private:
     explicit CoreTextStyle(const vcl::font::PhysicalFontFace&, const vcl::font::FontSelectPattern&);
 
-    hb_font_t* ImplInitHbFont() override;
+    virtual void ImplInitHbFont(hb_font_t*) override;
     bool ImplGetGlyphBoundRect(sal_GlyphId, tools::Rectangle&, bool) const override;
+
+    void SetFontVariationsOnHBFont(hb_font_t*) const;
 
     /// CoreText text style object
     CFMutableDictionaryRef  mpStyleDict;

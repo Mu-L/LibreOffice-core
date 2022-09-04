@@ -712,6 +712,7 @@ GtkSalFrame::~GtkSalFrame()
     GtkWidget *pEventWidget = getMouseEventWidget();
     for (auto handler_id : m_aMouseSignalIds)
         g_signal_handler_disconnect(G_OBJECT(pEventWidget), handler_id);
+
 #if !GTK_CHECK_VERSION(4, 0, 0)
     if( m_pFixedContainer )
         gtk_widget_destroy( GTK_WIDGET( m_pFixedContainer ) );
@@ -1018,6 +1019,34 @@ void GtkSalFrame::InitCommon()
     gtk_widget_add_controller(pEventWidget, pScrollController);
 #endif
 
+#if GTK_CHECK_VERSION(4,0,0)
+    GtkGesture* pZoomGesture = gtk_gesture_zoom_new();
+    gtk_widget_add_controller(pEventWidget, GTK_EVENT_CONTROLLER(pZoomGesture));
+#else
+    GtkGesture* pZoomGesture = gtk_gesture_zoom_new(GTK_WIDGET(pEventWidget));
+    g_object_weak_ref(G_OBJECT(pEventWidget), reinterpret_cast<GWeakNotify>(g_object_unref), pZoomGesture);
+#endif
+    gtk_event_controller_set_propagation_phase(GTK_EVENT_CONTROLLER(pZoomGesture),
+                                               GTK_PHASE_TARGET);
+    // Note that the default zoom gesture signal handler needs to run first to setup correct
+    // scale delta. Otherwise the first "begin" event will always contain scale delta of infinity.
+    g_signal_connect_after(pZoomGesture, "begin", G_CALLBACK(signalZoomBegin), this);
+    g_signal_connect_after(pZoomGesture, "update", G_CALLBACK(signalZoomUpdate), this);
+    g_signal_connect_after(pZoomGesture, "end", G_CALLBACK(signalZoomEnd), this);
+
+#if GTK_CHECK_VERSION(4,0,0)
+    GtkGesture* pRotateGesture = gtk_gesture_rotate_new();
+    gtk_widget_add_controller(pEventWidget, GTK_EVENT_CONTROLLER(pRotateGesture));
+#else
+    GtkGesture* pRotateGesture = gtk_gesture_rotate_new(GTK_WIDGET(pEventWidget));
+    g_object_weak_ref(G_OBJECT(pEventWidget), reinterpret_cast<GWeakNotify>(g_object_unref), pRotateGesture);
+#endif
+    gtk_event_controller_set_propagation_phase(GTK_EVENT_CONTROLLER(pRotateGesture),
+                                               GTK_PHASE_TARGET);
+    g_signal_connect(pRotateGesture, "begin", G_CALLBACK(signalRotateBegin), this);
+    g_signal_connect(pRotateGesture, "update", G_CALLBACK(signalRotateUpdate), this);
+    g_signal_connect(pRotateGesture, "end", G_CALLBACK(signalRotateEnd), this);
+
     //Drop Target Stuff
 #if GTK_CHECK_VERSION(4,0,0)
     GtkDropTargetAsync* pDropTarget = gtk_drop_target_async_new(nullptr, GdkDragAction(GDK_ACTION_ALL));
@@ -1139,7 +1168,7 @@ void GtkSalFrame::InitCommon()
     gtk_widget_add_events( m_pWindow,
                            GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK |
                            GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK |
-                           GDK_SCROLL_MASK
+                           GDK_SCROLL_MASK | GDK_TOUCHPAD_GESTURE_MASK
                            );
 #endif
 
@@ -4514,6 +4543,76 @@ void GtkSalFrame::signalWindowState(GdkToplevel* pSurface, GParamSpec*, gpointer
     pThis->m_nState = eNewWindowState;
 }
 #endif
+
+namespace
+{
+    bool handleSignalZoom(GtkGesture* gesture, GdkEventSequence* sequence, gpointer frame,
+                          GestureEventZoomType eEventType)
+    {
+        gdouble x = 0;
+        gdouble y = 0;
+        gtk_gesture_get_point(gesture, sequence, &x, &y);
+
+        SalGestureZoomEvent aEvent;
+        aEvent.meEventType = eEventType;
+        aEvent.mnX = x;
+        aEvent.mnY = y;
+        aEvent.mfScaleDelta = gtk_gesture_zoom_get_scale_delta(GTK_GESTURE_ZOOM(gesture));
+        GtkSalFrame* pThis = static_cast<GtkSalFrame*>(frame);
+        pThis->CallCallbackExc(SalEvent::GestureZoom, &aEvent);
+        return true;
+    }
+
+    bool handleSignalRotate(GtkGesture* gesture, GdkEventSequence* sequence, gpointer frame,
+                            GestureEventRotateType eEventType)
+    {
+        gdouble x = 0;
+        gdouble y = 0;
+        gtk_gesture_get_point(gesture, sequence, &x, &y);
+
+        SalGestureRotateEvent aEvent;
+        aEvent.meEventType = eEventType;
+        aEvent.mnX = x;
+        aEvent.mnY = y;
+        aEvent.mfAngleDelta = gtk_gesture_rotate_get_angle_delta(GTK_GESTURE_ROTATE(gesture));
+        GtkSalFrame* pThis = static_cast<GtkSalFrame*>(frame);
+        pThis->CallCallbackExc(SalEvent::GestureRotate, &aEvent);
+        return true;
+    }
+}
+
+bool GtkSalFrame::signalZoomBegin(GtkGesture* gesture, GdkEventSequence* sequence, gpointer frame)
+{
+    return handleSignalZoom(gesture, sequence, frame, GestureEventZoomType::Begin);
+}
+
+bool GtkSalFrame::signalZoomUpdate(GtkGesture* gesture, GdkEventSequence* sequence, gpointer frame)
+{
+    return handleSignalZoom(gesture, sequence, frame, GestureEventZoomType::Update);
+}
+
+bool GtkSalFrame::signalZoomEnd(GtkGesture* gesture, GdkEventSequence* sequence, gpointer frame)
+{
+    return handleSignalZoom(gesture, sequence, frame, GestureEventZoomType::End);
+}
+
+bool GtkSalFrame::signalRotateBegin(GtkGesture* gesture, GdkEventSequence* sequence,
+                                    gpointer frame)
+{
+    return handleSignalRotate(gesture, sequence, frame, GestureEventRotateType::Begin);
+}
+
+bool GtkSalFrame::signalRotateUpdate(GtkGesture* gesture, GdkEventSequence* sequence,
+                                     gpointer frame)
+{
+    return handleSignalRotate(gesture, sequence, frame, GestureEventRotateType::Update);
+}
+
+bool GtkSalFrame::signalRotateEnd(GtkGesture* gesture, GdkEventSequence* sequence,
+                                  gpointer frame)
+{
+    return handleSignalRotate(gesture, sequence, frame, GestureEventRotateType::End);
+}
 
 namespace
 {

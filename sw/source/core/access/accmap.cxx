@@ -2040,8 +2040,8 @@ void SwAccessibleMap::AddGroupContext(const SdrObject *pParentObj, uno::Referenc
     if (!xContext.is())
         return;
 
-    sal_Int32 nChildren = xContext->getAccessibleChildCount();
-    for(sal_Int32 i = 0; i<nChildren; i++)
+    sal_Int64 nChildren = xContext->getAccessibleChildCount();
+    for(sal_Int64 i = 0; i<nChildren; i++)
     {
         uno::Reference < XAccessible > xChild = xContext->getAccessibleChild(i);
         if (xChild.is())
@@ -2092,6 +2092,13 @@ void SwAccessibleMap::RemoveContext( const SwFrame *pFrame )
         return;
 
     mpFrameMap->erase( aIter );
+
+    if (mpSelectedFrameMap)
+    {
+        SwAccessibleContextMap_Impl::iterator aSelectedIter = mpSelectedFrameMap->find(pFrame);
+        if (aSelectedIter != mpSelectedFrameMap->end())
+            mpSelectedFrameMap->erase(aSelectedIter);
+    }
 
     // Remove reference to old caret object. Though mxCursorContext
     // is a weak reference and cleared automatically, clearing it
@@ -2455,13 +2462,13 @@ void SwAccessibleMap::InvalidateAttr( const SwTextFrame& rTextFrame )
     {
         osl::MutexGuard aGuard( maMutex );
 
-        if( mpFrameMap )
-        {
-            SwAccessibleContextMap_Impl::iterator aIter =
-                mpFrameMap->find( aFrameOrObj.GetSwFrame() );
-            if( aIter != mpFrameMap->end() )
-                xAcc = (*aIter).second;
-        }
+        if (!mpFrameMap)
+            return;
+
+        SwAccessibleContextMap_Impl::iterator aIter =
+            mpFrameMap->find( aFrameOrObj.GetSwFrame() );
+        if( aIter != mpFrameMap->end() )
+            xAcc = (*aIter).second;
     }
 
     if( !xAcc.is() )

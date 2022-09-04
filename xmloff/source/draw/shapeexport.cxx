@@ -103,6 +103,7 @@
 #include <tools/globname.hxx>
 #include <tools/helpers.hxx>
 #include <comphelper/diagnose_ex.hxx>
+#include <vcl/graph.hxx>
 
 #include <xmloff/contextid.hxx>
 #include <xmloff/families.hxx>
@@ -3363,6 +3364,82 @@ lcl_StoreMediaAndGetURL(SvXMLExport & rExport,
     }
 }
 
+namespace
+{
+void ExportGraphicPreview(const uno::Reference<graphic::XGraphic>& xGraphic, SvXMLExport& rExport, const std::u16string_view& rPrefix, const std::u16string_view& rExtension, const OUString& rMimeType)
+{
+    const bool bExportEmbedded(rExport.getExportFlags() & SvXMLExportFlags::EMBEDDED);
+
+    if( xGraphic.is() ) try
+    {
+        uno::Reference< uno::XComponentContext > xContext = rExport.getComponentContext();
+
+        uno::Reference< embed::XStorage > xPictureStorage;
+        uno::Reference< embed::XStorage > xStorage;
+        uno::Reference< io::XStream > xPictureStream;
+
+        OUString sPictureName;
+        if( bExportEmbedded )
+        {
+            xPictureStream.set( xContext->getServiceManager()->createInstanceWithContext( "com.sun.star.comp.MemoryStream", xContext), uno::UNO_QUERY_THROW );
+        }
+        else
+        {
+            xStorage.set( rExport.GetTargetStorage(), uno::UNO_SET_THROW );
+
+            xPictureStorage.set( xStorage->openStorageElement( "Pictures" , ::embed::ElementModes::READWRITE ), uno::UNO_SET_THROW );
+
+            sal_Int32 nIndex = 0;
+            do
+            {
+                sPictureName = rPrefix + OUString::number( ++nIndex ) + rExtension;
+            }
+            while( xPictureStorage->hasByName( sPictureName ) );
+
+            xPictureStream.set( xPictureStorage->openStreamElement( sPictureName, ::embed::ElementModes::READWRITE ), uno::UNO_SET_THROW );
+        }
+
+        uno::Reference< graphic::XGraphicProvider > xProvider( graphic::GraphicProvider::create(xContext) );
+        uno::Sequence< beans::PropertyValue > aArgs{
+            comphelper::makePropertyValue("MimeType", rMimeType ),
+                comphelper::makePropertyValue("OutputStream", xPictureStream->getOutputStream())
+        };
+        xProvider->storeGraphic( xGraphic, aArgs );
+
+        if( xPictureStorage.is() )
+        {
+            uno::Reference< embed::XTransactedObject > xTrans( xPictureStorage, uno::UNO_QUERY );
+            if( xTrans.is() )
+                xTrans->commit();
+        }
+
+        if( !bExportEmbedded )
+        {
+            OUString sURL = "Pictures/" + sPictureName;
+            rExport.AddAttribute( XML_NAMESPACE_XLINK, XML_HREF, sURL );
+            rExport.AddAttribute( XML_NAMESPACE_XLINK, XML_TYPE, XML_SIMPLE );
+            rExport.AddAttribute( XML_NAMESPACE_XLINK, XML_SHOW, XML_EMBED );
+            rExport.AddAttribute( XML_NAMESPACE_XLINK, XML_ACTUATE, XML_ONLOAD );
+        }
+
+        SvXMLElementExport aElem( rExport, XML_NAMESPACE_DRAW, XML_IMAGE, false, true );
+
+        if( bExportEmbedded )
+        {
+            uno::Reference< io::XSeekableInputStream > xSeekable( xPictureStream, uno::UNO_QUERY_THROW );
+            xSeekable->seek(0);
+
+            XMLBase64Export aBase64Exp( rExport );
+            aBase64Exp.exportOfficeBinaryDataElement( uno::Reference < io::XInputStream >( xPictureStream, uno::UNO_QUERY_THROW ) );
+        }
+    }
+    catch( uno::Exception const & )
+    {
+        DBG_UNHANDLED_EXCEPTION("xmloff.draw");
+    }
+}
+}
+
 void XMLShapeExport::ImpExportMediaShape(
     const uno::Reference< drawing::XShape >& xShape,
     XmlShapeType eShapeType, XMLShapeExportFlags nFeatures, css::awt::Point* pRefPoint)
@@ -3400,7 +3477,7 @@ void XMLShapeExport::ImpExportMediaShape(
     mrExport.AddAttribute( XML_NAMESPACE_DRAW, XML_MIME_TYPE, sMimeType );
 
     // write plugin
-    SvXMLElementExport aPluginOBJ(mrExport, XML_NAMESPACE_DRAW, XML_PLUGIN, !( nFeatures & XMLShapeExportFlags::NO_WS ), true);
+    auto pPluginOBJ = std::make_unique<SvXMLElementExport>(mrExport, XML_NAMESPACE_DRAW, XML_PLUGIN, !( nFeatures & XMLShapeExportFlags::NO_WS ), true);
 
     // export parameters
     const OUString aFalseStr(  "false"  ), aTrueStr(  "true"  );
@@ -3450,6 +3527,16 @@ void XMLShapeExport::ImpExportMediaShape(
         delete new SvXMLElementExport( mrExport, XML_NAMESPACE_DRAW, XML_PARAM, false, true );
     }
 
+    pPluginOBJ.reset();
+
+    uno::Reference<graphic::XGraphic> xGraphic;
+    xPropSet->getPropertyValue("Graphic") >>= xGraphic;
+    Graphic aGraphic(xGraphic);
+    if (!aGraphic.IsNone())
+    {
+        // The media has a preview, export it.
+        ExportGraphicPreview(xGraphic, mrExport, u"MediaPreview", u".png", "image/png");
+    }
 }
 
 void XMLShapeExport::ImpExport3DSceneShape( const uno::Reference< drawing::XShape >& xShape, XMLShapeExportFlags nFeatures, awt::Point* pRefPoint)
@@ -4973,7 +5060,6 @@ void XMLShapeExport::ImpExportTableShape( const uno::Reference< drawing::XShape 
             bIsEmptyPresObj = ImpExportPresentationAttributes( xPropSet, GetXMLToken(XML_TABLE) );
 
         const bool bCreateNewline( (nFeatures & XMLShapeExportFlags::NO_WS) == XMLShapeExportFlags::NONE );
-        const bool bExportEmbedded(mrExport.getExportFlags() & SvXMLExportFlags::EMBEDDED);
 
         SvXMLElementExport aElement( mrExport, XML_NAMESPACE_DRAW, XML_FRAME, bCreateNewline, true );
 
@@ -5017,73 +5103,7 @@ void XMLShapeExport::ImpExportTableShape( const uno::Reference< drawing::XShape 
         if( !bIsEmptyPresObj )
         {
             uno::Reference< graphic::XGraphic > xGraphic( xPropSet->getPropertyValue("ReplacementGraphic"), uno::UNO_QUERY );
-            if( xGraphic.is() ) try
-            {
-                uno::Reference< uno::XComponentContext > xContext = GetExport().getComponentContext();
-
-                uno::Reference< embed::XStorage > xPictureStorage;
-                uno::Reference< embed::XStorage > xStorage;
-                uno::Reference< io::XStream > xPictureStream;
-
-                OUString sPictureName;
-                if( bExportEmbedded )
-                {
-                    xPictureStream.set( xContext->getServiceManager()->createInstanceWithContext( "com.sun.star.comp.MemoryStream", xContext), uno::UNO_QUERY_THROW );
-                }
-                else
-                {
-                    xStorage.set( GetExport().GetTargetStorage(), uno::UNO_SET_THROW );
-
-                    xPictureStorage.set( xStorage->openStorageElement( "Pictures" , ::embed::ElementModes::READWRITE ), uno::UNO_SET_THROW );
-
-                    sal_Int32 nIndex = 0;
-                    do
-                    {
-                        sPictureName = "TablePreview" + OUString::number( ++nIndex ) + ".svm";
-                    }
-                    while( xPictureStorage->hasByName( sPictureName ) );
-
-                    xPictureStream.set( xPictureStorage->openStreamElement( sPictureName, ::embed::ElementModes::READWRITE ), uno::UNO_SET_THROW );
-                }
-
-                uno::Reference< graphic::XGraphicProvider > xProvider( graphic::GraphicProvider::create(xContext) );
-                uno::Sequence< beans::PropertyValue > aArgs{
-                    comphelper::makePropertyValue("MimeType", OUString( "image/x-vclgraphic" )),
-                    comphelper::makePropertyValue("OutputStream", xPictureStream->getOutputStream())
-                };
-                xProvider->storeGraphic( xGraphic, aArgs );
-
-                if( xPictureStorage.is() )
-                {
-                    uno::Reference< embed::XTransactedObject > xTrans( xPictureStorage, uno::UNO_QUERY );
-                    if( xTrans.is() )
-                        xTrans->commit();
-                }
-
-                if( !bExportEmbedded )
-                {
-                    OUString sURL = "Pictures/" + sPictureName;
-                    mrExport.AddAttribute( XML_NAMESPACE_XLINK, XML_HREF, sURL );
-                    mrExport.AddAttribute( XML_NAMESPACE_XLINK, XML_TYPE, XML_SIMPLE );
-                    mrExport.AddAttribute( XML_NAMESPACE_XLINK, XML_SHOW, XML_EMBED );
-                    mrExport.AddAttribute( XML_NAMESPACE_XLINK, XML_ACTUATE, XML_ONLOAD );
-                }
-
-                SvXMLElementExport aElem( GetExport(), XML_NAMESPACE_DRAW, XML_IMAGE, false, true );
-
-                if( bExportEmbedded )
-                {
-                    uno::Reference< io::XSeekableInputStream > xSeekable( xPictureStream, uno::UNO_QUERY_THROW );
-                    xSeekable->seek(0);
-
-                    XMLBase64Export aBase64Exp( GetExport() );
-                    aBase64Exp.exportOfficeBinaryDataElement( uno::Reference < io::XInputStream >( xPictureStream, uno::UNO_QUERY_THROW ) );
-                }
-            }
-            catch( uno::Exception const & )
-            {
-                DBG_UNHANDLED_EXCEPTION("xmloff.draw");
-            }
+            ExportGraphicPreview(xGraphic, mrExport, u"TablePreview", u".svm", "image/x-vclgraphic");
         }
 
         ImpExportEvents( xShape );

@@ -278,8 +278,8 @@ CPPUNIT_TEST_FIXTURE(SvdrawTest, testRectangleObject)
     pModel->InsertPage(pPage.get(), 0);
 
     tools::Rectangle aSize(Point(), Size(100, 100));
-    auto* pRectangle = new SdrRectObj(*pModel, aSize);
-    pPage->NbcInsertObject(pRectangle);
+    rtl::Reference<SdrRectObj> pRectangle = new SdrRectObj(*pModel, aSize);
+    pPage->NbcInsertObject(pRectangle.get());
     pRectangle->SetMergedItem(XLineStyleItem(drawing::LineStyle_SOLID));
     pRectangle->SetMergedItem(XLineStartWidthItem(200));
 
@@ -343,9 +343,6 @@ CPPUNIT_TEST_FIXTURE(SvdrawTest, testRectangleObject)
     assertXPath(pXmlDoc, aBasePath + "/stroke", 0);
 
     pPage->RemoveObject(0);
-
-    SdrObject* pObject(pRectangle);
-    SdrObject::Free(pObject);
 }
 
 CPPUNIT_TEST_FIXTURE(SvdrawTest, testAutoHeightMultiColShape)
@@ -502,9 +499,9 @@ CPPUNIT_TEST_FIXTURE(SvdrawTest, testVideoSnapshot)
     // Without the accompanying fix in place, this test would have failed with:
     // - Expected: rgba[ff0000ff]
     // - Actual  : rgba[000000ff]
-    // i.e. the preview was black, not red; since we seeked 3 secs into the video, while PowerPoint
+    // i.e. the preview was black, not ~red; since we seeked 3 secs into the video, while PowerPoint
     // doesn't do that.
-    CPPUNIT_ASSERT_EQUAL(Color(0xff, 0x0, 0x0), rBitmap.GetPixelColor(0, 0));
+    CPPUNIT_ASSERT_EQUAL(Color(0xfe, 0x0, 0x0), rBitmap.GetPixelColor(0, 0));
 
     // Without the accompanying fix in place, this test would have failed with:
     // - Expected: 321

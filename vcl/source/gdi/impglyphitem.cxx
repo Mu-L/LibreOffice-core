@@ -363,14 +363,16 @@ SalLayoutGlyphsCache::GetLayoutGlyphs(VclPtr<const OutputDevice> outputDevice, c
             // part being underlined. Doing this for any two segments allows this optimization
             // even when the prefix of the string would use a different font.
             // TODO: Can those font differences be ignored?
-            // Writer layouts tests enable SAL_ABORT_ON_NON_APPLICATION_FONT_USE in order
+            // Writer layouts tests enable SAL_NON_APPLICATION_FONT_USE=abort in order
             // to make PrintFontManager::Substitute() abort if font fallback happens. When
             // laying out the entire string the chance this happens increases (e.g. testAbi11870
             // normally calls this function only for a part of a string, but this optimization
             // lays out the entire string and causes a fallback). Since this optimization
             // does not change result of this function, simply disable it for those tests.
-            static bool bAbortOnFontSubstitute
-                = getenv("SAL_ABORT_ON_NON_APPLICATION_FONT_USE") != nullptr;
+            static const bool bAbortOnFontSubstitute = [] {
+                const char* pEnv = getenv("SAL_NON_APPLICATION_FONT_USE");
+                return pEnv && strcmp(pEnv, "abort") == 0;
+            }();
             if (mLastSubstringKey.has_value() && !bAbortOnFontSubstitute)
             {
                 sal_Int32 pos = nIndex;
@@ -485,6 +487,11 @@ SalLayoutGlyphsCache::CachedGlyphsKey::CachedGlyphsKey(
     const LogicalFontInstance* fi = outputDevice->GetFontInstance();
     fi->GetScale(&fontScaleX, &fontScaleY);
 
+    const vcl::font::FontSelectPattern& rFSD = fi->GetFontSelectPattern();
+    disabledLigatures = rFSD.GetPitch() == PITCH_FIXED;
+    artificialItalic = rFSD.GetItalic() != ITALIC_NONE && fontMetric.GetItalic() == ITALIC_NONE;
+    artificialBold = rFSD.GetWeight() > WEIGHT_MEDIUM && fontMetric.GetWeight() <= WEIGHT_MEDIUM;
+
     hashValue = 0;
     o3tl::hash_combine(hashValue, vcl::text::FirstCharsStringHash()(text));
     o3tl::hash_combine(hashValue, index);
@@ -500,6 +507,9 @@ SalLayoutGlyphsCache::CachedGlyphsKey::CachedGlyphsKey(
     o3tl::hash_combine(hashValue, fontScaleY);
     o3tl::hash_combine(hashValue, mapMode.GetHashValue());
     o3tl::hash_combine(hashValue, rtl);
+    o3tl::hash_combine(hashValue, disabledLigatures);
+    o3tl::hash_combine(hashValue, artificialItalic);
+    o3tl::hash_combine(hashValue, artificialBold);
     o3tl::hash_combine(hashValue, layoutMode);
     o3tl::hash_combine(hashValue, digitLanguage.get());
 }
@@ -508,6 +518,8 @@ inline bool SalLayoutGlyphsCache::CachedGlyphsKey::operator==(const CachedGlyphs
 {
     return hashValue == other.hashValue && index == other.index && len == other.len
            && logicWidth == other.logicWidth && mapMode == other.mapMode && rtl == other.rtl
+           && disabledLigatures == other.disabledLigatures
+           && artificialItalic == other.artificialItalic && artificialBold == other.artificialBold
            && layoutMode == other.layoutMode && digitLanguage == other.digitLanguage
            && fontScaleX == other.fontScaleX && fontScaleY == other.fontScaleY
            && fontMetric.EqualIgnoreColor(other.fontMetric)

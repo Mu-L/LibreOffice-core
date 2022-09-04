@@ -321,13 +321,35 @@ void QtAccessibleEventListener::notifyEvent(const css::accessibility::Accessible
                 new QAccessibleEvent(pQAccessibleInterface, QAccessible::TableSummaryChanged));
             return;
         case AccessibleEventId::SELECTION_CHANGED_ADD:
-            QAccessible::updateAccessibility(
-                new QAccessibleEvent(pQAccessibleInterface, QAccessible::SelectionAdd));
-            return;
         case AccessibleEventId::SELECTION_CHANGED_REMOVE:
-            QAccessible::updateAccessibility(
-                new QAccessibleEvent(pQAccessibleInterface, QAccessible::SelectionRemove));
+        {
+            QAccessible::Event eEventType;
+            if (aEvent.EventId == AccessibleEventId::SELECTION_CHANGED_ADD)
+                eEventType = QAccessible::SelectionAdd;
+            else
+                eEventType = QAccessible::SelectionRemove;
+
+            uno::Reference<accessibility::XAccessible> xChildAcc;
+            aEvent.NewValue >>= xChildAcc;
+            if (!xChildAcc.is())
+            {
+                SAL_WARN("vcl.qt",
+                         "Selection add/remove event without the (un)selected accessible set");
+                return;
+            }
+            Reference<XAccessibleContext> xContext = xChildAcc->getAccessibleContext();
+            if (!xContext.is())
+            {
+                SAL_WARN("vcl.qt", "No valid XAccessibleContext for (un)selected accessible.");
+                return;
+            }
+
+            // Qt expects the event to be sent for the (un)selected child
+            QObject* pChildObject = QtAccessibleRegistry::getQObject(xChildAcc);
+            assert(pChildObject);
+            QAccessible::updateAccessibility(new QAccessibleEvent(pChildObject, eEventType));
             return;
+        }
         case AccessibleEventId::SELECTION_CHANGED_WITHIN:
             QAccessible::updateAccessibility(
                 new QAccessibleEvent(pQAccessibleInterface, QAccessible::SelectionWithin));

@@ -80,7 +80,8 @@ void SwEditShell::GetGlobalDocContent( SwGlblDocContents& rArr ) const
                 pNew.reset(new SwGlblDocContent( pSect ));
                 break;
             }
-            rArr.insert( std::move(pNew) );
+            if (pNew)
+                rArr.insert( std::move(pNew) );
         }
     }
 
@@ -323,7 +324,7 @@ bool SwEditShell::MoveGlobalDocContent( const SwGlblDocContents& rArr ,
     else
         aInsPos  = pMyDoc->GetNodes().GetEndOfContent();
 
-    bool bRet = pMyDoc->getIDocumentContentOperations().MoveNodeRange( aRg, aInsPos,
+    bool bRet = pMyDoc->getIDocumentContentOperations().MoveNodeRange( aRg, aInsPos.GetNode(),
               SwMoveFlags::CREATEUNDOOBJ );
 
     EndAllAction();

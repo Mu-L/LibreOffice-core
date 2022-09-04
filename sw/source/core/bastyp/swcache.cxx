@@ -44,20 +44,19 @@ void SwCache::Check()
     SwCacheObj *const pOldRealFirst = m_pRealFirst;
     while ( pObj )
     {
-        // the object must be found also when moving backwards
-        SwCacheObj *pTmp = m_pLast;
-        while ( pTmp && pTmp != pObj )
-            pTmp = pTmp->GetPrev();
-        assert(pTmp && "Object not found.");
-
         ++nCnt;
         if ( pObj == m_pFirst )
             bFirstFound = true;
-        if ( !pObj->GetNext() )
+        SwCacheObj* pNext = pObj->GetNext();
+        if ( !pNext )
         {
             assert(pObj == m_pLast);
         }
-        pObj = pObj->GetNext();
+        else
+        {
+            assert(pObj == pNext->GetPrev());
+        }
+        pObj = pNext;
         assert(pObj != pOldRealFirst); (void) pOldRealFirst;
     }
     assert(bFirstFound);
@@ -151,17 +150,14 @@ void SwCache::Flush()
     INCREMENT( m_nFlushCnt );
     SwCacheObj *pObj = m_pRealFirst;
     m_pRealFirst = m_pFirst = m_pLast = nullptr;
-    SwCacheObj *pTmp;
     while ( pObj )
     {
         assert(!pObj->IsLocked());
-        {
-            pTmp = pObj;
-            pObj = pTmp->GetNext();
-            m_aFreePositions.push_back( pTmp->GetCachePos() );
-            m_aCacheObjects[pTmp->GetCachePos()].reset(); // deletes pTmp
-            INCREMENT( m_nFlushedObjects );
-        }
+        SwCacheObj *pTmp = pObj;
+        pObj = pTmp->GetNext();
+        m_aFreePositions.push_back( pTmp->GetCachePos() );
+        m_aCacheObjects[pTmp->GetCachePos()].reset(); // deletes pTmp
+        INCREMENT( m_nFlushedObjects );
     }
 }
 
@@ -474,13 +470,13 @@ SwCacheObj::~SwCacheObj()
 #ifdef DBG_UTIL
 void SwCacheObj::Lock()
 {
-    OSL_ENSURE( m_nLock < UCHAR_MAX, "Too many Locks for CacheObject." );
+    assert( m_nLock < UCHAR_MAX && "Too many Locks for CacheObject." );
     ++m_nLock;
 }
 
 void SwCacheObj::Unlock()
 {
-    OSL_ENSURE( m_nLock, "No more Locks available." );
+    assert( m_nLock && "No more Locks available." );
     --m_nLock;
 }
 #endif

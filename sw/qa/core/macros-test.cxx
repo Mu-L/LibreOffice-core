@@ -113,7 +113,7 @@ void SwMacrosTest::testVba()
         {
             OUString("testDocumentRange.docm"),
             OUString("vnd.sun.Star.script:Project.Module1.testAll?language=Basic&location=document")
-        }
+        },
         /*{
             OUString("testSelectionFind.docm"),
             OUString("vnd.sun.Star.script:Project.Module1.testAll?language=Basic&location=document")
@@ -136,11 +136,11 @@ void SwMacrosTest::testVba()
         {
             OUString("testParagraphFormat.docm"),
             OUString("vnd.sun.Star.script:Project.ThisDocument.TestAll?language=Basic&location=document")
-        },
+        },*/
         {
             OUString("testTables.docm"),
-            OUString("vnd.sun.Star.script:Project.ThisDocument.RightPadding?language=Basic&location=document")
-        }*/
+            OUString("vnd.sun.Star.script:Project.ThisDocument.TestAll?language=Basic&location=document")
+        }
 
     };
     for ( size_t  i=0; i<SAL_N_ELEMENTS( testInfo ); ++i )
@@ -534,7 +534,7 @@ void SwMacrosTest::testFindReplace()
             opts, false, SwDocPositions::Curr, SwDocPositions::End, bCancel, FindRanges::InBody);
     CPPUNIT_ASSERT(bFound);
     CPPUNIT_ASSERT(pPaM->HasMark());
-    CPPUNIT_ASSERT(pPaM->GetPoint()->nNode != pPaM->GetMark()->nNode);
+    CPPUNIT_ASSERT(pPaM->GetPoint()->GetNode() != pPaM->GetMark()->GetNode());
     CPPUNIT_ASSERT_EQUAL(OUString(OUStringChar(CH_TXTATR_NEWLINE)), pPaM->GetText());
 
     // now do another Find, inside the selection from the first Find
@@ -543,7 +543,7 @@ void SwMacrosTest::testFindReplace()
             opts, false, SwDocPositions::Curr, SwDocPositions::End, bCancel, FindRanges::InSel);
     CPPUNIT_ASSERT(bFound);
     CPPUNIT_ASSERT(pPaM->HasMark());
-    CPPUNIT_ASSERT(pPaM->GetPoint()->nNode != pPaM->GetMark()->nNode);
+    CPPUNIT_ASSERT(pPaM->GetPoint()->GetNode() != pPaM->GetMark()->GetNode());
     CPPUNIT_ASSERT_EQUAL(OUString(OUStringChar(CH_TXTATR_NEWLINE)), pPaM->GetText());
 
     rIDCO.ReplaceRange(*pPaM, " ", true);

@@ -338,6 +338,7 @@ void Reader::readMessage(Unmarshal & unmarshal) {
         uno_threadpool_putJob(
             bridge_->getThreadPool(), tid.getHandle(), req.get(), &request,
             !synchronous);
+        // coverity[leaked_storage] - "request" destroys req when executed
         req.release();
     }
 }
@@ -446,6 +447,7 @@ void Reader::readReplyMessage(Unmarshal & unmarshal, sal_uInt8 flags1) {
             uno_threadpool_putJob(
                 bridge_->getThreadPool(), tid.getHandle(), resp.get(), nullptr,
                 false);
+            // coverity[leaked_storage] - "Bridge::makeCall" destroys resp when received
             resp.release();
             break;
         }

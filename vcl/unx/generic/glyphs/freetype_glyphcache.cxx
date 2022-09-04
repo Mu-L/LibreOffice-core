@@ -212,7 +212,7 @@ FT_FaceRec_* FreetypeFontInfo::GetFaceFT()
     return maFaceFT;
 }
 
-void FreetypeFont::SetFontVariationsOnHBFont(hb_font_t* pHbFace) const
+void FreetypeFont::SetFontVariationsOnHBFont(hb_font_t* pHbFont) const
 {
     sal_uInt32 nFaceVariation = mxFontInfo->GetFontFaceVariation();
     if (!(maFaceFT && nFaceVariation))
@@ -231,7 +231,7 @@ void FreetypeFont::SetFontVariationsOnHBFont(hb_font_t* pHbFace) const
             aVariations[i].tag = pFtMMVar->axis[i].tag;
             aVariations[i].value = instance->coords[i] / 65536.0;
         }
-        hb_font_set_variations(pHbFace, aVariations.data(), aVariations.size());
+        hb_font_set_variations(pHbFont, aVariations.data(), aVariations.size());
     }
     dlFT_Done_MM_Var(aLibFT, pFtMMVar);
 }
@@ -313,40 +313,6 @@ void FreetypeManager::InitFreetype()
         nDefaultPrioAntiAlias = pEnv[0] - '0';
 }
 
-namespace
-{
-    bool DoesAlmostHorizontalDrainRenderingPool()
-    {
-        FT_Int nMajor, nMinor, nPatch;
-        FT_Library_Version(aLibFT, &nMajor, &nMinor, &nPatch);
-        if (nMajor > 2)
-            return false;
-        if (nMajor == 2 && nMinor <= 8)
-            return true;
-        return false;
-    }
-}
-
-bool FreetypeFont::AlmostHorizontalDrainsRenderingPool(int nRatio, const vcl::font::FontSelectPattern& rFSD)
-{
-    static bool bAlmostHorizontalDrainsRenderingPool = DoesAlmostHorizontalDrainRenderingPool();
-    if (nRatio > 100 && rFSD.maTargetName == "OpenSymbol" && bAlmostHorizontalDrainsRenderingPool)
-    {
-        // tdf#127189 FreeType <= 2.8 will fail to render stretched horizontal
-        // brace glyphs in starmath at a fairly low stretch ratio. The failure
-        // will set CAIRO_STATUS_FREETYPE_ERROR on the surface which cannot be
-        // cleared, so all further painting to the surface fails.
-
-        // This appears fixed in >= freetype 2.9
-
-        // Restrict this bodge to a stretch ratio > ~10 of the OpenSymbol font
-        // where it has been seen in practice.
-        SAL_WARN("vcl", "rendering text would fail with stretch ratio of: " << nRatio << ", with FreeType <= 2.8");
-        return true;
-    }
-    return false;
-}
-
 FT_Face FreetypeFont::GetFtFace() const
 {
     FT_Activate_Size( maSizeFT );
@@ -400,11 +366,30 @@ FreetypeFontFace::FreetypeFontFace( FreetypeFontInfo* pFI, const FontAttributes&
 :   vcl::font::PhysicalFontFace( rDFA ),
     mpFreetypeFontInfo( pFI )
 {
+    assert(mpFreetypeFontInfo);
 }
 
 rtl::Reference<LogicalFontInstance> FreetypeFontFace::CreateFontInstance(const vcl::font::FontSelectPattern& rFSD) const
 {
     return new FreetypeFontInstance(*this, rFSD);
+}
+
+hb_face_t* FreetypeFontFace::GetHbFace() const
+{
+    if (!mpHbFace)
+    {
+        auto* pFileName = mpFreetypeFontInfo->GetFontFileName().getStr();
+        auto nIndex = mpFreetypeFontInfo->GetFontFaceIndex();
+        hb_blob_t* pHbBlob = hb_blob_create_from_file(pFileName);
+        mpHbFace = hb_face_create(pHbBlob, nIndex);
+        hb_blob_destroy(pHbBlob);
+    }
+    return mpHbFace;
+}
+
+hb_blob_t* FreetypeFontFace::GetHbTable(hb_tag_t nTag) const
+{
+    return hb_face_reference_table(mpHbFace, nTag);
 }
 
 // FreetypeFont
@@ -452,11 +437,8 @@ FreetypeFont::FreetypeFont(FreetypeFontInstance& rFontInstance, std::shared_ptr<
         SAL_WARN("vcl", "FreetypeFont negative font width of: " << mnWidth);
         return;
     }
-    if (mfStretch > +148.0 || mfStretch < -148.0)
-    {
-        SAL_WARN("vcl", "FreetypeFont excessive stretch of: " << mfStretch);
-        return;
-    }
+
+    SAL_WARN_IF(mfStretch > +64.0 || mfStretch < -64.0, "vcl", "FreetypeFont excessive stretch of: " << mfStretch);
 
     if( !maFaceFT )
         return;

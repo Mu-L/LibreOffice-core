@@ -190,8 +190,8 @@ void CairoTextRender::DrawTextLayout(const GenericSalLayout& rLayout, const SalG
         return;
 
     const vcl::font::FontSelectPattern& rFSD = rInstance.GetFontSelectPattern();
-    int nHeight = rFSD.mnHeight;
-    int nWidth = rFSD.mnWidth ? rFSD.mnWidth : nHeight;
+    double nHeight = rFSD.mnHeight;
+    double nWidth = rFSD.mnWidth ? rFSD.mnWidth : nHeight;
     if (nWidth == 0 || nHeight == 0)
         return;
 
@@ -205,8 +205,6 @@ void CairoTextRender::DrawTextLayout(const GenericSalLayout& rLayout, const SalG
     }
 
     int nRatio = nWidth * 10 / nHeight;
-    if (FreetypeFont::AlmostHorizontalDrainsRenderingPool(nRatio, rFSD))
-        return;
 
     /*
      * It might be ideal to cache surface and cairo context between calls and

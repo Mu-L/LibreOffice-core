@@ -43,10 +43,9 @@ class ATL_NO_VTABLE CEnumVariant :
 {
 public:
     CEnumVariant()
-            :m_lLBound(0),
+            :m_nCurrent(0),
             pUNOInterface(nullptr)
     {
-        m_lCurrent = m_lLBound;
     }
 
     virtual ~CEnumVariant() {};
@@ -99,8 +98,7 @@ public:
 
 private:
 
-    long m_lCurrent;
-    long m_lLBound;
+    sal_Int64 m_nCurrent;
     css::accessibility::XAccessible* pUNOInterface;
     css::uno::Reference<css::accessibility::XAccessibleSelection>
         m_pXAccessibleSelection;

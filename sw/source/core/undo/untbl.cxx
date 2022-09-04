@@ -336,9 +336,6 @@ void SwUndoInsTable::RedoImpl(::sw::UndoRedoContext & rContext)
         return;
 
     SwPaM aPam( *pTableNode->EndOfSectionNode(), *pTableNode, SwNodeOffset(1) );
-    SwContentNode* pCNd = aPam.GetMarkContentNode();
-    if( pCNd )
-        aPam.GetMark()->nContent.Assign( pCNd, 0 );
 
     if( m_pRedlineData && IDocumentRedlineAccess::IsRedlineOn( GetRedlineFlags() ) )
     {
@@ -468,9 +465,9 @@ void SwUndoTableToText::UndoImpl(::sw::UndoRedoContext & rContext)
     SwNodeIndex aFrameIdx( rDoc.GetNodes(), m_nStartNode );
     SwNodeIndex aEndIdx( rDoc.GetNodes(), m_nEndNode );
 
-    pPam->GetPoint()->nNode = aFrameIdx;
+    pPam->GetPoint()->Assign( aFrameIdx );
     pPam->SetMark();
-    pPam->GetPoint()->nNode = aEndIdx;
+    pPam->GetPoint()->Assign( aEndIdx );
     rDoc.DelNumRules( *pPam );
     pPam->DeleteMark();
 
@@ -517,9 +514,9 @@ void SwUndoTableToText::UndoImpl(::sw::UndoRedoContext & rContext)
 
     // Is a table selection requested?
     pPam->DeleteMark();
-    pPam->GetPoint()->nNode = *pTableNd->EndOfSectionNode();
+    pPam->GetPoint()->Assign( *pTableNd->EndOfSectionNode() );
     pPam->SetMark();
-    pPam->GetPoint()->nNode = *pPam->GetPointNode().StartOfSectionNode();
+    pPam->GetPoint()->Assign( *pPam->GetPointNode().StartOfSectionNode() );
     pPam->Move( fnMoveForward, GoInContent );
     pPam->Exchange();
     pPam->Move( fnMoveBackward, GoInContent );
@@ -650,8 +647,7 @@ void SwUndoTableToText::RedoImpl(::sw::UndoRedoContext & rContext)
     SwDoc & rDoc = rContext.GetDoc();
     SwPaM *const pPam(& rContext.GetCursorSupplier().CreateNewShellCursor());
 
-    pPam->GetPoint()->nNode = m_nStartNode;
-    pPam->GetPoint()->nContent.Assign( nullptr, 0 );
+    pPam->GetPoint()->Assign( m_nStartNode );
     SwNodeIndex aSaveIdx( pPam->GetPoint()->GetNode(), -1 );
 
     pPam->SetMark();            // log off all indices
@@ -686,7 +682,7 @@ void SwUndoTableToText::RepeatImpl(::sw::RepeatContext & rContext)
     if( pTableNd )
     {
         // move cursor out of table
-        pPam->GetPoint()->nNode = *pTableNd->EndOfSectionNode();
+        pPam->GetPoint()->Assign( *pTableNd->EndOfSectionNode() );
         pPam->Move( fnMoveForward, GoInContent );
         pPam->SetMark();
         pPam->DeleteMark();
@@ -774,28 +770,27 @@ void SwUndoTextToTable::UndoImpl(::sw::UndoRedoContext & rContext)
         pPos->Assign(nTableNd);
         if (aPam.Move(fnMoveBackward, GoInContent))
         {
-            SwNodeIndex & rIdx = aPam.GetPoint()->nNode;
+            SwNode & rIdx = aPam.GetPoint()->GetNode();
 
             // than move, relatively, the Cursor/etc. again
             RemoveIdxRel( rIdx.GetIndex()+1, *pPos );
 
-            rIdx.GetNode().GetContentNode()->JoinNext();
+            rIdx.GetContentNode()->JoinNext();
         }
     }
 
     // join again at end?
     if( m_bSplitEnd )
     {
-        SwNodeIndex& rIdx = pPos->nNode;
-        rIdx = m_nEndNode;
-        SwTextNode* pTextNd = rIdx.GetNode().GetTextNode();
+        pPos->Assign( m_nEndNode );
+        SwTextNode* pTextNd = pPos->GetNode().GetTextNode();
         if( pTextNd && pTextNd->CanJoinNext() )
         {
             aPam.GetMark()->nContent.Assign( nullptr, 0 );
             aPam.GetPoint()->nContent.Assign( nullptr, 0 );
 
             // than move, relatively, the Cursor/etc. again
-            pPos->nContent.Assign(pTextNd, pTextNd->GetText().getLength());
+            pPos->SetContent(pTextNd->GetText().getLength());
             RemoveIdxRel( m_nEndNode + 1, *pPos );
 
             pTextNd->JoinNext();
@@ -995,8 +990,7 @@ void SaveTable::RestoreAttr( SwTable& rTable, bool bMdfyBox )
         {
             SwTableNode* pTableNode = rTable.GetTableNode();
             pTableNode->DelFrames();
-            SwNodeIndex aTableIdx( *pTableNode->EndOfSectionNode(), 1 );
-            pTableNode->MakeOwnFrames(&aTableIdx);
+            pTableNode->MakeOwnFrames();
         }
         else
         {
@@ -2006,7 +2000,7 @@ void SwUndoTableMerge::RedoImpl(::sw::UndoRedoContext & rContext)
     rDoc.MergeTable(rPam);
 }
 
-void SwUndoTableMerge::MoveBoxContent( SwDoc& rDoc, SwNodeRange& rRg, SwNodeIndex& rPos )
+void SwUndoTableMerge::MoveBoxContent( SwDoc& rDoc, SwNodeRange& rRg, SwNode& rPos )
 {
     SwNodeIndex aTmp( rRg.aStart, -1 ), aTmp2( rPos, -1 );
     std::unique_ptr<SwUndoMove> pUndo(new SwUndoMove( rDoc, rRg, rPos ));
@@ -2016,7 +2010,7 @@ void SwUndoTableMerge::MoveBoxContent( SwDoc& rDoc, SwNodeRange& rRg, SwNodeInde
         SwMoveFlags::DEFAULT );
     ++aTmp;
     ++aTmp2;
-    pUndo->SetDestRange( aTmp2, rPos, aTmp );
+    pUndo->SetDestRange( aTmp2.GetNode(), rPos, aTmp );
 
     m_vMoves.push_back(std::move(pUndo));
 }
@@ -2178,8 +2172,7 @@ void SwUndoTableNumFormat::UndoImpl(::sw::UndoRedoContext & rContext)
 
     SwPaM *const pPam(& rContext.GetCursorSupplier().CreateNewShellCursor());
     pPam->DeleteMark();
-    pPam->GetPoint()->nNode = m_nNode + 1;
-    pPam->GetPoint()->nContent.Assign( pTextNd, 0 );
+    pPam->GetPoint()->Assign( m_nNode + 1 );
 }
 
 namespace {
@@ -2231,7 +2224,7 @@ void SwUndoTableNumFormat::RedoImpl(::sw::UndoRedoContext & rContext)
     SwPaM *const pPam(& rContext.GetCursorSupplier().CreateNewShellCursor());
 
     pPam->DeleteMark();
-    pPam->GetPoint()->nNode = m_nNode;
+    pPam->GetPoint()->Assign( m_nNode );
 
     SwNode * pNd = & pPam->GetPoint()->GetNode();
     SwStartNode* pSttNd = pNd->FindSttNodeByType( SwTableBoxStartNode );
@@ -2307,8 +2300,7 @@ void SwUndoTableNumFormat::RedoImpl(::sw::UndoRedoContext & rContext)
     }
 
     if( !pNd->IsContentNode() )
-        pNd = rDoc.GetNodes().GoNext( &pPam->GetPoint()->nNode );
-    pPam->GetPoint()->nContent.Assign( static_cast<SwContentNode*>(pNd), 0 );
+        pNd = rDoc.GetNodes().GoNext( pPam->GetPoint() );
 }
 
 void SwUndoTableNumFormat::SetBox( const SwTableBox& rBox )
@@ -2452,7 +2444,7 @@ void SwUndoTableCpyTable::UndoImpl(::sw::UndoRedoContext & rContext)
             {
                 // The aPam.Point is at the moment at the last position of the new content and has to be
                 // moved to the first position of the old content for the SwUndoDelete operation
-                aPam.GetPoint()->Assign(aPam.GetPoint()->nNode.GetNode(), SwNodeOffset(1));
+                aPam.GetPoint()->Assign(aPam.GetPoint()->GetNode(), SwNodeOffset(1));
             }
             pUndo = std::make_unique<SwUndoDelete>(aPam, SwDeleteFlags::Default, bDeleteCompleteParagraph, true);
         }
@@ -2671,11 +2663,11 @@ std::unique_ptr<SwUndo> SwUndoTableCpyTable::PrepareRedline( SwDoc* pDoc, const 
     {
         // If the content is not merged, the end of the insertion is at the end of the node
         // _before_ the given position rPos
-        --aInsertEnd.nNode;
+        aInsertEnd.Adjust(SwNodeOffset(-1));
         pText = aInsertEnd.GetNode().GetTextNode();
         if( pText )
         {
-            aInsertEnd.nContent.Assign(pText, pText->GetText().getLength());
+            aInsertEnd.SetContent(pText->GetText().getLength());
             if( !bRedo && rPos.GetNode().GetTextNode() )
             {   // Try to merge, if not called by Redo()
                 rJoin = true;
@@ -2840,10 +2832,9 @@ void SwUndoSplitTable::UndoImpl(::sw::UndoRedoContext & rContext)
     SwDoc *const pDoc = & rContext.GetDoc();
     SwPaM *const pPam(& rContext.GetCursorSupplier().CreateNewShellCursor());
 
-    SwNodeIndex& rIdx = pPam->GetPoint()->nNode;
-    rIdx = m_nTableNode + m_nOffset;
-    pPam->GetPoint()->nContent.Assign(rIdx.GetNode().GetContentNode(), 0);
-    assert(rIdx.GetNode().GetContentNode()->Len() == 0); // empty para inserted
+    SwPosition& rPtPos = *pPam->GetPoint();
+    rPtPos.Assign( m_nTableNode + m_nOffset );
+    assert(rPtPos.GetNode().GetContentNode()->Len() == 0); // empty para inserted
 
     {
         // avoid asserts from ~SwContentIndexReg
@@ -2858,8 +2849,8 @@ void SwUndoSplitTable::UndoImpl(::sw::UndoRedoContext & rContext)
         pDoc->GetNodes().Delete( idx );
     }
 
-    rIdx = m_nTableNode + m_nOffset;
-    SwTableNode* pTableNd = rIdx.GetNode().GetTableNode();
+    rPtPos.Assign( m_nTableNode + m_nOffset );
+    SwTableNode* pTableNd = rPtPos.GetNode().GetTableNode();
     SwTable& rTable = pTableNd->GetTable();
 
     SwTableFormulaUpdate aMsgHint( &rTable );
@@ -2895,7 +2886,7 @@ void SwUndoSplitTable::UndoImpl(::sw::UndoRedoContext & rContext)
     default: break;
     }
 
-    pDoc->GetNodes().MergeTable( rIdx.GetNode() );
+    pDoc->GetNodes().MergeTable( rPtPos.GetNode() );
 
     if( m_pHistory )
     {
@@ -2904,7 +2895,7 @@ void SwUndoSplitTable::UndoImpl(::sw::UndoRedoContext & rContext)
     }
     if( mpSaveRowSpan )
     {
-        pTableNd = rIdx.GetNode().FindTableNode();
+        pTableNd = rPtPos.GetNode().FindTableNode();
         if( pTableNd )
             pTableNd->GetTable().RestoreRowSpan( *mpSaveRowSpan );
     }
@@ -2917,7 +2908,7 @@ void SwUndoSplitTable::RedoImpl(::sw::UndoRedoContext & rContext)
     SwPaM *const pPam(& rContext.GetCursorSupplier().CreateNewShellCursor());
 
     pPam->DeleteMark();
-    pPam->GetPoint()->nNode = m_nTableNode;
+    pPam->GetPoint()->Assign( m_nTableNode );
     pDoc->SplitTable( *pPam->GetPoint(), m_nMode, m_bCalcNewSize );
 
     ClearFEShellTabCols(*pDoc, nullptr);
@@ -2973,10 +2964,10 @@ void SwUndoMergeTable::UndoImpl(::sw::UndoRedoContext & rContext)
     SwPaM *const pPam(& rContext.GetCursorSupplier().CreateNewShellCursor());
 
     pPam->DeleteMark();
-    SwNodeIndex& rIdx = pPam->GetPoint()->nNode;
-    rIdx = m_nTableNode;
+    SwPosition& rPtPos = *pPam->GetPoint();
+    rPtPos.Assign( m_nTableNode);
 
-    SwTableNode* pTableNd = rIdx.GetNode().FindTableNode();
+    SwTableNode* pTableNd = rPtPos.GetNode().FindTableNode();
     SwTable* pTable = &pTableNd->GetTable();
 
     SwTableFormulaUpdate aMsgHint( pTable );
@@ -2989,7 +2980,7 @@ void SwUndoMergeTable::UndoImpl(::sw::UndoRedoContext & rContext)
     aFndBox.DelFrames( *pTable );
     // ? TL_CHART2: notification or locking of controller required ?
 
-    SwTableNode* pNew = pDoc->GetNodes().SplitTable( rIdx.GetNode() );
+    SwTableNode* pNew = pDoc->GetNodes().SplitTable( rPtPos.GetNode() );
 
     // update layout
     aFndBox.MakeFrames( *pTable );
@@ -3014,12 +3005,10 @@ void SwUndoMergeTable::UndoImpl(::sw::UndoRedoContext & rContext)
     }
 
     // create frames for the new table
-    SwNodeIndex aTmpIdx( *pNew );
-    pNew->MakeOwnFrames(&aTmpIdx);
+    pNew->MakeOwnFrames();
 
     // position cursor somewhere in content
-    SwContentNode* pCNd = pDoc->GetNodes().GoNext( &rIdx );
-    pPam->GetPoint()->nContent.Assign( pCNd, 0 );
+    pDoc->GetNodes().GoNext( &rPtPos );
 
     ClearFEShellTabCols(*pDoc, nullptr);
 
@@ -3038,11 +3027,10 @@ void SwUndoMergeTable::RedoImpl(::sw::UndoRedoContext & rContext)
     SwPaM *const pPam(& rContext.GetCursorSupplier().CreateNewShellCursor());
 
     pPam->DeleteMark();
-    pPam->GetPoint()->nNode = m_nTableNode;
     if( m_bWithPrev )
-        pPam->GetPoint()->nNode = m_nTableNode + 3;
+        pPam->GetPoint()->Assign( m_nTableNode + 3 );
     else
-        pPam->GetPoint()->nNode = m_nTableNode;
+        pPam->GetPoint()->Assign( m_nTableNode );
 
     pDoc->MergeTable( *pPam->GetPoint(), m_bWithPrev, m_nMode );
 
