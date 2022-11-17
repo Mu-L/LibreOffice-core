@@ -22,6 +22,7 @@
 #include <tools/date.hxx>
 #include <tools/time.hxx>
 #include <svl/fstathelper.hxx>
+#include <unotools/configmgr.hxx>
 #include <unotools/moduleoptions.hxx>
 #include <sfx2/docfile.hxx>
 #include <sfx2/docfilt.hxx>
@@ -30,6 +31,7 @@
 #include <editeng/boxitem.hxx>
 #include <editeng/paperinf.hxx>
 #include <o3tl/deleter.hxx>
+#include <officecfg/Office/Writer.hxx>
 #include <node.hxx>
 #include <docary.hxx>
 #include <fmtanchr.hxx>
@@ -74,6 +76,16 @@ static bool sw_MergePortions(SwNode* pNode, void *)
         pNode->GetTextNode()->FileLoadedInitHints();
     }
     return true;
+}
+
+void SwAsciiOptions::Reset()
+{
+    m_sFont.clear();
+    m_eCRLF_Flag = GetSystemLineEnd();
+    m_eCharSet = ::osl_getThreadTextEncoding();
+    m_nLanguage = LANGUAGE_SYSTEM;
+    m_bIncludeBOM = true;
+    m_bIncludeHidden = !utl::ConfigManager::IsFuzzing() && officecfg::Office::Writer::FilterFlags::ASCII::IncludeHiddenText::get();
 }
 
 ErrCode SwReader::Read( const Reader& rOptions )

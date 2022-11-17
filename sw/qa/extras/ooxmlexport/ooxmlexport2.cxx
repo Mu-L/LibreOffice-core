@@ -173,9 +173,9 @@ DECLARE_OOXMLEXPORT_TEST(testZoom, "zoom.docx")
     CPPUNIT_ASSERT_EQUAL(sal_Int16(42), nValue);
 
     // Validation test: order of elements were wrong.
-    xmlDocUniquePtr pXmlDoc = parseExport("word/styles.xml");
-    if (!pXmlDoc)
+    if (!isExported())
         return;
+    xmlDocUniquePtr pXmlDoc = parseExport("word/styles.xml");
     // Order was: rsid, next.
     int nNext = getXPathPosition(pXmlDoc, "/w:styles/w:style[3]", "next");
     int nRsid = getXPathPosition(pXmlDoc, "/w:styles/w:style[3]", "rsid");
@@ -586,7 +586,7 @@ DECLARE_OOXMLEXPORT_TEST(testTextframeGradient, "textframe-gradient.docx")
     xFrame.set(getShape(2), uno::UNO_QUERY);
     CPPUNIT_ASSERT_EQUAL(drawing::FillStyle_GRADIENT, getProperty<drawing::FillStyle>(xFrame, "FillStyle"));
     aGradient = getProperty<awt::Gradient>(xFrame, "FillGradient");
-    CPPUNIT_ASSERT_EQUAL(Color(0x000000), Color(ColorTransparency, aGradient.StartColor));
+    CPPUNIT_ASSERT_EQUAL(COL_BLACK, Color(ColorTransparency, aGradient.StartColor));
     CPPUNIT_ASSERT_EQUAL(Color(0x666666), Color(ColorTransparency, aGradient.EndColor));
     CPPUNIT_ASSERT_EQUAL(awt::GradientStyle_AXIAL, aGradient.Style);
 
@@ -605,7 +605,7 @@ CPPUNIT_TEST_FIXTURE(Test, testCellBtlr)
      * w:val="btLr"/> token was completely missing in the output.
      */
 
-    xmlDocUniquePtr pXmlDoc = parseExport();
+    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
     assertXPath(pXmlDoc, "/w:document/w:body/w:tbl/w:tr/w:tc/w:tcPr/w:textDirection", "val", "btLr");
 }
 
@@ -679,8 +679,9 @@ DECLARE_OOXMLEXPORT_TEST(testFdo64826, "fdo64826.docx")
     // 'Track-Changes' (Track Revisions) wasn't exported.
     CPPUNIT_ASSERT_EQUAL(true, getProperty<bool>(mxComponent, "RecordChanges"));
     // 'Show-Changes' should not be exported - default is true.
-    if (xmlDocUniquePtr pXmlSettings = parseExport("word/settings.xml"))
+    if (isExported())
     {
+        xmlDocUniquePtr pXmlSettings = parseExport("word/settings.xml");
         assertXPath(pXmlSettings, "/w:settings/w:revisionView", 0);
     }
 }
@@ -960,7 +961,7 @@ CPPUNIT_TEST_FIXTURE(Test, testPageBorderSpacingExportCase2)
     // The exporter ALWAYS exported 'w:offsetFrom="text"' even when the spacing values where too large
     // for Word to handle (larger than 31 points)
 
-    xmlDocUniquePtr pXmlDoc = parseExport();
+    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
 
     // Assert the XPath expression - page borders
     assertXPath(pXmlDoc, "/w:document/w:body/w:sectPr/w:pgBorders", "offsetFrom", "page");
@@ -989,7 +990,7 @@ CPPUNIT_TEST_FIXTURE(Test, testGrabBag)
 {
     loadAndSave("grabbag.docx");
     // w:mirrorIndents was lost on roundtrip, now should be handled as a grab bag property
-    xmlDocUniquePtr pXmlDoc = parseExport();
+    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
     assertXPath(pXmlDoc, "/w:document/w:body/w:p/w:pPr/w:mirrorIndents");
 }
 

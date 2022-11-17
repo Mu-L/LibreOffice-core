@@ -475,9 +475,12 @@ Reference< XCertificate > SecurityEnvironment_NssImpl::createCertificateFromAsci
     OString oscert = OUStringToOString( asciiCertificate , RTL_TEXTENCODING_ASCII_US ) ;
     xmlChar* chCert = xmlStrndup( reinterpret_cast<const xmlChar*>(oscert.getStr()), static_cast<int>(oscert.getLength()) ) ;
     xmlSecSize certSize;
-    xmlSecBase64Decode_ex( chCert, reinterpret_cast<xmlSecByte*>(chCert), xmlStrlen( chCert ), &certSize ) ;
-    if (certSize == 0)
+    int nRet = xmlSecBase64Decode_ex( chCert, reinterpret_cast<xmlSecByte*>(chCert), xmlStrlen( chCert ), &certSize ) ;
+    if (nRet < 0 || certSize == 0)
+    {
+        xmlFree(chCert);
         return nullptr;
+    }
 
     Sequence< sal_Int8 > rawCert(comphelper::arrayToSequence<sal_Int8>(chCert, certSize)) ;
 
@@ -638,7 +641,7 @@ verifyCertificate( const Reference< csss::XCertificate >& aCert,
     arUsages[3] = UsageDescription( certificateUsageEmailSigner, "certificateUsageEmailSigner" );
     arUsages[4] = UsageDescription( certificateUsageEmailRecipient, "certificateUsageEmailRecipient" );
 
-    int numUsages = SAL_N_ELEMENTS(arUsages);
+    int numUsages = std::size(arUsages);
     for (int i = 0; i < numUsages; i++)
     {
         SAL_INFO("xmlsecurity.xmlsec", "Testing usage " << i+1 <<

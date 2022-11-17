@@ -76,6 +76,7 @@
 #include <istyleaccess.hxx>
 #include "swstylemanager.hxx"
 #include <GrammarContact.hxx>
+#include <OnlineAccessibilityCheck.hxx>
 #include <tblafmt.hxx>
 #include <MarkManager.hxx>
 #include <UndoManager.hxx>
@@ -105,6 +106,7 @@
 
 #include <sfx2/Metadatable.hxx>
 #include <fmtmeta.hxx>
+#include <textcontentcontrol.hxx>
 
 #include <svx/xfillit0.hxx>
 #include <unotools/configmgr.hxx>
@@ -204,6 +206,7 @@ SwDoc::SwDoc()
     maOLEModifiedIdle( "sw::SwDoc maOLEModifiedIdle" ),
     mpMarkManager(new ::sw::mark::MarkManager(*this)),
     m_pMetaFieldManager(new ::sw::MetaFieldManager()),
+    m_pContentControlManager(new ::SwContentControlManager()),
     m_pDocumentDrawModelManager( new ::sw::DocumentDrawModelManager( *this ) ),
     m_pDocumentRedlineManager( new ::sw::DocumentRedlineManager( *this ) ),
     m_pDocumentStateManager( new ::sw::DocumentStateManager( *this ) ),
@@ -248,6 +251,7 @@ SwDoc::SwDoc()
     mpNumRuleTable( new SwNumRuleTable ),
     mpExtInputRing( nullptr ),
     mpGrammarContact(new sw::GrammarContact),
+    mpOnlineAccessibilityCheck(new sw::OnlineAccessibilityCheck(*this)),
     mpCellStyles(new SwCellStyleTable),
     mReferenceCount(0),
     mbDtor(false),
@@ -269,7 +273,6 @@ SwDoc::SwDoc()
     mbIsPrepareSelAll(false),
     meDictionaryMissing( MissingDictionary::Undefined ),
     mbContainsAtPageObjWithContentAnchor(false), //#i119292#, fdo#37024
-
     meDocType(DOCTYPE_NATIVE)
 {
     // The DrawingLayer ItemPool which is used as 2nd pool for Writer documents' pool
@@ -406,6 +409,7 @@ SwDoc::~SwDoc()
     }
 
     mpGrammarContact.reset();
+    mpOnlineAccessibilityCheck.reset();
 
     getIDocumentTimerAccess().StopIdling();   // stop idle timer
 

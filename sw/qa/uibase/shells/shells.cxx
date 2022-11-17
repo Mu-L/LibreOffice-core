@@ -25,6 +25,7 @@
 #include <comphelper/processfactory.hxx>
 #include <comphelper/propertyvalue.hxx>
 #include <unotools/ucbstreamhelper.hxx>
+#include <xmloff/odffields.hxx>
 
 #include <IDocumentContentOperations.hxx>
 #include <cmdid.h>
@@ -35,16 +36,20 @@
 #include <drawdoc.hxx>
 #include <docsh.hxx>
 
-constexpr OUStringLiteral DATA_DIRECTORY = u"/sw/qa/uibase/shells/data/";
-
 /// Covers sw/source/uibase/shells/ fixes.
 class SwUibaseShellsTest : public SwModelTestBase
 {
+public:
+    SwUibaseShellsTest()
+        : SwModelTestBase("/sw/qa/uibase/shells/data/")
+    {
+    }
 };
 
 CPPUNIT_TEST_FIXTURE(SwUibaseShellsTest, testTdf130179)
 {
-    SwDoc* pDoc = createSwDoc();
+    createSwDoc();
+    SwDoc* pDoc = getSwDoc();
     IDocumentContentOperations& rIDCO = pDoc->getIDocumentContentOperations();
     SwCursorShell* pShell(pDoc->GetEditShell());
     SfxItemSet aFrameSet(pDoc->GetAttrPool(), svl::Items<RES_FRMATR_BEGIN, RES_FRMATR_END - 1>);
@@ -75,7 +80,8 @@ CPPUNIT_TEST_FIXTURE(SwUibaseShellsTest, testShapeTextAlignment)
 // FIXME find out why this fails on macOS/Windows
 #if !defined(MACOSX) && !defined(_WIN32)
     // Create a document with a rectangle in it.
-    SwDoc* pDoc = createSwDoc();
+    createSwDoc();
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
     Point aStartPos(1000, 1000);
     pWrtShell->BeginCreate(SdrObjKind::Rectangle, aStartPos);
@@ -116,7 +122,7 @@ CPPUNIT_TEST_FIXTURE(SwUibaseShellsTest, testOleSavePreviewUpdate)
 {
     // Load a document with 2 charts in it. The second is down enough that you have to scroll to
     // trigger its rendering. Previews are missing for both.
-    load(DATA_DIRECTORY, "ole-save-preview-update.odt");
+    createSwDoc("ole-save-preview-update.odt");
 
     // Explicitly update OLE previews, etc.
     dispatchCommand(mxComponent, ".uno:UpdateAll", {});
@@ -137,7 +143,7 @@ CPPUNIT_TEST_FIXTURE(SwUibaseShellsTest, testOleSavePreviewUpdate)
 CPPUNIT_TEST_FIXTURE(SwUibaseShellsTest, testOlePreviewUpdate)
 {
     // Given a document with an embedded Writer object:
-    load(DATA_DIRECTORY, "ole-preview-update.odt");
+    createSwDoc("ole-preview-update.odt");
 
     // When updating "all" (including OLE previews):
     dispatchCommand(mxComponent, ".uno:UpdateAll", {});
@@ -159,7 +165,8 @@ CPPUNIT_TEST_FIXTURE(SwUibaseShellsTest, testOlePreviewUpdate)
 CPPUNIT_TEST_FIXTURE(SwUibaseShellsTest, testBibliographyUrlContextMenu)
 {
     // Given a document with a bibliography field:
-    SwDoc* pDoc = createSwDoc();
+    createSwDoc();
+    SwDoc* pDoc = getSwDoc();
     uno::Reference<lang::XMultiServiceFactory> xFactory(mxComponent, uno::UNO_QUERY);
     uno::Reference<beans::XPropertySet> xField(
         xFactory->createInstance("com.sun.star.text.TextField.Bibliography"), uno::UNO_QUERY);
@@ -196,7 +203,8 @@ CPPUNIT_TEST_FIXTURE(SwUibaseShellsTest, testBibliographyUrlContextMenu)
 CPPUNIT_TEST_FIXTURE(SwUibaseShellsTest, testBibliographyLocalCopyContextMenu)
 {
     // Given a document with a bibliography field's local copy:
-    SwDoc* pDoc = createSwDoc();
+    createSwDoc();
+    SwDoc* pDoc = getSwDoc();
     uno::Reference<lang::XMultiServiceFactory> xFactory(mxComponent, uno::UNO_QUERY);
     uno::Reference<beans::XPropertySet> xField(
         xFactory->createInstance("com.sun.star.text.TextField.Bibliography"), uno::UNO_QUERY);
@@ -234,7 +242,8 @@ CPPUNIT_TEST_FIXTURE(SwUibaseShellsTest, testBibliographyLocalCopyContextMenu)
 CPPUNIT_TEST_FIXTURE(SwUibaseShellsTest, testContentControlPageBreak)
 {
     // Given a document with a content control and a cursor inside the content control:
-    SwDoc* pDoc = createSwDoc();
+    createSwDoc();
+    SwDoc* pDoc = getSwDoc();
     uno::Reference<lang::XMultiServiceFactory> xMSF(mxComponent, uno::UNO_QUERY);
     uno::Reference<text::XTextDocument> xTextDocument(mxComponent, uno::UNO_QUERY);
     uno::Reference<text::XText> xText = xTextDocument->getText();
@@ -259,6 +268,50 @@ CPPUNIT_TEST_FIXTURE(SwUibaseShellsTest, testContentControlPageBreak)
     // i.e. inline content control had its start and end in different text nodes, which is not
     // allowed.
     CPPUNIT_ASSERT_EQUAL(1, getPages());
+}
+
+CPPUNIT_TEST_FIXTURE(SwUibaseShellsTest, testInsertTextFormField)
+{
+    // Given an empty document:
+    createSwDoc();
+    SwDoc* pDoc = getSwDoc();
+
+    // When inserting an ODF_UNHANDLED fieldmark:
+    OUString aExpectedCommand("ADDIN ZOTERO_BIBL foo bar");
+    uno::Sequence<css::beans::PropertyValue> aArgs = {
+        comphelper::makePropertyValue("FieldType", uno::Any(OUString(ODF_UNHANDLED))),
+        comphelper::makePropertyValue("FieldCommand", uno::Any(aExpectedCommand)),
+        comphelper::makePropertyValue("FieldResult", uno::Any(OUString("<p>aaa</p><p>bbb</p>"))),
+    };
+    dispatchCommand(mxComponent, ".uno:TextFormField", aArgs);
+
+    // Then make sure that it's type/name is correct:
+    SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
+    SwCursor* pCursor = pWrtShell->GetCursor();
+    pCursor->SttEndDoc(/*bSttDoc=*/true);
+    sw::mark::IFieldmark* pFieldmark
+        = pDoc->getIDocumentMarkAccess()->getFieldmarkAt(*pCursor->GetPoint());
+    CPPUNIT_ASSERT(pFieldmark);
+    // Without the accompanying fix in place, this test would have failed with:
+    // - Expected: vnd.oasis.opendocument.field.UNHANDLED
+    // - Actual  : vnd.oasis.opendocument.field.FORMTEXT
+    // i.e. the custom type parameter was ignored.
+    CPPUNIT_ASSERT_EQUAL(OUString(ODF_UNHANDLED), pFieldmark->GetFieldname());
+
+    auto it = pFieldmark->GetParameters()->find(ODF_CODE_PARAM);
+    CPPUNIT_ASSERT(it != pFieldmark->GetParameters()->end());
+    OUString aActualCommand;
+    it->second >>= aActualCommand;
+    CPPUNIT_ASSERT_EQUAL(aExpectedCommand, aActualCommand);
+
+    SwPaM aPam(pFieldmark->GetMarkStart(), pFieldmark->GetMarkEnd());
+    // Ignore the leading field start + sep.
+    aPam.GetMark()->SetContent(aPam.GetMark()->GetContentIndex() + 2);
+    // Ignore the trailing field end.
+    aPam.GetPoint()->SetContent(aPam.GetPoint()->GetContentIndex() - 1);
+    CPPUNIT_ASSERT(aPam.HasMark());
+    OUString aActualResult = aPam.GetText();
+    CPPUNIT_ASSERT_EQUAL(OUString("aaa\nbbb"), aActualResult);
 }
 
 CPPUNIT_PLUGIN_IMPLEMENT();

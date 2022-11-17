@@ -1018,7 +1018,7 @@ DECLARE_RTFEXPORT_TEST(testTdf80708, "tdf80708.rtf")
 
 CPPUNIT_TEST_FIXTURE(Test, testHyperlinkWithoutURL)
 {
-    load(mpTestDocumentPath, "tdf90421.fodt");
+    createSwDoc("tdf90421.fodt");
     // Change the hyperlink, so its URL is empty.
     uno::Reference<beans::XPropertySet> xRun(getRun(getParagraph(1), 2), uno::UNO_QUERY);
     xRun->setPropertyValue("HyperLinkURL", uno::Any(OUString()));
@@ -1261,7 +1261,7 @@ DECLARE_RTFEXPORT_TEST(testTdf98806, "tdf98806.rtf")
 DECLARE_RTFEXPORT_TEST(testTdf61901, "tdf61901.rtf")
 {
     // Test the file directly, as current RTF import gives the correct font name with and without the fix.
-    if (mbExported)
+    if (isExported())
     {
         SvStream* pStream = maTempFile.GetStream(StreamMode::READ);
         OString sLine;

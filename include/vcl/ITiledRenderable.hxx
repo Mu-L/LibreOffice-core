@@ -70,6 +70,14 @@ public:
     virtual Size getDocumentSize() = 0;
 
     /**
+     * Get the data area size (in Calc last column and row).
+     */
+    virtual Size getDataArea(long /*nPart*/)
+    {
+        return Size(1, 1);
+    }
+
+    /**
      * Set the document "part", i.e. slide for a slideshow, and
      * tab for a spreadsheet.
      * bool bAllowChangeFocus - used to not disturb other users while editing when
@@ -116,6 +124,19 @@ public:
 
     /// @see lok::Document::setPartMode().
     virtual void setPartMode(int) {}
+
+    /**
+     * Get the currently used EditMode (supported in Impress).
+     */
+    virtual int getEditMode()
+    {
+        return 0;
+    }
+
+    /**
+     * Set the currently used EditMode (supported in Impress).
+     */
+    virtual void setEditMode(int) {}
 
     /**
      * Setup various document properties that are needed for the document to

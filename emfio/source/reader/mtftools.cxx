@@ -1330,7 +1330,7 @@ namespace emfio
         maFillStyle = maBkColor;
         mnBkMode = BackgroundMode::OPAQUE;
         ImplSetNonPersistentLineColorTransparenz();
-        DrawPolygon(std::move(aPoly), false);
+        DrawPolygon(aPoly, false);
         mnBkMode = mnBkModeBackup; // The rectangle needs to be always drawned even if mode is transparent
         maFillStyle = aFillStyleBackup;
         maLineStyle.bTransparent = aTransparentBackup;
@@ -2366,7 +2366,6 @@ namespace emfio
 
     void MtfTools::Push()                       // !! to be able to access the original ClipRegion it
     {                                               // is not allowed to use the MetaPushAction()
-        UpdateClipRegion();                         // (the original clip region is on top of the stack) (SJ)
         auto pSave = std::make_shared<SaveStruct>();
 
         pSave->aLineStyle = maLineStyle;

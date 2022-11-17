@@ -37,6 +37,11 @@ $(eval $(call gb_Library_use_libraries,drawinglayercore,\
     salhelper \
     svl \
     tl \
+    utl \
+))
+
+$(eval $(call gb_Library_use_custom_headers,drawinglayercore,\
+	officecfg/registry \
 ))
 
 $(eval $(call gb_Library_add_exception_objects,drawinglayercore,\

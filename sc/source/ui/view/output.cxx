@@ -30,7 +30,7 @@
 #include <svx/framelinkarray.hxx>
 #include <drawinglayer/geometry/viewinformation2d.hxx>
 #include <drawinglayer/processor2d/baseprocessor2d.hxx>
-#include <drawinglayer/processor2d/processorfromoutputdevice.hxx>
+#include <drawinglayer/processor2d/processor2dtools.hxx>
 #include <vcl/lineinfo.hxx>
 #include <vcl/gradient.hxx>
 #include <vcl/settings.hxx>
@@ -1716,14 +1716,12 @@ std::unique_ptr<drawinglayer::processor2d::BaseProcessor2D> ScOutputData::Create
 
     basegfx::B2DRange aViewRange;
     SdrPage *pDrawPage = pDrawLayer->GetPage( static_cast< sal_uInt16 >( nTab ) );
-    const drawinglayer::geometry::ViewInformation2D aNewViewInfos(
-            basegfx::B2DHomMatrix(  ),
-            mpDev->GetViewTransformation(),
-            aViewRange,
-            GetXDrawPageForSdrPage( pDrawPage ),
-            0.0);
+    drawinglayer::geometry::ViewInformation2D aNewViewInfos;
+    aNewViewInfos.setViewTransformation(mpDev->GetViewTransformation());
+    aNewViewInfos.setViewport(aViewRange);
+    aNewViewInfos.setVisualizedPage(GetXDrawPageForSdrPage( pDrawPage ));
 
-    return drawinglayer::processor2d::createBaseProcessor2DFromOutputDevice(
+    return drawinglayer::processor2d::createProcessor2DFromOutputDevice(
                     *mpDev, aNewViewInfos );
 }
 

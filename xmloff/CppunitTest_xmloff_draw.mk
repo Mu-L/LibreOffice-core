@@ -23,12 +23,14 @@ $(eval $(call gb_CppunitTest_add_exception_objects,xmloff_draw, \
 $(eval $(call gb_CppunitTest_use_libraries,xmloff_draw, \
     comphelper \
     cppu \
+    cppuhelper \
     embobj \
     sal \
     subsequenttest \
     test \
     unotest \
     utl \
+    tl \
     avmedia \
     svxcore \
     vcl \

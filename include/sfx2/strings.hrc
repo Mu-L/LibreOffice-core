@@ -327,6 +327,7 @@
 #define STR_TEMPLATE_NAME30                     NC_("STR_TEMPLATE_NAME30", "Businesscard with logo")
 #define STR_TEMPLATE_NAME31                     NC_("STR_TEMPLATE_NAME31", "Simple")
 #define STR_TEMPLATE_NAME32                     NC_("STR_TEMPLATE_NAME32", "BPMN")
+#define STR_TEMPLATE_NAME33                     NC_("STR_TEMPLATE_NAME33", "Simplified Chinese Normal")
 
 #define STR_CLEAR_CHAR                          NC_("STR_CLEAR_CHAR", "Remove")
 #define STR_CLEAR_ALL_CHAR                      NC_("STR_CLEAR_ALL_CHAR", "Clear All")
@@ -356,6 +357,8 @@
 #define STR_WINDOW_TITLE_RENAME_TEMPLATE        NC_("STR_WINDOW_TITLE_RENAME_TEMPLATE","Rename")
 #define STR_WINDOW_TITLE_RENAME_CATEGORY        NC_("STR_WINDOW_TITLE_RENAME_CATEGORY","Rename Category")
 #define STR_WINDOW_TITLE_RENAME_NEW_CATEGORY    NC_("STR_WINDOW_TITLE_RENAME_NEW_CATEGORY","New Category")
+
+#define STR_OBJECT_INSPECTOR                    NC_("STR_OBJECT_INSPECTOR", "UNO Object Inspector")
 #endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

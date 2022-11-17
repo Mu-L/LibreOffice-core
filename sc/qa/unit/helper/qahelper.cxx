@@ -198,11 +198,10 @@ void testCondFile(const OUString& aFileName, ScDocument* pDoc, SCTAB nTab)
     }
 }
 
-void testFormats(ScBootstrapFixture* pTest, ScDocument* pDoc, sal_Int32 nFormat)
+void testFormats(ScModelTestBase* pTest, ScDocument* pDoc,std::u16string_view sFormat)
 {
     //test Sheet1 with csv file
-    OUString aCSVFileName;
-    pTest->createCSVPath("numberFormat.", aCSVFileName);
+    OUString aCSVFileName = pTest->createFilePath(u"contentCSV/numberFormat.csv");
     testFile(aCSVFileName, *pDoc, 0, StringType::PureString);
     //need to test the color of B3
     //it's not a font color!
@@ -230,7 +229,7 @@ void testFormats(ScBootstrapFixture* pTest, ScDocument* pDoc, sal_Int32 nFormat)
     pPattern->GetFont(aFont, SC_AUTOCOL_RAW);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("font should be striked out with a single line", STRIKEOUT_SINGLE, aFont.GetStrikeout());
     //some tests on sheet2 only for ods
-    if (nFormat == FORMAT_ODS)
+    if (sFormat == u"calc8")
     {
         pPattern = pDoc->GetPattern(1,2,1);
         pPattern->GetFont(aFont, SC_AUTOCOL_RAW);
@@ -271,12 +270,12 @@ void testFormats(ScBootstrapFixture* pTest, ScDocument* pDoc, sal_Int32 nFormat)
     CPPUNIT_ASSERT_EQUAL_MESSAGE("cell content should be aligned block horizontally", SvxCellHorJustify::Block, eHorJustify);
 
     //test Sheet3 only for ods and xlsx
-    if ( nFormat == FORMAT_ODS || nFormat == FORMAT_XLSX )
+    if ( sFormat == u"calc8" || sFormat == u"Calc Office Open XML" )
     {
-        pTest->createCSVPath("conditionalFormatting.", aCSVFileName);
+        aCSVFileName = pTest->createFilePath(u"contentCSV/conditionalFormatting.csv");
         testCondFile(aCSVFileName, pDoc, 2);
         // test parent cell style import ( fdo#55198 )
-        if ( nFormat == FORMAT_XLSX )
+        if ( sFormat == u"Calc Office Open XML" )
         {
             pPattern = pDoc->GetPattern(1,1,3);
             ScStyleSheet* pStyleSheet = const_cast<ScStyleSheet*>(pPattern->GetStyleSheet());
@@ -787,18 +786,6 @@ ScDocShellRef ScBootstrapFixture::saveAndReload( ScDocShell& rShell, sal_Int32 n
     return xDocSh;
 }
 
-ScDocShellRef ScBootstrapFixture::saveAndReloadPassword( ScDocShell& rShell, sal_Int32 nFormat, std::shared_ptr<utl::TempFileNamed>* pTempFile )
-{
-    OUString aFilterName(aFileFormats[nFormat].pFilterName, strlen(aFileFormats[nFormat].pFilterName), RTL_TEXTENCODING_UTF8) ;
-    OUString aFilterType(aFileFormats[nFormat].pTypeName, strlen(aFileFormats[nFormat].pTypeName), RTL_TEXTENCODING_UTF8);
-    OUString aPass("test");
-
-    ScDocShellRef xDocSh = saveAndReload(rShell, aFilterName, OUString(), aFilterType, aFileFormats[nFormat].nFormatType, pTempFile, &aPass);
-
-    CPPUNIT_ASSERT(xDocSh.is());
-    return xDocSh;
-}
-
 std::shared_ptr<utl::TempFileNamed> ScBootstrapFixture::exportTo( ScDocShell& rShell, sal_Int32 nFormat, bool bValidate )
 {
     OUString aFilterName(aFileFormats[nFormat].pFilterName, strlen(aFileFormats[nFormat].pFilterName), RTL_TEXTENCODING_UTF8) ;
@@ -829,48 +816,6 @@ std::shared_ptr<utl::TempFileNamed> ScBootstrapFixture::exportTo( ScDocShell& rS
     }
 
     return pTempFile;
-}
-
-void ScBootstrapFixture::miscRowHeightsTest( TestParam const * aTestValues, unsigned int numElems )
-{
-    for ( unsigned int index=0; index<numElems; ++index )
-    {
-        OUString sFileName = OUString::createFromAscii( aTestValues[ index ].sTestDoc );
-        SAL_INFO( "sc.qa", "aTestValues[" << index << "] " << sFileName );
-        int nImportType =  aTestValues[ index ].nImportType;
-        int nExportType =  aTestValues[ index ].nExportType;
-        ScDocShellRef xShell = loadDoc( sFileName, nImportType );
-
-        if ( nExportType != -1 )
-            xShell = saveAndReload(*xShell, nExportType );
-
-        CPPUNIT_ASSERT(xShell.is());
-
-        ScDocument& rDoc = xShell->GetDocument();
-
-        for (int i=0; i<aTestValues[ index ].nRowData; ++i)
-        {
-            SCROW nRow = aTestValues[ index ].pData[ i].nStartRow;
-            SCROW nEndRow = aTestValues[ index ].pData[ i ].nEndRow;
-            SCTAB nTab = aTestValues[ index ].pData[ i ].nTab;
-            int nExpectedHeight = aTestValues[ index ].pData[ i ].nExpectedHeight;
-            if ( nExpectedHeight == -1 )
-                nExpectedHeight = convertTwipToMm100(ScGlobal::GetStandardRowHeight());
-            bool bCheckOpt = ( ( aTestValues[ index ].pData[ i ].nCheck & CHECK_OPTIMAL ) == CHECK_OPTIMAL );
-            for ( ; nRow <= nEndRow; ++nRow )
-            {
-                SAL_INFO( "sc.qa", " checking row " << nRow << " for height " << nExpectedHeight );
-                int nHeight = convertTwipToMm100(rDoc.GetRowHeight(nRow, nTab, false));
-                if ( bCheckOpt )
-                {
-                    bool bOpt = !(rDoc.GetRowFlags( nRow, nTab ) & CRFlags::ManualSize);
-                    CPPUNIT_ASSERT_EQUAL(aTestValues[ index ].pData[ i ].bOptimal, bOpt);
-                }
-                CPPUNIT_ASSERT_EQUAL(nExpectedHeight, nHeight);
-            }
-        }
-        xShell->DoClose();
-    }
 }
 
 void ScBootstrapFixture::setUp()
@@ -910,6 +855,78 @@ void ScSimpleBootstrapFixture::tearDown()
     m_xDocShell.clear();
 
     test::BootstrapFixture::tearDown();
+}
+
+void ScModelTestBase::createScDoc(const char* pName, const char* pPassword)
+{
+    if (!pName)
+        load("private:factory/scalc");
+    else
+        loadFromURL(OUString::createFromAscii(pName), pPassword);
+
+    uno::Reference<lang::XServiceInfo> xServiceInfo(mxComponent, uno::UNO_QUERY);
+    CPPUNIT_ASSERT(xServiceInfo->supportsService("com.sun.star.sheet.SpreadsheetDocument"));
+}
+
+ScDocument* ScModelTestBase::getScDoc()
+{
+    ScModelObj* pModelObj = dynamic_cast<ScModelObj*>(mxComponent.get());
+    CPPUNIT_ASSERT(pModelObj);
+    return pModelObj->GetDocument();
+}
+
+ScDocShell* ScModelTestBase::getScDocShell()
+{
+    SfxObjectShell* pFoundShell = SfxObjectShell::GetShellFromComponent(mxComponent);
+    CPPUNIT_ASSERT_MESSAGE("Failed to access document shell", pFoundShell);
+    ScDocShell* pDocSh = dynamic_cast<ScDocShell*>(pFoundShell);
+    CPPUNIT_ASSERT(pDocSh);
+    return pDocSh;
+}
+
+ScTabViewShell* ScModelTestBase::getViewShell()
+{
+    ScDocShell* pDocSh = getScDocShell();
+    ScTabViewShell* pTabViewShell = pDocSh->GetBestViewShell(false);
+    CPPUNIT_ASSERT_MESSAGE("No ScTabViewShell", pTabViewShell);
+    return pTabViewShell;
+}
+
+void ScModelTestBase::miscRowHeightsTest( TestParam const * aTestValues, unsigned int numElems)
+{
+    for ( unsigned int index=0; index<numElems; ++index )
+    {
+        const std::u16string_view sFileName = aTestValues[ index ].sTestDoc;
+        const OUString sExportType =  aTestValues[ index ].sExportType;
+        loadFromURL(sFileName);
+
+        if ( !sExportType.isEmpty() )
+            saveAndReload(sExportType);
+
+        ScDocument* pDoc = getScDoc();
+
+        for (int i=0; i<aTestValues[ index ].nRowData; ++i)
+        {
+            SCROW nRow = aTestValues[ index ].pData[ i].nStartRow;
+            SCROW nEndRow = aTestValues[ index ].pData[ i ].nEndRow;
+            SCTAB nTab = aTestValues[ index ].pData[ i ].nTab;
+            int nExpectedHeight = aTestValues[ index ].pData[ i ].nExpectedHeight;
+            if ( nExpectedHeight == -1 )
+                nExpectedHeight = convertTwipToMm100(ScGlobal::GetStandardRowHeight());
+            bool bCheckOpt = ( ( aTestValues[ index ].pData[ i ].nCheck & CHECK_OPTIMAL ) == CHECK_OPTIMAL );
+            for ( ; nRow <= nEndRow; ++nRow )
+            {
+                SAL_INFO( "sc.qa", " checking row " << nRow << " for height " << nExpectedHeight );
+                int nHeight = convertTwipToMm100(pDoc->GetRowHeight(nRow, nTab, false));
+                if ( bCheckOpt )
+                {
+                    bool bOpt = !(pDoc->GetRowFlags( nRow, nTab ) & CRFlags::ManualSize);
+                    CPPUNIT_ASSERT_EQUAL(aTestValues[ index ].pData[ i ].bOptimal, bOpt);
+                }
+                CPPUNIT_ASSERT_EQUAL(nExpectedHeight, nHeight);
+            }
+        }
+    }
 }
 
 std::string to_std_string(const OUString& rStr)

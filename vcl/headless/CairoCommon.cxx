@@ -30,6 +30,10 @@
 #include <sal/log.hxx>
 #include <osl/module.h>
 
+#if CAIRO_VERSION < CAIRO_VERSION_ENCODE(1, 12, 0)
+#error "require at least cairo 1.12.0"
+#endif
+
 void dl_cairo_surface_set_device_scale(cairo_surface_t* surface, double x_scale, double y_scale)
 {
 #if !HAVE_DLAPI
@@ -448,103 +452,7 @@ void CairoCommon::releaseCairoContext(cairo_t* cr, bool bXorModeAllowed,
     //are some edge cases where legacy stuff still supports it, so
     //emulate it (slowly) here.
     if (bXoring)
-    {
-        cairo_surface_t* target_surface = m_pSurface;
-        if (cairo_surface_get_type(target_surface) != CAIRO_SURFACE_TYPE_IMAGE)
-        {
-            //in the unlikely case we can't use m_pSurface directly, copy contents
-            //to another temp image surface
-            cairo_t* copycr = createTmpCompatibleCairoContext();
-            cairo_rectangle(copycr, nExtentsLeft, nExtentsTop, nExtentsRight - nExtentsLeft,
-                            nExtentsBottom - nExtentsTop);
-            cairo_set_source_surface(copycr, m_pSurface, 0, 0);
-            cairo_paint(copycr);
-            target_surface = cairo_get_target(copycr);
-            cairo_destroy(copycr);
-        }
-
-        cairo_surface_flush(target_surface);
-        unsigned char* target_surface_data = cairo_image_surface_get_data(target_surface);
-        unsigned char* xor_surface_data = cairo_image_surface_get_data(surface);
-
-        cairo_format_t nFormat = cairo_image_surface_get_format(target_surface);
-        assert(nFormat == CAIRO_FORMAT_ARGB32
-               && "need to implement CAIRO_FORMAT_A1 after all here");
-        sal_Int32 nStride = cairo_format_stride_for_width(nFormat, nWidth * m_fScale);
-        sal_Int32 nUnscaledExtentsLeft = nExtentsLeft * m_fScale;
-        sal_Int32 nUnscaledExtentsRight = nExtentsRight * m_fScale;
-        sal_Int32 nUnscaledExtentsTop = nExtentsTop * m_fScale;
-        sal_Int32 nUnscaledExtentsBottom = nExtentsBottom * m_fScale;
-
-        // Handle headless size forced to (1,1) by SvpSalFrame::GetSurfaceFrameSize().
-        int target_surface_width = cairo_image_surface_get_width(target_surface);
-        if (nUnscaledExtentsLeft > target_surface_width)
-            nUnscaledExtentsLeft = target_surface_width;
-        if (nUnscaledExtentsRight > target_surface_width)
-            nUnscaledExtentsRight = target_surface_width;
-        int target_surface_height = cairo_image_surface_get_height(target_surface);
-        if (nUnscaledExtentsTop > target_surface_height)
-            nUnscaledExtentsTop = target_surface_height;
-        if (nUnscaledExtentsBottom > target_surface_height)
-            nUnscaledExtentsBottom = target_surface_height;
-
-#if !ENABLE_WASM_STRIP_PREMULTIPLY
-        vcl::bitmap::lookup_table const& unpremultiply_table
-            = vcl::bitmap::get_unpremultiply_table();
-        vcl::bitmap::lookup_table const& premultiply_table = vcl::bitmap::get_premultiply_table();
-#endif
-        for (sal_Int32 y = nUnscaledExtentsTop; y < nUnscaledExtentsBottom; ++y)
-        {
-            unsigned char* true_row = target_surface_data + (nStride * y);
-            unsigned char* xor_row = xor_surface_data + (nStride * y);
-            unsigned char* true_data = true_row + (nUnscaledExtentsLeft * 4);
-            unsigned char* xor_data = xor_row + (nUnscaledExtentsLeft * 4);
-            for (sal_Int32 x = nUnscaledExtentsLeft; x < nUnscaledExtentsRight; ++x)
-            {
-                sal_uInt8 a = true_data[SVP_CAIRO_ALPHA];
-                sal_uInt8 xor_a = xor_data[SVP_CAIRO_ALPHA];
-#if ENABLE_WASM_STRIP_PREMULTIPLY
-                sal_uInt8 b = vcl::bitmap::unpremultiply(a, true_data[SVP_CAIRO_BLUE])
-                              ^ vcl::bitmap::unpremultiply(xor_a, xor_data[SVP_CAIRO_BLUE]);
-                sal_uInt8 g = vcl::bitmap::unpremultiply(a, true_data[SVP_CAIRO_GREEN])
-                              ^ vcl::bitmap::unpremultiply(xor_a, xor_data[SVP_CAIRO_GREEN]);
-                sal_uInt8 r = vcl::bitmap::unpremultiply(a, true_data[SVP_CAIRO_RED])
-                              ^ vcl::bitmap::unpremultiply(xor_a, xor_data[SVP_CAIRO_RED]);
-                true_data[SVP_CAIRO_BLUE] = vcl::bitmap::premultiply(a, b);
-                true_data[SVP_CAIRO_GREEN] = vcl::bitmap::premultiply(a, g);
-                true_data[SVP_CAIRO_RED] = vcl::bitmap::premultiply(a, r);
-#else
-                sal_uInt8 b = unpremultiply_table[a][true_data[SVP_CAIRO_BLUE]]
-                              ^ unpremultiply_table[xor_a][xor_data[SVP_CAIRO_BLUE]];
-                sal_uInt8 g = unpremultiply_table[a][true_data[SVP_CAIRO_GREEN]]
-                              ^ unpremultiply_table[xor_a][xor_data[SVP_CAIRO_GREEN]];
-                sal_uInt8 r = unpremultiply_table[a][true_data[SVP_CAIRO_RED]]
-                              ^ unpremultiply_table[xor_a][xor_data[SVP_CAIRO_RED]];
-                true_data[SVP_CAIRO_BLUE] = premultiply_table[a][b];
-                true_data[SVP_CAIRO_GREEN] = premultiply_table[a][g];
-                true_data[SVP_CAIRO_RED] = premultiply_table[a][r];
-#endif
-                true_data += 4;
-                xor_data += 4;
-            }
-        }
-        cairo_surface_mark_dirty(target_surface);
-
-        if (target_surface != m_pSurface)
-        {
-            cairo_t* copycr = cairo_create(m_pSurface);
-            //unlikely case we couldn't use m_pSurface directly, copy contents
-            //back from image surface
-            cairo_rectangle(copycr, nExtentsLeft, nExtentsTop, nExtentsRight - nExtentsLeft,
-                            nExtentsBottom - nExtentsTop);
-            cairo_set_source_surface(copycr, target_surface, 0, 0);
-            cairo_paint(copycr);
-            cairo_destroy(copycr);
-            cairo_surface_destroy(target_surface);
-        }
-
-        cairo_surface_destroy(surface);
-    }
+        doXorOnRelease(nExtentsLeft, nExtentsTop, nExtentsRight, nExtentsBottom, surface, nWidth);
 
     cairo_destroy(cr); // unref
 
@@ -558,15 +466,99 @@ void CairoCommon::releaseCairoContext(cairo_t* cr, bool bXorModeAllowed,
     }
 }
 
+void CairoCommon::doXorOnRelease(sal_Int32 nExtentsLeft, sal_Int32 nExtentsTop,
+                                 sal_Int32 nExtentsRight, sal_Int32 nExtentsBottom,
+                                 cairo_surface_t* const surface, sal_Int32 nWidth) const
+{
+    //For the most part we avoid the use of XOR these days, but there
+    //are some edge cases where legacy stuff still supports it, so
+    //emulate it (slowly) here.
+    cairo_surface_t* target_surface = m_pSurface;
+    if (cairo_surface_get_type(target_surface) != CAIRO_SURFACE_TYPE_IMAGE)
+    {
+        //in the unlikely case we can't use m_pSurface directly, copy contents
+        //to another temp image surface
+        target_surface = cairo_surface_map_to_image(target_surface, nullptr);
+    }
+
+    cairo_surface_flush(target_surface);
+    unsigned char* target_surface_data = cairo_image_surface_get_data(target_surface);
+    unsigned char* xor_surface_data = cairo_image_surface_get_data(surface);
+
+    cairo_format_t nFormat = cairo_image_surface_get_format(target_surface);
+    assert(nFormat == CAIRO_FORMAT_ARGB32 && "need to implement CAIRO_FORMAT_A1 after all here");
+    sal_Int32 nStride = cairo_format_stride_for_width(nFormat, nWidth * m_fScale);
+    sal_Int32 nUnscaledExtentsLeft = nExtentsLeft * m_fScale;
+    sal_Int32 nUnscaledExtentsRight = nExtentsRight * m_fScale;
+    sal_Int32 nUnscaledExtentsTop = nExtentsTop * m_fScale;
+    sal_Int32 nUnscaledExtentsBottom = nExtentsBottom * m_fScale;
+
+    // Handle headless size forced to (1,1) by SvpSalFrame::GetSurfaceFrameSize().
+    int target_surface_width = cairo_image_surface_get_width(target_surface);
+    if (nUnscaledExtentsLeft > target_surface_width)
+        nUnscaledExtentsLeft = target_surface_width;
+    if (nUnscaledExtentsRight > target_surface_width)
+        nUnscaledExtentsRight = target_surface_width;
+    int target_surface_height = cairo_image_surface_get_height(target_surface);
+    if (nUnscaledExtentsTop > target_surface_height)
+        nUnscaledExtentsTop = target_surface_height;
+    if (nUnscaledExtentsBottom > target_surface_height)
+        nUnscaledExtentsBottom = target_surface_height;
+
+#if !ENABLE_WASM_STRIP_PREMULTIPLY
+    vcl::bitmap::lookup_table const& unpremultiply_table = vcl::bitmap::get_unpremultiply_table();
+    vcl::bitmap::lookup_table const& premultiply_table = vcl::bitmap::get_premultiply_table();
+#endif
+    for (sal_Int32 y = nUnscaledExtentsTop; y < nUnscaledExtentsBottom; ++y)
+    {
+        unsigned char* true_row = target_surface_data + (nStride * y);
+        unsigned char* xor_row = xor_surface_data + (nStride * y);
+        unsigned char* true_data = true_row + (nUnscaledExtentsLeft * 4);
+        unsigned char* xor_data = xor_row + (nUnscaledExtentsLeft * 4);
+        for (sal_Int32 x = nUnscaledExtentsLeft; x < nUnscaledExtentsRight; ++x)
+        {
+            sal_uInt8 a = true_data[SVP_CAIRO_ALPHA];
+            sal_uInt8 xor_a = xor_data[SVP_CAIRO_ALPHA];
+#if ENABLE_WASM_STRIP_PREMULTIPLY
+            sal_uInt8 b = vcl::bitmap::unpremultiply(a, true_data[SVP_CAIRO_BLUE])
+                          ^ vcl::bitmap::unpremultiply(xor_a, xor_data[SVP_CAIRO_BLUE]);
+            sal_uInt8 g = vcl::bitmap::unpremultiply(a, true_data[SVP_CAIRO_GREEN])
+                          ^ vcl::bitmap::unpremultiply(xor_a, xor_data[SVP_CAIRO_GREEN]);
+            sal_uInt8 r = vcl::bitmap::unpremultiply(a, true_data[SVP_CAIRO_RED])
+                          ^ vcl::bitmap::unpremultiply(xor_a, xor_data[SVP_CAIRO_RED]);
+            true_data[SVP_CAIRO_BLUE] = vcl::bitmap::premultiply(a, b);
+            true_data[SVP_CAIRO_GREEN] = vcl::bitmap::premultiply(a, g);
+            true_data[SVP_CAIRO_RED] = vcl::bitmap::premultiply(a, r);
+#else
+            sal_uInt8 b = unpremultiply_table[a][true_data[SVP_CAIRO_BLUE]]
+                          ^ unpremultiply_table[xor_a][xor_data[SVP_CAIRO_BLUE]];
+            sal_uInt8 g = unpremultiply_table[a][true_data[SVP_CAIRO_GREEN]]
+                          ^ unpremultiply_table[xor_a][xor_data[SVP_CAIRO_GREEN]];
+            sal_uInt8 r = unpremultiply_table[a][true_data[SVP_CAIRO_RED]]
+                          ^ unpremultiply_table[xor_a][xor_data[SVP_CAIRO_RED]];
+            true_data[SVP_CAIRO_BLUE] = premultiply_table[a][b];
+            true_data[SVP_CAIRO_GREEN] = premultiply_table[a][g];
+            true_data[SVP_CAIRO_RED] = premultiply_table[a][r];
+#endif
+            true_data += 4;
+            xor_data += 4;
+        }
+    }
+    cairo_surface_mark_dirty(target_surface);
+
+    if (target_surface != m_pSurface)
+    {
+        cairo_surface_unmap_image(m_pSurface, target_surface);
+    }
+
+    cairo_surface_destroy(surface);
+}
+
 cairo_t* CairoCommon::createTmpCompatibleCairoContext() const
 {
-#if CAIRO_VERSION >= CAIRO_VERSION_ENCODE(1, 12, 0)
-    cairo_surface_t* target = cairo_surface_create_similar_image(
-        m_pSurface,
-#else
-    cairo_surface_t* target = cairo_image_surface_create(
-#endif
-        CAIRO_FORMAT_ARGB32, m_aFrameSize.getX() * m_fScale, m_aFrameSize.getY() * m_fScale);
+    cairo_surface_t* target = cairo_surface_create_similar_image(m_pSurface, CAIRO_FORMAT_ARGB32,
+                                                                 m_aFrameSize.getX() * m_fScale,
+                                                                 m_aFrameSize.getY() * m_fScale);
 
     dl_cairo_surface_set_device_scale(target, m_fScale, m_fScale);
 
@@ -597,12 +589,20 @@ void CairoCommon::clipRegion(cairo_t* cr, const vcl::Region& rClipRegion)
     }
     if (!aRectangles.empty())
     {
+        bool bEmpty = true;
         for (auto const& rectangle : aRectangles)
         {
+            if (rectangle.GetWidth() <= 0 || rectangle.GetHeight() <= 0)
+            {
+                SAL_WARN("vcl.gdi", "bad clip rect of: " << rectangle);
+                continue;
+            }
             cairo_rectangle(cr, rectangle.Left(), rectangle.Top(), rectangle.GetWidth(),
                             rectangle.GetHeight());
+            bEmpty = false;
         }
-        cairo_clip(cr);
+        if (!bEmpty)
+            cairo_clip(cr);
     }
 }
 
@@ -707,7 +707,7 @@ bool CairoCommon::drawPolyLine(cairo_t* cr, basegfx::B2DRange* pExtents, const C
 
     cairo_set_line_join(cr, eCairoLineJoin);
     cairo_set_line_cap(cr, eCairoLineCap);
-    constexpr int MaxNormalLineWidth = 96;
+    constexpr int MaxNormalLineWidth = 92;
     if (fLineWidth > MaxNormalLineWidth)
     {
         const double fLineWidthPixel
@@ -980,10 +980,6 @@ cairo_pattern_t* create_stipple()
 }
 } // end anonymous ns
 
-#if defined CAIRO_VERSION && CAIRO_VERSION < CAIRO_VERSION_ENCODE(1, 10, 0)
-#define CAIRO_OPERATOR_DIFFERENCE (static_cast<cairo_operator_t>(23))
-#endif
-
 void CairoCommon::invert(const basegfx::B2DPolygon& rPoly, SalInvert nFlags, bool bAntiAlias)
 {
     cairo_t* cr = getCairoContext(false, bAntiAlias);
@@ -996,14 +992,7 @@ void CairoCommon::invert(const basegfx::B2DPolygon& rPoly, SalInvert nFlags, boo
 
     cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
 
-    if (cairo_version() >= CAIRO_VERSION_ENCODE(1, 10, 0))
-    {
-        cairo_set_operator(cr, CAIRO_OPERATOR_DIFFERENCE);
-    }
-    else
-    {
-        SAL_WARN("vcl.gdi", "SvpSalGraphics::invert, archaic cairo");
-    }
+    cairo_set_operator(cr, CAIRO_OPERATOR_DIFFERENCE);
 
     if (nFlags & SalInvert::TrackFrame)
     {

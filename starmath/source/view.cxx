@@ -40,6 +40,8 @@
 #include <sfx2/docinsert.hxx>
 #include <sfx2/filedlghelper.hxx>
 #include <sfx2/infobar.hxx>
+#include <sfx2/lokcomponenthelpers.hxx>
+#include <sfx2/lokhelper.hxx>
 #include <sfx2/msg.hxx>
 #include <sfx2/objface.hxx>
 #include <sfx2/printer.hxx>
@@ -308,9 +310,17 @@ void SmGraphicWidget::SetDrawingArea(weld::DrawingArea* pDrawingArea)
 
     rDevice.SetBackground(SM_MOD()->GetColorConfig().GetColorValue(svtools::DOCCOLOR).nColor);
 
-    const Fraction aFraction(1, 1);
-    MapUnit unit = comphelper::LibreOfficeKit::isActive() ? MapUnit::MapPixel : MapUnit::Map100thMM;
-    rDevice.SetMapMode(MapMode(unit, Point(), aFraction, aFraction));
+    if (comphelper::LibreOfficeKit::isActive())
+    {
+        // Disable map mode, so that it's possible to send mouse event coordinates
+        // directly in twips.
+        rDevice.EnableMapMode(false);
+    }
+    else
+    {
+        const Fraction aFraction(1, 1);
+        rDevice.SetMapMode(MapMode(SmMapUnit(), Point(), aFraction, aFraction));
+    }
 
     SetTotalSize();
 
@@ -357,6 +367,9 @@ bool SmGraphicWidget::MouseButtonDown(const MouseEvent& rMEvt)
 
     if (SmViewShell::IsInlineEditEnabled()) {
         GetCursor().MoveTo(&rDevice, aPos, !rMEvt.IsShift());
+        // 'on grab' window events are missing in lok, do it explicitly
+        if (comphelper::LibreOfficeKit::isActive())
+            SetIsCursorVisible(true);
         return true;
     }
     const SmNode *pNode = nullptr;
@@ -448,13 +461,15 @@ IMPL_LINK_NOARG(SmGraphicWidget, CaretBlinkTimerHdl, Timer *, void)
 
 void SmGraphicWidget::CaretBlinkInit()
 {
+    if (comphelper::LibreOfficeKit::isActive())
+        return; // No blinking in lok case
     aCaretBlinkTimer.SetInvokeHandler(LINK(this, SmGraphicWidget, CaretBlinkTimerHdl));
     aCaretBlinkTimer.SetTimeout(Application::GetSettings().GetStyleSettings().GetCursorBlinkTime());
 }
 
 void SmGraphicWidget::CaretBlinkStart()
 {
-    if (!SmViewShell::IsInlineEditEnabled())
+    if (!SmViewShell::IsInlineEditEnabled() || comphelper::LibreOfficeKit::isActive())
         return;
     if (aCaretBlinkTimer.GetTimeout() != STYLE_CURSOR_NOBLINKTIME)
         aCaretBlinkTimer.Start();
@@ -462,7 +477,7 @@ void SmGraphicWidget::CaretBlinkStart()
 
 void SmGraphicWidget::CaretBlinkStop()
 {
-    if (!SmViewShell::IsInlineEditEnabled())
+    if (!SmViewShell::IsInlineEditEnabled() || comphelper::LibreOfficeKit::isActive())
         return;
     aCaretBlinkTimer.Stop();
 }
@@ -486,6 +501,17 @@ void SmGraphicWidget::ShowLine(bool bShow)
         return;
 
     bIsLineVisible = bShow;
+}
+
+void SmGraphicWidget::SetIsCursorVisible(bool bVis)
+{
+    bIsCursorVisible = bVis;
+    if (comphelper::LibreOfficeKit::isActive())
+    {
+        mrViewShell.SendCaretToLOK();
+        mrViewShell.libreOfficeKitViewCallback(LOK_CALLBACK_CURSOR_VISIBLE,
+                                               OString::boolean(bVis).getStr());
+    }
 }
 
 void SmGraphicWidget::SetCursor(const SmNode *pNode)
@@ -801,9 +827,11 @@ bool SmGraphicWidget::Command(const CommandEvent& rCEvt)
 
 void SmGraphicWindow::SetZoom(sal_uInt16 Factor)
 {
+    if (comphelper::LibreOfficeKit::isActive())
+        return;
     nZoom = std::clamp(Factor, MINZOOM, MAXZOOM);
     Fraction aFraction(nZoom, 100);
-    SetGraphicMapMode(MapMode(MapUnit::Map100thMM, Point(), aFraction, aFraction));
+    SetGraphicMapMode(MapMode(SmMapUnit(), Point(), aFraction, aFraction));
     mxGraphic->SetTotalSize();
     SmViewShell& rViewSh = mxGraphic->GetView();
     rViewSh.GetViewFrame()->GetBindings().Invalidate(SID_ATTR_ZOOM);
@@ -813,7 +841,7 @@ void SmGraphicWindow::SetZoom(sal_uInt16 Factor)
 void SmGraphicWindow::ZoomToFitInWindow()
 {
     // set defined mapmode before calling 'LogicToPixel' below
-    SetGraphicMapMode(MapMode(MapUnit::Map100thMM));
+    SetGraphicMapMode(MapMode(SmMapUnit()));
 
     assert(mxGraphic->GetDoc());
     Size aSize(mxGraphic->GetOutputDevice().LogicToPixel(mxGraphic->GetDoc()->GetSize()));
@@ -1101,7 +1129,7 @@ void SmViewShell::InnerResizePixel(const Point &rOfs, const Size &rSize, bool)
     Size aObjSize = GetObjectShell()->GetVisArea().GetSize();
     if ( !aObjSize.IsEmpty() )
     {
-        Size aProvidedSize = GetWindow()->PixelToLogic(rSize, MapMode(MapUnit::Map100thMM));
+        Size aProvidedSize = GetWindow()->PixelToLogic(rSize, MapMode(SmMapUnit()));
         Fraction aZoomX(aProvidedSize.Width(), aObjSize.Width());
         Fraction aZoomY(aProvidedSize.Height(), aObjSize.Height());
         MapMode aMap(mxGraphicWindow->GetGraphicMapMode());
@@ -1404,44 +1432,43 @@ void SmViewShell::Impl_Print(OutputDevice &rOutDev, const SmPrintUIOptions &rPri
     switch (ePrintSize)
     {
         case PRINT_SIZE_NORMAL:
-            OutputMapMode = MapMode(MapUnit::Map100thMM);
+            OutputMapMode = MapMode(SmMapUnit());
             break;
 
         case PRINT_SIZE_SCALED:
             if (!aSize.IsEmpty())
             {
-                Size     OutputSize (rOutDev.LogicToPixel(Size(aOutRect.GetWidth(),
-                                                            aOutRect.GetHeight()), MapMode(MapUnit::Map100thMM)));
-                Size     GraphicSize (rOutDev.LogicToPixel(aSize, MapMode(MapUnit::Map100thMM)));
-                sal_uInt16 nZ = sal::static_int_cast<sal_uInt16>(std::min(tools::Long(Fraction(OutputSize.Width()  * 100, GraphicSize.Width())),
-                                                                          tools::Long(Fraction(OutputSize.Height() * 100, GraphicSize.Height()))));
+                Size OutputSize(rOutDev.LogicToPixel(aOutRect.GetSize(), MapMode(SmMapUnit())));
+                Size GraphicSize(rOutDev.LogicToPixel(aSize, MapMode(SmMapUnit())));
+                sal_uInt16 nZ = std::min(o3tl::convert(OutputSize.Width(), 100, GraphicSize.Width()),
+                                         o3tl::convert(OutputSize.Height(), 100, GraphicSize.Height()));
                 nZ -= 10;
-                Fraction aFraction (std::clamp(nZ, MINZOOM, sal_uInt16(100)));
+                Fraction aFraction(std::clamp(nZ, MINZOOM, sal_uInt16(100)), 1);
 
-                OutputMapMode = MapMode(MapUnit::Map100thMM, Point(), aFraction, aFraction);
+                OutputMapMode = MapMode(SmMapUnit(), Point(), aFraction, aFraction);
             }
             else
-                OutputMapMode = MapMode(MapUnit::Map100thMM);
+                OutputMapMode = MapMode(SmMapUnit());
             break;
 
         case PRINT_SIZE_ZOOMED:
         {
             Fraction aFraction( nZoomFactor, 100 );
 
-            OutputMapMode = MapMode(MapUnit::Map100thMM, Point(), aFraction, aFraction);
+            OutputMapMode = MapMode(SmMapUnit(), Point(), aFraction, aFraction);
             break;
         }
     }
 
     aSize = rOutDev.PixelToLogic(rOutDev.LogicToPixel(aSize, OutputMapMode),
-                                   MapMode(MapUnit::Map100thMM));
+                                   MapMode(SmMapUnit()));
 
     Point aPos (aOutRect.Left() + (aOutRect.GetWidth()  - aSize.Width())  / 2,
                 aOutRect.Top()  + (aOutRect.GetHeight() - aSize.Height()) / 2);
 
-    aPos     = rOutDev.PixelToLogic(rOutDev.LogicToPixel(aPos, MapMode(MapUnit::Map100thMM)),
+    aPos     = rOutDev.PixelToLogic(rOutDev.LogicToPixel(aPos, MapMode(SmMapUnit())),
                                           OutputMapMode);
-    aOutRect   = rOutDev.PixelToLogic(rOutDev.LogicToPixel(aOutRect, MapMode(MapUnit::Map100thMM)),
+    aOutRect   = rOutDev.PixelToLogic(rOutDev.LogicToPixel(aOutRect, MapMode(SmMapUnit())),
                                           OutputMapMode);
 
     rOutDev.SetMapMode(OutputMapMode);
@@ -2122,6 +2149,16 @@ public:
         mpSelectionChangeHandler->selectionChanged({}); // Installs the correct context
     }
 
+    virtual void SAL_CALL dispose() override
+    {
+        if (comphelper::LibreOfficeKit::isActive())
+            if (auto pViewShell = GetViewShell_Impl())
+                pViewShell->libreOfficeKitViewCallback(LOK_CALLBACK_CURSOR_VISIBLE,
+                                                       OString::boolean(false).getStr());
+
+        SfxBaseController::dispose();
+    }
+
 private:
     static OUString GetContextName() { return "Math"; } // Static constant for now
 
@@ -2252,14 +2289,16 @@ void SmViewShell::ZoomByItemSet(const SfxItemSet *pSet)
         case SvxZoomType::PAGEWIDTH:
         case SvxZoomType::WHOLEPAGE:
         {
-            const MapMode aMap( MapUnit::Map100thMM );
+            const MapMode aMap( SmMapUnit() );
             SfxPrinter *pPrinter = GetPrinter( true );
             tools::Rectangle  OutputRect(Point(), pPrinter->GetOutputSize());
             Size       OutputSize(pPrinter->LogicToPixel(Size(OutputRect.GetWidth(),
                                                               OutputRect.GetHeight()), aMap));
             Size       GraphicSize(pPrinter->LogicToPixel(GetDoc()->GetSize(), aMap));
-            sal_uInt16 nZ = sal::static_int_cast<sal_uInt16>(std::min(tools::Long(Fraction(OutputSize.Width()  * 100, GraphicSize.Width())),
-                                                                      tools::Long(Fraction(OutputSize.Height() * 100, GraphicSize.Height()))));
+            if (GraphicSize.Width() <= 0 || GraphicSize.Height() <= 0)
+                break;
+            sal_uInt16 nZ = std::min(o3tl::convert(OutputSize.Width(), 100, GraphicSize.Width()),
+                                     o3tl::convert(OutputSize.Height(), 100, GraphicSize.Height()));
             mxGraphicWindow->SetZoom(nZ);
             break;
         }
@@ -2273,14 +2312,60 @@ std::optional<OString> SmViewShell::getLOKPayload(int nType, int nViewId) const
     switch (nType)
     {
         case LOK_CALLBACK_INVALIDATE_VISIBLE_CURSOR:
-        case LOK_CALLBACK_INVALIDATE_VIEW_CURSOR:
+        {
+            OString sRectangle;
+            if (const SmGraphicWidget& widget = GetGraphicWidget(); widget.IsCursorVisible())
+            {
+                SmCursor& rCursor = GetDoc()->GetCursor();
+                OutputDevice& rOutDev = const_cast<SmGraphicWidget&>(widget).GetOutputDevice();
+                tools::Rectangle aCaret = rCursor.GetCaretRectangle(rOutDev);
+                LokStarMathHelper helper(SfxViewShell::Current());
+                tools::Rectangle aBounds = helper.GetBoundingBox();
+                aCaret.Move(aBounds.Left(), aBounds.Top());
+                sRectangle = aCaret.toString();
+            }
+            return SfxLokHelper::makeVisCursorInvalidation(nViewId, sRectangle, false, {});
+        }
         case LOK_CALLBACK_TEXT_SELECTION:
+        {
+            OString sRectangle;
+            if (const SmGraphicWidget& widget = GetGraphicWidget(); widget.IsCursorVisible())
+            {
+                SmCursor& rCursor = GetDoc()->GetCursor();
+                OutputDevice& rOutDev = const_cast<SmGraphicWidget&>(widget).GetOutputDevice();
+                tools::Rectangle aSelection = rCursor.GetSelectionRectangle(rOutDev);
+                if (!aSelection.IsEmpty())
+                {
+                    LokStarMathHelper helper(SfxViewShell::Current());
+                    tools::Rectangle aBounds = helper.GetBoundingBox();
+
+                    aSelection.Move(aBounds.Left(), aBounds.Top());
+                    sRectangle = aSelection.toString();
+                }
+            }
+            return sRectangle;
+        }
         case LOK_CALLBACK_TEXT_SELECTION_START:
         case LOK_CALLBACK_TEXT_SELECTION_END:
+        case LOK_CALLBACK_INVALIDATE_VIEW_CURSOR:
         case LOK_CALLBACK_TEXT_VIEW_SELECTION:
             return {};
     }
     return SfxViewShell::getLOKPayload(nType, nViewId); // aborts
+}
+
+void SmViewShell::SendCaretToLOK() const
+{
+    const int nViewId = sal_Int32(GetViewShellId());
+    if (const auto& payload = getLOKPayload(LOK_CALLBACK_INVALIDATE_VISIBLE_CURSOR, nViewId))
+    {
+        libreOfficeKitViewCallbackWithViewId(LOK_CALLBACK_INVALIDATE_VISIBLE_CURSOR,
+                                             payload->getStr(), nViewId);
+    }
+    if (const auto& payload = getLOKPayload(LOK_CALLBACK_TEXT_SELECTION, nViewId))
+    {
+        libreOfficeKitViewCallback(LOK_CALLBACK_TEXT_SELECTION, payload->getStr());
+    }
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

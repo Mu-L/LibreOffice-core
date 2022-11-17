@@ -29,11 +29,14 @@
 #include <swmodule.hxx>
 #include <view.hxx>
 
-constexpr OUStringLiteral DATA_DIRECTORY = u"/sw/qa/uibase/uiview/data/";
-
 /// Covers sw/source/uibase/uiview/ fixes.
 class SwUibaseUiviewTest : public SwModelTestBase
 {
+public:
+    SwUibaseUiviewTest()
+        : SwModelTestBase("/sw/qa/uibase/uiview/data/")
+    {
+    }
 };
 
 CPPUNIT_TEST_FIXTURE(SwUibaseUiviewTest, testUpdateAllObjectReplacements)
@@ -42,10 +45,9 @@ CPPUNIT_TEST_FIXTURE(SwUibaseUiviewTest, testUpdateAllObjectReplacements)
     utl::TempFileNamed tmp;
     tmp.EnableKillingFile();
     OUString sTempCopy = tmp.GetURL();
-    CPPUNIT_ASSERT_EQUAL(osl::FileBase::E_None,
-                         osl::File::copy(m_directories.getURLFromSrc(DATA_DIRECTORY)
-                                             + "updateall-objectreplacements.odt",
-                                         sTempCopy));
+    CPPUNIT_ASSERT_EQUAL(
+        osl::FileBase::E_None,
+        osl::File::copy(createFileURL(u"updateall-objectreplacements.odt"), sTempCopy));
 
     /* BASIC code that exhibits the problem:
 
@@ -94,8 +96,7 @@ CPPUNIT_TEST_FIXTURE(SwUibaseUiviewTest, testUpdateAllObjectReplacements)
 CPPUNIT_TEST_FIXTURE(SwUibaseUiviewTest, testUpdateReplacementNosetting)
 {
     // Load a copy of the document in hidden mode.
-    OUString aSourceURL
-        = m_directories.getURLFromSrc(DATA_DIRECTORY) + "update-replacement-nosetting.odt";
+    OUString aSourceURL = createFileURL(u"update-replacement-nosetting.odt");
     CPPUNIT_ASSERT_EQUAL(osl::FileBase::E_None, osl::File::copy(aSourceURL, maTempFile.GetURL()));
     mxComponent = loadFromDesktop(maTempFile.GetURL(), "com.sun.star.text.TextDocument",
                                   { comphelper::makePropertyValue("Hidden", true) });
@@ -118,7 +119,7 @@ CPPUNIT_TEST_FIXTURE(SwUibaseUiviewTest, testUpdateReplacementNosetting)
 CPPUNIT_TEST_FIXTURE(SwUibaseUiviewTest, testKeepRatio)
 {
     // Given a document with a custom KeepRatio:
-    OUString aURL = m_directories.getURLFromSrc(DATA_DIRECTORY) + "keep-ratio.fodt";
+    OUString aURL = createFileURL(u"keep-ratio.fodt");
 
     // When loading that document:
     mxComponent = loadFromDesktop(aURL);
@@ -137,12 +138,7 @@ CPPUNIT_TEST_FIXTURE(SwUibaseUiviewTest, testKeepRatio)
     CPPUNIT_ASSERT(pViewOption->IsKeepRatio());
 
     // Then export as well:
-    uno::Reference<frame::XStorable2> xStorable(mxComponent, uno::UNO_QUERY);
-    uno::Sequence<beans::PropertyValue> aStoreArgs = {
-        comphelper::makePropertyValue("FilterName", OUString("writer8")),
-    };
-    xStorable->storeToURL(maTempFile.GetURL(), aStoreArgs);
-    mbExported = true;
+    save("writer8");
     xmlDocUniquePtr pXmlDoc = parseExport("settings.xml");
     assertXPathContent(pXmlDoc, "//config:config-item[@config:name='KeepRatio']", "true");
 }
@@ -241,7 +237,8 @@ CPPUNIT_TEST_FIXTURE(SwUibaseUiviewTest, testSwitchBetweenImages)
 {
     // Given a document with 2 images, and an interceptor catching an UNO command that specific to
     // the current selection:
-    SwDoc* pDoc = createSwDoc();
+    createSwDoc();
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
     uno::Reference<lang::XMultiServiceFactory> xMSF(mxComponent, uno::UNO_QUERY);
     uno::Reference<text::XTextDocument> xTextDocument(mxComponent, uno::UNO_QUERY);

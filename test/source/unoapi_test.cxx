@@ -9,10 +9,12 @@
 
 #include <test/unoapi_test.hxx>
 
+#include <com/sun/star/beans/NamedValue.hpp>
 #include <com/sun/star/frame/Desktop.hpp>
 #include <com/sun/star/frame/XStorable.hpp>
 #include <comphelper/processfactory.hxx>
 #include <comphelper/propertyvalue.hxx>
+#include <comphelper/sequence.hxx>
 
 #include <sfx2/app.hxx>
 #include <sfx2/objsh.hxx>
@@ -26,6 +28,7 @@ UnoApiTest::UnoApiTest(OUString path)
     : mbSkipValidation(false)
     , m_aBaseString(std::move(path))
 {
+    maTempFile.EnableKillingFile();
 }
 
 void UnoApiTest::setUp()
@@ -54,7 +57,24 @@ OUString UnoApiTest::createFileURL(std::u16string_view aFileBase)
     return m_directories.getSrcRootURL() + m_aBaseString + "/" + aFileBase;
 }
 
-OUString UnoApiTest::loadFromURL(std::u16string_view aFileBase)
+OUString UnoApiTest::createFilePath(std::u16string_view aFileBase)
+{
+    return m_directories.getSrcRootPath() + "/" + m_aBaseString + "/" + aFileBase;
+}
+
+void UnoApiTest::setTestInteractionHandler(const char* pPassword,
+                                           std::vector<beans::PropertyValue>& rFilterOptions)
+{
+    OUString sPassword = OUString::createFromAscii(pPassword);
+    rFilterOptions.emplace_back();
+    xInteractionHandler
+        = rtl::Reference<TestInteractionHandler>(new TestInteractionHandler(sPassword));
+    css::uno::Reference<task::XInteractionHandler2> const xInteraction(xInteractionHandler);
+    rFilterOptions[0].Name = "InteractionHandler";
+    rFilterOptions[0].Value <<= xInteraction;
+}
+
+void UnoApiTest::load(OUString const& rURL, const char* pPassword)
 {
     if (mxComponent.is())
     {
@@ -62,8 +82,43 @@ OUString UnoApiTest::loadFromURL(std::u16string_view aFileBase)
         mxComponent.clear();
     }
 
+    std::vector<beans::PropertyValue> aFilterOptions;
+
+    if (pPassword)
+    {
+        setTestInteractionHandler(pPassword, aFilterOptions);
+    }
+
+    if (!maImportFilterOptions.isEmpty())
+    {
+        beans::PropertyValue aValue;
+        aValue.Name = "FilterOptions";
+        aValue.Value <<= maImportFilterOptions;
+        aFilterOptions.push_back(aValue);
+    }
+
+    if (!maImportFilterName.isEmpty())
+    {
+        beans::PropertyValue aValue;
+        aValue.Name = "FilterName";
+        aValue.Value <<= maImportFilterName;
+        aFilterOptions.push_back(aValue);
+    }
+
+    mxComponent
+        = loadFromDesktop(rURL, OUString(), comphelper::containerToSequence(aFilterOptions));
+
+    if (pPassword)
+    {
+        CPPUNIT_ASSERT_MESSAGE("Password set but not requested",
+                               xInteractionHandler->wasPasswordRequested());
+    }
+}
+
+OUString UnoApiTest::loadFromURL(std::u16string_view aFileBase, const char* pPassword)
+{
     OUString aFileName = createFileURL(aFileBase);
-    mxComponent = loadFromDesktop(aFileName);
+    load(aFileName, pPassword);
     return aFileName;
 }
 
@@ -81,63 +136,80 @@ uno::Any UnoApiTest::executeMacro(const OUString& rScriptURL,
     return aRet;
 }
 
-utl::TempFileNamed UnoApiTest::save(const OUString& rFilter)
+void UnoApiTest::save(const OUString& rFilter, const char* pPassword)
 {
-    utl::TempFileNamed aTempFile;
-    aTempFile.EnableKillingFile();
     utl::MediaDescriptor aMediaDescriptor;
     aMediaDescriptor["FilterName"] <<= rFilter;
     if (!maFilterOptions.isEmpty())
         aMediaDescriptor["FilterOptions"] <<= maFilterOptions;
     css::uno::Reference<frame::XStorable> xStorable(mxComponent, css::uno::UNO_QUERY_THROW);
-    xStorable->storeToURL(aTempFile.GetURL(), aMediaDescriptor.getAsConstPropertyValueList());
+
+    if (pPassword)
+    {
+        if (rFilter != "Office Open XML Text")
+        {
+            aMediaDescriptor["Password"] <<= OUString::createFromAscii(pPassword);
+        }
+        else
+        {
+            OUString sPassword = OUString::createFromAscii(pPassword);
+            uno::Sequence<beans::NamedValue> aEncryptionData{
+                { "CryptoType", uno::Any(OUString("Standard")) },
+                { "OOXPassword", uno::Any(sPassword) }
+            };
+            aMediaDescriptor[utl::MediaDescriptor::PROP_ENCRYPTIONDATA] <<= aEncryptionData;
+        }
+    }
+
+    xStorable->storeToURL(maTempFile.GetURL(), aMediaDescriptor.getAsConstPropertyValueList());
 
     if (!mbSkipValidation)
     {
         if (rFilter == "Office Open XML Text")
-            validate(aTempFile.GetFileName(), test::OOXML);
+            validate(maTempFile.GetFileName(), test::OOXML);
         else if (rFilter == "Calc Office Open XML")
-            validate(aTempFile.GetFileName(), test::OOXML);
+            validate(maTempFile.GetFileName(), test::OOXML);
         else if (rFilter == "Impress Office Open XML")
-            validate(aTempFile.GetFileName(), test::OOXML);
+            validate(maTempFile.GetFileName(), test::OOXML);
         else if (rFilter == "writer8")
-            validate(aTempFile.GetFileName(), test::ODF);
+            validate(maTempFile.GetFileName(), test::ODF);
         else if (rFilter == "calc8")
-            validate(aTempFile.GetFileName(), test::ODF);
+            validate(maTempFile.GetFileName(), test::ODF);
         else if (rFilter == "impress8")
-            validate(aTempFile.GetFileName(), test::ODF);
+            validate(maTempFile.GetFileName(), test::ODF);
         else if (rFilter == "draw8")
-            validate(aTempFile.GetFileName(), test::ODF);
+            validate(maTempFile.GetFileName(), test::ODF);
         else if (rFilter == "OpenDocument Text Flat XML")
-            validate(aTempFile.GetFileName(), test::ODF);
+            validate(maTempFile.GetFileName(), test::ODF);
         else if (rFilter == "MS Word 97")
-            validate(aTempFile.GetFileName(), test::MSBINARY);
+            validate(maTempFile.GetFileName(), test::MSBINARY);
         else if (rFilter == "MS Excel 97")
-            validate(aTempFile.GetFileName(), test::MSBINARY);
+            validate(maTempFile.GetFileName(), test::MSBINARY);
         else if (rFilter == "MS PowerPoint 97")
-            validate(aTempFile.GetFileName(), test::MSBINARY);
+            validate(maTempFile.GetFileName(), test::MSBINARY);
     }
-
-    return aTempFile;
 }
 
-utl::TempFileNamed UnoApiTest::saveAndClose(const OUString& rFilter)
+void UnoApiTest::saveAndReload(const OUString& rFilter, const char* pPassword)
 {
-    utl::TempFileNamed aTempFile = save(rFilter);
+    save(rFilter, pPassword);
 
-    mxComponent->dispose();
-    mxComponent.clear();
-
-    return aTempFile;
+    load(maTempFile.GetURL(), pPassword);
 }
 
-utl::TempFileNamed UnoApiTest::saveAndReload(const OUString& rFilter)
+std::unique_ptr<vcl::pdf::PDFiumDocument> UnoApiTest::parsePDFExport(const OString& rPassword)
 {
-    utl::TempFileNamed aTempFile = saveAndClose(rFilter);
-
-    mxComponent = loadFromDesktop(aTempFile.GetURL());
-
-    return aTempFile;
+    SvFileStream aFile(maTempFile.GetURL(), StreamMode::READ);
+    maMemory.WriteStream(aFile);
+    std::shared_ptr<vcl::pdf::PDFium> pPDFium = vcl::pdf::PDFiumLibrary::get();
+    if (!pPDFium)
+    {
+        return nullptr;
+    }
+    std::unique_ptr<vcl::pdf::PDFiumDocument> pPdfDocument
+        = pPDFium->openDocument(maMemory.GetData(), maMemory.GetSize(), rPassword);
+    CPPUNIT_ASSERT(pPdfDocument);
+    return pPdfDocument;
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

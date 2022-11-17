@@ -69,6 +69,7 @@ class Test : public UnoApiXmlTest
     void TestEmfPlusDrawPathWithMiterLimit();
     void TestEmfPlusFillClosedCurve();
     void TestExtTextOutOpaqueAndClipTransform();
+    void TestNegativeWinOrg();
 
     void TestBitBltStretchBltWMF();
     void TestExtTextOutOpaqueAndClipWMF();
@@ -122,6 +123,7 @@ public:
     CPPUNIT_TEST(TestEmfPlusDrawPathWithMiterLimit);
     CPPUNIT_TEST(TestEmfPlusFillClosedCurve);
     CPPUNIT_TEST(TestExtTextOutOpaqueAndClipTransform);
+    CPPUNIT_TEST(TestNegativeWinOrg);
 
     CPPUNIT_TEST(TestBitBltStretchBltWMF);
     CPPUNIT_TEST(TestExtTextOutOpaqueAndClipWMF);
@@ -1017,16 +1019,19 @@ void Test::TestEmfPlusSave()
 
     assertXPath(pDocument, aXPathPrefix + "mask/polypolygon", "path", "m0 0h33544v21311h-33544z");
 
-    assertXPath(pDocument, aXPathPrefix + "mask/group/mask/polypolygoncolor/polypolygon", "path",
+    assertXPath(pDocument, aXPathPrefix + "mask/group/mask/polypolygoncolor[1]/polypolygon", "path",
                 "m327.458333333333 638.222222222222h437007.1875v295555.555555556h-437007.1875z");
-    assertXPath(pDocument, aXPathPrefix + "mask/group/mask/polypolygoncolor", "color", "#ff0cad");
+    assertXPath(pDocument, aXPathPrefix + "mask/group/mask/polypolygoncolor[1]", "color",
+                "#ff0cad");
 
-    assertXPath(pDocument, aXPathPrefix + "mask/polypolygoncolor/polypolygon", "path",
+    assertXPath(pDocument, aXPathPrefix + "mask/group/mask/polypolygoncolor[2]/polypolygon", "path",
                 "m10853.4145539602 7321.41354709201h41952690v29630720h-41952690z");
-    assertXPath(pDocument, aXPathPrefix + "mask/polypolygoncolor", "color", "#00ffad");
+    assertXPath(pDocument, aXPathPrefix + "mask/group/mask/polypolygoncolor[2]", "color",
+                "#00ffad");
 
-    assertXPath(pDocument, aXPathPrefix + "mask/polygonstrokearrow/line", "color", "#000000");
-    assertXPathContent(pDocument, aXPathPrefix + "mask/polygonstrokearrow/polygon",
+    assertXPath(pDocument, aXPathPrefix + "mask/group/mask/polygonstrokearrow/line", "color",
+                "#000000");
+    assertXPathContent(pDocument, aXPathPrefix + "mask/group/mask/polygonstrokearrow/polygon",
                        "10853.4145539602,7321.41354709201 10853.4145539602,4907.54325697157 "
                        "12832.6557236512,4907.54325697157");
 }
@@ -1201,6 +1206,24 @@ void Test::TestExtTextOutOpaqueAndClipTransform()
                 "Opaque ClipP-");
     assertXPath(pDocument, aXPathPrefix + "group[3]/mask/group/textsimpleportion", "fontcolor",
                 "#000000");
+}
+
+void Test::TestNegativeWinOrg()
+{
+    Primitive2DSequence aSequence = parseEmf(u"/emfio/qa/cppunit/emf/data/TestNegativeWinOrg.emf");
+    CPPUNIT_ASSERT_EQUAL(1, static_cast<int>(aSequence.getLength()));
+    drawinglayer::Primitive2dXmlDump dumper;
+    xmlDocUniquePtr pDocument = dumper.dumpAndParse(Primitive2DContainer(aSequence));
+    CPPUNIT_ASSERT(pDocument);
+
+    // The crop box (EMR_EXTSELECTCLIPRGN) would not factor in WinOrg coordinates
+    // and be lower and more to the right than it actually is which would cut the
+    // text in the emf above in half.
+    assertXPath(pDocument, aXPathPrefix + "mask/group[1]/mask/polypolygon", 1);
+    assertXPath(pDocument, aXPathPrefix + "mask/group[1]/mask/polypolygon", "minx", "0");
+    assertXPath(pDocument, aXPathPrefix + "mask/group[1]/mask/polypolygon", "miny", "272");
+    assertXPath(pDocument, aXPathPrefix + "mask/group[1]/mask/polypolygon", "maxx", "6800");
+    assertXPath(pDocument, aXPathPrefix + "mask/group[1]/mask/polypolygon", "maxy", "644");
 }
 
 void Test::TestBitBltStretchBltWMF()

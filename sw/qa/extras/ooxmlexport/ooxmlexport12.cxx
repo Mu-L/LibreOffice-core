@@ -674,7 +674,7 @@ DECLARE_OOXMLEXPORT_TEST(testTdf112202, "090716_Studentische_Arbeit_VWS.docx")
     // page 1 header: 1 paragraph, 2 flys, 1 draw object
     assertXPath(pXmlDoc, "/root/page[1]/header/txt", 1);
     assertXPath(pXmlDoc, "/root/page[1]/header/txt/anchored/fly", 2);
-    if (mbExported) // somehow there's an additional shape on re-import?
+    if (isExported()) // somehow there's an additional shape on re-import?
         assertXPath(pXmlDoc, "/root/page[1]/header/txt/anchored/SwAnchoredDrawObject", 2);
     else
         assertXPath(pXmlDoc, "/root/page[1]/header/txt/anchored/SwAnchoredDrawObject", 1);
@@ -1144,7 +1144,7 @@ DECLARE_OOXMLEXPORT_TEST(testTdf80526_word_wrap, "tdf80526_word_wrap.docx")
 {
     // tdf#80526: check whether the "wrap" property has been set
     // TODO: fix export too
-    if (mbExported)
+    if (isExported())
         return;
     uno::Reference<drawing::XShape> xShape = getShape(1);
     CPPUNIT_ASSERT_EQUAL(false, getProperty<bool>(xShape, "TextWordWrap"));
@@ -1209,9 +1209,9 @@ DECLARE_OOXMLEXPORT_TEST(testTdf104797, "tdf104797.docx")
 DECLARE_OOXMLEXPORT_TEST(testTdf145720, "tdf104797.docx")
 {
     // check moveFromRangeStart/End and moveToRangeStart/End (to keep tracked text moving)
-    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
-    if (mbExported)
+    if (isExported())
     {
+        xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
         // These were 0 (missing move*FromRange* elements)
         assertXPath(pXmlDoc, "/w:document/w:body/w:p[1]/w:moveFrom/w:moveFromRangeStart", 1);
         assertXPath(pXmlDoc, "/w:document/w:body/w:p[1]/w:moveFromRangeEnd", 1);
@@ -1241,9 +1241,9 @@ DECLARE_OOXMLEXPORT_TEST(testTdf145720, "tdf104797.docx")
 DECLARE_OOXMLEXPORT_TEST(testTdf150166, "tdf150166.docx")
 {
     // check moveFromRangeStart/End and moveToRangeStart/End (to keep tracked text moving)
-    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
-    if (mbExported)
+    if (isExported())
     {
+        xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
         assertXPath(pXmlDoc, "//w:moveFromRangeStart", 0);
         // This was 2 (missing RangeStart elements, but bad unpaired RangeEnds)
         assertXPath(pXmlDoc, "//w:moveFromRangeEnd", 0);
@@ -1262,9 +1262,9 @@ DECLARE_OOXMLEXPORT_TEST(testTdf150166, "tdf150166.docx")
 DECLARE_OOXMLEXPORT_TEST(testTdf143510, "TC-table-DnD-move.docx")
 {
     // check moveFromRangeStart/End and moveToRangeStart/End for tracked table move by drag & drop
-    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
-    if (mbExported)
+    if (isExported())
     {
+        xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
         // This was 0 (missing tracked table row deletion/insertion)
         assertXPath(pXmlDoc, "/w:document/w:body/w:tbl[1]/w:tr/w:trPr/w:del", 2);
         assertXPath(pXmlDoc, "/w:document/w:body/w:tbl[2]/w:tr/w:trPr/w:ins", 2);
@@ -1274,9 +1274,9 @@ DECLARE_OOXMLEXPORT_TEST(testTdf143510, "TC-table-DnD-move.docx")
 DECLARE_OOXMLEXPORT_TEST(testTdf143510_table_from_row, "TC-table-Separate-Move.docx")
 {
     // check moveFromRangeStart/End and moveToRangeStart/End for tracked table move by drag & drop
-    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
-    if (mbExported)
+    if (isExported())
     {
+        xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
         // This was 0 (missing tracked table row deletion/insertion)
         assertXPath(pXmlDoc, "/w:document/w:body/w:tbl[1]/w:tr/w:trPr/w:del", 1);
         assertXPath(pXmlDoc, "/w:document/w:body/w:tbl[1]/w:tr[3]/w:trPr/w:del", 1);
@@ -1288,9 +1288,9 @@ DECLARE_OOXMLEXPORT_TEST(testTdf143510_table_from_row, "TC-table-Separate-Move.d
 DECLARE_OOXMLEXPORT_TEST(testTdf143510_within_table, "TC-table-rowDND.docx")
 {
     // check moveFromRangeStart/End and moveToRangeStart/End for tracked table row move by DnD
-    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
-    if (mbExported)
+    if (isExported())
     {
+        xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
         // This was 0 (missing tracked table row deletion/insertion)
         assertXPath(pXmlDoc, "/w:document/w:body/w:tbl/w:tr[1]/w:trPr/w:del", 1);
         assertXPath(pXmlDoc, "/w:document/w:body/w:tbl/w:tr[4]/w:trPr/w:ins", 1);
@@ -1300,9 +1300,9 @@ DECLARE_OOXMLEXPORT_TEST(testTdf143510_within_table, "TC-table-rowDND.docx")
 DECLARE_OOXMLEXPORT_TEST(testTdf143510_within_table2, "TC-table-rowDND-front.docx")
 {
     // check moveFromRangeStart/End and moveToRangeStart/End for tracked table row move by DnD
-    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
-    if (mbExported)
+    if (isExported())
     {
+        xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
         // This was 0 (missing tracked table row deletion/insertion)
         assertXPath(pXmlDoc, "/w:document/w:body/w:tbl/w:tr[1]/w:trPr/w:ins", 1);
         assertXPath(pXmlDoc, "/w:document/w:body/w:tbl/w:tr[4]/w:trPr/w:del", 1);
@@ -1512,7 +1512,7 @@ CPPUNIT_TEST_FIXTURE(Test, testTdf132271)
     loadAndSave("tdf149388.docx");
     xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
     // import change tracking in floating tables
-    if (!mbExported)
+    if (!isExported())
     {
         assertXPath(pXmlDoc, "//w:del", 2);
         assertXPath(pXmlDoc, "//w:ins", 2);
@@ -1547,7 +1547,7 @@ CPPUNIT_TEST_FIXTURE(Test, testTdf136667)
     loadAndSave("tdf149388_fly.docx");
     xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
     // import change tracking in floating tables
-    if (!mbExported)
+    if (!isExported())
     {
         assertXPath(pXmlDoc, "//w:del", 2);
         assertXPath(pXmlDoc, "//w:ins", 4);
@@ -1782,7 +1782,7 @@ CPPUNIT_TEST_FIXTURE(Test, testTdf81100)
     assertXPath(pDump, "/root/page[2]/body/tab[1]", 1);
     assertXPath(pDump, "/root/page[2]/body/tab[1]/row", 2);
     assertXPath(pDump, "/root/page[3]/body/tab", 1);
-    if (!mbExported) // TODO export tblHeader=false
+    if (!isExported()) // TODO export tblHeader=false
         assertXPath(pDump, "/root/page[3]/body/tab/row", 1);
 }
 
@@ -1974,7 +1974,7 @@ DECLARE_OOXMLEXPORT_TEST(testTdf121176, "tdf121176.docx")
 CPPUNIT_TEST_FIXTURE(Test, testTdf128913)
 {
     loadAndSave("tdf128913.docx");
-    xmlDocUniquePtr pXmlDoc = parseExport();
+    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
     // w:ins and w:del are imported correctly, if they contain only inline images
     assertXPath(pXmlDoc, "/w:document/w:body/w:p/w:ins/w:r/w:drawing/wp:inline/a:graphic");
     assertXPath(pXmlDoc, "/w:document/w:body/w:p/w:del/w:r/w:drawing/wp:inline/a:graphic");
@@ -1983,7 +1983,7 @@ CPPUNIT_TEST_FIXTURE(Test, testTdf128913)
 CPPUNIT_TEST_FIXTURE(Test, testTdf142700)
 {
     loadAndSave("tdf142700.docx");
-    xmlDocUniquePtr pXmlDoc = parseExport();
+    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
     // w:ins and w:del are imported correctly, if they contain only images anchored to character
     assertXPath(pXmlDoc, "/w:document/w:body/w:p/w:ins/w:r/w:drawing/wp:anchor/a:graphic");
     assertXPath(pXmlDoc, "/w:document/w:body/w:p/w:del/w:r/w:drawing/wp:anchor/a:graphic");
@@ -1992,7 +1992,7 @@ CPPUNIT_TEST_FIXTURE(Test, testTdf142700)
 CPPUNIT_TEST_FIXTURE(Test, testTdf142387)
 {
     loadAndSave("tdf142387.docx");
-    xmlDocUniquePtr pXmlDoc = parseExport();
+    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
     // w:del in w:ins is exported correctly (only w:del was exported)
     assertXPathContent(pXmlDoc, "/w:document/w:body/w:p/w:ins/w:del/w:r/w:delText", "inserts ");
 }
@@ -2142,7 +2142,7 @@ DECLARE_OOXMLEXPORT_TEST(testTdf119952_negativeMargins, "tdf119952_negativeMargi
     CPPUNIT_ASSERT(lcl_nearEqual(nTopHFly, 851));
 
     // this seems to be an import bug
-    if (!mbExported)
+    if (!isExported())
         CPPUNIT_ASSERT(lcl_nearEqual(nTopFFly, 14403));
 
     CPPUNIT_ASSERT(lcl_nearEqual(nHeightHead, 567));
@@ -2153,7 +2153,7 @@ DECLARE_OOXMLEXPORT_TEST(testTdf119952_negativeMargins, "tdf119952_negativeMargi
 
     // after export these heights increase to like 567.
     // not sure if it is another import, or export bug... or just the result of the modified document
-    if (!mbExported)
+    if (!isExported())
     {
         CPPUNIT_ASSERT(lcl_nearEqual(nHeightHFlyBound, 57));
         CPPUNIT_ASSERT(lcl_nearEqual(nHeightFFlyBound, 57));

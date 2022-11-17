@@ -32,6 +32,9 @@
 #define SVG_USE *[name()='use']
 #define SVG_PATTERN *[name()='pattern']
 #define SVG_RECT *[name()='rect']
+#define SVG_FOREIGNOBJECT *[name()='foreignObject']
+#define SVG_BODY *[name()='body']
+#define SVG_VIDEO *[name()='video']
 
 using namespace css;
 
@@ -69,29 +72,6 @@ bool isValidTiledBackgroundId(const OUString& sId)
 
 class SdSVGFilterTest : public UnoApiXmlTest
 {
-    class Resetter
-    {
-    private:
-        std::function<void ()> m_Func;
-
-    public:
-        Resetter(std::function<void ()> const& rFunc)
-            : m_Func(rFunc)
-        {
-        }
-        ~Resetter()
-        {
-            try
-            {
-                m_Func();
-            }
-            catch (...) // has to be reliable
-            {
-                CPPUNIT_FAIL("resetter failed with exception");
-            }
-        }
-    };
-
 public:
     SdSVGFilterTest()
         : UnoApiXmlTest("/sd/qa/unit/data/odp/")
@@ -101,12 +81,12 @@ public:
     void testSVGExportTextDecorations()
     {
         loadFromURL(u"svg-export-text-decorations.odp");
-        utl::TempFileNamed aTempFile = save("impress_svg_Export");
+        save("impress_svg_Export");
 
-        xmlDocUniquePtr svgDoc = parseXml(aTempFile);
+        xmlDocUniquePtr svgDoc = parseXml(maTempFile);
         CPPUNIT_ASSERT(svgDoc);
 
-        svgDoc->name = reinterpret_cast<char *>(xmlStrdup(reinterpret_cast<xmlChar const *>(OUStringToOString(aTempFile.GetURL(), RTL_TEXTENCODING_UTF8).getStr())));
+        svgDoc->name = reinterpret_cast<char *>(xmlStrdup(reinterpret_cast<xmlChar const *>(OUStringToOString(maTempFile.GetURL(), RTL_TEXTENCODING_UTF8).getStr())));
 
         assertXPath(svgDoc, SAL_STRINGIFY( /SVG_SVG ), 1);
         assertXPath(svgDoc, SAL_STRINGIFY( /SVG_SVG/SVG_G[2] ), "class", "SlideGroup");
@@ -124,9 +104,9 @@ public:
     void testSVGExportJavascriptURL()
     {
         loadFromURL(u"textbox-link-javascript.odp");
-        utl::TempFileNamed aTempFile = save("impress_svg_Export");
+        save("impress_svg_Export");
 
-        xmlDocUniquePtr svgDoc = parseXml(aTempFile);
+        xmlDocUniquePtr svgDoc = parseXml(maTempFile);
         CPPUNIT_ASSERT(svgDoc);
 
         // There should be only one child (no link to javascript url)
@@ -139,9 +119,9 @@ public:
     void testSVGExportSlideCustomBackground()
     {
         loadFromURL(u"slide-custom-background.odp");
-        utl::TempFileNamed aTempFile = save("impress_svg_Export");
+        save("impress_svg_Export");
 
-        xmlDocUniquePtr svgDoc = parseXml(aTempFile);
+        xmlDocUniquePtr svgDoc = parseXml(maTempFile);
         CPPUNIT_ASSERT(svgDoc);
 
         assertXPath(svgDoc, SAL_STRINGIFY( /SVG_SVG/SVG_G[2]/SVG_G/SVG_G/SVG_G/SVG_G/SVG_DEFS ), "class", "SlideBackground");
@@ -150,9 +130,9 @@ public:
     void testSVGExportTextFieldsInMasterPage()
     {
         loadFromURL(u"text-fields.odp");
-        utl::TempFileNamed aTempFile = save("impress_svg_Export");
+        save("impress_svg_Export");
 
-        xmlDocUniquePtr svgDoc = parseXml(aTempFile);
+        xmlDocUniquePtr svgDoc = parseXml(maTempFile);
         CPPUNIT_ASSERT(svgDoc);
 
         assertXPath(svgDoc, SAL_STRINGIFY( /SVG_SVG/SVG_DEFS[9]/SVG_G[2] ), "class", "Master_Slide");
@@ -175,12 +155,43 @@ public:
         assertXPathContent(svgDoc, SAL_STRINGIFY( /SVG_SVG/SVG_DEFS[9]/SVG_G[2]/SVG_G[2]/SVG_G[7]/SVG_G/SVG_TEXT/SVG_TSPAN/SVG_TSPAN/SVG_TSPAN ), "<number>");
     }
 
+    void testSVGExportEmbeddedVideo()
+    {
+        loadFromURL(u"slide-video-thumbnail.odp");
+        save("impress_svg_Export");
+
+        xmlDocUniquePtr svgDoc = parseXml(maTempFile);
+        CPPUNIT_ASSERT(svgDoc);
+
+        assertXPath(svgDoc, SAL_STRINGIFY( /SVG_SVG ), 1);
+        assertXPath(svgDoc, SAL_STRINGIFY( /SVG_SVG/SVG_G[2] ), "class", "SlideGroup");
+        assertXPath(svgDoc, SAL_STRINGIFY( /SVG_SVG/SVG_G[2]/SVG_G[1] ), "visibility", "hidden");
+        assertXPath(svgDoc, SAL_STRINGIFY( /SVG_SVG/SVG_G[2]/SVG_G[1]/SVG_G[1] ), "id", "container-id1");
+        assertXPath(svgDoc, SAL_STRINGIFY( /SVG_SVG/SVG_G[2]/SVG_G[1]/SVG_G[1]/SVG_G[1] ), "class", "Slide");
+        assertXPath(svgDoc, SAL_STRINGIFY( /SVG_SVG/SVG_G[2]/SVG_G[1]/SVG_G[1]/SVG_G[1]/SVG_G[1] ), "class", "Page");
+        assertXPath(svgDoc, SAL_STRINGIFY( /SVG_SVG/SVG_G[2]/SVG_G[1]/SVG_G[1]/SVG_G[1]/SVG_G[1]/SVG_G[1] ), "class", "TitleText");
+
+        // First one has no valid video, so we just generate the stock thumbnail as an image.
+        assertXPath(svgDoc, SAL_STRINGIFY( /SVG_SVG/SVG_G[2]/SVG_G[1]/SVG_G[1]/SVG_G[1]/SVG_G[1]/SVG_G[2] ), "class", "com.sun.star.presentation.MediaShape");
+        assertXPath(svgDoc, SAL_STRINGIFY( /SVG_SVG/SVG_G[2]/SVG_G[1]/SVG_G[1]/SVG_G[1]/SVG_G[1]/SVG_G[2]/SVG_G[1]/SVG_IMAGE ), 1);
+
+        // The second one is a valid video, with the thumbnail embedded.
+        assertXPath(svgDoc, SAL_STRINGIFY( /SVG_SVG/SVG_G[2]/SVG_G[1]/SVG_G[1]/SVG_G[1]/SVG_G[1]/SVG_G[5] ), "class", "com.sun.star.drawing.MediaShape");
+        assertXPath(svgDoc, SAL_STRINGIFY( /SVG_SVG/SVG_G[2]/SVG_G[1]/SVG_G[1]/SVG_G[1]/SVG_G[1]/SVG_G[5]/SVG_G[1] ), 1);
+        assertXPath(svgDoc, SAL_STRINGIFY( /SVG_SVG/SVG_G[2]/SVG_G[1]/SVG_G[1]/SVG_G[1]/SVG_G[1]/SVG_G[5]/SVG_G[1]/SVG_FOREIGNOBJECT ), 1);
+        assertXPath(svgDoc, SAL_STRINGIFY( /SVG_SVG/SVG_G[2]/SVG_G[1]/SVG_G[1]/SVG_G[1]/SVG_G[1]/SVG_G[5]/SVG_G[1]/SVG_FOREIGNOBJECT/SVG_BODY ), 1);
+        assertXPath(svgDoc, SAL_STRINGIFY( /SVG_SVG/SVG_G[2]/SVG_G[1]/SVG_G[1]/SVG_G[1]/SVG_G[1]/SVG_G[5]/SVG_G[1]/SVG_FOREIGNOBJECT/SVG_BODY/SVG_VIDEO ), "preload", "auto");
+
+        const OUString poster = getXPath(svgDoc, SAL_STRINGIFY( /SVG_SVG/SVG_G[2]/SVG_G[1]/SVG_G[1]/SVG_G[1]/SVG_G[1]/SVG_G[5]/SVG_G[1]/SVG_FOREIGNOBJECT/SVG_BODY/SVG_VIDEO), "poster");
+        CPPUNIT_ASSERT_MESSAGE("The video poster is invalid", poster.startsWith("data:image/png;base64,"));
+    }
+
     void testSVGExportSlideBitmapBackground()
     {
         loadFromURL(u"slide-bitmap-background.odp");
-        utl::TempFileNamed aTempFile = save("impress_svg_Export");
+        save("impress_svg_Export");
 
-        xmlDocUniquePtr svgDoc = parseXml(aTempFile);
+        xmlDocUniquePtr svgDoc = parseXml(maTempFile);
         CPPUNIT_ASSERT(svgDoc);
 
         assertXPath(svgDoc, SAL_STRINGIFY( /SVG_SVG/SVG_DEFS[9] ), "class", "BackgroundBitmaps");
@@ -207,9 +218,9 @@ public:
     void testSVGExportSlideTileBitmapBackground()
     {
         loadFromURL(u"slide-tile-background.odp");
-        utl::TempFileNamed aTempFile = save("impress_svg_Export");
+        save("impress_svg_Export");
 
-        xmlDocUniquePtr svgDoc = parseXml(aTempFile);
+        xmlDocUniquePtr svgDoc = parseXml(maTempFile);
         CPPUNIT_ASSERT(svgDoc);
 
         // check the bitmap
@@ -272,9 +283,9 @@ public:
         Application::SetSettings(aSettings);
 
         loadFromURL(u"text-fields.odp");
-        utl::TempFileNamed aTempFile = save("impress_svg_Export");
+        save("impress_svg_Export");
 
-        xmlDocUniquePtr svgDoc = parseXml(aTempFile);
+        xmlDocUniquePtr svgDoc = parseXml(maTempFile);
         CPPUNIT_ASSERT(svgDoc);
 
         assertXPath(svgDoc, SAL_STRINGIFY( /SVG_SVG/SVG_DEFS[9]/SVG_G[2] ), "class", "Master_Slide");
@@ -295,6 +306,7 @@ public:
     CPPUNIT_TEST(testSVGExportJavascriptURL);
     CPPUNIT_TEST(testSVGExportSlideCustomBackground);
     CPPUNIT_TEST(testSVGExportTextFieldsInMasterPage);
+    CPPUNIT_TEST(testSVGExportEmbeddedVideo);
     CPPUNIT_TEST(testSVGExportSlideBitmapBackground);
     CPPUNIT_TEST(testSVGExportSlideTileBitmapBackground);
     CPPUNIT_TEST(testSVGPlaceholderLocale);

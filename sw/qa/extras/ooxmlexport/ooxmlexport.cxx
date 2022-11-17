@@ -62,7 +62,7 @@ CPPUNIT_TEST_FIXTURE(Test, testfdo81381)
 CPPUNIT_TEST_FIXTURE(Test, testSdtAlias)
 {
     loadAndSave("sdt-alias.docx");
-    xmlDocUniquePtr pXmlDoc = parseExport();
+    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
 
     // <w:alias> was completely missing.
     assertXPath(pXmlDoc, "/w:document/w:body/w:p/w:sdt/w:sdtPr/w:alias", "val", "Subtitle");
@@ -71,7 +71,7 @@ CPPUNIT_TEST_FIXTURE(Test, testSdtAlias)
 CPPUNIT_TEST_FIXTURE(Test, testFooterBodyDistance)
 {
     loadAndSave("footer-body-distance.docx");
-    xmlDocUniquePtr pXmlDoc = parseExport();
+    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
     // Page break was exported as section break, this was 0
     assertXPath(pXmlDoc, "/w:document/w:body/w:p/w:r/w:br", 1);
 }
@@ -142,7 +142,7 @@ CPPUNIT_TEST_FIXTURE(Test, testPlausableBorder)
 {
     loadAndSave("plausable-border.docx");
     // sw::util::IsPlausableSingleWordSection() did not merge two page styles due to borders.
-    xmlDocUniquePtr pXmlDoc = parseExport();
+    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
     // Page break was exported as section break, this was 0
     assertXPath(pXmlDoc, "/w:document/w:body/w:p/w:r/w:br", 1);
 
@@ -152,7 +152,7 @@ CPPUNIT_TEST_FIXTURE(Test, testPlausableBorder)
 CPPUNIT_TEST_FIXTURE(Test, testUnwantedSectionBreak)
 {
     loadAndSave("unwanted-section-break.docx");
-    xmlDocUniquePtr pXmlDoc = parseExport();
+    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
     // This was 2: an additional sectPr was added to the document.
     assertXPath(pXmlDoc, "//w:sectPr", 1);
 }
@@ -160,7 +160,7 @@ CPPUNIT_TEST_FIXTURE(Test, testUnwantedSectionBreak)
 CPPUNIT_TEST_FIXTURE(Test, testfdo80897 )
 {
     loadAndSave("fdo80897.docx");
-    xmlDocUniquePtr pXmlDoc = parseExport();
+    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
     assertXPath(pXmlDoc, "/w:document/w:body/w:p/w:r/mc:AlternateContent/mc:Choice/w:drawing/wp:anchor/a:graphic/a:graphicData/wps:wsp/wps:bodyPr/a:prstTxWarp", "prst", "textTriangle");
 }
 
@@ -295,7 +295,7 @@ DECLARE_OOXMLEXPORT_TEST(testDropdownInCell, "dropdown-in-cell.docx")
         uno::Reference<text::XTextRangeCompare> xTextRangeCompare(xCell, uno::UNO_QUERY);
         CPPUNIT_ASSERT_EQUAL(sal_Int16(0), xTextRangeCompare->compareRegionStarts(xAnchor, xCell));
     }
-    else if (!mbExported)
+    else if (!isExported())
     {
         // ComboBox was imported as DropDown text field
         uno::Reference<text::XTextFieldsSupplier> xTextFieldsSupplier(mxComponent, uno::UNO_QUERY);
@@ -365,10 +365,11 @@ DECLARE_OOXMLEXPORT_TEST(testChartDupe, "chart-dupe.docx")
     // This was 2, on second import we got a duplicated chart copy.
     CPPUNIT_ASSERT_EQUAL(sal_Int32(1), xEmbeddedObjects->getCount());
 
-    xmlDocUniquePtr pXmlDocCT = parseExport("[Content_Types].xml");
 
-    if (!pXmlDocCT)
+    if (!isExported())
        return; // initial import
+
+    xmlDocUniquePtr pXmlDocCT = parseExport("[Content_Types].xml");
 
     assertXPath(pXmlDocCT,
         "/ContentType:Types/ContentType:Override[@PartName='/word/charts/chart1.xml']",
@@ -698,7 +699,7 @@ CPPUNIT_TEST_FIXTURE(Test, testParagraphMarkNonempty)
 {
     loadAndSave("paragraph-mark-nonempty.odt");
     CPPUNIT_ASSERT_EQUAL(1, getPages());
-    xmlDocUniquePtr pXmlDoc = parseExport();
+    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
     // There were two <w:sz> elements, make sure the 40 one is dropped and the 20 one is kept.
     assertXPath(pXmlDoc, "//w:p/w:pPr/w:rPr/w:sz", "val", "20");
 }
@@ -925,7 +926,7 @@ DECLARE_OOXMLEXPORT_TEST(testTdf97090, "tdf97090.docx")
 
 DECLARE_OOXMLEXPORT_TEST(testTdf89791, "tdf89791.docx")
 {
-    if (mbExported)
+    if (isExported())
     {
         uno::Reference<packages::zip::XZipFileAccess2> xNameAccess = packages::zip::ZipFileAccess::createWithURL(comphelper::getComponentContext(m_xSFactory), maTempFile.GetURL());
         CPPUNIT_ASSERT_EQUAL(false, bool(xNameAccess->hasByName("docProps/custom.xml")));
@@ -1026,7 +1027,7 @@ CPPUNIT_TEST_FIXTURE(Test, testTdf118682)
 {
     loadAndSave("tdf118682.fodt");
     // Support cell references in table formulas
-    xmlDocUniquePtr pXmlDoc = parseExport();
+    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
 
     // Formula fields were completely missing.
     assertXPath(pXmlDoc, "/w:document/w:body/w:tbl/w:tr[3]/w:tc/w:p/w:r/w:fldChar", 3);
@@ -1040,7 +1041,7 @@ CPPUNIT_TEST_FIXTURE(Test, testTdf118682)
 CPPUNIT_TEST_FIXTURE(Test, testTdf133163)
 {
     loadAndSave("tdf133163.fodt");
-    xmlDocUniquePtr pXmlDoc = parseExport();
+    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
 
     // Formula cells were completely missing.
     assertXPath(pXmlDoc, "/w:document/w:body/w:tbl/w:tr[3]/w:tc/w:p/w:r/w:fldChar", 3);
@@ -1054,7 +1055,7 @@ CPPUNIT_TEST_FIXTURE(Test, testTdf133163)
 CPPUNIT_TEST_FIXTURE(Test, testTdf133647)
 {
     loadAndSave("tdf133647.docx");
-    xmlDocUniquePtr pXmlDoc = parseExport();
+    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
 
     // Keep original formula during round-trip
     assertXPathContent(pXmlDoc, "/w:document/w:body/w:tbl/w:tr[4]/w:tc[4]/w:p/w:r[2]/w:instrText", " =SUM(A1,B1)");
@@ -1070,7 +1071,7 @@ CPPUNIT_TEST_FIXTURE(Test, testTdf133647)
 CPPUNIT_TEST_FIXTURE(Test, testTdf123386)
 {
     loadAndSave("tdf123386.docx");
-    xmlDocUniquePtr pXmlDoc = parseExport();
+    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
 
     // Keep original formula during round-trip
     assertXPathContent(pXmlDoc, "/w:document/w:body/w:tbl/w:tr[3]/w:tc[4]/w:p/w:r[2]/w:instrText", " =A1 < 2");
@@ -1088,7 +1089,7 @@ CPPUNIT_TEST_FIXTURE(Test, testTdf123386)
 CPPUNIT_TEST_FIXTURE(Test, testTdf123389)
 {
     loadAndSave("tdf123389.docx");
-    xmlDocUniquePtr pXmlDoc = parseExport();
+    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
 
     // Keep original formula during round-trip
     assertXPathContent(pXmlDoc, "/w:document/w:body/w:tbl/w:tr[3]/w:tc[4]/w:p/w:r[2]/w:instrText", " =ROUND(2.345,1)");

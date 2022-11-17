@@ -78,6 +78,7 @@ public:
      * (re-)moved.
      */
     void NotifyChangeTextNode(SwTextNode* pTextNode);
+    SwTextNode* GetTextNode() const;
     static SwFormatContentControl* CreatePoolDefault(sal_uInt16 nWhich);
     const std::shared_ptr<SwContentControl>& GetContentControl() const { return m_pContentControl; }
 
@@ -150,6 +151,9 @@ class SW_DLLPUBLIC SwContentControl : public sw::BroadcastingModify
 
     /// Same as drop-down, but free-form input is also accepted.
     bool m_bComboBox = false;
+
+    /// Same as combo box, but free-form input is not accepted.
+    bool m_bDropDown = false;
 
     /// The placeholder's doc part: just remembered.
     OUString m_aPlaceholderDocPart;
@@ -233,8 +237,6 @@ public:
 
     const std::vector<SwContentControlListItem>& GetListItems() const { return m_aListItems; }
 
-    bool HasListItems() const { return !m_aListItems.empty(); }
-
     void SetListItems(const std::vector<SwContentControlListItem>& rListItems)
     {
         m_aListItems = rListItems;
@@ -276,6 +278,10 @@ public:
     void SetComboBox(bool bComboBox) { m_bComboBox = bComboBox; }
 
     bool GetComboBox() const { return m_bComboBox; }
+
+    void SetDropDown(bool bDropDown) { m_bDropDown = bDropDown; }
+
+    bool GetDropDown() const { return m_bDropDown; }
 
     void SetPlaceholderDocPart(const OUString& rPlaceholderDocPart)
     {

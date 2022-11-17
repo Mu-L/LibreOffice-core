@@ -152,7 +152,7 @@ class OUStringConstExpr
 public:
     template<std::size_t N> constexpr OUStringConstExpr(OUStringLiteral<N> const & literal):
         pData(const_cast<rtl_uString *>(&literal.str)) {}
-    
+
     // prevent mis-use
     template<std::size_t N> constexpr OUStringConstExpr(OUStringLiteral<N> && literal)
         = delete;
@@ -163,7 +163,7 @@ public:
     /**
       make it easier to pass to OUStringBuffer and similar without casting/converting
     */
-    constexpr std::u16string_view asView() const { return {pData->buffer, static_cast<sal_uInt32>(pData->length)}; }
+    constexpr std::u16string_view asView() const { return std::u16string_view(pData->buffer, pData->length); }
 
     inline operator const OUString&() const;
 
@@ -3388,7 +3388,6 @@ inline std::basic_ostream<charT, traits> & operator <<(
     return stream << OUString( std::move(concat) );
 }
 
-    
 /// @endcond
 #endif
 

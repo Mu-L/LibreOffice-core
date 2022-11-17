@@ -23,6 +23,7 @@
 
 #include <filter/msfilter/util.hxx>
 #include <o3tl/safeint.hxx>
+#include <o3tl/sprintf.hxx>
 #include <osl/diagnose.h>
 #include <rtl/ustring.hxx>
 #include <rtl/ustrbuf.hxx>
@@ -55,6 +56,7 @@
 #include <sfx2/app.hxx>
 
 #include <docsh.hxx>
+#include <tabvwsh.hxx>
 #include <viewdata.hxx>
 #include <excdoc.hxx>
 
@@ -709,9 +711,9 @@ OUString XclXmlUtils::GetStreamName( const char* sStreamDir, const char* sStream
 OString XclXmlUtils::ToOString( const Color& rColor )
 {
     char buf[9];
-    sprintf( buf, "%.2X%.2X%.2X%.2X", rColor.GetAlpha(), rColor.GetRed(), rColor.GetGreen(), rColor.GetBlue() );
+    o3tl::sprintf( buf, "%.2X%.2X%.2X%.2X", rColor.GetAlpha(), rColor.GetRed(), rColor.GetGreen(), rColor.GetBlue() );
     buf[8] = '\0';
-    return OString(buf);
+    return buf;
 }
 
 OStringBuffer& XclXmlUtils::ToOString( OStringBuffer& s, const ScAddress& rAddress )
@@ -1049,6 +1051,16 @@ bool XclExpXmlStream::exportDocument()
     // Get the viewsettings before processing
     if( ScDocShell::GetViewData() )
         ScDocShell::GetViewData()->WriteExtOptions( mpRoot->GetExtDocOptions() );
+    else
+    {
+        // Try to get ScViewData through the current ScDocShell
+        ScTabViewShell* pTabViewShell = pShell->GetBestViewShell( false );
+        if ( pTabViewShell )
+        {
+            ScViewData* pViewData = &pTabViewShell->GetViewData();
+            pViewData->WriteExtOptions( mpRoot->GetExtDocOptions() );
+        }
+    }
 
     OUString const workbook = "xl/workbook.xml";
     const char* pWorkbookContentType = nullptr;

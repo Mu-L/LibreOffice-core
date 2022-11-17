@@ -93,9 +93,9 @@ DECLARE_OOXMLEXPORT_TEST(testDmlTextshape, "dml-textshape.docx")
     // This was drawing::LineStyle_NONE.
     CPPUNIT_ASSERT_EQUAL(drawing::LineStyle_SOLID, getProperty<drawing::LineStyle>(xShape, "LineStyle"));
 
-    xmlDocUniquePtr pXmlDocument = parseExport("word/document.xml");
-    if (!pXmlDocument)
+    if (!isExported())
         return;
+    xmlDocUniquePtr pXmlDocument = parseExport("word/document.xml");
     // This was wrap="none".
     assertXPath(pXmlDocument, "/w:document/w:body/w:p[2]/w:r/mc:AlternateContent/mc:Choice/w:drawing/wp:inline/a:graphic/a:graphicData/wpg:wgp/wps:wsp[2]/wps:bodyPr", "wrap", "square");
 
@@ -260,10 +260,10 @@ DECLARE_OOXMLEXPORT_TEST(testDMLShapeFillBitmapCrop, "dml-shape-fillbitmapcrop.d
 
     // 1st shape has some cropping
     text::GraphicCrop aGraphicCropStruct = getProperty<text::GraphicCrop>(getShape(1), "GraphicCrop");
-    CPPUNIT_ASSERT_EQUAL( sal_Int32(mbExported ? 454 : 455 ), aGraphicCropStruct.Left );
-    CPPUNIT_ASSERT_EQUAL( sal_Int32(mbExported ? 367 : 368 ), aGraphicCropStruct.Right );
-    CPPUNIT_ASSERT_EQUAL( sal_Int32(mbExported ? -454 : -455 ), aGraphicCropStruct.Top );
-    CPPUNIT_ASSERT_EQUAL( sal_Int32(mbExported ? -367 : -368 ), aGraphicCropStruct.Bottom );
+    CPPUNIT_ASSERT_EQUAL( sal_Int32(isExported() ? 454 : 455 ), aGraphicCropStruct.Left );
+    CPPUNIT_ASSERT_EQUAL( sal_Int32(isExported() ? 367 : 368 ), aGraphicCropStruct.Right );
+    CPPUNIT_ASSERT_EQUAL( sal_Int32(isExported() ? -454 : -455 ), aGraphicCropStruct.Top );
+    CPPUNIT_ASSERT_EQUAL( sal_Int32(isExported() ? -367 : -368 ), aGraphicCropStruct.Bottom );
 
     // 2nd shape has no cropping
     aGraphicCropStruct = getProperty<text::GraphicCrop>(getShape(2), "GraphicCrop");
@@ -369,7 +369,7 @@ DECLARE_OOXMLEXPORT_TEST(testDMLGroupShapeChildPosition, "dml-groupshape-childpo
 
     xChildGroup.set(xGroup->getByIndex(1), uno::UNO_QUERY);
     CPPUNIT_ASSERT_EQUAL(sal_Int32(-2123), xChildGroup->getPosition().X);
-    CPPUNIT_ASSERT_EQUAL(sal_Int32(mbExported ? 14023 : 14021), xChildGroup->getPosition().Y);
+    CPPUNIT_ASSERT_EQUAL(sal_Int32(isExported() ? 14023 : 14021), xChildGroup->getPosition().Y);
 }
 
 CPPUNIT_TEST_FIXTURE(Test, testDMLGradientFillTheme)
@@ -466,10 +466,10 @@ DECLARE_OOXMLEXPORT_TEST(testTableFloatingMargins, "table-floating-margins.docx"
     CPPUNIT_ASSERT_EQUAL(sal_Int32(1000), getProperty<sal_Int32>(xFrame, "TopMargin"));
     CPPUNIT_ASSERT_EQUAL(sal_Int32(2000), getProperty<sal_Int32>(xFrame, "BottomMargin"));
 
-    if (!mbExported)
+    if (!isExported())
         return;
     // Paragraph bottom margin wasn't 0 in the A1 cell of the floating table.
-    xmlDocUniquePtr pXmlDoc = parseExport();
+    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
     assertXPath(pXmlDoc, "/w:document/w:body/w:tbl/w:tr[1]/w:tc[1]/w:p/w:pPr/w:spacing", "after", "0");
 }
 
@@ -477,7 +477,7 @@ CPPUNIT_TEST_FIXTURE(Test, testTdf127814)
 {
     loadAndSave("tdf127814.docx");
     // Paragraph top margin was 0 in a table started on a new page
-    xmlDocUniquePtr pXmlDoc = parseExport();
+    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
     assertXPath(pXmlDoc, "/w:document/w:body/w:tbl/w:tr[1]/w:tc[1]/w:p/w:pPr/w:spacing", "before", "0");
 }
 
@@ -485,14 +485,14 @@ CPPUNIT_TEST_FIXTURE(Test, testTdf128752)
 {
     loadAndSave("tdf128752.docx");
     // Paragraph bottom margin was 200, docDefault instead of table style setting
-    xmlDocUniquePtr pXmlDoc = parseExport();
+    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
     assertXPath(pXmlDoc, "/w:document/w:body/w:tbl/w:tr[1]/w:tc[1]/w:p[1]/w:pPr/w:spacing", "after", "0");
 }
 
 CPPUNIT_TEST_FIXTURE(Test, testTdf119054)
 {
     loadAndSave("tdf119054.docx");
-    xmlDocUniquePtr pXmlDoc = parseExport();
+    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
     // Don't overwrite before and after spacing of Heading2 by table style.
     // Heading2 overrides table style's values from DocDefaults.
     assertXPath(pXmlDoc, "/w:document/w:body/w:tbl/w:tr[1]/w:tc[1]/w:p[1]/w:pPr/w:spacing", "before", "0");
@@ -504,7 +504,7 @@ CPPUNIT_TEST_FIXTURE(Test, testTdf119054)
 CPPUNIT_TEST_FIXTURE(Test, testTdf131258)
 {
     loadAndSave("tdf131258.docx");
-    xmlDocUniquePtr pXmlDoc = parseExport();
+    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
     // Use table style based bottom margin instead of the docDefaults in empty tables, too
     assertXPath(pXmlDoc, "/w:document/w:body/w:tbl/w:tr[1]/w:tc[1]/w:p/w:pPr/w:spacing", "after", "0");
 }
@@ -512,7 +512,7 @@ CPPUNIT_TEST_FIXTURE(Test, testTdf131258)
 CPPUNIT_TEST_FIXTURE(Test, testTdf132514)
 {
     loadAndSave("tdf132514.docx");
-    xmlDocUniquePtr pXmlDoc = parseExport();
+    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
     // Keep table style setting, when the footer also contain a table
     assertXPath(pXmlDoc, "/w:document/w:body/w:tbl/w:tr[1]/w:tc[2]/w:p[2]/w:pPr/w:spacing", "before", "0");
     assertXPath(pXmlDoc, "/w:document/w:body/w:tbl/w:tr[1]/w:tc[2]/w:p[2]/w:pPr/w:spacing", "after", "0");
@@ -526,7 +526,7 @@ CPPUNIT_TEST_FIXTURE(Test, testFdo69636)
      * importer, regarding the btLr text frame direction: the
      * mso-layout-flow-alt property was completely missing in the output.
      */
-    xmlDocUniquePtr pXmlDoc = parseExport();
+    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
     // VML
     CPPUNIT_ASSERT(getXPath(pXmlDoc, "/w:document/w:body/w:p/w:r/mc:AlternateContent/mc:Fallback/w:pict/v:rect/v:textbox", "style").match("mso-layout-flow-alt:bottom-to-top"));
     // drawingML
@@ -876,7 +876,7 @@ CPPUNIT_TEST_FIXTURE(Test, testFDO73546)
 CPPUNIT_TEST_FIXTURE(Test, testFdo69616)
 {
     loadAndSave("fdo69616.docx");
-    xmlDocUniquePtr pXmlDoc = parseExport();
+    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
     // VML
     // FIXME: VML needs correction, because DrawingML WPG shapes from now imported as
     // shape+textframe pairs. VML implementation still missing.
@@ -983,7 +983,7 @@ CPPUNIT_TEST_FIXTURE(Test, testOuterShdw)
 CPPUNIT_TEST_FIXTURE(Test, testExtentValue)
 {
     loadAndSave("fdo74605.docx");
-    xmlDocUniquePtr pXmlDoc = parseExport();
+    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
     sal_Int32 nX = getXPath(pXmlDoc, "/w:document/w:body/w:p[2]/w:r[1]/mc:AlternateContent[1]/mc:Choice[1]/w:drawing[1]/wp:anchor[1]/wp:extent", "cx").toInt32();
     // This was negative.
     CPPUNIT_ASSERT(nX >= 0);
@@ -1036,7 +1036,7 @@ DECLARE_OOXMLEXPORT_TEST(testRelativeAlignmentFromTopMargin,
     // tdf#133045 These shapes are relatively aligned from top margin, vertically to
     // top, center and bottom.
 
-    if (mbExported)
+    if (isExported())
         return;
 
     xmlDocUniquePtr pXmlDoc = parseLayoutDump();

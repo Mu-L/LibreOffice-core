@@ -29,19 +29,19 @@
 #include <IDocumentRedlineAccess.hxx>
 #include <fmtinfmt.hxx>
 
-namespace
-{
-constexpr OUStringLiteral DATA_DIRECTORY = u"/sw/qa/extras/uiwriter/data/";
-} // namespace
-
 /// Third set of tests asserting the behavior of Writer user interface shells.
 class SwUiWriterTest3 : public SwModelTestBase
 {
+public:
+    SwUiWriterTest3()
+        : SwModelTestBase("/sw/qa/extras/uiwriter/data/")
+    {
+    }
 };
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf145731)
 {
-    createSwDoc(DATA_DIRECTORY, "tdf145731.odt");
+    createSwDoc("tdf145731.odt");
 
     CPPUNIT_ASSERT_EQUAL(9, getShapes());
     CPPUNIT_ASSERT_EQUAL(1, getPages());
@@ -65,7 +65,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf145731)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf147199)
 {
-    createSwDoc(DATA_DIRECTORY, "tdf147199.docx");
+    createSwDoc("tdf147199.docx");
 
     CPPUNIT_ASSERT_EQUAL(7, getShapes());
 
@@ -106,7 +106,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf147199)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf139843)
 {
-    createSwDoc(DATA_DIRECTORY, "tdf139843.odt");
+    createSwDoc("tdf139843.odt");
 
     int nPages = getPages();
 
@@ -128,7 +128,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf139843)
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf146848)
 {
     // Reuse existing document
-    createSwDoc(DATA_DIRECTORY, "tdf77014.odt");
+    createSwDoc("tdf77014.odt");
 
     dispatchCommand(mxComponent, ".uno:SelectAll", {});
     Scheduler::ProcessEventsToIdle();
@@ -159,7 +159,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf146848)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf149507)
 {
-    createSwDoc(DATA_DIRECTORY, "tdf149507.docx");
+    createSwDoc("tdf149507.docx");
 
     CPPUNIT_ASSERT_EQUAL(1, getShapes());
     CPPUNIT_ASSERT_EQUAL(1, getPages());
@@ -195,7 +195,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf149507)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf145321)
 {
-    createSwDoc(DATA_DIRECTORY, "tdf145321.odt");
+    createSwDoc("tdf145321.odt");
 
     CPPUNIT_ASSERT_EQUAL(3, getShapes());
     CPPUNIT_ASSERT_EQUAL(3, getPages());
@@ -219,40 +219,90 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf145321)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testVariableFieldTableRowSplitHeader)
 {
-    SwDoc* const pDoc = createSwDoc(DATA_DIRECTORY, "variable-field-table-row-split-header.fodt");
+    createSwDoc("variable-field-table-row-split-header.fodt");
+    SwDoc* const pDoc = getSwDoc();
 
     // finish layout
     Scheduler::ProcessEventsToIdle();
     xmlDocUniquePtr pXmlDoc = parseLayoutDump();
 
     // the fields in cell are: variable-get variable-set variable-get
-    assertXPath(pXmlDoc, "/root/page[1]/body/tab/row[1]/cell[2]/txt[1]/Special", 3);
-    assertXPath(pXmlDoc, "/root/page[1]/body/tab/row[1]/cell[2]/txt[1]/Special[1]", "rText", "0");
-    assertXPath(pXmlDoc, "/root/page[1]/body/tab/row[1]/cell[2]/txt[1]/Special[2]", "rText", "1");
-    assertXPath(pXmlDoc, "/root/page[1]/body/tab/row[1]/cell[2]/txt[1]/Special[3]", "rText", "1");
-    assertXPath(pXmlDoc, "/root/page[1]/header/txt[1]/Special[1]", "rText", "0");
-    assertXPath(pXmlDoc, "/root/page[1]/footer/txt[1]/Special[1]", "rText", "1");
+    assertXPath(
+        pXmlDoc,
+        "/root/page[1]/body/tab/row[1]/cell[2]/txt[1]/SwParaPortion/SwLineLayout/SwFieldPortion",
+        3);
+    assertXPath(
+        pXmlDoc,
+        "/root/page[1]/body/tab/row[1]/cell[2]/txt[1]/SwParaPortion/SwLineLayout/SwFieldPortion[1]",
+        "expand", "0");
+    assertXPath(
+        pXmlDoc,
+        "/root/page[1]/body/tab/row[1]/cell[2]/txt[1]/SwParaPortion/SwLineLayout/SwFieldPortion[2]",
+        "expand", "1");
+    assertXPath(
+        pXmlDoc,
+        "/root/page[1]/body/tab/row[1]/cell[2]/txt[1]/SwParaPortion/SwLineLayout/SwFieldPortion[3]",
+        "expand", "1");
+    assertXPath(pXmlDoc, "/root/page[1]/header/txt[1]/SwParaPortion/SwLineLayout/SwFieldPortion[1]",
+                "expand", "0");
+    assertXPath(pXmlDoc, "/root/page[1]/footer/txt[1]/SwParaPortion/SwLineLayout/SwFieldPortion[1]",
+                "expand", "1");
     // here the header had shown the wrong value
-    assertXPath(pXmlDoc, "/root/page[2]/body/tab/row[2]/cell[2]/txt[1]/Special[1]", "rText", "1");
-    assertXPath(pXmlDoc, "/root/page[2]/body/tab/row[2]/cell[2]/txt[1]/Special[2]", "rText", "2");
-    assertXPath(pXmlDoc, "/root/page[2]/body/tab/row[2]/cell[2]/txt[1]/Special[3]", "rText", "2");
-    assertXPath(pXmlDoc, "/root/page[2]/header/txt[1]/Special[1]", "rText", "1");
-    assertXPath(pXmlDoc, "/root/page[2]/footer/txt[1]/Special[1]", "rText", "2");
+    assertXPath(
+        pXmlDoc,
+        "/root/page[2]/body/tab/row[2]/cell[2]/txt[1]/SwParaPortion/SwLineLayout/SwFieldPortion[1]",
+        "expand", "1");
+    assertXPath(
+        pXmlDoc,
+        "/root/page[2]/body/tab/row[2]/cell[2]/txt[1]/SwParaPortion/SwLineLayout/SwFieldPortion[2]",
+        "expand", "2");
+    assertXPath(
+        pXmlDoc,
+        "/root/page[2]/body/tab/row[2]/cell[2]/txt[1]/SwParaPortion/SwLineLayout/SwFieldPortion[3]",
+        "expand", "2");
+    assertXPath(pXmlDoc, "/root/page[2]/header/txt[1]/SwParaPortion/SwLineLayout/SwFieldPortion[1]",
+                "expand", "1");
+    assertXPath(pXmlDoc, "/root/page[2]/footer/txt[1]/SwParaPortion/SwLineLayout/SwFieldPortion[1]",
+                "expand", "2");
 
-    assertXPath(pXmlDoc, "/root/page[3]/body/tab/row[2]/cell[2]/txt[1]/Special[1]", "rText", "2");
-    assertXPath(pXmlDoc, "/root/page[3]/body/tab/row[2]/cell[2]/txt[1]/Special[2]", "rText", "3");
-    assertXPath(pXmlDoc, "/root/page[3]/body/tab/row[2]/cell[2]/txt[1]/Special[3]", "rText", "3");
-    assertXPath(pXmlDoc, "/root/page[3]/header/txt[1]/Special[1]", "rText", "2");
-    assertXPath(pXmlDoc, "/root/page[3]/footer/txt[1]/Special[1]", "rText", "3");
+    assertXPath(
+        pXmlDoc,
+        "/root/page[3]/body/tab/row[2]/cell[2]/txt[1]/SwParaPortion/SwLineLayout/SwFieldPortion[1]",
+        "expand", "2");
+    assertXPath(
+        pXmlDoc,
+        "/root/page[3]/body/tab/row[2]/cell[2]/txt[1]/SwParaPortion/SwLineLayout/SwFieldPortion[2]",
+        "expand", "3");
+    assertXPath(
+        pXmlDoc,
+        "/root/page[3]/body/tab/row[2]/cell[2]/txt[1]/SwParaPortion/SwLineLayout/SwFieldPortion[3]",
+        "expand", "3");
+    assertXPath(pXmlDoc, "/root/page[3]/header/txt[1]/SwParaPortion/SwLineLayout/SwFieldPortion[1]",
+                "expand", "2");
+    assertXPath(pXmlDoc, "/root/page[3]/footer/txt[1]/SwParaPortion/SwLineLayout/SwFieldPortion[1]",
+                "expand", "3");
 
-    assertXPath(pXmlDoc, "/root/page[4]/body/tab/row[2]/cell[2]/txt[1]/Special[1]", "rText", "3");
-    assertXPath(pXmlDoc, "/root/page[4]/body/tab/row[2]/cell[2]/txt[1]/Special[2]", "rText", "4");
-    assertXPath(pXmlDoc, "/root/page[4]/body/tab/row[2]/cell[2]/txt[1]/Special[3]", "rText", "4");
-    assertXPath(pXmlDoc, "/root/page[4]/header/txt[1]/Special[1]", "rText", "3");
-    assertXPath(pXmlDoc, "/root/page[4]/footer/txt[1]/Special[1]", "rText", "4");
+    assertXPath(
+        pXmlDoc,
+        "/root/page[4]/body/tab/row[2]/cell[2]/txt[1]/SwParaPortion/SwLineLayout/SwFieldPortion[1]",
+        "expand", "3");
+    assertXPath(
+        pXmlDoc,
+        "/root/page[4]/body/tab/row[2]/cell[2]/txt[1]/SwParaPortion/SwLineLayout/SwFieldPortion[2]",
+        "expand", "4");
+    assertXPath(
+        pXmlDoc,
+        "/root/page[4]/body/tab/row[2]/cell[2]/txt[1]/SwParaPortion/SwLineLayout/SwFieldPortion[3]",
+        "expand", "4");
+    assertXPath(pXmlDoc, "/root/page[4]/header/txt[1]/SwParaPortion/SwLineLayout/SwFieldPortion[1]",
+                "expand", "3");
+    assertXPath(pXmlDoc, "/root/page[4]/footer/txt[1]/SwParaPortion/SwLineLayout/SwFieldPortion[1]",
+                "expand", "4");
 
-    assertXPath(pXmlDoc, "/root/page[5]/header/txt[1]/Special[1]", "rText", "4");
-    assertXPath(pXmlDoc, "/root/page[5]/footer/txt[1]/Special[1]", "rText", "4");
+    assertXPath(pXmlDoc, "/root/page[5]/header/txt[1]/SwParaPortion/SwLineLayout/SwFieldPortion[1]",
+                "expand", "4");
+    assertXPath(pXmlDoc, "/root/page[5]/footer/txt[1]/SwParaPortion/SwLineLayout/SwFieldPortion[1]",
+                "expand", "4");
 
     discardDumpedLayout();
     // update and check again
@@ -261,38 +311,87 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testVariableFieldTableRowSplitHeader)
     pXmlDoc = parseLayoutDump();
 
     // the fields in cell are: variable-get variable-set variable-get
-    assertXPath(pXmlDoc, "/root/page[1]/body/tab/row[1]/cell[2]/txt[1]/Special", 3);
-    assertXPath(pXmlDoc, "/root/page[1]/body/tab/row[1]/cell[2]/txt[1]/Special[1]", "rText", "0");
-    assertXPath(pXmlDoc, "/root/page[1]/body/tab/row[1]/cell[2]/txt[1]/Special[2]", "rText", "1");
-    assertXPath(pXmlDoc, "/root/page[1]/body/tab/row[1]/cell[2]/txt[1]/Special[3]", "rText", "1");
-    assertXPath(pXmlDoc, "/root/page[1]/header/txt[1]/Special[1]", "rText", "0");
-    assertXPath(pXmlDoc, "/root/page[1]/footer/txt[1]/Special[1]", "rText", "1");
+    assertXPath(
+        pXmlDoc,
+        "/root/page[1]/body/tab/row[1]/cell[2]/txt[1]/SwParaPortion/SwLineLayout/SwFieldPortion",
+        3);
+    assertXPath(
+        pXmlDoc,
+        "/root/page[1]/body/tab/row[1]/cell[2]/txt[1]/SwParaPortion/SwLineLayout/SwFieldPortion[1]",
+        "expand", "0");
+    assertXPath(
+        pXmlDoc,
+        "/root/page[1]/body/tab/row[1]/cell[2]/txt[1]/SwParaPortion/SwLineLayout/SwFieldPortion[2]",
+        "expand", "1");
+    assertXPath(
+        pXmlDoc,
+        "/root/page[1]/body/tab/row[1]/cell[2]/txt[1]/SwParaPortion/SwLineLayout/SwFieldPortion[3]",
+        "expand", "1");
+    assertXPath(pXmlDoc, "/root/page[1]/header/txt[1]/SwParaPortion/SwLineLayout/SwFieldPortion[1]",
+                "expand", "0");
+    assertXPath(pXmlDoc, "/root/page[1]/footer/txt[1]/SwParaPortion/SwLineLayout/SwFieldPortion[1]",
+                "expand", "1");
     // here the header had shown the wrong value
-    assertXPath(pXmlDoc, "/root/page[2]/body/tab/row[2]/cell[2]/txt[1]/Special[1]", "rText", "1");
-    assertXPath(pXmlDoc, "/root/page[2]/body/tab/row[2]/cell[2]/txt[1]/Special[2]", "rText", "2");
-    assertXPath(pXmlDoc, "/root/page[2]/body/tab/row[2]/cell[2]/txt[1]/Special[3]", "rText", "2");
-    assertXPath(pXmlDoc, "/root/page[2]/header/txt[1]/Special[1]", "rText", "1");
-    assertXPath(pXmlDoc, "/root/page[2]/footer/txt[1]/Special[1]", "rText", "2");
+    assertXPath(
+        pXmlDoc,
+        "/root/page[2]/body/tab/row[2]/cell[2]/txt[1]/SwParaPortion/SwLineLayout/SwFieldPortion[1]",
+        "expand", "1");
+    assertXPath(
+        pXmlDoc,
+        "/root/page[2]/body/tab/row[2]/cell[2]/txt[1]/SwParaPortion/SwLineLayout/SwFieldPortion[2]",
+        "expand", "2");
+    assertXPath(
+        pXmlDoc,
+        "/root/page[2]/body/tab/row[2]/cell[2]/txt[1]/SwParaPortion/SwLineLayout/SwFieldPortion[3]",
+        "expand", "2");
+    assertXPath(pXmlDoc, "/root/page[2]/header/txt[1]/SwParaPortion/SwLineLayout/SwFieldPortion[1]",
+                "expand", "1");
+    assertXPath(pXmlDoc, "/root/page[2]/footer/txt[1]/SwParaPortion/SwLineLayout/SwFieldPortion[1]",
+                "expand", "2");
 
-    assertXPath(pXmlDoc, "/root/page[3]/body/tab/row[2]/cell[2]/txt[1]/Special[1]", "rText", "2");
-    assertXPath(pXmlDoc, "/root/page[3]/body/tab/row[2]/cell[2]/txt[1]/Special[2]", "rText", "3");
-    assertXPath(pXmlDoc, "/root/page[3]/body/tab/row[2]/cell[2]/txt[1]/Special[3]", "rText", "3");
-    assertXPath(pXmlDoc, "/root/page[3]/header/txt[1]/Special[1]", "rText", "2");
-    assertXPath(pXmlDoc, "/root/page[3]/footer/txt[1]/Special[1]", "rText", "3");
+    assertXPath(
+        pXmlDoc,
+        "/root/page[3]/body/tab/row[2]/cell[2]/txt[1]/SwParaPortion/SwLineLayout/SwFieldPortion[1]",
+        "expand", "2");
+    assertXPath(
+        pXmlDoc,
+        "/root/page[3]/body/tab/row[2]/cell[2]/txt[1]/SwParaPortion/SwLineLayout/SwFieldPortion[2]",
+        "expand", "3");
+    assertXPath(
+        pXmlDoc,
+        "/root/page[3]/body/tab/row[2]/cell[2]/txt[1]/SwParaPortion/SwLineLayout/SwFieldPortion[3]",
+        "expand", "3");
+    assertXPath(pXmlDoc, "/root/page[3]/header/txt[1]/SwParaPortion/SwLineLayout/SwFieldPortion[1]",
+                "expand", "2");
+    assertXPath(pXmlDoc, "/root/page[3]/footer/txt[1]/SwParaPortion/SwLineLayout/SwFieldPortion[1]",
+                "expand", "3");
 
-    assertXPath(pXmlDoc, "/root/page[4]/body/tab/row[2]/cell[2]/txt[1]/Special[1]", "rText", "3");
-    assertXPath(pXmlDoc, "/root/page[4]/body/tab/row[2]/cell[2]/txt[1]/Special[2]", "rText", "4");
-    assertXPath(pXmlDoc, "/root/page[4]/body/tab/row[2]/cell[2]/txt[1]/Special[3]", "rText", "4");
-    assertXPath(pXmlDoc, "/root/page[4]/header/txt[1]/Special[1]", "rText", "3");
-    assertXPath(pXmlDoc, "/root/page[4]/footer/txt[1]/Special[1]", "rText", "4");
+    assertXPath(
+        pXmlDoc,
+        "/root/page[4]/body/tab/row[2]/cell[2]/txt[1]/SwParaPortion/SwLineLayout/SwFieldPortion[1]",
+        "expand", "3");
+    assertXPath(
+        pXmlDoc,
+        "/root/page[4]/body/tab/row[2]/cell[2]/txt[1]/SwParaPortion/SwLineLayout/SwFieldPortion[2]",
+        "expand", "4");
+    assertXPath(
+        pXmlDoc,
+        "/root/page[4]/body/tab/row[2]/cell[2]/txt[1]/SwParaPortion/SwLineLayout/SwFieldPortion[3]",
+        "expand", "4");
+    assertXPath(pXmlDoc, "/root/page[4]/header/txt[1]/SwParaPortion/SwLineLayout/SwFieldPortion[1]",
+                "expand", "3");
+    assertXPath(pXmlDoc, "/root/page[4]/footer/txt[1]/SwParaPortion/SwLineLayout/SwFieldPortion[1]",
+                "expand", "4");
 
-    assertXPath(pXmlDoc, "/root/page[5]/header/txt[1]/Special[1]", "rText", "4");
-    assertXPath(pXmlDoc, "/root/page[5]/footer/txt[1]/Special[1]", "rText", "4");
+    assertXPath(pXmlDoc, "/root/page[5]/header/txt[1]/SwParaPortion/SwLineLayout/SwFieldPortion[1]",
+                "expand", "4");
+    assertXPath(pXmlDoc, "/root/page[5]/footer/txt[1]/SwParaPortion/SwLineLayout/SwFieldPortion[1]",
+                "expand", "4");
 }
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf147126)
 {
-    createSwDoc(DATA_DIRECTORY, "tdf147126.docx");
+    createSwDoc("tdf147126.docx");
     CPPUNIT_ASSERT(mxComponent);
     SwXTextDocument* pTextDoc = dynamic_cast<SwXTextDocument*>(mxComponent.get());
     CPPUNIT_ASSERT(pTextDoc);
@@ -416,7 +515,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf147126)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf148868)
 {
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf148868.odt");
+    createSwDoc("tdf148868.odt");
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
 
     CPPUNIT_ASSERT_EQUAL(1, getShapes());
@@ -435,7 +535,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf148868)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf129382)
 {
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf129382.docx");
+    createSwDoc("tdf129382.docx");
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
 
     CPPUNIT_ASSERT_EQUAL(8, getShapes());
@@ -465,7 +566,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf129382)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf135662)
 {
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf135662.odt");
+    createSwDoc("tdf135662.odt");
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
 
     CPPUNIT_ASSERT_EQUAL(2, getShapes());
@@ -488,7 +590,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf135662)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf134227)
 {
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf134227.docx");
+    createSwDoc("tdf134227.docx");
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
 
     CPPUNIT_ASSERT_EQUAL(4, getShapes());
@@ -516,7 +619,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf134227)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf139638)
 {
-    createSwDoc(DATA_DIRECTORY, "tdf139638.odt");
+    createSwDoc("tdf139638.odt");
 
     uno::Reference<text::XDocumentIndexesSupplier> xIndexSupplier(mxComponent, uno::UNO_QUERY);
     uno::Reference<container::XIndexAccess> xIndexes = xIndexSupplier->getDocumentIndexes();
@@ -529,7 +632,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf139638)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf135412)
 {
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf135412.docx");
+    createSwDoc("tdf135412.docx");
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
 
     CPPUNIT_ASSERT_EQUAL(4, getShapes());
@@ -563,7 +667,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf135412)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf138482)
 {
-    createSwDoc(DATA_DIRECTORY, "tdf138482.docx");
+    createSwDoc("tdf138482.docx");
 
     CPPUNIT_ASSERT_EQUAL(2, getShapes());
 
@@ -582,7 +686,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf138482)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf134965)
 {
-    createSwDoc(DATA_DIRECTORY, "tdf134965.odt");
+    createSwDoc("tdf134965.odt");
 
     uno::Reference<text::XTextTablesSupplier> xTextTablesSupplier(mxComponent, uno::UNO_QUERY);
     uno::Reference<container::XIndexAccess> xIndexAccess(xTextTablesSupplier->getTextTables(),
@@ -611,7 +715,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf128375)
 {
     for (sal_Int32 i = 0; i < 2; ++i)
     {
-        createSwDoc(DATA_DIRECTORY, "tdf128375.docx");
+        createSwDoc("tdf128375.docx");
 
         uno::Reference<text::XTextTablesSupplier> xTextTablesSupplier(mxComponent, uno::UNO_QUERY);
         uno::Reference<container::XIndexAccess> xIndexAccess(xTextTablesSupplier->getTextTables(),
@@ -631,7 +735,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf128375)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf135061)
 {
-    createSwDoc(DATA_DIRECTORY, "tdf135061.odt");
+    createSwDoc("tdf135061.odt");
 
     uno::Reference<text::XTextTablesSupplier> xTextTablesSupplier(mxComponent, uno::UNO_QUERY);
     uno::Reference<container::XIndexAccess> xIndexAccess(xTextTablesSupplier->getTextTables(),
@@ -667,7 +771,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf135061)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf132911)
 {
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf132911.odt");
+    createSwDoc("tdf132911.odt");
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
 
     uno::Reference<text::XTextTablesSupplier> xTextTablesSupplier(mxComponent, uno::UNO_QUERY);
@@ -737,7 +842,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf132911)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf61154)
 {
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf61154.fodt");
+    createSwDoc("tdf61154.fodt");
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
 
     pWrtShell->GotoNextTOXBase();
@@ -767,7 +873,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf124904)
 {
     // don't show deletions in referenced text,
     // (except if the full text is deleted)
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf124904.fodt");
+    createSwDoc("tdf124904.fodt");
+    SwDoc* pDoc = getSwDoc();
 
     // show changes
     pDoc->getIDocumentRedlineAccess().SetRedlineFlags(RedlineFlags::On | RedlineFlags::ShowDelete
@@ -795,7 +902,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf124904)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf100691)
 {
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf100691.fodt");
+    createSwDoc("tdf100691.fodt");
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
 
     pWrtShell->GotoNextTOXBase();
@@ -814,7 +922,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf100691)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf134404)
 {
-    createSwDoc(DATA_DIRECTORY, "tdf134404.odt");
+    createSwDoc("tdf134404.odt");
 
     CPPUNIT_ASSERT_EQUAL(1, getShapes());
     CPPUNIT_ASSERT_EQUAL(1, getPages());
@@ -842,7 +950,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf134404)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf112342)
 {
-    createSwDoc(DATA_DIRECTORY, "tdf112342.docx");
+    createSwDoc("tdf112342.docx");
 
     //Get the last para
     uno::Reference<text::XTextRange> xPara = getParagraph(3);
@@ -859,7 +967,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf112342)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf132321)
 {
-    createSwDoc(DATA_DIRECTORY, "tdf132321.odt");
+    createSwDoc("tdf132321.odt");
 
     CPPUNIT_ASSERT_EQUAL(1, getShapes());
 
@@ -878,7 +986,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf132321)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf135056)
 {
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf135056.odt");
+    createSwDoc("tdf135056.odt");
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
 
     CPPUNIT_ASSERT_EQUAL(sal_uInt16(1), pWrtShell->GetTOXCount());
@@ -898,7 +1007,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf135056)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf132597)
 {
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf132597.odt");
+    createSwDoc("tdf132597.odt");
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
 
     CPPUNIT_ASSERT_EQUAL(1, getShapes());
@@ -926,7 +1036,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf132597)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf139737)
 {
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf139737.fodt");
+    createSwDoc("tdf139737.fodt");
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
 
     uno::Reference<frame::XModel> xModel(mxComponent, uno::UNO_QUERY);
@@ -964,7 +1075,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf150845)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf147961)
 {
-    SwDoc* pDoc = createSwDoc();
+    createSwDoc();
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
 
     uno::Reference<text::XTextTablesSupplier> xTextTablesSupplier(mxComponent, uno::UNO_QUERY);
@@ -985,7 +1097,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf147961)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf147206)
 {
-    SwDoc* pDoc = createSwDoc();
+    createSwDoc();
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
 
     // insert empty paragraph and heading text
@@ -1054,7 +1167,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf147206)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf144840)
 {
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf144840.odt");
+    createSwDoc("tdf144840.odt");
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
 
     CPPUNIT_ASSERT_EQUAL(1, getPages());
@@ -1094,7 +1208,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf144840)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf131963)
 {
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf131963.docx");
+    createSwDoc("tdf131963.docx");
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
 
     CPPUNIT_ASSERT_EQUAL(11, getPages());
@@ -1119,7 +1234,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf131963)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf132596)
 {
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf132596.docx");
+    createSwDoc("tdf132596.docx");
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
 
     CPPUNIT_ASSERT_EQUAL(2, getPages());
@@ -1145,7 +1261,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf132596)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf126626)
 {
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf126626.docx");
+    createSwDoc("tdf126626.docx");
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
 
     CPPUNIT_ASSERT_EQUAL(2, getShapes());
@@ -1174,7 +1291,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf126626)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf133967)
 {
-    createSwDoc(DATA_DIRECTORY, "tdf133967.odt");
+    createSwDoc("tdf133967.odt");
 
     CPPUNIT_ASSERT_EQUAL(6, getPages());
 
@@ -1200,7 +1317,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf133967)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf132187)
 {
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf132187.odt");
+    createSwDoc("tdf132187.odt");
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
 
     CPPUNIT_ASSERT_EQUAL(1, getPages());
@@ -1228,7 +1346,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf132187)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf130094)
 {
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf130094.fodt");
+    createSwDoc("tdf130094.fodt");
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
 
     CPPUNIT_ASSERT_EQUAL(OUString("First"), getParagraph(1)->getString());
@@ -1273,7 +1392,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf130094)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf135733)
 {
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf135733.odt");
+    createSwDoc("tdf135733.odt");
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
 
     uno::Reference<text::XTextTablesSupplier> xTextTablesSupplier(mxComponent, uno::UNO_QUERY);
@@ -1320,7 +1440,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf135733)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf128739)
 {
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf128739.docx");
+    createSwDoc("tdf128739.docx");
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
 
     CPPUNIT_ASSERT_EQUAL(OUString("Fehler: Verweis nicht gefunden"), getParagraph(1)->getString());
@@ -1343,7 +1464,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf128739)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf124722)
 {
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf124722.rtf");
+    createSwDoc("tdf124722.rtf");
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
 
     CPPUNIT_ASSERT_EQUAL(22, getPages());
@@ -1365,7 +1487,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf124722)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testToxmarkLinks)
 {
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "udindex3.odt");
+    createSwDoc("udindex3.odt");
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
     SwView& rView(*pDoc->GetDocShell()->GetView());
 
@@ -1485,7 +1608,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testToxmarkLinks)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf125261)
 {
-    createSwDoc(DATA_DIRECTORY, "tdf125261.odt");
+    createSwDoc("tdf125261.odt");
 
     CPPUNIT_ASSERT_EQUAL(OUString("https://www.example.com/"),
                          getProperty<OUString>(getRun(getParagraph(1), 1), "HyperLinkURL"));
@@ -1501,7 +1624,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf125261)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf141175)
 {
-    createSwDoc(DATA_DIRECTORY, "tdf141175.odt");
+    createSwDoc("tdf141175.odt");
 
     uno::Reference<text::XTextTablesSupplier> xTextTablesSupplier(mxComponent, uno::UNO_QUERY);
     uno::Reference<container::XIndexAccess> xIndexAccess(xTextTablesSupplier->getTextTables(),
@@ -1531,7 +1654,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf141175)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf133990)
 {
-    createSwDoc(DATA_DIRECTORY, "tdf133990.odt");
+    createSwDoc("tdf133990.odt");
 
     uno::Reference<text::XTextTablesSupplier> xTextTablesSupplier(mxComponent, uno::UNO_QUERY);
     uno::Reference<container::XIndexAccess> xIndexAccess(xTextTablesSupplier->getTextTables(),
@@ -1555,7 +1678,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf133990)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf126504)
 {
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf126504.odt");
+    createSwDoc("tdf126504.odt");
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
 
     uno::Reference<text::XTextTablesSupplier> xTextTablesSupplier(mxComponent, uno::UNO_QUERY);
@@ -1603,7 +1727,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf126504)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf133982)
 {
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf133982.docx");
+    createSwDoc("tdf133982.docx");
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
 
     uno::Reference<text::XTextTablesSupplier> xTextTablesSupplier(mxComponent, uno::UNO_QUERY);
@@ -1628,7 +1753,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf133982)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf134253)
 {
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf134253.odt");
+    createSwDoc("tdf134253.odt");
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
 
     uno::Reference<text::XTextTablesSupplier> xTextTablesSupplier(mxComponent, uno::UNO_QUERY);
@@ -1662,7 +1788,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, TestAsCharTextBox)
     // tdf#140158 Remove horizontal positioning of As_char textboxes, because
     // the anchor moving does the same for it.
 
-    createSwDoc(DATA_DIRECTORY, "AsCharTxBxTest.docx");
+    createSwDoc("AsCharTxBxTest.docx");
     SwXTextDocument* pTextDoc = dynamic_cast<SwXTextDocument*>(mxComponent.get());
 
     // Add 3x tab to the doc
@@ -1709,7 +1835,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, TestAsCharTextBox)
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf140975)
 {
     // Load the bugdoc
-    createSwDoc(DATA_DIRECTORY, "tdf140975.docx");
+    createSwDoc("tdf140975.docx");
 
     // Set the Anchor of the shape to As_Char
     dispatchCommand(mxComponent, ".uno:JumpToNextFrame", {});
@@ -1736,7 +1862,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf140975)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf76636)
 {
-    createSwDoc(DATA_DIRECTORY, "tdf76636.doc");
+    createSwDoc("tdf76636.doc");
     SwXTextDocument* pTextDoc = dynamic_cast<SwXTextDocument*>(mxComponent.get());
 
     uno::Reference<text::XTextTablesSupplier> xTextTablesSupplier(mxComponent, uno::UNO_QUERY);
@@ -1774,7 +1900,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf76636)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf76636_2)
 {
-    createSwDoc(DATA_DIRECTORY, "tdf76636.doc");
+    createSwDoc("tdf76636.doc");
     SwXTextDocument* pTextDoc = dynamic_cast<SwXTextDocument*>(mxComponent.get());
 
     uno::Reference<text::XTextTablesSupplier> xTextTablesSupplier(mxComponent, uno::UNO_QUERY);
@@ -1809,7 +1935,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf76636_2)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf140828)
 {
-    createSwDoc(DATA_DIRECTORY, "tdf140828.docx");
+    createSwDoc("tdf140828.docx");
 
     CPPUNIT_ASSERT_EQUAL(1, getShapes());
     uno::Reference<drawing::XShape> xShp = getShape(1);
@@ -1839,7 +1965,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf140828)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf132725)
 {
-    createSwDoc(DATA_DIRECTORY, "tdf132725.odt");
+    createSwDoc("tdf132725.odt");
 
     CPPUNIT_ASSERT_EQUAL(1, getShapes());
     CPPUNIT_ASSERT_EQUAL(OUString("AA"), getParagraph(1)->getString());
@@ -1880,7 +2006,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf132725)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf126340)
 {
-    createSwDoc(DATA_DIRECTORY, "tdf126340.odt");
+    createSwDoc("tdf126340.odt");
 
     dispatchCommand(mxComponent, ".uno:GoDown", {});
     // without the fix, it crashes
@@ -1892,7 +2018,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf126340)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf124397)
 {
-    createSwDoc(DATA_DIRECTORY, "tdf124397.docx");
+    createSwDoc("tdf124397.docx");
 
     uno::Reference<text::XTextFramesSupplier> xTextFramesSupplier(mxComponent, uno::UNO_QUERY);
     uno::Reference<container::XIndexAccess> xIndexAccess(xTextFramesSupplier->getTextFrames(),
@@ -1910,7 +2036,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf124397)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf108124)
 {
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf108124.odt");
+    createSwDoc("tdf108124.odt");
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
 
     uno::Reference<text::XTextGraphicObjectsSupplier> xTextGraphicObjectsSupplier(mxComponent,
@@ -1957,7 +2084,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf107975)
 {
     // This test also covers tdf#117185 tdf#110442
 
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf107975.odt");
+    createSwDoc("tdf107975.odt");
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
     SwXTextDocument* pTextDoc = dynamic_cast<SwXTextDocument*>(mxComponent.get());
 
@@ -2039,7 +2167,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf107975)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf134021)
 {
-    createSwDoc(DATA_DIRECTORY, "tdf134021.docx");
+    createSwDoc("tdf134021.docx");
 
     uno::Reference<text::XTextTablesSupplier> xTextTablesSupplier(mxComponent, uno::UNO_QUERY);
     uno::Reference<container::XIndexAccess> xIndexAccess(xTextTablesSupplier->getTextTables(),
@@ -2064,7 +2192,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf134021)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf136778)
 {
-    createSwDoc(DATA_DIRECTORY, "tdf136778.docx");
+    createSwDoc("tdf136778.docx");
 
     uno::Reference<text::XTextTablesSupplier> xTextTablesSupplier(mxComponent, uno::UNO_QUERY);
     uno::Reference<container::XIndexAccess> xIndexAccess(xTextTablesSupplier->getTextTables(),
@@ -2089,7 +2217,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf136778)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf123285)
 {
-    createSwDoc(DATA_DIRECTORY, "tdf123285.odt");
+    createSwDoc("tdf123285.odt");
     SwXTextDocument* pTextDoc = dynamic_cast<SwXTextDocument*>(mxComponent.get());
 
     CPPUNIT_ASSERT_EQUAL(true,
@@ -2112,7 +2240,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf123285)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf130746)
 {
-    createSwDoc(DATA_DIRECTORY, "tdf130746.odt");
+    createSwDoc("tdf130746.odt");
     SwXTextDocument* pTextDoc = dynamic_cast<SwXTextDocument*>(mxComponent.get());
 
     uno::Reference<text::XTextTablesSupplier> xTextTablesSupplier(mxComponent, uno::UNO_QUERY);
@@ -2147,7 +2275,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf130746)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf129805)
 {
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf129805.docx");
+    createSwDoc("tdf129805.docx");
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
 
     CPPUNIT_ASSERT_EQUAL(OUString("x"), getParagraph(1)->getString());
@@ -2164,7 +2293,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf129805)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf130685)
 {
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf130685.odt");
+    createSwDoc("tdf130685.odt");
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
 
     CPPUNIT_ASSERT_EQUAL(2, getPages());
@@ -2198,7 +2328,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf130685)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf132944)
 {
-    createSwDoc(DATA_DIRECTORY, "tdf132944.odt");
+    createSwDoc("tdf132944.odt");
 
     CPPUNIT_ASSERT_EQUAL(1, getPages());
 
@@ -2216,7 +2346,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf132944)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf104649)
 {
-    createSwDoc(DATA_DIRECTORY, "tdf104649.docx");
+    createSwDoc("tdf104649.docx");
 
     CPPUNIT_ASSERT_EQUAL(OUString("Test"), getParagraph(1)->getString());
 
@@ -2234,7 +2364,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf104649)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf134931)
 {
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf134931.odt");
+    createSwDoc("tdf134931.odt");
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
 
     uno::Reference<text::XTextTablesSupplier> xTextTablesSupplier(mxComponent, uno::UNO_QUERY);
@@ -2270,7 +2401,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf134931)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest3, testTdf130680)
 {
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf130680.odt");
+    createSwDoc("tdf130680.odt");
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
 
     uno::Reference<text::XTextTablesSupplier> xTextTablesSupplier(mxComponent, uno::UNO_QUERY);

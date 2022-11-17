@@ -30,6 +30,8 @@
 #include "fmtcol.hxx"
 #include "nodeoffset.hxx"
 
+#include <sfx2/AccessibilityIssue.hxx>
+
 #include <memory>
 #include <vector>
 
@@ -78,6 +80,18 @@ namespace drawinglayer::attribute {
     typedef std::shared_ptr< SdrAllFillAttributesHelper > SdrAllFillAttributesHelperPtr;
 }
 
+// Accessibiity check
+
+namespace sw
+{
+struct AccessibilityCheckStatus
+{
+    std::unique_ptr<sfx::AccessibilityIssueCollection> pCollection;
+    bool bDirty = true;
+};
+
+}
+
 /// Base class of the Writer document model elements.
 class SW_DLLPUBLIC SwNode
     : public sw::BorderCacheOwner, private BigPtrEntry
@@ -89,6 +103,8 @@ class SW_DLLPUBLIC SwNode
     /// For text nodes: level of auto format. Was put here because we had still free bits.
     sal_uInt8 m_nAFormatNumLvl : 3;
     bool m_bIgnoreDontExpand : 1;     ///< for Text Attributes - ignore the flag
+
+    mutable sw::AccessibilityCheckStatus m_aAccessibilityCheckStatus;
 
 public:
     /// sw_redlinehide: redline node merge state
@@ -314,6 +330,11 @@ public:
     bool operator<=(const SwNode& rOther) const { assert(&GetNodes() == &rOther.GetNodes()); return GetIndex() <= rOther.GetIndex(); }
     bool operator>(const SwNode& rOther) const { assert(&GetNodes() == &rOther.GetNodes()); return GetIndex() > rOther.GetIndex(); }
     bool operator>=(const SwNode& rOther) const { assert(&GetNodes() == &rOther.GetNodes()); return GetIndex() >= rOther.GetIndex(); }
+
+    sw::AccessibilityCheckStatus& getAccessibilityCheckStatus()
+    {
+        return m_aAccessibilityCheckStatus;
+    }
 
 private:
     SwNode( const SwNode & rNodes ) = delete;

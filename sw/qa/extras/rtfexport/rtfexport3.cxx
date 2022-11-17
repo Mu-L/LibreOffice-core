@@ -124,12 +124,12 @@ DECLARE_RTFEXPORT_TEST(testTdf116436_tableBackground, "tdf116436_tableBackground
                                                     uno::UNO_QUERY);
     uno::Reference<text::XTextTable> xTable(xTables->getByIndex(0), uno::UNO_QUERY);
     uno::Reference<table::XCell> xCell = xTable->getCellByName("A1");
-    if (mbExported)
+    if (isExported())
         CPPUNIT_ASSERT_EQUAL(Color(0xF8DF7C), getProperty<Color>(xCell, "BackColor"));
     xCell.set(xTable->getCellByName("A6"));
     CPPUNIT_ASSERT_EQUAL(Color(0x81D41A), getProperty<Color>(xCell, "BackColor"));
     xCell.set(xTable->getCellByName("B6"));
-    if (mbExported)
+    if (isExported())
         CPPUNIT_ASSERT_EQUAL(Color(0xFFFBCC), getProperty<Color>(xCell, "BackColor"));
 }
 
@@ -260,7 +260,7 @@ DECLARE_RTFEXPORT_TEST(testTdf117505, "tdf117505.odt")
 
 DECLARE_RTFEXPORT_TEST(testTdf112520, "tdf112520.docx")
 {
-    if (!mbExported)
+    if (!isExported())
         return;
 
     // Assert that the white shape is on top of the yellow one.
@@ -432,7 +432,7 @@ CPPUNIT_TEST_FIXTURE(Test, testRtlGutter)
     };
 
     // Given a document with RTL gutter, when loading it:
-    load(mpTestDocumentPath, "rtl-gutter.rtf");
+    createSwDoc("rtl-gutter.rtf");
     // Then make sure the section's gutter is still RTL:
     // Without the accompanying fix in place, this test would have failed as \rtlgutter was missing.
     verify();
@@ -493,7 +493,7 @@ CPPUNIT_TEST_FIXTURE(Test, testNegativePageBorder)
 
 CPPUNIT_TEST_FIXTURE(Test, testTdf127806)
 {
-    load(mpTestDocumentPath, "tdf127806.rtf");
+    createSwDoc("tdf127806.rtf");
     CPPUNIT_ASSERT_EQUAL(2, getShapes());
 
     CPPUNIT_ASSERT_EQUAL(OUString("com.sun.star.drawing.GroupShape"), getShape(1)->getShapeType());

@@ -635,20 +635,10 @@ VclPtr<vcl::Window> ScModelObj::getDocWindow()
     if (!pViewShell)
         return VclPtr<vcl::Window>();
 
-    ScViewData* pViewData = &pViewShell->GetViewData();
+    if (VclPtr<vcl::Window> pWindow = SfxLokHelper::getInPlaceDocWindow(pViewShell))
+        return pWindow;
 
-    VclPtr<vcl::Window> pWindow;
-    if (pViewData)
-    {
-        pWindow = pViewData->GetActiveWin();
-
-        LokChartHelper aChartHelper(pViewData->GetViewShell());
-        vcl::Window* pChartWindow = aChartHelper.GetWindow();
-        if (pChartWindow)
-            pWindow = pChartWindow;
-    }
-
-    return pWindow;
+    return pViewShell->GetViewData().GetActiveWin();
 }
 
 Size ScModelObj::getDocumentSize()
@@ -694,6 +684,28 @@ Size ScModelObj::getDocumentSize()
     return aSize;
 }
 
+Size ScModelObj::getDataArea(long nPart)
+{
+    Size aSize(1, 1);
+
+    ScViewData* pViewData = ScDocShell::GetViewData();
+    if (!pViewData || !pDocShell)
+        return aSize;
+
+    SCTAB nTab = nPart;
+    SCCOL nEndCol = 0;
+    SCROW nEndRow = 0;
+    const ScDocument& rDoc = pDocShell->GetDocument();
+
+    const ScTable* pTab = rDoc.FetchTable(nTab);
+    if (!pTab)
+        return aSize;
+
+    pTab->GetCellArea(nEndCol, nEndRow);
+    aSize = Size(nEndCol, nEndRow);
+
+    return aSize;
+}
 
 void ScModelObj::postKeyEvent(int nType, int nCharCode, int nKeyCode)
 {
@@ -718,32 +730,15 @@ void ScModelObj::postMouseEvent(int nType, int nX, int nY, int nCount, int nButt
     if (!pGridWindow)
         return;
 
-    // check if user hit a chart which is being edited by him
-    ScTabViewShell * pTabViewShell = pViewData->GetViewShell();
     SCTAB nTab = pViewData->GetTabNo();
     const ScDocument& rDoc = pDocShell->GetDocument();
-    // In LOK RTL mode draw/svx operates in negative X coordinates
-    // But the coordinates from client is always positive, so negate nX for draw.
     bool bDrawNegativeX = rDoc.IsNegativePage(nTab);
-    LokChartHelper aChartHelper(pTabViewShell, bDrawNegativeX);
-    int nDrawX = bDrawNegativeX ? -nX : nX;
-    if (aChartHelper.postMouseEvent(nType, nDrawX, nY,
-                                    nCount, nButtons, nModifier,
-                                    pViewData->GetPPTX(), pViewData->GetPPTY()))
-    {
+    if (SfxLokHelper::testInPlaceComponentMouseEventHit(pViewShell, nType, nX, nY, nCount,
+                                                        nButtons, nModifier, pViewData->GetPPTX(),
+                                                        pViewData->GetPPTY(), bDrawNegativeX))
         return;
-    }
 
     Point aPointTwip(nX, nY);
-    Point aPointTwipDraw(nDrawX, nY);
-
-    // check if the user hit a chart which is being edited by someone else
-    // and, if so, skip current mouse event
-    if (nType != LOK_MOUSEEVENT_MOUSEMOVE)
-    {
-        if (LokChartHelper::HitAny(aPointTwipDraw, bDrawNegativeX))
-            return;
-    }
 
     // Check if a control is hit
     Point aPointHMM = o3tl::convert(aPointTwip, o3tl::Length::twip, o3tl::Length::mm100);

@@ -24,17 +24,20 @@
 #include <docsh.hxx>
 #include <swdtflvr.hxx>
 
-constexpr OUStringLiteral DATA_DIRECTORY = u"/sw/qa/core/frmedt/data/";
-
 /// Covers sw/source/core/frmedt/ fixes.
 class SwCoreFrmedtTest : public SwModelTestBase
 {
+public:
+    SwCoreFrmedtTest()
+        : SwModelTestBase("/sw/qa/core/frmedt/data/")
+    {
+    }
 };
 
 CPPUNIT_TEST_FIXTURE(SwCoreFrmedtTest, testTextboxReanchor)
 {
     // Load a document with a textframe and a textbox(shape+textframe).
-    load(DATA_DIRECTORY, "textbox-reanchor.odt");
+    createSwDoc("textbox-reanchor.odt");
     SwXTextDocument* pTextDoc = dynamic_cast<SwXTextDocument*>(mxComponent.get());
     SwDoc* pDoc = pTextDoc->GetDocShell()->GetDoc();
     SdrPage* pDrawPage = pDoc->getIDocumentDrawModelAccess().GetDrawModel()->GetPage(0);
@@ -65,7 +68,7 @@ CPPUNIT_TEST_FIXTURE(SwCoreFrmedtTest, testVertPosFromBottomBoundingBox)
 {
     // Insert a shape and anchor it vertically in a way, so its position is from the top of the page
     // bottom margin area.
-    mxComponent = loadFromDesktop("private:factory/swriter", "com.sun.star.text.TextDocument");
+    createSwDoc();
     uno::Reference<css::lang::XMultiServiceFactory> xFactory(mxComponent, uno::UNO_QUERY);
     uno::Reference<drawing::XShape> xShape(
         xFactory->createInstance("com.sun.star.drawing.RectangleShape"), uno::UNO_QUERY);
@@ -111,7 +114,7 @@ CPPUNIT_TEST_FIXTURE(SwCoreFrmedtTest, testVertPosFromBottomBoundingBox)
 CPPUNIT_TEST_FIXTURE(SwCoreFrmedtTest, testPasteFlyInTextBox)
 {
     // Given a document that contains a textbox, which contains an sw image (fly frame)
-    load(DATA_DIRECTORY, "paste-fly-in-textbox.docx");
+    createSwDoc("paste-fly-in-textbox.docx");
     SwXTextDocument* pTextDoc = dynamic_cast<SwXTextDocument*>(mxComponent.get());
     SwDocShell* pDocShell = pTextDoc->GetDocShell();
     SwWrtShell* pWrtShell = pDocShell->GetWrtShell();

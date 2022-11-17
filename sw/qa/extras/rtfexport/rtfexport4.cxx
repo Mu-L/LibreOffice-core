@@ -244,7 +244,7 @@ DECLARE_RTFEXPORT_TEST(testAnchoredAtSamePosition, "anchor.fodt")
     CPPUNIT_ASSERT_EQUAL(OUString("foobar"), getParagraph(1)->getString());
 
     SwFrameFormats& rFlys(*pDoc->GetSpzFrameFormats());
-    if (mbExported)
+    if (isExported())
     { // 2, not 3: the form control becomes a field on export...
         CPPUNIT_ASSERT_EQUAL(size_t(2), rFlys.size());
     }
@@ -253,7 +253,7 @@ DECLARE_RTFEXPORT_TEST(testAnchoredAtSamePosition, "anchor.fodt")
         CPPUNIT_ASSERT_EQUAL(size_t(3), rFlys.size());
     }
 
-    sal_Int32 const nIndex(mbExported ? 4 : 3);
+    sal_Int32 const nIndex(isExported() ? 4 : 3);
     CPPUNIT_ASSERT_EQUAL(RndStdIds::FLY_AT_CHAR, rFlys[0]->GetAnchor().GetAnchorId());
     CPPUNIT_ASSERT_EQUAL(SwNodeOffset(12),
                          rFlys[0]->GetAnchor().GetContentAnchor()->GetNodeIndex());
@@ -338,7 +338,7 @@ DECLARE_RTFEXPORT_TEST(testCjklist34, "cjklist34.rtf")
 
 CPPUNIT_TEST_FIXTURE(Test, testTabStopFillChars)
 {
-    load(mpTestDocumentPath, "tab-stop-fill-chars.rtf");
+    createSwDoc("tab-stop-fill-chars.rtf");
     // tlmdot
     auto aTabstops = getProperty<uno::Sequence<style::TabStop>>(getParagraph(1), "ParaTabStops");
     CPPUNIT_ASSERT(aTabstops.hasElements());
@@ -487,7 +487,7 @@ DECLARE_RTFEXPORT_TEST(testTdf129522_removeShadowStyle, "tdf129522_removeShadowS
     table::BorderLine2 aBorderLine = getProperty<table::BorderLine2>(xRun, "CharRightBorder");
     // MS formats can't have a shadow without a border.
     // Char borders are all or none, so have to decide to add borders, or throw away shadow...
-    if (mbExported)
+    if (isExported())
         CPPUNIT_ASSERT(sal_uInt32(0) != aBorderLine.LineWidth);
 
     xRun.set(getRun(getParagraph(4), 2, "shadow"));
@@ -517,7 +517,7 @@ DECLARE_RTFEXPORT_TEST(testTdf136587_noStyleName, "tdf136587_noStyleName.rtf")
 
 CPPUNIT_TEST_FIXTURE(Test, testPageBorder)
 {
-    load(mpTestDocumentPath, "page-border.rtf");
+    createSwDoc("page-border.rtf");
     uno::Reference<beans::XPropertySet> xPageStyle(getStyles("PageStyles")->getByName("Standard"),
                                                    uno::UNO_QUERY);
     auto aTopBorder = getProperty<table::BorderLine2>(xPageStyle, "TopBorder");
@@ -547,7 +547,7 @@ DECLARE_RTFEXPORT_TEST(testTbrlPage, "tbrl-page.rtf")
 
 CPPUNIT_TEST_FIXTURE(Test, testTdf126309)
 {
-    load(mpTestDocumentPath, "tdf126309.rtf");
+    createSwDoc("tdf126309.rtf");
     // Without the accompanying fix in place, this test would have failed, as
     // the paragraph was aligned to left, not right.
     CPPUNIT_ASSERT_EQUAL(
@@ -586,7 +586,7 @@ DECLARE_RTFEXPORT_TEST(testTdf116358, "tdf116358.rtf")
 
 CPPUNIT_TEST_FIXTURE(Test, testGutterLeft)
 {
-    load(mpTestDocumentPath, "gutter-left.rtf");
+    createSwDoc("gutter-left.rtf");
     reload(mpFilter, "gutter-left.rtf");
     uno::Reference<beans::XPropertySet> xPageStyle;
     getStyles("PageStyles")->getByName("Standard") >>= xPageStyle;
@@ -601,7 +601,7 @@ CPPUNIT_TEST_FIXTURE(Test, testGutterLeft)
 
 CPPUNIT_TEST_FIXTURE(Test, testGutterTop)
 {
-    load(mpTestDocumentPath, "gutter-top.rtf");
+    createSwDoc("gutter-top.rtf");
     reload(mpFilter, "gutter-left.rtf");
     uno::Reference<lang::XMultiServiceFactory> xFactory(mxComponent, uno::UNO_QUERY);
     uno::Reference<beans::XPropertySet> xSettings(
@@ -637,7 +637,7 @@ CPPUNIT_TEST_FIXTURE(Test, testClearingBreak)
 
     // Given a document with a clearing break:
     // When loading that file:
-    load(mpTestDocumentPath, "clearing-break.rtf");
+    createSwDoc("clearing-break.rtf");
     // Then make sure that the clear property of the break is not ignored:
     verify();
     reload(mpFilter, "clearing-break.rtf");

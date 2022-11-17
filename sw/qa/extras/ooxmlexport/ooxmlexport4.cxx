@@ -63,7 +63,7 @@ DECLARE_OOXMLEXPORT_TEST(testRelorientation, "relorientation.docx")
     // width 8.61cm and 325px in UI in Word and rounds down to 8609 Hmm. Considering scaling of the
     // parent group to the anchor extent (* 3118485 / 3108960) we get a display width of 3108960 EMU
     // = 8636Hmm. FIXME: Expected value is as in LO 7.2. Reason for difference is yet unknown.
-    if (mbExported)
+    if (isExported())
     {
         uno::Reference<drawing::XShape> xYear(xGroup->getByIndex(1), uno::UNO_QUERY);
         // This was 2, due to incorrect handling of parent transformations inside DML groupshapes.
@@ -275,7 +275,7 @@ CPPUNIT_TEST_FIXTURE(Test, fdo69656)
     // After changes for fdo76741 the fixed width is exported as "dxa" for DOCX
 
     // Check for the width type of table and its cells.
-    xmlDocUniquePtr pXmlDoc = parseExport();
+    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
     assertXPath(pXmlDoc, "/w:document/w:body/w:tbl/w:tblPr/w:tblW","type","dxa");
 }
 
@@ -363,9 +363,11 @@ DECLARE_OOXMLEXPORT_TEST(testColumnBreak_ColumnCountIsZero,"fdo74153.docx")
     /* fdo73545: Column Break with Column_count = 0 was not getting preserved.
      * The <w:br w:type="column" /> was missing after roundtrip
      */
-    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
-    if (pXmlDoc)
+    if (isExported())
+    {
+        xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
         assertXPath(pXmlDoc, "/w:document/w:body/w:p[3]/w:r[1]/w:br","type","column");
+    }
 
     //tdf76349 match Word's behavior of treating breaks in single columns as page breaks.
     CPPUNIT_ASSERT_EQUAL(2, getPages());
@@ -489,9 +491,9 @@ DECLARE_OOXMLEXPORT_TEST(testEmbeddedXlsx, "embedded-xlsx.docx")
     CPPUNIT_ASSERT_EQUAL(OUString("FrameShape"), getShape(2)->getShapeType());
 
     // check the objects are present in the exported document.xml
-    xmlDocUniquePtr pXmlDocument = parseExport("word/document.xml");
-    if (!pXmlDocument)
+    if (!isExported())
         return;
+    xmlDocUniquePtr pXmlDocument = parseExport("word/document.xml");
     assertXPath(pXmlDocument, "/w:document/w:body/w:p/w:r/w:object", 2);
 
     // finally check the embedded files are present in the zipped document
@@ -796,7 +798,7 @@ CPPUNIT_TEST_FIXTURE(Test, tdf134043_ImportComboBoxAsDropDown_true)
     officecfg::Office::Writer::Filter::Import::DOCX::ImportComboBoxAsDropDown::set(true, batch);
     batch->commit();
 
-    load(mpTestDocumentPath, "combobox-control.docx");
+    createSwDoc("combobox-control.docx");
     verifyComboBoxExport(true);
 }
 
@@ -806,7 +808,7 @@ CPPUNIT_TEST_FIXTURE(Test, tdf134043_ImportComboBoxAsDropDown_false)
     officecfg::Office::Writer::Filter::Import::DOCX::ImportComboBoxAsDropDown::set(false, batch);
     batch->commit();
 
-    load(mpTestDocumentPath, "combobox-control.docx");
+    createSwDoc("combobox-control.docx");
     verifyComboBoxExport(false);
 }
 

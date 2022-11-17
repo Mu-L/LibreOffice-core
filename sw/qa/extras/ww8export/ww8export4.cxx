@@ -30,12 +30,6 @@ public:
         : SwModelTestBase("/sw/qa/extras/ww8export/data/", "MS Word 97")
     {
     }
-
-    bool mustTestImportOf(const char* filename) const override
-    {
-        // If the testcase is stored in some other format, it's pointless to test.
-        return o3tl::ends_with(filename, ".doc");
-    }
 };
 
 CPPUNIT_TEST_FIXTURE(Test, testTdf148360)
@@ -44,9 +38,9 @@ CPPUNIT_TEST_FIXTURE(Test, testTdf148360)
     const auto& pLayout = parseLayoutDump();
 
     // Ensure first element is a tab
-    assertXPath(pLayout, "/root/page[1]/body/txt[1]/Text[1]", "nType", "PortionType::TabLeft");
+    assertXPath(pLayout, "/root/page[1]/body/txt[1]/SwParaPortion/SwLineLayout/child::*[1]", "type", "PortionType::TabLeft");
     // and only then goes content
-    assertXPath(pLayout, "/root/page[1]/body/txt[1]/Text[2]", "nType", "PortionType::Text");
+    assertXPath(pLayout, "/root/page[1]/body/txt[1]/SwParaPortion/SwLineLayout/child::*[2]", "type", "PortionType::Text");
 }
 
 CPPUNIT_TEST_FIXTURE(Test, testTdf77964)
@@ -66,9 +60,9 @@ DECLARE_WW8EXPORT_TEST(testTdf150197_anlv2ListFormat, "tdf150197_anlv2ListFormat
 
 DECLARE_WW8EXPORT_TEST(testTdf117994_CRnumformatting, "tdf117994_CRnumformatting.doc")
 {
-    CPPUNIT_ASSERT_EQUAL(OUString("1."), parseDump("//body/txt[1]/Special[@nType='PortionType::Number']", "rText"));
+    CPPUNIT_ASSERT_EQUAL(OUString("1."), parseDump("//body/txt[1]/SwParaPortion/SwLineLayout/child::*[@type='PortionType::Number']", "expand"));
     //Without this fix in place, it would become 200 (and non-bold).
-    CPPUNIT_ASSERT_EQUAL(OUString("160"), parseDump("//body/txt[1]/Special[@nType='PortionType::Number']", "nHeight"));
+    CPPUNIT_ASSERT_EQUAL(OUString("160"), parseDump("//body/txt[1]/SwParaPortion/SwLineLayout/child::*[@type='PortionType::Number']", "font-height"));
 }
 
 CPPUNIT_PLUGIN_IMPLEMENT();

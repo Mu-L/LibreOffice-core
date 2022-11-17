@@ -967,12 +967,29 @@ void SfxObjectShell::ExecFile_Impl(SfxRequest &rReq)
                         uno::Reference< uno::XInterface >(), sal_uInt32(ERRCODE_IO_ABORT));
                 }
 
+                const SfxBoolItem *pItem = nId != SID_DIRECTEXPORTDOCASPDF ? nullptr :
+                    dynamic_cast<const SfxBoolItem*>( GetSlotState(SID_MAIL_PREPAREEXPORT) );
+                // Fetch value from the pool item early, because GUIStoreModel() can free the pool
+                // item as part of spinning the main loop if a dialog is opened.
+                bool bMailPrepareExport = pItem && pItem->GetValue();
+                if (bMailPrepareExport)
+                {
+                    SfxRequest aRequest(SID_MAIL_PREPAREEXPORT, SfxCallMode::SYNCHRON, GetPool());
+                    aRequest.AppendItem(SfxBoolItem(FN_PARAM_1, true));
+                    ExecuteSlot(aRequest);
+                }
+
                 aHelper.GUIStoreModel( GetModel(),
                                        OUString::createFromAscii( pSlot->GetUnoName() ),
                                        aDispatchArgs,
                                        bPreselectPassword,
                                        GetDocumentSignatureState() );
 
+                if (bMailPrepareExport)
+                {
+                    SfxRequest aRequest(SID_MAIL_EXPORT_FINISHED, SfxCallMode::SYNCHRON, GetPool());
+                    ExecuteSlot(aRequest);
+                }
 
                 // merge aDispatchArgs to the request
                 SfxAllItemSet aResultParams( GetPool() );

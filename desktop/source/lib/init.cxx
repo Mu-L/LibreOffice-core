@@ -7,6 +7,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <config_buildconfig.h>
 #include <config_features.h>
 
 #include <stdio.h>
@@ -63,6 +64,7 @@
 #include <comphelper/propertyvalue.hxx>
 #include <comphelper/scopeguard.hxx>
 #include <comphelper/threadpool.hxx>
+#include <comphelper/servicehelper.hxx>
 #include <comphelper/sequenceashashmap.hxx>
 
 #include <com/sun/star/document/MacroExecMode.hpp>
@@ -421,12 +423,26 @@ RectangleAndPart RectangleAndPart::Create(const std::string& rPayload)
     {
         aRet.m_aRectangle = tools::Rectangle(0, 0, SfxLokHelper::MaxTwips, SfxLokHelper::MaxTwips);
         if (comphelper::LibreOfficeKit::isPartInInvalidation())
-            aRet.m_nPart = std::stol(rPayload.substr(6));
+        {
+            int nSeparatorPos = rPayload.find(',', 6);
+            bool bHasMode = nSeparatorPos > 0;
+            if (bHasMode)
+            {
+                aRet.m_nPart = std::stol(rPayload.substr(6, nSeparatorPos - 6));
+                assert(rPayload.length() > o3tl::make_unsigned(nSeparatorPos));
+                aRet.m_nMode = std::stol(rPayload.substr(nSeparatorPos + 1));
+            }
+            else
+            {
+                aRet.m_nPart = std::stol(rPayload.substr(6));
+                aRet.m_nMode = 0;
+            }
+        }
 
         return aRet;
     }
 
-    // Read '<left>, <top>, <width>, <height>[, <part>]'. C++ streams are simpler but slower.
+    // Read '<left>, <top>, <width>, <height>[, <part>, <mode>]'. C++ streams are simpler but slower.
     const char* pos = rPayload.c_str();
     const char* end = rPayload.c_str() + rPayload.size();
     tools::Long nLeft = rtl_str_toInt64_WithLength(pos, 10, end - pos);
@@ -446,6 +462,7 @@ RectangleAndPart RectangleAndPart::Create(const std::string& rPayload)
     assert(pos < end);
     tools::Long nHeight = rtl_str_toInt64_WithLength(pos, 10, end - pos);
     tools::Long nPart = INT_MIN;
+    tools::Long nMode = 0;
     if (comphelper::LibreOfficeKit::isPartInInvalidation())
     {
         while( *pos != ',' )
@@ -453,10 +470,20 @@ RectangleAndPart RectangleAndPart::Create(const std::string& rPayload)
         ++pos;
         assert(pos < end);
         nPart = rtl_str_toInt64_WithLength(pos, 10, end - pos);
+
+        while( *pos && *pos != ',' )
+            ++pos;
+        if (*pos)
+        {
+            ++pos;
+            assert(pos < end);
+            nMode = rtl_str_toInt64_WithLength(pos, 10, end - pos);
+        }
     }
 
     aRet.m_aRectangle = SanitizedRectangle(nLeft, nTop, nWidth, nHeight);
     aRet.m_nPart = nPart;
+    aRet.m_nMode = nMode;
     return aRet;
 }
 
@@ -993,6 +1020,10 @@ static int doc_getTileMode(LibreOfficeKitDocument* pThis);
 static void doc_getDocumentSize(LibreOfficeKitDocument* pThis,
                                 long* pWidth,
                                 long* pHeight);
+static void doc_getDataArea(LibreOfficeKitDocument* pThis,
+                            long nTab,
+                            long* pCol,
+                            long* pRow);
 static void doc_initializeForRendering(LibreOfficeKitDocument* pThis,
                                        const char* pArguments);
 
@@ -1245,6 +1276,7 @@ LibLODocument_Impl::LibLODocument_Impl(uno::Reference <css::lang::XComponent> xC
         m_pDocumentClass->paintPartTile = doc_paintPartTile;
         m_pDocumentClass->getTileMode = doc_getTileMode;
         m_pDocumentClass->getDocumentSize = doc_getDocumentSize;
+        m_pDocumentClass->getDataArea = doc_getDataArea;
         m_pDocumentClass->initializeForRendering = doc_initializeForRendering;
         m_pDocumentClass->registerCallback = doc_registerCallback;
         m_pDocumentClass->postKeyEvent = doc_postKeyEvent;
@@ -1459,9 +1491,9 @@ void CallbackFlushHandler::libreOfficeKitViewCallbackWithViewId(int nType, const
     queue(nType, callbackData);
 }
 
-void CallbackFlushHandler::libreOfficeKitViewInvalidateTilesCallback(const tools::Rectangle* pRect, int nPart)
+void CallbackFlushHandler::libreOfficeKitViewInvalidateTilesCallback(const tools::Rectangle* pRect, int nPart, int nMode)
 {
-    CallbackData callbackData(pRect, nPart);
+    CallbackData callbackData(pRect, nPart, nMode);
     queue(LOK_CALLBACK_INVALIDATE_TILES, callbackData);
 }
 
@@ -1798,14 +1830,15 @@ bool CallbackFlushHandler::processInvalidateTilesEvent(int type, CallbackData& a
     {
         auto pos2 = toQueue2(pos);
         const RectangleAndPart& rcOld = pos2->getRectangleAndPart();
-        if (rcOld.isInfinite() && (rcOld.m_nPart == -1 || rcOld.m_nPart == rcNew.m_nPart))
+        if (rcOld.isInfinite() && (rcOld.m_nPart == -1 || rcOld.m_nPart == rcNew.m_nPart) &&
+            (rcOld.m_nMode == rcNew.m_nMode))
         {
             SAL_INFO("lok", "Skipping queue [" << type << "]: [" << aCallbackData.getPayload()
                                                << "] since all tiles need to be invalidated.");
             return true;
         }
 
-        if (rcOld.m_nPart == -1 || rcOld.m_nPart == rcNew.m_nPart)
+        if ((rcOld.m_nPart == -1 || rcOld.m_nPart == rcNew.m_nPart) && (rcOld.m_nMode == rcNew.m_nMode))
         {
             // If fully overlapping.
             if (rcOld.m_aRectangle.Contains(rcNew.m_aRectangle))
@@ -1823,7 +1856,8 @@ bool CallbackFlushHandler::processInvalidateTilesEvent(int type, CallbackData& a
                                        << "] so removing all with part " << rcNew.m_nPart << ".");
         removeAll(LOK_CALLBACK_INVALIDATE_TILES, [&rcNew](const CallbackData& elemData) {
             // Remove exiting if new is all-encompassing, or if of the same part.
-            return (rcNew.m_nPart == -1 || rcNew.m_nPart == elemData.getRectangleAndPart().m_nPart);
+            return ((rcNew.m_nPart == -1 || rcNew.m_nPart == elemData.getRectangleAndPart().m_nPart)
+                && (rcNew.m_nMode == elemData.getRectangleAndPart().m_nMode));
         });
     }
     else
@@ -1833,7 +1867,8 @@ bool CallbackFlushHandler::processInvalidateTilesEvent(int type, CallbackData& a
         SAL_INFO("lok", "Have [" << type << "]: [" << aCallbackData.getPayload() << "] so merging overlapping.");
         removeAll(LOK_CALLBACK_INVALIDATE_TILES,[&rcNew](const CallbackData& elemData) {
             const RectangleAndPart& rcOld = elemData.getRectangleAndPart();
-            if (rcNew.m_nPart != -1 && rcOld.m_nPart != -1 && rcOld.m_nPart != rcNew.m_nPart)
+            if (rcNew.m_nPart != -1 && rcOld.m_nPart != -1 &&
+                (rcOld.m_nPart != rcNew.m_nPart || rcOld.m_nMode != rcNew.m_nMode))
             {
                 SAL_INFO("lok", "Nothing to merge between new: "
                                     << rcNew.toString() << ", and old: " << rcOld.toString());
@@ -1845,7 +1880,7 @@ bool CallbackFlushHandler::processInvalidateTilesEvent(int type, CallbackData& a
                 // Don't merge unless fully overlapped.
                 SAL_INFO("lok", "New " << rcNew.toString() << " has " << rcOld.toString()
                                        << "?");
-                if (rcNew.m_aRectangle.Contains(rcOld.m_aRectangle))
+                if (rcNew.m_aRectangle.Contains(rcOld.m_aRectangle) && rcOld.m_nMode == rcNew.m_nMode)
                 {
                     SAL_INFO("lok", "New " << rcNew.toString() << " engulfs old "
                                            << rcOld.toString() << ".");
@@ -1857,7 +1892,7 @@ bool CallbackFlushHandler::processInvalidateTilesEvent(int type, CallbackData& a
                 // Don't merge unless fully overlapped.
                 SAL_INFO("lok", "Old " << rcOld.toString() << " has " << rcNew.toString()
                                        << "?");
-                if (rcOld.m_aRectangle.Contains(rcNew.m_aRectangle))
+                if (rcOld.m_aRectangle.Contains(rcNew.m_aRectangle) && rcOld.m_nMode == rcNew.m_nMode)
                 {
                     SAL_INFO("lok", "New " << rcNew.toString() << " engulfs old "
                                            << rcOld.toString() << ".");
@@ -1868,7 +1903,7 @@ bool CallbackFlushHandler::processInvalidateTilesEvent(int type, CallbackData& a
             {
                 const tools::Rectangle rcOverlap
                     = rcNew.m_aRectangle.GetIntersection(rcOld.m_aRectangle);
-                const bool bOverlap = !rcOverlap.IsEmpty();
+                const bool bOverlap = !rcOverlap.IsEmpty() && rcOld.m_nMode == rcNew.m_nMode;
                 SAL_INFO("lok", "Merging " << rcNew.toString() << " & " << rcOld.toString()
                                            << " => " << rcOverlap.toString()
                                            << " Overlap: " << bOverlap);
@@ -2138,6 +2173,11 @@ void CallbackFlushHandler::enqueueUpdatedTypes()
 
 void CallbackFlushHandler::enqueueUpdatedType( int type, const SfxViewShell* viewShell, int viewId )
 {
+    if (type == LOK_CALLBACK_INVALIDATE_VISIBLE_CURSOR)
+    {
+        if (const SfxViewShell* viewShell2 = LokStarMathHelper(viewShell).GetSmViewShell())
+            viewShell = viewShell2;
+    }
     std::optional<OString> payload = viewShell->getLOKPayload( type, viewId );
     if(!payload)
         return; // No actual payload to send.
@@ -3663,8 +3703,8 @@ static void doc_paintTile(LibreOfficeKitDocument* pThis,
 
 #ifdef _WIN32
     // pBuffer was not used there
-    tools::Rectangle r(pDevice->PixelToLogic({ Point(0, 0), Size(nCanvasWidth + 1, nCanvasHeight + 1) }));
-    BitmapEx aBmpEx = pDevice->GetBitmapEx(r.TopLeft(), r.GetSize());
+    pDevice->EnableMapMode(false);
+    BitmapEx aBmpEx = pDevice->GetBitmapEx({ 0, 0 }, { nCanvasWidth, nCanvasHeight });
     Bitmap aBmp = aBmpEx.GetBitmap();
     Bitmap aAlpha = aBmpEx.GetAlpha();
     Bitmap::ScopedReadAccess sraBmp(aBmp);
@@ -3877,6 +3917,29 @@ static void doc_getDocumentSize(LibreOfficeKitDocument* pThis,
         Size aDocumentSize = pDoc->getDocumentSize();
         *pWidth = aDocumentSize.Width();
         *pHeight = aDocumentSize.Height();
+    }
+    else
+    {
+        SetLastExceptionMsg("Document doesn't support tiled rendering");
+    }
+}
+
+static void doc_getDataArea(LibreOfficeKitDocument* pThis,
+                            long nTab,
+                            long* pCol,
+                            long* pRow)
+{
+    comphelper::ProfileZone aZone("doc_getDataArea");
+
+    SolarMutexGuard aGuard;
+    SetLastExceptionMsg();
+
+    ITiledRenderable* pDoc = getTiledRenderable(pThis);
+    if (pDoc)
+    {
+        Size aDocumentSize = pDoc->getDataArea(nTab);
+        *pCol = aDocumentSize.Width();
+        *pRow = aDocumentSize.Height();
     }
     else
     {
@@ -6534,7 +6597,8 @@ static char* lo_getVersionInfo(SAL_UNUSED_PARAMETER LibreOfficeKit* /*pThis*/)
         "\"ProductName\": \"%PRODUCTNAME\", "
         "\"ProductVersion\": \"%PRODUCTVERSION\", "
         "\"ProductExtension\": \"%PRODUCTEXTENSION\", "
-        "\"BuildId\": \"%BUILDID\" "
+        "\"BuildId\": \"%BUILDID\", "
+        "\"BuildConfig\": \""  BUILDCONFIG  "\" "
         "}"));
 }
 

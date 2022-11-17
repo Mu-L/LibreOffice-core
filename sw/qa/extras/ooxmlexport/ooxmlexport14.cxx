@@ -35,12 +35,10 @@
 
 using namespace com::sun::star;
 
-constexpr OUStringLiteral DATA_DIRECTORY = u"/sw/qa/extras/ooxmlexport/data/";
-
 class Test : public SwModelTestBase
 {
 public:
-    Test() : SwModelTestBase(DATA_DIRECTORY, "Office Open XML Text") {}
+    Test() : SwModelTestBase("/sw/qa/extras/ooxmlexport/data/", "Office Open XML Text") {}
 };
 
 DECLARE_OOXMLEXPORT_TEST(Tdf130907, "tdf130907.docx")
@@ -75,11 +73,11 @@ DECLARE_OOXMLEXPORT_TEST(Tdf130907, "tdf130907.docx")
 
 CPPUNIT_TEST_FIXTURE(Test, testTdf128197)
 {
-    load(mpTestDocumentPath, "128197_compat14.docx");
+    createSwDoc("128197_compat14.docx");
     xmlDocUniquePtr pLayout14 = parseLayoutDump();
     sal_Int32 nHeight14 = getXPath(pLayout14, "//page[1]/body/txt[1]/infos/bounds", "height").toInt32();
 
-    load(mpTestDocumentPath, "128197_compat15.docx");
+    createSwDoc("128197_compat15.docx");
     xmlDocUniquePtr pLayout15 = parseLayoutDump();
     sal_Int32 nHeight15 = getXPath(pLayout15, "//page[1]/body/txt[1]/infos/bounds", "height").toInt32();
 
@@ -406,7 +404,7 @@ DECLARE_ODFEXPORT_TEST(testArabicZero5Numbering, "arabic-zero5-numbering.docx")
 CPPUNIT_TEST_FIXTURE(Test, testArabicZeroNumberingFootnote)
 {
     // Create a document, set footnote numbering type to ARABIC_ZERO.
-    loadURL("private:factory/swriter", nullptr);
+    createSwDoc();
     uno::Reference<text::XFootnotesSupplier> xFootnotesSupplier(mxComponent, uno::UNO_QUERY);
     uno::Reference<beans::XPropertySet> xFootnoteSettings
         = xFootnotesSupplier->getFootnoteSettings();
@@ -434,7 +432,7 @@ CPPUNIT_TEST_FIXTURE(Test, testArabicZeroNumberingFootnote)
 CPPUNIT_TEST_FIXTURE(Test, testChicagoNumberingFootnote)
 {
     // Create a document, set footnote numbering type to SYMBOL_CHICAGO.
-    loadURL("private:factory/swriter", nullptr);
+    createSwDoc();
     uno::Reference<text::XFootnotesSupplier> xFootnotesSupplier(mxComponent, uno::UNO_QUERY);
     uno::Reference<beans::XPropertySet> xFootnoteSettings
         = xFootnotesSupplier->getFootnoteSettings();
@@ -518,9 +516,9 @@ CPPUNIT_TEST_FIXTURE(Test, testTdf130610)
 
     // check inline text properties
     {
-        xmlDocUniquePtr pXmlDoc =parseExport("word/document.xml");
-        if (pXmlDoc)
+        if (isExported())
         {
+            xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
             assertXPath(pXmlDoc, "/w:document/w:body/w:p[2]/w:r/w:rPr/w:b");
         }
     }
@@ -762,7 +760,7 @@ DECLARE_OOXMLEXPORT_TEST(testTdf149421, "tdf121661.docx")
     // This was false
     CPPUNIT_ASSERT_GREATER( static_cast<sal_Int16>(0), getProperty<sal_Int16>(xStyle, "ParaHyphenationZone"));
 
-    if (!mbExported)
+    if (!isExported())
     {
         CPPUNIT_ASSERT_EQUAL( static_cast<sal_Int16>(851), getProperty<sal_Int16>(xStyle, "ParaHyphenationZone"));
         // modify hyphenation zone (note: only hyphenation zone set in Standard paragraph style
@@ -794,11 +792,10 @@ CPPUNIT_TEST_FIXTURE(Test, testTableStyleConfNested)
     assertXPath(pXmlDoc, "//w:body/w:tbl/w:tr/w:tc[2]/w:tcPr/w:tcBorders/w:top", "val", "nil");
 }
 
-CPPUNIT_TEST_FIXTURE(SwModelTestBase, testTdf133771)
+CPPUNIT_TEST_FIXTURE(Test, testTdf133771)
 {
     // Create the doc model.
-    OUString aURL = m_directories.getURLFromSrc(DATA_DIRECTORY) + "tdf133771.odt";
-    loadURL(aURL, nullptr, /*pPassword*/ "test");
+    createSwDoc("tdf133771.odt", /*pPassword*/ "test");
 
     CPPUNIT_ASSERT_EQUAL(OUString("Password Protected"), getParagraph(1)->getString());
 
@@ -806,16 +803,15 @@ CPPUNIT_TEST_FIXTURE(SwModelTestBase, testTdf133771)
     // "An uncaught exception of type com.sun.star.io.IOException"
     // exporting to docx
     save("Office Open XML Text");
-    mbExported = true;
     xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
     CPPUNIT_ASSERT(pXmlDoc);
     assertXPathContent(pXmlDoc, "//w:body/w:p/w:r/w:t", "Password Protected");
 }
 
-CPPUNIT_TEST_FIXTURE(SwModelTestBase, testZeroLineSpacing)
+CPPUNIT_TEST_FIXTURE(Test, testZeroLineSpacing)
 {
     // Create the doc model.
-    loadURL("private:factory/swriter", nullptr);
+    createSwDoc();
     uno::Reference<beans::XPropertySet> xParagraph(getParagraph(1), uno::UNO_QUERY);
     style::LineSpacing aSpacing;
     aSpacing.Mode = style::LineSpacingMode::MINIMUM;
@@ -824,7 +820,6 @@ CPPUNIT_TEST_FIXTURE(SwModelTestBase, testZeroLineSpacing)
 
     // Export to docx.
     save("Office Open XML Text");
-    mbExported = true;
     xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
     CPPUNIT_ASSERT(pXmlDoc);
 
@@ -836,10 +831,10 @@ CPPUNIT_TEST_FIXTURE(SwModelTestBase, testZeroLineSpacing)
     assertXPath(pXmlDoc, "/w:document/w:body/w:p/w:pPr/w:spacing", "line", "0");
 }
 
-CPPUNIT_TEST_FIXTURE(SwModelTestBase, testSemiTransparentText)
+CPPUNIT_TEST_FIXTURE(Test, testSemiTransparentText)
 {
     // Create an in-memory empty document.
-    loadURL("private:factory/swriter", nullptr);
+    createSwDoc();
 
     // Set text to half-transparent and type a character.
     uno::Reference<beans::XPropertySet> xParagraph(getParagraph(1), uno::UNO_QUERY);
@@ -852,7 +847,6 @@ CPPUNIT_TEST_FIXTURE(SwModelTestBase, testSemiTransparentText)
 
     // Export to docx.
     save("Office Open XML Text");
-    mbExported = true;
     xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
     CPPUNIT_ASSERT(pXmlDoc);
     double fValue = getXPath(
@@ -867,22 +861,22 @@ CPPUNIT_TEST_FIXTURE(SwModelTestBase, testSemiTransparentText)
     CPPUNIT_ASSERT_EQUAL(nTransparence, nActual);
 }
 
-CPPUNIT_TEST_FIXTURE(SwModelTestBase, testTdf147485)
+CPPUNIT_TEST_FIXTURE(Test, testTdf147485)
 {
     // Before the fix this was impossible.
-    load(DATA_DIRECTORY, "Tdf147485.docx");
+    createSwDoc("Tdf147485.docx");
 }
 
-CPPUNIT_TEST_FIXTURE(SwModelTestBase, testTdf149546)
+CPPUNIT_TEST_FIXTURE(Test, testTdf149546)
 {
     // Before the fix this was impossible.
-    load(DATA_DIRECTORY, "tdf149546.docx");
+    createSwDoc("tdf149546.docx");
 }
 
-CPPUNIT_TEST_FIXTURE(SwModelTestBase, testUserField)
+CPPUNIT_TEST_FIXTURE(Test, testUserField)
 {
     // Create an in-memory empty document with a user field.
-    loadURL("private:factory/swriter", nullptr);
+    createSwDoc();
     uno::Reference<lang::XMultiServiceFactory> xFactory(mxComponent, uno::UNO_QUERY);
     uno::Reference<text::XDependentTextField> xField(
         xFactory->createInstance("com.sun.star.text.TextField.User"), uno::UNO_QUERY);
@@ -897,7 +891,6 @@ CPPUNIT_TEST_FIXTURE(SwModelTestBase, testUserField)
 
     // Export to docx.
     save("Office Open XML Text");
-    mbExported = true;
     xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
     CPPUNIT_ASSERT(pXmlDoc);
 
@@ -913,11 +906,10 @@ CPPUNIT_TEST_FIXTURE(SwModelTestBase, testUserField)
     assertXPath(pXmlDoc, "//w:docVars/w:docVar", "val", "bar");
 }
 
-CPPUNIT_TEST_FIXTURE(SwModelTestBase, testHighlightEdit_numbering)
+CPPUNIT_TEST_FIXTURE(Test, testHighlightEdit_numbering)
 {
     // Create the doc model.
-    OUString aURL = m_directories.getURLFromSrc(DATA_DIRECTORY) + "tdf135774_numberingCRProps.docx";
-    loadURL(aURL, nullptr);
+    createSwDoc("tdf135774_numberingCRProps.docx");
 
     // This only affects when saving as w:highlight - which is not the default since 7.0.
     SvtFilterOptions& rOpt = SvtFilterOptions::Get();
@@ -951,7 +943,6 @@ CPPUNIT_TEST_FIXTURE(SwModelTestBase, testHighlightEdit_numbering)
 
     // Export to docx.
     save("Office Open XML Text");
-    mbExported = true;
 
     // Paragraph 2 should have only one w:highlight written per w:rPr. Without the fix, there were two.
     xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
@@ -1321,7 +1312,7 @@ DECLARE_OOXMLEXPORT_TEST(testContSectBreakHeaderFooter, "cont-sect-break-header-
     // i.e. both the header and the footer on page 3 was wrong.
 
     // Additional problem: top margin on page 3 was wrong.
-    if (mbExported)
+    if (isExported())
     {
         xmlDocUniquePtr pXml = parseExport("word/document.xml");
         // Without the accompanying fix in place, this test would have failed with:
@@ -1466,7 +1457,7 @@ DECLARE_OOXMLEXPORT_TEST(testVmlShapeTextWordWrap, "tdf97618_testVmlShapeTextWor
 {
     // tdf#97618 The text wrapping of a shape was not handled in a canvas.
     // TODO: fix export too
-    if (mbExported)
+    if (isExported())
         return;
     xmlDocUniquePtr pXmlDoc = parseLayoutDump();
     if (!pXmlDoc)
@@ -1478,9 +1469,9 @@ DECLARE_OOXMLEXPORT_TEST(testVmlShapeTextWordWrap, "tdf97618_testVmlShapeTextWor
 DECLARE_OOXMLEXPORT_TEST(testVmlLineShapeMirroredX, "tdf97517_testVmlLineShapeMirroredX.docx")
 {
     // tdf#97517 The "flip:x" was not handled for VML line shapes.
-    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
-    if (!pXmlDoc)
+    if (!isExported())
         return;
+    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
     OUString sStyle = getXPath(pXmlDoc,
         "/w:document/w:body/w:p[3]/w:r/mc:AlternateContent/mc:Fallback/w:pict/v:line",
         "style");
@@ -1490,9 +1481,9 @@ DECLARE_OOXMLEXPORT_TEST(testVmlLineShapeMirroredX, "tdf97517_testVmlLineShapeMi
 DECLARE_OOXMLEXPORT_TEST(testVmlLineShapeMirroredY, "tdf137678_testVmlLineShapeMirroredY.docx")
 {
     // tdf#137678 The "flip:y" was not handled for VML line shapes.
-    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
-    if (!pXmlDoc)
+    if (!isExported())
         return;
+    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
     OUString sStyle = getXPath(pXmlDoc,
         "/w:document/w:body/w:p[3]/w:r/mc:AlternateContent/mc:Fallback/w:pict/v:line",
         "style");
