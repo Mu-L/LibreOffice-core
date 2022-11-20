@@ -32,12 +32,10 @@
 #include <docsh.hxx>
 #include <wrtsh.hxx>
 
-constexpr OUStringLiteral DATA_DIRECTORY = u"/sw/qa/extras/ooxmlexport/data/";
-
 class Test : public SwModelTestBase
 {
 public:
-    Test() : SwModelTestBase(DATA_DIRECTORY, "Office Open XML Text") {}
+    Test() : SwModelTestBase("/sw/qa/extras/ooxmlexport/data/", "Office Open XML Text") {}
 };
 
 CPPUNIT_TEST_FIXTURE(Test, testTdf150197_predefinedNumbering)
@@ -77,13 +75,13 @@ DECLARE_OOXMLEXPORT_TEST(testTdf147646, "tdf147646_mergedCellNumbering.docx")
     //Without the fix in place, it would have failed with
     //- Expected: 2.
     //- Actual  : 4.
-    CPPUNIT_ASSERT_EQUAL(OUString("2."),parseDump("/root/page/body/tab/row[4]/cell/txt/Special[@nType='PortionType::Number']","rText"));
+    CPPUNIT_ASSERT_EQUAL(OUString("2."),parseDump("/root/page/body/tab/row[4]/cell/txt/SwParaPortion/SwLineLayout/child::*[@type='PortionType::Number']","expand"));
 }
 
 CPPUNIT_TEST_FIXTURE(Test, testTdf149551_mongolianVert)
 {
     // Given a docx document with a shape with vert="mongolianVert".
-    load(DATA_DIRECTORY, "tdf149551_mongolianVert.docx");
+    createSwDoc("tdf149551_mongolianVert.docx");
 
     // The shape is imported as custom shape with attached frame.
     // Without fix the shape itself had WritingMode = 0 = LR_TB,
@@ -99,9 +97,13 @@ CPPUNIT_TEST_FIXTURE(Test, testTdf149551_mongolianVert)
     // Such shape must have vert="mongolianVert" again after saving.
     // Without fix the orientation was vert="vert".
     save("Office Open XML Text");
-    mbExported = true;
     xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
     assertXPath(pXmlDoc, "//wps:bodyPr", "vert", "mongolianVert");
+}
+
+DECLARE_OOXMLEXPORT_TEST(testTdf151912, "tdf151912.docx")
+{
+    // For now just ensure roundtrip is successful
 }
 
 DECLARE_OOXMLEXPORT_TEST(testTdf147724, "tdf147724.docx")
@@ -121,11 +123,10 @@ CPPUNIT_TEST_FIXTURE(Test, testNumberPortionFormatFromODT)
 {
     // Given a document with a single paragraph, direct formatting asks 24pt font size for the
     // numbering and the text portion:
-    load(DATA_DIRECTORY, "number-portion-format.odt");
+    createSwDoc("number-portion-format.odt");
 
     // When saving to DOCX:
     save("Office Open XML Text");
-    mbExported = true;
 
     // Then make sure that the paragraph marker's char format has that custom font size:
     xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
@@ -141,7 +142,7 @@ CPPUNIT_TEST_FIXTURE(Test, testTdf150966_regularInset)
 {
     // Given a docx document with a rectangular shape with height cy="900000" (EMU), tIns="180000"
     // and bIns="360000", resulting in 360000EMU text area height.
-    load(DATA_DIRECTORY, "tdf150966_regularInset.docx");
+    createSwDoc("tdf150966_regularInset.docx");
 
     // The shape is imported as custom shape with attached frame.
     // The insets are currently imported as margin top="4.99mm" and bottom="10mm".
@@ -150,7 +151,6 @@ CPPUNIT_TEST_FIXTURE(Test, testTdf150966_regularInset)
     // Without fix the insets were tIns="359280" and bIns="539640". The text area had 1080Emu height
     // and Word displays no text at all.
     save("Office Open XML Text");
-    mbExported = true;
     xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
     assertXPathAttrs(pXmlDoc, "//wps:bodyPr", { { "tIns", "179640" }, { "bIns", "360000" } });
 }

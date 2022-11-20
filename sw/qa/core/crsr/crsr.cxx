@@ -27,16 +27,19 @@
 #include <ndtxt.hxx>
 #include <formatcontentcontrol.hxx>
 
-constexpr OUStringLiteral DATA_DIRECTORY = u"/sw/qa/core/crsr/data/";
-
 /// Covers sw/source/core/crsr/ fixes.
 class SwCoreCrsrTest : public SwModelTestBase
 {
+public:
+    SwCoreCrsrTest()
+        : SwModelTestBase("/sw/qa/core/crsr/data/")
+    {
+    }
 };
 
 CPPUNIT_TEST_FIXTURE(SwCoreCrsrTest, testFindReplace)
 {
-    loadURL("private:factory/swriter", nullptr);
+    createSwDoc();
 
     // Given: a document with two "foo" in it, the second followed by a formatted soft hyphen.
     uno::Reference<text::XTextDocument> xTextDocument(mxComponent, uno::UNO_QUERY);
@@ -87,7 +90,7 @@ CPPUNIT_TEST_FIXTURE(SwCoreCrsrTest, testFindReplace)
 
 CPPUNIT_TEST_FIXTURE(SwCoreCrsrTest, testSelAllStartsWithTable)
 {
-    load(DATA_DIRECTORY, "sel-all-starts-with-table.odt");
+    createSwDoc("sel-all-starts-with-table.odt");
     SwXTextDocument* pTextDoc = dynamic_cast<SwXTextDocument*>(mxComponent.get());
     SwDocShell* pDocShell = pTextDoc->GetDocShell();
     SwDoc* pDoc = pDocShell->GetDoc();
@@ -110,7 +113,8 @@ CPPUNIT_TEST_FIXTURE(SwCoreCrsrTest, testSelAllStartsWithTable)
 CPPUNIT_TEST_FIXTURE(SwCoreCrsrTest, testContentControlLineBreak)
 {
     // Given a document with a (rich text) content control:
-    SwDoc* pDoc = createSwDoc();
+    createSwDoc();
+    SwDoc* pDoc = getSwDoc();
     uno::Reference<lang::XMultiServiceFactory> xMSF(mxComponent, uno::UNO_QUERY);
     uno::Reference<text::XTextDocument> xTextDocument(mxComponent, uno::UNO_QUERY);
     uno::Reference<text::XText> xText = xTextDocument->getText();
@@ -141,7 +145,8 @@ CPPUNIT_TEST_FIXTURE(SwCoreCrsrTest, testContentControlLineBreak)
 CPPUNIT_TEST_FIXTURE(SwCoreCrsrTest, testContentControlReadOnly)
 {
     // Given a document with a checkbox content control:
-    SwDoc* pDoc = createSwDoc();
+    createSwDoc();
+    SwDoc* pDoc = getSwDoc();
     uno::Reference<lang::XMultiServiceFactory> xMSF(mxComponent, uno::UNO_QUERY);
     uno::Reference<text::XTextDocument> xTextDocument(mxComponent, uno::UNO_QUERY);
     uno::Reference<text::XText> xText = xTextDocument->getText();
@@ -168,7 +173,8 @@ CPPUNIT_TEST_FIXTURE(SwCoreCrsrTest, testContentControlReadOnly)
 
 CPPUNIT_TEST_FIXTURE(SwCoreCrsrTest, testTdf135451)
 {
-    SwDoc* pDoc = createSwDoc();
+    createSwDoc();
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
 
     // Insert narrow no-break space and move the cursor right before it
@@ -188,7 +194,8 @@ CPPUNIT_TEST_FIXTURE(SwCoreCrsrTest, testTdf135451)
 CPPUNIT_TEST_FIXTURE(SwCoreCrsrTest, testDropdownContentControl)
 {
     // Given a document with a dropdown content control:
-    SwDoc* pDoc = createSwDoc();
+    createSwDoc();
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
     pWrtShell->InsertContentControl(SwContentControlType::DROP_DOWN_LIST);
 
@@ -205,7 +212,8 @@ CPPUNIT_TEST_FIXTURE(SwCoreCrsrTest, testDropdownContentControl)
 CPPUNIT_TEST_FIXTURE(SwCoreCrsrTest, testContentControlProtectedSection)
 {
     // Given a document with a date content control in a protected section:
-    SwDoc* pDoc = createSwDoc();
+    createSwDoc();
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
     pWrtShell->InsertContentControl(SwContentControlType::DATE);
     pWrtShell->SelAll();

@@ -30,6 +30,7 @@
 #include <impfont.hxx>
 #include <vcl/fontcapabilities.hxx>
 #include <vcl/fontcharmap.hxx>
+#include <systools/win32/comtools.hxx>
 
 #include <memory>
 #include <unordered_set>
@@ -58,29 +59,30 @@ class ImplFontMetricData;
 #define PALRGB_TO_RGB(nPalRGB)      ((nPalRGB)&0x00ffffff)
 
 // win32 specific physically available font face
-class WinFontFace : public vcl::font::PhysicalFontFace
+class WinFontFace final : public vcl::font::PhysicalFontFace
 {
 public:
     explicit                WinFontFace(const ENUMLOGFONTEXW&, const NEWTEXTMETRICW&);
-    virtual                 ~WinFontFace() override;
+                            ~WinFontFace() override;
 
-    virtual rtl::Reference<LogicalFontInstance> CreateFontInstance( const vcl::font::FontSelectPattern& ) const override;
-    virtual sal_IntPtr      GetFontId() const override;
+    rtl::Reference<LogicalFontInstance> CreateFontInstance( const vcl::font::FontSelectPattern& ) const override;
+    sal_IntPtr              GetFontId() const override;
     void                    SetFontId( sal_IntPtr nId ) { mnId = nId; }
 
     BYTE                    GetCharSet() const          { return meWinCharSet; }
     BYTE                    GetPitchAndFamily() const   { return mnPitchAndFamily; }
 
-    virtual hb_blob_t*      GetHbTable(hb_tag_t nTag) const override;
+    hb_blob_t*              GetHbTable(hb_tag_t nTag) const override;
+
+    const std::vector<hb_variation_t>& GetVariations(const LogicalFontInstance&) const override;
 
 private:
     sal_IntPtr              mnId;
 
     BYTE                    meWinCharSet;
     BYTE                    mnPitchAndFamily;
-    bool                    mbAliasSymbolsHigh;
-    bool                    mbAliasSymbolsLow;
     LOGFONTW                maLogFont;
+    mutable sal::systools::COMReference<IDWriteFontFace> mxDWFontFace;
 };
 
 /** Class that creates (and destroys) a compatible Device Context.
@@ -163,6 +165,10 @@ private:
     RGNDATA*                mpStdClipRgnData;   // Cache Standard-ClipRegion-Data
     int                     mnPenWidth;         // line width
 
+    inline static sal::systools::COMReference<IDWriteFactory> mxDWriteFactory;
+    inline static sal::systools::COMReference<IDWriteGdiInterop> mxDWriteGdiInterop;
+    inline static bool bDWriteDone = false;
+
     // just call both from setHDC!
     void InitGraphics();
     void DeInitGraphics();
@@ -190,6 +196,8 @@ public:
         WINDOW,
         SCREEN
     };
+
+    static void getDWriteFactory(IDWriteFactory** pFactory, IDWriteGdiInterop** pInterop = nullptr);
 
 public:
 

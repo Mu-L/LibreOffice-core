@@ -185,7 +185,7 @@ ScTabView::~ScTabView()
         for (i=0; i<4; i++)
             if (pGridWin[i])
             {
-                pDrawView->DeleteWindowFromPaintView(pGridWin[i]->GetOutDev());
+                pDrawView->DeleteDeviceFromPaintView(*pGridWin[i]->GetOutDev());
             }
 
         pDrawView->HideSdrPage();
@@ -238,7 +238,7 @@ void ScTabView::MakeDrawView( TriState nForceDesignMode )
         if (pGridWin[i])
         {
             if ( SC_SPLIT_BOTTOMLEFT != static_cast<ScSplitPos>(i) )
-                pDrawView->AddWindowToPaintView(pGridWin[i]->GetOutDev(), nullptr);
+                pDrawView->AddDeviceToPaintView(*pGridWin[i]->GetOutDev(), nullptr);
         }
     pDrawView->RecalcScale();
     for (i=0; i<4; i++)
@@ -271,7 +271,7 @@ void ScTabView::DoAddWin( ScGridWindow* pWin )
 {
     if (pDrawView)
     {
-        pDrawView->AddWindowToPaintView(pWin->GetOutDev(), nullptr);
+        pDrawView->AddDeviceToPaintView(*pWin->GetOutDev(), nullptr);
         pWin->DrawLayerCreated();
     }
     pWin->SetAutoSpellContext(mpSpellCheckCxt);
@@ -345,7 +345,7 @@ void ScTabView::TabChanged( bool bSameTabButMoved )
 
     // Invalidate first
     tools::Rectangle aRectangle(0, 0, 1000000000, 1000000000);
-    pViewShell->libreOfficeKitViewInvalidateTilesCallback(&aRectangle, aViewData.GetTabNo());
+    pViewShell->libreOfficeKitViewInvalidateTilesCallback(&aRectangle, aViewData.GetTabNo(), 0);
 
     ScModelObj* pModel = comphelper::getFromUnoTunnel<ScModelObj>(pViewShell->GetCurrentDocument());
     SfxLokHelper::notifyDocumentSizeChanged(pViewShell, sRect, pModel, false);

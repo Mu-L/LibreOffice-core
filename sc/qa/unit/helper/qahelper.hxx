@@ -14,6 +14,7 @@
 
 #include <cppunit/SourceLine.h>
 
+#include <test/unoapixml_test.hxx>
 #include <test/bootstrapfixture.hxx>
 #include <comphelper/documentconstants.hxx>
 
@@ -70,7 +71,6 @@ class SdrOle2Obj;
 class ScRangeList;
 class ScTokenArray;
 
-
 // data format for row height tests
 struct TestParam
 {
@@ -83,9 +83,8 @@ struct TestParam
         int nCheck; // currently only CHECK_OPTIMAL ( we could add CHECK_MANUAL etc.)
         bool bOptimal;
     };
-    const char* sTestDoc;
-    int nImportType;
-    int nExportType; // -1 for import test, otherwise this is an export test
+    const std::u16string_view sTestDoc;
+    const OUString sExportType; // empty for import test, otherwise this is an export test
     int nRowData;
     RowData const * pData;
 };
@@ -114,46 +113,11 @@ SCQAHELPER_DLLPUBLIC std::ostream& operator<<(std::ostream& rStrm, const Color& 
 
 SCQAHELPER_DLLPUBLIC std::ostream& operator<<(std::ostream& rStrm, const OpCode& rCode);
 
-// Why is this here and not in osl, and using the already existing file
-// handling APIs? Do we really want to add arbitrary new file handling
-// wrappers here and there (and then having to handle the Android (and
-// eventually perhaps iOS) special cases here, too)?  Please move this to osl,
-// it sure looks generally useful. Or am I missing something?
-
-void loadFile(const OUString& aFileName, std::string& aContent);
-
-SCQAHELPER_DLLPUBLIC void testFile(const OUString& aFileName, ScDocument& rDoc, SCTAB nTab, StringType aStringFormat = StringType::StringValue);
-
-//need own handler because conditional formatting strings must be generated
-SCQAHELPER_DLLPUBLIC void testCondFile(const OUString& aFileName, ScDocument* pDoc, SCTAB nTab);
-
-SCQAHELPER_DLLPUBLIC const SdrOle2Obj* getSingleOleObject(ScDocument& rDoc, sal_uInt16 nPage);
-
-SCQAHELPER_DLLPUBLIC const SdrOle2Obj* getSingleChartObject(ScDocument& rDoc, sal_uInt16 nPage);
-
-SCQAHELPER_DLLPUBLIC ScRangeList getChartRanges(ScDocument& rDoc, const SdrOle2Obj& rChartObj);
-
 bool checkFormula(ScDocument& rDoc, const ScAddress& rPos, const char* pExpected);
-
-bool checkFormulaPosition(ScDocument& rDoc, const ScAddress& rPos);
-bool checkFormulaPositions(
-    ScDocument& rDoc, SCTAB nTab, SCCOL nCol, const SCROW* pRows, size_t nRowCount);
-
-std::unique_ptr<ScTokenArray> compileFormula(
-    ScDocument* pDoc, const OUString& rFormula,
-    formula::FormulaGrammar::Grammar eGram = formula::FormulaGrammar::GRAM_NATIVE );
 
 SCQAHELPER_DLLPUBLIC bool checkOutput(
     const ScDocument* pDoc, const ScRange& aOutRange,
     const std::vector<std::vector<const char*>>& aCheck, const char* pCaption );
-
-void clearFormulaCellChangedFlag( ScDocument& rDoc, const ScRange& rRange );
-
-/**
- * Check if the cell at specified position is a formula cell that doesn't
- * have an error value.
- */
-SCQAHELPER_DLLPUBLIC bool isFormulaWithoutError(ScDocument& rDoc, const ScAddress& rPos);
 
 /**
  * Convert formula token array to a formula string.
@@ -191,44 +155,21 @@ protected:
     OUString m_aBaseString;
 
     ScDocShellRef load(
-        bool bReadWrite, const OUString& rURL, const OUString& rFilter, const OUString &rUserData,
-        const OUString& rTypeName, SfxFilterFlags nFilterFlags, SotClipboardFormatId nClipboardID,
-        sal_Int32 nFilterVersion = SOFFICE_FILEFORMAT_CURRENT, const OUString* pPassword = nullptr );
-
-    ScDocShellRef load(
         const OUString& rURL, const OUString& rFilter, const OUString &rUserData,
         const OUString& rTypeName, SfxFilterFlags nFilterFlags, SotClipboardFormatId nClipboardID,
         sal_Int32 nFilterVersion = SOFFICE_FILEFORMAT_CURRENT, const OUString* pPassword = nullptr );
 
-    ScDocShellRef load(const OUString& rURL, sal_Int32 nFormat, bool bReadWrite = false);
-
-    ScDocShellRef loadEmptyDocument(const com::sun::star::uno::Sequence<com::sun::star::beans::PropertyValue>& rPropertyValues = {});
     ScDocShellRef loadDoc(
-        std::u16string_view rFileName, sal_Int32 nFormat, bool bReadWrite = false, bool bCheckErrorCode = true );
+        std::u16string_view rFileName, sal_Int32 nFormat, bool bCheckErrorCode = true );
 
 private:
     // reference to document interface that we are testing
     css::uno::Reference<css::uno::XInterface> m_xCalcComponent;
 public:
-    static const FileFormat* getFileFormats() { return aFileFormats; }
-
     explicit ScBootstrapFixture( const OUString& rsBaseString );
     virtual ~ScBootstrapFixture() override;
 
     void createFileURL(std::u16string_view aFileBase, std::u16string_view aFileExtension, OUString& rFilePath);
-    void createCSVPath(const char* aFileBase, OUString& rCSVPath);
-    void createCSVPath(std::u16string_view aFileBase, OUString& rCSVPath);
-
-    ScDocShellRef saveAndReload(ScDocShell& rShell, const OUString &rFilter,
-    const OUString &rUserData, const OUString& rTypeName, SfxFilterFlags nFormatType,
-    std::shared_ptr<utl::TempFileNamed>* pTempFile = nullptr, const OUString* pPassword = nullptr, bool bClose = true );
-
-    ScDocShellRef saveAndReload( ScDocShell& rShell, sal_Int32 nFormat, std::shared_ptr<utl::TempFileNamed>* pTempFile = nullptr );
-    ScDocShellRef saveAndReloadPassword( ScDocShell& rShell, sal_Int32 nFormat, std::shared_ptr<utl::TempFileNamed>* pTempFile = nullptr );
-
-    std::shared_ptr<utl::TempFileNamed> exportTo(ScDocShell& rShell, sal_Int32 nFormat, bool bValidate = true);
-
-    void miscRowHeightsTest( TestParam const * aTestValues, unsigned int numElems );
 
     virtual void setUp() override;
     virtual void tearDown() override;
@@ -240,9 +181,80 @@ public:
     virtual void setUp() override;
     virtual void tearDown() override;
 
+    ScRange insertRangeData(ScDocument* pDoc, const ScAddress& rPos,
+                                       const std::vector<std::vector<const char*>>& rData);
+    void copyToClip(ScDocument* pSrcDoc, const ScRange& rRange, ScDocument* pClipDoc);
+    void pasteFromClip(ScDocument* pDestDoc, const ScRange& rDestRange,
+                                        ScDocument* pClipDoc);
+    ScUndoPaste* createUndoPaste(ScDocShell& rDocSh, const ScRange& rRange,
+                                        ScDocumentUniquePtr pUndoDoc);
+    void pasteOneCellFromClip(ScDocument* pDestDoc, const ScRange& rDestRange,
+                                         ScDocument* pClipDoc,
+                                         InsertDeleteFlags eFlags = InsertDeleteFlags::ALL);
+    void setCalcAsShown(ScDocument* pDoc, bool bCalcAsShown);
+    ScDocShell* findLoadedDocShellByName(std::u16string_view rName);
+    ScUndoCut* cutToClip(ScDocShell& rDocSh, const ScRange& rRange, ScDocument* pClipDoc,
+                                        bool bCreateUndo);
+    bool insertRangeNames(ScDocument* pDoc, ScRangeName* pNames, const RangeNameDef* p,
+                                       const RangeNameDef* pEnd);
+    OUString getRangeByName(ScDocument* pDoc, const OUString& aRangeName);
+    OUString getFormula(ScDocument* pDoc, SCCOL nCol, SCROW nRow, SCTAB nTab);
+    void printFormula(ScDocument* pDoc, SCCOL nCol, SCROW nRow, SCTAB nTab,
+                                           const char* pCaption = nullptr);
+    void printRange(ScDocument* pDoc, const ScRange& rRange, const char* pCaption,
+                                         const bool printFormula = false);
+    void printRange(ScDocument* pDoc, const ScRange& rRange,
+                                         const OString& rCaption, const bool printFormula = false);
+    void clearRange(ScDocument* pDoc, const ScRange& rRange);
+    void clearSheet(ScDocument* pDoc, SCTAB nTab);
+    bool checkFormulaPosition(ScDocument& rDoc, const ScAddress& rPos);
+    bool checkFormulaPositions(
+        ScDocument& rDoc, SCTAB nTab, SCCOL nCol, const SCROW* pRows, size_t nRowCount);
+    std::unique_ptr<ScTokenArray> compileFormula(
+        ScDocument* pDoc, const OUString& rFormula,
+        formula::FormulaGrammar::Grammar eGram = formula::FormulaGrammar::GRAM_NATIVE );
+    void clearFormulaCellChangedFlag( ScDocument& rDoc, const ScRange& rRange );
+
 protected:
     ScDocShellRef m_xDocShell;
     ScDocument* m_pDoc;
+};
+
+class SCQAHELPER_DLLPUBLIC ScModelTestBase : public UnoApiXmlTest
+{
+public:
+    ScModelTestBase(OUString path)
+        : UnoApiXmlTest(path)
+    {
+    }
+
+    void createScDoc(const char* pName = nullptr, const char* pPassword = nullptr);
+    ScDocument* getScDoc();
+    ScDocShell* getScDocShell();
+    ScTabViewShell* getViewShell();
+    void miscRowHeightsTest( TestParam const * aTestValues, unsigned int numElems);
+
+    void testFile(const OUString& aFileName, ScDocument& rDoc, SCTAB nTab, StringType aStringFormat = StringType::StringValue);
+
+    //need own handler because conditional formatting strings must be generated
+    void testCondFile(const OUString& aFileName, ScDocument* pDoc, SCTAB nTab);
+
+    const SdrOle2Obj* getSingleOleObject(ScDocument& rDoc, sal_uInt16 nPage);
+
+    const SdrOle2Obj* getSingleChartObject(ScDocument& rDoc, sal_uInt16 nPage);
+
+    ScRangeList getChartRanges(ScDocument& rDoc, const SdrOle2Obj& rChartObj);
+
+    void testFormats(ScDocument* pDoc,std::u16string_view sFormat);
+
+private:
+    // Why is this here and not in osl, and using the already existing file
+    // handling APIs? Do we really want to add arbitrary new file handling
+    // wrappers here and there (and then having to handle the Android (and
+    // eventually perhaps iOS) special cases here, too)?  Please move this to osl,
+    // it sure looks generally useful. Or am I missing something?
+
+    void loadFile(const OUString& aFileName, std::string& aContent);
 };
 
 #define ASSERT_DOUBLES_EQUAL( expected, result )    \
@@ -257,37 +269,9 @@ SCQAHELPER_DLLPUBLIC void checkFormula(ScDocument& rDoc, const ScAddress& rPos,
 #define ASSERT_FORMULA_EQUAL(doc, pos, expected, msg) \
     checkFormula(doc, pos, expected, msg, CPPUNIT_SOURCELINE())
 
-SCQAHELPER_DLLPUBLIC void testFormats(ScBootstrapFixture* pTest, ScDocument* pDoc, sal_Int32 nFormat);
-
 SCQAHELPER_DLLPUBLIC ScTokenArray* getTokens(ScDocument& rDoc, const ScAddress& rPos);
 
 SCQAHELPER_DLLPUBLIC std::string to_std_string(const OUString& rStr);
 
-SCQAHELPER_DLLPUBLIC ScUndoCut* cutToClip(ScDocShell& rDocSh, const ScRange& rRange, ScDocument* pClipDoc,
-                                    bool bCreateUndo);
-SCQAHELPER_DLLPUBLIC void copyToClip(ScDocument* pSrcDoc, const ScRange& rRange, ScDocument* pClipDoc);
-SCQAHELPER_DLLPUBLIC void pasteFromClip(ScDocument* pDestDoc, const ScRange& rDestRange,
-                                    ScDocument* pClipDoc);
-SCQAHELPER_DLLPUBLIC ScUndoPaste* createUndoPaste(ScDocShell& rDocSh, const ScRange& rRange,
-                                    ScDocumentUniquePtr pUndoDoc);
-SCQAHELPER_DLLPUBLIC void pasteOneCellFromClip(ScDocument* pDestDoc, const ScRange& rDestRange,
-                                     ScDocument* pClipDoc,
-                                     InsertDeleteFlags eFlags = InsertDeleteFlags::ALL);
-SCQAHELPER_DLLPUBLIC void setCalcAsShown(ScDocument* pDoc, bool bCalcAsShown);
-SCQAHELPER_DLLPUBLIC ScDocShell* findLoadedDocShellByName(std::u16string_view rName);
-SCQAHELPER_DLLPUBLIC ScRange insertRangeData(ScDocument* pDoc, const ScAddress& rPos,
-                                   const std::vector<std::vector<const char*>>& rData);
-SCQAHELPER_DLLPUBLIC bool insertRangeNames(ScDocument* pDoc, ScRangeName* pNames, const RangeNameDef* p,
-                                   const RangeNameDef* pEnd);
-SCQAHELPER_DLLPUBLIC OUString getRangeByName(ScDocument* pDoc, const OUString& aRangeName);
-SCQAHELPER_DLLPUBLIC OUString getFormula(ScDocument* pDoc, SCCOL nCol, SCROW nRow, SCTAB nTab);
-SCQAHELPER_DLLPUBLIC void printFormula(ScDocument* pDoc, SCCOL nCol, SCROW nRow, SCTAB nTab,
-                                       const char* pCaption = nullptr);
-SCQAHELPER_DLLPUBLIC void printRange(ScDocument* pDoc, const ScRange& rRange, const char* pCaption,
-                                     const bool printFormula = false);
-SCQAHELPER_DLLPUBLIC void printRange(ScDocument* pDoc, const ScRange& rRange,
-                                     const OString& rCaption, const bool printFormula = false);
-SCQAHELPER_DLLPUBLIC void clearRange(ScDocument* pDoc, const ScRange& rRange);
-SCQAHELPER_DLLPUBLIC void clearSheet(ScDocument* pDoc, SCTAB nTab);
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

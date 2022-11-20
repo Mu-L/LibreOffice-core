@@ -324,6 +324,7 @@ DomainMapper_Impl::DomainMapper_Impl(
         m_xTextFactory( xModel, uno::UNO_QUERY ),
         m_xComponentContext(std::move( xContext )),
         m_bForceGenericFields(!utl::ConfigManager::IsFuzzing() && officecfg::Office::Common::Filter::Microsoft::Import::ForceImportWWFieldsAsGenericFields::get()),
+        m_bIsDecimalComma( false ),
         m_bSetUserFieldContent( false ),
         m_bSetCitation( false ),
         m_bSetDateValue( false ),
@@ -980,7 +981,11 @@ void DomainMapper_Impl::PopSdt()
                 pItems[i] = aItem;
             }
             xContentControlProps->setPropertyValue("ListItems", uno::Any(aItems));
-            if (m_pSdtHelper->getControlType() == SdtControlType::comboBox)
+            if (m_pSdtHelper->getControlType() == SdtControlType::dropDown)
+            {
+                xContentControlProps->setPropertyValue("DropDown", uno::Any(true));
+            }
+            else
             {
                 xContentControlProps->setPropertyValue("ComboBox", uno::Any(true));
             }
@@ -5551,6 +5556,15 @@ OUString DomainMapper_Impl::convertFieldFormula(const OUString& input) {
     /* Prepare replace of ABOVE/BELOW/LEFT/RIGHT by adding spaces around them */
     icu::RegexMatcher rmatch6("\\b(ABOVE|BELOW|LEFT|RIGHT)\\b", usInput, rMatcherFlags, status);
     usInput = rmatch6.replaceAll(icu::UnicodeString(" $1 "), status);
+
+    /* DOCX allows to set decimal symbol independently from the locale of the document, so if
+     * needed, convert decimal comma to get working formula in a document language (locale),
+     * which doesn't use decimal comma */
+    if ( m_pSettingsTable->GetDecimalSymbol() == "," && !m_bIsDecimalComma )
+    {
+        icu::RegexMatcher rmatch7("\\b([0-9]+),([0-9]+([eE][-]?[0-9]+)?)\\b", usInput, rMatcherFlags, status);
+        usInput = rmatch7.replaceAll(icu::UnicodeString("$1.$2"), status);
+    }
 
     return OUString(usInput.getTerminatedBuffer());
 }

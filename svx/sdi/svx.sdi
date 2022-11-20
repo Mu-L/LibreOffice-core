@@ -11770,7 +11770,7 @@ SfxVoidItem InsertRowsAfter SID_TABLE_INSERT_ROW_AFTER
 ]
 
 SfxBoolItem PrepareMailExport SID_MAIL_PREPAREEXPORT
-()
+(SfxBoolItem On FN_PARAM_1)
 [
     AutoUpdate = FALSE,
     FastCall = FALSE,
@@ -12544,6 +12544,24 @@ SfxVoidItem AccessibilityCheck SID_ACCESSIBILITY_CHECK
     MenuConfig = FALSE,
     ToolBoxConfig = FALSE,
     GroupId = SfxGroupId::Modify;
+]
+
+SfxBoolItem AccessibilityCheckOnline SID_ACCESSIBILITY_CHECK_ONLINE
+(SfxBoolItem Enable FN_PARAM_1)
+[
+    AutoUpdate = TRUE,
+    FastCall = FALSE,
+    ReadOnlyDoc = TRUE,
+    Toggle = TRUE,
+    Container = FALSE,
+    RecordAbsolute = FALSE,
+    RecordPerSet;
+
+
+    AccelConfig = TRUE,
+    MenuConfig = TRUE,
+    ToolBoxConfig = TRUE,
+    GroupId = SfxGroupId::Options;
 ]
 
 XColorItem GlowColor SID_ATTR_GLOW_COLOR

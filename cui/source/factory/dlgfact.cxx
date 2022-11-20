@@ -89,6 +89,7 @@
 #include <hyphen.hxx>
 #include <thesdlg.hxx>
 #include <tipofthedaydlg.hxx>
+#include <widgettestdlg.hxx>
 #include <toolbarmodedlg.hxx>
 #include <DiagramDialog.hxx>
 #include <fileextcheckdlg.hxx>
@@ -143,6 +144,7 @@ IMPL_ABSTDLG_CLASS_ASYNC(CuiAbstractControllerAsync,weld::DialogController)
 IMPL_ABSTDLG_CLASS_ASYNC(CuiAbstractTabController,SfxTabDialogController)
 IMPL_ABSTDLG_CLASS(CuiAbstractController)
 IMPL_ABSTDLG_CLASS(CuiAbstractSingleTabController)
+IMPL_ABSTDLG_CLASS_ASYNC(CuiAbstractWidgetTestControllerAsync,weld::GenericDialogController)
 
 short AbstractHyphenWordDialog_Impl::Execute()
 {
@@ -1428,9 +1430,9 @@ VclPtr<SfxAbstractLinksDialog> AbstractDialogFactory_Impl::CreateLinksDialog(wel
     return VclPtr<AbstractLinksDialog_Impl>::Create(std::move(xLinkDlg));
 }
 
-VclPtr<SfxAbstractTabDialog> AbstractDialogFactory_Impl::CreateSvxFormatCellsDialog(weld::Window* pParent, const SfxItemSet* pAttr, const SdrModel& rModel)
+VclPtr<SfxAbstractTabDialog> AbstractDialogFactory_Impl::CreateSvxFormatCellsDialog(weld::Window* pParent, const SfxItemSet* pAttr, const SdrModel& rModel, bool bStyle)
 {
-    return VclPtr<CuiAbstractTabController_Impl>::Create(std::make_shared<SvxFormatCellsDialog>(pParent, pAttr, rModel));
+    return VclPtr<CuiAbstractTabController_Impl>::Create(std::make_shared<SvxFormatCellsDialog>(pParent, pAttr, rModel, bStyle));
 }
 
 VclPtr<SvxAbstractSplitTableDialog> AbstractDialogFactory_Impl::CreateSvxSplitTableDialog(weld::Window* pParent, bool bIsTableVertical, tools::Long nMaxVertical)
@@ -1516,6 +1518,13 @@ AbstractDialogFactory_Impl::CreateTipOfTheDayDialog(weld::Window* pParent)
     (void) pParent;
     return nullptr;
 #endif
+}
+
+VclPtr<VclAbstractDialog>
+AbstractDialogFactory_Impl::CreateWidgetTestDialog(weld::Window* pParent)
+{
+    return VclPtr<CuiAbstractWidgetTestControllerAsync_Impl>::Create(
+        std::make_shared<WidgetTestDialog>(pParent));
 }
 
 VclPtr<VclAbstractDialog>

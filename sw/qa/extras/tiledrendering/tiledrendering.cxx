@@ -71,8 +71,6 @@
 #include <swmodule.hxx>
 #include <swdll.hxx>
 
-constexpr OUStringLiteral DATA_DIRECTORY = u"/sw/qa/extras/tiledrendering/data/";
-
 static std::ostream& operator<<(std::ostream& os, ViewShellId id)
 {
     os << static_cast<sal_Int32>(id);
@@ -116,7 +114,8 @@ protected:
 };
 
 SwTiledRenderingTest::SwTiledRenderingTest()
-    : m_bFound(true),
+    : SwModelTestBase("/sw/qa/extras/tiledrendering/data/"),
+    m_bFound(true),
     m_nSelectionBeforeSearchResult(0),
     m_nSelectionAfterSearchResult(0),
     m_nInvalidations(0),
@@ -162,9 +161,9 @@ void SwTiledRenderingTest::tearDown()
 SwXTextDocument* SwTiledRenderingTest::createDoc(const char* pName)
 {
     if (!pName)
-        loadURL("private:factory/swriter", nullptr);
+        createSwDoc();
     else
-        load(DATA_DIRECTORY, pName);
+        createSwDoc(pName);
 
     SwXTextDocument* pTextDocument = dynamic_cast<SwXTextDocument*>(mxComponent.get());
     CPPUNIT_ASSERT(pTextDocument);

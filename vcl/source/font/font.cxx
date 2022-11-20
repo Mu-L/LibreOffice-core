@@ -176,24 +176,6 @@ bool Font::IsSymbolFont() const
     return mpImplFont->IsSymbolFont();
 }
 
-void Font::SetSymbolFlag( bool bSymbol )
-{
-    if (const_cast<const ImplType&>(mpImplFont)->mbSymbolFlag != bSymbol)
-    {
-        mpImplFont->SetSymbolFlag( bSymbol );
-
-        if ( IsSymbolFont() )
-        {
-            mpImplFont->SetCharSet( RTL_TEXTENCODING_SYMBOL );
-        }
-        else
-        {
-            if ( std::as_const(mpImplFont)->GetCharSet() == RTL_TEXTENCODING_SYMBOL )
-                mpImplFont->SetCharSet( RTL_TEXTENCODING_DONTKNOW );
-        }
-    }
-}
-
 void Font::SetLanguageTag( const LanguageTag& rLanguageTag )
 {
     if (const_cast<const ImplType&>(mpImplFont)->maLanguageTag != rLanguageTag)
@@ -514,6 +496,11 @@ SvStream& ReadImplFont( SvStream& rIStm, ImplFont& rImplFont, tools::Long& rnNor
         {
             SAL_WARN("vcl.gdi", "suspicious average width of: " << rImplFont.maAverageFontSize.Width());
             rImplFont.maAverageFontSize.setWidth(8192);
+        }
+        if (rImplFont.maAverageFontSize.Height() > 8192)
+        {
+            SAL_WARN("vcl.gdi", "suspicious average height of: " << rImplFont.maAverageFontSize.Height());
+            rImplFont.maAverageFontSize.setHeight(8192);
         }
     }
 

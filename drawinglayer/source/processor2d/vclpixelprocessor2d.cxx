@@ -83,7 +83,7 @@ VclPixelProcessor2D::VclPixelProcessor2D(const geometry::ViewInformation2D& rVie
     mpOutputDevice->SetMapMode();
 
     // react on AntiAliasing settings
-    if (SvtOptionsDrawinglayer::IsAntiAliasing())
+    if (rViewInformation.getUseAntiAliasing())
     {
         mpOutputDevice->SetAntialiasing(m_nOrigAntiAliasing | AntialiasingFlags::Enable);
     }
@@ -355,17 +355,6 @@ void VclPixelProcessor2D::processBasePrimitive2D(const primitive2d::BasePrimitiv
                 static_cast<const primitive2d::BackgroundColorPrimitive2D&>(rCandidate));
             break;
         }
-        case PRIMITIVE2D_ID_TEXTHIERARCHYEDITPRIMITIVE2D:
-        {
-            // #i97628#
-            // This primitive means that the content is derived from an active text edit,
-            // not from model data itself. Some renderers need to suppress this content, e.g.
-            // the pixel renderer used for displaying the edit view (like this one). It's
-            // not to be suppressed by the MetaFile renderers, so that the edited text is
-            // part of the MetaFile, e.g. needed for presentation previews.
-            // Action: Ignore here, do nothing.
-            break;
-        }
         case PRIMITIVE2D_ID_INVERTPRIMITIVE2D:
         {
             processInvertPrimitive2D(rCandidate);
@@ -543,7 +532,7 @@ void VclPixelProcessor2D::processPolyPolygonColorPrimitive2D(
     // when AA is on and this filled polygons are the result of stroked line geometry,
     // draw the geometry once extra as lines to avoid AA 'gaps' between partial polygons
     // Caution: This is needed in both cases (!)
-    if (!(mnPolygonStrokePrimitive2D && SvtOptionsDrawinglayer::IsAntiAliasing()
+    if (!(mnPolygonStrokePrimitive2D && getViewInformation2D().getUseAntiAliasing()
           && (mpOutputDevice->GetAntialiasing() & AntialiasingFlags::Enable)))
         return;
 
@@ -758,7 +747,7 @@ void VclPixelProcessor2D::processPolygonStrokePrimitive2D(
 void VclPixelProcessor2D::processFillHatchPrimitive2D(
     const primitive2d::FillHatchPrimitive2D& rFillHatchPrimitive)
 {
-    if (SvtOptionsDrawinglayer::IsAntiAliasing())
+    if (getViewInformation2D().getUseAntiAliasing())
     {
         // if AA is used (or ignore smoothing is on), there is no need to smooth
         // hatch painting, use decomposition
@@ -925,8 +914,7 @@ void VclPixelProcessor2D::processInvertPrimitive2D(const primitive2d::BasePrimit
 void VclPixelProcessor2D::processMetaFilePrimitive2D(const primitive2d::BasePrimitive2D& rCandidate)
 {
     // #i98289#
-    const bool bForceLineSnap(SvtOptionsDrawinglayer::IsAntiAliasing()
-                              && SvtOptionsDrawinglayer::IsSnapHorVerLinesToDiscrete());
+    const bool bForceLineSnap(getViewInformation2D().getPixelSnapHairline());
     const AntialiasingFlags nOldAntiAliase(mpOutputDevice->GetAntialiasing());
 
     if (bForceLineSnap)
@@ -1045,7 +1033,7 @@ void VclPixelProcessor2D::processPatternFillPrimitive2D(
     tools::Rectangle aMaskRect = vcl::unotools::rectangleFromB2DRectangle(aMaskRange);
 
     // Unless smooth edges are needed, simply use clipping.
-    if (basegfx::utils::isRectangle(aMask) || !SvtOptionsDrawinglayer::IsAntiAliasing())
+    if (basegfx::utils::isRectangle(aMask) || !getViewInformation2D().getUseAntiAliasing())
     {
         mpOutputDevice->Push(vcl::PushFlags::CLIPREGION);
         mpOutputDevice->IntersectClipRegion(vcl::Region(aMask));

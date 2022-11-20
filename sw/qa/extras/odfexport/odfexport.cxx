@@ -467,8 +467,9 @@ DECLARE_ODFEXPORT_TEST(testFramebackgrounds, "framebackgrounds.odt")
     aGradientxTextFrame = getProperty<awt::Gradient>(xTextFrame, "FillTransparenceGradient");
     CPPUNIT_ASSERT_EQUAL(css::awt::GradientStyle_LINEAR, aGradientxTextFrame.Style);
 
-    if (xmlDocUniquePtr pXmlDoc = parseExport("content.xml"))
+    if (isExported())
     {
+        xmlDocUniquePtr pXmlDoc = parseExport("content.xml");
         // check that there are 3 background-image elements
         assertXPath(pXmlDoc, "//style:style[@style:parent-style-name='Frame' and @style:family='graphic']/style:graphic-properties[@draw:fill='bitmap']/style:background-image[@style:repeat='stretch']", 3);
         // tdf#90640: check that one of them is 55% opaque
@@ -665,8 +666,9 @@ CPPUNIT_TEST_FIXTURE(Test, testTdf92379)
 //    CPPUNIT_ASSERT_EQUAL(sal_Int32(0xffffff), getProperty<sal_Int32>(xFrameStyle2, "FillColor"));
 //    CPPUNIT_ASSERT_EQUAL(sal_Int16(100), getProperty<sal_Int16>(xFrameStyle2, "FillTransparence"));
 
-    if (xmlDocUniquePtr pXmlDoc = parseExport("styles.xml"))
+    if (isExported())
     {
+        xmlDocUniquePtr pXmlDoc = parseExport("styles.xml");
         // check that fo:background-color attribute is exported properly
         assertXPath(pXmlDoc, "//style:style[@style:family='graphic' and @style:name='encarts']/style:graphic-properties[@fo:background-color='#ffcc99']", 1);
         assertXPath(pXmlDoc, "//style:style[@style:family='graphic' and @style:name='Untitled1']/style:graphic-properties[@fo:background-color='transparent']", 1);
@@ -713,8 +715,9 @@ CPPUNIT_TEST_FIXTURE(Test, testTdf92379)
 //    CPPUNIT_ASSERT_EQUAL(sal_Int16(100), getProperty<sal_Int16>(xStyle32, "FillTransparence"));
     CPPUNIT_ASSERT_EQUAL(Color(0x461900), getProperty<Color>(xStyle32, "CharColor"));
 
-    if (xmlDocUniquePtr pXmlDoc = parseExport("styles.xml"))
+    if (isExported())
     {
+        xmlDocUniquePtr pXmlDoc = parseExport("styles.xml");
         // check that fo:background-color attribute is exported properly
         assertXPath(pXmlDoc, "//style:style[@style:family='paragraph' and @style:display-name='Titre Avis expert']/style:paragraph-properties[@fo:background-color='#661900']", 1);
         assertXPath(pXmlDoc, "//style:style[@style:family='paragraph' and @style:display-name='Avis expert questions']/style:paragraph-properties[@fo:background-color='transparent']", 1);
@@ -1190,8 +1193,9 @@ CPPUNIT_TEST_FIXTURE(Test, testProtectionKey)
 
     // we can't assume that the user entered the password; check that we
     // round-trip the password as-is
-    if (xmlDocUniquePtr pXmlDoc = parseExport("content.xml"))
+    if (isExported())
     {
+        xmlDocUniquePtr pXmlDoc = parseExport("content.xml");
         assertXPath(pXmlDoc, "//text:section[@text:name='Section0' and @text:protected='true' and @text:protection-key='vbnhxyBKtPHCA1wB21zG1Oha8ZA=']");
         assertXPath(pXmlDoc, "//text:section[@text:name='Section1' and @text:protected='true' and @text:protection-key='nLHas0RIwepGDaH4c2hpyIUvIS8=']");
         assertXPath(pXmlDoc, "//text:section[@text:name='Section2' and @text:protected='true' and @text:protection-key-digest-algorithm='http://www.w3.org/2000/09/xmldsig#sha256' and @text:protection-key='1tnJohagR2T0yF/v69hLPuumSTsj32CumW97nkKGuSQ=']");
@@ -1404,9 +1408,12 @@ DECLARE_ODFEXPORT_TEST(testTextboxRoundedCorners, "textbox-rounded-corners.odt")
     CPPUNIT_ASSERT_EQUAL(OUString("a"), xCell->getString());
 
     // Table inside a textbox should be in the extension namespace.
-    if (xmlDocUniquePtr pXmlDoc = parseExport("content.xml"))
+    if (isExported())
+    {
+        xmlDocUniquePtr pXmlDoc = parseExport("content.xml");
         // This failed, as draw:custom-shape had a table:table child.
         assertXPath(pXmlDoc, "//draw:custom-shape/loext:table", "name", "Table1");
+    }
 }
 
 // test that import whitespace collapsing is compatible with old docs
@@ -1813,7 +1820,7 @@ DECLARE_ODFEXPORT_TEST(testBtlrFrame, "btlr-frame.odt")
     CPPUNIT_ASSERT(pFlyFrame);
     CPPUNIT_ASSERT(pFlyFrame->IsVertLRBT());
 
-    if (!mbExported)
+    if (!isExported())
         // Not yet exported, don't modify the doc model for test purposes.
         return;
 
@@ -2321,7 +2328,7 @@ DECLARE_ODFEXPORT_TEST(testEmbeddedPdf, "embedded-pdf.odt")
     // This was image/x-vclgraphic, not exposing the info that the image is a PDF one.
     CPPUNIT_ASSERT_EQUAL(OUString("application/pdf"), getProperty<OUString>(xGraphic, "MimeType"));
 
-    if (mbExported)
+    if (isExported())
     {
         uno::Sequence<uno::Any> aArgs{ uno::Any(maTempFile.GetURL()) };
         uno::Reference<container::XNameAccess> xNameAccess(m_xSFactory->createInstanceWithArguments("com.sun.star.packages.zip.ZipFileAccess", aArgs), uno::UNO_QUERY);
@@ -2646,7 +2653,7 @@ CPPUNIT_TEST_FIXTURE(Test, testTableStyles3)
 
 CPPUNIT_TEST_FIXTURE(Test, testTableStyles4)
 {
-    load(mpTestDocumentPath, "table_styles_4.odt");
+    createSwDoc("table_styles_4.odt");
     // Test if loaded styles overwrite existing styles
     uno::Reference<style::XStyleFamiliesSupplier> XFamiliesSupplier(mxComponent, uno::UNO_QUERY);
     uno::Reference<container::XNameAccess> xFamilies(XFamiliesSupplier->getStyleFamilies());

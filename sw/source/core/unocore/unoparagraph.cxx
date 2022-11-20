@@ -192,6 +192,13 @@ void SwXParagraph::Impl::Notify(const SfxHint& rHint)
         std::unique_lock aGuard(m_Mutex);
         if (m_EventListeners.getLength(aGuard) != 0)
         {
+            // fdo#72695: if UNO object is already dead, don't revive it with event
+            // The specific pattern we are guarding against is this:
+            // [1] Thread1 takes the SolarMutex
+            // [2] Thread2 decrements the SwXParagraph reference count, and calls the
+            //     SwXParagraph destructor, which tries to take the SolarMutex, and blocks
+            // [3] Thread1 destroys a SwTextNode, which calls this Notify event, which results
+            //     in a double-free if we construct the xThis object.
             uno::Reference<uno::XInterface> const xThis(m_wThis);
             if (!xThis.is())
             {   // fdo#72695: if UNO object is already dead, don't revive it with event

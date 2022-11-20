@@ -39,11 +39,11 @@ namespace
     {
         SvStream& rStream;
         tsize_t nSize;
-        int nShortReads;
+        bool bAllowOneShortRead;
         Context(SvStream& rInStream, tsize_t nInSize)
             : rStream(rInStream)
             , nSize(nInSize)
-            , nShortReads(0)
+            , bAllowOneShortRead(false)
         {
         }
     };
@@ -55,10 +55,10 @@ static tsize_t tiff_read(thandle_t handle, tdata_t buf, tsize_t size)
     tsize_t nRead = pContext->rStream.ReadBytes(buf, size);
     // tdf#149417 allow one short read, which is similar to what
     // we do for jpeg since tdf#138950
-    if (nRead < size && !pContext->nShortReads)
+    if (nRead < size && pContext->bAllowOneShortRead)
     {
         memset(static_cast<char*>(buf) + nRead, 0, size - nRead);
-        ++pContext->nShortReads;
+        pContext->bAllowOneShortRead = false;
         return size;
     }
     return nRead;
@@ -184,12 +184,32 @@ bool ImportTiffGraphicImport(SvStream& rTIFF, Graphic& rGraphic)
                     }
                 }
             }
+
+            uint16_t Compression;
+            if (TIFFGetField(tif, TIFFTAG_COMPRESSION, &Compression) == 1)
+            {
+                if (Compression == COMPRESSION_CCITTFAX4)
+                {
+                    if (TIFFIsTiled(tif))
+                    {
+                        uint32_t tw;
+                        if (TIFFGetField(tif, TIFFTAG_TILEWIDTH, &tw) == 1)
+                        {
+                            uint32_t DspRuns;
+                            bOk = !o3tl::checked_multiply(tw, static_cast<uint32_t>(4), DspRuns) && DspRuns < MAX_PIXEL_SIZE;
+                            SAL_WARN_IF(!bOk, "filter.tiff", "skipping oversized tiff tile width: " << tw);
+                        }
+                    }
+                }
+            }
+
         }
 
         if (!bOk)
             break;
 
         std::vector<uint32_t> raster(nPixelsRequired);
+        aContext.bAllowOneShortRead = true;
         if (TIFFReadRGBAImageOriented(tif, w, h, raster.data(), ORIENTATION_TOPLEFT, 1))
         {
             Bitmap bitmap(Size(w, h), vcl::PixelFormat::N24_BPP);

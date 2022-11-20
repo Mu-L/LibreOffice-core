@@ -24,6 +24,7 @@
 
 #include <filter/msfilter/util.hxx>
 #include <o3tl/string_view.hxx>
+#include <o3tl/any.hxx>
 #include <oox/core/xmlfilterbase.hxx>
 #include <oox/export/shapes.hxx>
 #include <oox/export/utils.hxx>
@@ -46,6 +47,7 @@
 #include <com/sun/star/drawing/ConnectorType.hpp>
 #include <com/sun/star/drawing/EnhancedCustomShapeParameterPair.hpp>
 #include <com/sun/star/drawing/EnhancedCustomShapeParameterType.hpp>
+#include <com/sun/star/embed/Aspects.hpp>
 #include <com/sun/star/embed/EmbedStates.hpp>
 #include <com/sun/star/embed/XEmbeddedObject.hpp>
 #include <com/sun/star/embed/XEmbedPersist.hpp>
@@ -65,6 +67,7 @@
 #include <com/sun/star/presentation/ClickAction.hpp>
 #include <com/sun/star/drawing/XGluePointsSupplier.hpp>
 #include <com/sun/star/container/XIdentifierAccess.hpp>
+#include <com/sun/star/table/BorderLineStyle.hpp>
 #include <tools/globname.hxx>
 #include <comphelper/classids.hxx>
 #include <comphelper/propertysequence.hxx>
@@ -2290,7 +2293,30 @@ void ShapeExport::WriteBorderLine(const sal_Int32 XML_line, const BorderLine2& r
             mpFS->singleElementNS(XML_a, XML_noFill);
         else
             DrawingML::WriteSolidFill( ::Color(ColorTransparency, rBorderLine.Color) );
-        mpFS->endElementNS( XML_a, XML_line );
+
+        OUString sBorderStyle;
+        sal_Int16 nStyle = rBorderLine.LineStyle;
+        mAny.setValue(&nStyle, cppu::UnoType<sal_Int16>::get());
+        switch (*o3tl::doAccess<sal_Int16>(mAny))
+        {
+            case ::table::BorderLineStyle::SOLID:
+                sBorderStyle = "solid";
+                break;
+            case ::table::BorderLineStyle::DOTTED:
+                sBorderStyle = "dot";
+                break;
+            case ::table::BorderLineStyle::DASHED:
+                sBorderStyle = "dash";
+                break;
+            case ::table::BorderLineStyle::DASH_DOT:
+                sBorderStyle = "dashDot";
+                break;
+            case ::table::BorderLineStyle::DASH_DOT_DOT:
+                sBorderStyle = "sysDashDotDot";
+                break;
+        }
+        mpFS->singleElementNS(XML_a, XML_prstDash, XML_val, sBorderStyle);
+        mpFS->endElementNS(XML_a, XML_line);
     }
     else if( nBorderWidth == 0)
     {
@@ -2591,6 +2617,10 @@ ShapeExport& ShapeExport::WriteOLE2Shape( const Reference< XShape >& xShape )
         TOOLS_WARN_EXCEPTION("oox.shape", "ShapeExport::WriteOLEObject");
     }
 
+    sal_Int64 nAspect;
+    bool bShowAsIcon = (xPropSet->getPropertyValue("Aspect") >>= nAspect)
+                       && nAspect == embed::Aspects::MSOLE_ICON;
+
     OUString const sRelId = mpFB->addRelation(
         mpFS->getOutputStream(), sRelationType,
         Concat2View(OUString::createFromAscii(GetRelationCompPrefix()) + sFileName));
@@ -2617,6 +2647,7 @@ ShapeExport& ShapeExport::WriteOLE2Shape( const Reference< XShape >& xShape )
     if (pProgID)
     {
         mpFS->startElementNS( mnXmlNamespace, XML_oleObj,
+                          XML_showAsIcon, sax_fastparser::UseIf("1", bShowAsIcon),
                           XML_progId, pProgID,
                           FSNS(XML_r, XML_id), sRelId,
                           XML_spid, "" );
@@ -2625,6 +2656,7 @@ ShapeExport& ShapeExport::WriteOLE2Shape( const Reference< XShape >& xShape )
     {
         mpFS->startElementNS( mnXmlNamespace, XML_oleObj,
 //?                                              XML_name, "Document",
+                          XML_showAsIcon, sax_fastparser::UseIf("1", bShowAsIcon),
                           FSNS(XML_r, XML_id), sRelId,
                           // The spec says that this is a required attribute, but PowerPoint can only handle an empty value.
                           XML_spid, "" );

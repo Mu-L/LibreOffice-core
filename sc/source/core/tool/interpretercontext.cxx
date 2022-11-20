@@ -53,7 +53,11 @@ void ScInterpreterContext::ResetTokens()
 
 void ScInterpreterContext::SetDocAndFormatter(const ScDocument& rDoc, SvNumberFormatter* pFormatter)
 {
-    mpDoc = &rDoc;
+    if (mpDoc != &rDoc)
+    {
+        mxScLookupCache.reset();
+        mpDoc = &rDoc;
+    }
     mpFormatter = pFormatter;
 }
 
@@ -70,7 +74,11 @@ void ScInterpreterContext::Cleanup()
     ResetTokens();
 }
 
-void ScInterpreterContext::ClearLookupCache() { mxScLookupCache.reset(); }
+void ScInterpreterContext::ClearLookupCache(const ScDocument* pDoc)
+{
+    if (pDoc == mpDoc)
+        mxScLookupCache.reset();
+}
 
 SvNumFormatType ScInterpreterContext::GetNumberFormatType(sal_uInt32 nFIndex) const
 {
@@ -157,12 +165,12 @@ void ScInterpreterContextPool::ReturnToPool()
 }
 
 // static
-void ScInterpreterContextPool::ClearLookupCaches()
+void ScInterpreterContextPool::ClearLookupCaches(const ScDocument* pDoc)
 {
     for (auto& rPtr : aThreadedInterpreterPool.maPool)
-        rPtr->ClearLookupCache();
+        rPtr->ClearLookupCache(pDoc);
     for (auto& rPtr : aNonThreadedInterpreterPool.maPool)
-        rPtr->ClearLookupCache();
+        rPtr->ClearLookupCache(pDoc);
 }
 
 /* ScThreadedInterpreterContextGetterGuard */

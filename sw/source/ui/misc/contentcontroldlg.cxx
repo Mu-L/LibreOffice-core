@@ -120,7 +120,7 @@ SwContentControlDlg::SwContentControlDlg(weld::Window* pParent, SwWrtShell& rWrt
         m_xCheckboxFrame->set_visible(false);
     }
 
-    if (m_pContentControl->HasListItems())
+    if (m_pContentControl->GetComboBox() || m_pContentControl->GetDropDown())
     {
         for (const auto& rListItem : m_pContentControl->GetListItems())
         {
@@ -400,11 +400,6 @@ IMPL_LINK_NOARG(SwContentControlDlg, MoveDownHdl, weld::Button&, void)
 
 IMPL_LINK_NOARG(SwContentControlDlg, SelectionChangedHdl, weld::TreeView&, void)
 {
-    if (!m_xListItems->has_focus())
-    {
-        return;
-    }
-
     int nRow = m_xListItems->get_selected_index();
     if (nRow < 0)
     {

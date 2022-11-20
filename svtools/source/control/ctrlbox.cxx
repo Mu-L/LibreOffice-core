@@ -1406,7 +1406,6 @@ SvtLineListBox::SvtLineListBox(std::unique_ptr<weld::MenuButton> pControl)
     , m_nWidth( 5 )
     , aVirDev(VclPtr<VirtualDevice>::Create())
     , aColor(COL_BLACK)
-    , maPaintCol(COL_BLACK)
 {
     const StyleSettings& rStyleSettings = Application::GetSettings().GetStyleSettings();
     m_xLineSet->SetStyle(WinBits(WB_FLATVALUESET | WB_NO_DIRECTSELECT | WB_TABSTOP));
@@ -1434,8 +1433,6 @@ SvtLineListBox::SvtLineListBox(std::unique_ptr<weld::MenuButton> pControl)
 
     aVirDev->SetLineColor();
     aVirDev->SetMapMode(MapMode(MapUnit::MapTwip));
-
-    UpdatePaintLineColor();
 }
 
 IMPL_LINK_NOARG(SvtLineListBox, FocusHdl, weld::Widget&, void)
@@ -1476,25 +1473,6 @@ OUString SvtLineListBox::GetLineStyleName(SvxBorderLineStyle eStyle)
     return sRet;
 }
 
-sal_Int32 SvtLineListBox::GetStylePos( sal_Int32 nListPos ) const
-{
-    sal_Int32 nPos = -1;
-    --nListPos;
-
-    sal_Int32 n = 0;
-    size_t i = 0;
-    size_t nCount = m_vLineList.size();
-    while ( nPos == -1 && i < nCount )
-    {
-        if ( nListPos == n )
-            nPos = static_cast<sal_Int32>(i);
-        n++;
-        i++;
-    }
-
-    return nPos;
-}
-
 void SvtLineListBox::SelectEntry(SvxBorderLineStyle nStyle)
 {
     if (nStyle == SvxBorderLineStyle::NONE)
@@ -1512,28 +1490,17 @@ void SvtLineListBox::InsertEntry(
         rWidthImpl, nStyle, nMinWidth, pColor1Fn, pColor2Fn, pColorDistFn));
 }
 
-void SvtLineListBox::UpdatePaintLineColor()
-{
-    const StyleSettings& rSettings = Application::GetSettings().GetStyleSettings();
-    Color aNewCol(rSettings.GetWindowColor().IsDark() ? rSettings.GetLabelTextColor() : aColor);
-
-    bool bRet = aNewCol != maPaintCol;
-
-    if( bRet )
-        maPaintCol = aNewCol;
-}
-
 void SvtLineListBox::UpdateEntries()
 {
-    UpdatePaintLineColor( );
-
     SvxBorderLineStyle eSelected = GetSelectEntryStyle();
 
     // Remove the old entries
     m_xLineSet->Clear();
 
-    // Add the new entries based on the defined width
+    const StyleSettings& rSettings = Application::GetSettings().GetStyleSettings();
+    Color aFieldColor = rSettings.GetFieldColor();
 
+    // Add the new entries based on the defined width
     sal_uInt16 n = 0;
     sal_uInt16 nCount = m_vLineList.size( );
     while ( n < nCount )
@@ -1543,9 +1510,9 @@ void SvtLineListBox::UpdateEntries()
         ImpGetLine( pData->GetLine1ForWidth( m_nWidth ),
                 pData->GetLine2ForWidth( m_nWidth ),
                 pData->GetDistForWidth( m_nWidth ),
-                GetColorLine1(m_xLineSet->GetItemCount()),
-                GetColorLine2(m_xLineSet->GetItemCount()),
-                GetColorDist(m_xLineSet->GetItemCount()),
+                pData->GetColorLine1(aColor),
+                pData->GetColorLine2(aColor),
+                pData->GetColorDist(aColor, aFieldColor),
                 pData->GetStyle(), aBmp );
         sal_Int16 nItemId = static_cast<sal_Int16>(pData->GetStyle()) + 1;
         m_xLineSet->InsertItem(nItemId, Image(aBmp), GetLineStyleName(pData->GetStyle()));
@@ -1555,36 +1522,6 @@ void SvtLineListBox::UpdateEntries()
     }
 
     m_xLineSet->SetOptimalSize();
-}
-
-Color SvtLineListBox::GetColorLine1( sal_Int32 nPos )
-{
-    sal_Int32 nStyle = GetStylePos( nPos );
-    if (nStyle == -1)
-        return GetPaintColor( );
-    auto& pData = m_vLineList[ nStyle ];
-    return pData->GetColorLine1( GetColor( ) );
-}
-
-Color SvtLineListBox::GetColorLine2( sal_Int32 nPos )
-{
-    sal_Int32 nStyle = GetStylePos(nPos);
-    if (nStyle == -1)
-        return GetPaintColor( );
-    auto& pData = m_vLineList[ nStyle ];
-    return pData->GetColorLine2( GetColor( ) );
-}
-
-Color SvtLineListBox::GetColorDist( sal_Int32 nPos )
-{
-    const StyleSettings& rSettings = Application::GetSettings().GetStyleSettings();
-    Color rResult = rSettings.GetFieldColor();
-
-    sal_Int32 nStyle = GetStylePos( nPos );
-    if (nStyle == -1)
-        return rResult;
-    auto& pData = m_vLineList[ nStyle ];
-    return pData->GetColorDist( GetColor( ), rResult );
 }
 
 IMPL_LINK_NOARG(SvtLineListBox, ValueSelectHdl, ValueSet*, void)
@@ -1619,6 +1556,8 @@ void SvtLineListBox::UpdatePreview()
         const auto nPos = (aVirDev->GetOutputSizePixel().Height() - aImage.GetSizePixel().Height()) / 2;
         aVirDev->Push(vcl::PushFlags::MAPMODE);
         aVirDev->SetMapMode(MapMode(MapUnit::MapPixel));
+        const StyleSettings& rSettings = Application::GetSettings().GetStyleSettings();
+        aVirDev->SetBackground(rSettings.GetFieldColor());
         aVirDev->Erase();
         aVirDev->DrawImage(Point(0, nPos), aImage);
         m_xControl->set_image(aVirDev.get());

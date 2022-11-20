@@ -361,7 +361,8 @@ protected:
     void signal_container_focus_changed() { m_aContainerFocusChangedHdl.Call(*this); }
 
 public:
-    // remove and add in one go
+    // remove from old container and add to new container in one go
+    // new container can be null to just remove from old container
     virtual void move(weld::Widget* pWidget, weld::Container* pNewParent) = 0;
     // create an XWindow as a child of this container. The XWindow is
     // suitable to contain css::awt::XControl items
@@ -1478,6 +1479,7 @@ public:
     virtual void set_from_icon_name(const OUString& rIconName) = 0;
     virtual OUString get_label() const = 0;
     void clicked() { signal_clicked(); }
+    bool is_custom_handler_set() { return m_aClickHdl.IsSet(); }
 
     // font size is in points, not pixels, e.g. see Window::[G]etPointFont
     virtual void set_font(const vcl::Font& rFont) = 0;

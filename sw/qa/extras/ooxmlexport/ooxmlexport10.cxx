@@ -369,7 +369,7 @@ CPPUNIT_TEST_FIXTURE(Test, testFdo73389)
     // The width of the inner table was too large. The first fix still converted
     // the "auto" table width to a fixed one. The second fix used variable width.
     // The recent fix uses fixed width again, according to the fixed width cells.
-    xmlDocUniquePtr pXmlDoc = parseExport();
+    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
 
     assertXPath(pXmlDoc, "/w:document/w:body/w:tbl/w:tr/w:tc/w:tbl/w:tblPr/w:tblW","type","dxa");
     assertXPath(pXmlDoc, "/w:document/w:body/w:tbl/w:tr/w:tc/w:tbl/w:tblPr/w:tblW","w","1611");
@@ -378,7 +378,7 @@ CPPUNIT_TEST_FIXTURE(Test, testFdo73389)
 CPPUNIT_TEST_FIXTURE(Test, testTdf133735)
 {
     loadAndSave("fdo73389.docx");
-    xmlDocUniquePtr pXmlDoc = parseExport();
+    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
 
     assertXPath(pXmlDoc, "/w:document/w:body/w:tbl/w:tr/w:tc/w:tbl/w:tr[2]/w:tc[1]/w:p/w:pPr/w:spacing", "after", "0");
     // This was 200
@@ -398,7 +398,7 @@ CPPUNIT_TEST_FIXTURE(Test, testTdf59274)
 {
     loadAndSave("tdf59274.docx");
     // Table with "auto" table width and incomplete grid: 11 columns, but only 4 gridCol elements.
-    xmlDocUniquePtr pXmlDoc = parseExport();
+    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
 
     assertXPath(pXmlDoc, "/w:document/w:body/w:tbl/w:tblPr/w:tblW", "type", "dxa");
     // This was 7349: sum of the cell widths in first row, but the table width is determined by a longer row later.
@@ -624,7 +624,7 @@ CPPUNIT_TEST_FIXTURE(Test, testTdf116194)
 {
     loadAndSave("tdf116194.docx");
     // The problem was that the importer lost consecutive tables with w:gridBefore
-    xmlDocUniquePtr pXmlDoc = parseExport();
+    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
     assertXPath(pXmlDoc, "/w:document/w:body/w:tbl", 2);
 }
 
@@ -632,7 +632,7 @@ CPPUNIT_TEST_FIXTURE(Test, testTdf134606)
 {
     loadAndSave("tdf134606.docx");
     // The problem was that the importer lost the nested table structure with w:gridBefore
-    xmlDocUniquePtr pXmlDoc = parseExport();
+    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
     assertXPath(pXmlDoc, "/w:document/w:body/w:tbl/w:tr/w:tc/w:tbl");
 }
 
@@ -1045,10 +1045,10 @@ DECLARE_OOXMLEXPORT_TEST(testTdf95377, "tdf95377.docx")
 
     //default style has numbering enabled.  Styles inherit numbering unless specifically disabled
     xmlDocUniquePtr pXmlDoc = parseLayoutDump();
-    assertXPath(pXmlDoc, "//body/txt/Special", 3);  //first three paragraphs have numbering
-    assertXPath(pXmlDoc, "//body/txt[1]/Special", "rText", "a.");
-    assertXPath(pXmlDoc, "//body/txt[2]/Special", "rText", "b.");
-    assertXPath(pXmlDoc, "//body/txt[3]/Special", "rText", "c.");
+    assertXPath(pXmlDoc, "//body/txt/SwParaPortion/SwLineLayout/child::*[@type='PortionType::Number']", 3);  //first three paragraphs have numbering
+    assertXPath(pXmlDoc, "//body/txt[1]/SwParaPortion/SwLineLayout/child::*[@type='PortionType::Number']", "expand", "a.");
+    assertXPath(pXmlDoc, "//body/txt[2]/SwParaPortion/SwLineLayout/child::*[@type='PortionType::Number']", "expand", "b.");
+    assertXPath(pXmlDoc, "//body/txt[3]/SwParaPortion/SwLineLayout/child::*[@type='PortionType::Number']", "expand", "c.");
     assertXPath(pXmlDoc, "/root/page/body/txt[4]/Special", 0); //last paragraph style disables numbering
 }
 
@@ -1123,7 +1123,7 @@ DECLARE_OOXMLEXPORT_TEST(testTdf95777, "tdf95777.docx")
 
 CPPUNIT_TEST_FIXTURE(Test, testTdf94374)
 {
-    load(mpTestDocumentPath, "hello.docx");
+    createSwDoc("hello.docx");
     uno::Reference<text::XTextDocument> xTextDocument(mxComponent, uno::UNO_QUERY);
     uno::Reference<text::XTextRange> xText = xTextDocument->getText();
     uno::Reference<text::XTextRange> xEnd = xText->getEnd();
@@ -1243,7 +1243,7 @@ CPPUNIT_TEST_FIXTURE(Test, testTableMarginAdjustment)
 
 DECLARE_OOXMLEXPORT_TEST(testTdf119760_tableInTablePosition, "tdf119760_tableInTablePosition.docx")
 {
-    if ( mbExported )
+    if ( isExported() )
     {
         xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
 
@@ -1412,7 +1412,7 @@ DECLARE_OOXMLEXPORT_TEST(testTdf105875_VmlShapeRotationWithFlip, "tdf105875_VmlS
 {
     // tdf#105875: check whether the rotation of the VML bezier shape is ok (with flip too)
     // TODO: fix export too
-    if (mbExported)
+    if (isExported())
         return;
 
     {

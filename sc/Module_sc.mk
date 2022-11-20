@@ -9,6 +9,7 @@
 #
 
 include $(SRCDIR)/sc/common_unoapi_tests.mk
+include $(SRCDIR)/sc/functions_setup.mk
 include $(SRCDIR)/sc/ucalc_setup.mk
 include $(SRCDIR)/sc/subsequent_setup.mk
 
@@ -44,18 +45,20 @@ $(eval $(call gb_Module_add_check_targets,sc,\
 		CppunitTest_sc_ucalc) \
 	CppunitTest_sc_ucalc_condformat \
 	CppunitTest_sc_ucalc_copypaste \
+	CppunitTest_sc_ucalc_datatransformation \
 	CppunitTest_sc_ucalc_formula \
+	CppunitTest_sc_ucalc_parallelism \
 	CppunitTest_sc_ucalc_pivottable \
+	CppunitTest_sc_ucalc_rangelst \
+	CppunitTest_sc_ucalc_range \
 	CppunitTest_sc_ucalc_sharedformula \
+	CppunitTest_sc_ucalc_sparkline \
 	CppunitTest_sc_ucalc_sort \
 	CppunitTest_sc_bugfix_test \
 	CppunitTest_sc_filters_test \
-	CppunitTest_sc_rangelst_test \
-	CppunitTest_sc_range_test \
 	CppunitTest_sc_mark_test \
 	CppunitTest_sc_core \
 	CppunitTest_sc_dataprovider \
-	CppunitTest_sc_datatransformation \
 	CppunitTest_sc_cache_test \
     CppunitTest_sc_shapetest \
 ))
@@ -78,6 +81,7 @@ $(eval $(call gb_Module_add_slowcheck_targets,sc, \
 	CppunitTest_sc_new_cond_format_api \
 	CppunitTest_sc_pdf_export \
 	CppunitTest_sc_pivottable_filters_test \
+	CppunitTest_sc_sparkline_test \
 	CppunitTest_sc_subsequent_filters_test \
 	CppunitTest_sc_subsequent_filters_test2 \
 	CppunitTest_sc_subsequent_export_test \
@@ -200,7 +204,6 @@ $(eval $(call gb_Module_add_subsequentcheck_targets,sc,\
 	CppunitTest_sc_namedrangesobj \
 	CppunitTest_sc_opencl_test \
 	CppunitTest_sc_outlineobj \
-	CppunitTest_sc_parallelism \
 	CppunitTest_sc_recentfunctionsobj \
 	CppunitTest_sc_recordchanges \
 	CppunitTest_sc_scenariosobj \
@@ -208,7 +211,6 @@ $(eval $(call gb_Module_add_subsequentcheck_targets,sc,\
 	CppunitTest_sc_sheetlinkobj \
 	CppunitTest_sc_sheetlinksobj \
 	CppunitTest_sc_sortdescriptorbaseobj \
-	CppunitTest_sc_sparkline_test \
 	CppunitTest_sc_spreadsheetsettings \
 	CppunitTest_sc_spreadsheetsettingsobj \
 	CppunitTest_sc_styleobj \

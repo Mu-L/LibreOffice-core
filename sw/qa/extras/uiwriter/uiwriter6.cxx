@@ -47,8 +47,6 @@
 
 namespace
 {
-constexpr OUStringLiteral DATA_DIRECTORY = u"/sw/qa/extras/uiwriter/data/";
-
 sal_Int32 lcl_getAttributeIDFromHints(const SwpHints& hints)
 {
     for (size_t i = 0; i < hints.Count(); ++i)
@@ -64,12 +62,12 @@ sal_Int32 lcl_getAttributeIDFromHints(const SwpHints& hints)
     return -1;
 }
 
-void emulateTyping(SwXTextDocument& rXTextDocument, const std::u16string_view& rStr)
+void emulateTyping(SwXTextDocument& rTextDoc, const std::u16string_view& rStr)
 {
     for (const char16_t c : rStr)
     {
-        rXTextDocument.postKeyEvent(LOK_KEYEVENT_KEYINPUT, c, 0);
-        rXTextDocument.postKeyEvent(LOK_KEYEVENT_KEYUP, c, 0);
+        rTextDoc.postKeyEvent(LOK_KEYEVENT_KEYINPUT, c, 0);
+        rTextDoc.postKeyEvent(LOK_KEYEVENT_KEYUP, c, 0);
         Scheduler::ProcessEventsToIdle();
     }
 }
@@ -77,6 +75,11 @@ void emulateTyping(SwXTextDocument& rXTextDocument, const std::u16string_view& r
 
 class SwUiWriterTest6 : public SwModelTestBase, public HtmlTestTools
 {
+public:
+    SwUiWriterTest6()
+        : SwModelTestBase("/sw/qa/extras/uiwriter/data/")
+    {
+    }
 };
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf116640)
@@ -118,7 +121,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf116640)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf108524)
 {
-    createSwDoc(DATA_DIRECTORY, "tdf108524.odt");
+    createSwDoc("tdf108524.odt");
     xmlDocUniquePtr pXmlDoc = parseLayoutDump();
     // In total we expect two cells containing a section.
     assertXPath(pXmlDoc, "/root/page/body/tab/row/cell/section", 2);
@@ -134,7 +137,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testLinesInSectionInTable)
     // This is similar to testTdf108524(), but the page boundary now is not in
     // the middle of a multi-line paragraph: the section only contains oneliner
     // paragraphs instead.
-    createSwDoc(DATA_DIRECTORY, "lines-in-section-in-table.odt");
+    createSwDoc("lines-in-section-in-table.odt");
     xmlDocUniquePtr pXmlDoc = parseLayoutDump();
     // In total we expect two cells containing a section.
     assertXPath(pXmlDoc, "/root/page/body/tab/row/cell/section", 2);
@@ -149,7 +152,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testLinesMoveBackwardsInSectionInTable)
 {
 #if HAVE_MORE_FONTS
     // Assert that paragraph "4" is on page 1 and "5" is on page 2.
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "lines-in-section-in-table.odt");
+    createSwDoc("lines-in-section-in-table.odt");
+    SwDoc* pDoc = getSwDoc();
     xmlDocUniquePtr pXmlDoc = parseLayoutDump();
     assertXPath(pXmlDoc, "/root/page", 2);
     SwNodeOffset nPara4Node(
@@ -184,7 +188,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTableInSection)
 {
 #if HAVE_MORE_FONTS
     // The document has a section, containing a table that spans over 2 pages.
-    createSwDoc(DATA_DIRECTORY, "table-in-sect.odt");
+    createSwDoc("table-in-sect.odt");
     xmlDocUniquePtr pXmlDoc = parseLayoutDump();
     // In total we expect 4 cells.
     assertXPath(pXmlDoc, "/root/page/body/section/tab/row/cell", 4);
@@ -200,7 +204,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTableInNestedSection)
 #if HAVE_MORE_FONTS
     // The document has a nested section, containing a table that spans over 2 pages.
     // This crashed the layout.
-    createSwDoc(DATA_DIRECTORY, "rhbz739252-3.odt");
+    createSwDoc("rhbz739252-3.odt");
     xmlDocUniquePtr pXmlDoc = parseLayoutDump();
     // Make sure the table is inside a section and spans over 2 pages.
     assertXPath(pXmlDoc, "//page[1]//section/tab", 1);
@@ -211,7 +215,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTableInNestedSection)
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf112741)
 {
 #if HAVE_MORE_FONTS
-    createSwDoc(DATA_DIRECTORY, "tdf112741.fodt");
+    createSwDoc("tdf112741.fodt");
     xmlDocUniquePtr pXmlDoc = parseLayoutDump();
     // This was 5 pages.
     assertXPath(pXmlDoc, "//page", 4);
@@ -229,14 +233,14 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf112860)
     // The document has a split section inside a nested table, and also a table
     // in the footer.
     // This crashed the layout.
-    createSwDoc(DATA_DIRECTORY, "tdf112860.fodt");
+    createSwDoc("tdf112860.fodt");
 #endif
 }
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf113287)
 {
 #if HAVE_MORE_FONTS
-    createSwDoc(DATA_DIRECTORY, "tdf113287.fodt");
+    createSwDoc("tdf113287.fodt");
     xmlDocUniquePtr pXmlDoc = parseLayoutDump();
     assertXPath(pXmlDoc, "//page", 2);
     sal_uInt32 nCellTop
@@ -254,7 +258,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf113445)
 {
 #if HAVE_MORE_FONTS
     // Force multiple-page view.
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf113445.fodt");
+    createSwDoc("tdf113445.fodt");
+    SwDoc* pDoc = getSwDoc();
     SwDocShell* pDocShell = pDoc->GetDocShell();
     SwView* pView = pDocShell->GetView();
     pView->SetViewLayout(/*nColumns=*/2, /*bBookMode=*/false);
@@ -300,7 +305,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf113445)
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf113686)
 {
 #if HAVE_MORE_FONTS
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf113686.fodt");
+    createSwDoc("tdf113686.fodt");
+    SwDoc* pDoc = getSwDoc();
     xmlDocUniquePtr pXmlDoc = parseLayoutDump();
     assertXPath(pXmlDoc, "/root/page", 2);
     SwNodeOffset nPage1LastNode(
@@ -338,7 +344,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTableInSectionInTable)
     // The document has a table, containing a section, containing a nested
     // table.
     // This crashed the layout.
-    createSwDoc(DATA_DIRECTORY, "i95698.odt");
+    createSwDoc("i95698.odt");
 #endif
 }
 
@@ -348,14 +354,14 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testSectionInTableInTable)
     // The document has a nested table, containing a multi-line section at a
     // page boundary.
     // This crashed the layout later in SwFrame::IsFootnoteAllowed().
-    createSwDoc(DATA_DIRECTORY, "tdf112109.fodt");
+    createSwDoc("tdf112109.fodt");
 #endif
 }
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testSectionInTableInTable2)
 {
 #if HAVE_MORE_FONTS
-    createSwDoc(DATA_DIRECTORY, "split-section-in-nested-table.fodt");
+    createSwDoc("split-section-in-nested-table.fodt");
     xmlDocUniquePtr pXmlDoc = parseLayoutDump();
     sal_uInt32 nSection1
         = getXPath(pXmlDoc, "//page[1]//body/tab/row/cell/tab/row/cell/section", "id").toUInt32();
@@ -378,7 +384,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testSectionInTableInTable2)
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testSectionInTableInTable3)
 {
 #if HAVE_MORE_FONTS
-    createSwDoc(DATA_DIRECTORY, "tdf113153.fodt");
+    createSwDoc("tdf113153.fodt");
 
     uno::Reference<text::XTextTablesSupplier> xTablesSupplier(mxComponent, uno::UNO_QUERY);
     uno::Reference<container::XIndexAccess> xTables(xTablesSupplier->getTextTables(),
@@ -413,7 +419,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testSectionInTableInTable3)
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testSectionInTableInTable4)
 {
 #if HAVE_MORE_FONTS
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf113520.fodt");
+    createSwDoc("tdf113520.fodt");
+    SwDoc* pDoc = getSwDoc();
     xmlDocUniquePtr pXmlDoc = parseLayoutDump();
     assertXPath(pXmlDoc, "/root/page", 3);
     SwNodeOffset nPage1LastNode(
@@ -459,7 +466,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf112160)
 {
 #if HAVE_MORE_FONTS
     // Assert that the A2 cell is on page 1.
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf112160.fodt");
+    createSwDoc("tdf112160.fodt");
+    SwDoc* pDoc = getSwDoc();
     xmlDocUniquePtr pXmlDoc = parseLayoutDump();
     SwNodeOffset nA2CellNode(getXPath(pXmlDoc,
                                       "/root/page[1]/body/tab/row[2]/cell[1]/section/txt[last()]",
@@ -492,12 +500,13 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf114536)
 {
     // This crashed in SwTextFormatter::MergeCharacterBorder() due to a
     // use after free.
-    createSwDoc(DATA_DIRECTORY, "tdf114536.odt");
+    createSwDoc("tdf114536.odt");
 }
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testParagraphOfTextRange)
 {
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "paragraph-of-text-range.odt");
+    createSwDoc("paragraph-of-text-range.odt");
+    SwDoc* pDoc = getSwDoc();
 
     // Enter the table.
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
@@ -520,7 +529,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testParagraphOfTextRange)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf99689TableOfContents)
 {
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf99689.odt");
+    createSwDoc("tdf99689.odt");
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
     pWrtShell->GotoNextTOXBase();
     const SwTOXBase* pTOXBase = pWrtShell->GetCurTOX();
@@ -547,7 +557,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf99689TableOfContents)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf99689TableOfFigures)
 {
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf99689_figures.odt");
+    createSwDoc("tdf99689_figures.odt");
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
     pWrtShell->GotoNextTOXBase();
     const SwTOXBase* pTOXBase = pWrtShell->GetCurTOX();
@@ -572,7 +583,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf99689TableOfFigures)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf99689TableOfTables)
 {
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf99689_tables.odt");
+    createSwDoc("tdf99689_tables.odt");
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
     pWrtShell->GotoNextTOXBase();
     const SwTOXBase* pTOXBase = pWrtShell->GetCurTOX();
@@ -601,16 +613,17 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf99689TableOfTables)
 // before usage of the Height() and GetRealHeight().
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf112448)
 {
-    createSwDoc(DATA_DIRECTORY, "tdf112448.odt");
+    createSwDoc("tdf112448.odt");
 
     // check actual number of line breaks in the paragraph
     xmlDocUniquePtr pXmlDoc = parseLayoutDump();
-    assertXPath(pXmlDoc, "/root/page/body/txt/LineBreak", 2);
+    assertXPath(pXmlDoc, "/root/page/body/txt/SwParaPortion/SwLineLayout", 2);
 }
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf113790)
 {
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf113790.docx");
+    createSwDoc("tdf113790.docx");
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
     // Create the clipboard document.
     SwDoc aClipboard;
@@ -653,7 +666,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf108048)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf113481)
 {
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf113481-IVS.odt");
+    createSwDoc("tdf113481-IVS.odt");
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
 
     // One backspace should completely remove the CJK ideograph variation sequence
@@ -694,13 +708,13 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf115013)
     const OUString aWorkDir = aTempDir.GetURL();
 
     //create new writer document
-    SwDoc* pDoc = createSwDoc();
+    createSwDoc();
+    SwDoc* pDoc = getSwDoc();
 
     {
         // Load and register data source
-        const OUString aDataSourceURI(m_directories.getURLFromSrc(DATA_DIRECTORY)
-                                      + "datasource.ods");
-        OUString sDataSource = SwDBManager::LoadAndRegisterDataSource(aDataSourceURI, &aWorkDir);
+        OUString sDataSource
+            = SwDBManager::LoadAndRegisterDataSource(createFileURL(u"datasource.ods"), &aWorkDir);
         CPPUNIT_ASSERT(!sDataSource.isEmpty());
 
         // Insert a new field type for the mailmerge field
@@ -739,7 +753,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf115065)
     // In the document, the tables have table style assigned
     // Source table (first one) has two rows;
     // destination (second one) has only one row
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf115065.odt");
+    createSwDoc("tdf115065.odt");
+    SwDoc* pDoc = getSwDoc();
     CPPUNIT_ASSERT(pDoc);
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
     CPPUNIT_ASSERT(pWrtShell);
@@ -764,7 +779,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf84806_MovingMultipleTableRows)
     // Moving of multiple table rows.
     // Source table (first one) has two rows;
     // destination (second one) has only one row
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf115065.odt");
+    createSwDoc("tdf115065.odt");
+    SwDoc* pDoc = getSwDoc();
     CPPUNIT_ASSERT(pDoc);
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
     CPPUNIT_ASSERT(pWrtShell);
@@ -820,7 +836,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf147181_TrackedMovingOfMultipleTable
     // Tracked moving of multiple table rows.
     // Source table (first one) has two rows;
     // destination (second one) has only one row
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf115065.odt");
+    createSwDoc("tdf115065.odt");
+    SwDoc* pDoc = getSwDoc();
     CPPUNIT_ASSERT(pDoc);
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
     CPPUNIT_ASSERT(pWrtShell);
@@ -898,7 +915,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf147181_TrackedMovingOfMultipleTable
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf115132)
 {
-    SwDoc* pDoc = createSwDoc();
+    createSwDoc();
+    SwDoc* pDoc = getSwDoc();
     CPPUNIT_ASSERT(pDoc);
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
     CPPUNIT_ASSERT(pWrtShell);
@@ -977,7 +995,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testXDrawPagesSupplier)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf116403)
 {
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf116403-considerborders.odt");
+    createSwDoc("tdf116403-considerborders.odt");
+    SwDoc* pDoc = getSwDoc();
     // Check that before ToX update, the tab stop position is the old one
     uno::Reference<text::XTextRange> xParagraph = getParagraph(2, "1\t1");
     auto aTabs = getProperty<uno::Sequence<style::TabStop>>(xParagraph, "ParaTabStops");
@@ -1001,7 +1020,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf116403)
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testHtmlCopyImages)
 {
     // Load a document with an image.
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "image.odt");
+    createSwDoc("image.odt");
+    SwDoc* pDoc = getSwDoc();
 
     // Trigger the copy part of HTML copy&paste.
     WriterRef xWrt = new SwHTMLWriter(/*rBaseURL=*/OUString());
@@ -1027,7 +1047,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testHtmlCopyImages)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf116789)
 {
-    createSwDoc(DATA_DIRECTORY, "tdf116789.fodt");
+    createSwDoc("tdf116789.fodt");
     uno::Reference<text::XBookmarksSupplier> xBookmarksSupplier(mxComponent, uno::UNO_QUERY);
     uno::Reference<text::XText> xText1;
     uno::Reference<text::XText> xText2;
@@ -1048,7 +1068,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf116789)
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf91801)
 {
     // Tests calculation with several user field variables without prior user fields
-    createSwDoc(DATA_DIRECTORY, "tdf91801.fodt");
+    createSwDoc("tdf91801.fodt");
     uno::Reference<text::XTextTable> xTable(getParagraphOrTable(1), uno::UNO_QUERY);
     uno::Reference<table::XCell> xCell(xTable->getCellByName("A1"));
     CPPUNIT_ASSERT_EQUAL(555.0, xCell->getValue());
@@ -1056,7 +1076,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf91801)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf51223)
 {
-    SwDoc* pDoc = createSwDoc();
+    createSwDoc();
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
     sw::UndoManager& rUndoManager = pDoc->GetUndoManager();
     SwNodeOffset nIndex = pWrtShell->GetCursor()->GetPointNode().GetIndex();
@@ -1072,15 +1093,12 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf51223)
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testFontEmbedding)
 {
 #if HAVE_MORE_FONTS && !defined(MACOSX)
-    createSwDoc(DATA_DIRECTORY, "testFontEmbedding.odt");
+    createSwDoc("testFontEmbedding.odt");
 
     OString aContentBaseXpath("/office:document-content/office:font-face-decls");
     OString aSettingsBaseXpath("/office:document-settings/office:settings/config:config-item-set");
 
     xmlDocUniquePtr pXmlDoc;
-    uno::Sequence<beans::PropertyValue> aDescriptor;
-    utl::TempFileNamed aTempFile;
-    aTempFile.EnableKillingFile();
 
     // Get document settings
     uno::Reference<lang::XMultiServiceFactory> xFactory(mxComponent, uno::UNO_QUERY_THROW);
@@ -1098,18 +1116,17 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testFontEmbedding)
     // CASE 1 - no font embedding enabled
 
     // Save the document
-    uno::Reference<frame::XStorable> xStorable(mxComponent, uno::UNO_QUERY);
-    xStorable->storeToURL(aTempFile.GetURL(), aDescriptor);
-    CPPUNIT_ASSERT(aTempFile.IsValid());
+    save("writer8");
+    CPPUNIT_ASSERT(maTempFile.IsValid());
 
     // Check setting - No font embedding should be enabled
-    pXmlDoc = parseExportInternal(aTempFile.GetURL(), "settings.xml");
+    pXmlDoc = parseExport("settings.xml");
     CPPUNIT_ASSERT(pXmlDoc);
     assertXPathContent(
         pXmlDoc, aSettingsBaseXpath + "/config:config-item[@config:name='EmbedFonts']", "false");
 
     // Check content - No font-face-src nodes should be present
-    pXmlDoc = parseExportInternal(aTempFile.GetURL(), "content.xml");
+    pXmlDoc = parseExport("content.xml");
     CPPUNIT_ASSERT(pXmlDoc);
 
     assertXPath(pXmlDoc, aContentBaseXpath + "/style:font-face", 6);
@@ -1146,11 +1163,11 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testFontEmbedding)
     xProps->setPropertyValue("EmbedOnlyUsedFonts", uno::Any(false));
 
     // Save the document again
-    xStorable->storeToURL(aTempFile.GetURL(), aDescriptor);
-    CPPUNIT_ASSERT(aTempFile.IsValid());
+    save("writer8");
+    CPPUNIT_ASSERT(maTempFile.IsValid());
 
     // Check setting - font embedding should be enabled + embed only used fonts and scripts
-    pXmlDoc = parseExportInternal(aTempFile.GetURL(), "settings.xml");
+    pXmlDoc = parseExport("settings.xml");
     CPPUNIT_ASSERT(pXmlDoc);
     assertXPathContent(
         pXmlDoc, aSettingsBaseXpath + "/config:config-item[@config:name='EmbedFonts']", "true");
@@ -1169,7 +1186,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testFontEmbedding)
 
     // Check content - font-face-src should be present only for "Liberation Sans" fonts
 
-    pXmlDoc = parseExportInternal(aTempFile.GetURL(), "content.xml");
+    pXmlDoc = parseExport("content.xml");
     CPPUNIT_ASSERT(pXmlDoc);
 
     assertXPath(pXmlDoc, aContentBaseXpath + "/style:font-face", 6);
@@ -1209,11 +1226,11 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testFontEmbedding)
     xProps->setPropertyValue("EmbedComplexScriptFonts", uno::Any(true));
 
     // Save the document again
-    xStorable->storeToURL(aTempFile.GetURL(), aDescriptor);
-    CPPUNIT_ASSERT(aTempFile.IsValid());
+    save("writer8");
+    CPPUNIT_ASSERT(maTempFile.IsValid());
 
     // Check setting - font embedding should be enabled + embed only used fonts and scripts
-    pXmlDoc = parseExportInternal(aTempFile.GetURL(), "settings.xml");
+    pXmlDoc = parseExport("settings.xml");
     CPPUNIT_ASSERT(pXmlDoc);
     assertXPathContent(
         pXmlDoc, aSettingsBaseXpath + "/config:config-item[@config:name='EmbedFonts']", "true");
@@ -1232,7 +1249,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testFontEmbedding)
 
     // Check content - font-face-src should be present only for "Liberation Sans" fonts
 
-    pXmlDoc = parseExportInternal(aTempFile.GetURL(), "content.xml");
+    pXmlDoc = parseExport("content.xml");
     CPPUNIT_ASSERT(pXmlDoc);
 
     assertXPath(pXmlDoc, aContentBaseXpath + "/style:font-face", 6);
@@ -1286,7 +1303,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testInconsistentBookmark)
 {
     // create test document with text and bookmark
     {
-        SwDoc* pDoc(createSwDoc(DATA_DIRECTORY, "testInconsistentBookmark.ott"));
+        createSwDoc("testInconsistentBookmark.ott");
+        SwDoc* pDoc = getSwDoc();
         IDocumentMarkAccess& rIDMA(*pDoc->getIDocumentMarkAccess());
         SwNodeIndex aIdx(pDoc->GetNodes().GetEndOfContent(), -1);
         SwCursor aPaM(SwPosition(aIdx), nullptr);
@@ -1305,23 +1323,22 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testInconsistentBookmark)
         save("writer8");
 
         // load only content.xml
-        if (xmlDocUniquePtr pXmlDoc = parseExportInternal(maTempFile.GetURL(), "content.xml"))
-        {
-            const OString aPath("/office:document-content/office:body/office:text/text:p");
+        xmlDocUniquePtr pXmlDoc = parseExport("content.xml");
+        const OString aPath("/office:document-content/office:body/office:text/text:p");
 
-            const int pos1 = getXPathPosition(pXmlDoc, aPath, "bookmark-start");
-            const int pos2 = getXPathPosition(pXmlDoc, aPath, "control");
-            const int pos3 = getXPathPosition(pXmlDoc, aPath, "bookmark-end");
+        const int pos1 = getXPathPosition(pXmlDoc, aPath, "bookmark-start");
+        const int pos2 = getXPathPosition(pXmlDoc, aPath, "control");
+        const int pos3 = getXPathPosition(pXmlDoc, aPath, "bookmark-end");
 
-            CPPUNIT_ASSERT_GREATER(pos1, pos2);
-            CPPUNIT_ASSERT_GREATER(pos2, pos3);
-        }
+        CPPUNIT_ASSERT_GREATER(pos1, pos2);
+        CPPUNIT_ASSERT_GREATER(pos2, pos3);
     }
 }
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testSpellOnlineParameter)
 {
-    SwDoc* pDoc = createSwDoc();
+    createSwDoc();
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
     const SwViewOption* pOpt = pWrtShell->GetViewOptions();
     bool bSet = pOpt->IsOnlineSpell();
@@ -1341,7 +1358,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testSpellOnlineParameter)
 #if !defined(_WIN32)
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf124603)
 {
-    SwDoc* pDoc = createSwDoc();
+    createSwDoc();
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
     const SwViewOption* pOpt = pWrtShell->GetViewOptions();
     uno::Sequence<beans::PropertyValue> params
@@ -1354,8 +1372,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf124603)
 
     // Type a correct word
 
-    SwXTextDocument& rXTextDocument = getSwXTextDocument();
-    emulateTyping(rXTextDocument, u"the ");
+    SwXTextDocument* pTextDoc = dynamic_cast<SwXTextDocument*>(mxComponent.get());
+    emulateTyping(*pTextDoc, u"the ");
     SwCursorShell* pShell(pDoc->GetEditShell());
     SwTextNode* pNode = pShell->GetCursor()->GetPointNode().GetTextNode();
     // no bad word
@@ -1364,7 +1382,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf124603)
     // Create a bad word from the good: "the" -> "thex"
 
     pWrtShell->Left(SwCursorSkipMode::Chars, /*bSelect=*/false, 1, /*bBasicCall=*/false);
-    emulateTyping(rXTextDocument, u"x");
+    emulateTyping(*pTextDoc, u"x");
     CPPUNIT_ASSERT(pNode->GetWrong());
     // tdf#92036 pending spell checking
     bool bPending = !pNode->GetWrong() || !pNode->GetWrong()->Count();
@@ -1390,13 +1408,14 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf124603)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testRedlineAutoCorrect)
 {
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "redline-autocorrect.fodt");
+    createSwDoc("redline-autocorrect.fodt");
+    SwDoc* pDoc = getSwDoc();
 
     dispatchCommand(mxComponent, ".uno:GoToEndOfDoc", {});
 
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
     CPPUNIT_ASSERT(pWrtShell);
-    SwXTextDocument& rXTextDocument = getSwXTextDocument();
+    SwXTextDocument* pTextDoc = dynamic_cast<SwXTextDocument*>(mxComponent.get());
 
     // show tracked deletion with enabled change tracking
     RedlineFlags const nMode(pWrtShell->GetRedlineFlags() | RedlineFlags::On);
@@ -1407,7 +1426,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testRedlineAutoCorrect)
     CPPUNIT_ASSERT_MESSAGE("redlining should be on",
                            pDoc->getIDocumentRedlineAccess().IsRedlineOn());
 
-    emulateTyping(rXTextDocument, u" ");
+    emulateTyping(*pTextDoc, u" ");
 
     // tdf#83419 This was "Ts " removing the deletion of "t" silently by sentence capitalization
     OUString sReplaced("ts ");
@@ -1419,7 +1438,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testRedlineAutoCorrect)
     // repeat it with not visible redlining
     dispatchCommand(mxComponent, ".uno:Undo", {});
 
-    emulateTyping(rXTextDocument, u" ");
+    emulateTyping(*pTextDoc, u" ");
 
     sReplaced = "S ";
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
@@ -1436,35 +1455,36 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testRedlineAutoCorrect)
     dispatchCommand(mxComponent, ".uno:Undo", {});
     dispatchCommand(mxComponent, ".uno:Undo", {});
 
-    emulateTyping(rXTextDocument, u"et ");
+    emulateTyping(*pTextDoc, u"et ");
     // This was "Ttest" removing the tracked deletion silently.
     // Don't replace, if a redline starts or ends within the text.
     sReplaced = "tset ";
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
 
     // Otherwise replace it
-    emulateTyping(rXTextDocument, u"tset ");
+    emulateTyping(*pTextDoc, u"tset ");
     sReplaced = "tset test ";
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
 
     // Including capitalization
-    emulateTyping(rXTextDocument, u"end. word ");
+    emulateTyping(*pTextDoc, u"end. word ");
     sReplaced = "tset test end. Word ";
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
 
     // tracked deletions after the correction point doesn't affect autocorrect
     dispatchCommand(mxComponent, ".uno:GoToStartOfDoc", {});
-    emulateTyping(rXTextDocument, u"a ");
+    emulateTyping(*pTextDoc, u"a ");
     sReplaced = "A tset test end. Word ";
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
 }
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testRedlineAutoCorrect2)
 {
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "redline-autocorrect2.fodt");
+    createSwDoc("redline-autocorrect2.fodt");
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
     CPPUNIT_ASSERT(pWrtShell);
-    SwXTextDocument& rXTextDocument = getSwXTextDocument();
+    SwXTextDocument* pTextDoc = dynamic_cast<SwXTextDocument*>(mxComponent.get());
 
     dispatchCommand(mxComponent, ".uno:GoToEndOfDoc", {});
 
@@ -1474,7 +1494,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testRedlineAutoCorrect2)
     pWrtShell->SetRedlineFlags(nMode);
     CPPUNIT_ASSERT(nMode & RedlineFlags::ShowDelete);
 
-    emulateTyping(rXTextDocument, u"... ");
+    emulateTyping(*pTextDoc, u"... ");
 
     // This was "LoremLorem,…," (duplicating the deleted comma, but without deletion)
     // Don't replace, if a redline starts or ends within the text.
@@ -1482,23 +1502,24 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testRedlineAutoCorrect2)
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
 
     // Continue it:
-    emulateTyping(rXTextDocument, u"Lorem,... ");
+    emulateTyping(*pTextDoc, u"Lorem,... ");
     sReplaced = u"Lorem,... Lorem,… ";
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
 }
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testEmojiAutoCorrect)
 {
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "redline-autocorrect3.fodt");
+    createSwDoc("redline-autocorrect3.fodt");
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
     CPPUNIT_ASSERT(pWrtShell);
-    SwXTextDocument& rXTextDocument = getSwXTextDocument();
+    SwXTextDocument* pTextDoc = dynamic_cast<SwXTextDocument*>(mxComponent.get());
 
     // Emoji replacement (:snowman: -> ☃)
 
     // without change tracking
     CPPUNIT_ASSERT(!(pWrtShell->GetRedlineFlags() & RedlineFlags::On));
-    emulateTyping(rXTextDocument, u":snowman:");
+    emulateTyping(*pTextDoc, u":snowman:");
     OUString sReplaced = u"☃Lorem,";
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
 
@@ -1509,7 +1530,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testEmojiAutoCorrect)
     CPPUNIT_ASSERT(nMode & RedlineFlags::On);
     CPPUNIT_ASSERT(nMode & RedlineFlags::ShowDelete);
 
-    emulateTyping(rXTextDocument, u":snowman:");
+    emulateTyping(*pTextDoc, u":snowman:");
     sReplaced = u"☃☃Lorem,";
 
     // tdf#140674 This was ":snowman:" instead of autocorrect
@@ -1518,193 +1539,202 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testEmojiAutoCorrect)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf108423)
 {
-    SwDoc* pDoc = createSwDoc();
+    createSwDoc();
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
     CPPUNIT_ASSERT(pWrtShell);
-    SwXTextDocument& rXTextDocument = getSwXTextDocument();
+    SwXTextDocument* pTextDoc = dynamic_cast<SwXTextDocument*>(mxComponent.get());
     // testing autocorrect of i' -> I' on start of first paragraph
-    emulateTyping(rXTextDocument, u"i'");
+    emulateTyping(*pTextDoc, u"i'");
     // The word "i" should be capitalized due to autocorrect, followed by a typographical apostrophe
     OUString sIApostrophe(u"I\u2019");
     CPPUNIT_ASSERT_EQUAL(sIApostrophe, getParagraph(1)->getString());
-    emulateTyping(rXTextDocument, u" i'");
+    emulateTyping(*pTextDoc, u" i'");
     OUString sText(sIApostrophe + u" " + sIApostrophe);
     CPPUNIT_ASSERT_EQUAL(sText, getParagraph(1)->getString());
 }
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf106164)
 {
-    SwDoc* pDoc = createSwDoc();
+    createSwDoc();
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
     CPPUNIT_ASSERT(pWrtShell);
-    SwXTextDocument& rXTextDocument = getSwXTextDocument();
+    SwXTextDocument* pTextDoc = dynamic_cast<SwXTextDocument*>(mxComponent.get());
     // testing autocorrect of we're -> We're on start of first paragraph
-    emulateTyping(rXTextDocument, u"we're ");
+    emulateTyping(*pTextDoc, u"we're ");
     CPPUNIT_ASSERT_EQUAL(OUString(u"We\u2019re "), getParagraph(1)->getString());
 }
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf54409)
 {
-    SwDoc* pDoc = createSwDoc();
+    createSwDoc();
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
     CPPUNIT_ASSERT(pWrtShell);
-    SwXTextDocument& rXTextDocument = getSwXTextDocument();
+    SwXTextDocument* pTextDoc = dynamic_cast<SwXTextDocument*>(mxComponent.get());
     // testing autocorrect of "tset -> "test with typographical double quotation mark U+201C
-    emulateTyping(rXTextDocument, u"\"test ");
+    emulateTyping(*pTextDoc, u"\"test ");
     OUString sReplaced(u"\u201Ctest ");
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
     // testing autocorrect of test" -> test" with typographical double quotation mark U+201D
-    emulateTyping(rXTextDocument, u"and tset\" ");
+    emulateTyping(*pTextDoc, u"and tset\" ");
     OUString sReplaced2(sReplaced + u"and test\u201D ");
     CPPUNIT_ASSERT_EQUAL(sReplaced2, getParagraph(1)->getString());
     // testing autocorrect of "tset" -> "test" with typographical double quotation mark U+201C and U+201D
-    emulateTyping(rXTextDocument, u"\"tset\" ");
+    emulateTyping(*pTextDoc, u"\"tset\" ");
     OUString sReplaced3(sReplaced2 + u"\u201Ctest\u201D ");
     CPPUNIT_ASSERT_EQUAL(sReplaced3, getParagraph(1)->getString());
 }
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf38394)
 {
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf38394.fodt");
+    createSwDoc("tdf38394.fodt");
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
     CPPUNIT_ASSERT(pWrtShell);
-    SwXTextDocument& rXTextDocument = getSwXTextDocument();
+    SwXTextDocument* pTextDoc = dynamic_cast<SwXTextDocument*>(mxComponent.get());
     // testing autocorrect of French l'" -> l'« (instead of l'»)
-    emulateTyping(rXTextDocument, u"l'\"");
+    emulateTyping(*pTextDoc, u"l'\"");
     OUString sReplaced(u"l\u2019« ");
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
     // tdf#132301 autocorrect of qu'«
-    emulateTyping(rXTextDocument, u" qu'\"");
+    emulateTyping(*pTextDoc, u" qu'\"");
     sReplaced += u" qu\u2019« ";
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
 }
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf59666)
 {
-    SwDoc* pDoc = createSwDoc();
+    createSwDoc();
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
     CPPUNIT_ASSERT(pWrtShell);
-    SwXTextDocument& rXTextDocument = getSwXTextDocument();
+    SwXTextDocument* pTextDoc = dynamic_cast<SwXTextDocument*>(mxComponent.get());
     // testing missing autocorrect of single Greek letters
-    emulateTyping(rXTextDocument, u"π ");
+    emulateTyping(*pTextDoc, u"π ");
     CPPUNIT_ASSERT_EQUAL(OUString(u"\u03C0 "), getParagraph(1)->getString());
 }
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf133524)
 {
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf133524.fodt");
+    createSwDoc("tdf133524.fodt");
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
     CPPUNIT_ASSERT(pWrtShell);
-    SwXTextDocument& rXTextDocument = getSwXTextDocument();
+    SwXTextDocument* pTextDoc = dynamic_cast<SwXTextDocument*>(mxComponent.get());
     // 1. Testing autocorrect of >> and <<
     // Example: »word«
-    emulateTyping(rXTextDocument, u">>");
+    emulateTyping(*pTextDoc, u">>");
     OUString sReplaced(u"»");
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
     // <<
-    emulateTyping(rXTextDocument, u"word<<");
+    emulateTyping(*pTextDoc, u"word<<");
     sReplaced += u"word«";
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
     // 2. Testing autocorrect of " to >> and << inside „...”
     // Example: „Sentence and »word«.”
     // opening primary level quote
-    emulateTyping(rXTextDocument, u" \"");
+    emulateTyping(*pTextDoc, u" \"");
     sReplaced += u" „";
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
     // opening second level quote
-    emulateTyping(rXTextDocument, u"Sentence and \"");
+    emulateTyping(*pTextDoc, u"Sentence and \"");
     sReplaced += u"Sentence and »";
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
     // closing second level quote
-    emulateTyping(rXTextDocument, u"word\"");
+    emulateTyping(*pTextDoc, u"word\"");
     sReplaced += u"word«";
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
     // closing primary level quote
-    emulateTyping(rXTextDocument, u".\"");
+    emulateTyping(*pTextDoc, u".\"");
     sReplaced += u".”";
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
     // tdf#134940 avoid premature replacement of "--" in "-->"
-    emulateTyping(rXTextDocument, u" -->");
+    emulateTyping(*pTextDoc, u" -->");
     OUString sReplaced2(sReplaced + u" -->");
     // This was "–>" instead of "-->"
     CPPUNIT_ASSERT_EQUAL(sReplaced2, getParagraph(1)->getString());
-    emulateTyping(rXTextDocument, u" ");
+    emulateTyping(*pTextDoc, u" ");
     sReplaced += u" → ";
     // This was "–>" instead of "→"
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
 
     // tdf#83037
-    emulateTyping(rXTextDocument, u"-> ");
+    emulateTyping(*pTextDoc, u"-> ");
     sReplaced += u"→ ";
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
-    emulateTyping(rXTextDocument, u"<- ");
+    emulateTyping(*pTextDoc, u"<- ");
     sReplaced += u"← ";
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
-    emulateTyping(rXTextDocument, u"<-- ");
+    emulateTyping(*pTextDoc, u"<-- ");
     sReplaced += u"← ";
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
-    emulateTyping(rXTextDocument, u"<--> ");
+    emulateTyping(*pTextDoc, u"<--> ");
     sReplaced += u"↔ ";
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
 }
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf133524_Romanian)
 {
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf133524_ro.fodt");
+    createSwDoc("tdf133524_ro.fodt");
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
     CPPUNIT_ASSERT(pWrtShell);
-    SwXTextDocument& rXTextDocument = getSwXTextDocument();
+    SwXTextDocument* pTextDoc = dynamic_cast<SwXTextDocument*>(mxComponent.get());
     // 1. Testing autocorrect of " to << and >> inside „...”
     // Example: „Sentence and «word».”
     // opening primary level quote
-    emulateTyping(rXTextDocument, u"\"");
+    emulateTyping(*pTextDoc, u"\"");
     OUString sReplaced(u"„");
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
     // opening second level quote
-    emulateTyping(rXTextDocument, u"Sentence and \"");
+    emulateTyping(*pTextDoc, u"Sentence and \"");
     sReplaced += u"Sentence and «";
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
     // closing second level quote
-    emulateTyping(rXTextDocument, u"word\"");
+    emulateTyping(*pTextDoc, u"word\"");
     sReplaced += u"word»";
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
     // closing primary level quote
-    emulateTyping(rXTextDocument, u".\"");
+    emulateTyping(*pTextDoc, u".\"");
     sReplaced += u".”";
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
     // 2. Testing recognition of closing double quotation mark ”
-    emulateTyping(rXTextDocument, u" \"");
+    emulateTyping(*pTextDoc, u" \"");
     sReplaced += u" „";
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
     // 3. Testing recognition of alternative closing double quotation mark “
-    emulateTyping(rXTextDocument, u"Alternative.“ \"");
+    emulateTyping(*pTextDoc, u"Alternative.“ \"");
     sReplaced += u"Alternative.“ „";
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
 }
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf128860)
 {
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf128860.fodt");
+    createSwDoc("tdf128860.fodt");
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
     CPPUNIT_ASSERT(pWrtShell);
-    SwXTextDocument& rXTextDocument = getSwXTextDocument();
+    SwXTextDocument* pTextDoc = dynamic_cast<SwXTextDocument*>(mxComponent.get());
     // Second level ending quote: ‚word' -> ,word‘
-    emulateTyping(rXTextDocument, u",word'");
+    emulateTyping(*pTextDoc, u",word'");
     OUString sReplaced(u",word\u2019");
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
     // Us apostrophe without preceding starting quote: word' -> word’
-    emulateTyping(rXTextDocument, u" word'");
+    emulateTyping(*pTextDoc, u" word'");
     sReplaced += u" word\u2019";
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
     // But only after letters: word.' -> word.‘
-    emulateTyping(rXTextDocument, u" word.'");
+    emulateTyping(*pTextDoc, u" word.'");
     sReplaced += u" word.‘";
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
 }
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf123786)
 {
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf123786.fodt");
+    createSwDoc("tdf123786.fodt");
+    SwDoc* pDoc = getSwDoc();
 
     // On Windows, it will detect that system input language is en-US (despite "typing" e.g. Cyrillic characters),
     // and will change Russian into English (US); in the latter language,
@@ -1715,17 +1745,17 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf123786)
 
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
     CPPUNIT_ASSERT(pWrtShell);
-    SwXTextDocument& rXTextDocument = getSwXTextDocument();
+    SwXTextDocument* pTextDoc = dynamic_cast<SwXTextDocument*>(mxComponent.get());
     // Second level ending quote: „word' -> „word“
-    emulateTyping(rXTextDocument, u"„слово'");
+    emulateTyping(*pTextDoc, u"„слово'");
     OUString sReplaced(u"„слово“");
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
     // Us apostrophe without preceding starting quote: word' -> word’
-    emulateTyping(rXTextDocument, u" слово'");
+    emulateTyping(*pTextDoc, u" слово'");
     sReplaced += u" слово’";
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
     // But only after letters: word.' -> word.“
-    emulateTyping(rXTextDocument, u" слово.'");
+    emulateTyping(*pTextDoc, u" слово.'");
     sReplaced += u" слово.“";
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
 }
@@ -1733,81 +1763,121 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf123786)
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf133589)
 {
     // Hungarian test document with right-to-left paragraph setting
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf133589.fodt");
+    createSwDoc("tdf133589.fodt");
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
     CPPUNIT_ASSERT(pWrtShell);
-    SwXTextDocument& rXTextDocument = getSwXTextDocument();
+    SwXTextDocument* pTextDoc = dynamic_cast<SwXTextDocument*>(mxComponent.get());
     // translitere words to Old Hungarian
-    emulateTyping(rXTextDocument, u"székely ");
+    emulateTyping(*pTextDoc, u"székely ");
     OUString sReplaced(u"𐳥𐳋𐳓𐳉𐳗 ");
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
     // disambiguate consonants: asszony -> asz|szony
-    emulateTyping(rXTextDocument, u"asszony ");
+    emulateTyping(*pTextDoc, u"asszony ");
     sReplaced += u"𐳀𐳥𐳥𐳛𐳚 ";
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
     // disambiguate consonants: kosszarv -> kos|szarv
     // (add explicit ZWSP temporarily for consonant disambiguation, because the requested
     // hu_HU hyphenation dictionary isn't installed on all testing platform)
     // pWrtShell->Insert(u"kosszarv");
-    emulateTyping(rXTextDocument, u"kos\u200Bszarv ");
+    emulateTyping(*pTextDoc, u"kos\u200Bszarv ");
     sReplaced += u"𐳓𐳛𐳤𐳥𐳀𐳢𐳮 ";
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
     // transliterate numbers to Old Hungarian
-    emulateTyping(rXTextDocument, u"2020 ");
+    emulateTyping(*pTextDoc, u"2020 ");
     sReplaced += u"𐳺𐳺𐳿𐳼𐳼 ";
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
 
     // tdf#147546 transliterate punctuation marks
 
     // question mark
-    emulateTyping(rXTextDocument, u"Kérdőjel?");
+    emulateTyping(*pTextDoc, u"Kérdőjel?");
     sReplaced += u"𐲓𐳋𐳢𐳇𐳟𐳒𐳉𐳖";
     OUString sReplaced2(sReplaced + "?");
     CPPUNIT_ASSERT_EQUAL(sReplaced2, getParagraph(1)->getString());
-    emulateTyping(rXTextDocument, u" ");
+    emulateTyping(*pTextDoc, u" ");
     sReplaced += u"⸮ ";
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
     // comma
-    emulateTyping(rXTextDocument, u"Vessző,");
+    emulateTyping(*pTextDoc, u"Vessző,");
     sReplaced += u"𐲮𐳉𐳥𐳥𐳟";
     sReplaced2 = sReplaced + ",";
     CPPUNIT_ASSERT_EQUAL(sReplaced2, getParagraph(1)->getString());
-    emulateTyping(rXTextDocument, u" ");
+    emulateTyping(*pTextDoc, u" ");
     sReplaced += u"⹁ ";
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
     // semicolon
-    emulateTyping(rXTextDocument, u"pontosvessző;");
+    emulateTyping(*pTextDoc, u"pontosvessző;");
     sReplaced += u"𐳠𐳛𐳙𐳦𐳛𐳤𐳮𐳉𐳥𐳥𐳟";
     sReplaced2 = sReplaced + ";";
     CPPUNIT_ASSERT_EQUAL(sReplaced2, getParagraph(1)->getString());
-    emulateTyping(rXTextDocument, u" ");
+    emulateTyping(*pTextDoc, u" ");
     sReplaced += u"⁏ ";
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
     // quotation marks
-    emulateTyping(rXTextDocument, u"„idézőjel” ");
+    emulateTyping(*pTextDoc, u"„idézőjel” ");
     sReplaced += u"⹂𐳐𐳇𐳋𐳯𐳟𐳒𐳉𐳖‟ ";
+    CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
+
+    // tdf#148672 transliterate word with closing bracket
+    emulateTyping(*pTextDoc, u"word] ");
+    sReplaced += u"𐳮𐳛𐳢𐳇] "; // This was "word]" (no transliteration)
+    CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
+
+    // tdf#148672 transliterate words with parenthesis (libnumbertext 1.0.11)
+    emulateTyping(*pTextDoc, u"(word) ");
+    sReplaced += u"(𐳮𐳛𐳢𐳇) "; // This was "(word)" (no transliteration)
+    CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
+
+    emulateTyping(*pTextDoc, u"(word ");
+    sReplaced += u"(𐳮𐳛𐳢𐳇 "; // This was "(word" (no transliteration)
+    CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
+
+    emulateTyping(*pTextDoc, u"word) ");
+    sReplaced += u"𐳮𐳛𐳢𐳇) "; // This was "word)" (no transliteration)
+    CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
+
+    emulateTyping(*pTextDoc, u"{word} ");
+    sReplaced += u"{𐳮𐳛𐳢𐳇} "; // This was "(word)" (no transliteration)
+    CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
+
+    emulateTyping(*pTextDoc, u"{word ");
+    sReplaced += u"{𐳮𐳛𐳢𐳇 "; // This was "(word" (no transliteration)
+    CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
+
+    emulateTyping(*pTextDoc, u"word} ");
+    sReplaced += u"𐳮𐳛𐳢𐳇} "; // This was "word)" (no transliteration)
+    CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
+
+    emulateTyping(*pTextDoc, u"[word] ");
+    sReplaced += u"[𐳮𐳛𐳢𐳇] "; // This was "(word)" (no transliteration)
+    CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
+
+    emulateTyping(*pTextDoc, u"[word ");
+    sReplaced += u"[𐳮𐳛𐳢𐳇 "; // This was "(word" (no transliteration)
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
 }
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testAutoCorr)
 {
-    SwDoc* pDoc = createSwDoc();
+    createSwDoc();
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
     CPPUNIT_ASSERT(pWrtShell);
-    SwXTextDocument& rXTextDocument = getSwXTextDocument();
+    SwXTextDocument* pTextDoc = dynamic_cast<SwXTextDocument*>(mxComponent.get());
 
     //Normal AutoCorrect
-    emulateTyping(rXTextDocument, u"tset ");
+    emulateTyping(*pTextDoc, u"tset ");
     CPPUNIT_ASSERT_EQUAL(OUString("Test "), getParagraph(1)->getString());
 
     //AutoCorrect with change style to bolt
-    emulateTyping(rXTextDocument, u"Bolt ");
+    emulateTyping(*pTextDoc, u"Bolt ");
     const uno::Reference<text::XTextRange> xRun = getRun(getParagraph(1), 2);
     CPPUNIT_ASSERT_EQUAL(OUString("Bolt"), xRun->getString());
     CPPUNIT_ASSERT_EQUAL(OUString("Arial"), getProperty<OUString>(xRun, "CharFontName"));
 
     //AutoCorrect inserts Table with 2 rows and 3 columns
-    emulateTyping(rXTextDocument, u"4xx ");
+    emulateTyping(*pTextDoc, u"4xx ");
     const uno::Reference<text::XTextTable> xTable(getParagraphOrTable(2), uno::UNO_QUERY);
     CPPUNIT_ASSERT_EQUAL(sal_Int32(2), xTable->getRows()->getCount());
     CPPUNIT_ASSERT_EQUAL(sal_Int32(3), xTable->getColumns()->getCount());
@@ -1815,34 +1885,36 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testAutoCorr)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf130274)
 {
-    SwDoc* const pDoc(createSwDoc());
+    createSwDoc();
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* const pWrtShell = pDoc->GetDocShell()->GetWrtShell();
     CPPUNIT_ASSERT(pWrtShell);
-    SwXTextDocument& rXTextDocument = getSwXTextDocument();
+    SwXTextDocument* pTextDoc = dynamic_cast<SwXTextDocument*>(mxComponent.get());
 
     CPPUNIT_ASSERT(!pWrtShell->GetLayout()->IsHideRedlines());
     CPPUNIT_ASSERT(
         !IDocumentRedlineAccess::IsRedlineOn(pDoc->getIDocumentRedlineAccess().GetRedlineFlags()));
 
     // "tset" may be replaced by the AutoCorrect in the test profile
-    emulateTyping(rXTextDocument, u"tset");
+    emulateTyping(*pTextDoc, u"tset");
     // select from left to right
     pWrtShell->Left(SwCursorSkipMode::Chars, /*bSelect=*/false, 4, /*bBasicCall=*/false);
     pWrtShell->Right(SwCursorSkipMode::Chars, /*bSelect=*/true, 4, /*bBasicCall=*/false);
 
     pWrtShell->SetRedlineFlags(pWrtShell->GetRedlineFlags() | RedlineFlags::On);
     // this would crash in AutoCorrect
-    emulateTyping(rXTextDocument, u".");
+    emulateTyping(*pTextDoc, u".");
 
     CPPUNIT_ASSERT(!pDoc->getIDocumentRedlineAccess().GetRedlineTable().empty());
 }
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf83260)
 {
-    SwDoc* const pDoc(createSwDoc(DATA_DIRECTORY, "tdf83260-1.odt"));
+    createSwDoc("tdf83260-1.odt");
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
     CPPUNIT_ASSERT(pWrtShell);
-    SwXTextDocument& rXTextDocument = getSwXTextDocument();
+    SwXTextDocument* pTextDoc = dynamic_cast<SwXTextDocument*>(mxComponent.get());
 
     // enabled but not shown
     CPPUNIT_ASSERT(pWrtShell->GetLayout()->IsHideRedlines());
@@ -1856,7 +1928,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf83260)
 
     // the document contains redlines that are combined with CompressRedlines()
     // if that happens during AutoCorrect then indexes in Undo are off -> crash
-    emulateTyping(rXTextDocument, u"tset ");
+    emulateTyping(*pTextDoc, u"tset ");
     sw::UndoManager& rUndoManager = pDoc->GetUndoManager();
     auto const nActions(rUndoManager.GetUndoActionCount());
     for (auto i = nActions; 0 < i; --i)
@@ -1897,13 +1969,14 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf83260)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf74363)
 {
-    SwDoc* pDoc = createSwDoc();
+    createSwDoc();
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
     CPPUNIT_ASSERT(pWrtShell);
-    SwXTextDocument& rXTextDocument = getSwXTextDocument();
+    SwXTextDocument* pTextDoc = dynamic_cast<SwXTextDocument*>(mxComponent.get());
     //testing autocorrect of initial capitals on start of first paragraph
     //Inserting one all-lowercase word into the first paragraph
-    emulateTyping(rXTextDocument, u"testing ");
+    emulateTyping(*pTextDoc, u"testing ");
     //The word should be capitalized due to autocorrect
     CPPUNIT_ASSERT_EQUAL(OUString("Testing "), getParagraph(1)->getString());
 }
@@ -1911,12 +1984,12 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf74363)
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf139922)
 {
     createSwDoc();
-    SwXTextDocument& rTextDoc = getSwXTextDocument();
+    SwXTextDocument* pTextDoc = dynamic_cast<SwXTextDocument*>(mxComponent.get());
 
-    rTextDoc.postKeyEvent(LOK_KEYEVENT_KEYINPUT, 0, KEY_RETURN);
+    pTextDoc->postKeyEvent(LOK_KEYEVENT_KEYINPUT, 0, KEY_RETURN);
     Scheduler::ProcessEventsToIdle();
 
-    emulateTyping(rTextDoc, u"this is a SEntence. this is a SEntence.");
+    emulateTyping(*pTextDoc, u"this is a SEntence. this is a SEntence.");
 
     // Without the fix in place, this test would have failed with
     // - Expected: This is a Sentence. This is a Sentence.
@@ -1928,7 +2001,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf139922)
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf143176)
 {
     // Hungarian test document with right-to-left paragraph setting
-    createSwDoc(DATA_DIRECTORY, "tdf143176.fodt");
+    createSwDoc("tdf143176.fodt");
 
     // transliterate the document to Old Hungarian (note: it only works
     // with right-to-left text direction and Default Paragraph Style)
@@ -1946,7 +2019,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf143176)
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testInsertLongDateFormat)
 {
     // only for Hungarian, yet
-    createSwDoc(DATA_DIRECTORY, "tdf133524.fodt");
+    createSwDoc("tdf133524.fodt");
     dispatchCommand(mxComponent, ".uno:InsertDateField", {});
     // Make sure that the document starts with a field now, and its expanded string value contains space
     const uno::Reference<text::XTextRange> xField = getRun(getParagraph(1), 1);
@@ -1957,17 +2030,18 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testInsertLongDateFormat)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf129270)
 {
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf129270.odt");
+    createSwDoc("tdf129270.odt");
+    SwDoc* pDoc = getSwDoc();
     CPPUNIT_ASSERT(pDoc);
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
     CPPUNIT_ASSERT(pWrtShell);
-    SwXTextDocument& rXTextDocument = getSwXTextDocument();
+    SwXTextDocument* pTextDoc = dynamic_cast<SwXTextDocument*>(mxComponent.get());
 
     // Go to document end
     pWrtShell->SttEndDoc(/*bStt=*/false);
 
     // Press enter
-    rXTextDocument.postKeyEvent(LOK_KEYEVENT_KEYINPUT, 0, KEY_RETURN);
+    pTextDoc->postKeyEvent(LOK_KEYEVENT_KEYINPUT, 0, KEY_RETURN);
     Scheduler::ProcessEventsToIdle();
 
     // Numbering for previous outline should remain the same "2"
@@ -1990,8 +2064,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testInsertPdf)
 
     // insert the PDF into the document
     uno::Sequence<beans::PropertyValue> aArgs(comphelper::InitPropertySequence(
-        { { "FileName",
-            uno::Any(m_directories.getURLFromSrc(DATA_DIRECTORY) + "hello-world.pdf") } }));
+        { { "FileName", uno::Any(createFileURL(u"hello-world.pdf")) } }));
     dispatchCommand(mxComponent, ".uno:InsertGraphic", aArgs);
 
     // Save and load cycle
@@ -2013,7 +2086,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testTdf143760WrapContourToOff)
 {
     // Actually, this is an ooxmlexport test. It is here because here is a ready environment
     // to change a shape by dispatchCommand.
-    SwDoc* pDoc = createSwDoc(DATA_DIRECTORY, "tdf143760_ContourToWrapOff.docx");
+    createSwDoc("tdf143760_ContourToWrapOff.docx");
+    SwDoc* pDoc = getSwDoc();
     CPPUNIT_ASSERT(pDoc);
     CPPUNIT_ASSERT_EQUAL(true, getProperty<bool>(getShape(1), "SurroundContour"));
 
@@ -2066,15 +2140,15 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testHatchFill)
 
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testNestedGroupTextBoxCopyCrash)
 {
-    createSwDoc(DATA_DIRECTORY, "tdf149550.docx");
+    createSwDoc("tdf149550.docx");
 
     dispatchCommand(mxComponent, ".uno:SelectAll", {});
     Scheduler::ProcessEventsToIdle();
     dispatchCommand(mxComponent, ".uno:Copy", {});
     Scheduler::ProcessEventsToIdle();
     // This crashed here before the fix.
-    SwXTextDocument& rXTextDocument = getSwXTextDocument();
-    rXTextDocument.postKeyEvent(LOK_KEYEVENT_KEYINPUT, 0, KEY_ESCAPE);
+    SwXTextDocument* pTextDoc = dynamic_cast<SwXTextDocument*>(mxComponent.get());
+    pTextDoc->postKeyEvent(LOK_KEYEVENT_KEYINPUT, 0, KEY_ESCAPE);
     Scheduler::ProcessEventsToIdle();
     dispatchCommand(mxComponent, ".uno:Paste", {});
     Scheduler::ProcessEventsToIdle();
@@ -2089,7 +2163,7 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testNestedGroupTextBoxCopyCrash)
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest6, testCrashOnExit)
 {
     // Load the bugdoc with a table and a textbox shape inside.
-    CPPUNIT_ASSERT(createSwDoc(DATA_DIRECTORY, "tdf142715.odt"));
+    createSwDoc("tdf142715.odt");
 
     // Get the textbox selected
     CPPUNIT_ASSERT_EQUAL(1, getShapes());

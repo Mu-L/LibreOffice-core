@@ -7,8 +7,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include <test/bootstrapfixture.hxx>
-#include <unotest/macros_test.hxx>
+#include <test/unoapi_test.hxx>
 
 #include <com/sun/star/document/XExporter.hpp>
 #include <com/sun/star/document/XFilter.hpp>
@@ -28,34 +27,31 @@ using namespace ::com::sun::star;
 namespace
 {
 /// Covers filter/source/pdf/ fixes.
-class Test : public test::BootstrapFixture, public unotest::MacrosTest
+class Test : public UnoApiTest
 {
-private:
-    uno::Reference<lang::XComponent> mxComponent;
-
 public:
+    Test()
+        : UnoApiTest("/filter/qa/data/")
+    {
+    }
+
     void setUp() override;
     void tearDown() override;
-    uno::Reference<lang::XComponent>& getComponent() { return mxComponent; }
 };
 
 void Test::setUp()
 {
-    test::BootstrapFixture::setUp();
-    MacrosTest::setUpNssGpg(m_directories, "filter_pdf");
+    UnoApiTest::setUp();
 
-    mxDesktop.set(frame::Desktop::create(mxComponentContext));
+    MacrosTest::setUpNssGpg(m_directories, "filter_pdf");
 }
 
 void Test::tearDown()
 {
-    if (mxComponent.is())
-        mxComponent->dispose();
+    MacrosTest::tearDownNssGpg();
 
-    test::BootstrapFixture::tearDown();
+    UnoApiTest::tearDown();
 }
-
-constexpr OUStringLiteral DATA_DIRECTORY = u"/filter/qa/data/";
 
 CPPUNIT_TEST_FIXTURE(Test, testSignCertificateSubjectName)
 {
@@ -83,15 +79,14 @@ CPPUNIT_TEST_FIXTURE(Test, testSignCertificateSubjectName)
     }
 
     // Given an empty document:
-    getComponent().set(
-        loadFromDesktop("private:factory/swriter", "com.sun.star.text.TextDocument"));
+    mxComponent.set(loadFromDesktop("private:factory/swriter", "com.sun.star.text.TextDocument"));
 
     // When exporting to PDF, and referring to a certificate using a subject name:
     uno::Reference<css::lang::XMultiServiceFactory> xFactory = getMultiServiceFactory();
     uno::Reference<document::XFilter> xFilter(
         xFactory->createInstance("com.sun.star.document.PDFFilter"), uno::UNO_QUERY);
     uno::Reference<document::XExporter> xExporter(xFilter, uno::UNO_QUERY);
-    xExporter->setSourceDocument(getComponent());
+    xExporter->setSourceDocument(mxComponent);
     SvMemoryStream aStream;
     uno::Reference<io::XOutputStream> xOutputStream(new utl::OStreamWrapper(aStream));
 
@@ -118,18 +113,16 @@ CPPUNIT_TEST_FIXTURE(Test, testPdfDecompositionSize)
         return;
 
     // Given an empty Writer document:
-    getComponent().set(
-        loadFromDesktop("private:factory/swriter", "com.sun.star.text.TextDocument"));
+    mxComponent.set(loadFromDesktop("private:factory/swriter", "com.sun.star.text.TextDocument"));
 
     // When inserting a 267 points wide PDF image into the document:
     uno::Sequence<beans::PropertyValue> aArgs = {
-        comphelper::makePropertyValue("FileName",
-                                      m_directories.getURLFromSrc(DATA_DIRECTORY) + "picture.pdf"),
+        comphelper::makePropertyValue("FileName", createFileURL(u"picture.pdf")),
     };
-    dispatchCommand(getComponent(), ".uno:InsertGraphic", aArgs);
+    dispatchCommand(mxComponent, ".uno:InsertGraphic", aArgs);
 
     // Then make sure that its size is correct:
-    uno::Reference<drawing::XDrawPageSupplier> xDrawPageSupplier(getComponent(), uno::UNO_QUERY);
+    uno::Reference<drawing::XDrawPageSupplier> xDrawPageSupplier(mxComponent, uno::UNO_QUERY);
     uno::Reference<container::XIndexAccess> xDrawPage = xDrawPageSupplier->getDrawPage();
     uno::Reference<beans::XPropertySet> xShape(xDrawPage->getByIndex(0), uno::UNO_QUERY);
     auto xGraphic = xShape->getPropertyValue("Graphic").get<uno::Reference<graphic::XGraphic>>();
@@ -149,6 +142,50 @@ CPPUNIT_TEST_FIXTURE(Test, testPdfDecompositionSize)
     // Use some allowance (~1/2 pt) to let it pass on non-default DPI.
     CPPUNIT_ASSERT_DOUBLES_EQUAL(9437, aRange.getWidth(), 20.0);
 #endif
+}
+
+CPPUNIT_TEST_FIXTURE(Test, testWatermarkColor)
+{
+    // Given an empty Writer document:
+    std::shared_ptr<vcl::pdf::PDFium> pPDFium = vcl::pdf::PDFiumLibrary::get();
+    if (!pPDFium)
+        return;
+    mxComponent.set(loadFromDesktop("private:factory/swriter", "com.sun.star.text.TextDocument"));
+
+    // When exporting that as PDF with a red watermark:
+    uno::Reference<css::lang::XMultiServiceFactory> xFactory = getMultiServiceFactory();
+    uno::Reference<document::XFilter> xFilter(
+        xFactory->createInstance("com.sun.star.document.PDFFilter"), uno::UNO_QUERY);
+    uno::Reference<document::XExporter> xExporter(xFilter, uno::UNO_QUERY);
+    xExporter->setSourceDocument(mxComponent);
+    SvMemoryStream aStream;
+    uno::Reference<io::XOutputStream> xOutputStream(new utl::OStreamWrapper(aStream));
+    uno::Sequence<beans::PropertyValue> aFilterData{
+        comphelper::makePropertyValue("Watermark", OUString("X")),
+        comphelper::makePropertyValue("WatermarkColor", static_cast<sal_Int32>(0xff0000)),
+    };
+    uno::Sequence<beans::PropertyValue> aDescriptor{
+        comphelper::makePropertyValue("FilterName", OUString("writer_pdf_Export")),
+        comphelper::makePropertyValue("FilterData", aFilterData),
+        comphelper::makePropertyValue("OutputStream", xOutputStream),
+    };
+    xFilter->filter(aDescriptor);
+
+    // Then make sure that the watermark color is correct:
+    std::unique_ptr<vcl::pdf::PDFiumDocument> pPdfDocument
+        = pPDFium->openDocument(aStream.GetData(), aStream.GetSize(), OString());
+    CPPUNIT_ASSERT(pPdfDocument);
+    std::unique_ptr<vcl::pdf::PDFiumPage> pPage = pPdfDocument->openPage(0);
+    CPPUNIT_ASSERT_EQUAL(1, pPage->getObjectCount());
+    std::unique_ptr<vcl::pdf::PDFiumPageObject> pPageObject = pPage->getObject(0);
+    CPPUNIT_ASSERT_EQUAL(1, pPageObject->getFormObjectCount());
+    std::unique_ptr<vcl::pdf::PDFiumPageObject> pFormObject = pPageObject->getFormObject(0);
+    Color aFillColor = pFormObject->getFillColor();
+    // Without the accompanying fix in place, this test would have failed with:
+    // - Expected: rgba[ff0000ff]
+    // - Actual  : rgba[00ff00ff]
+    // i.e. the color was the (default) green, not red.
+    CPPUNIT_ASSERT_EQUAL(Color(ColorTransparency, 0xff0000), aFillColor);
 }
 }
 

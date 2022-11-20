@@ -218,8 +218,7 @@ bool CoreTextFont::GetGlyphOutline(sal_GlyphId nId, basegfx::B2DPolyPolygon& rRe
 hb_blob_t* CoreTextFontFace::GetHbTable(hb_tag_t nTag) const
 {
     hb_blob_t* pBlob = nullptr;
-    CTFontDescriptorRef pFontDesc = reinterpret_cast<CTFontDescriptorRef>(GetFontId());
-    CTFontRef pFont = CTFontCreateWithFontDescriptor(pFontDesc, 0.0, nullptr);
+    CTFontRef pFont = CTFontCreateWithFontDescriptor(mxFontDescriptor, 0.0, nullptr);
 
     if (!nTag)
     {
@@ -269,17 +268,17 @@ hb_blob_t* CoreTextFontFace::GetHbTable(hb_tag_t nTag) const
     return pBlob;
 }
 
-std::vector<hb_variation_t> CoreTextFontFace::GetVariations() const
+const std::vector<hb_variation_t>& CoreTextFontFace::GetVariations(const LogicalFontInstance&) const
 {
     CTFontRef pFont = CTFontCreateWithFontDescriptor(mxFontDescriptor, 0.0, nullptr);
 
-    if (m_aVariations.empty())
+    if (!mxVariations)
     {
+        mxVariations.emplace();
         CFArrayRef pAxes = CTFontCopyVariationAxes(pFont);
         if (pAxes)
         {
             CFDictionaryRef pVariations = CTFontCopyVariation(pFont);
-            std::vector<hb_variation_t> aHBVariations;
             if (pVariations)
             {
                 CFIndex nAxes = CFArrayGetCount(pAxes);
@@ -302,7 +301,7 @@ std::vector<hb_variation_t> CoreTextFontFace::GetVariations() const
                             continue;
                         CFNumberGetValue(pValue, kCFNumberFloatType, &fValue);
 
-                        m_aVariations.push_back({ nTag, fValue });
+                        mxVariations->push_back({ nTag, fValue });
                     }
                 }
                 CFRelease(pVariations);
@@ -311,7 +310,7 @@ std::vector<hb_variation_t> CoreTextFontFace::GetVariations() const
         }
     }
 
-    return m_aVariations;
+    return *mxVariations;
 }
 
 rtl::Reference<LogicalFontInstance> CoreTextFontFace::CreateFontInstance(const vcl::font::FontSelectPattern& rFSD) const

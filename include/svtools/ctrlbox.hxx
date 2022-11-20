@@ -250,22 +250,12 @@ private:
                                     Color nColor1, Color nColor2, Color nColorDist,
                                     SvxBorderLineStyle nStyle, BitmapEx& rBmp );
 
-    void            UpdatePaintLineColor();       // returns sal_True if maPaintCol has changed
     DECL_DLLPRIVATE_LINK(ValueSelectHdl, ValueSet*, void);
     DECL_DLLPRIVATE_LINK(FocusHdl, weld::Widget&, void);
     DECL_DLLPRIVATE_LINK(ToggleHdl, weld::Toggleable&, void);
     DECL_DLLPRIVATE_LINK(NoneHdl, weld::Button&, void);
 
     void            UpdateEntries();
-    sal_Int32       GetStylePos(sal_Int32 nListPos) const;
-
-    const Color&    GetPaintColor() const
-    {
-        return maPaintCol;
-    }
-    Color   GetColorLine1( sal_Int32  nPos );
-    Color   GetColorLine2( sal_Int32  nPos );
-    Color   GetColorDist( sal_Int32  nPos );
 
     void UpdatePreview();
 
@@ -283,7 +273,6 @@ private:
     tools::Long            m_nWidth;
     ScopedVclPtr<VirtualDevice>   aVirDev;
     Color           aColor;
-    Color           maPaintCol;
     FieldUnit       eSourceUnit;
     Link<SvtLineListBox&,void> maSelectHdl;
 };

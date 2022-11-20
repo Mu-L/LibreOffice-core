@@ -131,6 +131,7 @@
 #include <unotextrange.hxx>
 #include <docstat.hxx>
 #include <wordcountdialog.hxx>
+#include <OnlineAccessibilityCheck.hxx>
 #include <sfx2/sidebar/Sidebar.hxx>
 
 #include <vcl/GraphicNativeTransform.hxx>
@@ -1810,6 +1811,16 @@ void SwView::StateStatusLine(SfxItemSet &rSet)
                 SwWordCountWrapper *pWrdCnt = static_cast<SwWordCountWrapper*>(GetViewFrame()->GetChildWindow(SwWordCountWrapper::GetChildWindowId()));
                 if (pWrdCnt)
                     pWrdCnt->SetCounts(selectionStats, documentStats);
+            }
+            break;
+            case FN_STAT_ACCESSIBILITY_CHECK:
+            {
+                std::unique_ptr<sw::OnlineAccessibilityCheck> const& rOnlineAccessibilityCheck = rShell.GetDoc()->getOnlineAccessibilityCheck();
+                if (rOnlineAccessibilityCheck)
+                {
+                    sal_Int32 nIssues = rOnlineAccessibilityCheck->getNumberOfAccessibilityIssues();
+                    rSet.Put(SfxInt32Item(FN_STAT_ACCESSIBILITY_CHECK, nIssues));
+                }
             }
             break;
 

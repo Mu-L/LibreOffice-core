@@ -63,6 +63,7 @@
 #include <IMark.hxx>
 #include <officecfg/Office/Compatibility.hxx>
 #include <ndtxt.hxx>
+#include <translatehelper.hxx>
 
 
 using namespace nsSwDocInfoSubType;
@@ -686,24 +687,85 @@ FIELD_INSERT:
 
         case FN_INSERT_TEXT_FORMFIELD:
         {
+            OUString aFieldType(ODF_FORMTEXT);
+            const SfxStringItem* pFieldType = rReq.GetArg<SfxStringItem>(FN_PARAM_1);
+            if (pFieldType)
+            {
+                // Allow overwriting the default type.
+                aFieldType = pFieldType->GetValue();
+            }
+
+            OUString aFieldCode;
+            const SfxStringItem* pFieldCode = rReq.GetArg<SfxStringItem>(FN_PARAM_2);
+            if (pFieldCode)
+            {
+                // Allow specifying a field code/command.
+                aFieldCode = pFieldCode->GetValue();
+            }
+
             rSh.GetDoc()->GetIDocumentUndoRedo().StartUndo(SwUndoId::INSERT_FORM_FIELD, nullptr);
+            // Don't update the layout after inserting content and before deleting temporary
+            // text nodes.
+            rSh.StartAction();
 
             SwPaM* pCursorPos = rSh.GetCursor();
             if(pCursorPos)
             {
                 // Insert five En Space into the text field so the field has extent
                 static constexpr OUStringLiteral vEnSpaces = u"\u2002\u2002\u2002\u2002\u2002";
-                bool bSuccess = rSh.GetDoc()->getIDocumentContentOperations().InsertString(*pCursorPos, vEnSpaces);
+                OUString aFieldResult(vEnSpaces);
+                const SfxStringItem* pFieldResult = rReq.GetArg<SfxStringItem>(FN_PARAM_3);
+                if (pFieldResult)
+                {
+                    // Allow specifying a field result / expanded value.
+                    aFieldResult = pFieldResult->GetValue();
+                }
+
+                // Split node to remember where the start position is.
+                bool bSuccess = rSh.GetDoc()->getIDocumentContentOperations().SplitNode(
+                    *pCursorPos->GetPoint(), false);
                 if(bSuccess)
                 {
+                    SwPaM aFieldPam(*pCursorPos->GetPoint());
+                    aFieldPam.Move(fnMoveBackward, GoInContent);
+                    if (pFieldResult)
+                    {
+                        // Paste HTML content.
+                        SwTranslateHelper::PasteHTMLToPaM(rSh, pCursorPos, aFieldResult.toUtf8(),
+                                                          true);
+                        if (pCursorPos->GetPoint()->GetContentIndex() == 0)
+                        {
+                            // The paste created a last empty text node, remove it.
+                            SwPaM aPam(*pCursorPos->GetPoint());
+                            aPam.SetMark();
+                            aPam.Move(fnMoveBackward, GoInContent);
+                            rSh.GetDoc()->getIDocumentContentOperations().DeleteAndJoin(aPam);
+                        }
+                    }
+                    else
+                    {
+                        // Insert default placeholder.
+                        rSh.GetDoc()->getIDocumentContentOperations().InsertString(*pCursorPos,
+                                                                                   aFieldResult);
+                    }
+                    // Undo the above SplitNode().
+                    aFieldPam.SetMark();
+                    aFieldPam.Move(fnMoveForward, GoInContent);
+                    rSh.GetDoc()->getIDocumentContentOperations().DeleteAndJoin(aFieldPam);
+                    *aFieldPam.GetMark() = *pCursorPos->GetPoint();
+
                     IDocumentMarkAccess* pMarksAccess = rSh.GetDoc()->getIDocumentMarkAccess();
-                    SwPaM aFieldPam(pCursorPos->GetPoint()->GetNode(), pCursorPos->GetPoint()->GetContentIndex() - vEnSpaces.getLength(),
-                                    pCursorPos->GetPoint()->GetNode(), pCursorPos->GetPoint()->GetContentIndex());
-                    pMarksAccess->makeFieldBookmark(aFieldPam, OUString(), ODF_FORMTEXT,
-                            aFieldPam.Start());
+                    sw::mark::IFieldmark* pFieldmark = pMarksAccess->makeFieldBookmark(
+                        aFieldPam, OUString(), aFieldType, aFieldPam.Start());
+                    if (pFieldmark && !aFieldCode.isEmpty())
+                    {
+                        pFieldmark->GetParameters()->insert(
+                            std::pair<OUString, uno::Any>(ODF_CODE_PARAM, uno::Any(aFieldCode)));
+                    }
                 }
             }
 
+            rSh.EndAction();
             rSh.GetDoc()->GetIDocumentUndoRedo().EndUndo(SwUndoId::INSERT_FORM_FIELD, nullptr);
             rSh.GetView().GetViewFrame()->GetBindings().Invalidate( SID_UNDO );
         }

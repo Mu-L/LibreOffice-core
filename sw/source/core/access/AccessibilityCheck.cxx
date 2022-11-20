@@ -77,19 +77,6 @@ lclAddIssue(sfx::AccessibilityIssueCollection& rIssueCollection, OUString const&
     return pIssue;
 }
 
-class BaseCheck
-{
-protected:
-    sfx::AccessibilityIssueCollection& m_rIssueCollection;
-
-public:
-    BaseCheck(sfx::AccessibilityIssueCollection& rIssueCollection)
-        : m_rIssueCollection(rIssueCollection)
-    {
-    }
-    virtual ~BaseCheck() {}
-};
-
 class NodeCheck : public BaseCheck
 {
 public:
@@ -791,33 +778,63 @@ public:
         const OUString& sParagraphText = pTextNode->GetText();
         sal_Int32 nSpaceCount = 0;
         sal_Int32 nSpaceStart = 0;
+        sal_Int32 nTabCount = 0;
         bool bNonSpaceFound = false;
+        bool bPreviousWasChar = false;
         for (sal_Int32 i = 0; i < nParagraphLength; i++)
         {
-            if (sParagraphText[i] == ' ')
+            switch (sParagraphText[i])
             {
-                if (bNonSpaceFound)
+                case ' ':
                 {
-                    nSpaceCount++;
-                    if (nSpaceCount == 2)
-                        nSpaceStart = i;
+                    if (bNonSpaceFound)
+                    {
+                        nSpaceCount++;
+                        if (nSpaceCount == 2)
+                            nSpaceStart = i;
+                    }
+                    break;
                 }
-            }
-            else
-            {
-                if (nSpaceCount >= 2)
+                case '\t':
                 {
-                    auto pIssue = lclAddIssue(m_rIssueCollection, SwResId(STR_AVOID_SPACES_SPACE),
-                                              sfx::AccessibilityIssueID::TEXT_FORMATTING);
-                    pIssue->setIssueObject(IssueObject::TEXT);
-                    pIssue->setNode(pTextNode);
-                    SwDoc& rDocument = pTextNode->GetDoc();
-                    pIssue->setDoc(rDocument);
-                    pIssue->setStart(nSpaceStart);
-                    pIssue->setEnd(nSpaceStart + nSpaceCount - 1);
+                    if (bPreviousWasChar)
+                    {
+                        ++nTabCount;
+                        bPreviousWasChar = false;
+                        if (nTabCount == 2)
+                        {
+                            auto pIssue = lclAddIssue(m_rIssueCollection,
+                                                      SwResId(STR_AVOID_TABS_FORMATTING),
+                                                      sfx::AccessibilityIssueID::TEXT_FORMATTING);
+                            pIssue->setIssueObject(IssueObject::TEXT);
+                            pIssue->setNode(pTextNode);
+                            SwDoc& rDocument = pTextNode->GetDoc();
+                            pIssue->setDoc(rDocument);
+                            pIssue->setStart(0);
+                            pIssue->setEnd(nParagraphLength);
+                        }
+                    }
+                    break;
                 }
-                bNonSpaceFound = true;
-                nSpaceCount = 0;
+                default:
+                {
+                    if (nSpaceCount >= 2)
+                    {
+                        auto pIssue
+                            = lclAddIssue(m_rIssueCollection, SwResId(STR_AVOID_SPACES_SPACE),
+                                          sfx::AccessibilityIssueID::TEXT_FORMATTING);
+                        pIssue->setIssueObject(IssueObject::TEXT);
+                        pIssue->setNode(pTextNode);
+                        SwDoc& rDocument = pTextNode->GetDoc();
+                        pIssue->setDoc(rDocument);
+                        pIssue->setStart(nSpaceStart);
+                        pIssue->setEnd(nSpaceStart + nSpaceCount - 1);
+                    }
+                    bNonSpaceFound = true;
+                    bPreviousWasChar = true;
+                    nSpaceCount = 0;
+                    break;
+                }
             }
         }
     }
@@ -1347,40 +1364,76 @@ void AccessibilityCheck::checkObject(SdrObject* pObject)
     }
 }
 
+void AccessibilityCheck::init()
+{
+    if (m_aDocumentChecks.empty())
+    {
+        m_aDocumentChecks.emplace_back(new DocumentDefaultLanguageCheck(m_aIssueCollection));
+        m_aDocumentChecks.emplace_back(new DocumentTitleCheck(m_aIssueCollection));
+        m_aDocumentChecks.emplace_back(new FootnoteEndnoteCheck(m_aIssueCollection));
+        m_aDocumentChecks.emplace_back(new BackgroundImageCheck(m_aIssueCollection));
+    }
+
+    if (m_aNodeChecks.empty())
+    {
+        m_aNodeChecks.emplace_back(new NoTextNodeAltTextCheck(m_aIssueCollection));
+        m_aNodeChecks.emplace_back(new TableNodeMergeSplitCheck(m_aIssueCollection));
+        m_aNodeChecks.emplace_back(new TableFormattingCheck(m_aIssueCollection));
+        m_aNodeChecks.emplace_back(new NumberingCheck(m_aIssueCollection));
+        m_aNodeChecks.emplace_back(new HyperlinkCheck(m_aIssueCollection));
+        m_aNodeChecks.emplace_back(new TextContrastCheck(m_aIssueCollection));
+        m_aNodeChecks.emplace_back(new BlinkingTextCheck(m_aIssueCollection));
+        m_aNodeChecks.emplace_back(new HeaderCheck(m_aIssueCollection));
+        m_aNodeChecks.emplace_back(new TextFormattingCheck(m_aIssueCollection));
+        m_aNodeChecks.emplace_back(new NonInteractiveFormCheck(m_aIssueCollection));
+        m_aNodeChecks.emplace_back(new FloatingTextCheck(m_aIssueCollection));
+        m_aNodeChecks.emplace_back(new TableHeadingCheck(m_aIssueCollection));
+        m_aNodeChecks.emplace_back(new HeadingOrderCheck(m_aIssueCollection));
+        m_aNodeChecks.emplace_back(new NewlineSpacingCheck(m_aIssueCollection));
+        m_aNodeChecks.emplace_back(new SpaceSpacingCheck(m_aIssueCollection));
+        m_aNodeChecks.emplace_back(new FakeFootnoteCheck(m_aIssueCollection));
+        m_aNodeChecks.emplace_back(new FakeCaptionCheck(m_aIssueCollection));
+    }
+}
+
+void AccessibilityCheck::checkNode(SwNode* pNode)
+{
+    if (m_pDoc == nullptr || pNode == nullptr)
+        return;
+
+    init();
+
+    for (std::shared_ptr<BaseCheck>& rpNodeCheck : m_aNodeChecks)
+    {
+        auto pNodeCheck = dynamic_cast<NodeCheck*>(rpNodeCheck.get());
+        if (pNodeCheck)
+            pNodeCheck->check(pNode);
+    }
+}
+
+void AccessibilityCheck::checkDocumentProperties()
+{
+    if (m_pDoc == nullptr)
+        return;
+
+    init();
+
+    for (std::shared_ptr<BaseCheck>& rpDocumentCheck : m_aDocumentChecks)
+    {
+        auto pDocumentCheck = dynamic_cast<DocumentCheck*>(rpDocumentCheck.get());
+        if (pDocumentCheck)
+            pDocumentCheck->check(m_pDoc);
+    }
+}
+
 void AccessibilityCheck::check()
 {
     if (m_pDoc == nullptr)
         return;
 
-    std::vector<std::unique_ptr<DocumentCheck>> aDocumentChecks;
-    aDocumentChecks.push_back(std::make_unique<DocumentDefaultLanguageCheck>(m_aIssueCollection));
-    aDocumentChecks.push_back(std::make_unique<DocumentTitleCheck>(m_aIssueCollection));
-    aDocumentChecks.push_back(std::make_unique<FootnoteEndnoteCheck>(m_aIssueCollection));
-    aDocumentChecks.push_back(std::make_unique<BackgroundImageCheck>(m_aIssueCollection));
+    init();
 
-    for (std::unique_ptr<DocumentCheck>& rpDocumentCheck : aDocumentChecks)
-    {
-        rpDocumentCheck->check(m_pDoc);
-    }
-
-    std::vector<std::unique_ptr<NodeCheck>> aNodeChecks;
-    aNodeChecks.push_back(std::make_unique<NoTextNodeAltTextCheck>(m_aIssueCollection));
-    aNodeChecks.push_back(std::make_unique<TableNodeMergeSplitCheck>(m_aIssueCollection));
-    aNodeChecks.push_back(std::make_unique<TableFormattingCheck>(m_aIssueCollection));
-    aNodeChecks.push_back(std::make_unique<NumberingCheck>(m_aIssueCollection));
-    aNodeChecks.push_back(std::make_unique<HyperlinkCheck>(m_aIssueCollection));
-    aNodeChecks.push_back(std::make_unique<TextContrastCheck>(m_aIssueCollection));
-    aNodeChecks.push_back(std::make_unique<BlinkingTextCheck>(m_aIssueCollection));
-    aNodeChecks.push_back(std::make_unique<HeaderCheck>(m_aIssueCollection));
-    aNodeChecks.push_back(std::make_unique<TextFormattingCheck>(m_aIssueCollection));
-    aNodeChecks.push_back(std::make_unique<NonInteractiveFormCheck>(m_aIssueCollection));
-    aNodeChecks.push_back(std::make_unique<FloatingTextCheck>(m_aIssueCollection));
-    aNodeChecks.push_back(std::make_unique<TableHeadingCheck>(m_aIssueCollection));
-    aNodeChecks.push_back(std::make_unique<HeadingOrderCheck>(m_aIssueCollection));
-    aNodeChecks.push_back(std::make_unique<NewlineSpacingCheck>(m_aIssueCollection));
-    aNodeChecks.push_back(std::make_unique<SpaceSpacingCheck>(m_aIssueCollection));
-    aNodeChecks.push_back(std::make_unique<FakeFootnoteCheck>(m_aIssueCollection));
-    aNodeChecks.push_back(std::make_unique<FakeCaptionCheck>(m_aIssueCollection));
+    checkDocumentProperties();
 
     auto const& pNodes = m_pDoc->GetNodes();
     SwNode* pNode = nullptr;
@@ -1389,9 +1442,11 @@ void AccessibilityCheck::check()
         pNode = pNodes[n];
         if (pNode)
         {
-            for (std::unique_ptr<NodeCheck>& rpNodeCheck : aNodeChecks)
+            for (std::shared_ptr<BaseCheck>& rpNodeCheck : m_aNodeChecks)
             {
-                rpNodeCheck->check(pNode);
+                auto pNodeCheck = dynamic_cast<NodeCheck*>(rpNodeCheck.get());
+                if (pNodeCheck)
+                    pNodeCheck->check(pNode);
             }
         }
     }

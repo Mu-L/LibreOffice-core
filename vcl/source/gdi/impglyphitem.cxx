@@ -327,10 +327,6 @@ SalLayoutGlyphsCache::GetLayoutGlyphs(VclPtr<const OutputDevice> outputDevice, c
     if (nLen == 0)
         return nullptr;
     const CachedGlyphsKey key(outputDevice, text, nIndex, nLen, nLogicWidth);
-    // for now disable if the font is the one seen in tdf#119074
-    // https://github.com/harfbuzz/harfbuzz/issues/3824
-    if (key.fontMetric.GetFamilyName() == "XB Roya")
-        return nullptr;
     GlyphsCache::const_iterator it = mCachedGlyphs.find(key);
     if (it != mCachedGlyphs.end())
     {
@@ -407,7 +403,7 @@ SalLayoutGlyphsCache::GetLayoutGlyphs(VclPtr<const OutputDevice> outputDevice, c
                 = makeGlyphsSubset(itWhole->second, outputDevice, text, nIndex, nLen);
             if (mLastTemporaryGlyphs.IsValid())
             {
-                mLastTemporaryKey = std::move(key);
+                mLastTemporaryKey = key;
 #ifdef DBG_UTIL
                 std::shared_ptr<const vcl::text::TextLayoutCache> tmpLayoutCache;
                 if (layoutCache == nullptr)

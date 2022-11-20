@@ -60,7 +60,17 @@ bool isBuilderEnabled(std::u16string_view rUIFile, bool bMobile)
         || rUIFile == u"xmlsec/ui/viewcertdialog.ui" || rUIFile == u"xmlsec/ui/certgeneral.ui"
         || rUIFile == u"xmlsec/ui/certpage.ui" || rUIFile == u"svx/ui/accessibilitycheckdialog.ui"
         || rUIFile == u"modules/swriter/ui/translationdialog.ui"
-        || rUIFile == u"svx/ui/accessibilitycheckentry.ui")
+        || rUIFile == u"svx/ui/accessibilitycheckentry.ui"
+        || rUIFile == u"cui/ui/widgettestdialog.ui"
+        || rUIFile == u"modules/swriter/ui/contentcontroldlg.ui"
+        || rUIFile == u"modules/swriter/ui/contentcontrollistitemdlg.ui"
+        || rUIFile == u"modules/swriter/ui/splittable.ui"
+        || rUIFile == u"cui/ui/splitcellsdialog.ui"
+        || rUIFile == u"sfx/ui/documentpropertiesdialog.ui"
+        || rUIFile == u"sfx/ui/custominfopage.ui" || rUIFile == u"sfx/ui/cmisinfopage.ui"
+        || rUIFile == u"sfx/ui/descriptioninfopage.ui" || rUIFile == u"sfx/ui/documentinfopage.ui"
+        || rUIFile == u"sfx/ui/linefragment.ui" || rUIFile == u"sfx/ui/editdurationdialog.ui"
+        || rUIFile == u"modules/swriter/ui/insertcaption.ui")
     {
         return true;
     }

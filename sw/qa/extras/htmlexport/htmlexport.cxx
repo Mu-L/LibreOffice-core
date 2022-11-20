@@ -258,6 +258,11 @@ private:
 class SwHtmlDomExportTest : public SwModelTestBase, public HtmlTestTools
 {
 public:
+    SwHtmlDomExportTest()
+        : SwModelTestBase("/sw/qa/extras/htmlexport/data/")
+    {
+    }
+
     /// Get the .ole path, assuming maTempFile is an XHTML export result.
     OUString GetOlePath();
     OUString GetPngPath();
@@ -313,12 +318,8 @@ void SwHtmlDomExportTest::ParseOle1FromRtfUrl(const OUString& rRtfUrl, SvMemoryS
 
 void SwHtmlDomExportTest::ExportToReqif()
 {
-    uno::Reference<frame::XStorable> xStorable(mxComponent, uno::UNO_QUERY);
-    uno::Sequence<beans::PropertyValue> aStoreProperties = {
-        comphelper::makePropertyValue("FilterName", OUString("HTML (StarWriter)")),
-        comphelper::makePropertyValue("FilterOptions", OUString("xhtmlns=reqif-xhtml")),
-    };
-    xStorable->storeToURL(maTempFile.GetURL(), aStoreProperties);
+    setFilterOptions("xhtmlns=reqif-xhtml");
+    save("HTML (StarWriter)");
 }
 
 void SwHtmlDomExportTest::ImportFromReqif(const OUString& rUrl)
@@ -329,8 +330,6 @@ void SwHtmlDomExportTest::ImportFromReqif(const OUString& rUrl)
     };
     mxComponent = loadFromDesktop(rUrl, "com.sun.star.text.TextDocument", aLoadProperties);
 }
-
-constexpr OUStringLiteral DATA_DIRECTORY = u"/sw/qa/extras/htmlexport/data/";
 
 DECLARE_HTMLEXPORT_ROUNDTRIP_TEST(testFdo81276, "fdo81276.html")
 {
@@ -710,7 +709,7 @@ DECLARE_HTMLEXPORT_ROUNDTRIP_TEST(testReqIfOleImg, "reqif-ole-img.xhtml")
     // Check alternate text (it was empty, for export the 'alt' attribute was used).
     CPPUNIT_ASSERT_EQUAL(OUString("OLE Object"), getProperty<OUString>(xObject, "Title").trim());
 
-    if (!mbExported)
+    if (!isExported())
         return;
 
     // "type" attribute was missing for the inner <object> element.
@@ -752,8 +751,7 @@ CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testReqIfPngImg)
         CPPUNIT_ASSERT(aStream.indexOf("image/png") != -1);
     };
 
-    OUString aURL = m_directories.getURLFromSrc(DATA_DIRECTORY) + "reqif-png-img.xhtml";
-    ImportFromReqif(aURL);
+    ImportFromReqif(createFileURL(u"reqif-png-img.xhtml"));
     verify(/*bExported=*/false);
     uno::Reference<frame::XStorable> xStorable(mxComponent, uno::UNO_QUERY);
     uno::Sequence<beans::PropertyValue> aStoreProperties = {
@@ -804,7 +802,7 @@ DECLARE_HTMLEXPORT_TEST(testReqIfTable2, "reqif-table2.odt")
 CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testReqIfTableHeight)
 {
     // Given a document with a table in it, with an explicit row height:
-    loadURL("private:factory/swriter", nullptr);
+    createSwDoc();
     uno::Sequence<beans::PropertyValue> aTableProperties = {
         comphelper::makePropertyValue("Rows", static_cast<sal_Int32>(1)),
         comphelper::makePropertyValue("Columns", static_cast<sal_Int32>(1)),
@@ -879,7 +877,7 @@ DECLARE_HTMLEXPORT_ROUNDTRIP_TEST(testReqIfOle2, "reqif-ole2.xhtml")
     // document storage, but the embedded object already opened it, so an
     // exception of type com.sun.star.io.IOException was thrown.
 
-    if (mbExported)
+    if (isExported())
     {
         // Check that the replacement graphic is exported at RTF level.
         SvMemoryStream aStream;
@@ -945,8 +943,7 @@ DECLARE_HTMLEXPORT_TEST(testTransparentImage, "transparent-image.odt")
 
 CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testTransparentImageReqIf)
 {
-    OUString aURL = m_directories.getURLFromSrc(DATA_DIRECTORY) + "transparent-image.odt";
-    mxComponent = loadFromDesktop(aURL, "com.sun.star.text.TextDocument", {});
+    createSwDoc("transparent-image.odt");
     uno::Reference<frame::XStorable> xStorable(mxComponent, uno::UNO_QUERY);
     uno::Sequence<beans::PropertyValue> aStoreProperties = {
         comphelper::makePropertyValue("FilterName", OUString("HTML (StarWriter)")),
@@ -1052,16 +1049,13 @@ DECLARE_HTMLEXPORT_TEST(testTdf126879, "tdf126879.odt")
 CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testBlockQuoteReqIf)
 {
     // Build a document model that uses the Quotations paragraph style.
-    loadURL("private:factory/swriter", nullptr);
+    createSwDoc();
     uno::Reference<beans::XPropertySet> xParagraph(getParagraph(1), uno::UNO_QUERY);
     xParagraph->setPropertyValue("ParaStyleName", uno::Any(OUString("Quotations")));
 
     // Export it.
-    uno::Reference<frame::XStorable> xStorable(mxComponent, uno::UNO_QUERY);
-    utl::MediaDescriptor aMediaDescriptor;
-    aMediaDescriptor["FilterName"] <<= OUString("HTML (StarWriter)");
-    aMediaDescriptor["FilterOptions"] <<= OUString("xhtmlns=reqif-xhtml");
-    xStorable->storeToURL(maTempFile.GetURL(), aMediaDescriptor.getAsConstPropertyValueList());
+    setFilterOptions("xhtmlns=reqif-xhtml");
+    save("HTML (StarWriter)");
     SvMemoryStream aStream;
     WrapReqifFromTempFile(aStream);
     xmlDocUniquePtr pDoc = parseXmlStream(&aStream);
@@ -1078,8 +1072,7 @@ CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testRTFOLEMimeType)
 {
     // Import a document with an embedded object.
     OUString aType("test/rtf");
-    OUString aURL = m_directories.getURLFromSrc(DATA_DIRECTORY) + "reqif-ole-data.xhtml";
-    ImportFromReqif(aURL);
+    ImportFromReqif(createFileURL(u"reqif-ole-data.xhtml"));
 
     // Export it.
     uno::Reference<frame::XStorable> xStorable(mxComponent, uno::UNO_QUERY);
@@ -1105,8 +1098,7 @@ CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testRTFOLEMimeType)
 CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testChinese)
 {
     // Load a document with Chinese text in it.
-    OUString aURL = m_directories.getURLFromSrc(DATA_DIRECTORY) + "reqif-chinese.odt";
-    mxComponent = loadFromDesktop(aURL, "com.sun.star.text.TextDocument", {});
+    createSwDoc("reqif-chinese.odt");
 
     // Export it.
     ExportToReqif();
@@ -1122,7 +1114,7 @@ CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testChinese)
 CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testReqifComment)
 {
     // Create a document with a comment in it.
-    loadURL("private:factory/swriter", nullptr);
+    createSwDoc();
     uno::Sequence<beans::PropertyValue> aPropertyValues = comphelper::InitPropertySequence({
         { "Text", uno::Any(OUString("some text")) },
         { "Author", uno::Any(OUString("me")) },
@@ -1143,7 +1135,7 @@ CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testReqifComment)
 CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testReqifFontNameSize)
 {
     // Create a document with a custom font name and size in it.
-    loadURL("private:factory/swriter", nullptr);
+    createSwDoc();
     uno::Reference<beans::XPropertySet> xParagraph(getParagraph(1), uno::UNO_QUERY);
     xParagraph->setPropertyValue("CharFontName", uno::Any(OUString("Liberation Serif")));
     float fCharHeight = 14.0;
@@ -1171,7 +1163,7 @@ CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testReqifFontNameSize)
 CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testReqifParagraphAlignment)
 {
     // Create a document with an explicitly aligned paragraph.
-    loadURL("private:factory/swriter", nullptr);
+    createSwDoc();
     uno::Reference<beans::XPropertySet> xParagraph(getParagraph(1), uno::UNO_QUERY);
     xParagraph->setPropertyValue("ParaAdjust",
                                  uno::Any(static_cast<sal_Int16>(style::ParagraphAdjust_RIGHT)));
@@ -1194,8 +1186,7 @@ CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testReqifParagraphAlignment)
 CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testReqifOle1PDF)
 {
     // Save to reqif-xhtml.
-    OUString aURL = m_directories.getURLFromSrc(DATA_DIRECTORY) + "pdf-ole.odt";
-    mxComponent = loadFromDesktop(aURL, "com.sun.star.text.TextDocument", {});
+    createSwDoc("pdf-ole.odt");
 
     ExportToReqif();
     OUString aRtfUrl = GetOlePath();
@@ -1216,16 +1207,10 @@ CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testReqifOle1PDF)
     mxComponent->dispose();
     mxComponent.clear();
     ImportFromReqif(maTempFile.GetURL());
-    uno::Reference<frame::XStorable> xStorable(mxComponent, uno::UNO_QUERY);
-    utl::TempFileNamed aTempFile;
-    aTempFile.EnableKillingFile();
-    uno::Sequence<beans::PropertyValue> aStoreProperties = {
-        comphelper::makePropertyValue("FilterName", OUString("writer8")),
-    };
-    xStorable->storeToURL(aTempFile.GetURL(), aStoreProperties);
+    save("writer8");
     uno::Reference<packages::zip::XZipFileAccess2> xNameAccess
         = packages::zip::ZipFileAccess::createWithURL(comphelper::getComponentContext(m_xSFactory),
-                                                      aTempFile.GetURL());
+                                                      maTempFile.GetURL());
     uno::Reference<io::XInputStream> xInputStream(xNameAccess->getByName("Object 2"),
                                                   uno::UNO_QUERY);
     std::unique_ptr<SvStream> pStream(utl::UcbStreamHelper::CreateStream(xInputStream, true));
@@ -1242,16 +1227,10 @@ CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testReqifOle1PDF)
 CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testReqifOle1Paint)
 {
     // Load the bug document, which has OLE1 data in it, which is not a wrapper around OLE2 data.
-    OUString aURL = m_directories.getURLFromSrc(DATA_DIRECTORY) + "paint-ole.xhtml";
-    ImportFromReqif(aURL);
+    ImportFromReqif(createFileURL(u"paint-ole.xhtml"));
 
     // Save it as ODT to inspect the result of the OLE1 -> OLE2 conversion.
-    uno::Reference<frame::XStorable> xStorable(mxComponent, uno::UNO_QUERY);
-    xStorable.set(mxComponent, uno::UNO_QUERY);
-    uno::Sequence<beans::PropertyValue> aStoreProperties = {
-        comphelper::makePropertyValue("FilterName", OUString("writer8")),
-    };
-    xStorable->storeToURL(maTempFile.GetURL(), aStoreProperties);
+    save("writer8");
     uno::Reference<packages::zip::XZipFileAccess2> xNameAccess
         = packages::zip::ZipFileAccess::createWithURL(comphelper::getComponentContext(m_xSFactory),
                                                       maTempFile.GetURL());
@@ -1294,8 +1273,7 @@ CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testReqifOle1Paint)
 CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testReqifOle1PaintBitmapFormat)
 {
     // Given a document with a 8bpp bitmap:
-    OUString aURL = m_directories.getURLFromSrc(DATA_DIRECTORY) + "paint-ole-bitmap-format.odt";
-    mxComponent = loadFromDesktop(aURL, "com.sun.star.text.TextDocument", {});
+    createSwDoc("paint-ole-bitmap-format.odt");
 
     // When exporting to reqif-xhtml with ExportImagesAsOLE enabled:
     uno::Reference<frame::XStorable> xStorable(mxComponent, uno::UNO_QUERY);
@@ -1326,7 +1304,7 @@ CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testReqifOle1PaintBitmapFormat)
 CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testMultiParaListItem)
 {
     // Create a document with 3 list items: A, B&C and D.
-    loadURL("private:factory/swriter", nullptr);
+    createSwDoc();
     SwXTextDocument* pTextDoc = dynamic_cast<SwXTextDocument*>(mxComponent.get());
     SwWrtShell* pWrtShell = pTextDoc->GetDocShell()->GetWrtShell();
     pWrtShell->Insert("A");
@@ -1370,7 +1348,7 @@ CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testMultiParaListItem)
 CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testUnderlineNone)
 {
     // Create a document with a single paragraph: its underlying is set to an explicit 'none' value.
-    loadURL("private:factory/swriter", nullptr);
+    createSwDoc();
     uno::Reference<text::XTextDocument> xTextDocument(mxComponent, uno::UNO_QUERY);
     uno::Reference<text::XText> xText = xTextDocument->getText();
     xText->insertString(xText->getEnd(), "x", /*bAbsorb=*/false);
@@ -1392,8 +1370,7 @@ CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testUnderlineNone)
 CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testReqifOle1PresDataNoOle2)
 {
     // Save to reqif-xhtml.
-    OUString aURL = m_directories.getURLFromSrc(DATA_DIRECTORY) + "no-ole2-pres-data.odt";
-    mxComponent = loadFromDesktop(aURL, "com.sun.star.text.TextDocument", {});
+    createSwDoc("no-ole2-pres-data.odt");
     ExportToReqif();
     OUString aRtfUrl = GetOlePath();
     SvMemoryStream aOle1;
@@ -1409,8 +1386,7 @@ CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testReqifOle1PresDataNoOle2)
 CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testReqifOle1PresDataWmfOnly)
 {
     // Save to reqif-xhtml.
-    OUString aURL = m_directories.getURLFromSrc(DATA_DIRECTORY) + "ole1-pres-data-wmf.odt";
-    mxComponent = loadFromDesktop(aURL, "com.sun.star.text.TextDocument", {});
+    createSwDoc("ole1-pres-data-wmf.odt");
     ExportToReqif();
     OUString aRtfUrl = GetOlePath();
     SvMemoryStream aOle1;
@@ -1427,8 +1403,7 @@ CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testReqifOle1PresDataWmfOnly)
 CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testReqifAscharObjsize)
 {
     // Given a document with an as-char anchored embedded object:
-    OUString aURL = m_directories.getURLFromSrc(DATA_DIRECTORY) + "reqif-aschar-objsize.odt";
-    mxComponent = loadFromDesktop(aURL, "com.sun.star.text.TextDocument", {});
+    createSwDoc("reqif-aschar-objsize.odt");
 
     // When exporting to reqif-xhtml:
     ExportToReqif();
@@ -1450,9 +1425,7 @@ CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testReqifAscharObjsize)
 CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testReqifObjdataPresentationDataSize)
 {
     // Given a document with an OLE2 embedded object, containing a preview:
-    OUString aURL
-        = m_directories.getURLFromSrc(DATA_DIRECTORY) + "reqif-objdata-presentationdatasize.odt";
-    mxComponent = loadFromDesktop(aURL, "com.sun.star.text.TextDocument", {});
+    createSwDoc("reqif-objdata-presentationdatasize.odt");
 
     // When exporting to ReqIF:
     ExportToReqif();
@@ -1473,7 +1446,7 @@ CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testReqifObjdataPresentationDataSize)
 CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testListHeading)
 {
     // Given a document with a list heading:
-    loadURL("private:factory/swriter", nullptr);
+    createSwDoc();
     SwXTextDocument* pTextDoc = dynamic_cast<SwXTextDocument*>(mxComponent.get());
     SwWrtShell* pWrtShell = pTextDoc->GetDocShell()->GetWrtShell();
     pWrtShell->Insert("list header");
@@ -1504,7 +1477,7 @@ CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testListHeading)
 CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testPartiallyNumberedList)
 {
     // Given a document with a list, first para is numbered, second is not:
-    loadURL("private:factory/swriter", nullptr);
+    createSwDoc();
     SwXTextDocument* pTextDoc = dynamic_cast<SwXTextDocument*>(mxComponent.get());
     SwWrtShell* pWrtShell = pTextDoc->GetDocShell()->GetWrtShell();
     pWrtShell->Insert("list header");
@@ -1546,7 +1519,7 @@ CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testPartiallyNumberedList)
 CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testListHeaderAndItem)
 {
     // Given a document with a list, first para is not numbered, but the second is:
-    loadURL("private:factory/swriter", nullptr);
+    createSwDoc();
     SwXTextDocument* pTextDoc = dynamic_cast<SwXTextDocument*>(mxComponent.get());
     SwWrtShell* pWrtShell = pTextDoc->GetDocShell()->GetWrtShell();
     pWrtShell->Insert("not numbered");
@@ -1587,7 +1560,7 @@ CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testListHeaderAndItem)
 CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testBlockQuoteNoMargin)
 {
     // Given a document with some text, para style set to Quotations, no bottom margin:
-    loadURL("private:factory/swriter", nullptr);
+    createSwDoc();
     uno::Reference<text::XTextDocument> xTextDocument(mxComponent, uno::UNO_QUERY);
     uno::Reference<text::XText> xText = xTextDocument->getText();
     xText->insertString(xText->getEnd(), "string", /*bAbsorb=*/false);
@@ -1617,10 +1590,9 @@ CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testBlockQuoteNoMargin)
 CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testReqifImageToOle)
 {
     // Given a document with an image:
-    loadURL("private:factory/swriter", nullptr);
-    OUString aImageURL = m_directories.getURLFromSrc(DATA_DIRECTORY) + "ole2.png";
+    createSwDoc();
     uno::Sequence<beans::PropertyValue> aArgs = {
-        comphelper::makePropertyValue("FileName", aImageURL),
+        comphelper::makePropertyValue("FileName", createFileURL(u"ole2.png")),
     };
     dispatchCommand(mxComponent, ".uno:InsertGraphic", aArgs);
 
@@ -1661,20 +1633,14 @@ CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testReqifImageToOle)
 CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testReqifEmbedPNGDirectly)
 {
     // Given a document with an image:
-    loadURL("private:factory/swriter", nullptr);
-    OUString aImageURL = m_directories.getURLFromSrc(DATA_DIRECTORY) + "ole2.png";
+    createSwDoc();
     uno::Sequence<beans::PropertyValue> aArgs = {
-        comphelper::makePropertyValue("FileName", aImageURL),
+        comphelper::makePropertyValue("FileName", createFileURL(u"ole2.png")),
     };
     dispatchCommand(mxComponent, ".uno:InsertGraphic", aArgs);
 
     // When exporting to XHTML:
-    uno::Reference<frame::XStorable> xStorable(mxComponent, uno::UNO_QUERY);
-    uno::Sequence<beans::PropertyValue> aStoreProperties = {
-        comphelper::makePropertyValue("FilterName", OUString("HTML (StarWriter)")),
-        comphelper::makePropertyValue("FilterOptions", OUString("xhtmlns=reqif-xhtml")),
-    };
-    xStorable->storeToURL(maTempFile.GetURL(), aStoreProperties);
+    ExportToReqif();
 
     // Then make sure the PNG is embedded directly, without an RTF wrapper:
     SvMemoryStream aStream;
@@ -1691,20 +1657,14 @@ CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testReqifEmbedPNGDirectly)
 CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testReqifEmbedJPGDirectly)
 {
     // Given a document with an image:
-    loadURL("private:factory/swriter", nullptr);
-    OUString aImageURL = m_directories.getURLFromSrc(DATA_DIRECTORY) + "reqif-ole-img.jpg";
+    createSwDoc();
     uno::Sequence<beans::PropertyValue> aArgs = {
-        comphelper::makePropertyValue("FileName", aImageURL),
+        comphelper::makePropertyValue("FileName", createFileURL(u"reqif-ole-img.jpg")),
     };
     dispatchCommand(mxComponent, ".uno:InsertGraphic", aArgs);
 
     // When exporting to XHTML:
-    uno::Reference<frame::XStorable> xStorable(mxComponent, uno::UNO_QUERY);
-    uno::Sequence<beans::PropertyValue> aStoreProperties = {
-        comphelper::makePropertyValue("FilterName", OUString("HTML (StarWriter)")),
-        comphelper::makePropertyValue("FilterOptions", OUString("xhtmlns=reqif-xhtml")),
-    };
-    xStorable->storeToURL(maTempFile.GetURL(), aStoreProperties);
+    ExportToReqif();
 
     // Then make sure the JPG is embedded directly, without an RTF wrapper:
     SvMemoryStream aStream;
@@ -1723,24 +1683,18 @@ CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testReqifEmbedJPGDirectly)
 CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testReqifEmbedPNGShapeDirectly)
 {
     // Given a document with an image shape:
-    loadURL("private:factory/swriter", nullptr);
-    OUString aImageURL = m_directories.getURLFromSrc(DATA_DIRECTORY) + "ole2.png";
+    createSwDoc();
     uno::Reference<css::lang::XMultiServiceFactory> xFactory(mxComponent, uno::UNO_QUERY);
     uno::Reference<drawing::XShape> xShape(
         xFactory->createInstance("com.sun.star.drawing.GraphicObjectShape"), uno::UNO_QUERY);
     xShape->setSize(awt::Size(10000, 10000));
     uno::Reference<beans::XPropertySet> xShapeProps(xShape, uno::UNO_QUERY);
-    xShapeProps->setPropertyValue("GraphicURL", uno::Any(aImageURL));
+    xShapeProps->setPropertyValue("GraphicURL", uno::Any(createFileURL(u"ole2.png")));
     uno::Reference<drawing::XDrawPageSupplier> xDrawPageSupplier(mxComponent, uno::UNO_QUERY);
     xDrawPageSupplier->getDrawPage()->add(xShape);
 
     // When exporting to XHTML:
-    uno::Reference<frame::XStorable> xStorable(mxComponent, uno::UNO_QUERY);
-    uno::Sequence<beans::PropertyValue> aStoreProperties = {
-        comphelper::makePropertyValue("FilterName", OUString("HTML (StarWriter)")),
-        comphelper::makePropertyValue("FilterOptions", OUString("xhtmlns=reqif-xhtml")),
-    };
-    xStorable->storeToURL(maTempFile.GetURL(), aStoreProperties);
+    ExportToReqif();
 
     // Then make sure the PNG is embedded directly, without an RTF wrapper:
     SvMemoryStream aStream;
@@ -1756,24 +1710,18 @@ CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testReqifEmbedPNGShapeDirectly)
 CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testReqifEmbedJPGShapeDirectly)
 {
     // Given a document with an image:
-    loadURL("private:factory/swriter", nullptr);
-    OUString aImageURL = m_directories.getURLFromSrc(DATA_DIRECTORY) + "reqif-ole-img.jpg";
+    createSwDoc();
     uno::Reference<css::lang::XMultiServiceFactory> xFactory(mxComponent, uno::UNO_QUERY);
     uno::Reference<drawing::XShape> xShape(
         xFactory->createInstance("com.sun.star.drawing.GraphicObjectShape"), uno::UNO_QUERY);
     xShape->setSize(awt::Size(10000, 10000));
     uno::Reference<beans::XPropertySet> xShapeProps(xShape, uno::UNO_QUERY);
-    xShapeProps->setPropertyValue("GraphicURL", uno::Any(aImageURL));
+    xShapeProps->setPropertyValue("GraphicURL", uno::Any(createFileURL(u"reqif-ole-img.jpg")));
     uno::Reference<drawing::XDrawPageSupplier> xDrawPageSupplier(mxComponent, uno::UNO_QUERY);
     xDrawPageSupplier->getDrawPage()->add(xShape);
 
     // When exporting to XHTML:
-    uno::Reference<frame::XStorable> xStorable(mxComponent, uno::UNO_QUERY);
-    uno::Sequence<beans::PropertyValue> aStoreProperties = {
-        comphelper::makePropertyValue("FilterName", OUString("HTML (StarWriter)")),
-        comphelper::makePropertyValue("FilterOptions", OUString("xhtmlns=reqif-xhtml")),
-    };
-    xStorable->storeToURL(maTempFile.GetURL(), aStoreProperties);
+    ExportToReqif();
 
     // Then make sure the JPG is embedded directly, without an RTF wrapper:
     SvMemoryStream aStream;
@@ -1792,14 +1740,13 @@ CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testReqifEmbedJPGShapeDirectly)
 CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testReqifEmbedPNGShapeAsOLE)
 {
     // Given a document with an image shape:
-    loadURL("private:factory/swriter", nullptr);
-    OUString aImageURL = m_directories.getURLFromSrc(DATA_DIRECTORY) + "ole2.png";
+    createSwDoc();
     uno::Reference<css::lang::XMultiServiceFactory> xFactory(mxComponent, uno::UNO_QUERY);
     uno::Reference<drawing::XShape> xShape(
         xFactory->createInstance("com.sun.star.drawing.GraphicObjectShape"), uno::UNO_QUERY);
     xShape->setSize(awt::Size(10000, 10000));
     uno::Reference<beans::XPropertySet> xShapeProps(xShape, uno::UNO_QUERY);
-    xShapeProps->setPropertyValue("GraphicURL", uno::Any(aImageURL));
+    xShapeProps->setPropertyValue("GraphicURL", uno::Any(createFileURL(u"ole2.png")));
     uno::Reference<drawing::XDrawPageSupplier> xDrawPageSupplier(mxComponent, uno::UNO_QUERY);
     xDrawPageSupplier->getDrawPage()->add(xShape);
 
@@ -1827,7 +1774,7 @@ CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testReqifEmbedPNGShapeAsOLE)
 CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testReqifEmbedShapeAsPNG)
 {
     // Given a document with a shape:
-    loadURL("private:factory/swriter", nullptr);
+    createSwDoc();
     uno::Reference<css::lang::XMultiServiceFactory> xFactory(mxComponent, uno::UNO_QUERY);
     uno::Reference<drawing::XShape> xShape(
         xFactory->createInstance("com.sun.star.drawing.RectangleShape"), uno::UNO_QUERY);
@@ -1836,12 +1783,7 @@ CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testReqifEmbedShapeAsPNG)
     xDrawPageSupplier->getDrawPage()->add(xShape);
 
     // When exporting to XHTML:
-    uno::Reference<frame::XStorable> xStorable(mxComponent, uno::UNO_QUERY);
-    uno::Sequence<beans::PropertyValue> aStoreProperties = {
-        comphelper::makePropertyValue("FilterName", OUString("HTML (StarWriter)")),
-        comphelper::makePropertyValue("FilterOptions", OUString("xhtmlns=reqif-xhtml")),
-    };
-    xStorable->storeToURL(maTempFile.GetURL(), aStoreProperties);
+    ExportToReqif();
 
     // Then make sure the shape is embedded as a PNG:
     SvMemoryStream aStream;
@@ -1867,7 +1809,7 @@ CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testReqifEmbedShapeAsPNG)
 CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testShapeAsImageHtml)
 {
     // Given a document with a shape:
-    loadURL("private:factory/swriter", nullptr);
+    createSwDoc();
     uno::Reference<css::lang::XMultiServiceFactory> xFactory(mxComponent, uno::UNO_QUERY);
     uno::Reference<drawing::XShape> xShape(
         xFactory->createInstance("com.sun.star.drawing.RectangleShape"), uno::UNO_QUERY);
@@ -1876,15 +1818,8 @@ CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testShapeAsImageHtml)
     xDrawPageSupplier->getDrawPage()->add(xShape);
 
     // When exporting to plain HTML:
-    uno::Reference<frame::XStorable> xStorable(mxComponent, uno::UNO_QUERY);
-    uno::Sequence<beans::PropertyValue> aStoreProperties = {
-        comphelper::makePropertyValue("FilterName", OUString("HTML (StarWriter)")),
-    };
-    xStorable->storeToURL(maTempFile.GetURL(), aStoreProperties);
-    mxComponent->dispose();
+    reload("HTML (StarWriter)", "");
 
-    // Then make sure importing it back results in a clean doc model:
-    mxComponent = loadFromDesktop(maTempFile.GetURL());
     // Without the accompanying fix in place, this test would have failed with:
     // - Expected:
     // - Actual  :  />
@@ -1895,7 +1830,7 @@ CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testShapeAsImageHtml)
 CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testJson)
 {
     // Given a document with a shape:
-    loadURL("private:factory/swriter", nullptr);
+    createSwDoc();
     uno::Reference<css::lang::XMultiServiceFactory> xFactory(mxComponent, uno::UNO_QUERY);
     uno::Reference<drawing::XShape> xShape(
         xFactory->createInstance("com.sun.star.drawing.RectangleShape"), uno::UNO_QUERY);
@@ -1904,14 +1839,9 @@ CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testJson)
     xDrawPageSupplier->getDrawPage()->add(xShape);
 
     // When exporting to HTML, and specifying options as JSON:
-    uno::Reference<frame::XStorable> xStorable(mxComponent, uno::UNO_QUERY);
-    OUString aJson("{\"XhtmlNs\":{\"type\":\"string\", \"value\":\"reqif-xhtml\"},"
-                   "\"ShapeDPI\":{\"type\":\"long\",\"value\":\"192\"}}");
-    uno::Sequence<beans::PropertyValue> aStoreProperties = {
-        comphelper::makePropertyValue("FilterName", OUString("HTML (StarWriter)")),
-        comphelper::makePropertyValue("FilterOptions", aJson),
-    };
-    xStorable->storeToURL(maTempFile.GetURL(), aStoreProperties);
+    setFilterOptions("{\"XhtmlNs\":{\"type\":\"string\", \"value\":\"reqif-xhtml\"},"
+                     "\"ShapeDPI\":{\"type\":\"long\",\"value\":\"192\"}}");
+    save("HTML (StarWriter)");
 
     // Then make sure those options are not ignored:
     // Without the accompanying fix in place, this test would have failed, as GetPngPath() expects
@@ -1928,7 +1858,7 @@ CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testJson)
 CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testReqifEmbedShapeAsPNGCustomDPI)
 {
     // Given a document with a shape:
-    loadURL("private:factory/swriter", nullptr);
+    createSwDoc();
     uno::Reference<css::lang::XMultiServiceFactory> xFactory(mxComponent, uno::UNO_QUERY);
     uno::Reference<drawing::XShape> xShape(
         xFactory->createInstance("com.sun.star.drawing.RectangleShape"), uno::UNO_QUERY);
@@ -1976,10 +1906,9 @@ CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testReqifEmbedShapeAsPNGCustomDPI)
 CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testReqifOleBmpTransparent)
 {
     // Given a document with a transparent image:
-    loadURL("private:factory/swriter", nullptr);
-    OUString aImageURL = m_directories.getURLFromSrc(DATA_DIRECTORY) + "transparent.png";
+    createSwDoc();
     uno::Sequence<beans::PropertyValue> aArgs = {
-        comphelper::makePropertyValue("FileName", aImageURL),
+        comphelper::makePropertyValue("FileName", createFileURL(u"transparent.png")),
     };
     dispatchCommand(mxComponent, ".uno:InsertGraphic", aArgs);
 
@@ -2019,7 +1948,7 @@ CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testReqifOleBmpTransparent)
 CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testListsHeading)
 {
     // Given a document with lh, lh, li, li, lh and lh nodes:
-    loadURL("private:factory/swriter", nullptr);
+    createSwDoc();
     SwXTextDocument* pTextDoc = dynamic_cast<SwXTextDocument*>(mxComponent.get());
     SwWrtShell* pWrtShell = pTextDoc->GetDocShell()->GetWrtShell();
     pWrtShell->Insert("list 1, header 1");
@@ -2106,8 +2035,7 @@ CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testListsHeading)
 CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testOleEmfPreviewToHtml)
 {
     // Given a document containing an embedded object, with EMF preview:
-    OUString aURL = m_directories.getURLFromSrc(DATA_DIRECTORY) + "ole2.odt";
-    mxComponent = loadFromDesktop(aURL, "com.sun.star.text.TextDocument", {});
+    createSwDoc("ole2.odt");
 
     // When exporting to HTML:
     uno::Reference<frame::XStorable> xStorable(mxComponent, uno::UNO_QUERY);
@@ -2127,7 +2055,8 @@ CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testOleEmfPreviewToHtml)
 CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testNestedBullets)
 {
     // Given a documented with nested lists:
-    SwDoc* pDoc = createSwDoc();
+    createSwDoc();
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
     pWrtShell->Insert("first");
     sal_uInt16 nPos = pDoc->MakeNumRule(pDoc->GetUniqueNumRuleName());
@@ -2166,7 +2095,8 @@ CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testNestedBullets)
 CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testTrailingLineBreak)
 {
     // Given a document with a trailing line-break:
-    SwDoc* pDoc = createSwDoc();
+    createSwDoc();
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
     pWrtShell->Insert("test\n");
 
@@ -2206,7 +2136,8 @@ CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testTrailingLineBreak)
 CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testLeadingTab)
 {
     // Given a document with leading tabs:
-    SwDoc* pDoc = createSwDoc();
+    createSwDoc();
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
     pWrtShell->Insert("\t first");
     pWrtShell->SplitNode();
@@ -2242,7 +2173,8 @@ CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testLeadingTab)
 CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testLeadingTabHTML)
 {
     // Given a document with leading tabs:
-    SwDoc* pDoc = createSwDoc();
+    createSwDoc();
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
     pWrtShell->Insert("\t test");
 
@@ -2298,7 +2230,7 @@ CPPUNIT_TEST_FIXTURE(HtmlExportTest, testClearingBreak)
 
     // Given a document with an at-para anchored image + a clearing break:
     // When loading that file:
-    load(mpTestDocumentPath, "clearing-break.html");
+    createSwWebDoc("clearing-break.html");
     // Then make sure that the clear property of the break is not ignored:
     verify();
     reload(mpFilter, "clearing-break.html");
@@ -2310,7 +2242,8 @@ CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testTableBackground)
 {
     // Given a document with two tables: first stable has a background, second table has a
     // background in its first row:
-    SwDoc* pDoc = createSwDoc();
+    createSwDoc();
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
     SwInsertTableOptions aInsertTableOptions(SwInsertTableFlags::DefaultBorder,
                                              /*nRowsToRepeat=*/0);
@@ -2385,7 +2318,8 @@ CPPUNIT_TEST_FIXTURE(HtmlExportTest, testImageKeepRatio)
 CPPUNIT_TEST_FIXTURE(SwHtmlDomExportTest, testSectionDir)
 {
     // Given a document with a section:
-    SwDoc* pDoc = createSwDoc();
+    createSwDoc();
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
     pWrtShell->Insert("test");
     pWrtShell->SelAll();
@@ -2409,7 +2343,8 @@ CPPUNIT_TEST_FIXTURE(HtmlExportTest, testTdf114769)
 {
     // Create document from scratch since relative urls to filesystem can be replaced
     // by absolute during save/load
-    SwDoc* pDoc = createSwDoc();
+    createSwDoc();
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
     pWrtShell->Insert("Hyperlink1");
     pWrtShell->SplitNode();

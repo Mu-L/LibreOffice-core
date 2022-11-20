@@ -22,11 +22,14 @@ $(eval $(call gb_CppunitTest_add_exception_objects,svx_styles, \
 $(eval $(call gb_CppunitTest_use_libraries,svx_styles, \
     comphelper \
     cppu \
+    cppuhelper \
     svx \
     sal \
     subsequenttest \
     test \
     unotest \
+    utl \
+    tl \
 ))
 
 $(eval $(call gb_CppunitTest_use_sdk_api,svx_styles))

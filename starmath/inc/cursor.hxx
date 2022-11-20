@@ -186,6 +186,9 @@ public:
     /** Draw the caret */
     void Draw(OutputDevice& pDev, Point Offset, bool isCaretVisible);
 
+    tools::Rectangle GetCaretRectangle(OutputDevice& rOutDev) const;
+    tools::Rectangle GetSelectionRectangle(OutputDevice& rOutDev) const;
+
     bool IsAtTailOfBracket(SmBracketType eBracketType) const;
 
 private:
@@ -273,7 +276,7 @@ private:
     bool SetCaretPosition(SmCaretPos pos);
 
     /** Set selected on nodes of the tree */
-    void AnnotateSelection();
+    void AnnotateSelection() const;
 
     /** Clone list of nodes in a clipboard (creates a deep clone) */
     static std::unique_ptr<SmNodeList> CloneList(SmClipboard& rClipboard);

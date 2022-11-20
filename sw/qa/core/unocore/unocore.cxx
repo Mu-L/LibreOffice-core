@@ -31,20 +31,20 @@
 
 using namespace ::com::sun::star;
 
-namespace
-{
-constexpr OUStringLiteral DATA_DIRECTORY = u"/sw/qa/core/unocore/data/";
-}
-
 /// Covers sw/source/core/unocore/ fixes.
 class SwCoreUnocoreTest : public SwModelTestBase
 {
+public:
+    SwCoreUnocoreTest()
+        : SwModelTestBase("/sw/qa/core/unocore/data/")
+    {
+    }
 };
 
 CPPUNIT_TEST_FIXTURE(SwCoreUnocoreTest, testTdf119081)
 {
     // Load a doc with a nested table in it.
-    load(DATA_DIRECTORY, "tdf119081.odt");
+    createSwDoc("tdf119081.odt");
     SwXTextDocument* pTextDoc = dynamic_cast<SwXTextDocument*>(mxComponent.get());
     CPPUNIT_ASSERT(pTextDoc);
     SwDocShell* pDocShell = pTextDoc->GetDocShell();
@@ -75,7 +75,7 @@ CPPUNIT_TEST_FIXTURE(SwCoreUnocoreTest, testTdf119081)
 
 CPPUNIT_TEST_FIXTURE(SwCoreUnocoreTest, flyAtParaAnchor)
 {
-    mxComponent = loadFromDesktop("private:factory/swriter", "com.sun.star.text.TextDocument");
+    createSwDoc();
     uno::Reference<lang::XMultiServiceFactory> const xMSF(mxComponent, uno::UNO_QUERY_THROW);
     uno::Reference<text::XTextDocument> const xTD(mxComponent, uno::UNO_QUERY_THROW);
     uno::Reference<text::XTextFrame> const xTextFrame(
@@ -95,7 +95,7 @@ CPPUNIT_TEST_FIXTURE(SwCoreUnocoreTest, flyAtParaAnchor)
 
 CPPUNIT_TEST_FIXTURE(SwCoreUnocoreTest, testRtlGutter)
 {
-    mxComponent = loadFromDesktop("private:factory/swriter", "com.sun.star.text.TextDocument");
+    createSwDoc();
     uno::Reference<beans::XPropertySet> xPageStyle(getStyles("PageStyles")->getByName("Standard"),
                                                    uno::UNO_QUERY);
     // Without the accompanying fix in place, this test would have failed with:
@@ -169,8 +169,8 @@ CPPUNIT_TEST_FIXTURE(SwCoreUnocoreTest, testViewCursorTextFrame)
 {
     // Given a document with a graphic and holding a reference to that graphic frame:
     createSwDoc();
-    uno::Sequence<beans::PropertyValue> aInsertArgs = { comphelper::makePropertyValue(
-        "FileName", m_directories.getURLFromSrc(DATA_DIRECTORY) + "graphic.png") };
+    uno::Sequence<beans::PropertyValue> aInsertArgs
+        = { comphelper::makePropertyValue("FileName", createFileURL(u"graphic.png")) };
     dispatchCommand(mxComponent, ".uno:InsertGraphic", aInsertArgs);
     uno::Reference<frame::XModel> xModel(mxComponent, uno::UNO_QUERY);
     uno::Reference<text::XTextViewCursorSupplier> xTextViewCursorSupplier(
@@ -198,7 +198,7 @@ static void BasicDisplayErrorHandler(const OUString& /*rErr*/, const OUString& /
 CPPUNIT_TEST_FIXTURE(SwCoreUnocoreTest, testBrokenEmbeddedObject)
 {
     // Given a document with a broken embedded object (the XML markup is not well-formed):
-    load(DATA_DIRECTORY, "broken-embedded-object.odt");
+    createSwDoc("broken-embedded-object.odt");
     uno::Reference<text::XTextEmbeddedObjectsSupplier> xSupplier(mxComponent, uno::UNO_QUERY);
     uno::Reference<container::XIndexAccess> xObjects(xSupplier->getEmbeddedObjects(),
                                                      uno::UNO_QUERY);
@@ -222,7 +222,8 @@ CPPUNIT_TEST_FIXTURE(SwCoreUnocoreTest, testBrokenEmbeddedObject)
 CPPUNIT_TEST_FIXTURE(SwCoreUnocoreTest, testLineBreakInsert)
 {
     // Given an empty document:
-    SwDoc* pDoc = createSwDoc();
+    createSwDoc();
+    SwDoc* pDoc = getSwDoc();
 
     // When inserting a line-break with properties:
     uno::Reference<lang::XMultiServiceFactory> xMSF(mxComponent, uno::UNO_QUERY);
@@ -286,7 +287,7 @@ CPPUNIT_TEST_FIXTURE(SwCoreUnocoreTest, testLineBreakTextPortionEnum)
 CPPUNIT_TEST_FIXTURE(SwModelTestBase, testUserFieldTooltip)
 {
     // Given a document with a user field:
-    loadURL("private:factory/swriter", nullptr);
+    createSwDoc();
     uno::Reference<lang::XMultiServiceFactory> xFactory(mxComponent, uno::UNO_QUERY);
     uno::Reference<text::XDependentTextField> xField(
         xFactory->createInstance("com.sun.star.text.TextField.User"), uno::UNO_QUERY);
@@ -314,7 +315,8 @@ CPPUNIT_TEST_FIXTURE(SwModelTestBase, testUserFieldTooltip)
 CPPUNIT_TEST_FIXTURE(SwCoreUnocoreTest, testContentControlInsert)
 {
     // Given an empty document:
-    SwDoc* pDoc = createSwDoc();
+    createSwDoc();
+    SwDoc* pDoc = getSwDoc();
 
     // When inserting a content control around one or more text portions:
     uno::Reference<lang::XMultiServiceFactory> xMSF(mxComponent, uno::UNO_QUERY);
@@ -359,7 +361,7 @@ CPPUNIT_TEST_FIXTURE(SwCoreUnocoreTest, testContentControlInsert)
 CPPUNIT_TEST_FIXTURE(SwModelTestBase, testImageTooltip)
 {
     // Given a document with an image and a hyperlink on it:
-    loadURL("private:factory/swriter", nullptr);
+    createSwDoc();
     uno::Reference<lang::XMultiServiceFactory> xFactory(mxComponent, uno::UNO_QUERY);
     uno::Reference<text::XTextDocument> xDocument(mxComponent, uno::UNO_QUERY);
     uno::Reference<text::XText> xText = xDocument->getText();
@@ -384,7 +386,8 @@ CPPUNIT_TEST_FIXTURE(SwModelTestBase, testImageTooltip)
 CPPUNIT_TEST_FIXTURE(SwCoreUnocoreTest, testContentControlTextPortionEnum)
 {
     // Given a document with a content control around one or more text portions:
-    SwDoc* pDoc = createSwDoc();
+    createSwDoc();
+    SwDoc* pDoc = getSwDoc();
     uno::Reference<lang::XMultiServiceFactory> xMSF(mxComponent, uno::UNO_QUERY);
     uno::Reference<text::XTextDocument> xTextDocument(mxComponent, uno::UNO_QUERY);
     uno::Reference<text::XText> xText = xTextDocument->getText();
@@ -441,7 +444,8 @@ CPPUNIT_TEST_FIXTURE(SwCoreUnocoreTest, testContentControlTextPortionEnum)
 CPPUNIT_TEST_FIXTURE(SwCoreUnocoreTest, testContentControlCheckbox)
 {
     // Given an empty document:
-    SwDoc* pDoc = createSwDoc();
+    createSwDoc();
+    SwDoc* pDoc = getSwDoc();
 
     // When inserting a checkbox content control:
     uno::Reference<lang::XMultiServiceFactory> xMSF(mxComponent, uno::UNO_QUERY);
@@ -479,7 +483,8 @@ CPPUNIT_TEST_FIXTURE(SwCoreUnocoreTest, testContentControlCheckbox)
 CPPUNIT_TEST_FIXTURE(SwCoreUnocoreTest, testContentControlDropdown)
 {
     // Given an empty document:
-    SwDoc* pDoc = createSwDoc();
+    createSwDoc();
+    SwDoc* pDoc = getSwDoc();
 
     // When inserting a dropdown content control:
     uno::Reference<lang::XMultiServiceFactory> xMSF(mxComponent, uno::UNO_QUERY);
@@ -544,7 +549,7 @@ CPPUNIT_TEST_FIXTURE(SwCoreUnocoreTest, testInsertFileInContentControlException)
 
     // Reject inserting a document inside the content control:
     xCursor->goLeft(1, false);
-    OUString aURL(m_directories.getURLFromSrc(DATA_DIRECTORY) + "tdf119081.odt");
+    OUString aURL(createFileURL(u"tdf119081.odt"));
     uno::Reference<document::XDocumentInsertable> xInsertable(xCursor, uno::UNO_QUERY);
     CPPUNIT_ASSERT_THROW(xInsertable->insertDocumentFromURL(aURL, {}), uno::RuntimeException);
 
@@ -556,7 +561,8 @@ CPPUNIT_TEST_FIXTURE(SwCoreUnocoreTest, testInsertFileInContentControlException)
 CPPUNIT_TEST_FIXTURE(SwCoreUnocoreTest, testContentControlPicture)
 {
     // Given an empty document:
-    SwDoc* pDoc = createSwDoc();
+    createSwDoc();
+    SwDoc* pDoc = getSwDoc();
 
     // When inserting a picture content control:
     uno::Reference<lang::XMultiServiceFactory> xMSF(mxComponent, uno::UNO_QUERY);
@@ -593,7 +599,8 @@ CPPUNIT_TEST_FIXTURE(SwCoreUnocoreTest, testContentControlPicture)
 CPPUNIT_TEST_FIXTURE(SwCoreUnocoreTest, testContentControlDate)
 {
     // Given an empty document:
-    SwDoc* pDoc = createSwDoc();
+    createSwDoc();
+    SwDoc* pDoc = getSwDoc();
 
     // When inserting a date content control:
     uno::Reference<lang::XMultiServiceFactory> xMSF(mxComponent, uno::UNO_QUERY);
@@ -657,7 +664,8 @@ CPPUNIT_TEST_FIXTURE(SwCoreUnocoreTest, testListIdState)
 {
     // Given a document with 3 paragraphs: an outer numbering on para 1 & 3, an inner numbering on
     // para 2:
-    SwDoc* pDoc = createSwDoc();
+    createSwDoc();
+    SwDoc* pDoc = getSwDoc();
     SwWrtShell* pWrtShell = pDoc->GetDocShell()->GetWrtShell();
     {
         SfxItemSetFixed<RES_PARATR_NUMRULE, RES_PARATR_NUMRULE> aSet(pWrtShell->GetAttrPool());
@@ -696,7 +704,8 @@ CPPUNIT_TEST_FIXTURE(SwCoreUnocoreTest, testListIdState)
 CPPUNIT_TEST_FIXTURE(SwCoreUnocoreTest, testContentControlPlainText)
 {
     // Given an empty document:
-    SwDoc* pDoc = createSwDoc();
+    createSwDoc();
+    SwDoc* pDoc = getSwDoc();
 
     // When inserting a plain text content control around a text portion:
     uno::Reference<lang::XMultiServiceFactory> xMSF(mxComponent, uno::UNO_QUERY);
@@ -748,7 +757,8 @@ CPPUNIT_TEST_FIXTURE(SwCoreUnocoreTest, testContentControlPlainText)
 CPPUNIT_TEST_FIXTURE(SwCoreUnocoreTest, testContentControlComboBox)
 {
     // Given an empty document:
-    SwDoc* pDoc = createSwDoc();
+    createSwDoc();
+    SwDoc* pDoc = getSwDoc();
 
     // When inserting a combobox content control:
     uno::Reference<lang::XMultiServiceFactory> xMSF(mxComponent, uno::UNO_QUERY);
@@ -796,6 +806,56 @@ CPPUNIT_TEST_FIXTURE(SwCoreUnocoreTest, testContentControlComboBox)
     CPPUNIT_ASSERT_EQUAL(OUString("red"), aListItems[0].m_aDisplayText);
     CPPUNIT_ASSERT_EQUAL(OUString("R"), aListItems[0].m_aValue);
     CPPUNIT_ASSERT(pContentControl->GetComboBox());
+}
+
+CPPUNIT_TEST_FIXTURE(SwCoreUnocoreTest, testContentControls)
+{
+    // Given an empty document:
+    createSwDoc();
+    auto pXTextDocument = dynamic_cast<SwXTextDocument*>(mxComponent.get());
+    uno::Reference<container::XIndexAccess> xContentControls = pXTextDocument->getContentControls();
+    CPPUNIT_ASSERT_EQUAL(static_cast<sal_Int32>(0), xContentControls->getCount());
+
+    // When inserting content controls:
+    uno::Reference<lang::XMultiServiceFactory> xMSF(mxComponent, uno::UNO_QUERY);
+    uno::Reference<text::XTextDocument> xTextDocument(mxComponent, uno::UNO_QUERY);
+    uno::Reference<text::XText> xText = xTextDocument->getText();
+    uno::Reference<text::XTextCursor> xCursor = xText->createTextCursor();
+    // First tag1.
+    xText->insertString(xCursor, "test1", /*bAbsorb=*/false);
+    xCursor->gotoStart(/*bExpand=*/false);
+    xCursor->gotoEnd(/*bExpand=*/true);
+    {
+        uno::Reference<text::XTextContent> xContentControl(
+            xMSF->createInstance("com.sun.star.text.ContentControl"), uno::UNO_QUERY);
+        uno::Reference<beans::XPropertySet> xContentControlProps(xContentControl, uno::UNO_QUERY);
+        xContentControlProps->setPropertyValue("Tag", uno::Any(OUString("tag1")));
+        xText->insertTextContent(xCursor, xContentControl, /*bAbsorb=*/true);
+    }
+    xCursor->gotoStart(/*bExpand=*/false);
+    // Then tag2 before tag1.
+    xText->insertString(xCursor, "test2", /*bAbsorb=*/false);
+    xCursor->gotoStart(/*bExpand=*/false);
+    xCursor->goRight(5, /*bExpand=*/true);
+    {
+        uno::Reference<text::XTextContent> xContentControl(
+            xMSF->createInstance("com.sun.star.text.ContentControl"), uno::UNO_QUERY);
+        uno::Reference<beans::XPropertySet> xContentControlProps(xContentControl, uno::UNO_QUERY);
+        xContentControlProps->setPropertyValue("Tag", uno::Any(OUString("tag2")));
+        xText->insertTextContent(xCursor, xContentControl, /*bAbsorb=*/true);
+    }
+
+    // Then make sure that XContentControls contains the items in a correct order:
+    CPPUNIT_ASSERT_EQUAL(static_cast<sal_Int32>(2), xContentControls->getCount());
+    uno::Reference<beans::XPropertySet> xContentControl;
+    xContentControls->getByIndex(0) >>= xContentControl;
+    OUString aTag;
+    xContentControl->getPropertyValue("Tag") >>= aTag;
+    // Without the accompanying fix in place, this test would have failed with:
+    // - Expected: tag2
+    // - Actual  : tag1
+    // i.e. the order of the items was sorted by insert time, not by their doc model position.
+    CPPUNIT_ASSERT_EQUAL(OUString("tag2"), aTag);
 }
 
 CPPUNIT_PLUGIN_IMPLEMENT();

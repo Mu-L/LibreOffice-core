@@ -21,11 +21,14 @@
 #include <view.hxx>
 #include <wrtsh.hxx>
 
-constexpr OUStringLiteral DATA_DIRECTORY = u"/sw/qa/uibase/uno/data/";
-
 /// Covers sw/source/uibase/uno/ fixes.
 class SwUibaseUnoTest : public SwModelTestBase
 {
+public:
+    SwUibaseUnoTest()
+        : SwModelTestBase("/sw/qa/uibase/uno/data/")
+    {
+    }
 };
 
 CPPUNIT_TEST_FIXTURE(SwUibaseUnoTest, testLockControllers)
@@ -45,7 +48,7 @@ CPPUNIT_TEST_FIXTURE(SwUibaseUnoTest, testLockControllers)
 
 CPPUNIT_TEST_FIXTURE(SwUibaseUnoTest, testCondFieldCachedValue)
 {
-    load(DATA_DIRECTORY, "cond-field-cached-value.docx");
+    createSwDoc("cond-field-cached-value.docx");
     Scheduler::ProcessEventsToIdle();
 
     // Without the accompanying fix in place, this test would have failed with:
@@ -58,7 +61,8 @@ CPPUNIT_TEST_FIXTURE(SwUibaseUnoTest, testCondFieldCachedValue)
 CPPUNIT_TEST_FIXTURE(SwUibaseUnoTest, testCreateTextRangeByPixelPosition)
 {
     // Given a document with 2 characters, and the pixel position of the point between them:
-    SwDoc* pDoc = createSwDoc();
+    createSwDoc();
+    SwDoc* pDoc = getSwDoc();
     SwDocShell* pDocShell = pDoc->GetDocShell();
     SwWrtShell* pWrtShell = pDocShell->GetWrtShell();
     pWrtShell->Insert2("AZ");

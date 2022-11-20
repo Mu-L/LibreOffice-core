@@ -12,10 +12,12 @@
 #include <sfx2/ipclient.hxx>
 #include <sfx2/lokcomponenthelpers.hxx>
 #include <sfx2/lokhelper.hxx>
+#include <sfx2/objsh.hxx>
 
 #include <comphelper/dispatchcommand.hxx>
 #include <toolkit/helper/vclunohelper.hxx>
 #include <tools/fract.hxx>
+#include <tools/UnitConversion.hxx>
 #include <vcl/layout.hxx>
 #include <vcl/window.hxx>
 
@@ -122,16 +124,57 @@ vcl::Window* LokStarMathHelper::GetWidgetWindow()
     return mpWidgetWindow.get();
 }
 
-bool LokStarMathHelper::postMouseEvent(int nType, int nX, int nY, int nCount, int nButtons,
-                                       int nModifier, double /*fScaleX*/, double /*fScaleY*/)
+const SfxViewShell* LokStarMathHelper::GetSmViewShell()
 {
-    if (vcl::Window* pWindow = GetWidgetWindow())
+    if (vcl::Window* pGraphWindow = GetGraphicWindow())
     {
-        Point aMousePos(nX, nY);
-        tools::Rectangle rBBox = mpIPClient->GetObjArea();
-        if (rBBox.Contains(aMousePos))
+        return SfxViewShell::GetFirst(false, [pGraphWindow](const SfxViewShell* shell) {
+            return shell->GetWindow() && shell->GetWindow()->IsChild(pGraphWindow);
+        });
+    }
+    return nullptr;
+}
+
+tools::Rectangle LokStarMathHelper::GetBoundingBox() const
+{
+    if (mpIPClient)
+    {
+        tools::Rectangle r(mpIPClient->GetObjArea());
+        if (SfxObjectShell* pObjShell = const_cast<SfxViewShell*>(mpViewShell)->GetObjectShell())
+        {
+            const o3tl::Length unit = MapToO3tlLength(pObjShell->GetMapUnit());
+            if (unit != o3tl::Length::twip && unit != o3tl::Length::invalid)
+                r = o3tl::convert(r, unit, o3tl::Length::twip);
+        }
+        return r;
+    }
+    return {};
+}
+
+bool LokStarMathHelper::postMouseEvent(int nType, int nX, int nY, int nCount, int nButtons,
+                                       int nModifier, double fPPTScaleX, double fPPTScaleY)
+{
+    const tools::Rectangle rBBox = GetBoundingBox();
+    if (Point aMousePos(nX, nY); rBBox.Contains(aMousePos))
+    {
+        if (vcl::Window* pWindow = GetWidgetWindow())
         {
             aMousePos -= rBBox.TopLeft();
+
+            // In lok, Math does not convert coordinates (see SmGraphicWidget::SetDrawingArea,
+            // which disables MapMode), and uses twips internally (see SmDocShell ctor and
+            // SmMapUnit), but the conversion factor can depend on the client zoom.
+            // 1. Remove the twip->pixel factor in the passed scales
+            double fScaleX = o3tl::convert(fPPTScaleX, o3tl::Length::px, o3tl::Length::twip);
+            double fScaleY = o3tl::convert(fPPTScaleY, o3tl::Length::px, o3tl::Length::twip);
+            // 2. Adjust the position according to the scales
+            aMousePos
+                = Point(std::round(aMousePos.X() * fScaleX), std::round(aMousePos.Y() * fScaleY));
+            // 3. Take window own scaling into account (reverses the conversion done in
+            // SmGraphicWidget::MouseButtonDown, albeit incompletely - it does not handle
+            // GetFormulaDrawPos; hopefully, in lok/in-place case, it's always [ 0, 0 ]?)
+            aMousePos = pWindow->LogicToPixel(aMousePos);
+
             LokMouseEventData aMouseEventData(
                 nType, aMousePos, nCount, MouseEventModifiers::SIMPLECLICK, nButtons, nModifier);
             SfxLokHelper::postMouseEventAsync(pWindow, aMouseEventData);

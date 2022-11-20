@@ -5974,6 +5974,23 @@ SfxStringItem StateWordCount FN_STAT_WORDCOUNT
     GroupId = SfxGroupId::View;
 ]
 
+SfxInt32Item StateAccessibilityCheck FN_STAT_ACCESSIBILITY_CHECK
+
+[
+    AutoUpdate = FALSE,
+    FastCall = FALSE,
+    ReadOnlyDoc = TRUE,
+    Toggle = FALSE,
+    Container = FALSE,
+    RecordAbsolute = FALSE,
+    RecordPerSet;
+
+    AccelConfig = FALSE,
+    MenuConfig = FALSE,
+    ToolBoxConfig = FALSE,
+    GroupId = SfxGroupId::View;
+]
+
 SfxBoolItem SubScript FN_SET_SUB_SCRIPT
 
 [
@@ -8221,7 +8238,7 @@ SfxBoolItem ShowInlineTooltips FN_SHOW_INLINETOOLTIPS
 ]
 
 SfxVoidItem TextFormField FN_INSERT_TEXT_FORMFIELD
-
+(SfxStringItem FieldType FN_PARAM_1, SfxStringItem FieldCommand FN_PARAM_2, SfxStringItem FieldResult FN_PARAM_3)
 [
     AutoUpdate = TRUE,
     FastCall = FALSE,

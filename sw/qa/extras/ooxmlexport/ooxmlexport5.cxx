@@ -128,8 +128,9 @@ CPPUNIT_TEST_FIXTURE(Test, testfdo79008)
 
 DECLARE_OOXMLEXPORT_TEST(testTdf120852_readOnlyProtection, "tdf120852_readOnlyProtection.docx")
 {
-    if (xmlDocUniquePtr pXmlSettings = parseExport("word/settings.xml"))
+    if (isExported())
     {
+        xmlDocUniquePtr pXmlSettings = parseExport("word/settings.xml");
         assertXPath(pXmlSettings, "/w:settings/w:documentProtection", "enforcement", "1");
         assertXPath(pXmlSettings, "/w:settings/w:documentProtection", "edit", "readOnly");
     }
@@ -152,7 +153,7 @@ DECLARE_OOXMLEXPORT_TEST(testTdf120852_readOnlyUnProtected, "tdf120852_readOnlyU
     uno::Reference<container::XIndexAccess> xSections(xTextSectionsSupplier->getTextSections(), uno::UNO_QUERY_THROW);
     const sal_Int32 nLastSection = xSections->getCount() - 1;
     uno::Reference<beans::XPropertySet> xSect(xSections->getByIndex(nLastSection), uno::UNO_QUERY_THROW);
-    if ( !mbExported )
+    if ( !isExported() )
     {
         CPPUNIT_ASSERT_MESSAGE("Section is not protected", !getProperty<bool>(xSect, "IsProtected"));
         // Enable section protection. The round-trip should have forms protection enabled.
@@ -808,7 +809,7 @@ CPPUNIT_TEST_FIXTURE(Test, testTdf128646)
     xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
 
     assertXPath(pXmlDoc,"/w:document/w:body/w:tbl/w:tr/w:tc/w:p[7]/w:pPr/w:rPr/w:vanish", 1);
-    if (!mbExported)
+    if (!isExported())
         // originally no <w:vanish> (the same as <w:vanish val="false">)
         assertXPath(pXmlDoc,"/w:document/w:body/w:tbl/w:tr/w:tc/w:p[7]/w:r/w:rPr/w:vanish", 0);
     else
@@ -824,7 +825,7 @@ CPPUNIT_TEST_FIXTURE(Test, testTdf119800)
     xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
 
     assertXPath(pXmlDoc,"/w:document/w:body/w:p[2]/w:pPr/w:rPr/w:vanish", 1);
-    if (!mbExported)
+    if (!isExported())
         // originally no <w:vanish> (the same as <w:vanish val="false">)
         assertXPath(pXmlDoc,"/w:document/w:body/w:p[2]/w:r/w:rPr/w:vanish", 0);
     else
@@ -1092,7 +1093,7 @@ CPPUNIT_TEST_FIXTURE(Test, testfdo83048)
 CPPUNIT_TEST_FIXTURE(Test, testSdt2Run)
 {
     loadAndSave("sdt-2-run.docx");
-    xmlDocUniquePtr pXmlDoc = parseExport();
+    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
 
     // The problem was that <w:sdt> was closed after "first", not after "second", so the second assert failed.
     assertXPathContent(pXmlDoc, "/w:document/w:body/w:p/w:sdt/w:sdtContent/w:r/w:t", "firstsecond");
@@ -1152,17 +1153,13 @@ CPPUNIT_TEST_FIXTURE(Test, testTdf89774)
 CPPUNIT_TEST_FIXTURE(Test, testSectionProtection)
 {
     loadAndReload("sectionprot.odt");
-    if (xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml"))
-    {
-        assertXPath(pXmlDoc, "/w:document/w:body/w:p/w:pPr/w:sectPr/w:formProt", "val", "true");
-        assertXPath(pXmlDoc, "/w:document/w:body/w:sectPr/w:formProt", "val", "false");
-    }
+    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
+    assertXPath(pXmlDoc, "/w:document/w:body/w:p/w:pPr/w:sectPr/w:formProt", "val", "true");
+    assertXPath(pXmlDoc, "/w:document/w:body/w:sectPr/w:formProt", "val", "false");
 
-    if (xmlDocUniquePtr pXmlSettings = parseExport("word/settings.xml"))
-    {
-        assertXPath(pXmlSettings, "/w:settings/w:documentProtection", "enforcement", "true");
-        assertXPath(pXmlSettings, "/w:settings/w:documentProtection", "edit", "forms");
-    }
+    xmlDocUniquePtr pXmlSettings = parseExport("word/settings.xml");
+    assertXPath(pXmlSettings, "/w:settings/w:documentProtection", "enforcement", "true");
+    assertXPath(pXmlSettings, "/w:settings/w:documentProtection", "edit", "forms");
 
     uno::Reference<text::XTextSectionsSupplier> xTextSectionsSupplier(mxComponent, uno::UNO_QUERY);
     uno::Reference<container::XIndexAccess> xSections(xTextSectionsSupplier->getTextSections(), uno::UNO_QUERY);
@@ -1176,11 +1173,9 @@ CPPUNIT_TEST_FIXTURE(Test, testSectionProtection2)
 {
     loadAndSave("sectionprot2.odt");
     CPPUNIT_ASSERT_EQUAL(1, getPages());
-    if (xmlDocUniquePtr pXmlSettings = parseExport("word/settings.xml"))
-    {
-        assertXPath(pXmlSettings, "/w:settings/w:documentProtection", "enforcement", "true");
-        assertXPath(pXmlSettings, "/w:settings/w:documentProtection", "edit", "forms");
-    }
+    xmlDocUniquePtr pXmlSettings = parseExport("word/settings.xml");
+    assertXPath(pXmlSettings, "/w:settings/w:documentProtection", "enforcement", "true");
+    assertXPath(pXmlSettings, "/w:settings/w:documentProtection", "edit", "forms");
 
     uno::Reference<text::XTextSectionsSupplier> xTextSectionsSupplier(mxComponent, uno::UNO_QUERY);
     uno::Reference<container::XIndexAccess> xSections(xTextSectionsSupplier->getTextSections(), uno::UNO_QUERY);
@@ -1191,8 +1186,9 @@ CPPUNIT_TEST_FIXTURE(Test, testSectionProtection2)
 DECLARE_OOXMLEXPORT_TEST(tdf66398_permissions, "tdf66398_permissions.docx")
 {
     // check document permission settings for the whole document
-    if (xmlDocUniquePtr pXmlSettings = parseExport("word/settings.xml"))
+    if (isExported())
     {
+        xmlDocUniquePtr pXmlSettings = parseExport("word/settings.xml");
         assertXPath(pXmlSettings, "/w:settings/w:documentProtection", "edit",               "readOnly");
         assertXPath(pXmlSettings, "/w:settings/w:documentProtection", "enforcement",        "1");
         assertXPath(pXmlSettings, "/w:settings/w:documentProtection", "cryptProviderType",  "rsaAES");
@@ -1273,21 +1269,17 @@ CPPUNIT_TEST_FIXTURE(Test, testSectionHeader)
 {
     loadAndReload("sectionprot.odt");
     CPPUNIT_ASSERT_EQUAL(1, getPages());
-    if (xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml"))
-    {
-        // this test must not be zero
-        assertXPath(pXmlDoc, "//w:headerReference", 1);
-    }
+    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
+    // this test must not be zero
+    assertXPath(pXmlDoc, "//w:headerReference", 1);
 }
 
 CPPUNIT_TEST_FIXTURE(Test, testTdf146491)
 {
     loadAndReload("tdf146491.odt");
-    if (xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml"))
-    {
-        // This was 12 - a page style was unnecessarily created for every section.
-        assertXPath(pXmlDoc, "//w:footerReference", 1);
-    }
+    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
+    // This was 12 - a page style was unnecessarily created for every section.
+    assertXPath(pXmlDoc, "//w:footerReference", 1);
 }
 
 CPPUNIT_TEST_FIXTURE(Test, testOO47778_1)
@@ -1295,8 +1287,8 @@ CPPUNIT_TEST_FIXTURE(Test, testOO47778_1)
     loadAndReload("ooo47778-3.odt");
     CPPUNIT_ASSERT_EQUAL(5, getShapes());
     CPPUNIT_ASSERT_EQUAL(1, getPages());
-    if (xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml"))
-        assertXPathContent(pXmlDoc, "(//w:t)[3]", "c");
+    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
+    assertXPathContent(pXmlDoc, "(//w:t)[3]", "c");
 }
 
 CPPUNIT_TEST_FIXTURE(Test, testOO47778_2)
@@ -1304,8 +1296,8 @@ CPPUNIT_TEST_FIXTURE(Test, testOO47778_2)
     loadAndReload("ooo47778-4.odt");
     CPPUNIT_ASSERT_EQUAL(1, getShapes());
     CPPUNIT_ASSERT_EQUAL(1, getPages());
-    if (xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml"))
-        assertXPathContent(pXmlDoc, "(//w:t)[4]", "c");
+    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
+    assertXPathContent(pXmlDoc, "(//w:t)[4]", "c");
 
     // tdf116436: The problem was that the table background was undefined, not white.
     uno::Reference<text::XTextTablesSupplier> xTextTablesSupplier(mxComponent, uno::UNO_QUERY);
@@ -1319,8 +1311,8 @@ CPPUNIT_TEST_FIXTURE(Test, testOO67471)
 {
     loadAndReload("ooo67471-2.odt");
     CPPUNIT_ASSERT_EQUAL(1, getPages());
-    if (xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml"))
-        assertXPathContent(pXmlDoc, "(//w:t)[2]", "B");
+    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
+    assertXPathContent(pXmlDoc, "(//w:t)[2]", "B");
 }
 
 CPPUNIT_TEST_FIXTURE(Test, testKDE302504)
@@ -1328,8 +1320,8 @@ CPPUNIT_TEST_FIXTURE(Test, testKDE302504)
     loadAndReload("kde302504-1.odt");
     CPPUNIT_ASSERT_EQUAL(1, getShapes());
     CPPUNIT_ASSERT_EQUAL(1, getPages());
-    if (xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml"))
-        assertXPath(pXmlDoc, "//v:shape", "ID", "KoPathShape");
+    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
+    assertXPath(pXmlDoc, "//v:shape", "ID", "KoPathShape");
 }
 
 CPPUNIT_TEST_FIXTURE(Test, testKDE216114)
@@ -1337,16 +1329,16 @@ CPPUNIT_TEST_FIXTURE(Test, testKDE216114)
     loadAndReload("kde216114-1.odt");
     CPPUNIT_ASSERT_EQUAL(1, getShapes());
     CPPUNIT_ASSERT_EQUAL(1, getPages());
-    if (xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml"))
-        assertXPath(pXmlDoc, "//w:pict", 1);
+    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
+    assertXPath(pXmlDoc, "//w:pict", 1);
 }
 
 CPPUNIT_TEST_FIXTURE(Test, testOO72950)
 {
     loadAndReload("ooo72950-1.odt");
     CPPUNIT_ASSERT_EQUAL(1, getPages());
-    if (xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml"))
-        assertXPath(pXmlDoc, "//w:tbl", 1);
+    xmlDocUniquePtr pXmlDoc = parseExport("word/document.xml");
+    assertXPath(pXmlDoc, "//w:tbl", 1);
 }
 
 //There are two tables to export in this doc the second of which is inside a

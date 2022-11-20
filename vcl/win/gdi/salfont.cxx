@@ -32,6 +32,13 @@
 #include <svsys.h>
 #include <vector>
 
+#include <dwrite_3.h>
+// Currently, we build with _WIN32_WINNT=0x0601 (Windows 7), which means newer
+// declarations in dwrite_3.h will not be visible.
+#if WINVER < 0x0A00
+#  include "dw-extra.h"
+#endif
+
 #include <o3tl/lru_map.hxx>
 #include <basegfx/matrix/b2dhommatrixtools.hxx>
 #include <basegfx/polygon/b2dpolygon.hxx>
@@ -51,6 +58,7 @@
 #include <vcl/metric.hxx>
 #include <vcl/fontcharmap.hxx>
 #include <comphelper/scopeguard.hxx>
+#include <comphelper/windowserrorstring.hxx>
 
 #include <font/FontSelectPattern.hxx>
 #include <font/PhysicalFontCollection.hxx>
@@ -162,7 +170,7 @@ const std::map<OUString, OUString> aBitmapFontSubs =
 // TODO: See if Windows have API that we can use here to improve font fallback.
 bool WinPreMatchFontSubstititution::FindFontSubstitute(vcl::font::FontSelectPattern& rFontSelData) const
 {
-    if (rFontSelData.IsSymbolFont() || IsStarSymbol(rFontSelData.maSearchName))
+    if (rFontSelData.IsSymbolFont() || IsOpenSymbol(rFontSelData.maSearchName))
         return false;
 
     for (const auto& aSub : aBitmapFontSubs)
@@ -509,30 +517,8 @@ WinFontFace::WinFontFace(const ENUMLOGFONTEXW& rEnumFont, const NEWTEXTMETRICW& 
     mnId( 0 ),
     meWinCharSet(rEnumFont.elfLogFont.lfCharSet),
     mnPitchAndFamily(rMetric.tmPitchAndFamily),
-    mbAliasSymbolsHigh( false ),
-    mbAliasSymbolsLow( false ),
     maLogFont(rEnumFont.elfLogFont)
 {
-    if (meWinCharSet == SYMBOL_CHARSET)
-    {
-        if ((mnPitchAndFamily & TMPF_TRUETYPE) != 0)
-        {
-            // truetype fonts need their symbols as U+F0xx
-            mbAliasSymbolsHigh = true;
-        }
-        else if ((mnPitchAndFamily & (TMPF_VECTOR|TMPF_DEVICE))
-                                  == (TMPF_VECTOR|TMPF_DEVICE))
-        {
-            // scalable device fonts (e.g. builtin printer fonts)
-            // need their symbols as U+00xx
-            mbAliasSymbolsLow  = true;
-        }
-        else if ((mnPitchAndFamily & (TMPF_VECTOR|TMPF_TRUETYPE)) == 0)
-        {
-            // bitmap fonts need their symbols as U+F0xx
-            mbAliasSymbolsHigh = true;
-        }
-    }
 }
 
 WinFontFace::~WinFontFace()
@@ -551,6 +537,37 @@ rtl::Reference<LogicalFontInstance> WinFontFace::CreateFontInstance(const vcl::f
         return new SkiaWinFontInstance(*this, rFSD);
 #endif
     return new WinFontInstance(*this, rFSD);
+}
+
+const std::vector<hb_variation_t>&
+WinFontFace::GetVariations(const LogicalFontInstance& rFont) const
+{
+    if (!mxVariations)
+    {
+        mxVariations.emplace();
+        auto pDWFontFace = static_cast<const WinFontInstance&>(rFont).GetDWFontFace();
+        if (pDWFontFace)
+        {
+            sal::systools::COMReference<IDWriteFontFace5> xDWFontFace5;
+            auto hr = pDWFontFace->QueryInterface(__uuidof(IDWriteFontFace5),
+                                                  reinterpret_cast<void**>(&xDWFontFace5));
+            if (SUCCEEDED(hr) && xDWFontFace5->HasVariations())
+            {
+                std::vector<DWRITE_FONT_AXIS_VALUE> aAxisValues(
+                    xDWFontFace5->GetFontAxisValueCount());
+                hr = xDWFontFace5->GetFontAxisValues(aAxisValues.data(), aAxisValues.size());
+                if (SUCCEEDED(hr))
+                {
+                    mxVariations->reserve(aAxisValues.size());
+                    for (auto& rAxisValue : aAxisValues)
+                        mxVariations->push_back(
+                            { OSL_NETDWORD(rAxisValue.axisTag), rAxisValue.value });
+                }
+            }
+        }
+    }
+
+    return *mxVariations;
 }
 
 namespace
@@ -1379,6 +1396,37 @@ bool WinFontInstance::GetGlyphOutline(sal_GlyphId nId, basegfx::B2DPolyPolygon& 
     }
 
     return true;
+}
+
+IDWriteFontFace* WinFontInstance::GetDWFontFace() const
+{
+    if (!mxDWFontFace)
+    {
+        assert(m_pGraphics);
+        HDC hDC = m_pGraphics->getHDC();
+        const HFONT hOrigFont = static_cast<HFONT>(GetCurrentObject(hDC, OBJ_FONT));
+        const HFONT hFont = GetHFONT();
+        if (hFont != hOrigFont)
+            SelectObject(hDC, hFont);
+
+        const ::comphelper::ScopeGuard aFontRestoreScopeGuard([hFont, hOrigFont, hDC]() {
+            if (hFont != hOrigFont)
+                SelectObject(hDC, hOrigFont);
+        });
+
+        IDWriteGdiInterop* pDWriteGdiInterop;
+        WinSalGraphics::getDWriteFactory(nullptr, &pDWriteGdiInterop);
+
+        HRESULT hr = pDWriteGdiInterop->CreateFontFaceFromHdc(hDC, &mxDWFontFace);
+        if (FAILED(hr))
+        {
+            SAL_WARN("vcl.fonts", "HRESULT 0x" << OUString::number(hr, 16) << ": "
+                                               << WindowsErrorStringFromHRESULT(hr));
+            mxDWFontFace = nullptr;
+        }
+    }
+
+    return mxDWFontFace;
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab cinoptions=b1,g0,N-s cinkeys+=0=break: */

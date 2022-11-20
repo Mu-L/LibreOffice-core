@@ -133,7 +133,7 @@ DECLARE_WW8EXPORT_TEST(testTdf148380_fldLocked, "tdf148380_fldLocked.doc")
 
     // Verify that these are fields, and not just plain text
     // (import only, since export thankfully just dumps these fixed fields as plain text
-    if (mbExported)
+    if (isExported())
         return;
     uno::Reference<text::XTextFieldsSupplier> xTextFieldsSupplier(mxComponent, uno::UNO_QUERY);
     auto xFieldsAccess(xTextFieldsSupplier->getTextFields());
@@ -190,7 +190,7 @@ DECLARE_WW8EXPORT_TEST(testGutterLeft, "gutter-left.doc")
 
 CPPUNIT_TEST_FIXTURE(Test, testGutterTop)
 {
-    load(mpTestDocumentPath, "gutter-top.doc");
+    createSwDoc("gutter-top.doc");
     reload(mpFilter, "gutter-top.doc");
     uno::Reference<lang::XMultiServiceFactory> xFactory(mxComponent, uno::UNO_QUERY);
     uno::Reference<beans::XPropertySet> xSettings(
@@ -217,7 +217,7 @@ DECLARE_WW8EXPORT_TEST(testArabicZeroNumbering, "arabic-zero-numbering.doc")
 
 DECLARE_WW8EXPORT_TEST(testTdf128501, "tdf128501.doc")
 {
-    if (!mbExported)
+    if (!isExported())
     {
         uno::Reference<drawing::XShapeDescriptor> xShapeDescriptor = getShape(1);
         CPPUNIT_ASSERT_EQUAL(OUString("com.sun.star.drawing.CustomShape"), xShapeDescriptor->getShapeType());
@@ -235,7 +235,7 @@ DECLARE_WW8EXPORT_TEST(testTdf128501, "tdf128501.doc")
 CPPUNIT_TEST_FIXTURE(SwModelTestBase, testArabicZeroNumberingFootnote)
 {
     // Create a document, set footnote numbering type to ARABIC_ZERO.
-    loadURL("private:factory/swriter", nullptr);
+    createSwDoc();
     uno::Reference<text::XFootnotesSupplier> xFootnotesSupplier(mxComponent, uno::UNO_QUERY);
     uno::Reference<beans::XPropertySet> xFootnoteSettings
         = xFootnotesSupplier->getFootnoteSettings();
@@ -265,7 +265,7 @@ CPPUNIT_TEST_FIXTURE(SwModelTestBase, testArabicZeroNumberingFootnote)
 CPPUNIT_TEST_FIXTURE(SwModelTestBase, testChicagoNumberingFootnote)
 {
     // Create a document, set footnote numbering type to SYMBOL_CHICAGO.
-    loadURL("private:factory/swriter", nullptr);
+    createSwDoc();
     uno::Reference<text::XFootnotesSupplier> xFootnotesSupplier(mxComponent, uno::UNO_QUERY);
     uno::Reference<beans::XPropertySet> xFootnoteSettings
         = xFootnotesSupplier->getFootnoteSettings();
@@ -679,9 +679,9 @@ CPPUNIT_TEST_FIXTURE(Test, testTdf94009_zeroPgMargin)
 
 DECLARE_WW8EXPORT_TEST(testTdf108518_CRnumformatting, "tdf108518_CRnumformatting.doc")
 {
-    CPPUNIT_ASSERT_EQUAL(OUString("6.2.3."), parseDump("//body/txt[4]/Special[@nType='PortionType::Number']", "rText"));
+    CPPUNIT_ASSERT_EQUAL(OUString("6.2.3."), parseDump("//body/txt[4]/SwParaPortion/SwLineLayout/child::*[@type='PortionType::Number']", "expand"));
     //Without this fix in place, it would become 200 (and non-bold).
-    CPPUNIT_ASSERT_EQUAL(OUString("220"), parseDump("//body/txt[4]/Special[@nType='PortionType::Number']", "nHeight"));
+    CPPUNIT_ASSERT_EQUAL(OUString("220"), parseDump("//body/txt[4]/SwParaPortion/SwLineLayout/child::*[@type='PortionType::Number']", "font-height"));
 }
 
 DECLARE_WW8EXPORT_TEST(testTdf120711_joinedParagraphWithChangeTracking, "tdf120711.doc")
@@ -807,7 +807,7 @@ CPPUNIT_TEST_FIXTURE(Test, testBtlrFrame)
     loadAndReload("btlr-frame.odt");
     CPPUNIT_ASSERT_EQUAL(1, getShapes());
     CPPUNIT_ASSERT_EQUAL(1, getPages());
-    if (!mbExported)
+    if (!isExported())
     {
         return;
     }
@@ -863,7 +863,7 @@ CPPUNIT_TEST_FIXTURE(Test, testRtlGutter)
     };
 
     // Given a document with RTL gutter, when loading it:
-    load(mpTestDocumentPath, "rtl-gutter.doc");
+    createSwDoc("rtl-gutter.doc");
     // Then make sure the section's gutter is still RTL:
     // Without the accompanying fix in place, this test would have failed as the SPRM was missing.
     verify();
@@ -962,10 +962,10 @@ DECLARE_WW8EXPORT_TEST(testTdf104239_chapterNumberTortureTest, "tdf104239_chapte
     CPPUNIT_ASSERT_EQUAL(OUString("2nd.ii"), getProperty<OUString>(xPara, "ListLabelString"));
     CPPUNIT_ASSERT_EQUAL(sal_Int16(1), getProperty<sal_Int16>(xPara, "NumberingLevel")); // Level 2
     xPara.set(getParagraph(9, "outline with Body listLvl(9)."), uno::UNO_QUERY);
-    if (!mbExported)
+    if (!isExported())
         CPPUNIT_ASSERT_EQUAL(OUString(""), getProperty<OUString>(xPara, "ListLabelString"));
     xPara.set(getParagraph(10, "outline with Body listLvl(9) #2."), uno::UNO_QUERY);
-    if (!mbExported)
+    if (!isExported())
         CPPUNIT_ASSERT_EQUAL(OUString(""), getProperty<OUString>(xPara, "ListLabelString"));
     xPara.set(getParagraph(11, "direct formatting - Body listLvl(9)."), uno::UNO_QUERY);
     CPPUNIT_ASSERT_EQUAL(OUString(""), getProperty<OUString>(xPara, "ListLabelString"));
@@ -1087,7 +1087,7 @@ CPPUNIT_TEST_FIXTURE(Test, testClearingBreak)
 
     // Given a document with a clearing break:
     // When loading that file:
-    load(mpTestDocumentPath, "clearing-break.doc");
+    createSwDoc("clearing-break.doc");
     // Then make sure that the clear property of the break is not ignored:
     verify();
     reload(mpFilter, "clearing-break.doc");

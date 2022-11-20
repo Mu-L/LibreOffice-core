@@ -161,7 +161,7 @@ View::~View()
     while(PaintWindowCount())
     {
         // remove all registered OutDevs
-        suppress_fun_call_w_exception(DeleteWindowFromPaintView(GetFirstOutputDevice()));
+        suppress_fun_call_w_exception(DeleteDeviceFromPaintView(*GetFirstOutputDevice()));
     }
 }
 
@@ -449,6 +449,20 @@ void ViewRedirector::createRedirectedPrimitive2DSequence(
     }
 }
 
+namespace
+{
+    void setOutlinerBgFromPage(::Outliner& rOutl, SdrPageView& rPgView, bool bScreenDisplay)
+    {
+        SdPage* pPage = static_cast<SdPage*>(rPgView.GetPage());
+        if (pPage)
+        {
+            // #i75566# Name change GetBackgroundColor -> GetPageBackgroundColor and
+            // hint value if screen display. Only then the AutoColor mechanisms shall be applied
+            rOutl.SetBackgroundColor(pPage->GetPageBackgroundColor(&rPgView, bScreenDisplay));
+        }
+    }
+}
+
 /**
  * The event will be forwarded to the View
  */
@@ -476,9 +490,7 @@ void View::CompleteRedraw(OutputDevice* pOutDev, const vcl::Region& rReg, sdr::c
                     || (OUTDEV_PDF == pOutDev->GetOutDevType())))
                 bScreenDisplay = false;
 
-            // #i75566# Name change GetBackgroundColor -> GetPageBackgroundColor and
-            // hint value if screen display. Only then the AutoColor mechanisms shall be applied
-            rOutl.SetBackgroundColor( pPage->GetPageBackgroundColor(pPgView, bScreenDisplay) );
+            setOutlinerBgFromPage(rOutl, *pPgView, bScreenDisplay);
         }
     }
 
@@ -724,7 +736,11 @@ bool View::SdrBeginTextEdit(
             }
             else
             {
-                pObj->setSuitableOutlinerBg(*pOL);
+                // tdf#148140 Set the background to determine autocolor.
+                // Use any explicit bg with fallback to underlying page if
+                // none found
+                if (!pObj->setSuitableOutlinerBg(*pOL) && pPV)
+                    setOutlinerBgFromPage(*pOL, *pPV, true);
             }
         }
 

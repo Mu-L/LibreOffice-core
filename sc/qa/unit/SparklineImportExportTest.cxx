@@ -60,8 +60,8 @@ void checkSparklines(ScDocument& rDocument)
 
         CPPUNIT_ASSERT_EQUAL(Color(0x376092), rAttributes.getColorSeries());
         CPPUNIT_ASSERT_EQUAL(Color(0x00b050), rAttributes.getColorNegative());
-        CPPUNIT_ASSERT_EQUAL(Color(0x000000), rAttributes.getColorAxis());
-        CPPUNIT_ASSERT_EQUAL(Color(0x000000), rAttributes.getColorMarkers());
+        CPPUNIT_ASSERT_EQUAL(COL_BLACK, rAttributes.getColorAxis());
+        CPPUNIT_ASSERT_EQUAL(COL_BLACK, rAttributes.getColorMarkers());
         CPPUNIT_ASSERT_EQUAL(Color(0x7030a0), rAttributes.getColorFirst());
         CPPUNIT_ASSERT_EQUAL(Color(0xff0000), rAttributes.getColorLast());
         CPPUNIT_ASSERT_EQUAL(Color(0x92d050), rAttributes.getColorHigh());
@@ -93,7 +93,7 @@ void checkSparklines(ScDocument& rDocument)
 
         CPPUNIT_ASSERT_EQUAL(Color(0x376092), rAttributes.getColorSeries());
         CPPUNIT_ASSERT_EQUAL(Color(0xff0000), rAttributes.getColorNegative());
-        CPPUNIT_ASSERT_EQUAL(Color(0x000000), rAttributes.getColorAxis());
+        CPPUNIT_ASSERT_EQUAL(COL_BLACK, rAttributes.getColorAxis());
         CPPUNIT_ASSERT_EQUAL(Color(0xd00000), rAttributes.getColorMarkers());
         CPPUNIT_ASSERT_EQUAL(Color(0x92d050), rAttributes.getColorFirst());
         CPPUNIT_ASSERT_EQUAL(Color(0x00b0f0), rAttributes.getColorLast());
@@ -167,8 +167,8 @@ void SparklineImportExportTest::testSparklinesExportODS()
     loadFromURL(u"xlsx/Sparklines.xlsx");
 
     // Save as ODS and check content.xml with XPath
-    utl::TempFileNamed tempFile = save("calc8");
-    xmlDocUniquePtr pXmlDoc = parseExport(tempFile.GetURL(), "content.xml");
+    save("calc8");
+    xmlDocUniquePtr pXmlDoc = parseExport("content.xml");
 
     // We have 3 sparkline groups = 3 tables that contain sparklines
     assertXPath(pXmlDoc, "//table:table/calcext:sparkline-groups", 3);
@@ -233,8 +233,8 @@ void SparklineImportExportTest::testNoSparklinesInDocumentXLSX()
     // Load the document containing NO sparklines
     loadFromURL(u"xlsx/empty.xlsx");
 
-    utl::TempFileNamed tempFile = save("Calc Office Open XML");
-    xmlDocUniquePtr pXmlDoc = parseExport(tempFile.GetURL(), "xl/worksheets/sheet1.xml");
+    save("Calc Office Open XML");
+    xmlDocUniquePtr pXmlDoc = parseExport("xl/worksheets/sheet1.xml");
     CPPUNIT_ASSERT(pXmlDoc);
 
     assertXPath(pXmlDoc, "/x:worksheet", 1);

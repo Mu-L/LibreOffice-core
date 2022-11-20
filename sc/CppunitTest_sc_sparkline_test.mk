@@ -15,7 +15,6 @@ $(eval $(call gb_CppunitTest_use_common_precompiled_header,sc_sparkline_test))
 
 $(eval $(call gb_CppunitTest_add_exception_objects,sc_sparkline_test, \
     sc/qa/unit/SparklineImportExportTest \
-    sc/qa/unit/SparklineTest \
 ))
 
 $(eval $(call gb_CppunitTest_use_externals,sc_sparkline_test, \

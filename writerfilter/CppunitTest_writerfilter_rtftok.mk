@@ -28,11 +28,14 @@ $(eval $(call gb_CppunitTest_use_libraries,writerfilter_rtftok, \
     basegfx \
     comphelper \
     cppu \
+    cppuhelper \
     oox \
     sal \
     subsequenttest \
     test \
     unotest \
+    utl \
+    tl \
     vcl \
 ))
 

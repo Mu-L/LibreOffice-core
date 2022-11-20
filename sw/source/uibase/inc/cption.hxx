@@ -64,6 +64,7 @@ class SwCaptionDialog final : public SfxDialogController
     DECL_LINK(ModifyComboHdl, weld::ComboBox&, void);
     DECL_LINK(OptionHdl, weld::Button&, void);
     DECL_LINK(CaptionHdl, weld::Button&, void);
+    DECL_LINK(OKHdl, weld::Button&, void);
 
     void Apply();
 
@@ -71,7 +72,7 @@ class SwCaptionDialog final : public SfxDialogController
     void DrawSample();
     void ApplyCaptionOrder(); //#i61007# order of captions
 
-    static OUString our_aSepTextSave; // Save caption separator text
+    static OUString s_aSepTextSave; // Save caption separator text
 public:
     SwCaptionDialog(weld::Window* pParent, SwView& rV);
     virtual short run() override;

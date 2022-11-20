@@ -637,6 +637,7 @@ void SwSelPaintRects::HighlightContentControl()
     std::vector<OString> aLOKRectangles;
     SwRect aFirstPortionPaintArea;
     SwRect aLastPortionPaintArea;
+    bool bRTL = false;
     std::shared_ptr<SwContentControl> pContentControl;
 
     if (m_bShowContentControlOverlay)
@@ -683,6 +684,15 @@ void SwSelPaintRects::HighlightContentControl()
                 aLastPortionPaintArea = (*pRects)[pRects->size() - 1];
             }
             pContentControl = pCurContentControlAtCursor->GetContentControl().GetContentControl();
+
+            // The layout knows if the text node is RTL (either set directly, or inherited from the
+            // environment).
+            SwIterator<SwTextFrame, SwTextNode, sw::IteratorMode::UnwrapMulti> aFrames(*pTextNode);
+            SwTextFrame* pFrame = aFrames.First();
+            if (pFrame)
+            {
+                bRTL = pFrame->IsRightToLeft();
+            }
         }
     }
 
@@ -696,7 +706,7 @@ void SwSelPaintRects::HighlightContentControl()
             aJson.put("action", "show");
             aJson.put("rectangles", aPayload);
 
-            if (pContentControl && pContentControl->HasListItems())
+            if (pContentControl && (pContentControl->GetComboBox() || pContentControl->GetDropDown()))
             {
                 tools::ScopedJsonWriterArray aItems = aJson.startArray("items");
                 for (const auto& rItem : pContentControl->GetListItems())
@@ -741,7 +751,7 @@ void SwSelPaintRects::HighlightContentControl()
             }
         }
 
-        if (pContentControl && pContentControl->HasListItems())
+        if (pContentControl && (pContentControl->GetComboBox() || pContentControl->GetDropDown()))
         {
             if (pWrtShell)
             {
@@ -756,7 +766,15 @@ void SwSelPaintRects::HighlightContentControl()
                     m_pContentControlButton = VclPtr<SwDropDownContentControlButton>::Create(
                         &rEditWin, pContentControl);
                 }
-                m_pContentControlButton->CalcPosAndSize(aLastPortionPaintArea);
+                m_pContentControlButton->SetRTL(bRTL);
+                if (bRTL)
+                {
+                    m_pContentControlButton->CalcPosAndSize(aFirstPortionPaintArea);
+                }
+                else
+                {
+                    m_pContentControlButton->CalcPosAndSize(aLastPortionPaintArea);
+                }
                 m_pContentControlButton->Show();
             }
         }

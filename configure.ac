@@ -522,6 +522,8 @@ AC_DEFINE_UNQUOTED(LIBO_VERSION_PATCH,$LIBO_VERSION_PATCH)
 LIBO_THIS_YEAR=`date +%Y`
 AC_DEFINE_UNQUOTED(LIBO_THIS_YEAR,$LIBO_THIS_YEAR)
 
+AC_DEFINE_UNQUOTED([BUILDCONFIG],[["$ac_configure_args"]],[Options passed to configure script])
+
 dnl ===================================================================
 dnl Product version
 dnl ===================================================================
@@ -2689,7 +2691,7 @@ libo_FUZZ_ARG_WITH(lxml,
 libo_FUZZ_ARG_WITH(latest-c++,
     AS_HELP_STRING([--with-latest-c++],
         [Try to enable the latest features of the C++ compiler, even if they are not yet part of a
-         published standard.]),,
+         published standard.  This option is ignored when CXXFLAGS_CXX11 is set explicitly.]),,
         [with_latest_c__=no])
 
 AC_ARG_WITH(gtk3-build,
@@ -3428,7 +3430,7 @@ if test $_os = Darwin; then
     # The SDK in the currently selected Xcode should be found.
 
     AC_MSG_CHECKING([what macOS SDK to use])
-    for macosx_sdk in 13.0 12.3 12.1 12.0 11.3 11.1 11.0 10.15 10.14 10.13; do
+    for macosx_sdk in 13.0 12.3 12.1 12.0 11.3 11.1 11.0 10.15 10.14; do
         MACOSX_SDK_PATH=`xcrun --sdk macosx${macosx_sdk} --show-sdk-path 2> /dev/null`
         if test -d "$MACOSX_SDK_PATH"; then
             break
@@ -3446,9 +3448,6 @@ if test $_os = Darwin; then
     AC_MSG_RESULT([macOS SDK $macosx_sdk at $MACOSX_SDK_PATH])
     MACOSX_SDK_BUILD_VERSION=$(xcodebuild -version -sdk "$MACOSX_SDK_PATH" ProductBuildVersion) 
     case $macosx_sdk in
-    10.13)
-        MACOSX_SDK_VERSION=101300
-        ;;
     10.14)
         MACOSX_SDK_VERSION=101400
         ;;
@@ -3695,8 +3694,8 @@ dnl ===================================================================
 
 if test $_os = iOS; then
     AC_MSG_CHECKING([what iOS SDK to use])
-    current_sdk_ver=16.0
-    older_sdk_vers="15.6"
+    current_sdk_ver=16.1
+    older_sdk_vers="16.0 15.6"
     if test "$enable_ios_simulator" = "yes"; then
         platform=iPhoneSimulator
         versionmin=-mios-simulator-version-min=14.5
@@ -5266,6 +5265,12 @@ linux-gnu*|linux-musl*)
         EPM_FLAGS="-a mipsel"
         PLATFORMID=linux_mips_el
         ;;
+    riscv64)
+        CPUNAME=RISCV64
+        RTL_ARCH=RISCV64
+        EPM_FLAGS="-a riscv64"
+        PLATFORMID=linux_riscv64
+        ;;
     m68k)
         CPUNAME=M68K
         RTL_ARCH=M68K
@@ -6698,35 +6703,23 @@ find_winsdk()
 find_msms()
 {
     # Return value: $msmdir
+    local version="$1"
 
-    AC_MSG_CHECKING([for MSVC merge modules directory])
-    local my_msm_files
+    AC_MSG_CHECKING([for MSVC $version merge modules directory])
+    local my_msm_file="Microsoft_VC${version}_CRT_x86.msm"
     local my_msm_dir
 
-    dnl Order my_msm_files in increasing order. Then check the directories returned
-    dnl by ls in an inner loop; assuming they are also ordered in increasing order,
-    dnl the result will be the highest MSM version found in the highest directory.
-
-    case "$VCVER" in
-        16.0 | 17.0 | 17.4)
-        my_msm_files="Microsoft_VC141_CRT_x86.msm Microsoft_VC142_CRT_x86.msm Microsoft_VC143_CRT_x86.msm ${my_msm_files}"
-        ;;
-    esac
-    for f in $my_msm_files; do
-        echo "$as_me:$LINENO: searching for $f" >&5
-    done
+    echo "$as_me:$LINENO: searching for $my_msm_file" >&5
 
     msmdir=
     case "$VCVER" in
     16.0 | 17.0 | 17.4)
-        for f in ${my_msm_files}; do
-            for l in `ls -1 $VC_PRODUCT_DIR/redist/MSVC/`; do
-                my_msm_dir="$VC_PRODUCT_DIR/redist/MSVC/$l/MergeModules/"
-                echo "$as_me:$LINENO: looking for $my_msm_dir${f}])" >&5
-                if test -e "$my_msm_dir${f}"; then
-                    msmdir=$my_msm_dir
-                fi
-            done
+        for l in `ls -1 $VC_PRODUCT_DIR/redist/MSVC/`; do
+            my_msm_dir="$VC_PRODUCT_DIR/redist/MSVC/$l/MergeModules/"
+            echo "$as_me:$LINENO: looking for $my_msm_dir${my_msm_file}])" >&5
+            if test -e "$my_msm_dir${my_msm_file}"; then
+                msmdir=$my_msm_dir
+            fi
         done
         ;;
     esac
@@ -6739,7 +6732,7 @@ find_msms()
             AC_MSG_FAILURE([not found])
         else
             AC_MSG_WARN([not found (check config.log)])
-            add_warning "MSM none of ${my_msm_files} found"
+            add_warning "MSM ${my_msm_file} not found"
         fi
     fi
 }
@@ -7622,63 +7615,64 @@ dnl ===================================================================
 dnl C++11
 dnl ===================================================================
 
-AC_MSG_CHECKING([whether $CXX_BASE supports C++17])
-CXXFLAGS_CXX11=
-if test "$COM" = MSC -a "$COM_IS_CLANG" != TRUE; then
-    if test "$with_latest_c__" = yes; then
-        CXXFLAGS_CXX11=-std:c++latest
+if test -z "${CXXFLAGS_CXX11+x}"; then
+    AC_MSG_CHECKING([whether $CXX_BASE supports C++17])
+    if test "$COM" = MSC -a "$COM_IS_CLANG" != TRUE; then
+        if test "$with_latest_c__" = yes; then
+            CXXFLAGS_CXX11=-std:c++latest
+        else
+            CXXFLAGS_CXX11=-std:c++17
+        fi
+        CXXFLAGS_CXX11="$CXXFLAGS_CXX11 -permissive- -Zc:__cplusplus"
+    elif test "$GCC" = "yes" -o "$COM_IS_CLANG" = TRUE; then
+        my_flags='-std=c++17 -std=c++1z'
+        if test "$with_latest_c__" = yes; then
+            my_flags="-std=c++23 -std=c++2b -std=c++20 -std=c++2a $my_flags"
+        fi
+        for flag in $my_flags; do
+            if test "$COM" = MSC; then
+                flag="-Xclang $flag"
+            fi
+            save_CXXFLAGS=$CXXFLAGS
+            CXXFLAGS="$CXXFLAGS $flag -Werror"
+            if test "$SYSTEM_LIBCMIS" = TRUE; then
+                CXXFLAGS="$CXXFLAGS -DSYSTEM_LIBCMIS $LIBCMIS_CFLAGS"
+            fi
+            AC_LANG_PUSH([C++])
+            AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+                #include <algorithm>
+                #include <functional>
+                #include <vector>
+
+                #if defined SYSTEM_LIBCMIS
+                // See ucb/source/ucp/cmis/auth_provider.hxx:
+                #if !defined __clang__
+                #pragma GCC diagnostic push
+                #pragma GCC diagnostic ignored "-Wdeprecated"
+                #pragma GCC diagnostic ignored "-Wunused-but-set-parameter"
+                #endif
+                #include <libcmis/libcmis.hxx>
+                #if !defined __clang__
+                #pragma GCC diagnostic pop
+                #endif
+                #endif
+
+                void f(std::vector<int> & v, std::function<bool(int, int)> fn) {
+                    std::sort(v.begin(), v.end(), fn);
+                }
+                ]])],[CXXFLAGS_CXX11=$flag])
+            AC_LANG_POP([C++])
+            CXXFLAGS=$save_CXXFLAGS
+            if test -n "$CXXFLAGS_CXX11"; then
+                break
+            fi
+        done
+    fi
+    if test -n "$CXXFLAGS_CXX11"; then
+        AC_MSG_RESULT([yes ($CXXFLAGS_CXX11)])
     else
-        CXXFLAGS_CXX11=-std:c++17
+        AC_MSG_ERROR(no)
     fi
-    CXXFLAGS_CXX11="$CXXFLAGS_CXX11 -permissive- -Zc:__cplusplus"
-elif test "$GCC" = "yes" -o "$COM_IS_CLANG" = TRUE; then
-    my_flags='-std=c++17 -std=c++1z'
-    if test "$with_latest_c__" = yes; then
-        my_flags="-std=c++23 -std=c++2b -std=c++20 -std=c++2a $my_flags"
-    fi
-    for flag in $my_flags; do
-        if test "$COM" = MSC; then
-            flag="-Xclang $flag"
-        fi
-        save_CXXFLAGS=$CXXFLAGS
-        CXXFLAGS="$CXXFLAGS $flag -Werror"
-        if test "$SYSTEM_LIBCMIS" = TRUE; then
-            CXXFLAGS="$CXXFLAGS -DSYSTEM_LIBCMIS $LIBCMIS_CFLAGS"
-        fi
-        AC_LANG_PUSH([C++])
-        AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-            #include <algorithm>
-            #include <functional>
-            #include <vector>
-
-            #if defined SYSTEM_LIBCMIS
-            // See ucb/source/ucp/cmis/auth_provider.hxx:
-            #if !defined __clang__
-            #pragma GCC diagnostic push
-            #pragma GCC diagnostic ignored "-Wdeprecated"
-            #pragma GCC diagnostic ignored "-Wunused-but-set-parameter"
-            #endif
-            #include <libcmis/libcmis.hxx>
-            #if !defined __clang__
-            #pragma GCC diagnostic pop
-            #endif
-            #endif
-
-            void f(std::vector<int> & v, std::function<bool(int, int)> fn) {
-                std::sort(v.begin(), v.end(), fn);
-            }
-            ]])],[CXXFLAGS_CXX11=$flag])
-        AC_LANG_POP([C++])
-        CXXFLAGS=$save_CXXFLAGS
-        if test -n "$CXXFLAGS_CXX11"; then
-            break
-        fi
-    done
-fi
-if test -n "$CXXFLAGS_CXX11"; then
-    AC_MSG_RESULT([yes ($CXXFLAGS_CXX11)])
-else
-    AC_MSG_ERROR(no)
 fi
 AC_SUBST(CXXFLAGS_CXX11)
 
@@ -8406,9 +8400,11 @@ if test "$COM_IS_CLANG" = "TRUE"; then
             fi
             # Try if clang is built from source (in which case its includes are not together with llvm includes).
             # src-root is [llvm-toplevel-src-dir]/llvm, clang is [llvm-toplevel-src-dir]/clang
-            clangsrcdir=$(dirname $($LLVM_CONFIG --src-root))
-            if test -n "$clangsrcdir" -a -d "$clangsrcdir" -a -d "$clangsrcdir/clang/include"; then
-                COMPILER_PLUGINS_CXXFLAGS="$COMPILER_PLUGINS_CXXFLAGS -I$clangsrcdir/clang/include"
+            if $LLVM_CONFIG --src-root >/dev/null 2>&1; then
+                clangsrcdir=$(dirname $($LLVM_CONFIG --src-root))
+                if test -n "$clangsrcdir" -a -d "$clangsrcdir" -a -d "$clangsrcdir/clang/include"; then
+                    COMPILER_PLUGINS_CXXFLAGS="$COMPILER_PLUGINS_CXXFLAGS -I$clangsrcdir/clang/include"
+                fi
             fi
             # obj-root is [llvm-toplevel-obj-dir]/, clang is [llvm-toplevel-obj-dir]/tools/clang
             clangobjdir=$($LLVM_CONFIG --obj-root)
@@ -8558,25 +8554,25 @@ AC_ARG_WITH(ucrt-dir,
 UCRT_REDISTDIR="$with_ucrt_dir"
 if test $_os = "WINNT"; then
     find_msvc_x64_dlls
+    MSVC_DLL_PATH=`win_short_path_for_make "$msvcdllpath"`
+    MSVC_DLLS="$msvcdlls"
+    if echo "$msvcdllpath" | grep -q "VC143.CRT$"; then
+        with_redist=143
+    elif echo "$msvcdllpath" | grep -q "VC142.CRT$"; then
+        with_redist=142
+    elif echo "$msvcdllpath" | grep -q "VC141.CRT$"; then
+        with_redist=141
+    fi
     for i in $PKGFORMAT; do
         if test "$i" = msi; then
-            find_msms
+            find_msms "$with_redist"
+            if test -n "$msmdir"; then
+                MSM_PATH=`win_short_path_for_make "$msmdir"`
+                SCPDEFS="$SCPDEFS -DWITH_VC_REDIST=$with_redist"
+            fi
             break
         fi
     done
-    MSVC_DLL_PATH=`win_short_path_for_make "$msvcdllpath"`
-    MSVC_DLLS="$msvcdlls"
-    test -n "$msmdir" && MSM_PATH=`win_short_path_for_make "$msmdir"`
-    # MSVC 15.3 changed it to VC141
-    if echo "$msvcdllpath" | grep -q "VC143.CRT$"; then
-        SCPDEFS="$SCPDEFS -DWITH_VC143_REDIST"
-    elif echo "$msvcdllpath" | grep -q "VC142.CRT$"; then
-        SCPDEFS="$SCPDEFS -DWITH_VC142_REDIST"
-    elif echo "$msvcdllpath" | grep -q "VC141.CRT$"; then
-        SCPDEFS="$SCPDEFS -DWITH_VC141_REDIST"
-    else
-        SCPDEFS="$SCPDEFS -DWITH_VC${VCVER}_REDIST"
-    fi
 
     if test "$UCRT_REDISTDIR" = "no"; then
         dnl explicitly disabled
@@ -8674,7 +8670,7 @@ if test "$ENABLE_JAVA" != ""; then
         JAVAINTERPRETER=`win_short_path_for_make "$JAVAINTERPRETER"`
     elif test "$cross_compiling" != "yes"; then
         case $CPUNAME in
-            AARCH64|AXP|X86_64|IA64|POWERPC64|S390X|SPARC64|MIPS64)
+            AARCH64|AXP|X86_64|IA64|POWERPC64|S390X|SPARC64|MIPS64|RISCV64)
                 if test -f "$JAVAINTERPRETER" -a "`$JAVAINTERPRETER -version 2>&1 | $GREP -i 64-bit`" = "" >/dev/null; then
                     AC_MSG_WARN([You are building 64-bit binaries but the JDK $JAVAINTERPRETER is 32-bit])
                     AC_MSG_ERROR([You should pass the --with-jdk-home option pointing to a 64-bit JDK])
@@ -11773,7 +11769,7 @@ GTK3_LIBS=""
 ENABLE_GTKTILEDVIEWER=""
 if test "$test_gtk3" = yes -a "x$enable_gtk3" = "xyes" -o "x$enable_gtk3_kde5" = "xyes"; then
     if test "$with_system_cairo" = no; then
-        add_warning 'Non-system cairo combined with gtk3 is assumed to cause trouble; proceed at your own risk.'
+        add_warning 'Non-system cairo combined with gtk3 is known to cause trouble (eg. broken image in the splashscreen). Use --with-system-cairo unless you know what you are doing.'
     fi
     : ${with_system_cairo:=yes}
     PKG_CHECK_MODULES(GTK3, gtk+-3.0 >= 3.20 gtk+-unix-print-3.0 gmodule-no-export-2.0 glib-2.0 >= 2.38 atk >= 2.28.1 cairo)
@@ -12948,7 +12944,7 @@ AC_SUBST(RHINO_JAR)
 # platforms there.
 supports_multilib=
 case "$host_cpu" in
-x86_64 | powerpc64 | powerpc64le | s390x | aarch64 | mips64 | mips64el | loongarch64)
+x86_64 | powerpc64 | powerpc64le | s390x | aarch64 | mips64 | mips64el | loongarch64 | riscv64)
     if test "$SAL_TYPES_SIZEOFLONG" = "8"; then
         supports_multilib="yes"
     fi
@@ -13598,7 +13594,7 @@ if test "$test_cairo" = "yes"; then
         SYSTEM_CAIRO=TRUE
         AC_MSG_RESULT([yes])
 
-        PKG_CHECK_MODULES( CAIRO, cairo >= 1.8.0 )
+        PKG_CHECK_MODULES( CAIRO, cairo >= 1.12.0 )
         CAIRO_CFLAGS=$(printf '%s' "$CAIRO_CFLAGS" | sed -e "s/-I/${ISYSTEM?}/g")
         FilterLibs "${CAIRO_LIBS}"
         CAIRO_LIBS="${filteredlibs}"
@@ -14831,6 +14827,8 @@ AC_CONFIG_FILES([config_host.mk
                  instsetoo_native/util/openoffice.lst
                  sysui/desktop/macosx/Info.plist
                  vs-code.code-workspace.template:.vscode/vs-code-template.code-workspace.in])
+
+AC_CONFIG_HEADERS([config_host/config_buildconfig.h])
 AC_CONFIG_HEADERS([config_host/config_buildid.h])
 AC_CONFIG_HEADERS([config_host/config_box2d.h])
 AC_CONFIG_HEADERS([config_host/config_clang.h])
