@@ -3755,15 +3755,23 @@ void DomainMapper_Impl::RemoveTemporaryFootOrEndnotes()
 
 static void lcl_convertToNoteIndices(std::deque<sal_Int32>& rNoteIds, sal_Int32& rFirstNoteIndex)
 {
-    // convert arbitrary footnote identifiers to 0, 1, 2...
-    // indices, keeping their possible random order
+    // rNoteIds contains XML footnote identifiers in the loaded order of the footnotes
+    // (the same order as in footnotes.xml), i.e. it maps temporary footnote positions to the
+    // identifiers. For example: Ids[0] = 100; Ids[1] = -1, Ids[2] = 5.
+    // To copy the footnotes in their final place, create an array, which map the (normalized)
+    // footnote identifiers to the temporary footnote positions. Using the previous example,
+    // Pos[0] = 1; Pos[1] = 2; Pos[2] = 0 (where [0], [1], [2] are the normalized
+    // -1, 5 and 100 identifiers).
     std::deque<sal_Int32> aSortedIds = rNoteIds;
     std::sort(aSortedIds.begin(), aSortedIds.end());
     std::map<sal_Int32, size_t> aMapIds;
+    // normalize footnote identifiers to 0, 1, 2 ...
     for (size_t i = 0; i < aSortedIds.size(); ++i)
         aMapIds[aSortedIds[i]] = i;
+    // reusing rNoteIds, create the Pos array to map normalized identifiers to the loaded positions
+    std::deque<sal_Int32> aOrigNoteIds = rNoteIds;
     for (size_t i = 0; i < rNoteIds.size(); ++i)
-        rNoteIds[i] = aMapIds[rNoteIds[i]];
+        rNoteIds[aMapIds[aOrigNoteIds[i]]] = i;
     rFirstNoteIndex = rNoteIds.front();
     rNoteIds.pop_front();
 }
@@ -6210,7 +6218,6 @@ void DomainMapper_Impl::handleToc
     OUString sTemplate;
     OUString sChapterNoSeparator;
     OUString sFigureSequence;
-    uno::Reference< beans::XPropertySet > xTOC;
     OUString aBookmarkName;
 
 //                  \a Builds a table of figures but does not include the captions's label and number
@@ -6309,6 +6316,8 @@ void DomainMapper_Impl::handleToc
 
     const OUString aTocTitle = extractTocTitle();
 
+    uno::Reference<beans::XPropertySet> xTOC;
+
     if (m_xTextFactory.is() && ! m_aTextAppendStack.empty())
     {
         const auto& xTextAppend = GetTopTextAppend();
@@ -6344,13 +6353,17 @@ void DomainMapper_Impl::handleToc
     }
 
     m_bStartTOC = true;
+    pContext->SetTOC(xTOC);
+    m_bParaHadField = false;
 
-    if (xTOC.is())
-        xTOC->setPropertyValue(getPropertyName( PROP_TITLE ), uno::Any(aTocTitle));
+    if (!xTOC)
+        return;
+
+    xTOC->setPropertyValue(getPropertyName( PROP_TITLE ), uno::Any(aTocTitle));
 
     if (!aBookmarkName.isEmpty())
         xTOC->setPropertyValue(getPropertyName(PROP_TOC_BOOKMARK), uno::Any(aBookmarkName));
-    if( !bTableOfFigures && xTOC.is() )
+    if (!bTableOfFigures)
     {
         xTOC->setPropertyValue( getPropertyName( PROP_LEVEL ), uno::Any( nMaxLevel ) );
         xTOC->setPropertyValue( getPropertyName( PROP_CREATE_FROM_OUTLINE ), uno::Any( bFromOutline ));
@@ -6419,7 +6432,7 @@ void DomainMapper_Impl::handleToc
             }
         }
     }
-    else if (bTableOfFigures && xTOC.is())
+    else // if (bTableOfFigures)
     {
         if (!sFigureSequence.isEmpty())
             xTOC->setPropertyValue(getPropertyName(PROP_LABEL_CATEGORY),
@@ -6444,8 +6457,6 @@ void DomainMapper_Impl::handleToc
             xLevelFormats->replaceByIndex( 1, uno::Any( aNewLevel ) );
         }
     }
-    pContext->SetTOC( xTOC );
-    m_bParaHadField = false;
 }
 
 uno::Reference<beans::XPropertySet> DomainMapper_Impl::createSectionForRange(

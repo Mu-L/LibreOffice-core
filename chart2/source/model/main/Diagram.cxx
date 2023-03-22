@@ -25,6 +25,8 @@
 #include <ChartType.hxx>
 #include <DataSeriesHelper.hxx>
 #include <PropertyHelper.hxx>
+#include <RegressionCurveHelper.hxx>
+#include <RegressionCurveModel.hxx>
 #include "Wall.hxx"
 #include <ModifyListenerHelper.hxx>
 #include <UserDefinedProperties.hxx>
@@ -401,7 +403,7 @@ void SAL_CALL Diagram::setDiagramData(
     const Sequence< beans::PropertyValue >& aArguments )
 {
     rtl::Reference< ::chart::ChartTypeManager > xChartTypeManager = new ::chart::ChartTypeManager( m_xContext );
-    DiagramHelper::tTemplateWithServiceName aTemplateAndService = DiagramHelper::getTemplateForDiagram( this, xChartTypeManager );
+    Diagram::tTemplateWithServiceName aTemplateAndService = getTemplate( xChartTypeManager );
     rtl::Reference< ::chart::ChartTypeTemplate > xTemplate( aTemplateAndService.xChartTypeTemplate );
     if( !xTemplate.is() )
         xTemplate = xChartTypeManager->createTemplate( "com.sun.star.chart2.template.Column" );
@@ -1253,16 +1255,6 @@ std::vector< rtl::Reference< ::chart::DataSeries > >
 }
 
 rtl::Reference< ChartType > Diagram::getChartTypeOfSeries(
-        const uno::Reference< chart2::XDataSeries >& xGivenDataSeries )
-{
-    if( !xGivenDataSeries.is() )
-        return nullptr;
-    rtl::Reference pGivenDataSeries = dynamic_cast<DataSeries*>(xGivenDataSeries.get());
-    assert(pGivenDataSeries);
-    return getChartTypeOfSeries(pGivenDataSeries);
-}
-
-rtl::Reference< ChartType > Diagram::getChartTypeOfSeries(
         const rtl::Reference< DataSeries >& xGivenDataSeries )
 {
     if( !xGivenDataSeries.is() )
@@ -1291,26 +1283,19 @@ rtl::Reference< ChartType > Diagram::getChartTypeOfSeries(
 }
 
 rtl::Reference< Axis > Diagram::getAttachedAxis(
-        const uno::Reference< css::chart2::XDataSeries >& xSeries )
-{
-    return AxisHelper::getAxis( 1, DiagramHelper::isSeriesAttachedToMainAxis( xSeries ), this );
-}
-
-rtl::Reference< Axis > Diagram::getAttachedAxis(
         const rtl::Reference< DataSeries >& xSeries )
 {
     return AxisHelper::getAxis( 1, DiagramHelper::isSeriesAttachedToMainAxis( xSeries ), this );
 }
 
 bool Diagram::attachSeriesToAxis( bool bAttachToMainAxis
-                        , const uno::Reference< chart2::XDataSeries >& xDataSeries
+                        , const rtl::Reference< DataSeries >& xDataSeries
                         , const uno::Reference< uno::XComponentContext > & xContext
                         , bool bAdaptAxes )
 {
     bool bChanged = false;
 
     //set property at axis
-    Reference< beans::XPropertySet > xProp( xDataSeries, uno::UNO_QUERY_THROW );
 
     sal_Int32 nNewAxisIndex = bAttachToMainAxis ? 0 : 1;
     sal_Int32 nOldAxisIndex = DataSeriesHelper::getAttachedAxisIndex(xDataSeries);
@@ -1320,7 +1305,7 @@ bool Diagram::attachSeriesToAxis( bool bAttachToMainAxis
     {
         try
         {
-            xProp->setPropertyValue( "AttachedAxisIndex", uno::Any( nNewAxisIndex ) );
+            xDataSeries->setPropertyValue( "AttachedAxisIndex", uno::Any( nNewAxisIndex ) );
             bChanged = true;
         }
         catch( const uno::Exception & )
@@ -1620,6 +1605,60 @@ bool Diagram::getVertical( bool& rbFound, bool& rbAmbiguous )
         }
     }
     return bValue;
+}
+
+Diagram::tTemplateWithServiceName
+    Diagram::getTemplate(
+        const rtl::Reference< ::chart::ChartTypeManager > & xChartTypeManager )
+{
+    tTemplateWithServiceName aResult;
+
+    if( !xChartTypeManager )
+        return aResult;
+
+    Sequence< OUString > aServiceNames( xChartTypeManager->getAvailableServiceNames());
+    const sal_Int32 nLength = aServiceNames.getLength();
+
+    bool bTemplateFound = false;
+
+    for( sal_Int32 i = 0; ! bTemplateFound && i < nLength; ++i )
+    {
+        try
+        {
+            rtl::Reference< ::chart::ChartTypeTemplate > xTempl =
+                xChartTypeManager->createTemplate( aServiceNames[ i ] );
+
+            if (xTempl.is() && xTempl->matchesTemplate2(this, true))
+            {
+                aResult.xChartTypeTemplate = xTempl;
+                aResult.sServiceName = aServiceNames[ i ];
+                bTemplateFound = true;
+            }
+        }
+        catch( const uno::Exception & )
+        {
+            DBG_UNHANDLED_EXCEPTION("chart2");
+        }
+    }
+
+    return aResult;
+}
+
+std::vector< rtl::Reference< RegressionCurveModel > >
+    Diagram::getAllRegressionCurvesNotMeanValueLine()
+{
+    std::vector< rtl::Reference< RegressionCurveModel > > aResult;
+    std::vector< rtl::Reference< DataSeries > > aSeries( getDataSeries());
+    for (auto const& elem : aSeries)
+    {
+        for( rtl::Reference< RegressionCurveModel > const & curve : elem->getRegressionCurves2() )
+        {
+            if( ! RegressionCurveHelper::isMeanValueLine( curve ))
+                aResult.push_back( curve );
+        }
+    }
+
+    return aResult;
 }
 
 } //  namespace chart

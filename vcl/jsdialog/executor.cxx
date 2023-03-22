@@ -361,12 +361,15 @@ bool ExecuteAction(const std::string& nWindowId, const OString& rWidget, StringM
                 }
             }
 
-            auto pTextView = dynamic_cast<weld::TextView*>(pWidget);
+            auto pTextView = dynamic_cast<JSTextView*>(pWidget);
             if (pTextView)
             {
                 if (sAction == "change")
                 {
-                    pTextView->set_text(rData["data"]);
+                    int rStartPos, rEndPos;
+                    pTextView->get_selection_bounds(rStartPos, rEndPos);
+                    pTextView->set_text_without_notify(rData["data"]);
+                    pTextView->select_region(rStartPos, rEndPos);
                     LOKTrigger::trigger_changed(*pTextView);
                     return true;
                 }
@@ -540,6 +543,27 @@ bool ExecuteAction(const std::string& nWindowId, const OString& rWidget, StringM
                     bool bChecked = rData["data"] == "true";
                     pRadioButton->set_state(bChecked ? TRISTATE_TRUE : TRISTATE_FALSE);
                     LOKTrigger::trigger_toggled(*static_cast<weld::Toggleable*>(pRadioButton));
+                    return true;
+                }
+            }
+        }
+        else if (sControlType == "scrolledwindow")
+        {
+            auto pScrolledWindow = dynamic_cast<weld::ScrolledWindow*>(pWidget);
+            if (pScrolledWindow)
+            {
+                if (sAction == "scrollv")
+                {
+                    sal_Int32 nValue = o3tl::toInt32(rData["data"]);
+                    pScrolledWindow->vadjustment_set_value(nValue);
+                    LOKTrigger::trigger_scrollv(*pScrolledWindow);
+                    return true;
+                }
+                else if (sAction == "scrollh")
+                {
+                    sal_Int32 nValue = o3tl::toInt32(rData["data"]);
+                    pScrolledWindow->hadjustment_set_value(nValue);
+                    LOKTrigger::trigger_scrollh(*pScrolledWindow);
                     return true;
                 }
             }

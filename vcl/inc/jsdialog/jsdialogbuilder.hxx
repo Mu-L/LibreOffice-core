@@ -40,6 +40,7 @@ class ComboBox;
 class VclMultiLineEdit;
 class SvTabListBox;
 class IconView;
+class VclScrolledWindow;
 
 namespace vcl
 {
@@ -304,6 +305,8 @@ public:
     virtual std::unique_ptr<weld::TreeView> weld_tree_view(const OString& id) override;
     virtual std::unique_ptr<weld::Expander> weld_expander(const OString& id) override;
     virtual std::unique_ptr<weld::IconView> weld_icon_view(const OString& id) override;
+    virtual std::unique_ptr<weld::ScrolledWindow>
+    weld_scrolled_window(const OString& id, bool bUserManagedScrolling = false) override;
     virtual std::unique_ptr<weld::RadioButton> weld_radio_button(const OString& id) override;
     virtual std::unique_ptr<weld::Frame> weld_frame(const OString& id) override;
     virtual std::unique_ptr<weld::MenuButton> weld_menu_button(const OString& id) override;
@@ -363,6 +366,14 @@ public:
     JSWidget(JSDialogSender* pSender, VclClass* pObject, SalInstanceBuilder* pBuilder,
              bool bTakeOwnership)
         : BaseInstanceClass(pObject, pBuilder, bTakeOwnership)
+        , m_bIsFreezed(false)
+        , m_pSender(pSender)
+    {
+    }
+
+    JSWidget(JSDialogSender* pSender, VclClass* pObject, SalInstanceBuilder* pBuilder,
+             bool bTakeOwnership, bool bUserManagedScrolling)
+        : BaseInstanceClass(pObject, pBuilder, bTakeOwnership, bUserManagedScrolling)
         , m_bIsFreezed(false)
         , m_pSender(pSender)
     {
@@ -510,6 +521,21 @@ public:
                 bool bTakeOwnership);
 };
 
+class JSScrolledWindow final : public JSWidget<SalInstanceScrolledWindow, ::VclScrolledWindow>
+{
+public:
+    JSScrolledWindow(JSDialogSender* pSender, ::VclScrolledWindow* pWindow,
+                     SalInstanceBuilder* pBuilder, bool bTakeOwnership, bool bUserManagedScrolling);
+
+    virtual void vadjustment_configure(int value, int lower, int upper, int step_increment,
+                                       int page_increment, int page_size) override;
+    virtual void set_vpolicy(VclPolicyType eVPolicy) override;
+
+    virtual void hadjustment_configure(int value, int lower, int upper, int step_increment,
+                                       int page_increment, int page_size) override;
+    virtual void set_hpolicy(VclPolicyType eVPolicy) override;
+};
+
 class JSLabel final : public JSWidget<SalInstanceLabel, Control>
 {
 public:
@@ -546,6 +572,7 @@ public:
             bool bTakeOwnership);
     virtual void set_text(const OUString& rText) override;
     void set_text_without_notify(const OUString& rText);
+    virtual void replace_selection(const OUString& rText) override;
 };
 
 class JSListBox final : public JSWidget<SalInstanceComboBoxWithoutEdit, ::ListBox>
@@ -575,34 +602,12 @@ public:
 
 class JSNotebook final : public JSWidget<SalInstanceNotebook, ::TabControl>
 {
-    Link<const OString&, bool> m_aLeavePageOverridenHdl;
-    Link<const OString&, void> m_aEnterPageOverridenHdl;
-
-    DECL_LINK(LeaveHdl, const OString&, bool);
-    DECL_LINK(EnterHdl, const OString&, bool);
-
 public:
     JSNotebook(JSDialogSender* pSender, ::TabControl* pControl, SalInstanceBuilder* pBuilder,
                bool bTakeOwnership);
 
-    virtual void set_current_page(int nPage) override;
-
-    virtual void set_current_page(const OString& rIdent) override;
-
     virtual void remove_page(const OString& rIdent) override;
-
     virtual void insert_page(const OString& rIdent, const OUString& rLabel, int nPos) override;
-
-    void connect_leave_page(const Link<const OString&, bool>& rLink)
-    {
-        m_aLeavePageHdl = LINK(this, JSNotebook, LeaveHdl);
-        m_aLeavePageOverridenHdl = rLink;
-    }
-    void connect_enter_page(const Link<const OString&, void>& rLink)
-    {
-        m_aLeavePageHdl = LINK(this, JSNotebook, EnterHdl);
-        m_aEnterPageOverridenHdl = rLink;
-    }
 };
 
 class JSSpinButton final : public JSWidget<SalInstanceSpinButton, ::FormattedField>
@@ -688,6 +693,7 @@ public:
     JSTextView(JSDialogSender* pSender, ::VclMultiLineEdit* pTextView, SalInstanceBuilder* pBuilder,
                bool bTakeOwnership);
     virtual void set_text(const OUString& rText) override;
+    void set_text_without_notify(const OUString& rText);
     virtual void replace_selection(const OUString& rText) override;
 };
 

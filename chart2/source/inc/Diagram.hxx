@@ -42,9 +42,12 @@ namespace chart
 class Axis;
 class BaseCoordinateSystem;
 class ChartType;
+class ChartTypeManager;
+class ChartTypeTemplate;
 class DataSeries;
 class Legend;
 class DataTable;
+class RegressionCurveModel;
 enum class StackMode;
 class Wall;
 
@@ -252,18 +255,13 @@ public:
         getDataSeries();
 
     rtl::Reference< ChartType >
-        getChartTypeOfSeries( const css::uno::Reference< css::chart2::XDataSeries >& xSeries );
-    rtl::Reference< ChartType >
         getChartTypeOfSeries( const rtl::Reference< DataSeries >& xSeries );
-
-    rtl::Reference< ::chart::Axis > getAttachedAxis(
-        const css::uno::Reference< css::chart2::XDataSeries >& xSeries );
 
     rtl::Reference< ::chart::Axis > getAttachedAxis(
         const rtl::Reference< ::chart::DataSeries >& xSeries );
 
     bool attachSeriesToAxis( bool bMainAxis,
-        const css::uno::Reference< css::chart2::XDataSeries >& xSeries,
+        const rtl::Reference< DataSeries >& xSeries,
         const css::uno::Reference< css::uno::XComponentContext > & xContext,
         bool bAdaptAxes=true );
 
@@ -314,6 +312,25 @@ public:
         "vertical==true" for bar charts, "vertical==false" for column charts
     */
     bool getVertical( bool& rbOutFoundResult, bool& rbOutAmbiguousResult );
+
+    struct tTemplateWithServiceName {
+        rtl::Reference< ::chart::ChartTypeTemplate > xChartTypeTemplate;
+        OUString sServiceName;
+    };
+
+    /** tries to find a template in the chart-type manager that matches this
+        diagram.
+
+        @return
+            A pair containing a template with the correct properties set as
+            first entry and the service name of the templates second entry.  If
+            no template was found both elements are empty.
+     */
+    tTemplateWithServiceName
+        getTemplate(const rtl::Reference< ::chart::ChartTypeManager > & xChartTypeManager);
+
+    std::vector<rtl::Reference<::chart::RegressionCurveModel> >
+        getAllRegressionCurvesNotMeanValueLine();
 
 private:
     // ____ XModifyListener ____

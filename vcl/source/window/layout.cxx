@@ -401,12 +401,17 @@ void VclBox::DumpAsPropertyTree(tools::JsonWriter& rJsonWriter)
 
 sal_uInt16 VclBox::getDefaultAccessibleRole() const
 {
+    // fdo#74284 call Boxes Panels, keep them as "Filler" under
+    // at least Linux seeing as that's what Gtk3 did for GtkBoxes.
+    // Though now with Gtk4 that uses GTK_ACCESSIBLE_ROLE_GROUP
+    // which maps to ATSPI_ROLE_PANEL
 #if defined(_WIN32)
-    //fdo#74284 call Boxes Panels, keep then as "Filler" under
-    //at least Linux seeing as that's what Gtk does for GtkBoxes
     return css::accessibility::AccessibleRole::PANEL;
 #else
-    return css::accessibility::AccessibleRole::FILLER;
+    static sal_uInt16 eRole = Application::GetToolkitName() == "gtk4" ?
+                              css::accessibility::AccessibleRole::PANEL :
+                              css::accessibility::AccessibleRole::FILLER;
+    return eRole;
 #endif
 }
 
@@ -2165,6 +2170,53 @@ void VclScrolledWindow::Paint(vcl::RenderContext& rRenderContext, const tools::R
     const auto nBorderWidth = (aRect.GetWidth() - aContentRect.GetWidth()) / 2;
     SAL_WARN_IF(nBorderWidth > m_nBorderWidth, "vcl.layout", "desired border at paint " <<
                 nBorderWidth << " is larger than expected " << m_nBorderWidth);
+}
+
+namespace {
+void lcl_dumpScrollbar(::tools::JsonWriter& rJsonWriter, ScrollBar& rScrollBar)
+{
+    rJsonWriter.put("lower", rScrollBar.GetRangeMin());
+    rJsonWriter.put("upper", rScrollBar.GetRangeMax());
+    rJsonWriter.put("step_increment", rScrollBar.GetLineSize());
+    rJsonWriter.put("page_increment", rScrollBar.GetPageSize());
+    rJsonWriter.put("value", rScrollBar.GetThumbPos());
+    rJsonWriter.put("page_size", rScrollBar.GetVisibleSize());
+}
+};
+
+void VclScrolledWindow::DumpAsPropertyTree(::tools::JsonWriter& rJsonWriter)
+{
+    VclBin::DumpAsPropertyTree(rJsonWriter);
+
+    {
+        auto aVertical = rJsonWriter.startNode("vertical");
+
+        ScrollBar& rScrollBar = getVertScrollBar();
+        lcl_dumpScrollbar(rJsonWriter, rScrollBar);
+
+        WinBits nWinBits = GetStyle();
+        if (nWinBits & WB_VSCROLL)
+            rJsonWriter.put("policy", "always");
+        else if (nWinBits & WB_AUTOVSCROLL)
+            rJsonWriter.put("policy", "auto");
+        else
+            rJsonWriter.put("policy", "never");
+    }
+
+    {
+        auto aHorizontal = rJsonWriter.startNode("horizontal");
+
+        ScrollBar& rScrollBar = getHorzScrollBar();
+        lcl_dumpScrollbar(rJsonWriter, rScrollBar);
+
+        WinBits nWinBits = GetStyle();
+        if (nWinBits & WB_HSCROLL)
+            rJsonWriter.put("policy", "always");
+        else if (nWinBits & WB_AUTOHSCROLL)
+            rJsonWriter.put("policy", "auto");
+        else
+            rJsonWriter.put("policy", "never");
+    }
 }
 
 void VclViewport::setAllocation(const Size &rAllocation)

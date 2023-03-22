@@ -236,14 +236,14 @@ void RegressionCurveHelper::initializeCurveCalculator(
 
 void RegressionCurveHelper::initializeCurveCalculator(
     const Reference< XRegressionCurveCalculator > & xOutCurveCalculator,
-    const Reference< XDataSeries > & xSeries,
+    const rtl::Reference< ::chart::DataSeries > & xSeries,
     const rtl::Reference<::chart::ChartModel> & xModel )
 {
     sal_Int32 nAxisType = ChartTypeHelper::getAxisType(
         ChartModelHelper::getChartTypeOfSeries( xModel, xSeries ), 0 ); // x-axis
 
     initializeCurveCalculator( xOutCurveCalculator,
-                               uno::Reference< data::XDataSource >( xSeries, uno::UNO_QUERY ),
+                               xSeries,
                                (nAxisType == AxisType::REALNUMBER) );
 }
 
@@ -840,24 +840,6 @@ OUString RegressionCurveHelper::getRegressionCurveName( const Reference< XRegres
     OUString aResult = getRegressionCurveSpecificName(xRegressionCurve);
     if (aResult.isEmpty())
         return getRegressionCurveGenericName(xRegressionCurve);
-    return aResult;
-}
-
-std::vector< rtl::Reference< RegressionCurveModel > >
-    RegressionCurveHelper::getAllRegressionCurvesNotMeanValueLine(
-        const rtl::Reference< Diagram > & xDiagram )
-{
-    std::vector< rtl::Reference< RegressionCurveModel > > aResult;
-    std::vector< rtl::Reference< DataSeries > > aSeries( xDiagram->getDataSeries());
-    for (auto const& elem : aSeries)
-    {
-        for( rtl::Reference< RegressionCurveModel > const & curve : elem->getRegressionCurves2() )
-        {
-            if( ! isMeanValueLine( curve ))
-                aResult.push_back( curve );
-        }
-    }
-
     return aResult;
 }
 

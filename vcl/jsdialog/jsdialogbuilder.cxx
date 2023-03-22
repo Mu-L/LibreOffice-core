@@ -950,6 +950,21 @@ std::unique_ptr<weld::Container> JSInstanceBuilder::weld_container(const OString
     return pWeldWidget;
 }
 
+std::unique_ptr<weld::ScrolledWindow>
+JSInstanceBuilder::weld_scrolled_window(const OString& id, bool bUserManagedScrolling)
+{
+    VclScrolledWindow* pScrolledWindow = m_xBuilder->get<VclScrolledWindow>(id);
+    auto pWeldWidget = pScrolledWindow
+                           ? std::make_unique<JSScrolledWindow>(this, pScrolledWindow, this, false,
+                                                                bUserManagedScrolling)
+                           : nullptr;
+
+    if (pWeldWidget)
+        RememberWidget(id, pWeldWidget.get());
+
+    return pWeldWidget;
+}
+
 std::unique_ptr<weld::Label> JSInstanceBuilder::weld_label(const OString& id)
 {
     Control* pLabel = m_xBuilder->get<Control>(id);
@@ -1393,6 +1408,42 @@ JSContainer::JSContainer(JSDialogSender* pSender, vcl::Window* pContainer,
 {
 }
 
+JSScrolledWindow::JSScrolledWindow(JSDialogSender* pSender, ::VclScrolledWindow* pContainer,
+                                   SalInstanceBuilder* pBuilder, bool bTakeOwnership,
+                                   bool bUserManagedScrolling)
+    : JSWidget<SalInstanceScrolledWindow, ::VclScrolledWindow>(
+          pSender, pContainer, pBuilder, bTakeOwnership, bUserManagedScrolling)
+{
+}
+
+void JSScrolledWindow::vadjustment_configure(int value, int lower, int upper, int step_increment,
+                                             int page_increment, int page_size)
+{
+    SalInstanceScrolledWindow::vadjustment_configure(value, lower, upper, step_increment,
+                                                     page_increment, page_size);
+    sendUpdate();
+}
+
+void JSScrolledWindow::set_vpolicy(VclPolicyType eVPolicy)
+{
+    SalInstanceScrolledWindow::set_vpolicy(eVPolicy);
+    sendUpdate();
+}
+
+void JSScrolledWindow::hadjustment_configure(int value, int lower, int upper, int step_increment,
+                                             int page_increment, int page_size)
+{
+    SalInstanceScrolledWindow::hadjustment_configure(value, lower, upper, step_increment,
+                                                     page_increment, page_size);
+    sendUpdate();
+}
+
+void JSScrolledWindow::set_hpolicy(VclPolicyType eVPolicy)
+{
+    SalInstanceScrolledWindow::set_hpolicy(eVPolicy);
+    sendUpdate();
+}
+
 JSLabel::JSLabel(JSDialogSender* pSender, Control* pLabel, SalInstanceBuilder* pBuilder,
                  bool bTakeOwnership)
     : JSWidget<SalInstanceLabel, Control>(pSender, pLabel, pBuilder, bTakeOwnership)
@@ -1436,6 +1487,12 @@ void JSEntry::set_text(const OUString& rText)
 }
 
 void JSEntry::set_text_without_notify(const OUString& rText) { SalInstanceEntry::set_text(rText); }
+
+void JSEntry::replace_selection(const OUString& rText)
+{
+    SalInstanceEntry::replace_selection(rText);
+    sendUpdate();
+}
 
 JSListBox::JSListBox(JSDialogSender* pSender, ::ListBox* pListBox, SalInstanceBuilder* pBuilder,
                      bool bTakeOwnership)
@@ -1502,50 +1559,10 @@ void JSComboBox::set_active(int pos)
 
 bool JSComboBox::changed_by_direct_pick() const { return true; }
 
-IMPL_LINK(JSNotebook, LeaveHdl, const OString&, rPage, bool)
-{
-    m_aLeavePageOverridenHdl.Call(rPage);
-    sendFullUpdate();
-    return true;
-}
-
-IMPL_LINK(JSNotebook, EnterHdl, const OString&, rPage, bool)
-{
-    m_aEnterPageOverridenHdl.Call(rPage);
-    sendFullUpdate();
-    return true;
-}
-
 JSNotebook::JSNotebook(JSDialogSender* pSender, ::TabControl* pControl,
                        SalInstanceBuilder* pBuilder, bool bTakeOwnership)
     : JSWidget<SalInstanceNotebook, ::TabControl>(pSender, pControl, pBuilder, bTakeOwnership)
 {
-}
-
-void JSNotebook::set_current_page(int nPage)
-{
-    bool bForce = false;
-    int nCurrent = get_current_page();
-    if (nCurrent == nPage)
-        bForce = true;
-
-    SalInstanceNotebook::set_current_page(nPage);
-    sendFullUpdate(bForce);
-
-    m_aEnterPageHdl.Call(get_current_page_ident());
-}
-
-void JSNotebook::set_current_page(const OString& rIdent)
-{
-    bool bForce = false;
-    OString sCurrent = get_current_page_ident();
-    if (sCurrent == rIdent)
-        bForce = true;
-
-    SalInstanceNotebook::set_current_page(rIdent);
-    sendFullUpdate(bForce);
-
-    m_aEnterPageHdl.Call(get_current_page_ident());
 }
 
 void JSNotebook::remove_page(const OString& rIdent)
@@ -1790,6 +1807,11 @@ void JSTextView::set_text(const OUString& rText)
 {
     SalInstanceTextView::set_text(rText);
     sendUpdate();
+}
+
+void JSTextView::set_text_without_notify(const OUString& rText)
+{
+    SalInstanceTextView::set_text(rText);
 }
 
 void JSTextView::replace_selection(const OUString& rText)
