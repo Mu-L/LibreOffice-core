@@ -398,6 +398,104 @@ void ImpEditEngine::FormatFullDoc()
     FormatDoc();
 }
 
+tools::Long ImpEditEngine::FormatParagraphs(o3tl::sorted_vector<sal_Int32>& aRepaintParagraphList)
+{
+    sal_Int32 nParaCount = GetParaPortions().Count();
+    tools::Long nY = 0;
+    bool bGrow = false;
+
+    for (sal_Int32 nParagraph = 0; nParagraph < nParaCount; nParagraph++)
+    {
+        ParaPortion& rParaPortion = GetParaPortions().getRef(nParagraph);
+        if (rParaPortion.MustRepaint() || (rParaPortion.IsInvalid() && rParaPortion.IsVisible()))
+        {
+            // No formatting should be necessary for MustRepaint()!
+            if (CreateLines(nParagraph, nY))
+            {
+                if (!bGrow && GetTextRanger())
+                {
+                    // For a change in height all below must be reformatted...
+                    for (sal_Int32 n = nParagraph + 1; n < nParaCount; n++)
+                    {
+                        ParaPortion& rParaPortionToInvalidate = GetParaPortions().getRef(n);
+                        rParaPortionToInvalidate.MarkSelectionInvalid(0);
+                        rParaPortionToInvalidate.GetLines().Reset();
+                    }
+                }
+                bGrow = true;
+                if (IsCallParaInsertedOrDeleted())
+                {
+                    GetEditEnginePtr()->ParagraphHeightChanged(nParagraph);
+
+                    for (EditView* pView : maEditViews)
+                    {
+                        pView->getImpl().ScrollStateChange();
+                    }
+
+                }
+                rParaPortion.SetMustRepaint(false);
+            }
+
+            aRepaintParagraphList.insert(nParagraph);
+        }
+        nY += rParaPortion.GetHeight();
+    }
+    return nY;
+}
+
+namespace
+{
+constexpr std::array<ScalingParameters, 13> constScaleLevels =
+{
+    ScalingParameters{ 1.000,  1.000,  1.0,  0.9 },
+    ScalingParameters{ 0.925,  0.925,  1.0,  0.9 },
+    ScalingParameters{ 0.925,  0.925,  1.0,  0.8 },
+    ScalingParameters{ 0.850,  0.850,  1.0,  0.9 },
+    ScalingParameters{ 0.850,  0.850,  1.0,  0.8 },
+    ScalingParameters{ 0.775,  0.775,  1.0,  0.8 },
+    ScalingParameters{ 0.700,  0.700,  1.0,  0.8 },
+    ScalingParameters{ 0.625,  0.625,  1.0,  0.8 },
+    ScalingParameters{ 0.550,  0.550,  1.0,  0.8 },
+    ScalingParameters{ 0.475,  0.475,  1.0,  0.8 },
+    ScalingParameters{ 0.400,  0.400,  1.0,  0.8 },
+    ScalingParameters{ 0.325,  0.325,  1.0,  0.8 },
+    ScalingParameters{ 0.250,  0.250,  1.0,  0.8 },
+};
+
+} // end anonymous ns
+
+void ImpEditEngine::ScaleContentToFitWindow(o3tl::sorted_vector<sal_Int32>& aRepaintParagraphList)
+{
+    if (!maCustomScalingParameters.areValuesDefault())
+        maScalingParameters = maCustomScalingParameters;
+
+    tools::Long nHeight = FormatParagraphs(aRepaintParagraphList);
+    bool bOverflow = nHeight > (maMaxAutoPaperSize.Height() * mnColumns);
+
+    size_t nCurrentScaleLevel = 0;
+    while (bOverflow && nCurrentScaleLevel < constScaleLevels.size())
+    {
+        // Clean-up and reset paragraphs
+        aRepaintParagraphList.clear();
+        for (auto& pParaPortionToInvalidate : GetParaPortions())
+        {
+            pParaPortionToInvalidate->GetLines().Reset();
+            pParaPortionToInvalidate->MarkSelectionInvalid(0);
+            pParaPortionToInvalidate->SetMustRepaint(true);
+        }
+
+        // Get new scaling parameters
+        maScalingParameters = constScaleLevels[nCurrentScaleLevel];
+
+        // Try again with different scaling factor
+        nHeight = FormatParagraphs(aRepaintParagraphList);
+        bOverflow = nHeight > (maMaxAutoPaperSize.Height() * mnColumns);
+
+        // Increase scale level
+        nCurrentScaleLevel++;
+    }
+}
+
 void ImpEditEngine::FormatDoc()
 {
     if (!IsUpdateLayout() || IsFormatting())
@@ -406,53 +504,17 @@ void ImpEditEngine::FormatDoc()
     mbIsFormatting = true;
 
     // Then I can also start the spell-timer...
-    if ( GetStatus().DoOnlineSpelling() )
+    if (GetStatus().DoOnlineSpelling())
         StartOnlineSpellTimer();
 
-    tools::Long nY = 0;
-    bool bGrow = false;
+    // Reserve, as it should match the current number of paragraphs
+    o3tl::sorted_vector<sal_Int32> aRepaintParagraphList;
+    aRepaintParagraphList.reserve(GetParaPortions().Count());
 
-    // Here already, so that not always in CreateLines...
-    sal_Int32 nParaCount = GetParaPortions().Count();
-    o3tl::sorted_vector<sal_Int32> aRepaintParas;
-    aRepaintParas.reserve(nParaCount);
-
-    for ( sal_Int32 nPara = 0; nPara < nParaCount; nPara++ )
-    {
-        ParaPortion& rParaPortion = GetParaPortions().getRef(nPara);
-        if (rParaPortion.MustRepaint() || (rParaPortion.IsInvalid() && rParaPortion.IsVisible()))
-        {
-            // No formatting should be necessary for MustRepaint()!
-            if (!rParaPortion.IsInvalid() || CreateLines( nPara, nY ) )
-            {
-                if ( !bGrow && GetTextRanger() )
-                {
-                    // For a change in height all below must be reformatted...
-                    for ( sal_Int32 n = nPara+1; n < GetParaPortions().Count(); n++ )
-                    {
-                        ParaPortion& rParaPortionToInvalidate = GetParaPortions().getRef(n);
-                        rParaPortionToInvalidate.MarkSelectionInvalid( 0 );
-                        rParaPortionToInvalidate.GetLines().Reset();
-                    }
-                }
-                bGrow = true;
-                if ( IsCallParaInsertedOrDeleted() )
-                {
-                    GetEditEnginePtr()->ParagraphHeightChanged( nPara );
-
-                    for (EditView* pView : maEditViews)
-                    {
-                        pView->getImpl().ScrollStateChange();
-                    }
-
-                }
-                rParaPortion.SetMustRepaint( false );
-            }
-
-            aRepaintParas.insert(nPara);
-        }
-        nY += rParaPortion.GetHeight();
-    }
+    if (maStatus.DoStretch())
+        ScaleContentToFitWindow(aRepaintParagraphList);
+    else
+        FormatParagraphs(aRepaintParagraphList);
 
     maInvalidRect = tools::Rectangle(); // make empty
 
@@ -491,10 +553,10 @@ void ImpEditEngine::FormatDoc()
             }
         }
 
-        if (!aRepaintParas.empty())
+        if (!aRepaintParagraphList.empty())
         {
             auto CombineRepaintParasAreas = [&](const LineAreaInfo& rInfo) {
-                if (aRepaintParas.count(rInfo.nPortion))
+                if (aRepaintParagraphList.count(rInfo.nPortion))
                     maInvalidRect.Union(rInfo.aArea);
                 return CallbackResult::Continue;
             };
@@ -1006,12 +1068,13 @@ bool ImpEditEngine::CreateLines( sal_Int32 nPara, sal_uInt32 nStartPosY )
                         // Search for Tab-Pos...
                         tools::Long nCurPos = nTmpWidth + nStartX;
                         // consider scaling
-                        if (maStatus.DoStretch() && (mfFontScaleX != 100.0))
-                            nCurPos = basegfx::fround(double(nCurPos) * 100.0 / std::max(mfFontScaleX, 1.0));
+                        double fFontScalingX = maScalingParameters.fFontX;
+                        if (maStatus.DoStretch() && (fFontScalingX != 1.0))
+                            nCurPos = basegfx::fround(double(nCurPos) / std::max(fFontScalingX, 0.01));
 
-                        short nAllSpaceBeforeText = static_cast< short >(rLRItem.GetTextLeft()/* + rLRItem.GetTextLeft()*/ + nSpaceBeforeAndMinLabelWidth);
-                        aCurrentTab.aTabStop = pNode->GetContentAttribs().FindTabStop( nCurPos - nAllSpaceBeforeText /*rLRItem.GetTextLeft()*/, maEditDoc.GetDefTab() );
-                        aCurrentTab.nTabPos = scaleXFontValue(tools::Long(aCurrentTab.aTabStop.GetTabPos() + nAllSpaceBeforeText/*rLRItem.GetTextLeft()*/));
+                        short nAllSpaceBeforeText = short(rLRItem.GetTextLeft());
+                        aCurrentTab.aTabStop = pNode->GetContentAttribs().FindTabStop( nCurPos - nAllSpaceBeforeText , maEditDoc.GetDefTab() );
+                        aCurrentTab.nTabPos = tools::Long(aCurrentTab.aTabStop.GetTabPos() + nAllSpaceBeforeText);
                         aCurrentTab.bValid = false;
 
                         // Switch direction in R2L para...
@@ -1530,7 +1593,7 @@ bool ImpEditEngine::CreateLines( sal_Int32 nPara, sal_uInt32 nStartPosY )
                 sal_uInt16 nPropLineSpace = rLSItem.GetPropLineSpace();
                 double fProportionalScale = double(nPropLineSpace) / 100.0;
                 constexpr const double f80Percent = 8.0 / 10.0;
-                double fSpacingFactor = mfSpacingScaleY / 100.0;
+                double fSpacingFactor = maScalingParameters.fSpacingY;
                 if (nPropLineSpace && nPropLineSpace < 100)
                 {
                     // Adapted code from sw/source/core/text/itrform2.cxx
@@ -1554,9 +1617,9 @@ bool ImpEditEngine::CreateLines( sal_Int32 nPara, sal_uInt32 nStartPosY )
             }
             else if (rLSItem.GetInterLineSpaceRule() == SvxInterLineSpaceRule::Off)
             {
-                if (mfSpacingScaleY < 100.0)
+                if (maScalingParameters.fSpacingY < 1.0)
                 {
-                    double fSpacingFactor = mfSpacingScaleY / 100.0;
+                    double fSpacingFactor = maScalingParameters.fSpacingY;
                     sal_uInt16 nPropLineSpace = basegfx::fround(100.0 * fSpacingFactor);
                     if (nPropLineSpace && nPropLineSpace < 100)
                     {
@@ -3022,23 +3085,25 @@ void ImpEditEngine::SeekCursor( ContentNode* pNode, sal_Int32 nPos, SvxFont& rFo
 
         if (maStatus.DoStretch())
         {
-            if (mfFontScaleY != 100.0)
+            if (maScalingParameters.fFontY != 1.0)
             {
                 double fHeightRounded = roundToNearestPt(aRealSz.Height());
-                double fNewHeight = fHeightRounded * (mfFontScaleY / 100.0);
+                double fNewHeight = fHeightRounded * maScalingParameters.fFontY;
                 fNewHeight = roundToNearestPt(fNewHeight);
                 aRealSz.setHeight(basegfx::fround(fNewHeight));
             }
-            if (mfFontScaleX != 100.0)
+            if (maScalingParameters.fFontX != 1.0)
             {
-                if (mfFontScaleX == mfFontScaleY && nRelWidth == 100 )
+                auto fFontX = maScalingParameters.fFontX;
+                auto fFontY = maScalingParameters.fFontY;
+                if (fFontX == fFontY && nRelWidth == 100 )
                 {
                     aRealSz.setWidth( 0 );
                 }
                 else
                 {
                     double fWidthRounded = roundToNearestPt(aRealSz.Width());
-                    double fNewWidth = fWidthRounded * (mfFontScaleX / 100.0);
+                    double fNewWidth = fWidthRounded * fFontX;
                     fNewWidth = roundToNearestPt(fNewWidth);
                     aRealSz.setWidth(basegfx::fround(fNewWidth));
 
@@ -3055,15 +3120,15 @@ void ImpEditEngine::SeekCursor( ContentNode* pNode, sal_Int32 nPos, SvxFont& rFo
   >0        >100        > (Proportional)
   <0        >100        < (The amount, thus disproportional)
 */
-                    if (nKerning < 0 && mfFontScaleX > 100.0)
+                    if (nKerning < 0 && fFontX > 1.0)
                     {
                         // disproportional
-                        nKerning = basegfx::fround((double(nKerning) * 100.0) / mfFontScaleX);
+                        nKerning = basegfx::fround(nKerning / fFontX);
                     }
                     else if ( nKerning )
                     {
                         // Proportional
-                        nKerning = basegfx::fround((double(nKerning) * mfFontScaleX) / 100.0);
+                        nKerning = basegfx::fround(nKerning * fFontX);
                     }
                     rFont.SetFixKerning( static_cast<short>(nKerning) );
                 }
@@ -4528,30 +4593,20 @@ void ImpEditEngine::SetFlatMode( bool bFlat )
         mpActiveView->ShowCursor();
 }
 
-void ImpEditEngine::setScale(double fFontScaleX, double fFontScaleY, double fSpacingScaleX, double fSpacingScaleY)
+void ImpEditEngine::setScalingParameters(ScalingParameters const& rScalingParameters)
 {
-    bool bChanged;
+    ScalingParameters aNewScalingParameters(rScalingParameters);
 
-    if (!IsEffectivelyVertical())
+    if (IsEffectivelyVertical())
     {
-        bChanged = mfFontScaleX != fFontScaleX || mfFontScaleY != fFontScaleY ||
-                   mfSpacingScaleX != fSpacingScaleX || mfSpacingScaleY != fSpacingScaleY;
-        mfFontScaleX = fFontScaleX;
-        mfFontScaleY = fFontScaleY;
-        mfSpacingScaleX = fSpacingScaleX;
-        mfSpacingScaleY = fSpacingScaleY;
-    }
-    else
-    {
-        bChanged = mfFontScaleX != fFontScaleY || mfFontScaleY != fFontScaleX ||
-                   mfSpacingScaleX != fSpacingScaleY || mfSpacingScaleY != fSpacingScaleX;
-        mfFontScaleX = fFontScaleY;
-        mfFontScaleY = fFontScaleX;
-        mfSpacingScaleX = fSpacingScaleY;
-        mfSpacingScaleY = fSpacingScaleX;
+        std::swap(aNewScalingParameters.fFontX, aNewScalingParameters.fFontY);
+        std::swap(aNewScalingParameters.fSpacingX, aNewScalingParameters.fSpacingY);
     }
 
-    if (bChanged && maStatus.DoStretch())
+    bool bScalingChanged = maScalingParameters != aNewScalingParameters;
+    maCustomScalingParameters = maScalingParameters = aNewScalingParameters;
+
+    if (bScalingChanged && maStatus.DoStretch())
     {
         FormatFullDoc();
         // (potentially) need everything redrawn

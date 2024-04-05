@@ -77,10 +77,14 @@ public:
                     , const rtl::Reference< ::chart::ChartModel >& xModel );
 
     static OUString getCompleteString( const rtl::Reference< ::chart::Title >& xTitle );
+    static OUString getUnstackedStr( const OUString& rNewText );
+    static void setFormattedString( const rtl::Reference< ::chart::Title >& xTitle,
+        const css::uno::Sequence< css::uno::Reference< css::chart2::XFormattedString > >& aNewFormattedTitle );
     static void setCompleteString( const OUString& rNewText
         , const rtl::Reference< ::chart::Title >& xTitle
         , const css::uno::Reference< css::uno::XComponentContext > & xContext
-        , const float * pDefaultCharHeight = nullptr );
+        , const float * pDefaultCharHeight = nullptr
+        , bool bDialogTitle = false );
 
     static bool getTitleType( eTitleType& rType
                     , const rtl::Reference< ::chart::Title >& xTitle

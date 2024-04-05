@@ -935,11 +935,11 @@ void SdrTextObj::impDecomposeAutoFitTextPrimitive(
         rOutliner.SetMinColumnWrapHeight(nAnchorTextWidth);
     }
 
-    rOutliner.SetPaperSize(aNullSize);
+    rOutliner.SetPaperSize(aAnchorTextSize);
     rOutliner.SetUpdateLayout(true);
     rOutliner.SetText(*pOutlinerParaObject);
-    ImpAutoFitText(rOutliner,aAnchorTextSize,bVerticalWriting);
 
+    setupAutoFitText(rOutliner, aAnchorTextSize);
     // set visualizing page at Outliner; needed e.g. for PageNumberField decomposition
     rOutliner.setVisualizedPage(GetSdrPageFromXDrawPage(aViewInformation.getVisualizedPage()));
 
@@ -1375,7 +1375,9 @@ void SdrTextObj::impDecomposeStretchTextPrimitive(
     // to layout without mirroring
     const double fScaleX(fabs(aScale.getX()) / aOutlinerScale.getX());
     const double fScaleY(fabs(aScale.getY()) / aOutlinerScale.getY());
-    rOutliner.setGlobalScale(fScaleX * 100.0, fScaleY * 100.0, 100.0, 100.0);
+    ScalingParameters aScalingParameters{fScaleX, fScaleY};
+
+    rOutliner.setScalingParameters(aScalingParameters);
 
     // When mirroring in X and Y,
     // move the null point which was top left to bottom right.

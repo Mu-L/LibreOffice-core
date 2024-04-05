@@ -58,7 +58,6 @@ class INetBookmark;
 class INetImage;
 class FileList;
 class SotStorageStream;
-class SotTempStream;
 namespace vcl { class Window; }
 
 // Drag&Drop defines
@@ -245,7 +244,7 @@ protected:
 
     virtual void        AddSupportedFormats() = 0;
     virtual bool        GetData( const css::datatransfer::DataFlavor& rFlavor, const OUString& rDestDoc ) = 0;
-    virtual bool        WriteObject( tools::SvRef<SotTempStream>& rxOStm, void* pUserObject, sal_uInt32 nUserObjectId, const css::datatransfer::DataFlavor& rFlavor );
+    virtual bool        WriteObject( SvStream& rOStm, void* pUserObject, sal_uInt32 nUserObjectId, const css::datatransfer::DataFlavor& rFlavor );
     virtual void        DragFinished( sal_Int8 nDropAction );
     virtual void        ObjectReleased();
 
@@ -352,8 +351,8 @@ public:
     css::uno::Sequence<sal_Int8> GetSequence( SotClipboardFormatId nFormat, const OUString& rDestDoc ) const;
     css::uno::Sequence<sal_Int8> GetSequence( const css::datatransfer::DataFlavor& rFlavor, const OUString& rDestDoc ) const;
 
-    bool                        GetSotStorageStream( SotClipboardFormatId nFormat, tools::SvRef<SotTempStream>& rStreamRef ) const;
-    bool                        GetSotStorageStream( const css::datatransfer::DataFlavor& rFlavor, tools::SvRef<SotTempStream>& rStreamRef ) const;
+    bool                        GetSotStorageStream( SotClipboardFormatId nFormat, std::unique_ptr<SvStream>& rStreamRef ) const;
+    bool                        GetSotStorageStream( const css::datatransfer::DataFlavor& rFlavor, std::unique_ptr<SvStream>& rStreamRef ) const;
 
     css::uno::Reference<css::io::XInputStream> GetInputStream( SotClipboardFormatId nFormat, const OUString& rDestDoc ) const;
     css::uno::Reference<css::io::XInputStream> GetInputStream( const css::datatransfer::DataFlavor& rFlavor, const OUString& rDestDoc ) const;
@@ -363,6 +362,10 @@ public:
     static TransferableDataHelper   CreateFromPrimarySelection();
     static bool                     IsEqual( const css::datatransfer::DataFlavor& rInternalFlavor,
                                              const css::datatransfer::DataFlavor& rRequestFlavor );
+    static bool WriteDDELink(SvStream& stream, std::u16string_view application,
+                             std::u16string_view topic, std::u16string_view item,
+                             std::u16string_view extra = {});
+    bool ReadDDELink(OUString& application, OUString& topic, OUString& item, OUString& rest) const;
 };
 
 class VCL_DLLPUBLIC SAL_LOPLUGIN_ANNOTATE("crosscast") DragSourceHelper

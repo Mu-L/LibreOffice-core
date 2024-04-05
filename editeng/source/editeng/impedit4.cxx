@@ -1121,7 +1121,9 @@ std::unique_ptr<EditTextObject> ImpEditEngine::CreateTextObject( EditSelection a
     // sleeper set up when Olli paragraphs not hacked!
     if ( bAllowBigObjects && bOnlyFullParagraphs && IsFormatted() && IsUpdateLayout() && ( nTextPortions >= nBigObjectStart ) )
     {
-        XParaPortionList* pXList = new XParaPortionList(GetRefDevice(), GetColumnWidth(maPaperSize), mfFontScaleX, mfFontScaleY, mfSpacingScaleX, mfSpacingScaleY);
+        XParaPortionList* pXList = new XParaPortionList(GetRefDevice(), GetColumnWidth(maPaperSize),
+            maScalingParameters.fFontX, maScalingParameters.fFontY,
+            maScalingParameters.fSpacingX, maScalingParameters.fSpacingY);
         pTxtObj->SetPortionInfo(std::unique_ptr<XParaPortionList>(pXList));
         for ( nNode = nStartNode; nNode <= nEndNode; nNode++  )
         {
@@ -1206,10 +1208,10 @@ EditSelection ImpEditEngine::InsertTextObject( const EditTextObject& rTextObject
 
     if (pPortionInfo && ( static_cast<tools::Long>(pPortionInfo->GetPaperWidth()) == GetColumnWidth(maPaperSize))
             && pPortionInfo->GetRefMapMode() == GetRefDevice()->GetMapMode()
-            && pPortionInfo->getFontScaleX() == mfFontScaleX
-            && pPortionInfo->getFontScaleY() == mfFontScaleY
-            && pPortionInfo->getSpacingScaleX() == mfSpacingScaleX
-            && pPortionInfo->getSpacingScaleY() == mfSpacingScaleY)
+            && pPortionInfo->getFontScaleX() == maScalingParameters.fFontX
+            && pPortionInfo->getFontScaleY() == maScalingParameters.fFontY
+            && pPortionInfo->getSpacingScaleX() == maScalingParameters.fSpacingX
+            && pPortionInfo->getSpacingScaleY() == maScalingParameters.fSpacingY)
     {
         if ( (pPortionInfo->GetRefDevPtr() == GetRefDevice()) ||
              (pPortionInfo->RefDevIsVirtual() && GetRefDevice()->IsVirtual()) )
@@ -2709,6 +2711,11 @@ EditSelection ImpEditEngine::TransliterateText( const EditSelection& rSelection,
     if ( !aSel.HasRange() )
     {
         aSel = SelectWord( aSel, css::i18n::WordType::ANYWORD_IGNOREWHITESPACES, true, true );
+        if (!aSel.HasRange() && aSel.Min().GetIndex() > 0 &&
+            OUString(".!?").indexOf(aSel.Min().GetNode()->GetChar(aSel.Min().GetIndex() - 1)) > -1 )
+        {
+            aSel = SelectSentence(aSel);
+        }
     }
 
     // tdf#107176: if there's still no range, just return aSel

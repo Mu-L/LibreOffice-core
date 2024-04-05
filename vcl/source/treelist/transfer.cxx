@@ -24,6 +24,7 @@
 #endif
 #include <o3tl/char16_t2wchar_t.hxx>
 #include <rtl/uri.hxx>
+#include <rtl/tencinfo.h>
 #include <sal/log.hxx>
 #include <tools/debug.hxx>
 #include <tools/urlobj.hxx>
@@ -903,17 +904,17 @@ bool TransferableHelper::SetINetImage( const INetImage& rINtImg,
 
 bool TransferableHelper::SetObject( void* pUserObject, sal_uInt32 nUserObjectId, const DataFlavor& rFlavor )
 {
-    tools::SvRef<SotTempStream> xStm( new SotTempStream( OUString() ) );
+    SvMemoryStream aStm;
 
-    xStm->SetVersion( SOFFICE_FILEFORMAT_50 );
+    aStm.SetVersion( SOFFICE_FILEFORMAT_50 );
 
-    if( pUserObject && WriteObject( xStm, pUserObject, nUserObjectId, rFlavor ) )
+    if( pUserObject && WriteObject( aStm, pUserObject, nUserObjectId, rFlavor ) )
     {
-        const sal_uInt32        nLen = xStm->TellEnd();
+        const sal_uInt32        nLen = aStm.TellEnd();
         Sequence< sal_Int8 >    aSeq( nLen );
 
-        xStm->Seek( STREAM_SEEK_TO_BEGIN );
-        xStm->ReadBytes(aSeq.getArray(), nLen);
+        aStm.Seek( STREAM_SEEK_TO_BEGIN );
+        aStm.ReadBytes(aSeq.getArray(), nLen);
 
         if( nLen && ( SotExchange::GetFormat( rFlavor ) == SotClipboardFormatId::STRING ) )
         {
@@ -931,7 +932,7 @@ bool TransferableHelper::SetObject( void* pUserObject, sal_uInt32 nUserObjectId,
 }
 
 
-bool TransferableHelper::WriteObject( tools::SvRef<SotTempStream>&, void*, sal_uInt32, const DataFlavor& )
+bool TransferableHelper::WriteObject( SvStream&, void*, sal_uInt32, const DataFlavor& )
 {
     OSL_FAIL( "TransferableHelper::WriteObject( ... ) not implemented" );
     return false;
@@ -1567,7 +1568,7 @@ bool TransferableDataHelper::GetBitmapEx( SotClipboardFormatId nFormat, BitmapEx
 
 bool TransferableDataHelper::GetBitmapEx( const DataFlavor& rFlavor, BitmapEx& rBmpEx ) const
 {
-    tools::SvRef<SotTempStream> xStm;
+    std::unique_ptr<SvStream> xStm;
     DataFlavor aSubstFlavor;
     bool bRet(GetSotStorageStream(rFlavor, xStm));
     bool bSuppressPNG(false); // #122982# If PNG stream not accessed, but BMP one, suppress trying to load PNG
@@ -1678,7 +1679,7 @@ bool TransferableDataHelper::GetGDIMetaFile(SotClipboardFormatId nFormat, GDIMet
 
 bool TransferableDataHelper::GetGDIMetaFile( const DataFlavor& rFlavor, GDIMetaFile& rMtf ) const
 {
-    tools::SvRef<SotTempStream> xStm;
+    std::unique_ptr<SvStream> xStm;
     DataFlavor          aSubstFlavor;
     bool                bRet = false;
 
@@ -1761,7 +1762,7 @@ bool TransferableDataHelper::GetGraphic( const css::datatransfer::DataFlavor& rF
             TransferableDataHelper::IsEqual(aFlavor, rFlavor))
     {
         Graphic aGraphic;
-        tools::SvRef<SotTempStream> xStm;
+        std::unique_ptr<SvStream> xStm;
         if (GetSotStorageStream(rFlavor, xStm))
         {
             if (GraphicConverter::Import(*xStm, aGraphic) == ERRCODE_NONE)
@@ -1799,7 +1800,7 @@ bool TransferableDataHelper::GetGraphic( const css::datatransfer::DataFlavor& rF
     }
     else
     {
-        tools::SvRef<SotTempStream> xStm;
+        std::unique_ptr<SvStream> xStm;
 
         if( GetSotStorageStream( rFlavor, xStm ) )
         {
@@ -1822,8 +1823,8 @@ bool TransferableDataHelper::GetImageMap( SotClipboardFormatId nFormat, ImageMap
 
 bool TransferableDataHelper::GetImageMap( const css::datatransfer::DataFlavor& rFlavor, ImageMap& rIMap ) const
 {
-    tools::SvRef<SotTempStream> xStm;
-    bool                bRet = GetSotStorageStream( rFlavor, xStm );
+    std::unique_ptr<SvStream> xStm;
+    bool bRet = GetSotStorageStream( rFlavor, xStm );
 
     if( bRet )
     {
@@ -2017,7 +2018,7 @@ bool TransferableDataHelper::GetINetImage(
         const css::datatransfer::DataFlavor& rFlavor,
         INetImage& rINtImg ) const
 {
-    tools::SvRef<SotTempStream> xStm;
+    std::unique_ptr<SvStream> xStm;
     bool bRet = GetSotStorageStream( rFlavor, xStm );
 
     if( bRet )
@@ -2036,7 +2037,7 @@ bool TransferableDataHelper::GetFileList( SotClipboardFormatId nFormat,
 
 bool TransferableDataHelper::GetFileList( FileList& rFileList ) const
 {
-    tools::SvRef<SotTempStream> xStm;
+    std::unique_ptr<SvStream> xStm;
     bool                bRet = false;
 
     for( sal_uInt32 i = 0, nFormatCount = GetFormatCount(); ( i < nFormatCount ) && !bRet; ++i )
@@ -2087,20 +2088,20 @@ Sequence<sal_Int8> TransferableDataHelper::GetSequence( const DataFlavor& rFlavo
 }
 
 
-bool TransferableDataHelper::GetSotStorageStream( SotClipboardFormatId nFormat, tools::SvRef<SotTempStream>& rxStream ) const
+bool TransferableDataHelper::GetSotStorageStream( SotClipboardFormatId nFormat, std::unique_ptr<SvStream>& rxStream ) const
 {
     DataFlavor aFlavor;
     return( SotExchange::GetFormatDataFlavor( nFormat, aFlavor ) && GetSotStorageStream( aFlavor, rxStream ) );
 }
 
 
-bool TransferableDataHelper::GetSotStorageStream( const DataFlavor& rFlavor, tools::SvRef<SotTempStream>& rxStream ) const
+bool TransferableDataHelper::GetSotStorageStream( const DataFlavor& rFlavor, std::unique_ptr<SvStream>& rxStream ) const
 {
     Sequence<sal_Int8> aSeq = GetSequence(rFlavor, OUString());
 
     if (aSeq.hasElements())
     {
-        rxStream = new SotTempStream( "" );
+        rxStream = SotTempStream::Create( "" );
         rxStream->WriteBytes( aSeq.getConstArray(), aSeq.getLength() );
         rxStream->Seek( 0 );
     }
@@ -2272,6 +2273,100 @@ bool TransferableDataHelper::IsEqual( const css::datatransfer::DataFlavor& rInte
     }
 
     return bRet;
+}
+
+static bool WriteDDELink_impl(SvStream& stream, rtl_TextEncoding encoding,
+                              std::u16string_view application, std::u16string_view topic,
+                              std::u16string_view item, std::u16string_view extra)
+{
+    // Put Link format, potentially with extra: either application\0topic\0item\0\0
+    // or application\0topic\0item\0extra\0\0
+    assert(rtl_isOctetTextEncoding(encoding)); // The Link format is 8-bit
+    stream.WriteUnicodeOrByteText(application, encoding, true);
+    stream.WriteUnicodeOrByteText(topic, encoding, true);
+    stream.WriteUnicodeOrByteText(item, encoding, true);
+    if (!extra.empty())
+        stream.WriteUnicodeOrByteText(extra, encoding, true);
+    stream.WriteChar('\0'); // One more trailing zero
+    return stream.GetErrorCode() == ERRCODE_NONE;
+}
+
+// static
+bool TransferableDataHelper::WriteDDELink(SvStream& stream, std::u16string_view application,
+                                          std::u16string_view topic, std::u16string_view item,
+                                          std::u16string_view extra)
+{
+    // 1. Put standard Link format in the system encoding
+    WriteDDELink_impl(stream, osl_getThreadTextEncoding(), application, topic, item, extra);
+
+    // 2. Put our extension to the format. Start with a magic string "ULnk", followed by
+    // UTF-8-encoded Link format
+    stream.WriteOString("ULnk");
+    return WriteDDELink_impl(stream, RTL_TEXTENCODING_UTF8, application, topic, item, extra);
+}
+
+static size_t ReadDDELink_impl(std::string_view str, std::string_view& application,
+                               std::string_view& topic, std::string_view& item,
+                               std::string_view& rest)
+{
+    application = {};
+    topic = {};
+    item = {};
+    rest = {};
+
+    size_t start = 0;
+    size_t end = str.find('\0', start);
+    application = str.substr(start, end - start);
+    if (end == std::string_view::npos)
+        return end;
+    start = end + 1;
+    end = str.find('\0', start);
+    topic = str.substr(start, end - start);
+    if (end == std::string_view::npos)
+        return end;
+    start = end + 1;
+    end = str.find('\0', start);
+    item = str.substr(start, end - start);
+    if (end >= str.size() - 1 || str[end + 1] == '\0')
+        return end;
+    start = end + 1;
+    do
+    {
+        // Read all remaining data until \0\0 into rest, including possible single \0
+        end = str.find('\0', end + 1);
+    } while (end < str.size() - 1 && str[end + 1] != '\0');
+    rest = str.substr(start, end - start);
+    return end;
+}
+
+bool TransferableDataHelper::ReadDDELink(OUString& application, OUString& topic, OUString& item,
+                                         OUString& rest) const
+{
+    css::uno::Sequence<sal_Int8> sequence = GetSequence(SotClipboardFormatId::LINK, {});
+    if (!sequence.hasElements())
+    {
+        SAL_WARN("svtools", "DDE data not found");
+        return false;
+    }
+
+    std::string_view str(reinterpret_cast<const char*>(sequence.getConstArray()),
+                         sequence.getLength());
+    std::string_view application_view, topic_view, item_view, rest_view;
+    rtl_TextEncoding encoding = osl_getThreadTextEncoding();
+    size_t end = ReadDDELink_impl(str, application_view, topic_view, item_view, rest_view);
+    if (end < str.size() - 1 && str[end + 1] == '\0' && str.substr(end + 2, 4) == "ULnk")
+    {
+        // Now try to read our UTF-8 extension; if it's present, use it unconditionally, even if
+        // osl_getThreadTextEncoding gives RTL_TEXTENCODING_UTF8, because the extension is immune
+        // to possible different source encoding
+        encoding = RTL_TEXTENCODING_UTF8;
+        ReadDDELink_impl(str.substr(end + 6), application_view, topic_view, item_view, rest_view);
+    }
+    application = OStringToOUString(application_view, encoding);
+    topic = OStringToOUString(topic_view, encoding);
+    item = OStringToOUString(item_view, encoding);
+    rest = OStringToOUString(rest_view, encoding);
+    return !application.isEmpty() && !topic.isEmpty() && !item.isEmpty();
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

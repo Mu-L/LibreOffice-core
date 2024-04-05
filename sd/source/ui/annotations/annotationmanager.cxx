@@ -80,15 +80,9 @@ using namespace ::com::sun::star::uno;
 using namespace ::com::sun::star::drawing;
 using namespace ::com::sun::star::document;
 using namespace ::com::sun::star::geometry;
-using namespace ::com::sun::star::container;
-using namespace ::com::sun::star::beans;
 using namespace ::com::sun::star::text;
-using namespace ::com::sun::star::view;
-using namespace ::com::sun::star::style;
-using namespace ::com::sun::star::frame;
 using namespace ::com::sun::star::lang;
 using namespace ::com::sun::star::ui;
-using namespace ::com::sun::star::task;
 using namespace ::com::sun::star::office;
 
 namespace sd {
@@ -235,9 +229,9 @@ void SAL_CALL AnnotationManagerImpl::notifyEvent( const css::document::EventObje
     if ( aEvent.EventName == "OnAnnotationRemoved" )
     {
         Reference< XAnnotation > xAnnotation( aEvent.Source, uno::UNO_QUERY );
-        if ( xAnnotation.is() )
+        if ( auto pAnnotation = dynamic_cast<sd::Annotation*>(xAnnotation.get()) )
         {
-            LOKCommentNotify(CommentNotificationType::Remove, &mrBase, xAnnotation);
+            LOKCommentNotify(CommentNotificationType::Remove, &mrBase, pAnnotation);
         }
     }
 
@@ -258,8 +252,8 @@ rtl::Reference<Annotation> AnnotationManagerImpl::GetAnnotationById(sal_uInt32 n
         {
             AnnotationVector aAnnotations(pPage->getAnnotations());
             auto iter = std::find_if(aAnnotations.begin(), aAnnotations.end(),
-                [nAnnotationId](const Reference<XAnnotation>& xAnnotation) {
-                    return sd::getAnnotationId(xAnnotation) == nAnnotationId;
+                [nAnnotationId](const rtl::Reference<sd::Annotation>& xAnnotation) {
+                    return xAnnotation->GetId() == nAnnotationId;
                 });
             if (iter != aAnnotations.end())
                 return *iter;
@@ -389,7 +383,7 @@ void AnnotationManagerImpl::ExecuteDeleteAnnotation(SfxRequest const & rReq)
 void AnnotationManagerImpl::ExecuteEditAnnotation(SfxRequest const & rReq)
 {
     const SfxItemSet* pArgs = rReq.GetArgs();
-    Reference< XAnnotation > xAnnotation;
+    rtl::Reference< Annotation > xAnnotation;
     OUString sText;
     sal_Int32 nPositionX = -1;
     sal_Int32 nPositionY = -1;
@@ -416,7 +410,7 @@ void AnnotationManagerImpl::ExecuteEditAnnotation(SfxRequest const & rReq)
 
     if (xAnnotation.is())
     {
-        CreateChangeUndo(xAnnotation);
+        xAnnotation->createChangeUndo();
 
         if (nPositionX >= 0 && nPositionY >= 0)
         {
@@ -570,7 +564,8 @@ void AnnotationManagerImpl::ExecuteReplyToAnnotation( SfxRequest const & rReq )
     if (mpDoc->IsUndoEnabled())
         mpDoc->BegUndo(SdResId(STR_ANNOTATION_REPLY));
 
-    CreateChangeUndo(xAnnotation);
+    if (xAnnotation)
+        xAnnotation->createChangeUndo();
     ::Outliner aOutliner( GetAnnotationPool(),OutlinerMode::TextObject );
 
     SdDrawDocument::SetCalcFieldValueHdl( &aOutliner );

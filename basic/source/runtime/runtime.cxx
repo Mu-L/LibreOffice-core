@@ -49,9 +49,7 @@
 #include <svl/numformat.hxx>
 #include <svl/zforlist.hxx>
 
-#include <i18nutil/searchopt.hxx>
-#include <unotools/syslocale.hxx>
-#include <unotools/textsearch.hxx>
+#include <unicode/regex.h>
 
 #include <basic/sbuno.hxx>
 
@@ -76,7 +74,6 @@ using com::sun::star::uno::Reference;
 using namespace com::sun::star::uno;
 using namespace com::sun::star::container;
 using namespace com::sun::star::lang;
-using namespace com::sun::star::beans;
 using namespace com::sun::star::script;
 
 using namespace ::com::sun::star;
@@ -1439,103 +1436,68 @@ void SbiRuntime::StepGE()       { StepCompare( SbxGE );     }
 
 namespace
 {
-    bool NeedEsc(sal_Unicode cCode)
+    OUString VBALikeToRegexp(std::u16string_view sIn)
     {
-        if(!rtl::isAscii(cCode))
+        OUStringBuffer sResult("\\A"); // Match at the beginning of the input
+
+        for (auto start = sIn.begin(), end = sIn.end(); start < end;)
         {
-            return false;
-        }
-        switch(cCode)
-        {
-        case '.':
-        case '^':
-        case '$':
-        case '+':
-        case '\\':
-        case '|':
-        case '{':
-        case '}':
-        case '(':
-        case ')':
-            return true;
-        default:
-            return false;
-        }
-    }
-
-    OUString VBALikeToRegexp(const OUString &rIn)
-    {
-        OUStringBuffer sResult;
-        const sal_Unicode *start = rIn.getStr();
-        const sal_Unicode *end = start + rIn.getLength();
-
-        int seenright = 0;
-
-        sResult.append('^');
-
-        while (start < end)
-        {
-            switch (*start)
+            switch (auto ch = *start++)
             {
             case '?':
                 sResult.append('.');
-                start++;
                 break;
             case '*':
                 sResult.append(".*");
-                start++;
                 break;
             case '#':
                 sResult.append("[0-9]");
-                start++;
-                break;
-            case ']':
-                sResult.append('\\');
-                sResult.append(*start++);
                 break;
             case '[':
-                sResult.append(*start++);
-                seenright = 0;
-                if (start < end && *start == '!')
+                sResult.append(ch);
+                if (start < end)
                 {
-                    sResult.append('^');
-                    start++;
+                    if (*start == '!')
+                    {
+                        sResult.append('^');
+                        ++start;
+                    }
+                    else if (*start == '^')
+                        sResult.append('\\');
                 }
-                while (start < end && !seenright)
+                for (bool seenright = false; start < end && !seenright; ++start)
                 {
                     switch (*start)
                     {
                     case '[':
-                    case '?':
-                    case '*':
+                    case '\\':
                         sResult.append('\\');
-                        sResult.append(*start);
                         break;
                     case ']':
-                        sResult.append(*start);
-                        seenright = 1;
-                        break;
-                    default:
-                        if (NeedEsc(*start))
-                        {
-                            sResult.append('\\');
-                        }
-                        sResult.append(*start);
+                        seenright = true;
                         break;
                     }
-                    start++;
+                    sResult.append(*start);
                 }
                 break;
+            case '.':
+            case '^':
+            case '$':
+            case '+':
+            case '\\':
+            case '|':
+            case '{':
+            case '}':
+            case '(':
+            case ')':
+                sResult.append('\\');
+                [[fallthrough]];
             default:
-                if (NeedEsc(*start))
-                {
-                    sResult.append('\\');
-                }
-                sResult.append(*start++);
+                sResult.append(ch);
             }
         }
 
-        sResult.append('$');
+        sResult.append("\\z"); // Match if the current position is at the end of input
 
         return sResult.makeStringAndClear();
     }
@@ -1547,13 +1509,7 @@ void SbiRuntime::StepLIKE()
     SbxVariableRef refVar2 = PopVar();
 
     OUString value = refVar2->GetOUString();
-
-    i18nutil::SearchOptions2 aSearchOpt;
-
-    aSearchOpt.AlgorithmType2 = css::util::SearchAlgorithms2::REGEXP;
-
-    aSearchOpt.Locale = Application::GetSettings().GetLanguageTag().getLocale();
-    aSearchOpt.searchString = VBALikeToRegexp(refVar1->GetOUString());
+    OUString regex = VBALikeToRegexp(refVar1->GetOUString());
 
     bool bTextMode(true);
     bool bCompatibility = ( GetSbData()->pInst && GetSbData()->pInst->IsCompatibility() );
@@ -1561,14 +1517,35 @@ void SbiRuntime::StepLIKE()
     {
         bTextMode = IsImageFlag( SbiImageFlags::COMPARETEXT );
     }
+    sal_uInt32 searchFlags = UREGEX_UWORD | UREGEX_DOTALL; // Dot matches newline
     if( bTextMode )
     {
-        aSearchOpt.transliterateFlags |= TransliterationFlags::IGNORE_CASE;
+        searchFlags |= UREGEX_CASE_INSENSITIVE;
+    }
+
+    static sal_uInt32 cachedSearchFlags = 0;
+    static OUString cachedRegex;
+    static std::optional<icu::RegexMatcher> oRegexMatcher;
+    UErrorCode nIcuErr = U_ZERO_ERROR;
+    if (regex != cachedRegex || searchFlags != cachedSearchFlags || !oRegexMatcher)
+    {
+        cachedRegex = regex;
+        cachedSearchFlags = searchFlags;
+        icu::UnicodeString sRegex(false, reinterpret_cast<const UChar*>(cachedRegex.getStr()),
+                                  cachedRegex.getLength());
+        oRegexMatcher.emplace(sRegex, cachedSearchFlags, nIcuErr);
+    }
+
+    icu::UnicodeString sSource(false, reinterpret_cast<const UChar*>(value.getStr()),
+                               value.getLength());
+    oRegexMatcher->reset(sSource);
+
+    bool bRes = oRegexMatcher->matches(nIcuErr);
+    if (nIcuErr)
+    {
+        Error(ERRCODE_BASIC_INTERNAL_ERROR);
     }
     SbxVariable* pRes = new SbxVariable;
-    utl::TextSearch aSearch( aSearchOpt);
-    sal_Int32 nStart=0, nEnd=value.getLength();
-    bool bRes = aSearch.SearchForward(value, &nStart, &nEnd);
     pRes->PutBool( bRes );
 
     PushVar( pRes );

@@ -214,12 +214,18 @@ bool SalLayout::GetOutline(basegfx::B2DPolyPolygonVector& rVector) const
     return (bAllOk && bOneOk);
 }
 
+// No need to expand to the next pixel, when the character only covers its tiny fraction
+static double trimInsignificant(double n)
+{
+    return std::abs(n) >= 0x1p53 ? n : std::round(n * 1e5) / 1e5;
+}
+
 bool SalLayout::GetBoundRect(tools::Rectangle& rRect) const
 {
     bool bRet = false;
-    rRect.SetEmpty();
 
-    tools::Rectangle aRectangle;
+    basegfx::B2DRectangle aUnion;
+    basegfx::B2DRectangle aRectangle;
 
     basegfx::B2DPoint aPos;
     const GlyphItem* pGlyph;
@@ -230,21 +236,27 @@ bool SalLayout::GetBoundRect(tools::Rectangle& rRect) const
         // get bounding rectangle of individual glyph
         if (pGlyph->GetGlyphBoundRect(pGlyphFont, aRectangle))
         {
-            if (!aRectangle.IsEmpty())
+            if (!aRectangle.isEmpty())
             {
-                aRectangle.AdjustLeft(std::floor(aPos.getX()));
-                aRectangle.AdjustRight(std::ceil(aPos.getX()));
-                aRectangle.AdjustTop(std::floor(aPos.getY()));
-                aRectangle.AdjustBottom(std::ceil(aPos.getY()));
-
+                aRectangle.transform(basegfx::utils::createTranslateB2DHomMatrix(aPos));
                 // merge rectangle
-                if (rRect.IsEmpty())
-                    rRect = aRectangle;
-                else
-                    rRect.Union(aRectangle);
+                aUnion.expand(aRectangle);
             }
             bRet = true;
         }
+    }
+    if (aUnion.isEmpty())
+    {
+        rRect = {};
+    }
+    else
+    {
+        double l = rtl::math::approxFloor(trimInsignificant(aUnion.getMinX())),
+               t = rtl::math::approxFloor(trimInsignificant(aUnion.getMinY())),
+               r = rtl::math::approxCeil(trimInsignificant(aUnion.getMaxX())),
+               b = rtl::math::approxCeil(trimInsignificant(aUnion.getMaxY()));
+        assert(std::isfinite(l) && std::isfinite(t) && std::isfinite(r) && std::isfinite(b));
+        rRect = tools::Rectangle(l, t, r, b);
     }
 
     return bRet;

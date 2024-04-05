@@ -243,11 +243,6 @@ Size Outliner::CalcTextSize()
     return Size(pEditEngine->CalcTextWidth(),pEditEngine->GetTextHeight());
 }
 
-Size Outliner::CalcTextSizeNTP()
-{
-    return Size(pEditEngine->CalcTextWidth(),pEditEngine->GetTextHeightNTP());
-}
-
 void Outliner::SetStyleSheetPool( SfxStyleSheetPool* pSPool )
 {
     pEditEngine->SetStyleSheetPool( pSPool );
@@ -477,7 +472,12 @@ void Outliner::QuickFormatDoc()
     pEditEngine->QuickFormatDoc();
 }
 
-void Outliner::setGlobalScale(double rFontX, double rFontY, double rSpacingX, double rSpacingY)
+ScalingParameters Outliner::getScalingParameters() const
+{
+    return pEditEngine->getScalingParameters();
+}
+
+void Outliner::setScalingParameters(ScalingParameters const& rScalingParameters)
 {
     // reset bullet size
     sal_Int32 nParagraphs = pParaList->GetParagraphCount();
@@ -488,13 +488,7 @@ void Outliner::setGlobalScale(double rFontX, double rFontY, double rSpacingX, do
             pPara->aBulSize.setWidth( -1 );
     }
 
-    pEditEngine->setGlobalScale(rFontX, rFontY, rSpacingX, rSpacingY);
-}
-
-void Outliner::getGlobalScale(double& rFontX, double& rFontY, double& rSpacingX, double& rSpacingY) const
-{
-    pEditEngine->getGlobalFontScale(rFontX, rFontY);
-    pEditEngine->getGlobalSpacingScale(rSpacingX, rSpacingY);
+    pEditEngine->setScalingParameters(rScalingParameters);
 }
 
 void Outliner::setRoundFontSizeToPt(bool bRound) const

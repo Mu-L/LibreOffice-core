@@ -17,8 +17,6 @@
 #include <config_features.h>
 
 #include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 
 #ifdef IOS
 #include <sys/mman.h>
@@ -53,7 +51,6 @@
 #include <memory>
 #include <iostream>
 #include <string_view>
-#include <queue>
 
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/algorithm/string.hpp>
@@ -74,7 +71,6 @@
 #include <rtl/bootstrap.hxx>
 #include <rtl/strbuf.hxx>
 #include <rtl/uri.hxx>
-#include <svl/zforlist.hxx>
 #include <linguistic/misc.hxx>
 #include <cppuhelper/bootstrap.hxx>
 #include <comphelper/base64.hxx>
@@ -88,14 +84,12 @@
 #include <comphelper/scopeguard.hxx>
 #include <comphelper/threadpool.hxx>
 #include <comphelper/types.hxx>
-#include <comphelper/servicehelper.hxx>
 #include <comphelper/sequenceashashmap.hxx>
 
 #include <com/sun/star/connection/XConnection.hpp>
 #include <com/sun/star/document/MacroExecMode.hpp>
 #include <com/sun/star/beans/XPropertySet.hpp>
 #include <com/sun/star/container/XNameAccess.hpp>
-#include <com/sun/star/document/XDocumentLanguages.hpp>
 #include <com/sun/star/frame/Desktop.hpp>
 #include <com/sun/star/frame/DispatchResultEvent.hpp>
 #include <com/sun/star/frame/DispatchResultState.hpp>
@@ -126,7 +120,6 @@
 #include <com/sun/star/security/XCertificate.hpp>
 
 #include <com/sun/star/linguistic2/DictionaryList.hpp>
-#include <com/sun/star/linguistic2/LanguageGuessing.hpp>
 #include <com/sun/star/linguistic2/LinguServiceManager.hpp>
 #include <com/sun/star/linguistic2/XSpellChecker.hpp>
 #include <com/sun/star/linguistic2/XProofreader.hpp>
@@ -148,8 +141,6 @@
 #include <sfx2/dispatch.hxx>
 #include <sfx2/lokcomponenthelpers.hxx>
 #include <sfx2/DocumentSigner.hxx>
-#include <sfx2/sidebar/SidebarDockingWindow.hxx>
-#include <sfx2/sidebar/SidebarController.hxx>
 #include <sfx2/sidebar/Sidebar.hxx>
 #include <svl/numformat.hxx>
 #include <svx/dialmgr.hxx>
@@ -227,7 +218,6 @@
 #include <unotools/moduleoptions.hxx>
 #include <unotools/searchopt.hxx>
 #include <unotools/useroptions.hxx>
-#include <unotools/viewoptions.hxx>
 #include <vcl/settings.hxx>
 
 #include <officecfg/Setup.hxx>
@@ -3364,6 +3354,19 @@ static void lo_registerCallback (LibreOfficeKit* pThis,
     pApp->m_pCallbackData = pLib->mpCallbackData = pData;
 }
 
+static SfxObjectShell* getSfxObjectShell(LibreOfficeKitDocument* pThis)
+{
+    LibLODocument_Impl* pDocument = static_cast<LibLODocument_Impl*>(pThis);
+    if (!pDocument)
+        return nullptr;
+
+    SfxBaseModel* pBaseModel = dynamic_cast<SfxBaseModel*>(pDocument->mxComponent.get());
+    if (!pBaseModel)
+        return nullptr;
+
+    return pBaseModel->GetObjectShell();
+}
+
 static int doc_saveAs(LibreOfficeKitDocument* pThis, const char* sUrl, const char* pFormat, const char* pFilterOptions)
 {
     comphelper::ProfileZone aZone("doc_saveAs");
@@ -3513,6 +3516,7 @@ static int doc_saveAs(LibreOfficeKitDocument* pThis, const char* sUrl, const cha
         const uno::Sequence<OUString> aOptionSeq = comphelper::string::convertCommaSeparated(aFilterOptions);
         std::vector<OUString> aFilteredOptionVec;
         bool bTakeOwnership = false;
+        bool bCreateFromTemplate = false;
         MediaDescriptor aSaveMediaDescriptor;
         for (const auto& rOption : aOptionSeq)
         {
@@ -3520,8 +3524,19 @@ static int doc_saveAs(LibreOfficeKitDocument* pThis, const char* sUrl, const cha
                 bTakeOwnership = true;
             else if (rOption == "NoFileSync")
                 aSaveMediaDescriptor[u"NoFileSync"_ustr] <<= true;
+            else if (rOption == "FromTemplate")
+                bCreateFromTemplate = true;
             else
                 aFilteredOptionVec.push_back(rOption);
+        }
+
+        if (bCreateFromTemplate && bTakeOwnership)
+        {
+            if (SfxObjectShell* pObjectShell = getSfxObjectShell(pThis))
+            {
+                DateTime now( ::DateTime::SYSTEM );
+                pObjectShell->getDocProperties()->setCreationDate(now.GetUNODateTime());
+            }
         }
 
         aSaveMediaDescriptor[u"Overwrite"_ustr] <<= true;
@@ -5913,15 +5928,7 @@ static void doc_resetSelection(LibreOfficeKitDocument* pThis)
 
 static char* getDocReadOnly(LibreOfficeKitDocument* pThis)
 {
-    LibLODocument_Impl* pDocument = static_cast<LibLODocument_Impl*>(pThis);
-    if (!pDocument)
-        return nullptr;
-
-    SfxBaseModel* pBaseModel = dynamic_cast<SfxBaseModel*>(pDocument->mxComponent.get());
-    if (!pBaseModel)
-        return nullptr;
-
-    SfxObjectShell* pObjectShell = pBaseModel->GetObjectShell();
+    SfxObjectShell* pObjectShell = getSfxObjectShell(pThis);
     if (!pObjectShell)
         return nullptr;
 
@@ -7508,6 +7515,9 @@ static void preloadData()
     bool bAbort = desktop::Desktop::CheckExtensionDependencies();
     if(bAbort)
         std::cerr << "CheckExtensionDependencies failed" << std::endl;
+
+    // inhibit forced 2nd synchronization from Main
+    ::rtl::Bootstrap::set( "DISABLE_EXTENSION_SYNCHRONIZATION", "true");
 
     std::cerr << "Preload textencodings"; // sal_textenc
     // Use RTL_TEXTENCODING_MS_1250 to trigger Impl_getTextEncodingData

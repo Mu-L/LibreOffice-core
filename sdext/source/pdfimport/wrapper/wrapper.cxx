@@ -61,6 +61,7 @@
 #include <memory>
 #include <string_view>
 #include <unordered_map>
+#include <vector>
 #include <string.h>
 
 using namespace com::sun::star;
@@ -1079,24 +1080,15 @@ bool xpdf_ImportFromFile(const OUString& rURL,
     OUString converterURL("$BRAND_BASE_DIR/" LIBO_BIN_FOLDER "/xpdfimport");
     rtl::Bootstrap::expandMacros(converterURL); //TODO: detect failure
 
-    // Determine pathname of xpdfimport_err.pdf:
-    OUString errPathname("$BRAND_BASE_DIR/" LIBO_SHARE_FOLDER "/xpdfimport/xpdfimport_err.pdf");
-    rtl::Bootstrap::expandMacros(errPathname); //TODO: detect failure
-    if (osl::FileBase::getSystemPathFromFileURL(errPathname, errPathname)
-        != osl::FileBase::E_None)
-    {
-        SAL_WARN(
-            "sdext.pdfimport",
-            "getSystemPathFromFileURL(" << errPathname << ") failed");
-        return false;
-    }
-
     // spawn separate process to keep LGPL/GPL code apart.
 
-    OUString aOptFlag("-o");
-    rtl_uString*  args[] = { aSysUPath.pData, errPathname.pData,
-                             aOptFlag.pData, rFilterOptions.pData };
-    sal_Int32 nArgs = rFilterOptions.isEmpty() ? 2 : 4;
+    constexpr OUString aOptFlag(u"-o"_ustr);
+    std::vector<rtl_uString*> args({ aSysUPath.pData });
+    if (!rFilterOptions.isEmpty())
+    {
+        args.push_back(aOptFlag.pData);
+        args.push_back(rFilterOptions.pData);
+    }
 
     oslProcess    aProcess;
     oslFileHandle pIn  = nullptr;
@@ -1105,8 +1097,8 @@ bool xpdf_ImportFromFile(const OUString& rURL,
     oslSecurity pSecurity = osl_getCurrentSecurity ();
     oslProcessError eErr =
         osl_executeProcess_WithRedirectedIO(converterURL.pData,
-                                            args,
-                                            nArgs,
+                                            args.data(),
+                                            args.size(),
                                             osl_Process_SEARCHPATH|osl_Process_HIDDEN,
                                             pSecurity,
                                             nullptr, nullptr, 0,
@@ -1206,6 +1198,7 @@ bool xpdf_ImportFromFile(const OUString& rURL,
                     "sdext.pdfimport",
                     "getProcessInfo of " << converterURL
                         << " failed with exit code " << info.Code);
+                // TODO: use xIHdl and/or exceptions to inform the user; see poppler/ErrorCodes.h
                 bRet = false;
             }
         }

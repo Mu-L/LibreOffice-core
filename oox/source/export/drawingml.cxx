@@ -2518,6 +2518,9 @@ void DrawingML::WriteRunProperties( const Reference< XPropertySet >& rRun, bool 
     {
         switch ( *o3tl::doAccess<sal_Int16>(mAny) )
         {
+            case awt::FontUnderline::NONE :
+                underline = "none";
+                break;
             case awt::FontUnderline::SINGLE :
                 underline = "sng";
                 break;
@@ -4268,8 +4271,8 @@ void DrawingML::WriteText(const Reference<XInterface>& rXIface, bool bBodyPr, bo
                     SdrTextObj* pTextObject = DynCastSdrTextObj(pTextShape->GetSdrObject());
                     if (pTextObject)
                     {
-                        nFontScale = sal_Int32(pTextObject->GetFontScale() * 1000.0);
-                        nSpacingReduction = sal_Int32((100.0 - pTextObject->GetSpacingScale()) * 1000.0);
+                        nFontScale = sal_Int32(pTextObject->GetFontScale() * 100000.0);
+                        nSpacingReduction = sal_Int32((1.0 - pTextObject->GetSpacingScale()) * 100000.0);
                     }
                 }
 

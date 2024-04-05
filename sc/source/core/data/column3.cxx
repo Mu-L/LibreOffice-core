@@ -33,7 +33,6 @@
 #include <subtotal.hxx>
 #include <markdata.hxx>
 #include <stringutil.hxx>
-#include <docpool.hxx>
 #include <cellvalue.hxx>
 #include <tokenarray.hxx>
 #include <clipcontext.hxx>
@@ -48,7 +47,6 @@
 #include <colorscale.hxx>
 #include <table.hxx>
 #include <editeng/brushitem.hxx>
-#include <editeng/colritem.hxx>
 
 #include <com/sun/star/i18n/LocaleDataItem2.hpp>
 #include <com/sun/star/lang/IllegalArgumentException.hpp>
@@ -63,7 +61,6 @@
 #include <svl/zforlist.hxx>
 #include <svl/zformat.hxx>
 #include <svl/sharedstringpool.hxx>
-#include <osl/diagnose.h>
 
 #include <cstdio>
 #include <refdata.hxx>
@@ -2045,9 +2042,9 @@ void ScColumn::MixData(
     CellStorageModified();
 }
 
-std::unique_ptr<ScAttrIterator> ScColumnData::CreateAttrIterator( SCROW nStartRow, SCROW nEndRow ) const
+ScAttrIterator ScColumnData::CreateAttrIterator( SCROW nStartRow, SCROW nEndRow ) const
 {
-    return std::make_unique<ScAttrIterator>( pAttrArray.get(), nStartRow, nEndRow, &GetDoc().getCellAttributeHelper().getDefaultCellAttribute() );
+    return ScAttrIterator( pAttrArray.get(), nStartRow, nEndRow, &GetDoc().getCellAttributeHelper().getDefaultCellAttribute() );
 }
 
 namespace {
@@ -3275,6 +3272,19 @@ SCSIZE ScColumn::GetCellCount() const
     CellCounter aFunc;
     aFunc = std::for_each(maCells.begin(), maCells.end(), aFunc);
     return aFunc.getCount();
+}
+
+bool ScColumn::IsCellCountZero() const
+{
+    auto it = maCells.begin();
+    auto itEnd = maCells.end();
+    for (; it != itEnd; ++it)
+    {
+        const sc::CellStoreType::value_type& node = *it;
+        if (node.size != 0)
+            return false;
+    }
+    return true;
 }
 
 FormulaError ScColumn::GetErrCode( SCROW nRow ) const

@@ -39,8 +39,6 @@
 #include <framework/FrameworkHelper.hxx>
 #include <comphelper/extract.hxx>
 
-#include <officecfg/Office/Common.hxx>
-
 #include <FrameView.hxx>
 #include <createpresentation.hxx>
 #include <unomodel.hxx>
@@ -74,7 +72,6 @@ using namespace ::com::sun::star::drawing;
 using namespace ::com::sun::star::beans;
 using namespace ::com::sun::star::lang;
 using namespace ::com::sun::star::animations;
-using namespace ::com::sun::star::drawing::framework;
 
 namespace {
     /** This local version of the work window overrides DataChanged() so that it
@@ -241,12 +238,7 @@ bool SlideShow::IsInteractiveSlideshow(const ViewShellBase* pViewShellBase)
 
 bool SlideShow::IsInteractiveSlideshow() const
 {
-    // allow override with ENV_VAR for practical dev reasons
-    static bool g_bEnable_Interactive_Slideshow(getenv("ENABLE_INTERACTIVE_SLIDESHOW"));
-    if (g_bEnable_Interactive_Slideshow)
-        return true;
-
-    return officecfg::Office::Common::Misc::ExperimentalMode::get() && mpDoc->getPresentationSettings().mbInteractive;
+    return mpDoc->getPresentationSettings().mbInteractive;
 }
 
 void SlideShow::CreateController(  ViewShell* pViewSh, ::sd::View* pView, vcl::Window* pParentWindow )

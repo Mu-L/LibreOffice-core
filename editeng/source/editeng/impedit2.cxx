@@ -104,10 +104,6 @@ ImpEditEngine::ImpEditEngine( EditEngine* pEE, SfxItemPool* pItemPool ) :
     mpUndoManager(nullptr),
     maWordDelimiters(" .,;:-`'?!_=\"{}()[]"),
     maBackgroundColor(COL_AUTO),
-    mfFontScaleX(100.0),
-    mfFontScaleY(100.0),
-    mfSpacingScaleX(100.0),
-    mfSpacingScaleY(100.0),
     mbRoundToNearestPt(false),
     mnAsianCompressionMode(CharCompressType::NONE),
     meDefaultHorizontalTextDirection(EEHorizontalTextDirection::Default),
@@ -4392,12 +4388,31 @@ tools::Long ImpEditEngine::GetXPos(ParaPortion const& rParaPortion, EditLine con
     return nX;
 }
 
+/** Is true if paragraph is in the empty cluster of paragraphs at the end */
+bool ImpEditEngine::isInEmptyClusterAtTheEnd(ParaPortion& rPortion)
+{
+    sal_Int32 nPortion = GetParaPortions().GetPos(&rPortion);
+
+    auto& rParagraphs = GetParaPortions();
+    if (rParagraphs.Count() <= 0)
+        return false;
+
+    sal_Int32 nCurrent = rParagraphs.lastIndex();
+    while (nCurrent > 0 && rParagraphs.getRef(nCurrent).IsEmpty())
+    {
+        if (nCurrent == nPortion)
+            return true;
+        nCurrent--;
+    }
+    return false;
+}
+
 void ImpEditEngine::CalcHeight(ParaPortion& rPortion)
 {
     rPortion.mnHeight = 0;
     rPortion.mnFirstLineOffset = 0;
 
-    if (!rPortion.IsVisible())
+    if (!rPortion.IsVisible() || isInEmptyClusterAtTheEnd(rPortion))
         return;
 
     OSL_ENSURE(rPortion.GetLines().Count(), "Paragraph with no lines in ParaPortion::CalcHeight");
@@ -4431,7 +4446,6 @@ void ImpEditEngine::CalcHeight(ParaPortion& rPortion)
     {
         rPortion.mnHeight += scaleYSpacingValue(rULItem.GetLower());   // not in the last
     }
-
 
     if ( !nPortion || maStatus.ULSpaceSummation() )
         return;

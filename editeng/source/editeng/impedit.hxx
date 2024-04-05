@@ -571,10 +571,8 @@ private:
 
     Color               maBackgroundColor;
 
-    double mfFontScaleX;
-    double mfFontScaleY;
-    double mfSpacingScaleX;
-    double mfSpacingScaleY;
+    ScalingParameters maCustomScalingParameters;
+    ScalingParameters maScalingParameters;
     bool mbRoundToNearestPt;
 
     CharCompressType mnAsianCompressionMode;
@@ -660,6 +658,7 @@ private:
     void                ParaAttribsChanged( ContentNode const * pNode, bool bIgnoreUndoCheck = false );
     void                TextModified();
     void                CalcHeight(ParaPortion& rParaPortion);
+    bool isInEmptyClusterAtTheEnd(ParaPortion& rParaPortion);
 
     void                InsertUndo( std::unique_ptr<EditUndo> pUndo, bool bTryMerge = false );
     void                ResetUndoManager();
@@ -781,34 +780,34 @@ private:
 
     double scaleXSpacingValue(tools::Long nXValue) const
     {
-        if (!maStatus.DoStretch() || mfSpacingScaleX == 100.0)
+        if (!maStatus.DoStretch() || maScalingParameters.fSpacingX == 1.0)
             return nXValue;
 
-        return double(nXValue) * mfSpacingScaleX / 100.0;
+        return double(nXValue) * maScalingParameters.fSpacingX;
     }
 
     double scaleYSpacingValue(sal_uInt16 nYValue) const
     {
-        if (!maStatus.DoStretch() || mfSpacingScaleY == 100.0)
+        if (!maStatus.DoStretch() || maScalingParameters.fSpacingY == 1.0)
             return nYValue;
 
-        return double(nYValue) * mfSpacingScaleY / 100.0;
-    }
-
-    double scaleYFontValue(sal_uInt16 nYValue) const
-    {
-        if (!maStatus.DoStretch() || (mfFontScaleY == 100.0))
-            return nYValue;
-
-        return double(nYValue) * mfFontScaleY / 100.0;
+        return double(nYValue) * maScalingParameters.fSpacingY;
     }
 
     double scaleXFontValue(tools::Long nXValue) const
     {
-        if (!maStatus.DoStretch() || (mfFontScaleX == 100.0))
+        if (!maStatus.DoStretch() || (maScalingParameters.fFontX == 1.0))
             return nXValue;
 
-        return double(nXValue) * mfFontScaleY / 100.0;
+        return double(nXValue) * maScalingParameters.fFontX;
+    }
+
+    double scaleYFontValue(sal_uInt16 nYValue) const
+    {
+        if (!maStatus.DoStretch() || (maScalingParameters.fFontY == 1.0))
+            return nYValue;
+
+        return double(nYValue) * maScalingParameters.fFontY;
     }
 
     void setRoundToNearestPt(bool bRound) { mbRoundToNearestPt = bRound; }
@@ -980,8 +979,11 @@ public:
 
     void SetMinColumnWrapHeight(tools::Long nVal) { mnMinColumnWrapHeight = nVal; }
 
-    void                    FormatDoc();
-    void                    FormatFullDoc();
+    tools::Long FormatParagraphs(o3tl::sorted_vector<sal_Int32>& rRepaintParagraphs);
+    void ScaleContentToFitWindow(o3tl::sorted_vector<sal_Int32>& rRepaintParagraphs);
+    void FormatDoc();
+    void FormatFullDoc();
+
     void                    UpdateViews( EditView* pCurView = nullptr );
     void                    Paint( ImpEditView* pView, const tools::Rectangle& rRect, OutputDevice* pTargetDevice );
     void                    Paint(OutputDevice& rOutDev, tools::Rectangle aClipRect, Point aStartPos, bool bStripOnly = false, Degree10 nOrientation = 0_deg10);
@@ -1247,18 +1249,16 @@ public:
     SvxCellJustifyMethod    GetJustifyMethod( sal_Int32 nPara ) const;
     SvxCellVerJustify       GetVerJustification( sal_Int32 nPara ) const;
 
-    void setScale(double fFontScaleX, double fFontScaleY, double fSpacingScaleX, double fSpacingScaleY);
+    void setScalingParameters(ScalingParameters const& rScalingParameters);
 
-    void getFontScale(double& rX, double& rY) const
+    void resetScalingParameters()
     {
-        rX = mfFontScaleX;
-        rY = mfFontScaleY;
+        setScalingParameters(ScalingParameters());
     }
 
-    void getSpacingScale(double& rX, double& rY) const
+    ScalingParameters getScalingParameters()
     {
-        rX = mfSpacingScaleX;
-        rY = mfSpacingScaleY;
+        return maScalingParameters;
     }
 
     sal_Int32 GetBigTextObjectStart() const { return mnBigTextObjectStart; }

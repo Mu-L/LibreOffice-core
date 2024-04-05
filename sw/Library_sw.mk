@@ -736,6 +736,7 @@ $(eval $(call gb_Library_add_exception_objects,sw,\
     sw/source/uibase/sidebar/SwPanelFactory \
     sw/source/uibase/sidebar/WriterInspectorTextPanel \
     sw/source/uibase/sidebar/A11yCheckIssuesPanel \
+    sw/source/uibase/sidebar/QuickFindPanel \
     sw/source/uibase/table/chartins \
     sw/source/uibase/table/swtablerep \
     sw/source/uibase/table/tablemgr \
@@ -777,7 +778,6 @@ $(eval $(call gb_Library_add_exception_objects,sw,\
     sw/source/uibase/utlui/AccessibilityStatusBarControl \
     sw/source/uibase/utlui/attrdesc \
     sw/source/uibase/utlui/bookctrl \
-    sw/source/uibase/utlui/condedit \
     sw/source/uibase/utlui/content \
     sw/source/uibase/utlui/glbltree \
     sw/source/uibase/utlui/gloslst \

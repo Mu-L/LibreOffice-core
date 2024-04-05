@@ -60,7 +60,6 @@
 #include <com/sun/star/system/SystemShellExecuteFlags.hpp>
 #include <com/sun/star/frame/Desktop.hpp>
 #include <com/sun/star/frame/StartModule.hpp>
-#include <com/sun/star/view/XPrintable.hpp>
 #include <com/sun/star/awt/XTopWindow.hpp>
 #include <com/sun/star/util/URLTransformer.hpp>
 #include <com/sun/star/util/XURLTransformer.hpp>
@@ -118,7 +117,6 @@
 #include <svl/eitem.hxx>
 #include <basic/sbstar.hxx>
 #include <desktop/crashreport.hxx>
-#include <tools/time.hxx>
 #include <tools/urlobj.hxx>
 #include <comphelper/diagnose_ex.hxx>
 #include <svtools/fontsubstconfig.hxx>
@@ -128,6 +126,10 @@
 #include <vcl/window.hxx>
 #include "langselect.hxx"
 #include <salhelper/thread.hxx>
+
+#if HAVE_FEATURE_UPDATE_MAR
+#include <tools/time.hxx>
+#endif
 
 #if defined MACOSX
 #include <errno.h>
@@ -157,7 +159,6 @@ using namespace ::com::sun::star::lang;
 using namespace ::com::sun::star::beans;
 using namespace ::com::sun::star::frame;
 using namespace ::com::sun::star::document;
-using namespace ::com::sun::star::view;
 using namespace ::com::sun::star::task;
 using namespace ::com::sun::star::system;
 using namespace ::com::sun::star::ui;

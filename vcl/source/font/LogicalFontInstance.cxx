@@ -26,6 +26,8 @@
 #include <font/LogicalFontInstance.hxx>
 #include <impfontcache.hxx>
 
+#include <basegfx/matrix/b2dhommatrixtools.hxx>
+
 LogicalFontInstance::LogicalFontInstance(const vcl::font::PhysicalFontFace& rFontFace,
                                          const vcl::font::FontSelectPattern& rFontSelData)
     : mxFontMetric(new FontMetricData(rFontSelData))
@@ -167,47 +169,42 @@ void LogicalFontInstance::IgnoreFallbackForUnicode(sal_UCS4 cChar, FontWeight eW
         maUnicodeFallbackList.erase(it);
 }
 
-bool LogicalFontInstance::GetGlyphBoundRect(sal_GlyphId nID, tools::Rectangle& rRect,
+bool LogicalFontInstance::GetGlyphBoundRect(sal_GlyphId nID, basegfx::B2DRectangle& rRect,
                                             bool bVertical) const
 {
+    // TODO: find out if it's possible for the same glyph in the same font to be used both
+    // normally and vertically; if yes, then these two variants must be cached separately
+
     if (mpFontCache && mpFontCache->GetCachedGlyphBoundRect(this, nID, rRect))
         return true;
 
     auto* pHbFont = const_cast<LogicalFontInstance*>(this)->GetHbFont();
     hb_glyph_extents_t aExtents;
-    bool res = hb_font_get_glyph_extents(pHbFont, nID, &aExtents);
+    if (!hb_font_get_glyph_extents(pHbFont, nID, &aExtents))
+        return false;
 
-    if (res)
+    double nXScale = 0, nYScale = 0;
+    GetScale(&nXScale, &nYScale);
+
+    double fMinX = aExtents.x_bearing * nXScale;
+    double fMinY = -aExtents.y_bearing * nYScale;
+    double fMaxX = (aExtents.x_bearing + aExtents.width) * nXScale;
+    double fMaxY = -(aExtents.y_bearing + aExtents.height) * nYScale;
+    rRect = basegfx::B2DRectangle(fMinX, fMinY, fMaxX, fMaxY);
+
+    auto orientation = mnOrientation;
+    if (bVertical)
+        orientation += 900_deg10;
+    if (orientation)
     {
-        double nXScale = 0, nYScale = 0;
-        GetScale(&nXScale, &nYScale);
-
-        double fMinX = aExtents.x_bearing;
-        double fMinY = aExtents.y_bearing;
-        double fMaxX = aExtents.x_bearing + aExtents.width;
-        double fMaxY = aExtents.y_bearing + aExtents.height;
-
-        tools::Rectangle aRect(std::floor(fMinX * nXScale), -std::ceil(fMinY * nYScale),
-                               std::ceil(fMaxX * nXScale), -std::floor(fMaxY * nYScale));
-        if (mnOrientation && !bVertical)
-        {
-            // Apply font rotation.
-            const double fRad = toRadians(mnOrientation);
-            const double fCos = cos(fRad);
-            const double fSin = sin(fRad);
-
-            rRect.SetLeft(fCos * aRect.Left() + fSin * aRect.Top());
-            rRect.SetTop(-fSin * aRect.Left() - fCos * aRect.Top());
-            rRect.SetRight(fCos * aRect.Right() + fSin * aRect.Bottom());
-            rRect.SetBottom(-fSin * aRect.Right() - fCos * aRect.Bottom());
-        }
-        else
-            rRect = aRect;
+        // Apply font rotation.
+        rRect.transform(basegfx::utils::createRotateB2DHomMatrix(-toRadians(orientation)));
     }
 
-    if (mpFontCache && res)
+    if (mpFontCache)
         mpFontCache->CacheGlyphBoundRect(this, nID, rRect);
-    return res;
+
+    return true;
 }
 
 sal_GlyphId LogicalFontInstance::GetGlyphIndex(uint32_t nUnicode, uint32_t nVariationSelector) const

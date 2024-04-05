@@ -36,6 +36,7 @@
 #include <comphelper/storagehelper.hxx>
 #include <comphelper/string.hxx>
 #include <o3tl/deleter.hxx>
+#include <o3tl/temporary.hxx>
 #include <unotools/ucbstreamhelper.hxx>
 #include <sot/filelist.hxx>
 #include <svx/svxdlg.hxx>
@@ -693,7 +694,7 @@ bool SwTransferable::GetData( const DataFlavor& rFlavor, const OUString& rDestDo
     return bOK;
 }
 
-bool SwTransferable::WriteObject( tools::SvRef<SotTempStream>& xStream,
+bool SwTransferable::WriteObject( SvStream& rOStream,
                                     void* pObject, sal_uInt32 nObjectType,
                                     const DataFlavor& /*rFlavor*/ )
 {
@@ -706,7 +707,7 @@ bool SwTransferable::WriteObject( tools::SvRef<SotTempStream>& xStream,
         {
             // don't change the sequence of commands
             SdrModel *pModel = static_cast<SdrModel*>(pObject);
-            xStream->SetBufferSize( 16348 );
+            rOStream.SetBufferSize( 16348 );
 
             // for the changed pool defaults from drawing layer pool set those
             // attributes as hard attributes to preserve them for saving
@@ -734,11 +735,11 @@ bool SwTransferable::WriteObject( tools::SvRef<SotTempStream>& xStream,
             }
 
             {
-                uno::Reference<io::XOutputStream> xDocOut( new utl::OOutputStreamWrapper( *xStream ) );
+                uno::Reference<io::XOutputStream> xDocOut( new utl::OOutputStreamWrapper( rOStream ) );
                 SvxDrawingLayerExport( pModel, xDocOut );
             }
 
-            bRet = ERRCODE_NONE == xStream->GetError();
+            bRet = ERRCODE_NONE == rOStream.GetError();
         }
         break;
 
@@ -763,8 +764,8 @@ bool SwTransferable::WriteObject( tools::SvRef<SotTempStream>& xStream,
                 if ( xTransact.is() )
                     xTransact->commit();
 
-                xStream->SetBufferSize( 0xff00 );
-                xStream->WriteStream( *pTempStream );
+                rOStream.SetBufferSize( 0xff00 );
+                rOStream.WriteStream( *pTempStream );
 
                 xWorkStore->dispose();
                 xWorkStore.clear();
@@ -773,17 +774,17 @@ bool SwTransferable::WriteObject( tools::SvRef<SotTempStream>& xStream,
             {
             }
 
-            bRet = ( xStream->GetError() == ERRCODE_NONE );
+            bRet = ( rOStream.GetError() == ERRCODE_NONE );
         }
         break;
 
     case SWTRANSFER_OBJECTTYPE_DDE:
         {
-            xStream->SetBufferSize( 1024 );
+            rOStream.SetBufferSize( 1024 );
             SwTransferDdeLink* pDdeLnk = static_cast<SwTransferDdeLink*>(pObject);
-            if( pDdeLnk->WriteData( *xStream ) )
+            if( pDdeLnk->WriteData( rOStream ) )
             {
-                bRet = ERRCODE_NONE == xStream->GetError();
+                bRet = ERRCODE_NONE == rOStream.GetError();
             }
         }
         break;
@@ -829,10 +830,10 @@ bool SwTransferable::WriteObject( tools::SvRef<SotTempStream>& xStream,
         aDbgWrt.Write( xWrt );
 #endif
 
-        SwWriter aWrt( *xStream, *pDoc );
+        SwWriter aWrt( rOStream, *pDoc );
         if( ! aWrt.Write( xWrt ).IsError() )
         {
-            xStream->WriteChar( '\0' );               // terminate with a zero
+            rOStream.WriteChar( '\0' );               // terminate with a zero
             bRet = true;
         }
     }
@@ -2147,7 +2148,7 @@ bool SwTransferable::PasteFileContent( const TransferableDataHelper& rData,
 
     MSE40HTMLClipFormatObj aMSE40ClpObj;
 
-    tools::SvRef<SotTempStream> xStrm;
+    std::unique_ptr<SvStream> xStrm;
     SvStream* pStream = nullptr;
     Reader* pRead = nullptr;
     OUString sData;
@@ -2232,7 +2233,7 @@ bool SwTransferable::PasteFileContent( const TransferableDataHelper& rData,
         pResId = STR_CLPBRD_FORMAT_ERROR;
 
     // Exist a SvMemoryStream? (data in the OUString and xStrm is empty)
-    if( pStream && !xStrm.is() )
+    if( pStream && !xStrm )
         delete pStream;
 
     if (bMsg && pResId)
@@ -2604,19 +2605,10 @@ bool SwTransferable::PasteDDE( const TransferableDataHelper& rData,
     // data from Clipboardformat
     OUString aApp, aTopic, aItem;
 
+    if (!rData.ReadDDELink(aApp, aTopic, aItem, o3tl::temporary(OUString())))
     {
-        tools::SvRef<SotTempStream> xStrm;
-        if( !rData.GetSotStorageStream( SotClipboardFormatId::LINK, xStrm ))
-        {
-            OSL_ENSURE( false, "DDE Data not found." );
-            return false;
-        }   // report useful error!!
-
-        rtl_TextEncoding eEncoding = osl_getThreadTextEncoding();
-        aApp = read_zeroTerminated_uInt8s_ToOUString(*xStrm, eEncoding);
-        aTopic = read_zeroTerminated_uInt8s_ToOUString(*xStrm, eEncoding);
-        aItem = read_zeroTerminated_uInt8s_ToOUString(*xStrm, eEncoding);
-    }
+        return false;
+    }   // report useful error!!
 
     OUString aCmd;
     sfx2::MakeLnkName( aCmd, &aApp, aTopic, aItem );
@@ -2775,7 +2767,7 @@ bool SwTransferable::PasteSdrFormat(  const TransferableDataHelper& rData,
                                     const Point* pPt, SotExchangeActionFlags nActionFlags, bool bNeedToSelectBeforePaste)
 {
     bool bRet = false;
-    tools::SvRef<SotTempStream> xStrm;
+    std::unique_ptr<SvStream> xStrm;
     if( rData.GetSotStorageStream( SotClipboardFormatId::DRAWING, xStrm ))
     {
         xStrm->SetVersion( SOFFICE_FILEFORMAT_50 );
@@ -2816,7 +2808,7 @@ bool SwTransferable::PasteGrf( const TransferableDataHelper& rData, SwWrtShell& 
 
     case SotClipboardFormatId::SVXB:
     {
-        tools::SvRef<SotTempStream> xStm;
+        std::unique_ptr<SvStream> xStm;
 
         if(rData.GetSotStorageStream(SotClipboardFormatId::SVXB, xStm))
         {
@@ -4463,28 +4455,8 @@ bool SwTransferDdeLink::WriteData( SvStream& rStrm )
     if( !m_xRefObj.is() || !FindDocShell() )
         return false;
 
-    rtl_TextEncoding eEncoding = osl_getThreadTextEncoding();
-    const OString aAppNm(OUStringToOString(
-        Application::GetAppName(), eEncoding));
-    const OString aTopic(OUStringToOString(
-        m_pDocShell->GetTitle(SFX_TITLE_FULLNAME), eEncoding));
-    const OString aName(OUStringToOString(m_sName, eEncoding));
-
-    std::unique_ptr<char[]> pMem(new char[ aAppNm.getLength() + aTopic.getLength() + aName.getLength() + 4 ]);
-
-    sal_Int32 nLen = aAppNm.getLength();
-    memcpy( pMem.get(), aAppNm.getStr(), nLen );
-    pMem[ nLen++ ] = 0;
-    memcpy( pMem.get() + nLen, aTopic.getStr(), aTopic.getLength() );
-    nLen = nLen + aTopic.getLength();
-    pMem[ nLen++ ] = 0;
-    memcpy( pMem.get() + nLen, aName.getStr(), aName.getLength() );
-    nLen = nLen + aName.getLength();
-    pMem[ nLen++ ] = 0;
-    pMem[ nLen++ ] = 0;
-
-    rStrm.WriteBytes( pMem.get(), nLen );
-    pMem.reset();
+    TransferableDataHelper::WriteDDELink(rStrm, Application::GetAppName(),
+                                         m_pDocShell->GetTitle(SFX_TITLE_FULLNAME), m_sName);
 
     IDocumentMarkAccess* const pMarkAccess = m_pDocShell->GetDoc()->getIDocumentMarkAccess();
     IDocumentMarkAccess::const_iterator_t ppMark = pMarkAccess->findMark(m_sName);

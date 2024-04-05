@@ -64,10 +64,11 @@
 #include <com/sun/star/sheet/TableValidationVisibility.hpp>
 #include <com/sun/star/awt/KeyModifier.hpp>
 #include <com/sun/star/awt/MouseButton.hpp>
-#include <com/sun/star/awt/XVclWindowPeer.hpp>
 #include <com/sun/star/script/vba/VBAEventId.hpp>
 #include <com/sun/star/script/vba/XVBAEventProcessor.hpp>
 #include <com/sun/star/text/textfield/Type.hpp>
+
+#include <com/sun/star/awt/XVclWindowPeer.hdl>
 
 #include <gridwin.hxx>
 #include <tabvwsh.hxx>
@@ -4367,7 +4368,7 @@ static SotClipboardFormatId lcl_GetDropFormatId( const uno::Reference<datatransf
         //  If it's a Writer object, insert RTF instead of OLE
 
         bool bDoRtf = false;
-        tools::SvRef<SotTempStream> xStm;
+        std::unique_ptr<SvStream> xStm;
         TransferableObjectDescriptor aObjDesc;
         if( aDataHelper.GetTransferableObjectDescriptor( SotClipboardFormatId::OBJECTDESCRIPTOR, aObjDesc ) &&
             aDataHelper.GetSotStorageStream( SotClipboardFormatId::EMBED_SOURCE, xStm ) )

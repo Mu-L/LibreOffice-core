@@ -156,6 +156,20 @@ struct ParagraphInfos
     bool        bValid; // A query during formatting is not valid!
 };
 
+struct ScalingParameters
+{
+    double fFontX = 1.0;
+    double fFontY = 1.0;
+    double fSpacingX = 1.0;
+    double fSpacingY = 1.0;
+
+    bool operator==(const ScalingParameters& rOther) const = default;
+    bool areValuesDefault()
+    {
+        return fFontX == 1.0 && fFontY == 1.0 && fSpacingX == 1.0 && fSpacingY == 1.0;
+    }
+};
+
 struct EECharAttrib
 {
     const SfxPoolItem*  pAttr;

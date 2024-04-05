@@ -169,7 +169,7 @@ void TextObjectBar::GetAttrState( SfxItemSet& rSet )
             case SID_ATTR_CHAR_STRIKEOUT:
             case SID_ATTR_CHAR_CASEMAP:
             {
-                double stretchY = 100.0;
+                double stretchY = 1.0;
                 SvxScriptSetItem aSetItem( nSlotId, GetPool() );
                 aSetItem.GetItemSet().Put( aAttrSet, false );
 
@@ -188,7 +188,7 @@ void TextObjectBar::GetAttrState( SfxItemSet& rSet )
                         pOLV = pOView->GetViewByWindow(mpViewShell->GetActiveWindow());
 
                     if (pOutliner)
-                        pOutliner->getGlobalScale(o3tl::temporary(double()), stretchY, o3tl::temporary(double()), o3tl::temporary(double()));
+                        stretchY = pOutliner->getScalingParameters().fFontY;
 
                     if(pOLV && !pOLV->GetSelection().HasRange())
                     {
@@ -207,7 +207,7 @@ void TextObjectBar::GetAttrState( SfxItemSet& rSet )
                     if( nSlotId == SID_ATTR_CHAR_FONTHEIGHT )
                     {
                         SvxFontHeightItem aFontItem = dynamic_cast<const SvxFontHeightItem&>(*pI);
-                        aFontItem.SetHeight(aFontItem.GetHeight() * (stretchY / 100.0), 100, aFontItem.GetPropUnit());
+                        aFontItem.SetHeight(aFontItem.GetHeight() * stretchY, 100, aFontItem.GetPropUnit());
                         aFontItem.SetWhich(nWhich);
                         aAttrSet.Put( aFontItem );
                     }
