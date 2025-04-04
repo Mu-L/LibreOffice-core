@@ -12193,8 +12193,8 @@ dnl ===================================================================
 dnl Check for system box2d
 dnl ===================================================================
 AC_MSG_CHECKING([which box2d to use])
-BOX2D_MAJOR=2
-BOX2D_MINOR=4
+BOX2D_MAJOR=3
+BOX2D_MINOR=0
 if test "$with_system_box2d" = "yes"; then
     AC_MSG_RESULT([external])
     SYSTEM_BOX2D=TRUE
@@ -12229,6 +12229,9 @@ fi
 AC_SUBST(SYSTEM_BOX2D)
 AC_SUBST(BOX2D_CFLAGS)
 AC_SUBST(BOX2D_LIBS)
+
+AC_DEFINE_UNQUOTED(BOX2D_MAJOR,$BOX2D_MAJOR)
+AC_DEFINE_UNQUOTED(BOX2D_MINOR,$BOX2D_MINOR)
 
 dnl ===================================================================
 dnl Checking for altlinuxhyph

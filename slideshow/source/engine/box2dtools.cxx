@@ -8,8 +8,6 @@
  */
 
 #include <box2dtools.hxx>
-#include <config_box2d.h>
-#include BOX2D_HEADER
 
 #include <shapemanager.hxx>
 #include <attributableshape.hxx>
@@ -82,12 +80,14 @@ b2Vec2 convertB2DPointToBox2DVec2(const basegfx::B2DPoint& aPoint, const double 
 
 // expects rTriangleVector to have coordinates relative to the shape's bounding box center
 void addTriangleVectorToBody(const basegfx::triangulator::B2DTriangleVector& rTriangleVector,
+#if BOX2D_CHECK_VERSION(3, 0)
+                             b2BodyId* aBody, const double fScaleFactor)
+#else
                              b2Body* aBody, const double fScaleFactor)
+#endif
 {
     for (const basegfx::triangulator::B2DTriangle& aTriangle : rTriangleVector)
     {
-        b2FixtureDef aFixture;
-        b2PolygonShape aPolygonShape;
         b2Vec2 aTriangleVertices[3]
             = { convertB2DPointToBox2DVec2(aTriangle.getA(), fScaleFactor),
                 convertB2DPointToBox2DVec2(aTriangle.getB(), fScaleFactor),
@@ -100,19 +100,35 @@ void addTriangleVectorToBody(const basegfx::triangulator::B2DTriangleVector& rTr
 
         if (bValidPointDistance)
         {
-            // create a fixture that represents the triangle
+        // create a fixture that represents the triangle
+#if BOX2D_CHECK_VERSION(3, 0)
+            b2Hull aHull = b2ComputeHull(aTriangleVertices, 3);
+            b2ShapeDef aShapeDef = b2DefaultShapeDef();
+            aShapeDef.density = fDefaultStaticDensity;
+            aShapeDef.friction = fDefaultStaticFriction;
+            aShapeDef.restitution = fDefaultStaticBodyBounciness;
+            b2Polygon aPolygonShape = b2MakePolygon(&aHull, 0.0);
+            b2CreatePolygonShape(*aBody, &aShapeDef, &aPolygonShape);
+#else
+            b2FixtureDef aFixture;
+            b2PolygonShape aPolygonShape;
             aPolygonShape.Set(aTriangleVertices, 3);
             aFixture.shape = &aPolygonShape;
             aFixture.density = fDefaultStaticDensity;
             aFixture.friction = fDefaultStaticFriction;
             aFixture.restitution = fDefaultStaticBodyBounciness;
             aBody->CreateFixture(&aFixture);
+#endif
         }
     }
 }
 
 // expects rPolygon to have coordinates relative to it's center
+#if BOX2D_CHECK_VERSION(3, 0)
+void addEdgeShapeToBody(const basegfx::B2DPolygon& rPolygon, b2BodyId* aBody,
+#else
 void addEdgeShapeToBody(const basegfx::B2DPolygon& rPolygon, b2Body* aBody,
+#endif
                         const double fScaleFactor)
 {
     // make sure there's no bezier curves on the polygon
@@ -127,9 +143,6 @@ void addEdgeShapeToBody(const basegfx::B2DPolygon& rPolygon, b2Body* aBody,
 
     for (sal_uInt32 nIndex = 0; nIndex < aPolygon.count(); nIndex++)
     {
-        b2FixtureDef aFixture;
-        b2PolygonShape aPolygonShape;
-
         basegfx::B2DPoint aPointA;
         basegfx::B2DPoint aPointB;
         if (nIndex != 0)
@@ -153,10 +166,18 @@ void addEdgeShapeToBody(const basegfx::B2DPolygon& rPolygon, b2Body* aBody,
         // and make it a unit vector
         b2Vec2 aEdgeUnitVec(convertB2DPointToBox2DVec2(aPointB, fScaleFactor)
                             - convertB2DPointToBox2DVec2(aPointA, fScaleFactor));
+#if BOX2D_CHECK_VERSION(3, 0)
+        aEdgeUnitVec = b2Normalize(aEdgeUnitVec);
+#else
         aEdgeUnitVec.Normalize();
+#endif
 
         // create a unit vector that represents Normal of the edge
+#if BOX2D_CHECK_VERSION(3, 0)
+        b2Vec2 aEdgeNormal = { -aEdgeUnitVec.y, aEdgeUnitVec.x };
+#else
         b2Vec2 aEdgeNormal(-aEdgeUnitVec.y, aEdgeUnitVec.x);
+#endif
 
         // if there was an edge previously created it should just connect
         // using it's ending points so that there are no empty spots
@@ -182,13 +203,25 @@ void addEdgeShapeToBody(const basegfx::B2DPolygon& rPolygon, b2Body* aBody,
 
         if (bValidPointDistance)
         {
-            // create a quadrilateral shaped fixture to represent the edge
+        // create a quadrilateral shaped fixture to represent the edge
+#if BOX2D_CHECK_VERSION(3, 0)
+            b2Hull aHull = b2ComputeHull(aQuadrilateralVertices, 4);
+            b2ShapeDef aShapeDef = b2DefaultShapeDef();
+            aShapeDef.density = fDefaultStaticDensity;
+            aShapeDef.friction = fDefaultStaticFriction;
+            aShapeDef.restitution = fDefaultStaticBodyBounciness;
+            b2Polygon aPolygonShape = b2MakePolygon(&aHull, 0.0);
+            b2CreatePolygonShape(*aBody, &aShapeDef, &aPolygonShape);
+#else
+            b2FixtureDef aFixture;
+            b2PolygonShape aPolygonShape;
             aPolygonShape.Set(aQuadrilateralVertices, 4);
             aFixture.shape = &aPolygonShape;
             aFixture.density = fDefaultStaticDensity;
             aFixture.friction = fDefaultStaticFriction;
             aFixture.restitution = fDefaultStaticBodyBounciness;
             aBody->CreateFixture(&aFixture);
+#endif
 
             // prepare the quadrilateral edge for next connection
             aQuadrilateralVertices[0] = aQuadrilateralVertices[2];
@@ -197,7 +230,11 @@ void addEdgeShapeToBody(const basegfx::B2DPolygon& rPolygon, b2Body* aBody,
     }
 }
 
+#if BOX2D_CHECK_VERSION(3, 0)
+void addEdgeShapeToBody(const basegfx::B2DPolyPolygon& rPolyPolygon, b2BodyId* aBody,
+#else
 void addEdgeShapeToBody(const basegfx::B2DPolyPolygon& rPolyPolygon, b2Body* aBody,
+#endif
                         const double fScaleFactor)
 {
     for (const basegfx::B2DPolygon& rPolygon : rPolyPolygon)
@@ -208,7 +245,11 @@ void addEdgeShapeToBody(const basegfx::B2DPolyPolygon& rPolyPolygon, b2Body* aBo
 }
 
 box2DWorld::box2DWorld(const ::basegfx::B2DVector& rSlideSize)
+#if BOX2D_CHECK_VERSION(3, 0)
+    : mbWorldInitialized(false)
+#else
     : mpBox2DWorld()
+#endif
     , mfScaleFactor(calculateScaleFactor(rSlideSize))
     , mbShapesInitialized(false)
     , mbHasWorldStepper(false)
@@ -223,7 +264,16 @@ box2DWorld::~box2DWorld() = default;
 
 void box2DWorld::createStaticFrameAroundSlide(const ::basegfx::B2DVector& rSlideSize)
 {
+#if BOX2D_CHECK_VERSION(3, 0)
+    b2Vec2 gravity = { 0.0f, -30.0f };
+    b2WorldDef worldDef = b2DefaultWorldDef();
+    worldDef.gravity = gravity;
+
+    maBox2DWorldId = b2CreateWorld(&worldDef);
+    mbWorldInitialized = true;
+#else
     mpBox2DWorld = std::make_unique<b2World>(b2Vec2(0.0f, -30.0f));
+#endif
 
     float fWidth = static_cast<float>(rSlideSize.getX() * mfScaleFactor);
     float fHeight = static_cast<float>(rSlideSize.getY() * mfScaleFactor);
@@ -231,10 +281,26 @@ void box2DWorld::createStaticFrameAroundSlide(const ::basegfx::B2DVector& rSlide
     // static body for creating the frame around the slide
     b2BodyDef aBodyDef;
     aBodyDef.type = b2_staticBody;
+#if BOX2D_CHECK_VERSION(3, 0)
+    aBodyDef.position = { 0, 0 };
+#else
     aBodyDef.position.Set(0, 0);
+#endif
 
     // not going to be stored anywhere, will live
     // as long as the Box2DWorld does
+#if BOX2D_CHECK_VERSION(3, 0)
+    b2BodyId aBody = b2CreateBody(maBox2DWorldId, &aBodyDef);
+
+    // create an edge loop that represents slide frame
+    b2Vec2 aEdgePoints[4] = { { 0, 0 }, { 0, -fHeight }, { fWidth, -fHeight }, { fWidth, 0 } };
+
+    b2ChainDef aChainDef = b2DefaultChainDef();
+    aChainDef.points = aEdgePoints;
+    aChainDef.count = 4;
+    aChainDef.isLoop = true;
+    b2CreateChain(aBody, &aChainDef);
+#else
     b2Body* pStaticBody = mpBox2DWorld->CreateBody(&aBodyDef);
 
     // create an edge loop that represents slide frame
@@ -251,6 +317,7 @@ void box2DWorld::createStaticFrameAroundSlide(const ::basegfx::B2DVector& rSlide
     b2FixtureDef aFixtureDef;
     aFixtureDef.shape = &aEdgesChainShape;
     pStaticBody->CreateFixture(&aFixtureDef);
+#endif
 }
 
 void box2DWorld::setShapePosition(const css::uno::Reference<css::drawing::XShape>& xShape,
@@ -563,7 +630,11 @@ void box2DWorld::alertPhysicsAnimationStart(
     const ::basegfx::B2DVector& rSlideSize,
     const slideshow::internal::ShapeManagerSharedPtr& pShapeManager)
 {
+#if BOX2D_CHECK_VERSION(3, 0)
+    if (!mbWorldInitialized)
+#else
     if (!mpBox2DWorld)
+#endif
         createStaticFrameAroundSlide(rSlideSize);
 
     if (!mbShapesInitialized)
@@ -574,12 +645,18 @@ void box2DWorld::alertPhysicsAnimationStart(
 
 double box2DWorld::stepAmount(const double fPassedTime)
 {
+#if !BOX2D_CHECK_VERSION(3, 0)
     assert(mpBox2DWorld);
+#endif
 
     // attention fTimeStep should not vary.
     const float fTimeStep = 1.0f / 100.0f;
+#if BOX2D_CHECK_VERSION(3, 0)
+    const int nSubStepCount = 4;
+#else
     const int nVelocityIterations = 6;
     const int nPositionIterations = 2;
+#endif
 
     unsigned int nStepAmount = static_cast<unsigned int>(std::round(fPassedTime / fTimeStep));
     // find the actual time that will be stepped through so
@@ -593,7 +670,11 @@ double box2DWorld::stepAmount(const double fPassedTime)
     {
         for (unsigned int nStepCounter = 0; nStepCounter < nStepAmount; nStepCounter++)
         {
+#if BOX2D_CHECK_VERSION(3, 0)
+            b2World_Step(maBox2DWorldId, fTimeStep, nSubStepCount);
+#else
             mpBox2DWorld->Step(fTimeStep, nVelocityIterations, nPositionIterations);
+#endif
         }
     }
     else
@@ -608,7 +689,11 @@ double box2DWorld::stepAmount(const double fPassedTime)
 
 bool box2DWorld::isInitialized() const
 {
+#if BOX2D_CHECK_VERSION(3, 0)
+    if (mbWorldInitialized)
+#else
     if (mpBox2DWorld)
+#endif
         return true;
     else
         return false;
@@ -619,7 +704,9 @@ box2DWorld::makeShapeDynamic(const css::uno::Reference<css::drawing::XShape>& xS
                              const basegfx::B2DVector& rStartVelocity, const double fDensity,
                              const double fBounciness)
 {
+#if !BOX2D_CHECK_VERSION(3, 0)
     assert(mpBox2DWorld);
+#endif
     Box2DBodySharedPtr pBox2DBody = mpXShapeToBodyMap.find(xShape)->second;
     pBox2DBody->setDensityAndRestitution(fDensity, fBounciness);
     queueLinearVelocityUpdate(xShape, rStartVelocity, 1);
@@ -657,7 +744,22 @@ Box2DBodySharedPtr box2DWorld::createStaticBody(const slideshow::internal::Shape
               ->getTopmostAttributeLayer();
     if (pShapeAttributeLayer && pShapeAttributeLayer->isRotationAngleValid())
     {
-        // if the shape's rotation value was altered by another animation effect set it.
+    // if the shape's rotation value was altered by another animation effect set it.
+#if BOX2D_CHECK_VERSION(3, 0)
+        aBodyDef.rotation
+            = b2MakeRot(::basegfx::deg2rad(-pShapeAttributeLayer->getRotationAngle()));
+    }
+
+    auto pBody = std::shared_ptr<b2BodyId>(new b2BodyId(b2CreateBody(maBox2DWorldId, &aBodyDef)),
+                                           [](b2BodyId* pB2BodyId) {
+                                               if (pB2BodyId != nullptr)
+                                               {
+                                                   b2DestroyBody(*pB2BodyId);
+                                                   delete pB2BodyId;
+                                               }
+                                           });
+
+#else
         aBodyDef.angle = ::basegfx::deg2rad(-pShapeAttributeLayer->getRotationAngle());
     }
 
@@ -665,6 +767,7 @@ Box2DBodySharedPtr box2DWorld::createStaticBody(const slideshow::internal::Shape
     std::shared_ptr<b2Body> pBody(mpBox2DWorld->CreateBody(&aBodyDef), [](b2Body* pB2Body) {
         pB2Body->GetWorld()->DestroyBody(pB2Body);
     });
+#endif
 
     SdrObject* pSdrObject = SdrObject::getSdrObjectFromXShape(rShape->getXShape());
 
@@ -735,7 +838,11 @@ Box2DBodySharedPtr box2DWorld::createStaticBody(const slideshow::internal::Shape
 #pragma GCC diagnostic pop
 #endif
 
+#if BOX2D_CHECK_VERSION(3, 0)
+box2DBody::box2DBody(std::shared_ptr<b2BodyId> pBox2DBody, double fScaleFactor)
+#else
 box2DBody::box2DBody(std::shared_ptr<b2Body> pBox2DBody, double fScaleFactor)
+#endif
     : mpBox2DBody(std::move(pBox2DBody))
     , mfScaleFactor(fScaleFactor)
 {
@@ -743,7 +850,11 @@ box2DBody::box2DBody(std::shared_ptr<b2Body> pBox2DBody, double fScaleFactor)
 
 ::basegfx::B2DPoint box2DBody::getPosition() const
 {
+#if BOX2D_CHECK_VERSION(3, 0)
+    b2Vec2 aPosition = b2Body_GetPosition(*mpBox2DBody);
+#else
     b2Vec2 aPosition = mpBox2DBody->GetPosition();
+#endif
     double fX = static_cast<double>(aPosition.x) / mfScaleFactor;
     double fY = static_cast<double>(aPosition.y) / -mfScaleFactor;
     return ::basegfx::B2DPoint(fX, fY);
@@ -751,16 +862,26 @@ box2DBody::box2DBody(std::shared_ptr<b2Body> pBox2DBody, double fScaleFactor)
 
 void box2DBody::setPosition(const basegfx::B2DPoint& rPos)
 {
+#if BOX2D_CHECK_VERSION(3, 0)
+    b2Body_SetTransform(*mpBox2DBody, convertB2DPointToBox2DVec2(rPos, mfScaleFactor),
+                        b2Body_GetRotation(*mpBox2DBody));
+#else
     mpBox2DBody->SetTransform(convertB2DPointToBox2DVec2(rPos, mfScaleFactor),
                               mpBox2DBody->GetAngle());
+#endif
 }
 
 void box2DBody::setPositionByLinearVelocity(const basegfx::B2DPoint& rDesiredPos,
                                             const double fPassedTime)
 {
-    // kinematic bodies are not affected by other bodies, but unlike static ones can still have velocity
+// kinematic bodies are not affected by other bodies, but unlike static ones can still have velocity
+#if BOX2D_CHECK_VERSION(3, 0)
+    if (b2Body_GetType(*mpBox2DBody) != b2_kinematicBody)
+        b2Body_SetType(*mpBox2DBody, b2_kinematicBody);
+#else
     if (mpBox2DBody->GetType() != b2_kinematicBody)
         mpBox2DBody->SetType(b2_kinematicBody);
+#endif
 
     ::basegfx::B2DPoint aCurrentPos = getPosition();
     // calculate the velocity needed to reach the rDesiredPos in the given time frame
@@ -771,9 +892,14 @@ void box2DBody::setPositionByLinearVelocity(const basegfx::B2DPoint& rDesiredPos
 
 void box2DBody::setAngleByAngularVelocity(const double fDesiredAngle, const double fPassedTime)
 {
-    // kinematic bodies are not affected by other bodies, but unlike static ones can still have velocity
+// kinematic bodies are not affected by other bodies, but unlike static ones can still have velocity
+#if BOX2D_CHECK_VERSION(3, 0)
+    if (b2Body_GetType(*mpBox2DBody) != b2_kinematicBody)
+        b2Body_SetType(*mpBox2DBody, b2_kinematicBody);
+#else
     if (mpBox2DBody->GetType() != b2_kinematicBody)
         mpBox2DBody->SetType(b2_kinematicBody);
+#endif
 
     double fDeltaAngle = fDesiredAngle - getAngle();
 
@@ -790,17 +916,40 @@ void box2DBody::setLinearVelocity(const ::basegfx::B2DVector& rVelocity)
 {
     b2Vec2 aVelocity = { static_cast<float>(rVelocity.getX() * mfScaleFactor),
                          static_cast<float>(rVelocity.getY() * -mfScaleFactor) };
+#if BOX2D_CHECK_VERSION(3, 0)
+    b2Body_SetLinearVelocity(*mpBox2DBody, aVelocity);
+#else
     mpBox2DBody->SetLinearVelocity(aVelocity);
+#endif
 }
 
 void box2DBody::setAngularVelocity(const double fAngularVelocity)
 {
     float fBox2DAngularVelocity = static_cast<float>(basegfx::deg2rad(-fAngularVelocity));
+#if BOX2D_CHECK_VERSION(3, 0)
+    b2Body_SetAngularVelocity(*mpBox2DBody, fBox2DAngularVelocity);
+#else
     mpBox2DBody->SetAngularVelocity(fBox2DAngularVelocity);
+#endif
 }
 
 void box2DBody::setCollision(const bool bCanCollide)
 {
+#if BOX2D_CHECK_VERSION(3, 0)
+    int nShapeCount = b2Body_GetShapeCount(*mpBox2DBody);
+    std::vector<b2ShapeId> aShapeIds(nShapeCount);
+    b2Body_GetShapes(*mpBox2DBody, aShapeIds.data(), nShapeCount);
+
+    for (int i = 0; i < nShapeCount; ++i)
+    {
+        b2ShapeId aShapeId = aShapeIds[i];
+        b2Filter aFilter = b2Shape_GetFilter(aShapeId);
+        // 0xFFFF means collides with everything
+        // 0x0000 means collides with nothing
+        aFilter.maskBits = bCanCollide ? 0xFFFF : 0x0000;
+        b2Shape_SetFilter(aShapeId, aFilter);
+    }
+#else
     // collision have to be set for each fixture of the body individually
     for (b2Fixture* pFixture = mpBox2DBody->GetFixtureList(); pFixture;
          pFixture = pFixture->GetNext())
@@ -811,21 +960,45 @@ void box2DBody::setCollision(const bool bCanCollide)
         aFilter.maskBits = bCanCollide ? 0xFFFF : 0x0000;
         pFixture->SetFilterData(aFilter);
     }
+#endif
 }
 
 double box2DBody::getAngle() const
 {
+#if BOX2D_CHECK_VERSION(3, 0)
+    double fAngle = static_cast<double>(b2Rot_GetAngle(b2Body_GetRotation(*mpBox2DBody)));
+#else
     double fAngle = static_cast<double>(mpBox2DBody->GetAngle());
+#endif
     return ::basegfx::rad2deg(-fAngle);
 }
 
 void box2DBody::setAngle(const double fAngle)
 {
-    mpBox2DBody->SetTransform(mpBox2DBody->GetPosition(), ::basegfx::deg2rad(-fAngle));
+#if BOX2D_CHECK_VERSION(3, 0)
+    b2Body_SetTransform(*mpBox2DBody, b2Body_GetPosition(*mpBox2DBody),
+                        b2MakeRot(::basegfx::deg2rad(-fAngle)));
+#else
+    mpBox2DBody->SetTransform(*mpBox2DBody->GetPosition(), ::basegfx::deg2rad(-fAngle));
+#endif
 }
 
 void box2DBody::setDensityAndRestitution(const double fDensity, const double fRestitution)
 {
+#if BOX2D_CHECK_VERSION(3, 0)
+    int nShapeCount = b2Body_GetShapeCount(*mpBox2DBody);
+    std::vector<b2ShapeId> aShapeIds(nShapeCount);
+    b2Body_GetShapes(*mpBox2DBody, aShapeIds.data(), nShapeCount);
+
+    for (int i = 0; i < nShapeCount; ++i)
+    {
+        b2ShapeId aShapeId = aShapeIds[i];
+        b2Shape_SetDensity(aShapeId, static_cast<float>(fDensity));
+        b2Shape_SetRestitution(aShapeId, static_cast<float>(fRestitution));
+    }
+    // without resetting the massdata of the body, density change won't take effect
+    b2Body_ApplyMassFromShapes(*mpBox2DBody);
+#else
     // density and restitution have to be set for each fixture of the body individually
     for (b2Fixture* pFixture = mpBox2DBody->GetFixtureList(); pFixture;
          pFixture = pFixture->GetNext())
@@ -835,23 +1008,47 @@ void box2DBody::setDensityAndRestitution(const double fDensity, const double fRe
     }
     // without resetting the massdata of the body, density change won't take effect
     mpBox2DBody->ResetMassData();
+#endif
 }
 
 void box2DBody::setRestitution(const double fRestitution)
 {
+#if BOX2D_CHECK_VERSION(3, 0)
+    int nShapeCount = b2Body_GetShapeCount(*mpBox2DBody);
+    std::vector<b2ShapeId> aShapeIds(nShapeCount);
+    b2Body_GetShapes(*mpBox2DBody, aShapeIds.data(), nShapeCount);
+
+    for (int i = 0; i < nShapeCount; ++i)
+    {
+        b2ShapeId aShapeId = aShapeIds[i];
+        b2Shape_SetRestitution(aShapeId, static_cast<float>(fRestitution));
+    }
+#else
     for (b2Fixture* pFixture = mpBox2DBody->GetFixtureList(); pFixture;
          pFixture = pFixture->GetNext())
     {
         pFixture->SetRestitution(static_cast<float>(fRestitution));
     }
+#endif
 }
 
 void box2DBody::setType(box2DBodyType eType)
 {
+#if BOX2D_CHECK_VERSION(3, 0)
+    b2Body_SetType(*mpBox2DBody, getBox2DInternalBodyType(eType));
+#else
     mpBox2DBody->SetType(getBox2DInternalBodyType(eType));
+#endif
 }
 
-box2DBodyType box2DBody::getType() const { return getBox2DLOBodyType(mpBox2DBody->GetType()); }
+box2DBodyType box2DBody::getType() const
+{
+#if BOX2D_CHECK_VERSION(3, 0)
+    return getBox2DLOBodyType(b2Body_GetType(*mpBox2DBody));
+#else
+    return getBox2DLOBodyType(mpBox2DBody->GetType());
+#endif
+}
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab cinoptions=b1,g0,N-s cinkeys+=0=break: */

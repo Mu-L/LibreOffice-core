@@ -9,14 +9,22 @@
 
 #pragma once
 
+#include <config_box2d.h>
+#define BOX2D_CHECK_VERSION(major, minor)                                                          \
+    (BOX2D_MAJOR > (major) || (BOX2D_MAJOR == (major) && BOX2D_MINOR >= (minor)))
+
+#include BOX2D_HEADER
+
 #include "shape.hxx"
 #include "shapeattributelayer.hxx"
 #include "attributemap.hxx"
 #include <unordered_map>
 #include <queue>
 
+#if !BOX2D_CHECK_VERSION(3, 0)
 class b2Body;
 class b2World;
+#endif
 
 namespace slideshow::internal
 {
@@ -76,8 +84,14 @@ struct Box2DDynamicUpdateInformation
 class box2DWorld
 {
 private:
+#if BOX2D_CHECK_VERSION(3, 0)
+    b2WorldId maBox2DWorldId;
+    bool mbWorldInitialized;
+#else
     /// Pointer to the real Box2D World that this class manages
     std::unique_ptr<b2World> mpBox2DWorld;
+#endif
+
     /// Scale factor for conversions between LO user space coordinates to Box2D World coordinates
     double mfScaleFactor;
     bool mbShapesInitialized;
@@ -332,12 +346,21 @@ class box2DBody
 {
 private:
     /// Pointer to the body that this class manages
+#if BOX2D_CHECK_VERSION(3, 0)
+    std::shared_ptr<b2BodyId> mpBox2DBody;
+#else
     std::shared_ptr<b2Body> mpBox2DBody;
+#endif
+
     /// Scale factor for conversions between LO user space coordinates to Box2D World coordinates
     double mfScaleFactor;
 
 public:
+#if BOX2D_CHECK_VERSION(3, 0)
+    box2DBody(std::shared_ptr<b2BodyId> pBox2DBody, double fScaleFactor);
+#else
     box2DBody(std::shared_ptr<b2Body> pBox2DBody, double fScaleFactor);
+#endif
 
     /// @return current position in LO user space coordinates
     ::basegfx::B2DPoint getPosition() const;

@@ -1,0 +1,41 @@
+--- box2d/src/core.h	2026-05-05 16:51:31.330228008 +0200
++++ box2d/src/core.h	2026-05-05 16:53:35.525696798 +0200
+@@ -40,14 +40,12 @@
+ #endif
+ 
+ // Define CPU
+-#if defined( __x86_64__ ) || defined( _M_X64 )
+-	#define B2_CPU_X64
+-#elif defined( __aarch64__ ) || defined( _M_ARM64 )
++#if defined( __aarch64__ ) || defined( _M_ARM64 )
+ 	#define B2_CPU_ARM
+ #elif defined( __EMSCRIPTEN__ )
+ 	#define B2_CPU_WASM
+ #else
+-	#error Unsupported CPU
++	#define B2_CPU_X64
+ #endif
+ 
+ // Define compiler
+--- box2d/src/allocate.c	2026-05-05 17:08:39.096202016 +0200
++++ box2d/src/allocate.c	2026-05-05 17:09:17.879976210 +0200
+@@ -66,9 +66,16 @@
+ 	}
+ 
+ #ifdef B2_PLATFORM_WINDOWS
+-	void* ptr = _aligned_malloc( size32, B2_ALIGNMENT );
++    void* ptr = _aligned_malloc( size32, B2_ALIGNMENT );
++#elif defined( B2_PLATFORM_ANDROID )
++    void* ptr = NULL;
++    if ( posix_memalign( &ptr, B2_ALIGNMENT, size32 ) != 0 )
++    {
++        // allocation failed, exit the application
++        exit( EXIT_FAILURE );
++    }
+ #else
+-	void* ptr = aligned_alloc( B2_ALIGNMENT, size32 );
++    void* ptr = aligned_alloc( B2_ALIGNMENT, size32 );
+ #endif
+ 
+ 	b2TracyCAlloc( ptr, size );
+
