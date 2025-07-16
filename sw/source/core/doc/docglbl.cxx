@@ -56,38 +56,6 @@
 
 using namespace ::com::sun::star;
 
-namespace {
-
-enum SwSplitDocType
-{
-    SPLITDOC_TO_GLOBALDOC,
-    SPLITDOC_TO_HTML
-};
-
-}
-
-bool SwDoc::GenerateGlobalDoc( const OUString& rPath,
-                                   const SwTextFormatColl* pSplitColl )
-{
-    return SplitDoc( SPLITDOC_TO_GLOBALDOC, rPath, false, pSplitColl );
-}
-
-bool SwDoc::GenerateGlobalDoc( const OUString& rPath, int nOutlineLevel )
-{
-    return SplitDoc( SPLITDOC_TO_GLOBALDOC, rPath, true, nullptr, nOutlineLevel );
-}
-
-bool SwDoc::GenerateHTMLDoc( const OUString& rPath, int nOutlineLevel )
-{
-    return SplitDoc( SPLITDOC_TO_HTML, rPath, true, nullptr, nOutlineLevel );
-}
-
-bool SwDoc::GenerateHTMLDoc( const OUString& rPath,
-                                 const SwTextFormatColl* pSplitColl )
-{
-    return SplitDoc( SPLITDOC_TO_HTML, rPath, false, pSplitColl );
-}
-
 // two helpers for outline mode
 static SwNode* GetStartNode( SwOutlineNodes const * pOutlNds, int nOutlineLevel, SwOutlineNodes::size_type* nOutl )
 {
@@ -159,7 +127,7 @@ static SwNode* GetEndNode( const SwOutlineNodes* pOutlNds, const SwTextFormatCol
     return nullptr;
 }
 
-bool SwDoc::SplitDoc( sal_uInt16 eDocType, const OUString& rPath, bool bOutline, const SwTextFormatColl* pSplitColl, int nOutlineLevel )
+bool SwDoc::SplitDoc(sal_uInt16 eDocType, const OUString& rPath, bool bOutline, const SwTextFormatColl* pSplitColl, int nOutlineLevel, std::function<OUString(OUString, OUString)> concatFunc)
 {
     // Iterate over all the template's Nodes, creating an own
     // document for every single one and replace linked sections (GlobalDoc) for links (HTML).
@@ -316,9 +284,9 @@ bool SwDoc::SplitDoc( sal_uInt16 eDocType, const OUString& rPath, bool bOutline,
                     SwNodeIndex aIdx( pDoc->GetNodes().GetEndOfExtras(), 2 );
                     if( aIdx.GetIndex() + 1 !=
                         pDoc->GetNodes().GetEndOfContent().GetIndex() )
-                        pDoc->GetNodes().Delete( aIdx );
+                        pDoc->GetNodes().Delete(aIdx);
 
-                    sFileName = utl::CreateTempURL(sLeading, true, sExt, &sPath);
+                    sFileName = utl::CreateTempURL(sLeading, true, sExt, &sPath, false, concatFunc);
                     SfxMedium* pTmpMed = new SfxMedium( sFileName,
                                                 StreamMode::STD_READWRITE );
                     pTmpMed->SetFilter( pFilter );
@@ -357,6 +325,7 @@ bool SwDoc::SplitDoc( sal_uInt16 eDocType, const OUString& rPath, bool bOutline,
                             SwNodeIndex aSIdx( aTmp.GetMark()->GetNode() );
                             SwNodeIndex aEIdx( aTmp.GetPoint()->GetNode() );
 
+                            // Ensure that *pStartNd and aEndIdx.GetNode() (the nodes around the mark and point) refer to valid nodes
                             // Try to move past the end
                             if( !aTmp.Move( fnMoveForward, GoInNode ) )
                             {
@@ -382,7 +351,7 @@ bool SwDoc::SplitDoc( sal_uInt16 eDocType, const OUString& rPath, bool bOutline,
                                     ((RndStdIds::FLY_AT_PARA == pAnchor->GetAnchorId()) ||
                                      (RndStdIds::FLY_AT_CHAR == pAnchor->GetAnchorId())) &&
                                     aSIdx <= *pAnchorNode &&
-                                    *pAnchorNode < aEIdx.GetNode() )
+                                    *pAnchorNode <= aEIdx.GetNode() )
                                 {
                                     getIDocumentLayoutAccess().DelLayoutFormat( pFly );
                                 }
@@ -390,6 +359,7 @@ bool SwDoc::SplitDoc( sal_uInt16 eDocType, const OUString& rPath, bool bOutline,
                                     ++n;
                             }
 
+                            aTmp.DeleteMark();
                             GetNodes().Delete( aSIdx, nNodeDiff );
                         }
 

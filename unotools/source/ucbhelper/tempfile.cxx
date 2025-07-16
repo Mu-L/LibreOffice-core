@@ -33,7 +33,6 @@
 #include <osl/mutex.hxx>
 #include <osl/detail/file.h>
 #include <osl/file.hxx>
-#include <tools/time.hxx>
 #include <tools/debug.hxx>
 #include <tools/Guid.hxx>
 #include <comphelper/DirectoryHelper.hxx>
@@ -43,6 +42,8 @@
 #elif defined( _WIN32 )
 #include <process.h>
 #endif
+
+sal_uInt32 UniqueTokens::globalValue = SAL_MAX_UINT32;
 
 namespace
 {
@@ -125,70 +126,6 @@ OUString ConstructTempDir_Impl( const OUString* pParent, bool bCreateParentDirs 
     return ensureTrailingSlash(aName);
 }
 
-class Tokens {
-public:
-    virtual bool next(OUString *) = 0;
-
-protected:
-    virtual ~Tokens() {} // avoid warnings
-};
-
-class SequentialTokens: public Tokens {
-public:
-    explicit SequentialTokens(bool showZero): m_value(0), m_show(showZero) {}
-
-    bool next(OUString * token) override {
-        assert(token != nullptr);
-        if (m_value == SAL_MAX_UINT32) {
-            return false;
-        }
-        *token = m_show ? OUString::number(m_value) : OUString();
-        ++m_value;
-        m_show = true;
-        return true;
-    }
-
-private:
-    sal_uInt32 m_value;
-    bool m_show;
-};
-
-class UniqueTokens: public Tokens {
-public:
-    UniqueTokens(): m_count(0) {}
-
-    bool next(OUString * token) override {
-        assert(token != nullptr);
-        // Because of the shared globalValue, no single instance of UniqueTokens
-        // is guaranteed to exhaustively test all 36^6 possible values, but stop
-        // after that many attempts anyway:
-        sal_uInt32 radix = 36;
-        sal_uInt32 max = radix * radix * radix * radix * radix * radix;
-            // 36^6 == 2'176'782'336 < SAL_MAX_UINT32 == 4'294'967'295
-        if (m_count == max) {
-            return false;
-        }
-        sal_uInt32 v;
-        {
-            osl::MutexGuard g(osl::Mutex::getGlobalMutex());
-            globalValue
-                = ((globalValue == SAL_MAX_UINT32
-                    ? tools::Time::GetSystemTicks() : globalValue + 1)
-                   % max);
-            v = globalValue;
-        }
-        *token = OUString::number(v, radix);
-        ++m_count;
-        return true;
-    }
-
-private:
-    static sal_uInt32 globalValue;
-
-    sal_uInt32 m_count;
-};
-
-sal_uInt32 UniqueTokens::globalValue = SAL_MAX_UINT32;
 
     class TempDirCreatedObserver : public osl::DirectoryCreationObserver
     {
@@ -203,7 +140,9 @@ sal_uInt32 UniqueTokens::globalValue = SAL_MAX_UINT32;
 OUString lcl_createName(
     std::u16string_view rLeadingChars, Tokens & tokens, std::u16string_view pExtension,
     const OUString* pParent, bool bDirectory, bool bKeep, bool bLock,
-    bool bCreateParentDirs )
+    bool bCreateParentDirs,
+    std::function<OUString(OUString,OUString)> concatFunc =
+        [](OUString aName, OUString token) -> OUString { return aName + token; })
 {
     OUString aName = ConstructTempDir_Impl( pParent, bCreateParentDirs );
     if ( bCreateParentDirs )
@@ -218,12 +157,11 @@ OUString lcl_createName(
         if (!okOrExists(osl::Directory::createPath(aDirName, &observer)))
             return OUString();
     }
-    aName += rLeadingChars;
 
     OUString token;
     while (tokens.next(&token))
     {
-        OUString aTmp( aName + token );
+        OUString aTmp(aName + concatFunc(OUString(rLeadingChars), token));
         if ( !pExtension.empty() )
             aTmp += pExtension;
         else
@@ -384,13 +322,14 @@ OUString CreateTempURL( const OUString* pParent, bool bDirectory )
     return CreateTempName_Impl( pParent, true, bDirectory );
 }
 
-OUString CreateTempURL( std::u16string_view rLeadingChars, bool _bStartWithZero,
-                    std::u16string_view pExtension, const OUString* pParent,
-                    bool bCreateParentDirs )
+OUString CreateTempURL(std::u16string_view rLeadingChars, bool _bStartWithZero,
+                       std::u16string_view pExtension, const OUString* pParent,
+                       bool bCreateParentDirs,
+                       std::function<OUString(OUString, OUString)> concatFunc)
 {
-    SequentialTokens t(_bStartWithZero);
-    return lcl_createName( rLeadingChars, t, pExtension, pParent, false,
-                            true, true, bCreateParentDirs );
+    PaddedSequentialTokens<3,1> t(_bStartWithZero);
+    return lcl_createName(rLeadingChars, t, pExtension, pParent, false,
+                           true, true, bCreateParentDirs, concatFunc);
 }
 
 TempFileNamed::TempFileNamed( const OUString* pParent, bool bDirectory )

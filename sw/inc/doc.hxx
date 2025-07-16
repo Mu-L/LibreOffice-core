@@ -190,6 +190,14 @@ namespace sfx2 {
     class IXmlIdRegistry;
 }
 
+namespace {
+    enum SwSplitDocType
+    {
+        SPLITDOC_TO_GLOBALDOC,
+        SPLITDOC_TO_HTML
+    };
+}
+
 void SetAllScriptItem( SfxItemSet& rSet, const SfxPoolItem& rItem );
 
 using SwRubyList = std::vector<std::unique_ptr<SwRubyListEntry>>;
@@ -380,10 +388,18 @@ private:
 
     bool UnProtectTableCells( SwTable& rTable );
 
-    /** Create sub-documents according to the given collection.
-     If no collection is given, take chapter style of the 1st level. */
-    bool SplitDoc( sal_uInt16 eDocType, const OUString& rPath, bool bOutline,
-                        const SwTextFormatColl* pSplitColl, int nOutlineLevel = 0 );
+    /**
+       Create sub-documents according to the given collection.
+       If no collection is given, take chapter style of the 1st level.
+
+       @param eDocType Enumeration value representing doctype to be generated
+       @param rPath String representing parent directories of file to be generated
+       @param concatFunc Function representing how token is concatenated to the filename
+    */
+    bool SplitDoc(sal_uInt16 eDocType, const OUString& rPath, bool bOutline,
+                  const SwTextFormatColl* pSplitColl, int nOutlineLevel = 0,
+                  std::function<OUString(OUString, OUString)> concatFunc =
+                  [](OUString aName, OUString token) -> OUString { return aName + token; });
 
     // Update charts of given table.
     void UpdateCharts_( const SwTable& rTable, SwViewShell const & rVSh ) const;
@@ -1525,12 +1541,37 @@ public:
 
     // Create sub-documents according to given collection.
     // If no collection is given, use chapter styles for 1st level.
-    bool GenerateGlobalDoc( const OUString& rPath,
-                                const SwTextFormatColl* pSplitColl );
-    bool GenerateGlobalDoc( const OUString& rPath, int nOutlineLevel );
-    bool GenerateHTMLDoc( const OUString& rPath,
-                                const SwTextFormatColl* pSplitColl );
-    bool GenerateHTMLDoc( const OUString& rPath, int nOutlineLevel );
+    bool GenerateGlobalDoc(
+        const OUString& rPath, const SwTextFormatColl* pSplitColl,
+        std::function<OUString(OUString, OUString)> concatFunc
+        = [](OUString aName, OUString token) -> OUString { return aName + token; })
+    {
+        return SplitDoc(SPLITDOC_TO_GLOBALDOC, rPath, false, pSplitColl, 0, concatFunc);
+    }
+
+    bool GenerateGlobalDoc(
+        const OUString& rPath, int nOutlineLevel,
+        std::function<OUString(OUString, OUString)> concatFunc
+        = [](OUString aName, OUString token) -> OUString { return aName + token; })
+    {
+        return SplitDoc(SPLITDOC_TO_GLOBALDOC, rPath, true, nullptr, nOutlineLevel, concatFunc);
+    }
+
+    bool GenerateHTMLDoc(
+        const OUString& rPath, const SwTextFormatColl* pSplitColl,
+        std::function<OUString(OUString, OUString)> concatFunc
+        = [](OUString aName, OUString token) -> OUString { return aName + token; })
+    {
+        return SplitDoc(SPLITDOC_TO_HTML, rPath, false, pSplitColl, 0, concatFunc);
+    }
+
+    bool GenerateHTMLDoc(
+        const OUString& rPath, int nOutlineLevel,
+        std::function<OUString(OUString, OUString)> concatFunc
+        = [](OUString aName, OUString token) -> OUString { return aName + token; })
+    {
+        return SplitDoc(SPLITDOC_TO_HTML, rPath, true, nullptr, nOutlineLevel, concatFunc);
+    }
 
     //  Compare two documents.
     tools::Long CompareDoc( const SwDoc& rDoc );

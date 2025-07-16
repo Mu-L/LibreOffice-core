@@ -29,6 +29,198 @@
 #include <memory>
 #include <mutex>
 #include <optional>
+#include <functional>
+#include <tools/time.hxx>
+
+/**
+   Base class providing an interface to generate tokens sequentially, storing state
+   between calls.
+
+   @see SequentialTokens
+   @see PaddedSequentialTokens
+   @see UniqueTokens
+*/
+class Tokens {
+public:
+    /**
+       Generates the next token in a sequence and modfies an OUString token
+       with the generated value.
+
+       @param[out] token Pointer to the OUString in which you plan to store the generated token
+       @return Boolean representing if token generation was successful
+    */
+    virtual bool next(OUString * token) = 0;
+
+protected:
+    virtual ~Tokens() {} // avoid warnings
+};
+
+/**
+   Specialization of `Tokens` class that generates unpadded, sequential numbers.
+
+   @see Tokens
+   @see PaddedSequentialTokens
+*/
+class SequentialTokens: public Tokens {
+public:
+    /**
+       Constructor that initializes the first number to zero and sets boolean
+       determining whether the first item (zero) will be returned
+
+       @param[in] showZero Determines if the first token (0) will be generated
+    */
+    explicit SequentialTokens(bool showZero): m_value(0), m_show(showZero) {}
+
+    /**
+       Generates the token representing the integer coming after the previous token
+       generated, as an OUString
+
+       @param[out] token Pointer to OUString in which the generated token is stored
+       @return Boolean representing whether token generation was successful
+    */
+    bool next(OUString * token) override {
+        assert(token != nullptr);
+        if (m_value == SAL_MAX_UINT32) {
+            return false;
+        }
+        *token = m_show ? OUString::number(m_value) : OUString();
+        ++m_value;
+        m_show = true;
+        return true;
+    }
+
+private:
+    /// Represents the integer value stored in the current token
+    sal_uInt32 m_value;
+    /// Represents if the first token will be generated, or if it will just be an empty string
+    bool m_show;
+};
+
+/**
+   Modification of `SequentialTokens` class and specialization of `Tokens` class that generates
+   sequential numbers that are padded to a specified number of characters with leading zeroes.
+
+   @see Tokens
+   @see SequentialTokens
+   @tparam padding Specifies the minimum number of characters in a returned token
+   @tparam initial Specifies the integer value of the first token
+*/
+template<sal_uInt32 padding = 3, sal_uInt32 initial = 1>
+class PaddedSequentialTokens: public Tokens {
+public:
+    /**
+       Constructor initializing the number of characters to which the token must be padded,
+       the integer value of the first token, and whether the first token will be shown or just
+       returned as an empty OUString.
+
+       @param[in] showInitial Determines if the first token will be generated or just empty
+    */
+    explicit PaddedSequentialTokens(bool showInitial):
+        m_padding(padding), m_value(initial), m_show(showInitial) {}
+
+    /**
+       Generates the token coming after the one returned by the last call, as an OUString
+
+       @param[out] token Pointer to OUString in which the generated token is stored
+       @return Boolean representing whether token generation was successful
+    */
+    bool next(OUString * token) override
+    {
+        // Ensure that the pointer to OUString is valid
+        assert(token != nullptr);
+
+        // Fail if it is impossible to generate more tokens
+        if (m_value == SAL_MAX_UINT32)
+        {
+            return false;
+        }
+
+        // Generate token value if it needs to be displayed; otherwise, just return empty string
+        if (m_show)
+        {
+            OUString newTokenValue = OUString::number(m_value);
+            sal_Int32 nPaddingCharacters = m_padding - newTokenValue.getLength();
+
+            while (nPaddingCharacters > 0)
+            {
+                newTokenValue = "0" + newTokenValue;
+                nPaddingCharacters--;
+            }
+
+            *token = newTokenValue;
+        }
+        else
+        {
+            *token = OUString();
+        }
+
+        // Increment internal counter for next call
+        ++m_value;
+
+        // Ensure the second (and future) tokens will be generated
+        m_show = true;
+
+        return true;
+    }
+
+private:
+    /// Minimum number of characters to which the token must be padded
+    sal_uInt32 m_padding;
+    /// Integer value stored in current token
+    sal_uInt32 m_value;
+    /// Represents whether the first token will be shown or not
+    bool m_show;
+};
+
+/**
+   Specialization of `Tokens` that generates a guaranteed unique token every call
+
+   @see Tokens
+*/
+class UniqueTokens: public Tokens {
+public:
+    /**
+       Initializes the count of tokens generated to zero
+    */
+    UniqueTokens(): m_count(0) {}
+
+    /**
+       Generate a new unique token as an OUString
+
+       @param[out] token Pointer to OUString in which teh generated token is stored
+       @return Boolean representing whether token generation was successful
+    */
+    bool next(OUString * token) override {
+        assert(token != nullptr);
+        // Because of the shared globalValue, no single instance of UniqueTokens
+        // is guaranteed to exhaustively test all 36^6 possible values, but stop
+        // after that many attempts anyway:
+        sal_uInt32 radix = 36;
+        sal_uInt32 max = radix * radix * radix * radix * radix * radix;
+            // 36^6 == 2'176'782'336 < SAL_MAX_UINT32 == 4'294'967'295
+        if (m_count == max) {
+            return false;
+        }
+        sal_uInt32 v;
+        {
+            osl::MutexGuard g(osl::Mutex::getGlobalMutex());
+            globalValue
+                = ((globalValue == SAL_MAX_UINT32
+                    ? tools::Time::GetSystemTicks() : globalValue + 1)
+                   % max);
+            v = globalValue;
+        }
+        *token = OUString::number(v, radix);
+        ++m_count;
+        return true;
+    }
+
+private:
+    /// Static integer representing shared value among all instances of UniqueTokens
+    static sal_uInt32 globalValue;
+    /// Number of tokens generated by current instance
+    sal_uInt32 m_count;
+};
 
 class SvFileStream;
 class SvStream;
@@ -80,15 +272,22 @@ UNOTOOLS_DLLPUBLIC OUString CreateTempName();
 UNOTOOLS_DLLPUBLIC OUString CreateTempURL( const OUString* pParent=nullptr, bool bDirectory=false );
 
 /**
-Same as above; additionally the name starts with some given characters followed by a counter ( example:
-rLeadingChars="abc" means "abc0","abc1" and so on, depending on existing files in the folder ).
-The extension string may be f.e. ".txt" or "", if no extension string is given, ".tmp" is used
-    @param  _bStartWithZero If set to false names will be generated like "abc","abc0","abc1"
-    @param  bCreateParentDirs If rLeadingChars contains a slash, this will create the required
-            parent directories.
+   Same as above; additionally the name starts with some given characters followed by a counter ( example:
+   rLeadingChars="abc" means "abc0","abc1" and so on, depending on existing files in the folder ).
+The extension string may be f.e. ".txt" or "", if no extension string is given, ".tmp" is use
+    @param _bStartWithZero If set to false names will be generated like "abc","abc0","abc1"
+    @param pExtension String representing filename extension
+    @param bCreateParentDirs If rLeadingChars contains a slash, this will create the required
+           parent directories.
+    @param concatFunc Optional parameter to change the way the counter is added onto the character.
+            Default is to just add the number immediately after the name, e.g. "abc0" "abc1" etc.
 */
-UNOTOOLS_DLLPUBLIC OUString CreateTempURL( std::u16string_view rLeadingChars, bool _bStartWithZero=true, std::u16string_view pExtension={},
-                          const OUString* pParent=nullptr, bool bCreateParentDirs=false );
+UNOTOOLS_DLLPUBLIC OUString CreateTempURL(
+    std::u16string_view rLeadingChars, bool _bStartWithZero = true,
+    std::u16string_view pExtension = {}, const OUString* pParent = nullptr,
+    bool bCreateParentDirs = false,
+    std::function<OUString(OUString, OUString)> concatFunc
+    = [](OUString aName, OUString token) -> OUString { return aName + token; });
 
 /**
 The TempNameBaseDirectory is a subfolder in the folder that is passed as a "physical" file name in the

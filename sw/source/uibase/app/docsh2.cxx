@@ -1108,15 +1108,21 @@ void SwDocShell::Execute(SfxRequest& rReq)
 
                 if( !aFileName.isEmpty() )
                 {
+                    std::function<OUString(OUString, OUString)> concatFunc
+                        = [](OUString aName, OUString token) -> OUString
+                        { return token + u"_" + aName; };
+
                     if( PrepareClose( false ) )
                     {
-                        SwWait aWait( *this, true );
+                        SwWait aWait(*this, true);
 
                         if ( bCreateByOutlineLevel )
                         {
                             bDone = bCreateHtml
-                                ? m_xDoc->GenerateHTMLDoc( aFileName, nTemplateOutlineLevel )
-                                : m_xDoc->GenerateGlobalDoc( aFileName, nTemplateOutlineLevel );
+                                ? m_xDoc->GenerateHTMLDoc(
+                                      aFileName, nTemplateOutlineLevel, concatFunc)
+                                : m_xDoc->GenerateGlobalDoc(
+                                      aFileName, nTemplateOutlineLevel, concatFunc);
                         }
                         else
                         {
@@ -1124,8 +1130,8 @@ void SwDocShell::Execute(SfxRequest& rReq)
                             if ( !aTemplateName.isEmpty() )
                                 pSplitColl = m_xDoc->FindTextFormatCollByName(UIName(aTemplateName));
                             bDone = bCreateHtml
-                                ? m_xDoc->GenerateHTMLDoc( aFileName, pSplitColl )
-                                : m_xDoc->GenerateGlobalDoc( aFileName, pSplitColl );
+                                ? m_xDoc->GenerateHTMLDoc(aFileName, pSplitColl, concatFunc)
+                                : m_xDoc->GenerateGlobalDoc(aFileName, pSplitColl, concatFunc);
                         }
                         if( bDone )
                         {
