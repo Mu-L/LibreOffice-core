@@ -1,0 +1,15 @@
+--- xmlsec/win32/Makefile.msvc	2026-03-30 14:53:44.477606963 +0200
++++ xmlsec/win32/Makefile.msvc	2026-03-30 14:54:59.101302260 +0200
+@@ -502,7 +502,11 @@
+ LDFLAGS = $(LDFLAGS) /WX
+ !endif
+ 
++!if "$(MSVC_USE_DEBUG_RUNTIME)" == "TRUE"
++SOLIBS 			= $(LIBS) libxml2d.lib bcrypt.lib ws2_32.lib
++!else
+ SOLIBS 			= $(LIBS) libxml2.lib bcrypt.lib ws2_32.lib
++!endif
+ ALIBS           = $(LIBS) libxml2s.lib bcrypt.lib ws2_32.lib
+ 
+ !if "$(WITH_ICONV)" == "1"
+
