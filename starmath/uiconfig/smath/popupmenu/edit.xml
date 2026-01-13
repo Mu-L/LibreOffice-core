@@ -233,7 +233,7 @@
       <menu:menuitem menu:label="nospace {...}" menu:id=".uno:InsertCommandText?Text:string=nospace {&lt;?&gt;} "/>
       <menu:menuitem menu:label="binom x y" menu:id=".uno:InsertCommandText?Text:string=binom{&lt;?&gt;}{&lt;?&gt;} "/>
       <menu:menuitem menu:label="stack {...}" menu:id=".uno:InsertCommandText?Text:string=stack{&lt;?&gt; # &lt;?&gt; # &lt;?&gt;} "/>
-      <menu:menuitem menu:label="matrix {...}" menu:id=".uno:InsertCommandText?Text:string=matrix{&lt;?&gt; # &lt;?&gt; ## &lt;?&gt; # &lt;?&gt;} "/>
+      <menu:menuitem menu:label="matrix {...}" menu:id=".uno:MatrixEditor"/>
       <menu:menuseparator/>
       <menu:menuitem menu:label="alignl x" menu:id=".uno:InsertCommandText?Text:string=alignl &lt;?&gt; "/>
       <menu:menuitem menu:label="alignc x" menu:id=".uno:InsertCommandText?Text:string=alignc &lt;?&gt; "/>

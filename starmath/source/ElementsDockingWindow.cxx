@@ -405,6 +405,7 @@ const SmElementDescr s_a5FormatsList[] =
     {RID_BINOMXY, RID_BINOMXY_HELP, {}, {}},
     {RID_STACK, RID_STACK_HELP, {}, {}},
     {RID_MATRIX, RID_MATRIX_HELP, {}, {}},
+    {RID_MATRIX_DIALOG, RID_MATRIX_HELP, u"matrix{<?> # <?> ## <?> # <?>} ~ cdot {} cdot {} cdot {}", {}},
 };
 
 const SmElementDescr s_a5OthersList[] =

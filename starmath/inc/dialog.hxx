@@ -502,4 +502,51 @@ public:
     void        SelectChar(sal_Unicode cChar);
 };
 
+class MatrixCreatorDialog final : public weld::GenericDialogController
+{
+    std::unique_ptr<weld::Button> mxOk;
+    std::unique_ptr<weld::Button> mxCancel;
+    std::unique_ptr<weld::Entry> mxName;
+    std::unique_ptr<weld::SpinButton> mxRows;
+    std::unique_ptr<weld::SpinButton> mxCols;
+    std::unique_ptr<weld::RadioButton> mxUnitMatrix;
+    std::unique_ptr<weld::RadioButton> mxDiagMatrix;
+    std::unique_ptr<weld::RadioButton> mxSymmetricMatrix;
+    std::unique_ptr<weld::RadioButton> mxFullMatrix;
+    std::unique_ptr<weld::TreeView> mxMatrix;
+
+    DECL_LINK(ButtonOkHdl, weld::Button&, void);
+    DECL_LINK(ButtonCancelHdl, weld::Button&, void);
+    DECL_LINK(ModifyHdl, weld::Entry&, void);
+    OUString mOldName;
+    DECL_LINK(SpinButtonModifyHdl, weld::SpinButton&, void);
+    DECL_LINK(RadioButtonModifyHdl, weld::Toggleable&, void);
+    DECL_LINK(MousePressHdl, const MouseEvent&, bool);
+    int mClickedColumn;
+    int mEditedColumn;
+    DECL_LINK(EditingEntryHdl, const weld::TreeIter&, bool);
+    typedef std::pair<const weld::TreeIter&, OUString> IterString;
+    DECL_LINK(EditedEntryHdl, const IterString&, bool);
+
+public:
+    MatrixCreatorDialog(weld::Window *pParent);
+    virtual ~MatrixCreatorDialog() override;
+
+    // Get textual representation of the matrix (including STACK/MATRIX and curly braces
+    OUString getMatrix() const { return mMatrixText; }
+
+private:
+    // Get name to be used for filling the matrix (default is "x")
+    OUString getName() const;
+    // Change number of rows and/or columns
+    void resizeMatrix();
+    // Make matrix diagonal, symmetric, etc.
+    void shapeMatrix();
+    // Build matrix in starmath format
+    OUString buildMatrix() const;
+
+    static constexpr int mMaxCols = 10;
+    OUString mMatrixText;
+};
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

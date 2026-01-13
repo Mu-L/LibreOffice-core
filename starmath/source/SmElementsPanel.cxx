@@ -104,9 +104,18 @@ IMPL_LINK(SmElementsPanel, ElementClickHandler, const OUString&, ElementSource, 
 {
     if (SmViewShell* pViewSh = GetView())
     {
-        SfxStringItem aInsertCommand(SID_INSERTCOMMANDTEXT, ElementSource);
-        pViewSh->GetViewFrame().GetDispatcher()->ExecuteList(
-            SID_INSERTCOMMANDTEXT, SfxCallMode::RECORD, { &aInsertCommand });
+        if (ElementSource == ".uno:MatrixEditor")
+        {
+            SfxStringItem aInsertCommand(SID_MATRIXEDITOR);
+            pViewSh->GetViewFrame().GetDispatcher()->ExecuteList(
+                SID_MATRIXEDITOR, SfxCallMode::RECORD, { &aInsertCommand });
+        }
+        else
+        {
+            SfxStringItem aInsertCommand(SID_INSERTCOMMANDTEXT, ElementSource);
+            pViewSh->GetViewFrame().GetDispatcher()->ExecuteList(
+                SID_INSERTCOMMANDTEXT, SfxCallMode::RECORD, { &aInsertCommand });
+        }
     }
 }
 

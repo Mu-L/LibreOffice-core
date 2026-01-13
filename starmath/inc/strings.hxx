@@ -254,6 +254,7 @@ inline constexpr OUString RID_UNDOFORMATNAME = u"Format"_ustr;
 #define RID_BINOMXY             u"binom{<?>}{<?>} "
 #define RID_STACK               u"stack{<?> # <?> # <?>} "
 #define RID_MATRIX              u"matrix{<?> # <?> ## <?> # <?>} "
+#define RID_MATRIX_DIALOG       u".uno:MatrixEditor"
 #define RID_ALIGNLX             u"alignl <?> "
 #define RID_ALIGNCX             u"alignc <?> "
 #define RID_ALIGNRX             u"alignr <?> "

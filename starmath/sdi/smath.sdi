@@ -381,6 +381,24 @@ SfxVoidItem PasteObject SID_PASTEOBJECT
 ]
 
 
+SfxVoidItem MatrixEditor SID_MATRIXEDITOR
+()
+[
+    AutoUpdate = FALSE,
+    FastCall = FALSE,
+    ReadOnlyDoc = TRUE,
+    Toggle = FALSE,
+    Container = FALSE,
+    RecordAbsolute = FALSE,
+    RecordPerSet;
+
+    AccelConfig = FALSE,
+    MenuConfig = FALSE,
+    ToolBoxConfig = FALSE,
+    GroupId = SfxGroupId::Edit;
+]
+
+
 SfxVoidItem PrevError SID_PREVERR
 ()
 [
