@@ -58,9 +58,8 @@ ScTpCalcOptions::ScTpCalcOptions(weld::Container* pPage, weld::DialogController*
     , m_xDateImg(m_xBuilder->weld_widget(u"lockdate"_ustr))
 #if HAVE_FEATURE_OPENCL
     , maConfig(OpenCLConfig::get())
-    , m_xAllowOpenCL(m_xBuilder->weld_check_button(u"allowopencl"_ustr))
 #endif
-    , m_xOpenCLFrame(m_xBuilder->weld_frame(u"OptOpenCLPage"_ustr))
+    , m_xAllowOpenCL(m_xBuilder->weld_check_button(u"allowopencl"_ustr))
     , m_xBtnCase(m_xBuilder->weld_check_button(u"case"_ustr))
     , m_xBtnCaseImg(m_xBuilder->weld_widget(u"lockcase"_ustr))
     , m_xBtnCalc(m_xBuilder->weld_check_button(u"calc"_ustr))
@@ -110,7 +109,7 @@ void ScTpCalcOptions::InitOpenCL()
     m_xAllowOpenCL->set_sensitive(!officecfg::Office::Common::Misc::UseOpenCL::isReadOnly()
                                   && openclwrapper::GPUEnv::isOpenCLEnabled());
 #endif
-    m_xOpenCLFrame->set_visible(HAVE_FEATURE_OPENCL);
+    m_xAllowOpenCL->set_visible(HAVE_FEATURE_OPENCL);
 }
 
 std::unique_ptr<SfxTabPage> ScTpCalcOptions::Create( weld::Container* pPage, weld::DialogController* pController, const SfxItemSet* rAttrSet )
@@ -279,7 +278,7 @@ OUString ScTpCalcOptions::GetAllStrings()
     OUStringBuffer sAllStrings;
     OUString labels[] = { u"label5"_ustr, u"label1"_ustr,  u"precft"_ustr,
                           u"label2"_ustr, u"stepsft"_ustr, u"minchangeft"_ustr,
-                          u"label4"_ustr, u"label3"_ustr,  u"openclframe"_ustr };
+                          u"label4"_ustr, u"label3"_ustr };
 
     for (const auto& label : labels)
     {

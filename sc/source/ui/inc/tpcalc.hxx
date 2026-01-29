@@ -66,9 +66,8 @@ private:
 
 #if HAVE_FEATURE_OPENCL
     OpenCLConfig maConfig;
-    std::unique_ptr<weld::CheckButton> m_xAllowOpenCL;
 #endif
-    std::unique_ptr<weld::Frame> m_xOpenCLFrame;
+    std::unique_ptr<weld::CheckButton> m_xAllowOpenCL;
 
     std::unique_ptr<weld::CheckButton> m_xBtnCase;
     std::unique_ptr<weld::Widget> m_xBtnCaseImg;
