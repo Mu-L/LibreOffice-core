@@ -75,11 +75,14 @@ class BackingWindow : public InterimItemWindow
     std::unique_ptr<weld::Container> mxAllButtonsBox;
     std::unique_ptr<weld::Container> mxButtonsBox;
     std::unique_ptr<weld::Container> mxSmallButtonsBox;
+    std::unique_ptr<weld::Container> mxRightBox;
 
     std::unique_ptr<sfx2::RecentDocsView> mxAllRecentThumbnails;
     std::unique_ptr<weld::CustomWeld> mxAllRecentThumbnailsWin;
     std::unique_ptr<TemplateDefaultView> mxLocalView;
     std::unique_ptr<weld::CustomWeld> mxLocalViewWin;
+    std::unique_ptr<weld::Image> mxDonation;
+
     bool mbLocalViewInitialized;
 
     css::uno::Reference<css::datatransfer::dnd::XDropTarget> mxDropTarget;
@@ -102,6 +105,7 @@ class BackingWindow : public InterimItemWindow
     DECL_LINK(CreateContextMenuHdl, TemplateViewItem*, void);
     DECL_LINK(OpenTemplateHdl, const OUString&, void);
     DECL_LINK(EditTemplateHdl, const OUString&, void);
+    DECL_LINK(ResizeHdl, const Size&, void);
 
     void initControls();
 
