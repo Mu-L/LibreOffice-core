@@ -36,6 +36,7 @@ use crate::ffi::sal_types::*;
 /// OUString provides a safe, memory-managed interface to LibreOffice's native
 /// string type. It automatically handles reference counting and memory cleanup,
 /// and provides conversions to/from standard Rust string types.
+#[repr(transparent)]
 pub struct OUString {
     inner: NonNull<rtl_uString>,
 }

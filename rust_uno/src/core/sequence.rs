@@ -37,6 +37,7 @@ use std::ptr::NonNull;
 ///
 /// Sequence provides a safe, memory-managed interface to LibreOffice's native
 /// Sequence type. It automatically handles reference counting and memory cleanup.
+#[repr(transparent)]
 pub struct Sequence {
     inner: NonNull<uno_Sequence>,
 }

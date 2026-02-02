@@ -54,6 +54,7 @@ use std::ptr;
 /// ));
 /// ```
 #[allow(non_snake_case)] // _pType follows FFI naming conventions
+#[repr(transparent)]
 pub struct Type {
     /// C typelib reference pointer
     _pType: *mut typelib_TypeDescriptionReference,

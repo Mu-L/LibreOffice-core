@@ -613,6 +613,7 @@ void RustProducer::generateInterfaceWrapper(
         .endLine()
         .beginLine()
         .append("#[allow(non_camel_case_types)]")
+        .append("#[repr(transparent)]")
         .endLine()
         .beginLine()
         .append("pub struct ")

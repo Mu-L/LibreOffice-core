@@ -34,6 +34,7 @@ use crate::ffi::uno_any::*;
 ///
 /// Any provides a safe, memory-managed interface to LibreOffice's native
 /// any type. It automatically handles reference counting and memory cleanup.
+#[repr(transparent)]
 pub struct Any {
     inner: uno_Any,
 }
