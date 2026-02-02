@@ -33,7 +33,7 @@ class Tdf146375(UITestCase):
                 # Create a new category
                 with self.ui_test.execute_blocking_action(
                         xActionMenu.executeAction, args=('OPENFROMLIST', mkPropertyValues({"POS": "0"}))) as xNameDialog:
-                    xEntry = xNameDialog.getChild("entry")
+                    xEntry = xNameDialog.getChild("name_entry")
                     xEntry.executeAction("TYPE", mkPropertyValues({"KEYCODE":"CTRL+A"}))
                     xEntry.executeAction("TYPE", mkPropertyValues({"KEYCODE":"BACKSPACE"}))
                     xEntry.executeAction("TYPE", mkPropertyValues({"TEXT": categoryName}))
@@ -46,7 +46,7 @@ class Tdf146375(UITestCase):
                 # Rename the category
                 with self.ui_test.execute_blocking_action(
                         xActionMenu.executeAction, args=('OPENFROMLIST', mkPropertyValues({"POS": "1"}))) as xNameDialog:
-                    xEntry = xNameDialog.getChild("entry")
+                    xEntry = xNameDialog.getChild("name_entry")
                     xEntry.executeAction("TYPE", mkPropertyValues({"KEYCODE":"CTRL+A"}))
                     xEntry.executeAction("TYPE", mkPropertyValues({"KEYCODE":"BACKSPACE"}))
                     xEntry.executeAction("TYPE", mkPropertyValues({"TEXT": renamedCategory}))

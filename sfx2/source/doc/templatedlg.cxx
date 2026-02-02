@@ -9,8 +9,8 @@
 
 #include <sfx2/templatedlg.hxx>
 
-#include <inputdlg.hxx>
 #include <sfx2/module.hxx>
+#include <svtools/dlgname.hxx>
 
 #include <comphelper/processfactory.hxx>
 #include <comphelper/propertyvalue.hxx>
@@ -1044,14 +1044,12 @@ void SfxTemplateManagerDlg::OnTemplateOpen ()
 
 void SfxTemplateManagerDlg::OnCategoryNew()
 {
-    InputDialog dlg(m_xDialog.get(), SfxResId(STR_INPUT_NEW));
-    dlg.set_title(SfxResId(STR_WINDOW_TITLE_RENAME_NEW_CATEGORY));
-    int ret = dlg.run();
+    SvxNameDialog dlg(m_xDialog.get(), u""_ustr, SfxResId(STR_INPUT_NEW), SfxResId(STR_WINDOW_TITLE_RENAME_NEW_CATEGORY));
 
-    if (!ret)
+    if(dlg.run() != RET_OK)
         return;
 
-    OUString aName = dlg.GetEntryText();
+    OUString aName = dlg.GetName();
 
     if (maLocalView.createRegion(aName))
         mxCBFolder->append_text(aName);
@@ -1068,15 +1066,12 @@ void SfxTemplateManagerDlg::OnCategoryNew()
 void SfxTemplateManagerDlg::OnCategoryRename()
 {
     OUString sCategory = mxCBFolder->get_active_text();
-    InputDialog dlg(m_xDialog.get(), SfxResId(STR_INPUT_NEW));
-    dlg.set_title(SfxResId(STR_WINDOW_TITLE_RENAME_CATEGORY));
-    dlg.SetEntryText(sCategory);
-    int ret = dlg.run();
+    SvxNameDialog dlg(m_xDialog.get(), sCategory, SfxResId(STR_INPUT_NEW), SfxResId(STR_WINDOW_TITLE_RENAME_CATEGORY));
 
-    if (!ret)
+    if (dlg.run() != RET_OK)
         return;
 
-    OUString aName = dlg.GetEntryText();
+    OUString aName = dlg.GetName();
 
     if (maLocalView.renameRegion(sCategory, aName))
     {
