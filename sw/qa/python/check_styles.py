@@ -170,12 +170,12 @@ class CheckStyle(unittest.TestCase):
         self.__test_StyleFamilyIndex(xTableStyles, vEmptyDocStyles, "SwXTextTableStyle")
         self.__test_StyleFamilyInsert(xDoc, xTableStyles, vEmptyDocStyles, "com.sun.star.style.TableStyle", "com.sun.star.style.CharacterStyle")
         for sStyleName in vEmptyDocStyles:
-            self.assertIsNotNone(xTableStyles.getByName(sStyleName))
+            self.assertIsNotNone(xTableStyles[sStyleName])
         #check SwXTextCellStyles
         vCellStyles = ["first-row", "last-row", "first-column", "last-column", "body", "even-rows", "odd-rows", "even-columns", "odd-columns", "background"]
         xDefaultTableStyle = xTableStyles[0]
         for sCellStyle in vCellStyles:
-            xCellStyle = xDefaultTableStyle.getByName(sCellStyle)
+            xCellStyle = xDefaultTableStyle[sCellStyle]
             self.assertIsNotNone(xCellStyle.getPropertyValue("BackColor"))
             with self.assertRaises(UnknownPropertyException):
                 xCellStyle.getPropertyValue("foobarbaz")
@@ -188,8 +188,8 @@ class CheckStyle(unittest.TestCase):
         xTable = xDoc.createInstance("com.sun.star.text.TextTable")
         xTable.initialize(1, 1)
         xBodyText.insertTextContent(xCursor, xTable, True)
-        xDefaultTableStyle = xDoc.StyleFamilies.getByName("TableStyles").getByName("Default Style")
-        xDefaultCellStyle = xDoc.StyleFamilies.getByName("CellStyles").getByName("Default Style.1")
+        xDefaultTableStyle = xDoc.StyleFamilies["TableStyles"]["Default Style"]
+        xDefaultCellStyle = xDoc.StyleFamilies["CellStyles"]["Default Style.1"]
         self.assertFalse(xDefaultTableStyle.isInUse())
         xTable.setPropertyValue("TableTemplateName", "Default Style")
         self.assertTrue(xDefaultTableStyle.isInUse())
@@ -198,7 +198,7 @@ class CheckStyle(unittest.TestCase):
         self.assertFalse(xDefaultTableStyle.isInUse())
         xTableStyle = xDoc.createInstance("com.sun.star.style.TableStyle")
         self.assertFalse(xTableStyle.isInUse())
-        xDoc.StyleFamilies.getByName("TableStyles").insertByName("Test Table Style", xTableStyle)
+        xDoc.StyleFamilies["TableStyles"].insertByName("Test Table Style", xTableStyle)
         self.assertFalse(xTableStyle.isInUse())
         xTable.setPropertyValue("TableTemplateName", "Test Table Style")
         self.assertTrue(xTableStyle.isInUse())
@@ -215,10 +215,10 @@ class CheckStyle(unittest.TestCase):
         self.__test_StyleFamilyIndex(xCellStyles, vEmptyDocStyles, "SwXTextCellStyle")
         self.__test_StyleFamilyInsert(xDoc, xCellStyles, vEmptyDocStyles, "com.sun.star.style.CellStyle", "com.sun.star.style.CharacterStyle")
         xTableStyle = xDoc.createInstance("com.sun.star.style.TableStyle")
-        xCellStyle = xTableStyle.getByName("first-row")
-        xDoc.StyleFamilies.getByName("TableStyles").insertByName("Test Table Style", xTableStyle)
-        self.assertEqual(xTableStyle.getByName("first-row"), xCellStyle)
-        self.assertEqual(xTableStyle.getByName("first-row"), xDoc.StyleFamilies.getByName("TableStyles").getByName("Test Table Style").getByName("first-row"))
+        xCellStyle = xTableStyle["first-row"]
+        xDoc.StyleFamilies["TableStyles"].insertByName("Test Table Style", xTableStyle)
+        self.assertEqual(xTableStyle["first-row"], xCellStyle)
+        self.assertEqual(xTableStyle["first-row"], xDoc.StyleFamilies["TableStyles"]["Test Table Style"]["first-row"])
         #replaceByName
         with self.assertRaises(NoSuchElementException):
             xTableStyle.replaceByName("foobarbaz", xCellStyle)
@@ -229,11 +229,11 @@ class CheckStyle(unittest.TestCase):
         with self.assertRaises(IllegalArgumentException):       #replace with other family style
             xTableStyle.replaceByName("first-row", xTableStyle2)
         #replace with already assigned cell style
-        xTableStyle.replaceByName("first-row", xTableStyle2.getByName("first-row"))
-        self.assertEqual(xTableStyle.getByName("first-row"), xTableStyle2.getByName("first-row"))
-        xDoc.StyleFamilies.getByName("CellStyles").insertByName("Test Cell Style", xCellStyle)
+        xTableStyle.replaceByName("first-row", xTableStyle2["first-row"])
+        self.assertEqual(xTableStyle["first-row"], xTableStyle2["first-row"])
+        xDoc.StyleFamilies["CellStyles"].insertByName("Test Cell Style", xCellStyle)
         xTableStyle.replaceByName("first-row", xCellStyle)
-        self.assertEqual(xTableStyle.getByName("first-row"), xCellStyle)
+        self.assertEqual(xTableStyle["first-row"], xCellStyle)
         xDoc.dispose()
 
 if __name__ == '__main__':
