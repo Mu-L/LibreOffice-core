@@ -22,7 +22,8 @@
 #include <framework/fwkdllapi.h>
 #include <svtools/toolboxcontroller.hxx>
 #include <vcl/toolbox.hxx>
-#include <vcl/weld/Toolbar.hxx>
+
+namespace weld { class Toolbar; }
 
 namespace framework
 {
