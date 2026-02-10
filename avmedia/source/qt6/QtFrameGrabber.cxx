@@ -45,69 +45,118 @@ uno::Reference<css::graphic::XGraphic> toXGraphic(const QImage& rImage)
 
 namespace avmedia::qt
 {
-QtFrameGrabber::QtFrameGrabber(const QUrl& rSourceUrl)
-    : m_bWaitingForFrame(false)
+namespace grabhelper
+{
+CaptureFrameHelperTaskWorker::CaptureFrameHelperTaskWorker(const QUrl& url)
+    : QObject(nullptr)
+    , m_url(url)
+{
+}
+
+void CaptureFrameHelperTaskWorker::start()
 {
     m_xMediaPlayer = std::make_unique<QMediaPlayer>();
-    m_xMediaPlayer->setSource(rSourceUrl);
-
     m_xVideoSink = std::make_unique<QVideoSink>();
     m_xMediaPlayer->setVideoSink(m_xVideoSink.get());
 
+    connect(m_xMediaPlayer.get(), &QMediaPlayer::mediaStatusChanged, this,
+            [this](const QMediaPlayer::MediaStatus& status) {
+                if (status == QMediaPlayer::MediaStatus::LoadedMedia)
+                {
+                    if (!m_xMediaPlayer->hasVideo())
+                    {
+                        dataReady();
+                    }
+                }
+            });
+
     connect(m_xMediaPlayer.get(), &QMediaPlayer::errorOccurred, this,
-            &QtFrameGrabber::onErrorOccured, Qt::SingleShotConnection);
+            [this](QMediaPlayer::Error error, const QString& errorString) {
+                m_workerTaskResult.error = errorString;
+                m_workerTaskResult.errorCode = error;
+                dataReady();
+            });
+
+    connect(m_xVideoSink.get(), &QVideoSink::videoFrameChanged, this,
+            [this](const QVideoFrame& vframe) {
+                m_workerTaskResult.frame = vframe;
+                dataReady();
+            },
+            Qt::SingleShotConnection);
+
+    m_xMediaPlayer->setSource(m_url);
+    m_xMediaPlayer->setPosition(m_mediaPos);
+    m_xMediaPlayer->play();
 }
 
-void QtFrameGrabber::onErrorOccured(QMediaPlayer::Error eError, const QString& rErrorString)
+void CaptureFrameHelperTaskWorker::setPos(double pos) { m_mediaPos = pos; }
+
+void CaptureFrameHelperTaskWorker::dataReady()
 {
-    std::lock_guard aLock(m_aMutex);
-
-    SAL_WARN("avmedia", "Media playback error occurred when trying to grab frame: "
-                            << toOUString(rErrorString) << ", code: " << eError);
-
-    m_bWaitingForFrame = false;
+    m_xMediaPlayer->stop();
+    Q_EMIT ready(m_workerTaskResult);
 }
 
-void QtFrameGrabber::onVideoFrameChanged(const QVideoFrame& rFrame)
+CaptureFrameHelperResultHandler::CaptureFrameHelperResultHandler(std::condition_variable& cv,
+                                                                 std::mutex& helperMutex)
+    : QObject(nullptr)
+    , m_cv(cv)
+    , m_helperMutex(helperMutex){};
+void CaptureFrameHelperResultHandler::handle(const LoadingDataResult& data)
 {
-    std::lock_guard aLock(m_aMutex);
-
-    const QImage aImage = rFrame.toImage();
-    m_xGraphic = toXGraphic(aImage);
-    m_bWaitingForFrame = false;
+    std::unique_lock<std::mutex> lock(m_helperMutex);
+    m_workResult = data;
+    m_cv.notify_all();
 }
+
+LoadingDataResult CaptureFrameHelperResultHandler::getData() { return m_workResult; }
+
+CaptureFrameHelper::CaptureFrameHelper(const QUrl& url, double pos)
+{
+    m_helper = new CaptureFrameHelperTaskWorker(url);
+    m_helper->setPos(pos);
+    m_resultHandler = new CaptureFrameHelperResultHandler(m_cond, m_helperMutex);
+    m_helper->moveToThread(&m_helperThread);
+    m_resultHandler->moveToThread(&m_helperThread);
+
+    QObject::connect(&m_helperThread, &QThread::started, m_helper,
+                     &CaptureFrameHelperTaskWorker::start);
+    QObject::connect(&m_helperThread, &QThread::finished, m_helper, &QObject::deleteLater);
+    QObject::connect(&m_helperThread, &QThread::finished, m_resultHandler, &QObject::deleteLater);
+    QObject::connect(m_helper, &CaptureFrameHelperTaskWorker::ready, m_resultHandler,
+                     &CaptureFrameHelperResultHandler::handle);
+}
+
+CaptureFrameHelper::~CaptureFrameHelper()
+{
+    m_helperThread.quit();
+    m_helperThread.wait();
+}
+
+LoadingDataResult CaptureFrameHelper::startAndGet()
+{
+    std::unique_lock<std::mutex> aLock(m_helperMutex);
+    m_helperThread.start();
+    m_cond.wait(aLock);
+    return m_resultHandler->getData();
+}
+}
+QtFrameGrabber::QtFrameGrabber(const QUrl& rSourceUrl) { m_url = rSourceUrl; }
 
 css::uno::Reference<css::graphic::XGraphic> SAL_CALL QtFrameGrabber::grabFrame(double fMediaTime)
 {
-    std::lock_guard aLock(m_aMutex);
-
-    m_xMediaPlayer->setPosition(fMediaTime * 1000);
-
-    // in order to get a video frame, connect to videoFrameChanged signal and start playing
-    // until the first frame has been received
-    m_bWaitingForFrame = true;
-    connect(m_xVideoSink.get(), &QVideoSink::videoFrameChanged, this,
-            &QtFrameGrabber::onVideoFrameChanged, Qt::SingleShotConnection);
-    m_xMediaPlayer->play();
-    while (m_bWaitingForFrame)
+    grabhelper::CaptureFrameHelper aFrameHelper(m_url, fMediaTime * 1000);
+    auto res = aFrameHelper.startAndGet();
+    if (res.errorCode)
     {
-        // QMediaPlayer::hasVideo() result isn't valid while media is loading
-        if (m_xMediaPlayer->mediaStatus() != QMediaPlayer::LoadingMedia
-            && !m_xMediaPlayer->hasVideo())
-        {
-            // There's no video, don't wait for frame
-            m_bWaitingForFrame = false;
-        }
-        else
-        {
-            Scheduler::ProcessEventsToIdle();
-        }
+        SAL_WARN("avmedia", "Media playback error occurred when trying to grab frame: "
+                                << toOUString(res.error) << ", code: " << res.errorCode);
     }
-    m_xMediaPlayer->stop();
-
-    uno::Reference<css::graphic::XGraphic> xGraphic = m_xGraphic;
-    m_xGraphic.clear();
-    return xGraphic;
+    if (res.frame.has_value())
+    {
+        return toXGraphic(res.frame.value().toImage());
+    }
+    return nullptr;
 }
 
 }; // namespace
