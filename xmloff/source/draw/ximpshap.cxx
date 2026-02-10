@@ -81,6 +81,7 @@
 #include <basegfx/matrix/b2dhommatrix.hxx>
 #include <com/sun/star/drawing/XEnhancedCustomShapeDefaulter.hpp>
 #include <com/sun/star/container/XChild.hpp>
+#include <com/sun/star/table/XColumnRowRange.hpp>
 #include <com/sun/star/text/XTextDocument.hpp>
 #include <basegfx/matrix/b2dhommatrixtools.hxx>
 #include <basegfx/point/b2dpoint.hxx>

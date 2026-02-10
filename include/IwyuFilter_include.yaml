@@ -431,16 +431,10 @@ excludelist:
     include/toolkit/helper/macros.hxx:
     # Needed for macros
     - comphelper/diagnose_ex.hxx
-    include/xmloff/unointerfacetouniqueidentifiermapper.hxx:
-    # base class has to be a complete type
-    - com/sun/star/uno/XInterface.hpp
     include/xmloff/unoatrcn.hxx:
     # base class has to be a complete type
     - com/sun/star/container/XNameContainer.hpp
     - com/sun/star/lang/XServiceInfo.hpp
-    include/xmloff/xmlictxt.hxx:
-    # base class has to be a complete type
-    - com/sun/star/xml/sax/XFastContextHandler.hpp
     include/xmloff/xmlexp.hxx:
     # base class has to be a complete type
     - com/sun/star/document/XFilter.hpp
@@ -448,6 +442,11 @@ excludelist:
     - com/sun/star/document/XExporter.hpp
     - com/sun/star/lang/XInitialization.hpp
     - com/sun/star/container/XNamed.hpp
+    include/xmloff/xmlgrhlp.hxx:
+    # base class has to be a complete type
+    - com/sun/star/document/XBinaryStreamResolver.hpp
+    - com/sun/star/document/XGraphicObjectResolver.hpp
+    - com/sun/star/document/XGraphicStorageHandler.hpp
     include/xmloff/xmlmetae.hxx:
     # base class has to be a complete type
     - com/sun/star/xml/sax/XDocumentHandler.hpp
@@ -459,6 +458,7 @@ excludelist:
     - com/sun/star/lang/XServiceInfo.hpp
     - com/sun/star/xml/sax/XFastDocumentHandler.hpp
     - com/sun/star/xml/sax/XFastParser.hpp
+    - com/sun/star/xml/sax/XDocumentHandler.hpp
     include/xmloff/XMLTextMasterPageContext.hxx:
     # needed in --fwdecl mode
     - struct ContextID_Index_Pair

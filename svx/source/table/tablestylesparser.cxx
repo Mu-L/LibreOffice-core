@@ -26,6 +26,8 @@
 #include <editeng/adjustitem.hxx>
 #include <sax/tools/converter.hxx>
 #include <svx/svxtableitems.hxx>
+#include <xmloff/maptype.hxx>
+#include <xmloff/xmlimppr.hxx>
 #include <xmloff/xmlprmap.hxx>
 #include <svx/TableAutoFmt.hxx>
 #include <svx/TableStylesParser.hxx>

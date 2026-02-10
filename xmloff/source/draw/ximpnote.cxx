@@ -20,6 +20,7 @@
 #include "ximpnote.hxx"
 #include "ximpshap.hxx"
 #include <xmloff/xmlnamespace.hxx>
+#include <xmloff/xmltoken.hxx>
 
 using namespace ::com::sun::star;
 using namespace ::xmloff::token;

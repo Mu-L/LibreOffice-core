@@ -29,6 +29,7 @@
 #include <xmloff/unointerfacetouniqueidentifiermapper.hxx>
 
 #include <xmloff/shapeimport.hxx>
+#include <xmloff/xmlimppr.hxx>
 #include <xmloff/xmlstyle.hxx>
 #include <xmloff/xmlnamespace.hxx>
 #include <xmloff/xmltoken.hxx>

@@ -31,6 +31,7 @@
 
 #include <xmloff/unointerfacetouniqueidentifiermapper.hxx>
 #include <xmloff/families.hxx>
+#include <xmloff/xmltoken.hxx>
 #include "ximpshow.hxx"
 #include "layerimp.hxx"
 #include <animationimport.hxx>
