@@ -537,9 +537,6 @@ excludelist:
     # base class has to be a complete type
     - com/sun/star/graphic/XPrimitive2D.hpp
     - com/sun/star/util/XAccounting.hpp
-    include/drawinglayer/primitive3d/baseprimitive3d.hxx:
-    # base class has to be a complete type
-    - com/sun/star/graphic/XPrimitive3D.hpp
     include/sfx2/childwin.hxx:
     # Needed in macro #define
     - comphelper/lok.hxx

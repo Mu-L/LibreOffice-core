@@ -20,6 +20,7 @@
 #ifndef INCLUDED_SVX_INC_SDR_OVERLAY_OVERLAYTOOLS_HXX
 #define INCLUDED_SVX_INC_SDR_OVERLAY_OVERLAYTOOLS_HXX
 
+#include <basegfx/color/bcolor.hxx>
 #include <drawinglayer/primitive2d/primitivetools2d.hxx>
 #include <vcl/bitmap.hxx>
 #include <basegfx/vector/b2dsize.hxx>

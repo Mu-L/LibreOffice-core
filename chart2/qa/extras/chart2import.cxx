@@ -36,6 +36,7 @@
 #include <com/sun/star/awt/Gradient2.hpp>
 #include <com/sun/star/lang/XMultiServiceFactory.hpp>
 #include <docmodel/uno/UnoGradientTools.hxx>
+#include <tools/color.hxx>
 
 namespace
 {

@@ -45,6 +45,7 @@
 #include <vcl/animate/AnimationFrame.hxx>
 #include <vcl/alpha.hxx>
 #include <vcl/graph.hxx>
+#include <vcl/GraphicAttributes.hxx>
 #include <vcl/virdev.hxx>
 #include <vcl/svapp.hxx>
 #include <vcl/skia/SkiaHelper.hxx>

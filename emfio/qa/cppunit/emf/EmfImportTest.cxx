@@ -22,6 +22,7 @@
 
 #include <drawinglayer/primitive2d/Primitive2DContainer.hxx>
 #include <drawinglayer/tools/primitive2dxmldump.hxx>
+#include <tools/color.hxx>
 #include <vcl/filter/PDFiumLibrary.hxx>
 #include <vcl/gdimtf.hxx>
 #include <vcl/vectorgraphicdata.hxx>

@@ -19,6 +19,8 @@
 #include <com/sun/star/chart/DataLabelPlacement.hpp>
 #include <com/sun/star/chart2/PieChartSubType.hpp>
 
+#include <tools/color.hxx>
+
 using uno::Reference;
 using beans::XPropertySet;
 

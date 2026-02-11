@@ -27,6 +27,7 @@
 #include <drawinglayer/primitive2d/BitmapAlphaPrimitive2D.hxx>
 #include <basegfx/polygon/b2dpolygontools.hxx>
 #include <basegfx/polygon/b2dpolypolygontools.hxx>
+#include <basegfx/range/b3drange.hxx>
 #include <drawinglayer/primitive2d/transparenceprimitive2d.hxx>
 #include <drawinglayer/primitive2d/maskprimitive2d.hxx>
 #include <drawinglayer/primitive2d/sceneprimitive2d.hxx>
@@ -36,6 +37,7 @@
 #include <drawinglayer/primitive2d/hiddengeometryprimitive2d.hxx>
 #include <drawinglayer/primitive2d/bitmapprimitive2d.hxx>
 #include <comphelper/lok.hxx>
+#include <tools/color.hxx>
 
 namespace drawinglayer::processor2d
 {

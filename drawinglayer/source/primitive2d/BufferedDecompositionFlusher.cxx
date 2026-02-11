@@ -20,6 +20,8 @@
 #include <sal/config.h>
 #include <comphelper/solarmutex.hxx>
 #include <drawinglayer/primitive2d/BufferedDecompositionFlusher.hxx>
+#include <drawinglayer/primitive2d/BufferedDecompositionGroupPrimitive2D.hxx>
+#include <drawinglayer/primitive2d/BufferedDecompositionPrimitive2D.hxx>
 
 namespace drawinglayer::primitive2d
 {
