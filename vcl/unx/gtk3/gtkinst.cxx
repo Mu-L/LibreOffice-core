@@ -14805,6 +14805,13 @@ public:
         gtk_tree_view_column_set_title(pColumn, OUStringToOString(rTitle, RTL_TEXTENCODING_UTF8).getStr());
     }
 
+    virtual void set_column_visible(int nColumn, const bool bVisible) override
+    {
+        GtkTreeViewColumn* pColumn = GTK_TREE_VIEW_COLUMN(g_list_nth_data(m_pColumns, nColumn));
+        assert(pColumn && "wrong count");
+        gtk_tree_view_column_set_visible(pColumn, bVisible);
+    }
+
     virtual void set_column_custom_renderer(int nColumn, bool bEnable) override
     {
         assert(n_children() == 0 && "tree must be empty");

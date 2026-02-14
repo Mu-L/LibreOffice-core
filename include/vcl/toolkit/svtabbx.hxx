@@ -66,6 +66,7 @@ public:
     virtual ~SvTabListBox() override;
     virtual void dispose() override;
     void SetTabs(const std::vector<tools::Long>& rTabPositions, MapUnit = MapUnit::MapAppFont);
+    void SetTabWidth(sal_uInt16 nTab, tools::Long tabWidth, MapUnit = MapUnit::MapAppFont);
     using SvTreeListBox::GetTab;
     tools::Long            GetLogicTab( sal_uInt16 nTab );
 
@@ -84,6 +85,8 @@ public:
 
     void             SetTabAlignCenter(sal_uInt16 nTab);
     void             SetTabEditable( sal_uInt16 nTab, bool bEditable );
+    void             SetTabVisible( sal_uInt16 nTab, bool bVisible );
+    bool             GetTabVisible( sal_uInt16 nTab );
 
     void             SetRole(SvTabListBoxRole e) { m_eRole = e; }
 

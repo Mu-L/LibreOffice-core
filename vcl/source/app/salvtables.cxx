@@ -3944,7 +3944,8 @@ void SalInstanceTreeView::set_column_fixed_widths(const std::vector<int>& rWidth
 {
     std::vector<tools::Long> aTabPositions{ 0 };
     for (size_t i = 0; i < rWidths.size(); ++i)
-        aTabPositions.push_back(aTabPositions[i] + rWidths[i]);
+        aTabPositions.push_back(aTabPositions[i]
+                                + (m_xTreeView->GetTabVisible(i) ? rWidths[i] : 0));
     m_xTreeView->SetTabs(aTabPositions, MapUnit::MapPixel);
     set_header_item_width(rWidths);
     // call Resize to recalculate based on the new tabs
@@ -3990,6 +3991,22 @@ void SalInstanceTreeView::set_column_title(int nColumn, const OUString& rTitle)
     {
         return pHeaderBar->SetItemText(pHeaderBar->GetItemId(nColumn), rTitle);
     }
+}
+
+void SalInstanceTreeView::set_column_visible(int nColumn, const bool bVisible)
+{
+    tools::Long width = bVisible ? m_xTreeView->GetEntryWidth() : 0;
+    m_xTreeView->SetTabWidth(nColumn, width, MapUnit::MapPixel);
+
+    SvHeaderTabListBox* pHeaderBox = dynamic_cast<SvHeaderTabListBox*>(m_xTreeView.get());
+    if (HeaderBar* pHeaderBar = pHeaderBox ? pHeaderBox->GetHeaderBar() : nullptr)
+        pHeaderBar->SetItemSize(pHeaderBar->GetItemId(nColumn), width);
+
+    // Set flag for columns_autosize() to respect the visibility
+    m_xTreeView->SetTabVisible(nColumn, bVisible);
+
+    // call Resize to recalculate based on the new tab positions
+    m_xTreeView->Resize();
 }
 
 void SalInstanceTreeView::set_column_custom_renderer(int nColumn, bool bEnable)

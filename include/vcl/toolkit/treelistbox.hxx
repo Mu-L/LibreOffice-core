@@ -71,6 +71,7 @@ enum class SvLBoxTabFlags
                                // (on which Abo Tabpage/Extras/Option/Customize, etc. rely on)
                                // The first tab's position corresponds precisely to the Flags set
                                // and column widths
+    HIDDEN           = 0x0080, // Tab is not visible
 
     ADJUST_FLAGS = ADJUST_RIGHT | ADJUST_LEFT | ADJUST_CENTER,
 };
@@ -113,6 +114,7 @@ public:
     tools::Long    GetPos() const { return nPos; }
     tools::Long    CalcOffset( tools::Long nItemLength, tools::Long nTabWidth );
     bool    IsEditable() const { return bool(nFlags & SvLBoxTabFlags::EDITABLE); }
+    bool    IsHidden() const { return bool(nFlags & SvLBoxTabFlags::HIDDEN); }
 };
 
 class UNLESS_MERGELIBS(VCL_DLLPUBLIC) SvLBoxItem

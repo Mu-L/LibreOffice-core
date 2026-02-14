@@ -480,6 +480,7 @@ public:
     virtual void set_centered_column(int nCol) = 0;
     virtual OUString get_column_title(int nColumn) const = 0;
     virtual void set_column_title(int nColumn, const OUString& rTitle) = 0;
+    virtual void set_column_visible(int nColumn, bool bVisible) = 0;
 
     int get_checkbox_column_width() const { return get_approximate_digit_width() * 3 + 6; }
 

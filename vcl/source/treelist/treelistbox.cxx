@@ -1739,6 +1739,11 @@ void SvTreeListBox::SetTabs()
     tools::Long nContextWidth = nContextBmpWidthMax;
     tools::Long nContextWidthDIV2 = nContextWidth / 2;
 
+    // Remember hidden state of tabs
+    std::vector<bool> hiddenState(aTabs.size());
+    for (size_t n = 0; n < aTabs.size(); ++n)
+        hiddenState[n] = aTabs[n]->IsHidden();
+
     ClearTabList();
 
     TreeListButtonType eButtonType = TreeListButtonType::NO_BUTTONS;
@@ -1814,6 +1819,15 @@ void SvTreeListBox::SetTabs()
             AddTab( nStartPos, TABFLAGS_TEXT );
             break;
     }
+
+    for (size_t n = 0; n < std::min(aTabs.size(), hiddenState.size()); ++n)
+    {
+        if (hiddenState[n])
+            aTabs[n]->nFlags |= SvLBoxTabFlags::HIDDEN;
+        else
+            aTabs[n]->nFlags &= ~SvLBoxTabFlags::HIDDEN;
+    }
+
     pImpl->NotifyTabsChanged();
 }
 
@@ -2983,6 +2997,14 @@ void SvTreeListBox::PaintEntry1(SvTreeListEntry& rEntry, tools::Long nLine, vcl:
     while (nCurTab < nTabCount && nCurItem < nItemCount)
     {
         SvLBoxTab* pTab = aTabs[nCurTab].get();
+
+        if (pTab->IsHidden())
+        {
+            nCurItem++;
+            nCurTab++;
+            continue;
+        }
+
         const size_t nNextTab = nCurTab + 1;
         SvLBoxTab* pNextTab = nNextTab < nTabCount ? aTabs[nNextTab].get() : nullptr;
         SvLBoxItem& rItem = rEntry.GetItem(nCurItem);
