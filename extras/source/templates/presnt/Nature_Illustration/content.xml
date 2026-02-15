@@ -16,32 +16,32 @@
   </office:automatic-styles>
   <office:body>
     <office:presentation>
-      <draw:page draw:name="page1" draw:style-name="dp1" draw:master-page-name="Nature_5f_Illustration" presentation:presentation-page-layout-name="AL1T0" presentation:use-date-time-name="dtd1">
+      <draw:page draw:name="page1" draw:style-name="dp1" draw:master-page-name="Nature_20_Illustration_20_16_3a_9" presentation:presentation-page-layout-name="AL1T0" presentation:use-date-time-name="dtd1">
         <office:forms form:automatic-focus="false" form:apply-design-mode="false"/>
-        <draw:frame presentation:style-name="Nature_5f_Illustration-title" draw:layer="layout" svg:width="24.8cm" svg:height="4.963cm" svg:x="0.8cm" svg:y="4.8cm" presentation:class="title" presentation:placeholder="true">
+        <draw:frame presentation:style-name="Nature_20_Illustration_20_16_3a_9-title" draw:layer="layout" svg:width="24.8cm" svg:height="5cm" svg:x="0.8cm" svg:y="3.3cm" presentation:class="title" presentation:placeholder="true">
           <draw:text-box/>
         </draw:frame>
-        <draw:frame presentation:style-name="Nature_5f_Illustration-subtitle" draw:layer="layout" svg:width="15.6cm" svg:height="2.693cm" svg:x="10cm" svg:y="10.7cm" presentation:class="subtitle" presentation:placeholder="true">
+        <draw:frame presentation:style-name="Nature_20_Illustration_20_16_3a_9-subtitle" draw:layer="layout" svg:width="15.4cm" svg:height="2.7cm" svg:x="9.7cm" svg:y="8.7cm" presentation:class="subtitle" presentation:placeholder="true">
           <draw:text-box/>
         </draw:frame>
         <presentation:notes draw:style-name="dp2">
-          <draw:page-thumbnail draw:style-name="gr1" draw:layer="layout" svg:width="14.848cm" svg:height="11.136cm" svg:x="3.075cm" svg:y="2.257cm" draw:page-number="1" presentation:class="page"/>
-          <draw:frame presentation:style-name="Nature_5f_Illustration-notes" draw:layer="layout" svg:width="16.8cm" svg:height="13.364cm" svg:x="2.1cm" svg:y="14.107cm" presentation:class="notes" presentation:placeholder="true">
+          <draw:page-thumbnail draw:style-name="gr1" draw:layer="layout" svg:width="17cm" svg:height="9.562cm" svg:x="2cm" svg:y="2.5cm" draw:page-number="1" presentation:class="page"/>
+          <draw:frame presentation:style-name="Nature_20_Illustration_20_16_3a_9-notes" draw:layer="layout" svg:width="17cm" svg:height="14cm" svg:x="2cm" svg:y="13cm" presentation:class="notes" presentation:placeholder="true">
             <draw:text-box/>
           </draw:frame>
         </presentation:notes>
       </draw:page>
-      <draw:page draw:name="page2" draw:style-name="dp3" draw:master-page-name="Nature_5f_Illustration1" presentation:presentation-page-layout-name="AL2T1" presentation:use-date-time-name="dtd1">
+      <draw:page draw:name="page2" draw:style-name="dp3" draw:master-page-name="Nature_20_Illustration1_20_16_3a_9" presentation:presentation-page-layout-name="AL2T1" presentation:use-date-time-name="dtd1">
         <office:forms form:automatic-focus="false" form:apply-design-mode="false"/>
-        <draw:frame presentation:style-name="Nature_5f_Illustration1-title" draw:layer="layout" svg:width="25.2cm" svg:height="3.506cm" svg:x="1.4cm" svg:y="0.837cm" presentation:class="title" presentation:placeholder="true">
+        <draw:frame presentation:style-name="Nature_20_Illustration1_20_16_3a_9-title" draw:layer="layout" svg:width="25.2cm" svg:height="3.5cm" svg:x="1.4cm" svg:y="0.8cm" presentation:class="title" presentation:placeholder="true">
           <draw:text-box/>
         </draw:frame>
-        <draw:frame presentation:style-name="Nature_5f_Illustration1-outline1" draw:layer="layout" svg:width="25.2cm" svg:height="13.486cm" svg:x="1.4cm" svg:y="4.914cm" presentation:class="outline" presentation:placeholder="true">
+        <draw:frame presentation:style-name="Nature_20_Illustration1_20_16_3a_9-outline1" draw:layer="layout" svg:width="25.2cm" svg:height="9.5cm" svg:x="1.4cm" svg:y="4.9cm" presentation:class="outline" presentation:placeholder="true">
           <draw:text-box/>
         </draw:frame>
         <presentation:notes draw:style-name="dp2">
-          <draw:page-thumbnail draw:style-name="gr1" draw:layer="layout" svg:width="14.848cm" svg:height="11.136cm" svg:x="3.075cm" svg:y="2.257cm" draw:page-number="2" presentation:class="page"/>
-          <draw:frame presentation:style-name="Nature_5f_Illustration1-notes" draw:layer="layout" svg:width="16.8cm" svg:height="13.364cm" svg:x="2.1cm" svg:y="14.107cm" presentation:class="notes" presentation:placeholder="true">
+          <draw:page-thumbnail draw:style-name="gr1" draw:layer="layout" svg:width="17cm" svg:height="9.562cm" svg:x="2cm" svg:y="2.5cm" draw:page-number="2" presentation:class="page"/>
+          <draw:frame presentation:style-name="Nature_20_Illustration1_20_16_3a_9-notes" draw:layer="layout" svg:width="17cm" svg:height="14cm" svg:x="2cm" svg:y="13cm" presentation:class="notes" presentation:placeholder="true">
             <draw:text-box/>
           </draw:frame>
         </presentation:notes>
