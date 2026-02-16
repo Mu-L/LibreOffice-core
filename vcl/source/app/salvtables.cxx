@@ -4801,6 +4801,24 @@ tools::Rectangle SalInstanceTreeView::get_row_area(const weld::TreeIter& rIter) 
     return m_xTreeView->GetBoundingRect(static_cast<const SalInstanceTreeIter&>(rIter).iter);
 }
 
+tools::Rectangle SalInstanceTreeView::get_cell_area(const weld::TreeIter& rIter,
+                                                    const int nColumn) const
+{
+    if (nColumn < 0)
+        return {}; // Ignore expander column
+
+    int column = to_internal_model(nColumn);
+    auto rect = get_row_area(rIter);
+    rect.SetLeft(column == 1
+                     ? 0
+                     : m_xTreeView->GetLogicTab(
+                           column)); // GetLogicTab(1) gives position of internal expander bitmap
+    if (o3tl::make_unsigned(nColumn) < m_xTreeView->GetEntry(0)->ItemCount() - 1)
+        rect.SetRight(m_xTreeView->GetLogicTab(column + 1));
+
+    return rect;
+}
+
 weld::TreeView* SalInstanceTreeView::get_drag_source() const { return g_DragSource; }
 
 int SalInstanceTreeView::vadjustment_get_value() const

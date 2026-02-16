@@ -1813,6 +1813,9 @@ public:
 
     virtual tools::Rectangle get_row_area(const weld::TreeIter& rIter) const override;
 
+    virtual tools::Rectangle get_cell_area(const weld::TreeIter& rIter,
+                                           const int nColumn) const override;
+
     virtual TreeView* get_drag_source() const override;
 
     virtual int vadjustment_get_value() const override;
