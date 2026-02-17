@@ -163,6 +163,9 @@ void ToolbarTabPage::Reset(const SfxItemSet* /* rSet*/)
             }
         }
     }
+    //TODO: context-sensitivity not working properly, see comment on tdf#38850
+    m_pToolbarList->set_column_visible(3, bIsExperimentalMode);
+
     m_pToolbarList->thaw();
     m_pToolbarList->make_sorted();
 
@@ -174,8 +177,6 @@ void ToolbarTabPage::Reset(const SfxItemSet* /* rSet*/)
         OUString sTitle = m_pToolbarList->get_column_title(i);
         aWidths.push_back(m_pToolbarList->get_pixel_size(sTitle).Width() + 12); // some padding
     }
-    if (!bIsExperimentalMode)
-        aWidths.push_back(0); // zero width for context_sensitive column, otherwise available space
     m_pToolbarList->set_column_fixed_widths(aWidths);
 
     // treeview height
