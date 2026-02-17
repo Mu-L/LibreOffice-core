@@ -61,8 +61,7 @@ public:
 protected:
                 ScHFEditPage( weld::Container* pPage, weld::DialogController* pController,
                               const SfxItemSet& rCoreSet,
-                              TypedWhichId<ScPageHFItem> nWhich,
-                              bool              bHeader );
+                              TypedWhichId<ScPageHFItem> nWhich );
     virtual     ~ScHFEditPage() override;
 
 private:
@@ -72,6 +71,8 @@ private:
 
     std::unique_ptr<weld::Label> m_xFtDefinedHF;
     std::unique_ptr<weld::ComboBox> m_xLbDefined;
+    std::unique_ptr<weld::ComboBox> m_xLbFontFamily;
+    std::unique_ptr<weld::ComboBox> m_xLbFontHeight;
     std::unique_ptr<weld::Label> m_xFtCustomHF;
     std::unique_ptr<weld::Button> m_xBtnText;
     std::unique_ptr<weld::MenuButton> m_xBtnFile;
@@ -80,6 +81,9 @@ private:
     std::unique_ptr<weld::Button> m_xBtnLastPage;
     std::unique_ptr<weld::Button> m_xBtnDate;
     std::unique_ptr<weld::Button> m_xBtnTime;
+    std::unique_ptr<weld::ToggleButton> m_xBtnBold;
+    std::unique_ptr<weld::ToggleButton> m_xBtnItalic;
+    std::unique_ptr<weld::ToggleButton> m_xBtnUnderline;
 
     std::unique_ptr<weld::Label> m_xFtConfidential;
     std::unique_ptr<weld::Label> m_xFtPage;
@@ -88,6 +92,9 @@ private:
     std::unique_ptr<weld::Label> m_xFtNone;
     std::unique_ptr<weld::Label> m_xFtCreatedBy;
     std::unique_ptr<weld::Label> m_xFtCustomized;
+    std::unique_ptr<weld::Label> m_xFtPreset;
+    std::unique_ptr<weld::Label> m_xFtFormat;
+    std::unique_ptr<weld::Label> m_xFtField;
 
     std::unique_ptr<weld::Grid> m_xAreaGrid;
     std::unique_ptr<weld::Widget> m_xLeftScrolledWindow;
@@ -115,9 +122,13 @@ private:
     bool IsPageEntry(EditEngine*pEngine, const EditTextObject* pTextObj);
     static bool IsDateEntry(const EditTextObject* pTextObj);
     static bool IsExtFileNameEntry(const EditTextObject* pTextObj);
+    void UpdateFontAttributes();
     DECL_LINK( ListHdl_Impl, weld::ComboBox&, void);
     DECL_LINK( ListToggleHdl_Impl, weld::ComboBox&, void);
+    DECL_LINK( FontFamilyListHdl, weld::ComboBox&, void);
+    DECL_LINK( FontHeightListHdl, weld::ComboBox&, void);
     DECL_LINK( ClickHdl, weld::Button&, void );
+    DECL_LINK( ToggleHdl, weld::Toggleable&, void );
     DECL_LINK( MenuHdl, const OUString&, void );
 };
 

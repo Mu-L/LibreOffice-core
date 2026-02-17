@@ -2,14 +2,10 @@
 <!-- Generated with glade 3.40.0 -->
 <interface domain="sc">
   <requires lib="gtk+" version="3.24"/>
-  <object class="GtkSizeGroup" id="sizegrp">
-    <property name="mode">horizontal</property>
-    <widgets>
-        <widget name="labelFT_H_CUSTOM"/>
-        <widget name="labelFT_F_CUSTOM"/>
-        <widget name="labelFT_H_DEFINED"/>
-        <widget name="labelFT_F_DEFINED"/>
-    </widgets>
+  <object class="GtkImage" id="imageBTN_BOLD">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="icon-name">cmd/lc_bold.png</property>
   </object>
   <object class="GtkImage" id="imageBTN_DATE">
     <property name="visible">True</property>
@@ -20,6 +16,11 @@
     <property name="visible">True</property>
     <property name="can-focus">False</property>
     <property name="icon-name">sc/res/file.png</property>
+  </object>
+  <object class="GtkImage" id="imageBTN_ITALIC">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="icon-name">cmd/lc_italic.png</property>
   </object>
   <object class="GtkImage" id="imageBTN_PAGE">
     <property name="visible">True</property>
@@ -45,6 +46,11 @@
     <property name="visible">True</property>
     <property name="can-focus">False</property>
     <property name="icon-name">sc/res/time.png</property>
+  </object>
+  <object class="GtkImage" id="imageBTN_UNDERLINE">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="icon-name">cmd/lc_underline.png</property>
   </object>
   <object class="GtkMenu" id="popup">
     <property name="visible">True</property>
@@ -80,6 +86,353 @@
     <property name="border-width">6</property>
     <property name="orientation">vertical</property>
     <property name="spacing">6</property>
+    <child>
+      <!-- n-columns=2 n-rows=1 -->
+      <object class="GtkGrid" id="grid1">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="row-spacing">12</property>
+        <property name="column-spacing">6</property>
+        <child>
+          <object class="GtkComboBoxText" id="comboLB_DEFINED">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <child internal-child="accessible">
+              <object class="AtkObject" id="comboLB_DEFINED-atkobject">
+                <property name="AtkObject::accessible-description" translatable="yes" context="headerfootercontent|extended_tip|comboLB_DEFINED">Select a predefined header or footer from the list.</property>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="left-attach">1</property>
+            <property name="top-attach">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="labelFT_PRESET">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="label">Preset</property>
+            <property name="mnemonic-widget">comboLB_DEFINED</property>
+            <property name="xalign">0</property>
+          </object>
+          <packing>
+            <property name="left-attach">0</property>
+            <property name="top-attach">0</property>
+          </packing>
+        </child>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
+        <property name="position">0</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkSeparator">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
+        <property name="position">1</property>
+      </packing>
+    </child>
+    <child>
+      <!-- n-columns=2 n-rows=2 -->
+      <object class="GtkGrid" id="grid2">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="orientation">vertical</property>
+        <property name="row-spacing">12</property>
+        <property name="column-spacing">6</property>
+        <child>
+          <object class="GtkBox">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="spacing">12</property>
+            <child>
+              <object class="GtkComboBoxText" id="comboLB_FONT_FAMILY">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="has-entry">True</property>
+                <child internal-child="entry">
+                  <object class="GtkEntry">
+                    <property name="can-focus">False</property>
+                  </object>
+                </child>
+                <child internal-child="accessible">
+                  <object class="AtkObject" id="comboLB_FONT_FAMILY-atkobject">
+                    <property name="AtkObject::accessible-description" translatable="yes" context="headerfootercontent|extended_tip|comboLB_FONT_FAMILY">Selects the font family.</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkComboBoxText" id="comboLB_FONT_HEIGHT">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="has-entry">True</property>
+                <property name="popup-fixed-width">False</property>
+                <child internal-child="entry">
+                  <object class="GtkEntry">
+                    <property name="can-focus">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                </child>
+                <child internal-child="accessible">
+                  <object class="AtkObject" id="comboLB_FONT_HEIGHT-atkobject">
+                    <property name="AtkObject::accessible-description" translatable="yes" context="headerfootercontent|extended_tip|comboLB_FONT_FAMILY">Selects the font height.</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="buttonBTN_TEXT">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="tooltip-text" translatable="yes" context="headerfootercontent|buttonBTN_TEXT|tooltip_text">Text Attributes</property>
+                <property name="image">imageBTN_TEXT</property>
+                <property name="always-show-image">True</property>
+                <child internal-child="accessible">
+                  <object class="AtkObject" id="buttonBTN_TEXT-atkobject">
+                    <property name="AtkObject::accessible-description" translatable="yes" context="headerfootercontent|extended_tip|buttonBTN_TEXT">Opens a dialog to assign formats to new or selected text.</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToggleButton" id="buttonBTN_BOLD">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="tooltip-text">Bold</property>
+                <property name="image">imageBTN_BOLD</property>
+                <property name="always-show-image">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">3</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToggleButton" id="buttonBTN_ITALIC">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="tooltip-text">Italic</property>
+                <property name="image">imageBTN_ITALIC</property>
+                <property name="always-show-image">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">4</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToggleButton" id="buttonBTN_UNDERLINE">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="tooltip-text">Underline</property>
+                <property name="image">imageBTN_UNDERLINE</property>
+                <property name="always-show-image">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">5</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="left-attach">1</property>
+            <property name="top-attach">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="labelFT_FORMAT">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="label">Format</property>
+            <property name="xalign">0</property>
+          </object>
+          <packing>
+            <property name="left-attach">0</property>
+            <property name="top-attach">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkBox" id="box">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="spacing">12</property>
+            <child>
+              <object class="GtkMenuButton" id="buttonBTN_FILE">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="tooltip-text" translatable="yes" context="headerfootercontent|buttonBTN_FILE|tooltip_text">Title</property>
+                <property name="image">imageBTN_FILE</property>
+                <property name="draw-indicator">True</property>
+                <property name="popup">popup</property>
+                <property name="use-popover">False</property>
+                <child internal-child="accessible">
+                  <object class="AtkObject" id="buttonBTN_FILE-atkobject">
+                    <property name="AtkObject::accessible-description" translatable="yes" context="headerfootercontent|extended_tip|buttonBTN_FILE">Inserts a file name placeholder in the selected area.</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="buttonBTN_TABLE">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="tooltip-text" translatable="yes" context="headerfootercontent|buttonBTN_TABLE|tooltip_text">Sheet Name</property>
+                <property name="image">imageBTN_TABLE</property>
+                <property name="always-show-image">True</property>
+                <child internal-child="accessible">
+                  <object class="AtkObject" id="buttonBTN_TABLE-atkobject">
+                    <property name="AtkObject::accessible-description" translatable="yes" context="headerfootercontent|extended_tip|buttonBTN_TABLE">Inserts a placeholder in the selected header/footer area, which is replaced by the sheet name in the header/footer of the actual document.</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="buttonBTN_PAGE">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="tooltip-text" translatable="yes" context="headerfootercontent|buttonBTN_PAGE|tooltip_text">Page</property>
+                <property name="image">imageBTN_PAGE</property>
+                <property name="always-show-image">True</property>
+                <child internal-child="accessible">
+                  <object class="AtkObject" id="buttonBTN_PAGE-atkobject">
+                    <property name="AtkObject::accessible-description" translatable="yes" context="headerfootercontent|extended_tip|buttonBTN_PAGE">Inserts a placeholder in the selected header/footer area, which is replaced by page numbering. This allows continuous page numbering in a document.</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">3</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="buttonBTN_PAGES">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="tooltip-text" translatable="yes" context="headerfootercontent|buttonBTN_PAGES|tooltip_text">Pages</property>
+                <property name="image">imageBTN_PAGES</property>
+                <property name="always-show-image">True</property>
+                <child internal-child="accessible">
+                  <object class="AtkObject" id="buttonBTN_PAGES-atkobject">
+                    <property name="AtkObject::accessible-description" translatable="yes" context="headerfootercontent|extended_tip|buttonBTN_PAGES">Inserts a placeholder in the selected header/footer area, which is replaced by the total number of pages in the document.</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">4</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="buttonBTN_DATE">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="tooltip-text" translatable="yes" context="headerfootercontent|buttonBTN_DATE|tooltip_text">Date</property>
+                <property name="image">imageBTN_DATE</property>
+                <property name="always-show-image">True</property>
+                <child internal-child="accessible">
+                  <object class="AtkObject" id="buttonBTN_DATE-atkobject">
+                    <property name="AtkObject::accessible-description" translatable="yes" context="headerfootercontent|extended_tip|buttonBTN_DATE">Inserts a placeholder in the selected header/footer area, which is replaced by the current date which will be repeated in the header/footer on each page of the document.</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">5</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="buttonBTN_TIME">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="tooltip-text" translatable="yes" context="headerfootercontent|buttonBTN_TIME|tooltip_text">Time</property>
+                <property name="image">imageBTN_TIME</property>
+                <property name="always-show-image">True</property>
+                <child internal-child="accessible">
+                  <object class="AtkObject" id="buttonBTN_TIME-atkobject">
+                    <property name="AtkObject::accessible-description" translatable="yes" context="headerfootercontent|extended_tip|buttonBTN_TIME">Inserts a placeholder in the selected header/footer area, which is replaced by the current time in the header/footer on each page of the document.</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">6</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="left-attach">1</property>
+            <property name="top-attach">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="labelFT_FIELD">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="label">Field</property>
+            <property name="xalign">0</property>
+          </object>
+          <packing>
+            <property name="left-attach">0</property>
+            <property name="top-attach">1</property>
+          </packing>
+        </child>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
+        <property name="position">2</property>
+      </packing>
+    </child>
     <child>
       <!-- n-columns=3 n-rows=2 -->
       <object class="GtkGrid" id="areagrid">
@@ -224,304 +577,7 @@
       <packing>
         <property name="expand">False</property>
         <property name="fill">True</property>
-        <property name="position">0</property>
-      </packing>
-    </child>
-    <child>
-      <!-- n-columns=2 n-rows=2 -->
-      <object class="GtkGrid" id="grid2">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="orientation">vertical</property>
-        <property name="row-spacing">12</property>
-        <property name="column-spacing">6</property>
-        <child>
-          <object class="GtkBox" id="box2">
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
-            <property name="orientation">vertical</property>
-            <child>
-              <object class="GtkLabel" id="labelFT_H_DEFINED">
-                <property name="can-focus">False</property>
-                <property name="vexpand">True</property>
-                <property name="label" translatable="yes" context="headerfootercontent|labelFT_H_DEFINED">_Header</property>
-                <property name="use-underline">True</property>
-                <property name="mnemonic-widget">comboLB_DEFINED</property>
-                <property name="xalign">0</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel" id="labelFT_F_DEFINED">
-                <property name="can-focus">False</property>
-                <property name="vexpand">True</property>
-                <property name="label" translatable="yes" context="headerfootercontent|labelFT_F_DEFINED">_Footer</property>
-                <property name="use-underline">True</property>
-                <property name="mnemonic-widget">comboLB_DEFINED</property>
-                <property name="xalign">0</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-          </object>
-          <packing>
-            <property name="left-attach">0</property>
-            <property name="top-attach">0</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkBox" id="box3">
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
-            <property name="orientation">vertical</property>
-            <property name="spacing">6</property>
-            <child>
-              <object class="GtkLabel" id="labelFT_H_CUSTOM">
-                <property name="can-focus">False</property>
-                <property name="vexpand">True</property>
-                <property name="label" translatable="yes" context="headerfootercontent|labelFT_H_CUSTOM">Custom header</property>
-                <property name="xalign">0</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel" id="labelFT_F_CUSTOM">
-                <property name="can-focus">False</property>
-                <property name="vexpand">True</property>
-                <property name="label" translatable="yes" context="headerfootercontent|labelFT_F_CUSTOM">Custom footer</property>
-                <property name="xalign">0</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-          </object>
-          <packing>
-            <property name="left-attach">0</property>
-            <property name="top-attach">1</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkBox" id="box">
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
-            <property name="spacing">12</property>
-            <child>
-              <object class="GtkButton" id="buttonBTN_TEXT">
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes" context="headerfootercontent|buttonBTN_TEXT|tooltip_text">Text Attributes</property>
-                <property name="image">imageBTN_TEXT</property>
-                <property name="always-show-image">True</property>
-                <child internal-child="accessible">
-                  <object class="AtkObject" id="buttonBTN_TEXT-atkobject">
-                    <property name="AtkObject::accessible-description" translatable="yes" context="headerfootercontent|extended_tip|buttonBTN_TEXT">Opens a dialog to assign formats to new or selected text.</property>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkMenuButton" id="buttonBTN_FILE">
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes" context="headerfootercontent|buttonBTN_FILE|tooltip_text">Title</property>
-                <property name="image">imageBTN_FILE</property>
-                <property name="draw-indicator">True</property>
-                <property name="popup">popup</property>
-                <property name="use-popover">False</property>
-                <child internal-child="accessible">
-                  <object class="AtkObject" id="buttonBTN_FILE-atkobject">
-                    <property name="AtkObject::accessible-description" translatable="yes" context="headerfootercontent|extended_tip|buttonBTN_FILE">Inserts a file name placeholder in the selected area.</property>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="buttonBTN_TABLE">
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes" context="headerfootercontent|buttonBTN_TABLE|tooltip_text">Sheet Name</property>
-                <property name="image">imageBTN_TABLE</property>
-                <property name="always-show-image">True</property>
-                <child internal-child="accessible">
-                  <object class="AtkObject" id="buttonBTN_TABLE-atkobject">
-                    <property name="AtkObject::accessible-description" translatable="yes" context="headerfootercontent|extended_tip|buttonBTN_TABLE">Inserts a placeholder in the selected header/footer area, which is replaced by the sheet name in the header/footer of the actual document.</property>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">2</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="buttonBTN_PAGE">
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes" context="headerfootercontent|buttonBTN_PAGE|tooltip_text">Page</property>
-                <property name="image">imageBTN_PAGE</property>
-                <property name="always-show-image">True</property>
-                <child internal-child="accessible">
-                  <object class="AtkObject" id="buttonBTN_PAGE-atkobject">
-                    <property name="AtkObject::accessible-description" translatable="yes" context="headerfootercontent|extended_tip|buttonBTN_PAGE">Inserts a placeholder in the selected header/footer area, which is replaced by page numbering. This allows continuous page numbering in a document.</property>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">3</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="buttonBTN_PAGES">
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes" context="headerfootercontent|buttonBTN_PAGES|tooltip_text">Pages</property>
-                <property name="image">imageBTN_PAGES</property>
-                <property name="always-show-image">True</property>
-                <child internal-child="accessible">
-                  <object class="AtkObject" id="buttonBTN_PAGES-atkobject">
-                    <property name="AtkObject::accessible-description" translatable="yes" context="headerfootercontent|extended_tip|buttonBTN_PAGES">Inserts a placeholder in the selected header/footer area, which is replaced by the total number of pages in the document.</property>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">4</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="buttonBTN_DATE">
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes" context="headerfootercontent|buttonBTN_DATE|tooltip_text">Date</property>
-                <property name="image">imageBTN_DATE</property>
-                <property name="always-show-image">True</property>
-                <child internal-child="accessible">
-                  <object class="AtkObject" id="buttonBTN_DATE-atkobject">
-                    <property name="AtkObject::accessible-description" translatable="yes" context="headerfootercontent|extended_tip|buttonBTN_DATE">Inserts a placeholder in the selected header/footer area, which is replaced by the current date which will be repeated in the header/footer on each page of the document.</property>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">5</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="buttonBTN_TIME">
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes" context="headerfootercontent|buttonBTN_TIME|tooltip_text">Time</property>
-                <property name="image">imageBTN_TIME</property>
-                <property name="always-show-image">True</property>
-                <child internal-child="accessible">
-                  <object class="AtkObject" id="buttonBTN_TIME-atkobject">
-                    <property name="AtkObject::accessible-description" translatable="yes" context="headerfootercontent|extended_tip|buttonBTN_TIME">Inserts a placeholder in the selected header/footer area, which is replaced by the current time in the header/footer on each page of the document.</property>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">6</property>
-              </packing>
-            </child>
-          </object>
-          <packing>
-            <property name="left-attach">1</property>
-            <property name="top-attach">1</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkComboBoxText" id="comboLB_DEFINED">
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
-            <child internal-child="accessible">
-              <object class="AtkObject" id="comboLB_DEFINED-atkobject">
-                <property name="AtkObject::accessible-description" translatable="yes" context="headerfootercontent|extended_tip|comboLB_DEFINED">Select a predefined header or footer from the list.</property>
-              </object>
-            </child>
-          </object>
-          <packing>
-            <property name="left-attach">1</property>
-            <property name="top-attach">0</property>
-          </packing>
-        </child>
-      </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="fill">True</property>
-        <property name="position">1</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkFrame" id="frame1">
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="label-xalign">0</property>
-        <property name="shadow-type">none</property>
-        <child>
-          <object class="GtkLabel" id="label2">
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
-            <property name="margin-start">12</property>
-            <property name="margin-top">6</property>
-            <property name="label" translatable="yes" context="headerfootercontent|label2">Use the buttons to change the font or insert field commands such as date, time, etc.</property>
-            <attributes>
-              <attribute name="scale" value="0.90000000000000002"/>
-            </attributes>
-          </object>
-        </child>
-        <child type="label">
-          <object class="GtkLabel" id="label1">
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
-            <property name="label" translatable="yes" context="headerfootercontent|label1">Note</property>
-            <attributes>
-              <attribute name="weight" value="bold"/>
-            </attributes>
-          </object>
-        </child>
-      </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="fill">True</property>
-        <property name="position">3</property>
+        <property name="position">4</property>
       </packing>
     </child>
     <child>
@@ -617,7 +673,7 @@
       <packing>
         <property name="expand">False</property>
         <property name="fill">True</property>
-        <property name="position">4</property>
+        <property name="position">5</property>
       </packing>
     </child>
     <child internal-child="accessible">
