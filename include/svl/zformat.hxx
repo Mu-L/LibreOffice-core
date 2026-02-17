@@ -247,7 +247,8 @@ public:
      * Get output string from a numeric value that fits the number of
      * characters specified.
      */
-    bool GetOutputString( double fNumber, sal_uInt16 nCharCount, OUString& rOutString, const NativeNumberWrapper& rNatNum ) const;
+    bool GetOutputString( double fNumber, sal_uInt16 nCharCount, OUString& rOutString,
+                          const NativeNumberWrapper& rNatNum, const SvNFLanguageData& rCurrentLang ) const;
 
     // bStarFlag: Take *n format as ESC n
     bool GetOutputString( double fNumber, OUString& OutString, const Color** ppColor, const NativeNumberWrapper& rNatNum, const SvNFLanguageData& rCurrentLang, bool bStarFlag = false) const;

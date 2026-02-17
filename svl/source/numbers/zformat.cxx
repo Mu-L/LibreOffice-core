@@ -2426,13 +2426,13 @@ OUString SvNumberformat::GetIntegerFractionDelimiterString( sal_uInt16 nNumFor )
     return lcl_GetIntegerFractionDelimiterString( rInfo, nCnt );
 }
 
-bool SvNumberformat::GetOutputString(double fNumber, sal_uInt16 nCharCount, OUString& rOutString, const NativeNumberWrapper& rNatNum) const
+bool SvNumberformat::GetOutputString(double fNumber, sal_uInt16 nCharCount, OUString& rOutString,
+                                     const NativeNumberWrapper& rNatNum, const SvNFLanguageData& rCurrentLang) const
 {
     if (eType != SvNumFormatType::NUMBER)
     {
         return false;
     }
-    const auto& rLangData = GetCurrentLanguageData();
     double fTestNum = fNumber;
     bool bSign = std::signbit(fTestNum);
     if (bSign)
@@ -2441,7 +2441,7 @@ bool SvNumberformat::GetOutputString(double fNumber, sal_uInt16 nCharCount, OUSt
     }
     if (fTestNum < EXP_LOWER_BOUND)
     {
-        lcl_GetOutputStringScientific(fNumber, nCharCount, rLangData, rOutString);
+        lcl_GetOutputStringScientific(fNumber, nCharCount, rCurrentLang, rOutString);
         return true;
     }
 
@@ -2451,7 +2451,7 @@ bool SvNumberformat::GetOutputString(double fNumber, sal_uInt16 nCharCount, OUSt
 
     if (nDigitPre > 15)
     {
-        lcl_GetOutputStringScientific(fNumber, nCharCount, rLangData, rOutString);
+        lcl_GetOutputStringScientific(fNumber, nCharCount, rCurrentLang, rOutString);
         return true;
     }
 
@@ -2466,11 +2466,11 @@ bool SvNumberformat::GetOutputString(double fNumber, sal_uInt16 nCharCount, OUSt
         // Subtract the decimal point.
         --nPrec;
     }
-    ImpGetOutputStdToPrecision(fNumber, rOutString, nPrec, rNatNum, rLangData);
+    ImpGetOutputStdToPrecision(fNumber, rOutString, nPrec, rNatNum, rCurrentLang);
     if (rOutString.getLength() > nCharCount)
     {
         // String still wider than desired.  Switch to scientific notation.
-        lcl_GetOutputStringScientific(fNumber, nCharCount, rLangData, rOutString);
+        lcl_GetOutputStringScientific(fNumber, nCharCount, rCurrentLang, rOutString);
     }
     return true;
 }
