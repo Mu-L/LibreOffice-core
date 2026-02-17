@@ -559,7 +559,6 @@ private:
 
     const CharClass& rChrCls() const;
     const LocaleDataWrapper& rLoc() const;
-    const SvNFLanguageData& GetCurrentLanguageData() const;
 
     // divide in substrings and color conditions
     SVL_DLLPRIVATE short ImpNextSymbol( OUStringBuffer& rString,

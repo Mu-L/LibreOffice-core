@@ -770,7 +770,7 @@ SvNumberformat::SvNumberformat(OUString& rString,
     // replace all occurrences by a simple space.
     // The same for Narrow No-Break Space just in case some locale uses it.
     // The tokens will be changed to the LocaleData separator again later on.
-    const OUString& rThSep = GetCurrentLanguageData().GetNumThousandSep();
+    const OUString& rThSep = rScan.GetCurrentLanguageData().GetNumThousandSep();
     if ( rThSep.getLength() == 1)
     {
         const sal_Unicode cNBSp = 0xA0;
@@ -785,7 +785,7 @@ SvNumberformat::SvNumberformat(OUString& rString,
     OUString aConvertToDecSep;
     if (rScan.GetConvertMode())
     {
-        aConvertFromDecSep = GetCurrentLanguageData().GetNumDecimalSep();
+        aConvertFromDecSep = rScan.GetCurrentLanguageData().GetNumDecimalSep();
         maLocale.meLanguage = rScan.GetNewLnge();
         eLan = maLocale.meLanguage; // Make sure to return switch
     }
@@ -6138,11 +6138,6 @@ const CharClass& SvNumberformat::rChrCls() const
 const LocaleDataWrapper& SvNumberformat::rLoc() const
 {
     return rScan.GetLoc();
-}
-
-const SvNFLanguageData& SvNumberformat::GetCurrentLanguageData() const
-{
-    return rScan.GetCurrentLanguageData();
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
