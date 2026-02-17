@@ -2432,6 +2432,7 @@ bool SvNumberformat::GetOutputString(double fNumber, sal_uInt16 nCharCount, OUSt
     {
         return false;
     }
+    const auto& rLangData = GetCurrentLanguageData();
     double fTestNum = fNumber;
     bool bSign = std::signbit(fTestNum);
     if (bSign)
@@ -2440,7 +2441,7 @@ bool SvNumberformat::GetOutputString(double fNumber, sal_uInt16 nCharCount, OUSt
     }
     if (fTestNum < EXP_LOWER_BOUND)
     {
-        lcl_GetOutputStringScientific(fNumber, nCharCount, GetCurrentLanguageData(), rOutString);
+        lcl_GetOutputStringScientific(fNumber, nCharCount, rLangData, rOutString);
         return true;
     }
 
@@ -2450,7 +2451,7 @@ bool SvNumberformat::GetOutputString(double fNumber, sal_uInt16 nCharCount, OUSt
 
     if (nDigitPre > 15)
     {
-        lcl_GetOutputStringScientific(fNumber, nCharCount, GetCurrentLanguageData(), rOutString);
+        lcl_GetOutputStringScientific(fNumber, nCharCount, rLangData, rOutString);
         return true;
     }
 
@@ -2465,11 +2466,11 @@ bool SvNumberformat::GetOutputString(double fNumber, sal_uInt16 nCharCount, OUSt
         // Subtract the decimal point.
         --nPrec;
     }
-    ImpGetOutputStdToPrecision(fNumber, rOutString, nPrec, rNatNum, GetCurrentLanguageData());
+    ImpGetOutputStdToPrecision(fNumber, rOutString, nPrec, rNatNum, rLangData);
     if (rOutString.getLength() > nCharCount)
     {
         // String still wider than desired.  Switch to scientific notation.
-        lcl_GetOutputStringScientific(fNumber, nCharCount, GetCurrentLanguageData(), rOutString);
+        lcl_GetOutputStringScientific(fNumber, nCharCount, rLangData, rOutString);
     }
     return true;
 }
@@ -2509,15 +2510,15 @@ bool SvNumberformat::GetOutputString(double fNumber,
     bool bRes = false;
     OutString.clear();
     *ppColor = nullptr; // No color change
-    if (eType & SvNumFormatType::LOGICAL && sFormatstring == rScan.GetKeywords()[NF_KEY_BOOLEAN])
+    if (eType & SvNumFormatType::LOGICAL && sFormatstring == rCurrentLang.GetKeywords()[NF_KEY_BOOLEAN])
     {
         if (fNumber)
         {
-            OutString = rScan.GetTrueString();
+            OutString = rCurrentLang.GetTrueString();
         }
         else
         {
-            OutString = rScan.GetFalseString();
+            OutString = rCurrentLang.GetFalseString();
         }
         return false;
     }
