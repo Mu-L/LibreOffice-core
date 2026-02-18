@@ -4510,7 +4510,8 @@ StackVar ScInterpreter::Interpret()
                     case ocBetaInv          :
                     case ocBetaInv_MS       : ScBetaInv();                  break;
                     case ocFourier          : ScFourier();                  break;
-                    case ocExternal         : ScExternal();                 break;
+                    case ocExternal         :
+                    case ocUDExternal       : ScExternal();                 break;
                     case ocTableOp          : ScTableOp();                  break;
                     case ocStop :                                           break;
                     case ocErrorType        : ScErrorType();                break;

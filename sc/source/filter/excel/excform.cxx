@@ -531,8 +531,10 @@ ConvErr ExcelToSc::Convert( std::unique_ptr<ScTokenArray>& pResult, XclImpStream
                     else if (pName->GetScRangeData())
                         aStack << aPool.StoreName(nUINT16,
                                                   pName->IsGlobal() ? -1 : pName->GetScTab());
-                    else
+                    else if (ScGlobal::IsValidExternal(pName->GetXclName()))
                         aStack << aPool.Store(ocExternal, pName->GetXclName());
+                    else
+                        aStack << aPool.Store(ocUDExternal, pName->GetXclName());
                 }
             }
                 break;
@@ -1541,7 +1543,7 @@ void ExcelToSc::DoMulArgs( DefTokenId eId, sal_uInt8 nCnt )
     if( nPass < nCnt )
         nCnt = static_cast< sal_uInt8 >( nPass );
 
-    if( nCnt > 0 && eId == ocExternal )
+    if( nCnt > 0 && (eId == ocExternal || eId == ocUDExternal) )
     {
         TokenId             n = eParam[ nCnt - 1 ];
 //##### ADJUST STUPIDITY FOR BASIC-FUNCS!
