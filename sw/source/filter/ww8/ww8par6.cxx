@@ -2321,12 +2321,11 @@ void WW8DupProperties::Insert(const SwPosition &rPos)
     {
         if( pSet->Count() )
         {
-            SfxItemIter aIter( *pSet );
-            const SfxPoolItem* pItem = aIter.GetCurItem();
-            do
+            for (SfxItemIter aIter( *pSet ); !aIter.IsAtEnd(); aIter.Next())
             {
+                const SfxPoolItem* pItem = aIter.GetCurItem();
                 m_pCtrlStck->NewAttr(rPos, *pItem);
-            } while ((pItem = aIter.NextItem()));
+            }
         }
     }
 }
