@@ -236,6 +236,8 @@ public:
 
     bool isExportTemplate() const;
 
+    bool isExportSlideShow() const;
+
 protected:
     virtual css::uno::Reference< css::io::XInputStream >
                         implGetInputStream( comphelper::SequenceAsHashMap& rMediaDesc ) const;
