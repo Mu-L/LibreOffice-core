@@ -1268,18 +1268,17 @@ basegfx::B2DPolyPolygon SdrObject::TakeContour() const
             drawinglayer::processor2d::ContourExtractor2D aExtractor(aViewInformation2D, false);
             aExtractor.process(xSequence);
             const basegfx::B2DPolyPolygonVector& rResult(aExtractor.getExtractedContour());
-            const sal_uInt32 nSize(rResult.size());
 
             // when count is one, it is implied that the object has only its normal
             // contour anyways and TakeContour() is to return an empty PolyPolygon
             // (see old implementation for historical reasons)
-            if(nSize > 1)
+            if(rResult.size() > 1)
             {
                 // the topology for contour is correctly a vector of PolyPolygons; for
                 // historical reasons cut it back to a single tools::PolyPolygon here
-                for(sal_uInt32 a(0); a < nSize; a++)
+                for (auto const &rPoly : rResult)
                 {
-                    aRetval.append(rResult[a]);
+                    aRetval.append(rPoly);
                 }
             }
         }
