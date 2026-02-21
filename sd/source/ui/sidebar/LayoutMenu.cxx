@@ -396,7 +396,7 @@ SfxRequest LayoutMenu::CreateRequest (
     return aRequest;
 }
 
-VclPtr<VirtualDevice> LayoutMenu::GetVirtualDevice(Image pImage)
+ScopedVclPtr<VirtualDevice> LayoutMenu::GetVirtualDevice(Image pImage)
 {
     Bitmap aPreviewBitmap = pImage.GetBitmap();
     VclPtr<VirtualDevice> pVDev = VclPtr<VirtualDevice>::Create();
@@ -481,11 +481,9 @@ void LayoutMenu::Fill()
                 OUString sLayoutName = SdResId(elem.mpStrResId);
                 if (!mxLayoutIconView->get_id(id).isEmpty())
                 {
-                    VclPtr<VirtualDevice> pVDev = GetVirtualDevice(aImg);
-                    mxLayoutIconView->set_image(id, *pVDev);
+                    mxLayoutIconView->set_image(id, *GetVirtualDevice(aImg));
                     mxLayoutIconView->set_id(id, sId);
                     mxLayoutIconView->set_text(id, sLayoutName);
-                    pVDev.disposeAndClear();
                 }
                 else
                 {

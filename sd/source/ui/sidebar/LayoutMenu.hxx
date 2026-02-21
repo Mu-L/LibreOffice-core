@@ -25,6 +25,7 @@
 #include <sfx2/request.hxx>
 #include <xmloff/autolayout.hxx>
 #include <vcl/image.hxx>
+#include <vcl/vclptr.hxx>
 #include <vcl/weld/IconView.hxx>
 #include <map>
 
@@ -159,7 +160,7 @@ private:
     DECL_LINK(EventMultiplexerListener, ::sdtools::EventMultiplexerEvent&, void);
     DECL_LINK(MenuSelectAsyncHdl, void*, void);
 
-    static VclPtr<VirtualDevice> GetVirtualDevice(Image pPreview);
+    static ScopedVclPtr<VirtualDevice> GetVirtualDevice(Image pPreview);
     static Bitmap GetPreviewAsBitmap(const Image& rImage);
     void HandleMenuSelect(std::u16string_view rIdent);
 };
