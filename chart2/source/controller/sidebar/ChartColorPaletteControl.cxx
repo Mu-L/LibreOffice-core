@@ -111,7 +111,7 @@ void ChartColorPaletteControl::updateStatus(bool bForce)
         if (!getToolboxId(nId, &pToolBox) && !m_pToolbar)
             return;
 
-        auto pDev = VclPtr<VirtualDevice>::Create();
+        ScopedVclPtrInstance<VirtualDevice> pDev;
         renderSelectedColorPalette(pDev);
         auto aSelItemImg(pDev->GetBitmap(Point(), pDev->GetOutputSizePixel()));
         if (m_pToolbar)
