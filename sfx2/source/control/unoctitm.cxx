@@ -1454,6 +1454,8 @@ const std::map<std::u16string_view, KitUnoCommand>& GetKitUnoCommandList()
         { u"TableColumWidth", { PayloadType::TableSizePayload, false } },
         { u"TableRowHeight", { PayloadType::TableSizePayload, false } },
 
+        { u"TableStyles", { PayloadType::StringPayload, true } },
+
         { u"BorderInner", { PayloadType::None, true } },
         { u"BorderOuter", { PayloadType::None, true } },
         { u"ChangeTheme", { PayloadType::None, true } },
