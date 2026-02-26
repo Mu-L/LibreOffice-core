@@ -1158,6 +1158,16 @@ CPPUNIT_TEST_FIXTURE(ScExportTest4, testUserDefinedFunctions_XLSX)
                        u"_xludf.SUM(B9:C42)");
 }
 
+CPPUNIT_TEST_FIXTURE(ScExportTest4, testUserDefinedFunctions_XLS2)
+{
+    createScDoc("xls/external_named_function.xls");
+    save(TestFilter::XLSX);
+    xmlDocUniquePtr pSheet = parseExport(u"xl/worksheets/sheet1.xml"_ustr);
+    CPPUNIT_ASSERT(pSheet);
+    assertXPathContent(pSheet, "/x:worksheet/x:sheetData/x:row[1]/x:c[2]/x:f",
+                       u"[1]!_xludf.WEEKNUM(B2,2)-1");
+}
+
 CPPUNIT_PLUGIN_IMPLEMENT();
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
