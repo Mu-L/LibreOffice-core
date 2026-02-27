@@ -2033,7 +2033,7 @@ void XclExpObjectManager::StartSheet()
     mxObjList = new XclExpObjList( GetRoot(), *mxEscherEx );
 }
 
-rtl::Reference< XclExpRecordBase > XclExpObjectManager::ProcessDrawing( const SdrPage* pSdrPage )
+rtl::Reference< XclExpRecordBase > XclExpObjectManager::ProcessDrawing( const SdrPage* pSdrPage, std::unique_ptr<XclExpImgData> pImgData )
 {
     if( pSdrPage )
         mxEscherEx->AddSdrPage( *pSdrPage, GetOutput() != EXC_OUTPUT_BINARY );
@@ -2041,6 +2041,8 @@ rtl::Reference< XclExpRecordBase > XclExpObjectManager::ProcessDrawing( const Sd
     OSL_ENSURE( mxEscherEx->GetGroupLevel() <= 1, "XclExpObjectManager::ProcessDrawing - still groups open?" );
     while( mxEscherEx->GetGroupLevel() )
         mxEscherEx->LeaveGroup();
+    if (pImgData)
+        mxObjList->SetImageData(std::move(pImgData));
     mxObjList->EndSheet();
     return mxObjList;
 }
