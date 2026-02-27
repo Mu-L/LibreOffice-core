@@ -27,6 +27,7 @@
 #include <vcl/Toolkit.hxx>
 #include <vcl/dllapi.h>
 #include <vcl/salgtype.hxx>
+#include <vcl/svmain.hxx>
 #include <vcl/vclenum.hxx>
 #include <vcl/weld/ColorChooserDialog.hxx>
 #include <vcl/weld/weld.hxx>
@@ -106,7 +107,10 @@ public:
 
     //called directly after Application::Init
     virtual void            AfterAppInit() {}
-    virtual bool            SVMainHook(int*) { return false; }
+
+    // run main application and cleanup; VCL plugin can override
+    // to implement platform-specific application lifecycle
+    virtual int             SVMainRun() { return ImplSVMainRun(); };
 
     // Frame
     // DisplayName for Unix ???

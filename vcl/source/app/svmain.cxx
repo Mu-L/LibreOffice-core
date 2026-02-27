@@ -193,38 +193,41 @@ int ImplSVMain()
 
     SAL_WARN_IF( !pSVData->mpApp, "vcl", "no instance of class Application" );
 
-    int nReturn = EXIT_FAILURE;
-
-    const bool bWasInitVCL = IsVCLInit();
+    if ( IsVCLInit() )
+        return EXIT_SUCCESS;
 
 #if !defined(_WIN32) && !defined(SYSTEM_OPENSSL)
-    if (!bWasInitVCL)
+    static constexpr OUString name(u"SSL_CERT_FILE"_ustr);
+    OUString temp;
+    if (osl_getEnvironment(name.pData, &temp.pData) == osl_Process_E_NotFound)
     {
-        static constexpr OUString name(u"SSL_CERT_FILE"_ustr);
-        OUString temp;
-        if (osl_getEnvironment(name.pData, &temp.pData) == osl_Process_E_NotFound)
-        {
-            // Try to point bundled OpenSSL to some system certificate file
-            // ... this only works if the client actually calls
-            // SSL_CTX_set_default_verify_paths() or similar; e.g. python ssl.
-            char const*const path = GetCABundleFile();
-            if (path == nullptr) {
-                SAL_WARN("vcl", "no OpenSSL CA certificate bundle found");
-            } else {
-                OUString const filepath(::rtl::OStringToOUString(
-                    ::std::string_view(path), osl_getThreadTextEncoding()));
-                osl_setEnvironment(name.pData, filepath.pData);
-            }
+        // Try to point bundled OpenSSL to some system certificate file
+        // ... this only works if the client actually calls
+        // SSL_CTX_set_default_verify_paths() or similar; e.g. python ssl.
+        char const*const path = GetCABundleFile();
+        if (path == nullptr) {
+            SAL_WARN("vcl", "no OpenSSL CA certificate bundle found");
+        } else {
+            OUString const filepath(::rtl::OStringToOUString(
+                ::std::string_view(path), osl_getThreadTextEncoding()));
+            osl_setEnvironment(name.pData, filepath.pData);
         }
     }
 #endif
 
-    const bool bInit = bWasInitVCL || InitVCL();
-    int nRet = 0;
-    if (!bWasInitVCL && bInit && pSVData->mpDefInst->SVMainHook(&nRet))
-        return nRet;
+    if ( !InitVCL() )
+        return EXIT_FAILURE;
 
-    if( bInit )
+    return GetSalInstance()->SVMainRun();
+}
+
+int ImplSVMainRun()
+{
+    ImplSVData* pSVData = ImplGetSVData();
+
+    int nReturn = EXIT_FAILURE;
+
+    if( IsVCLInit() )
     {
         // call application main
         pSVData->maAppData.mbInAppMain = true;

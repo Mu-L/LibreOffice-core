@@ -98,7 +98,7 @@ public:
     virtual ~AquaSalInstance() override;
 
     virtual void AfterAppInit() override;
-    virtual bool SVMainHook(int *) override;
+    virtual int SVMainRun() override;
 
     virtual SalFrame*       CreateChildFrame( SystemParentData* pParent, SalFrameStyleFlags nStyle ) override;
     virtual SalFrame*       CreateFrame( SalFrame* pParent, SalFrameStyleFlags nStyle ) override;

@@ -90,7 +90,6 @@ extern "C" {
 
 using namespace ::com::sun::star;
 
-static int* gpnInit = nullptr;
 static NSMenu* pDockMenu = nil;
 static bool bLeftMain = false;
 
@@ -402,25 +401,22 @@ bool AquaSalInstance::IsMainThread() const
 
 void AquaSalInstance::handleAppDefinedEvent( NSEvent* pEvent )
 {
+    AquaSalInstance *pInst = GetSalData()->mpInstance;
     AquaSalTimer *pTimer = static_cast<AquaSalTimer*>( ImplGetSVData()->maSchedCtx.mpSalTimer );
-    int nSubtype = [pEvent subtype];
-    switch( nSubtype )
+
+    switch( [pEvent subtype] )
     {
     case AppStartTimerEvent:
         if ( pTimer )
             pTimer->handleStartTimerEvent( pEvent );
         break;
     case AppExecuteSVMain:
-    {
-        int nRet = ImplSVMain();
-        if (gpnInit)
-            *gpnInit = nRet;
+        // Run main application
+        ImplSVMainRun();
         [NSApp stop: NSApp];
         break;
-    }
     case DispatchTimerEvent:
     {
-        AquaSalInstance *pInst = GetSalData()->mpInstance;
         if ( pTimer && pInst )
             pInst->mbTimerProcessed = pTimer->handleDispatchTimerEvent( pEvent );
         break;
@@ -429,7 +425,6 @@ void AquaSalInstance::handleAppDefinedEvent( NSEvent* pEvent )
     case AppleRemoteControlEvent: // Defined in <apple_remote/RemoteMainController.h>
     {
         MediaCommand nCommand;
-        AquaSalInstance *pInst = GetSalData()->mpInstance;
         bool bIsFullScreenMode = false;
 
         for( auto pSalFrame : pInst->getFrames() )
@@ -1074,25 +1069,25 @@ NSImage* CreateNSImage( const Image& rImage )
     return pImage;
 }
 
-bool AquaSalInstance::SVMainHook(int* pnInit)
+int AquaSalInstance::SVMainRun()
 {
-    gpnInit = pnInit;
+    int numArgs = 1;
+    const char *pArgv[4] = { 0 };
 
     OUString aExeURL, aExe;
     osl_getExecutableFile( &aExeURL.pData );
     osl_getSystemPathFromFileURL( aExeURL.pData, &aExe.pData );
     OString aByteExe( OUStringToOString( aExe, osl_getThreadTextEncoding() ) );
+    pArgv[0] = aByteExe.getStr();
 
 #if OSL_DEBUG_LEVEL >= 2
-    aByteExe += OString ( " NSAccessibilityDebugLogLevel 1" );
-    const char* pArgv[] = { aByteExe.getStr(), NULL };
-    NSApplicationMain( 3, pArgv );
-#else
-    const char* pArgv[] = { aByteExe.getStr(), nullptr };
-    NSApplicationMain( 1, pArgv );
+    pArgv[1] = "NSAccessibilityDebugLogLevel";
+    pArgv[2] = "1";
+    numArgs = 3;
 #endif
 
-    return true;
+    // Note that NSApplicationMain never returns; it calls exit() internally
+    return NSApplicationMain( numArgs, pArgv );
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
