@@ -46,7 +46,6 @@ class AquaSalFrame;
 -(BOOL)application: (NSApplication*) app printFile: (NSString*)file;
 -(NSApplicationPrintReply)application: (NSApplication *) app printFiles:(NSArray *)files withSettings: (NSDictionary *)printSettings showPrintPanels:(BOOL)bShowPrintPanels;
 -(NSApplicationTerminateReply)applicationShouldTerminate: (NSApplication *) app;
--(void)applicationWillTerminate: (NSNotification *) aNotification;
 -(void)observeValueForKeyPath: (NSString*) keyPath ofObject:(id)object
                                change: (NSDictionary<NSKeyValueChangeKey, id>*)change
                                context: (void*)context;

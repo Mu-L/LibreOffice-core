@@ -300,13 +300,6 @@
     return NSPrintingSuccess;
 }
 
--(void)applicationWillTerminate: (NSNotification *) aNotification
-{
-    (void)aNotification;
-    sal_detail_deinitialize();
-    _Exit(0);
-}
-
 -(NSApplicationTerminateReply)applicationShouldTerminate: (NSApplication *) app
 {
     (void)app;
@@ -333,11 +326,13 @@
 
         if( aReply == NSTerminateNow )
         {
+            // Postpone AppKit-enforced termination by returning Cancel, allowing
+            // the Application instance to clean up and exit before we tell AppKit
+            // to terminate from our event handler
+            aReply = NSTerminateCancel;
+
             ApplicationEvent aEv(ApplicationEvent::Type::PrivateDoShutdown);
             GetpApp()->AppEvent( aEv );
-            ImageTree::get().shutdown();
-            // DeInitVCL should be called in ImplSVMain - unless someone exits first which
-            // can occur in Desktop::doShutdown for example
         }
     }
 

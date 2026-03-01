@@ -359,7 +359,6 @@ AquaSalInstance::AquaSalInstance()
 
 AquaSalInstance::~AquaSalInstance()
 {
-    [NSApp stop: NSApp];
     bLeftMain = true;
     if( pDockMenu )
     {
