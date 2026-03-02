@@ -1772,6 +1772,18 @@ bool DrawFillAttributes(
                 }
                 assert(pPrimitives && pPrimitives->size());
 
+                // tdf#140349 For gradient fills, clip to the non-expanded
+                // 'aPaintRange' paint region. The expansion above ensures the
+                // rendered gradient fully covers the area but can produce a
+                // visible spillover fringe in the expanded margins.
+                const bool bClipGradient(rFillAttributes->hasSdrFillAttribute()
+                    && !rFillAttributes->getFillAttribute().getGradient().isDefault());
+                if (bClipGradient)
+                {
+                    rOut.Push(vcl::PushFlags::CLIPREGION);
+                    rOut.IntersectClipRegion(rPaintRegion.GetOrigin().SVRect());
+                }
+
                 drawinglayer::geometry::ViewInformation2D aViewInformation2D;
                 aViewInformation2D.setViewTransformation(rOut.GetViewTransformation());
                 aViewInformation2D.setViewport(aPaintRange);
@@ -1780,6 +1792,10 @@ bool DrawFillAttributes(
                     rOut,
                     aViewInformation2D) );
                 pProcessor->process(*pPrimitives);
+
+                if (bClipGradient)
+                    rOut.Pop();
+
                 return true;
             }
         }
