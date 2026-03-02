@@ -47,6 +47,8 @@
 
 
 
+#include <svl/whiter.hxx>
+
 using namespace ::com::sun::star::uno;
 
 constexpr OUString USERITEM_NAME = u"UserItem"_ustr;
@@ -396,10 +398,23 @@ bool SfxTabDialogController::DeactivatePage(std::u16string_view aPage)
             m_xExampleSet->Put( aTmp );
             m_pOutSet->Put( aTmp );
 
-            // Re-clear any items that were explicitly invalidated by user
+            // Re-clear any items that were explicitly invalidated by user (property chips)
             for (sal_uInt16 nWhich : m_aInvalidatedWhichIds)
             {
                 m_xExampleSet->ClearItem(nWhich);
+                m_pOutSet->InvalidateItem(nWhich);
+            }
+
+            // Preserve invalid items from tab pages (e.g., inheritance restoration)
+            {
+                SfxWhichIter aIter(aTmp);
+                for (sal_uInt16 nW = aIter.FirstWhich(); nW; nW = aIter.NextWhich())
+                {
+                    if (aTmp.GetItemState(nW, false) == SfxItemState::INVALID)
+                    {
+                        m_pOutSet->InvalidateItem(nW);
+                    }
+                }
             }
         }
     }
@@ -454,6 +469,16 @@ bool SfxTabDialogController::PrepareLeaveCurrentPage()
             {
                 m_xExampleSet->Put( aTmp );
                 m_pOutSet->Put( aTmp );
+
+                // Preserve invalid items
+                SfxWhichIter aIter(aTmp);
+                for (sal_uInt16 nWhich = aIter.FirstWhich(); nWhich; nWhich = aIter.NextWhich())
+                {
+                    if (aTmp.GetItemState(nWhich, false) == SfxItemState::INVALID)
+                    {
+                        m_pOutSet->InvalidateItem(nWhich);
+                    }
+                }
             }
         }
         else

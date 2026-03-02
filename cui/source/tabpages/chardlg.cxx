@@ -1041,12 +1041,32 @@ bool SvxCharNamePage::FillItemSet_Impl( SfxItemSet& rSet, LanguageGroup eLangGrp
             const SvxFontHeightItem& rOldItem =
                 static_cast<const SvxFontHeightItem&>(GetItemSet().GetParent()->Get( nWhich ));
 
-            SvxFontHeightItem aHeight( 240, 100, nWhich );
+            // Check if relative value means "inherit from parent"
+            bool bInheritFromParent = false;
             if ( pSizeBox->IsPtRelative() )
-                aHeight.SetHeight( rOldItem.GetHeight(), static_cast<sal_uInt16>( nSize / 10 ), MapUnit::MapPoint, eUnit );
+            {
+                // +0pt means inherit
+                bInheritFromParent = ( nSize == 0 );
+            }
             else
-                aHeight.SetHeight( rOldItem.GetHeight(), static_cast<sal_uInt16>(nSize) );
-            rSet.Put( aHeight );
+            {
+                // 100% means inherit
+                bInheritFromParent = ( nSize == 100 );
+            }
+            if ( bInheritFromParent )
+            {
+                // Invalidate the item to restore inheritance
+                rSet.InvalidateItem( nWhich );
+            }
+            else
+            {
+                SvxFontHeightItem aHeight( 240, 100, nWhich );
+                if ( pSizeBox->IsPtRelative() )
+                    aHeight.SetHeight( rOldItem.GetHeight(), static_cast<sal_uInt16>( nSize / 10 ), MapUnit::MapPoint, eUnit );
+                else
+                    aHeight.SetHeight( rOldItem.GetHeight(), static_cast<sal_uInt16>(nSize) );
+                rSet.Put( aHeight );
+            }
         }
         else
         {

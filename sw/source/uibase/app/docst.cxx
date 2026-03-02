@@ -648,7 +648,20 @@ IMPL_LINK_NOARG(ApplyStyle, ApplyHdl, LinkParamNone*, void)
 
     if( SfxStyleFamily::Para == m_nFamily )
     {
-        SfxItemSet aSet( *m_pDlg->GetOutputItemSet() );
+        const SfxItemSet* pOutputSet = m_pDlg->GetOutputItemSet();
+        SfxItemSet aSet( *pOutputSet );
+
+        SfxWhichIter aIter(*pOutputSet);
+        sal_uInt16 nWhich = aIter.FirstWhich();
+        while (nWhich)
+        {
+            if (pOutputSet->GetItemState(nWhich, false) == SfxItemState::INVALID)
+            {
+                aSet.InvalidateItem(nWhich);
+            }
+            nWhich = aIter.NextWhich();
+        }
+
         ::ConvertAttrGenToChar(aSet, m_xTmp->GetItemSet(), /*bIsPara=*/true);
         ::SfxToSwPageDescAttr( *pWrtShell, aSet  );
         // reset indent attributes at paragraph style, if a list style
@@ -672,7 +685,22 @@ IMPL_LINK_NOARG(ApplyStyle, ApplyHdl, LinkParamNone*, void)
                 FN_TABLE_INSERT_COL_AFTER, 0};
             pView->GetViewFrame().GetBindings().Invalidate(aInval);
         }
-        SfxItemSet aTmpSet( *m_pDlg->GetOutputItemSet() );
+        const SfxItemSet* pOutputSet = m_pDlg->GetOutputItemSet();
+        SfxItemSet aTmpSet( *pOutputSet );
+
+        // Preserve invalid items (these signal "restore inheritance")
+        SfxWhichIter aIter(*pOutputSet);
+        sal_uInt16 nWhich = aIter.FirstWhich();
+        while (nWhich)
+        {
+            if (pOutputSet->GetItemState(nWhich, false) == SfxItemState::INVALID)
+            {
+                aTmpSet.InvalidateItem(nWhich);
+            }
+            nWhich = aIter.NextWhich();
+        }
+
+
         if( SfxStyleFamily::Char == m_nFamily )
         {
             ::ConvertAttrGenToChar(aTmpSet, m_xTmp->GetItemSet());
