@@ -112,6 +112,7 @@ class SwContentTree final : public SfxListener
     std::map<const void*, bool> m_aRegionNodeExpandMap;
     std::map<const void*, bool> m_aPostItNodeExpandMap;
     std::map<const void*, bool> m_aIndexNodeExpandMap;
+    std::unordered_set<const void*> m_aDrawObjectNodeExpandSet;
 
     sal_Int32           m_nActiveBlock;  // used to restore content types expand state
     sal_Int32           m_nHiddenBlock;

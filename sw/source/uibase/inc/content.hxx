@@ -30,6 +30,9 @@
 #include <tools/long.hxx>
 #include <utility>
 
+#include <tox.hxx>
+#include <svx/svdobj.hxx>
+
 class SwWrtShell;
 class SwContentArr;
 class SwContentType;
@@ -201,6 +204,19 @@ public:
     {
     }
     const SwTOXMark* GetTOXMark() const { return m_pMark; }
+};
+
+class SwDrawObjectContent final : public SwContent
+{
+    const SdrObject* m_pSdrObject;
+
+public:
+    SwDrawObjectContent(const SwContentType* pCnt, const SdrObject* pSdrObject, tools::Long nYPos)
+        : SwContent(pCnt, pSdrObject->GetName(), nYPos)
+        , m_pSdrObject(pSdrObject)
+    {
+    }
+    const SdrObject* GetSdrObject() const { return m_pSdrObject; }
 };
 
 /**

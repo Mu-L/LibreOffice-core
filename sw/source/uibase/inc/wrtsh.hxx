@@ -514,6 +514,7 @@ typedef bool (SwWrtShell::*FNSimpleMove)();
     SW_DLLPUBLIC bool GotoTable( const UIName& rName );
     void GotoFormatField( const SwFormatField& rField );
     const SwRangeRedline* GotoRedline( SwRedlineTable::size_type nArrPos, bool bSelect);
+    bool GotoDrawingObject(const SdrObject *pObj);
     SW_DLLPUBLIC bool GotoDrawingObject(std::u16string_view rName);
     void GotoFootnoteAnchor(const SwTextFootnote& rTextFootnote);
     SW_DLLPUBLIC void ChangeHeaderOrFooter(const UIName& rStyleName, bool bHeader, bool bOn, bool bShowWarning);

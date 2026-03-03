@@ -1273,24 +1273,22 @@ void SwContentType::FillMemberList(bool* pbContentChanged)
         case ContentTypeId::DRAWOBJECT:
         {
             IDocumentDrawModelAccess& rIDDMA = m_pWrtShell->getIDocumentDrawModelAccess();
-            SwDrawModel* pModel = rIDDMA.GetDrawModel();
-            if(pModel)
+            if (SwDrawModel* pModel = rIDDMA.GetDrawModel())
             {
-                SdrPage* pPage = pModel->GetPage(0);
-                for (const rtl::Reference<SdrObject>& pTemp : *pPage)
+                SdrObjListIter aIter(pModel->GetPage(0), SdrIterMode::DeepWithGroups);
+                while (aIter.IsMore())
                 {
-                    // #i51726# - all drawing objects can be named now
-                    if (!pTemp->IsVirtualObj() && !pTemp->GetName().isEmpty())
-                    {
-                        tools::Long nYPos = LONG_MIN;
-                        const bool bIsVisible = rIDDMA.IsVisibleLayerId(pTemp->GetLayer());
-                        if (bIsVisible)
-                            nYPos = m_bAlphabeticSort ? 0 : pTemp->GetLogicRect().Top();
-                        auto pCnt(std::make_unique<SwContent>(this, pTemp->GetName(), nYPos));
-                        if (!bIsVisible)
-                            pCnt->SetInvisible();
-                        m_pMember->insert(std::move(pCnt));
-                    }
+                    SdrObject* pObj = aIter.Next();
+                    if (pObj->IsVirtualObj() || pObj->GetName().isEmpty())
+                        continue;
+                    tools::Long nYPos = LONG_MIN;
+                    const bool bIsVisible = rIDDMA.IsVisibleLayerId(pObj->GetLayer());
+                    if (bIsVisible)
+                        nYPos = m_bAlphabeticSort ? 0 : pObj->GetLogicRect().Top();
+                    auto pCnt(std::make_unique<SwDrawObjectContent>(this, pObj, nYPos));
+                    if (!bIsVisible)
+                        pCnt->SetInvisible();
+                    m_pMember->insert(std::move(pCnt));
                 }
 
                 if (pOldMember)
@@ -2169,7 +2167,9 @@ IMPL_LINK(SwContentTree, CommandHdl, const CommandEvent&, rCEvt, bool)
                         bRemoveDeleteCommentEntry = false;
                     break;
                     case ContentTypeId::DRAWOBJECT:
+                    {
                         bRemoveDeleteDrawingObjectEntry = false;
+                    }
                     break;
                     case ContentTypeId::TEXTFIELD:
                         bRemoveDeleteFieldEntry = false;
@@ -2273,6 +2273,13 @@ IMPL_LINK(SwContentTree, CommandHdl, const CommandEvent&, rCEvt, bool)
                     bRemoveSelectEntry = bHidden || !bVisible;
                     xPop->set_active(u"protectsection"_ustr, bProtected);
                     xPop->set_active(u"hidesection"_ustr, bHidden);
+                }
+                else if (ContentTypeId::DRAWOBJECT == nContentType)
+                {
+                    SwDrawObjectContent* pCnt
+                        = weld::fromId<SwDrawObjectContent*>(m_xTreeView->get_id(*xEntry));
+                    if (!pCnt->GetSdrObject()->IsGroupObject())
+                        bRemoveEditEntry = false;
                 }
                 else
                     bRemoveEditEntry = false;
@@ -2865,8 +2872,58 @@ bool SwContentTree::RequestingChildren(const weld::TreeIter& rParent)
                 }
             }
         }
+        else if (pCntType->GetType() == ContentTypeId::DRAWOBJECT)
+        {
+            std::unordered_map<const SdrObject*, std::unique_ptr<weld::TreeIter>> aParentMap;
+
+            std::vector<size_t> vMemberIndexes(nCount);
+            std::iota(vMemberIndexes.begin(), vMemberIndexes.end(), 0);
+
+            while (!vMemberIndexes.empty())
+            {
+                std::vector<size_t> vNoParentYetFoundForMemberIndexes;
+
+                for (auto i : vMemberIndexes)
+                {
+                    const SwDrawObjectContent* pDrawObjectContent
+                        = static_cast<const SwDrawObjectContent*>(pCntType->GetMember(i));
+
+                    OUString sEntry = pDrawObjectContent->GetName();
+                    OUString sId(weld::toId(pDrawObjectContent));
+
+                    const SdrObject* pSdrObject = pDrawObjectContent->GetSdrObject();
+
+                    if (const SdrObject* pParentSdrObject
+                        = pSdrObject->getParentSdrObjectFromSdrObject())
+                    {
+                        if (aParentMap.contains(pParentSdrObject))
+                            insert(aParentMap[pParentSdrObject].get(), sEntry, sId, false,
+                                   xChild.get());
+                        else
+                        {
+                            vNoParentYetFoundForMemberIndexes.push_back(i);
+                            continue;
+                        }
+                    }
+                    else
+                        insert(&rParent, sEntry, sId, false, xChild.get());
+
+                    m_xTreeView->set_sensitive(*xChild, !pDrawObjectContent->IsInvisible());
+
+                    if (pSdrObject->IsGroupObject())
+                    {
+                        m_xTreeView->set_image(*xChild, RID_BMP_NAVI_DRAWOBJECT_GROUP);
+                        aParentMap[pSdrObject] = m_xTreeView->make_iterator(xChild.get());
+                    }
+                }
+
+                vMemberIndexes = vNoParentYetFoundForMemberIndexes;
+            }
+        }
         else
             InsertContent(rParent);
+
+        m_xTreeView->set_children_on_demand(rParent, false);
 
         return nCount != 0;
     }
@@ -3128,6 +3185,45 @@ void SwContentTree::Expand(const weld::TreeIter& rParent,
             m_aPostItNodeExpandMap[key] = true;
         }
     }
+    else if (eParentContentTypeId == ContentTypeId::DRAWOBJECT)
+    {
+        if (bParentIsContentType)
+        {
+            std::unordered_set<const void*> aCurrentDrawObjectNodeExpandSet;
+            if (RequestingChildren(rParent))
+            {
+                std::unique_ptr<weld::TreeIter> xChild(m_xTreeView->make_iterator(&rParent));
+                while (m_xTreeView->iter_next(*xChild) && lcl_IsContent(*xChild, *m_xTreeView))
+                {
+                    if (m_xTreeView->iter_has_child(*xChild))
+                    {
+                        assert(dynamic_cast<SwDrawObjectContent*>(
+                                   weld::fromId<SwTypeNumber*>(m_xTreeView->get_id(*xChild))));
+                        const void* key = static_cast<const void*>(
+                                    weld::fromId<SwDrawObjectContent*>(m_xTreeView->get_id(*xChild))
+                                    ->GetSdrObject());
+                        if (m_aDrawObjectNodeExpandSet.contains(key))
+                        {
+                            aCurrentDrawObjectNodeExpandSet.insert(key);
+                            if (pNodesToExpand)
+                                pNodesToExpand->emplace_back(
+                                            m_xTreeView->make_iterator(xChild.get()));
+                            // RequestingChildren(*xChild);
+                        }
+                    }
+                }
+            }
+            m_aDrawObjectNodeExpandSet = std::move(aCurrentDrawObjectNodeExpandSet);
+            return;
+        }
+        else
+        {
+            assert(dynamic_cast<SwDrawObjectContent*>(weld::fromId<SwTypeNumber*>(aParentId)));
+            const void* key = static_cast<const void*>(
+                        weld::fromId<SwDrawObjectContent*>(aParentId)->GetSdrObject());
+            m_aDrawObjectNodeExpandSet.insert(key);
+        }
+    }
 
     RequestingChildren(rParent);
 }
@@ -3217,9 +3313,9 @@ IMPL_LINK(SwContentTree, EditedEntryHdl, const IterString&, rIterString, bool)
         {
             GotoContent(pCnt);
 
-            SdrView* pSdrView = m_pActiveShell->GetDrawView();
-            rtl::Reference<SdrObject> pSelected
-                = pSdrView->GetMarkedObjectList().GetMark(0)->GetMarkedSdrObj();
+            assert(dynamic_cast<SwDrawObjectContent*>(static_cast<SwTypeNumber*>(pCnt)));
+            SwDrawObjectContent* pDrawObjectContent = static_cast<SwDrawObjectContent*>(pCnt);
+            const SdrObject* pDrawObject = pDrawObjectContent->GetSdrObject();
 
             // Drawing Object name uniqueness
             SwDrawModel* pModel = m_pActiveShell->getIDocumentDrawModelAccess().GetDrawModel();
@@ -3227,16 +3323,18 @@ IMPL_LINK(SwContentTree, EditedEntryHdl, const IterString&, rIterString, bool)
             while (aIter.IsMore())
             {
                 SdrObject* pTempObj = aIter.Next();
-                if (pSelected != pTempObj && pTempObj->GetName() == sNewName)
+                if (pTempObj == pDrawObject)
+                    continue;
+                if (pTempObj->GetName() == sNewName)
                 {
                     m_bEditing = false;
                     return false;
                 }
-
             }
 
             pCnt->SetName(sNewName);
-            pSelected->SetName(sNewName);
+            const_cast<SdrObject*>(pDrawObject)->SetName(sNewName);
+
             m_pActiveShell->SetModified();
             m_bEditing = false;
             return true;
@@ -3372,6 +3470,14 @@ IMPL_LINK(SwContentTree, CollapseHdl, const weld::TreeIter&, rParent, bool)
             const void* key = static_cast<const void*>(
                 weld::fromId<SwTOXBaseContent*>(m_xTreeView->get_id(rParent))->GetTOXBase());
             m_aIndexNodeExpandMap[key] = false;
+        }
+        else if (eContentTypeId == ContentTypeId::DRAWOBJECT)
+        {
+            assert(dynamic_cast<SwDrawObjectContent*>(
+                weld::fromId<SwTypeNumber*>(m_xTreeView->get_id(rParent))));
+            const void* key = static_cast<const void*>(
+                weld::fromId<SwDrawObjectContent*>(m_xTreeView->get_id(rParent))->GetSdrObject());
+            m_aDrawObjectNodeExpandSet.erase(key);
         }
     }
 
@@ -3656,7 +3762,8 @@ void SwContentTree::Display( bool bActive )
             bool bChOnDemand(m_nRootType == ContentTypeId::OUTLINE ||
                              m_nRootType == ContentTypeId::REGION ||
                              m_nRootType == ContentTypeId::POSTIT ||
-                             m_nRootType == ContentTypeId::INDEX);
+                             m_nRootType == ContentTypeId::INDEX ||
+                             m_nRootType == ContentTypeId::DRAWOBJECT);
             OUString sId(weld::toId(rpRootContentT.get()));
             insert(nullptr, rpRootContentT->GetName(), sId, bChOnDemand, xEntry.get());
             m_xTreeView->set_image(*xEntry, aImage);
@@ -4878,6 +4985,13 @@ static void lcl_SelectByContentTypeAndAddress(SwContentTree* pThis, weld::TreeVi
                 p = pCnt->GetPostItField();
                 break;
             }
+            case ContentTypeId::DRAWOBJECT:
+            {
+                assert(dynamic_cast<SwDrawObjectContent*>(static_cast<SwTypeNumber*>(pUserData)));
+                SwDrawObjectContent* pCnt = static_cast<SwDrawObjectContent*>(pUserData);
+                p = pCnt->GetSdrObject();
+                break;
+            }
             case ContentTypeId::INDEXTOXBASE:
             {
                 if (SwTOXBaseContent* pCnt
@@ -4951,37 +5065,6 @@ static void lcl_SelectByContentTypeAndName(SwContentTree* pThis, weld::TreeView&
                 pThis->UpdateContentFunctionsToolbar();
             }
             break;
-        }
-    }
-}
-
-static void lcl_SelectDrawObjectByName(SwContentTree* pThis, weld::TreeView& rContentTree,
-                                       std::u16string_view rName)
-{
-    if (rName.empty())
-        return;
-
-    // find content type entry
-    std::unique_ptr<weld::TreeIter> xIter(rContentTree.make_iterator());
-    bool bFoundEntry = rContentTree.get_iter_first(*xIter);
-    while (bFoundEntry && SwResId(STR_CONTENT_TYPE_DRAWOBJECT) != rContentTree.get_text(*xIter))
-        bFoundEntry = rContentTree.iter_next_sibling(*xIter);
-    // find content type content entry and select it
-    if (bFoundEntry)
-    {
-        rContentTree.expand_row(*xIter); // assure content type entry is expanded
-        while (rContentTree.iter_next(*xIter) && lcl_IsContent(*xIter, rContentTree))
-        {
-            if (rName == rContentTree.get_text(*xIter))
-            {
-                if (!rContentTree.is_selected(*xIter))
-                {
-                    rContentTree.select(*xIter);
-                    rContentTree.scroll_to_row(*xIter);
-                    pThis->UpdateContentFunctionsToolbar();
-                }
-                break;
-            }
         }
     }
 }
@@ -5117,9 +5200,8 @@ void SwContentTree::UpdateTracking()
                     for (size_t nIdx(0); nIdx < pSdrView->GetMarkedObjectList().GetMarkCount(); nIdx++)
                     {
                         SdrObject* pSelected = pSdrView->GetMarkedObjectList().GetMark(nIdx)->GetMarkedSdrObj();
-                        OUString aName(pSelected->GetName());
-                        if (!aName.isEmpty())
-                            lcl_SelectDrawObjectByName(this, *m_xTreeView, aName);
+                        lcl_SelectByContentTypeAndAddress(this, *m_xTreeView,
+                                                          ContentTypeId::DRAWOBJECT, pSelected);
                     }
                 }
                 else
@@ -7442,7 +7524,11 @@ void SwContentTree::GotoContent(const SwContent* pCnt)
         break;
         case ContentTypeId::DRAWOBJECT:
         {
-            m_pActiveShell->GotoDrawingObject(pCnt->GetName());
+            if (const SdrObject* pObj
+                = static_cast<const SwDrawObjectContent*>(pCnt)->GetSdrObject())
+            {
+                m_pActiveShell->GotoDrawingObject(pObj);
+            }
         }
         break;
         case ContentTypeId::FOOTNOTE:
@@ -7767,7 +7853,9 @@ void SwContentTree::BringEntryToAttention(const weld::TreeIter& rEntry)
             }
             else if (nType == ContentTypeId::DRAWOBJECT)
             {
-                std::vector<const SdrObject*> aSdrObjectArr {GetDrawingObjectsByContent(pCnt)};
+                std::vector<const SdrObject*> aSdrObjectArr{
+                    static_cast<SwDrawObjectContent*>(pCnt)->GetSdrObject()
+                };
                 BringDrawingObjectsToAttention(aSdrObjectArr);
             }
             else if (nType == ContentTypeId::TEXTFIELD)

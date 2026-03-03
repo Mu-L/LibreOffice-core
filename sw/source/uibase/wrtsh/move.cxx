@@ -28,6 +28,8 @@
 #include <svx/svdpage.hxx>
 #include <svx/svdview.hxx>
 
+#include <svx/svditer.hxx>
+
 /**
    Always:
     -   Reset of the cursor stack
@@ -664,6 +666,28 @@ bool SwWrtShell::GotoOutline( const OUString& rName )
     bool bRet = SwCursorShell::GotoOutline (rName);
     if (bRet)
         m_aNavigationMgr.addEntry(aPos);
+    return bRet;
+}
+
+bool SwWrtShell::GotoDrawingObject(const SdrObject* pObj)
+{
+    if (!pObj)
+        return false;
+
+    SwPosition aPos = *GetCursor()->GetPoint();
+
+    if (SdrObject* pParentSdrObject = pObj->getParentSdrObjectFromSdrObject())
+    {
+        SelectObj(Point(), 0, pParentSdrObject);
+        GetDrawView()->EnterMarkedGroup();
+    }
+
+    bool bRet = SelectObj(Point(), 0, const_cast<SdrObject*>(pObj));
+    if (bRet)
+    {
+        m_aNavigationMgr.addEntry(aPos);
+        EnterSelFrameMode();
+    }
     return bRet;
 }
 
