@@ -2485,7 +2485,7 @@ void ScInputHandler::UpdateAdjust( sal_Unicode cTyped )
                     break;
                 }
 
-                // Cells with an explit RTL writing direction are always right adjusted
+                // Cells with an explicit RTL writing direction are always right adjusted
                 if (pLastPattern)
                 {
                     SvxFrameDirection eDir = pLastPattern->GetItem(ATTR_WRITINGDIR).GetValue();
