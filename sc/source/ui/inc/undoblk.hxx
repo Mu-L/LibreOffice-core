@@ -728,13 +728,16 @@ private:
     ScDocumentUniquePtr xRedoDoc;
 };
 
+class ScTokenArray;
+
 class ScUndoEnterMatrix: public ScBlockUndo
 {
 public:
                     ScUndoEnterMatrix( ScDocShell& rNewDocShell,
                                        const ScRange& rArea,
                                        ScDocumentUniquePtr pNewUndoDoc,
-                                       OUString aForm );
+                                       OUString aForm,
+                                       std::unique_ptr<ScTokenArray> pTokenArray = nullptr );
     virtual         ~ScUndoEnterMatrix() override;
 
     virtual void    Undo() override;
@@ -748,6 +751,7 @@ private:
     ScDocumentUniquePtr
                     pUndoDoc;
     OUString        aFormula;
+    std::unique_ptr<ScTokenArray> pTokenArray;
     sal_uLong       nStartChangeAction;
     sal_uLong       nEndChangeAction;
 
