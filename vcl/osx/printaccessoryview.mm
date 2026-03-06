@@ -247,8 +247,9 @@ public:
             PropertyValue* pVal = mpController->getValue( name_it->second );
             if( pVal )
             {
+                bool bPageContentType = name_it->second == u"PageContentType"_ustr;
                 pVal->Value <<= value_it->second;
-                mnLastPageCount = [mpAccessoryController updatePrintOperation: mnLastPageCount];
+                mnLastPageCount = [mpAccessoryController updatePrintOperation: mnLastPageCount forceRestart: bPageContentType];
             }
         }
     }
