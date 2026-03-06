@@ -417,7 +417,7 @@ static OUString filterAccelerator( OUString const & rText )
         NSTextField* pField = static_cast<NSTextField*>(pSender);
         int nTag = [pField tag];
         sal_Int64 nValue = [pField intValue];
-        
+
         NSView* pOther = mpController->getPair( pField );
         if( pOther )
             [static_cast<NSControl*>(pOther) setIntValue: nValue];
@@ -459,13 +459,13 @@ struct ColumnItem
     NSControl*      pControl;
     CGFloat         nOffset;
     NSControl*      pSubControl;
-    
+
     ColumnItem( NSControl* i_pControl = nil, CGFloat i_nOffset = 0, NSControl* i_pSub = nil )
     : pControl( i_pControl )
     , nOffset( i_nOffset )
     , pSubControl( i_pSub )
     {}
-    
+
     CGFloat getWidth() const
     {
         CGFloat nWidth = 0;
@@ -539,7 +539,7 @@ static void adjustViewAndChildren( NSView* pNSView, NSSize& rMaxSize,
             if( rRightColumn[i].pSubControl )
             {
                 NSRect aSubRect = [rRightColumn[i].pSubControl frame];
-                aSubRect.origin.x = nX + aSubRect.origin.x - aCtrlRect.origin.x; 
+                aSubRect.origin.x = nX + aSubRect.origin.x - aCtrlRect.origin.x;
                 [rRightColumn[i].pSubControl setFrame: aSubRect];
             }
             aCtrlRect.origin.x = nX;
@@ -593,7 +593,7 @@ static void adjustTabViews( NSTabView* pTabView, NSSize aTabSize )
             double nDiff = aTabSize.height - aRect.size.height;
             aRect.size = aTabSize;
             [pNSView setFrame: aRect];
-            
+
             NSArray* pSubViews = [pNSView subviews];
             unsigned int nSubViews = [pSubViews count];
 
@@ -673,17 +673,17 @@ static void linebreakCell( NSCell* pBtn, const OUString& i_rText )
 static void addSubgroup( NSView* pCurParent, CGFloat& rCurY, const OUString& rText )
 {
     NSControl* pTextView = createLabel( rText );
-    [pCurParent addSubview: [pTextView autorelease]];                
+    [pCurParent addSubview: [pTextView autorelease]];
     NSRect aTextRect = [pTextView frame];
     // move to nCurY
     aTextRect.origin.y = rCurY - aTextRect.size.height;
     [pTextView setFrame: aTextRect];
-    
+
     NSRect aSepRect = { { aTextRect.size.width + 1, aTextRect.origin.y }, { 100, 6 } };
     NSBox* pBox = [[NSBox alloc] initWithFrame: aSepRect];
     [pBox setBoxType: NSBoxSeparator];
     [pCurParent addSubview: [pBox autorelease]];
-    
+
     // update nCurY
     rCurY = aTextRect.origin.y - 5;
 }
@@ -698,35 +698,35 @@ static void addBool( NSView* pCurParent, CGFloat rCurX, CGFloat& rCurY, CGFloat 
 {
     NSRect aCheckRect = { { rCurX + nAttachOffset, 0 }, { 0, 15 } };
     NSButton* pBtn = [[NSButton alloc] initWithFrame: aCheckRect];
-    [pBtn setButtonType: NSButtonTypeSwitch];                
+    [pBtn setButtonType: NSButtonTypeSwitch];
     [pBtn setState: bValue ? NSControlStateValueOn : NSControlStateValueOff];
     if( ! bEnabled )
         [pBtn setEnabled: NO];
     linebreakCell( [pBtn cell], rText );
     [pBtn sizeToFit];
-    
+
     rRightColumn.push_back( ColumnItem( pBtn ) );
-    
+
     // connect target
     [pBtn setTarget: pCtrlTarget];
     [pBtn setAction: @selector(triggered:)];
     int nTag = pControllerProperties->addNameTag( rProperty );
     pControllerProperties->addObservedControl( pBtn );
     [pBtn setTag: nTag];
-    
+
     aCheckRect = [pBtn frame];
     // #i115837# add a murphy factor; it can apparently occasionally happen
     // that sizeToFit does not a perfect job and that the button linebreaks again
     // if - and only if - there is already a '\n' contained in the text and the width
     // is minimally of
     aCheckRect.size.width += 1;
-    
+
     // move to rCurY
     aCheckRect.origin.y = rCurY - aCheckRect.size.height;
     [pBtn setFrame: aCheckRect];
 
     [pCurParent addSubview: [pBtn autorelease]];
-    
+
     // update rCurY
     rCurY = aCheckRect.origin.y - 5;
 }
@@ -748,23 +748,23 @@ static void addRadio( NSView* pCurParent, CGFloat rCurX, CGFloat& rCurY, CGFloat
         NSRect aTextRect = [pTextView frame];
         aTextRect.origin.x = rCurX + nAttachOffset;
         [pCurParent addSubview: [pTextView autorelease]];
-        
+
         rLeftColumn.push_back( ColumnItem( pTextView ) );
-        
+
         // move to nCurY
         aTextRect.origin.y = rCurY - aTextRect.size.height;
         [pTextView setFrame: aTextRect];
-        
+
         // update nCurY
         rCurY = aTextRect.origin.y - 5;
-        
+
         // indent the radio group relative to the text
         // nOff = 20;
     }
-    
+
     // setup radio matrix
     NSButtonCell* pProto = [[NSButtonCell alloc] init];
-    
+
     NSRect aRadioRect = { { rCurX + nOff, 0 },
                           { 280 - rCurX,
                             static_cast<CGFloat>(5*rChoices.getLength()) } };
@@ -793,17 +793,17 @@ static void addRadio( NSView* pCurParent, CGFloat rCurX, CGFloat& rCurY, CGFloat
     }
     [pMatrix sizeToFit];
     aRadioRect = [pMatrix frame];
-    
+
     // move it down, so it comes to the correct position
     aRadioRect.origin.y = rCurY - aRadioRect.size.height;
     [pMatrix setFrame: aRadioRect];
     [pCurParent addSubview: [pMatrix autorelease]];
-    
+
     rRightColumn.push_back( ColumnItem( pMatrix ) );
-    
+
     // update nCurY
     rCurY = aRadioRect.origin.y - 5;
-    
+
     [pProto release];
 }
 
@@ -839,7 +839,7 @@ static void addList( NSView* pCurParent, CGFloat& rCurX, CGFloat& rCurY, CGFloat
     }
 
     [pBtn selectItemAtIndex: nSelectValue];
-    
+
     // add the button to observed controls for enabled state changes
     // also add a tag just for this purpose
     pControllerProperties->addObservedControl( pBtn );
@@ -847,18 +847,18 @@ static void addList( NSView* pCurParent, CGFloat& rCurX, CGFloat& rCurY, CGFloat
 
     [pBtn sizeToFit];
     [pCurParent addSubview: [pBtn autorelease]];
-    
+
     rRightColumn.push_back( ColumnItem( pBtn ) );
 
     // connect target and action
     [pBtn setTarget: pCtrlTarget];
     [pBtn setAction: @selector(triggered:)];
-    
+
     // move to nCurY
     aBtnRect = [pBtn frame];
     aBtnRect.origin.y = rCurY - aBtnRect.size.height;
     [pBtn setFrame: aBtnRect];
-    
+
     // align label
     aTextRect.origin.y = aBtnRect.origin.y + (aBtnRect.size.height - aTextRect.size.height)/2;
     [pTextView setFrame: aTextRect];
@@ -884,22 +884,22 @@ static void addEdit( NSView* pCurParent, CGFloat rCurX, CGFloat& rCurY, CGFloat 
         // add a label
         NSControl* pTextView = createLabel( rText );
         [pCurParent addSubview: [pTextView autorelease]];
-        
+
         rLeftColumn.push_back( ColumnItem( pTextView ) );
-        
+
         // move to nCurY
         NSRect aTextRect = [pTextView frame];
         aTextRect.origin.x = rCurX + nAttachOffset;
         aTextRect.origin.y = rCurY - aTextRect.size.height;
         [pTextView setFrame: aTextRect];
-        
+
         // update nCurY
         rCurY = aTextRect.origin.y - 5;
-        
+
         // and set the offset for the real edit field
         nOff = aTextRect.size.width + 5;
     }
-    
+
     NSRect aFieldRect = { { rCurX + nOff + nAttachOffset, 0 }, { 100, 25 } };
     NSTextField* pFieldView = [[NSTextField alloc] initWithFrame: aFieldRect];
     [pFieldView setEditable: YES];
@@ -907,9 +907,9 @@ static void addEdit( NSView* pCurParent, CGFloat rCurX, CGFloat& rCurY, CGFloat 
     [pFieldView setDrawsBackground: YES];
     [pFieldView sizeToFit]; // FIXME: this does nothing
     [pCurParent addSubview: [pFieldView autorelease]];
-    
+
     rRightColumn.push_back( ColumnItem( pFieldView ) );
-    
+
     // add the field to observed controls for enabled state changes
     // also add a tag just for this purpose
     pControllerProperties->addObservedControl( pFieldView );
@@ -932,13 +932,13 @@ static void addEdit( NSView* pCurParent, CGFloat rCurX, CGFloat& rCurY, CGFloat 
         [pStep setValueWraps: NO];
         [pStep setTag: nTag];
         [pCurParent addSubview: [pStep autorelease]];
-        
+
         rRightColumn.back().pSubControl = pStep;
-        
+
         pControllerProperties->addObservedControl( pStep );
         [pStep setTarget: pCtrlTarget];
         [pStep setAction: @selector(triggered:)];
-        
+
         // constrain the text field to decimal numbers
         NSNumberFormatter* pFormatter = [[NSNumberFormatter alloc] init];
         [pFormatter setFormatterBehavior: NSNumberFormatterBehavior10_4];
@@ -957,7 +957,7 @@ static void addEdit( NSView* pCurParent, CGFloat rCurX, CGFloat& rCurY, CGFloat 
         sal_Int64 nSelectVal = 0;
         if( pValue && pValue->Value.hasValue() )
             pValue->Value >>= nSelectVal;
-        
+
         [pFieldView setIntValue: nSelectVal];
         [pStep setIntValue: nSelectVal];
 
@@ -1209,7 +1209,7 @@ static void addEdit( NSView* pCurParent, CGFloat rCurX, CGFloat& rCurY, CGFloat 
                 bIgnoreSubgroup = bIgnore;
                 if( bIgnore )
                     continue;
-                
+
                 addSubgroup( pCurParent, nCurY, aText );
             }
             else if( bIgnoreSubgroup || bIgnore )
