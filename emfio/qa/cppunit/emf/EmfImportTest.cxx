@@ -150,7 +150,7 @@ CPPUNIT_TEST_FIXTURE(Test, testDrawImagePointsTypeBitmap)
 CPPUNIT_TEST_FIXTURE(Test, testDrawImagePointsWithMetafile)
 {
     // tdf166084 tdf138087 tdf59814 EMF+ file with ObjectTypeImage, DrawImagePoints
-    // The test is checking the position and scale of embedded metafile drawed by DrawImagePoints
+    // The test is checking the position and scale of embedded metafile drawn by DrawImagePoints
 
     Primitive2DSequence aSequence
         = parseEmf(u"/emfio/qa/cppunit/emf/data/TestEmfPlusDrawImagePointsWithMetafile.emf");
