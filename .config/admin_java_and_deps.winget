@@ -6,6 +6,8 @@
 # (this configuration needs to be applied with administrator privileges, as otherwise even
 # downloading files e.g. would fail with:
 # Access to the path 'C:\ProgramData\Microsoft\Windows\PowerShell\Configuration\BuiltinProvCache\DSC_xRemoteFile' is denied.
+# unfortunately the "securityContext: elevated" directive is not respected by all DSC modules, so
+# for now it is still necessary to run the whole configuration with admin privileges.
 
 properties:
   resources:
@@ -109,4 +111,33 @@ properties:
         TestScript: wsl.exe --status 2>$null; return ![bool]$LASTEXITCODE
         GetScript:  wsl.exe --status 2>$null; return ![bool]$LASTEXITCODE
         SetScript: wsl.exe --install --no-distribution
+    - resource: xPSDesiredStateConfiguration/xScript
+      id: media-feature-pack
+      directives:
+        description: install Media Feature Pack when necessary (for Windows N)
+        securityContext: elevated
+      settings:
+        # the Get-WindowsCapability/Add-WindowsCapability cmdlets aren't available when running in
+        # the winget configure context, so use dism.exe directly here.
+        # Installing the media-pack takes ages/is very slow, but there doesn't seem to be a way to
+        # add custom messages to the output/the only way seems to be to use msg.exe to launch a
+        # crude message-box, but since this should be a rare case, it is better to keep it simple.
+        TestScript: |
+          $caps = & dism.exe /English /Online /Get-Capabilities
+          # On non-N editions it is an OptionalFeature, not a Capability, so nothing would match.
+          # In that case, consider the system already in desired state.
+          if (-not [bool]($caps -match 'Media\.MediaFeaturePack')) {
+            return $true
+          }
+          $info = & dism.exe /English /Online /Get-CapabilityInfo /CapabilityName:Media.MediaFeaturePack
+          return [bool]($info -match 'State : Installed')
+        GetScript: |
+          $caps = & dism.exe /English /Online /Get-Capabilities
+          if (-not [bool]($caps -match 'Media\.MediaFeaturePack')) {
+            return @{Result = "NotApplicable"}
+          }
+          $info = & dism.exe /English /Online /Get-CapabilityInfo /CapabilityName:Media.MediaFeaturePack
+          return @{Result = ($info -match 'State : ')}
+        SetScript: |
+          dism.exe /English /Online /Add-Capability /CapabilityName:Media.MediaFeaturePack /Quiet /NoRestart
   configurationVersion: 0.2.0

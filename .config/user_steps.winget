@@ -28,9 +28,21 @@ properties:
           "")
           !(($files | foreach {Test-Path "$env:PUBLIC/Downloads/$_"}) -contains $false)
     - resource: xPSDesiredStateConfiguration/xScript
+      id: reboot-pending-check
+      directives:
+        description: check whether a reboot is pending after WSL (or MediaFeaturePack) installation
+      settings:
+        GetScript: return $false
+        SetSCript: return $false
+        # installing wsl or media pack would cause a Component Based Servicing reboot pending state
+        # Return true if NO reboot pending (TestScript returns true when system is in desired state)
+        TestScript: return -not (Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootPending")
+    - resource: xPSDesiredStateConfiguration/xScript
       id: wsl-check
       directives:
         description: check that wsl utility is available/working - i.e. whether wsl is installed
+      dependsOn:
+        - reboot-pending-check
       settings:
         TestScript: wsl.exe --status ; return ![bool]$LASTEXITCODE
         GetScript: return $false
@@ -211,7 +223,7 @@ properties:
               [user]
               default=ubuntu
 
-          packages: [pkg-config, automake, make, gperf, bison, nasm, flex, zip, libfont-ttf-perl]
+          packages: [pkg-config, automake, make, gperf, bison, nasm, flex, zip, gettext]
           '
     - resource: xPSDesiredStateConfiguration/xScript
       id: install-Ubuntu
@@ -222,8 +234,14 @@ properties:
       settings:
         TestScript: wsl.exe --list ; return ![bool]$LASTEXITCODE
         GetScript:  wsl.exe --list ; return ![bool]$LASTEXITCODE
+        # wsl by defaults uses UTF16 encoding for the console output (could be switched to UTF8 by
+        # setting WSL_UTF8 environment variable, but that still wouldn't necessarily match the
+        # console encoding). Wsl might complain about nested virtualization not being supported, and
+        # that is sent to stderr and treated as an error by winget. We could redirect to nul, but
+        # that would also hide any other potential error messages. Checking for that message also
+        # isn't easy since it is localized…
         SetScript: |
+          [System.Console]::OutputEncoding = [System.Text.Encoding]::Unicode
           wsl.exe --install --no-launch --distribution Ubuntu-24.04
-          ubuntu2404.exe install --root
-          ubuntu2404.exe run cloud-init status --wait
+          wsl.exe --distribution Ubuntu-24.04 -u root cloud-init status --wait
   configurationVersion: 0.2.0
