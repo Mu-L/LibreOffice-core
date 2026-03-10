@@ -464,13 +464,8 @@ rtl::Reference<ScDatabaseRangeObj> WorkbookGlobals::createDatabaseRangeObject( O
         while (pNames && pNames->getNamedDBs().findByUpperName(ScGlobal::getCharClass().uppercase(aNewName)) != nullptr )
             aNewName = orName + OUStringChar('_') + OUString::number( nIndex++ );
         orName = aNewName;
-        // create the database range
-        CellRangeAddress aApiRange( aDestRange.aStart.Tab(), aDestRange.aStart.Col(), aDestRange.aStart.Row(),
-                                    aDestRange.aEnd.Col(), aDestRange.aEnd.Row() );
         ScDBDocFunc aFunc(*pDocSh);
-        ScRange aNameRange( static_cast<SCCOL>(aApiRange.StartColumn), static_cast<SCROW>(aApiRange.StartRow), aApiRange.Sheet,
-                            static_cast<SCCOL>(aApiRange.EndColumn),   static_cast<SCROW>(aApiRange.EndRow),   aApiRange.Sheet );
-        if(!( aFunc.AddDBRange( orName, aNameRange ) ))
+        if(!( aFunc.AddDBRange( orName, aDestRange ) ))
             throw RuntimeException(u"Could not add database range"_ustr);
         return new ScDatabaseRangeObj(pDocSh, orName);
     }
