@@ -1193,4 +1193,26 @@ CPPUNIT_TEST_FIXTURE(CondFormatTest, tdf169379)
     CPPUNIT_ASSERT_EQUAL(sal_uInt32(1), pFormat->GetKey());
 }
 
+CPPUNIT_TEST_FIXTURE(CondFormatTest, testTdf164334CondFormatTomorrow)
+{
+    // tdf#164334: "tomorrow" date condition was wrongly exported as "yesterday"
+    createScDoc();
+    ScDocument* pDocument = getScDoc();
+
+    ScAddress aAddress(0, 0, 0);
+    auto pFormat = std::make_unique<ScConditionalFormat>(0, *pDocument);
+    ScRangeList aRangeList{ ScRange(aAddress) };
+    pFormat->SetRange(aRangeList);
+
+    ScCondDateFormatEntry* pEntry = new ScCondDateFormatEntry(*pDocument);
+    pEntry->SetDateType(condformat::TOMORROW);
+    pFormat->AddEntry(pEntry);
+    pDocument->AddCondFormat(std::move(pFormat), 0);
+
+    save(TestFilter::XLSX);
+    xmlDocUniquePtr pSheet = parseExport(u"xl/worksheets/sheet1.xml"_ustr);
+    CPPUNIT_ASSERT(pSheet);
+    // Without the fix, this would have been "yesterday" instead of "tomorrow"
+    assertXPath(pSheet, "//x:conditionalFormatting/x:cfRule", "timePeriod", u"tomorrow");
+}
 CPPUNIT_PLUGIN_IMPLEMENT();
