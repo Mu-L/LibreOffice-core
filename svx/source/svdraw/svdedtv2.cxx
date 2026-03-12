@@ -33,7 +33,6 @@
 #include <svx/xfillit0.hxx>
 #include <svx/xlineit0.hxx>
 #include <svx/xtextit0.hxx>
-#include <svx/svdograf.hxx>
 #include <svx/sdr/contact/viewcontact.hxx>
 #include <svx/sdgcpitm.hxx>   // SdrGrafCropItem
 #include <svx/sdmetitm.hxx>
