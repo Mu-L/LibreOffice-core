@@ -815,7 +815,7 @@ void SwTextPaintInfo::DrawText_( const OUString &rText, const SwLinePortion &rPo
 
             const SwAttrSet& rAttrSet = GetTextFrame()->GetTextNodeForParaProps()->GetSwAttrSet();
             const SvxAdjustItem* pAdjust = rAttrSet.GetItem(RES_PARATR_ADJUST);
-            // microtypograpy: line-level automatic scaling between the custom range
+            // microtypography: line-level automatic scaling between the custom range
             if ( pAdjust->GetPropScaleWidthMinimum() != 100 ||
                     pAdjust->GetPropScaleWidthMaximum() != 100 )
             {
