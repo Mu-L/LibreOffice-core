@@ -51,30 +51,30 @@ DesktopType get_desktop_environment()
         OString aOver( pOverride );
 
         if ( aOver.equalsIgnoreAsciiCase( "lxqt" ) )
-            return DESKTOP_LXQT;
+            return DesktopType::LXQt;
         if (aOver.equalsIgnoreAsciiCase("plasma5") || aOver.equalsIgnoreAsciiCase("plasma"))
-            return DESKTOP_PLASMA5;
+            return DesktopType::Plasma5;
         if (aOver.equalsIgnoreAsciiCase("plasma6"))
-            return DESKTOP_PLASMA6;
+            return DesktopType::Plasma6;
         if ( aOver.equalsIgnoreAsciiCase( "gnome" ) )
-            return DESKTOP_GNOME;
+            return DesktopType::GNOME;
         if ( aOver.equalsIgnoreAsciiCase( "gnome-wayland" ) )
-            return DESKTOP_GNOME;
+            return DesktopType::GNOME;
         if ( aOver.equalsIgnoreAsciiCase( "unity" ) )
-            return DESKTOP_UNITY;
+            return DesktopType::Unity;
         if ( aOver.equalsIgnoreAsciiCase( "xfce" ) )
-            return DESKTOP_XFCE;
+            return DesktopType::Xfce;
         if ( aOver.equalsIgnoreAsciiCase( "mate" ) )
-            return DESKTOP_MATE;
+            return DesktopType::MATE;
         if ( aOver.equalsIgnoreAsciiCase( "none" ) )
-            return DESKTOP_UNKNOWN;
+            return DesktopType::Unknown;
     }
 
     OUString plugin;
     rtl::Bootstrap::get(u"SAL_USE_VCLPLUGIN"_ustr, plugin);
 
     if (plugin == "svp")
-        return DESKTOP_NONE;
+        return DesktopType::Headless;
 
     const char *pDesktop = getenv( "XDG_CURRENT_DESKTOP" );
     if ( pDesktop )
@@ -87,11 +87,11 @@ DesktopType get_desktop_environment()
         for (const auto& rCurrentDesktopStr : aSplitCurrentDesktop)
         {
             if ( rCurrentDesktopStr.equalsIgnoreAsciiCase( "unity" ) )
-                return DESKTOP_UNITY;
+                return DesktopType::Unity;
             else if ( rCurrentDesktopStr.equalsIgnoreAsciiCase( "gnome" ) )
-                return DESKTOP_GNOME;
+                return DesktopType::GNOME;
             else if ( rCurrentDesktopStr.equalsIgnoreAsciiCase( "lxqt" ) )
-                return DESKTOP_LXQT;
+                return DesktopType::LXQt;
         }
     }
 
@@ -102,26 +102,26 @@ DesktopType get_desktop_environment()
 
     // fast environment variable checks
     if ( aDesktopSession.equalsIgnoreAsciiCase( "gnome" ) )
-        return DESKTOP_GNOME;
+        return DesktopType::GNOME;
     else if ( aDesktopSession.equalsIgnoreAsciiCase( "gnome-wayland" ) )
-        return DESKTOP_GNOME;
+        return DesktopType::GNOME;
     else if ( aDesktopSession.equalsIgnoreAsciiCase( "mate" ) )
-        return DESKTOP_MATE;
+        return DesktopType::MATE;
     else if ( aDesktopSession.equalsIgnoreAsciiCase( "xfce" ) )
-        return DESKTOP_XFCE;
+        return DesktopType::Xfce;
     else if ( aDesktopSession.equalsIgnoreAsciiCase( "lxqt" ) )
-        return DESKTOP_LXQT;
+        return DesktopType::LXQt;
 
     if (is_plasma5_desktop())
-        return DESKTOP_PLASMA5;
+        return DesktopType::Plasma5;
     if (is_plasma6_desktop())
-        return DESKTOP_PLASMA6;
+        return DesktopType::Plasma6;
 
     // tdf#121275 if we still can't tell, and WAYLAND_DISPLAY
     // is set, default to gtk3
     const char* pWaylandStr = getenv("WAYLAND_DISPLAY");
     if (pWaylandStr && *pWaylandStr)
-        return DESKTOP_GNOME;
+        return DesktopType::GNOME;
 
     // these guys can be slower, with X property fetches,
     // round-trips etc. and so are done later.
@@ -146,14 +146,14 @@ DesktopType get_desktop_environment()
 
     // no server at all
     if( ! pDisplayStr || !*pDisplayStr )
-        return DESKTOP_NONE;
+        return DesktopType::Headless;
 
     // warning: these checks are coincidental, GNOME does not
     // explicitly advertise itself
     if (getenv("GNOME_DESKTOP_SESSION_ID"))
-        return DESKTOP_GNOME;
+        return DesktopType::GNOME;
 
-    return DESKTOP_UNKNOWN;
+    return DesktopType::Unknown;
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

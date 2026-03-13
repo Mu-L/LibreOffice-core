@@ -21,19 +21,17 @@
 
 #include <sal/config.h>
 
-#include <sal/types.h>
-
-enum SAL_DLLPUBLIC_RTTI DesktopType
+enum class DesktopType
 {
-    DESKTOP_NONE, // headless, i.e. no X connection at all
-    DESKTOP_UNKNOWN, // unknown desktop, simple WM, etc.
-    DESKTOP_GNOME,
-    DESKTOP_UNITY,
-    DESKTOP_XFCE,
-    DESKTOP_MATE,
-    DESKTOP_PLASMA5,
-    DESKTOP_PLASMA6,
-    DESKTOP_LXQT
+    Headless,
+    Unknown, // unknown desktop, simple WM, etc.
+    GNOME,
+    Unity,
+    Xfce,
+    MATE,
+    Plasma5,
+    Plasma6,
+    LXQt
 };
 
 DesktopType get_desktop_environment();

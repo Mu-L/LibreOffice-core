@@ -176,15 +176,15 @@ std::vector<OUString> autodetect_plugin_list()
     const DesktopType eDesktop = get_desktop_environment();
 #if ENABLE_HEADLESS
     // no server at all: dummy plugin
-    if (eDesktop == DESKTOP_NONE)
+    if (eDesktop == DesktopType::Headless)
         return { u"svp"_ustr };
 #endif
 
     std::vector<OUString> aPlugins;
-    if (eDesktop == DESKTOP_LXQT || eDesktop == DESKTOP_PLASMA5 || eDesktop == DESKTOP_PLASMA6)
+    if (eDesktop == DesktopType::LXQt || eDesktop == DesktopType::Plasma5 || eDesktop == DesktopType::Plasma6)
     {
 #if ENABLE_KF6
-        if (eDesktop == DESKTOP_PLASMA6)
+        if (eDesktop == DesktopType::Plasma6)
             aPlugins.push_back(u"kf6"_ustr);
 #endif
 #if ENABLE_KF5
@@ -377,16 +377,16 @@ const OUString& SalGetDesktopEnvironment()
 #elif defined(iOS)
     static OUString aDesktopEnvironment("iOS");
 #elif UNIX_DESKTOP_DETECT
-    static constexpr auto aDesktopMap
-        = frozen::make_unordered_map<DesktopType, OUString>({ { DESKTOP_NONE, u"none"_ustr },
-                                                              { DESKTOP_UNKNOWN, u"unknown"_ustr },
-                                                              { DESKTOP_GNOME, u"GNOME"_ustr },
-                                                              { DESKTOP_UNITY, u"UNITY"_ustr },
-                                                              { DESKTOP_XFCE, u"XFCE"_ustr },
-                                                              { DESKTOP_MATE, u"MATE"_ustr },
-                                                              { DESKTOP_PLASMA5, u"PLASMA5"_ustr },
-                                                              { DESKTOP_PLASMA6, u"PLASMA6"_ustr },
-                                                              { DESKTOP_LXQT, u"LXQT"_ustr } });
+    static constexpr auto aDesktopMap = frozen::make_unordered_map<DesktopType, OUString>(
+        { { DesktopType::Headless, u"none"_ustr },
+          { DesktopType::Unknown, u"unknown"_ustr },
+          { DesktopType::GNOME, u"GNOME"_ustr },
+          { DesktopType::Unity, u"UNITY"_ustr },
+          { DesktopType::Xfce, u"XFCE"_ustr },
+          { DesktopType::MATE, u"MATE"_ustr },
+          { DesktopType::Plasma5, u"PLASMA5"_ustr },
+          { DesktopType::Plasma6, u"PLASMA6"_ustr },
+          { DesktopType::LXQt, u"LXQT"_ustr } });
     static OUString aDesktopEnvironment;
     if( aDesktopEnvironment.isEmpty())
     {
