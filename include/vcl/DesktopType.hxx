@@ -31,7 +31,12 @@ enum class DesktopType
     MATE,
     Plasma5,
     Plasma6,
-    LXQt
+    LXQt,
+    macOS,
+    Windows,
+    WASM,
+    Android,
+    iOS,
 };
 
 DesktopType get_desktop_environment();

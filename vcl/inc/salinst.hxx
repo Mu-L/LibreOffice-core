@@ -76,6 +76,7 @@ struct SystemEnvData;
 struct SystemGraphicsData;
 struct SystemWindowData;
 class Menu;
+enum class DesktopType;
 enum class VclInputFlags;
 enum class SalFrameStyleFlags;
 
@@ -243,6 +244,6 @@ void DestroySalInstance( SalInstance* pInst );
 
 void SalAbort( const OUString& rErrorText, bool bDumpCore );
 
-const OUString& SalGetDesktopEnvironment();
+DesktopType SalGetDesktopEnvironment();
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

@@ -24,6 +24,7 @@
 #include <svl/pickerhistoryaccess.hxx>
 #include <officecfg/Office/Common.hxx>
 
+#include <vcl/DesktopType.hxx>
 #include <vcl/svapp.hxx>
 
 #include "fpicker.hxx"
@@ -37,8 +38,7 @@ using css::uno::Sequence;
 static OUString FilePicker_getSystemPickerServiceName()
 {
 #ifdef UNX
-    OUString aDesktopEnvironment (Application::GetDesktopEnvironment());
-    if (aDesktopEnvironment.equalsIgnoreAsciiCase("macosx"))
+    if (Application::GetDesktopEnvironment() == DesktopType::macOS)
         return u"com.sun.star.ui.dialogs.AquaFilePicker"_ustr;
     else
         return u"com.sun.star.ui.dialogs.SystemFilePicker"_ustr;
@@ -116,8 +116,7 @@ Sequence< OUString > FilePicker_getSupportedServiceNames()
 static OUString FolderPicker_getSystemPickerServiceName()
 {
 #ifdef UNX
-    OUString aDesktopEnvironment (Application::GetDesktopEnvironment());
-    if (aDesktopEnvironment.equalsIgnoreAsciiCase("macosx"))
+    if (Application::GetDesktopEnvironment() == DesktopType::macOS)
         return u"com.sun.star.ui.dialogs.AquaFolderPicker"_ustr;
 #endif
     return u"com.sun.star.ui.dialogs.SystemFolderPicker"_ustr;

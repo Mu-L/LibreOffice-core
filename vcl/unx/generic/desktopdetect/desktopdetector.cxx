@@ -17,11 +17,10 @@
  *   the License at http://www.apache.org/licenses/LICENSE-2.0 .
  */
 
-#include <unx/desktops.hxx>
-
 #include <rtl/bootstrap.hxx>
 #include <rtl/process.h>
 #include <osl/thread.h>
+#include <vcl/DesktopType.hxx>
 
 #include <vclpluginapi.h>
 

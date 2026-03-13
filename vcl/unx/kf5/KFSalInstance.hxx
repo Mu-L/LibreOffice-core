@@ -23,6 +23,8 @@
 
 #include <QtInstance.hxx>
 
+#include <vcl/DesktopType.hxx>
+
 #include <KConfigCore/KConfigGroup>
 #include <KConfigCore/KSharedConfig>
 #include <QtWidgets/QApplication>
@@ -47,8 +49,8 @@ class KFSalInstance final : public QtInstanceBaseClass
         // In order to insert custom controls, KFFilePicker currently relies on KFileWidget
         // being used in the native file picker, which is only the case for KDE Plasma.
         // Therefore, return the plain qt5/qt6 one in order to not lose custom controls otherwise.
-        const OUString sDesktop = Application::GetDesktopEnvironment();
-        if (sDesktop == "PLASMA5" || sDesktop == "PLASMA6")
+        const DesktopType eDesktop = Application::GetDesktopEnvironment();
+        if (eDesktop == DesktopType::Plasma5 || eDesktop == DesktopType::Plasma6)
             return new KFFilePicker(context, eMode);
         return QtInstance::createPicker(context, eMode);
     }
@@ -62,8 +64,8 @@ class KFSalInstance final : public QtInstanceBaseClass
         // https://invent.kde.org/plasma/kde-gtk-config/-/blob/881ae01ad361a03396f7f327365f225ef87688e8/kded/configvalueprovider.cpp#L239
         // (ideally, this should probably be done in the desktop backend rather than directly
         // in the VCL plugin)
-        const OUString sDesktop = Application::GetDesktopEnvironment();
-        if (sDesktop == "PLASMA5" || sDesktop == "PLASMA6")
+        const DesktopType eDesktop = Application::GetDesktopEnvironment();
+        if (eDesktop == DesktopType::Plasma5 || eDesktop == DesktopType::Plasma6)
         {
             KSharedConfigPtr pSharedConfig = KSharedConfig::openConfig();
             KConfigGroup aGeneralConfig = pSharedConfig->group(QStringLiteral("KDE"));

@@ -39,6 +39,7 @@
 #include <unotools/syslocale.hxx>
 #include <unotools/syslocaleoptions.hxx>
 
+#include <vcl/DesktopType.hxx>
 #include <vcl/toolkit/dialog.hxx>
 #include <vcl/dialoghelper.hxx>
 #include <vcl/exceptiontypes.hxx>
@@ -1629,15 +1630,12 @@ void Application::ShowNativeErrorBox(const OUString& sTitle  ,
     ImplGetSalSystem()->ShowNativeMessageBox(sTitle, sMessage);
 }
 
-const OUString& Application::GetDesktopEnvironment()
+DesktopType Application::GetDesktopEnvironment()
 {
     if (IsHeadlessModeEnabled())
-    {
-        static constexpr OUString aNone(u"none"_ustr);
-        return aNone;
-    }
-    else
-        return SalGetDesktopEnvironment();
+        return DesktopType::Headless;
+
+    return SalGetDesktopEnvironment();
 }
 
 void Application::AddToRecentDocumentList(const OUString& rFileUrl, const OUString& rMimeType, const OUString& rDocumentService)

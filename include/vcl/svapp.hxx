@@ -73,6 +73,7 @@ struct ConvertData;
 namespace basegfx { class SystemDependentDataManager; }
 namespace rtl { template <class reference_type> class Reference; }
 
+enum class DesktopType;
 enum class ExceptionCategory;
 enum class VclButtonsType;
 enum class VclEventId;
@@ -1254,9 +1255,9 @@ public:
 
     /** Get the desktop environment the process is currently running in
 
-     @returns String representing the desktop environment
+     @returns The desktop environment
     */
-    static const OUString&      GetDesktopEnvironment();
+    static DesktopType GetDesktopEnvironment();
 
     /*** @name Platform Functionality
     */

@@ -36,6 +36,7 @@
 #include <osl/thread.h>
 #include <osl/process.h>
 
+#include <vcl/DesktopType.hxx>
 #include <vcl/svapp.hxx>
 #include <sal/log.hxx>
 
@@ -924,10 +925,10 @@ int getButtonPriority(std::u16string_view rType)
 
     const ButtonOrder* pOrder = &aDiscardCancelSave[0];
 
-    const OUString &rEnv = Application::GetDesktopEnvironment();
+    const DesktopType eDesktop = Application::GetDesktopEnvironment();
 
-    if (rEnv.equalsIgnoreAsciiCase("windows") ||
-        rEnv.startsWithIgnoreAsciiCase("plasma"))
+    if (eDesktop == DesktopType::Windows || eDesktop == DesktopType::Plasma5
+        || eDesktop == DesktopType::Plasma6)
     {
         pOrder = &aSaveDiscardCancel[0];
     }

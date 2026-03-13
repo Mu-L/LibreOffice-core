@@ -46,6 +46,7 @@
 #include <sal/types.h>
 #include <comphelper/diagnose_ex.hxx>
 #include <uno/current_context.hxx>
+#include <vcl/DesktopType.hxx>
 #include <vcl/svapp.hxx>
 
 namespace {
@@ -277,7 +278,7 @@ shell_DesktopBackend_get_implementation(
 {
     // Fall back to the default if the specific backend is not available:
     css::uno::Reference< css::uno::XInterface > backend;
-    if (Application::GetDesktopEnvironment() == u"PLASMA5")
+    if (Application::GetDesktopEnvironment() == DesktopType::Plasma5)
         backend = createBackend(context,
             u"com.sun.star.configuration.backend.KF5Backend"_ustr);
     if (!backend)

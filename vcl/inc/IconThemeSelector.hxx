@@ -17,6 +17,7 @@
 
 // forward declaration of unit test class. Required for friend relationship.
 class IconThemeSelectorTest;
+enum class DesktopType;
 
 namespace vcl {
 class IconThemeInfo;
@@ -53,10 +54,8 @@ public:
      * @pre
      * @p installedThemes must not be empty
      */
-    OUString
-    SelectIconThemeForDesktopEnvironment(
-            const std::vector<IconThemeInfo>& installedThemes,
-            const OUString& desktopEnvironment) const;
+    OUString SelectIconThemeForDesktopEnvironment(const std::vector<IconThemeInfo>& installedThemes,
+                                                  DesktopType eDesktop) const;
 
     void
     SetUseHighContrastTheme(bool);
@@ -68,8 +67,8 @@ public:
     bool
     operator==(const vcl::IconThemeSelector&) const = default;
 
-    static OUString
-    GetIconThemeForDesktopEnvironment(const OUString& desktopEnvironment, bool bPreferDarkIconTheme);
+    static OUString GetIconThemeForDesktopEnvironment(DesktopType eDesktop,
+                                                      bool bPreferDarkIconTheme);
 
 private:
     /** Return the first element of the themes, or the fallback if the vector is empty */

@@ -12,6 +12,7 @@
 #include <IconThemeSelector.hxx>
 
 #include <tools/color.hxx>
+#include <vcl/DesktopType.hxx>
 #include <vcl/IconThemeInfo.hxx>
 #include <vcl/settings.hxx>
 #include <vcl/svapp.hxx>
@@ -50,8 +51,8 @@ IconThemeSelector::IconThemeSelector()
 {
 }
 
-/*static*/ OUString
-IconThemeSelector::GetIconThemeForDesktopEnvironment(const OUString& desktopEnvironment, bool bPreferDarkIconTheme)
+/*static*/ OUString IconThemeSelector::GetIconThemeForDesktopEnvironment(DesktopType eDesktop,
+                                                                         bool bPreferDarkIconTheme)
 {
     if (comphelper::LibreOfficeKit::isActive())
     {
@@ -62,35 +63,37 @@ IconThemeSelector::GetIconThemeForDesktopEnvironment(const OUString& desktopEnvi
     }
 
 #ifdef _WIN32
-    (void)desktopEnvironment;
+    (void)eDesktop;
     if (!bPreferDarkIconTheme)
         return "colibre";
     else
         return "colibre_dark";
 #else
     OUString r;
-    if ( desktopEnvironment.equalsIgnoreAsciiCase("plasma5") ||
-         desktopEnvironment.equalsIgnoreAsciiCase("plasma6") ||
-         desktopEnvironment.equalsIgnoreAsciiCase("lxqt") ) {
+    if (eDesktop == DesktopType::Plasma5 || eDesktop == DesktopType::Plasma6
+        || eDesktop == DesktopType::LXQt)
+    {
         if (!bPreferDarkIconTheme)
             r = "breeze";
         else
             r = "breeze_dark";
     }
-    else if ( desktopEnvironment.equalsIgnoreAsciiCase("macosx") ) {
+    else if (eDesktop == DesktopType::macOS)
+    {
         if (!bPreferDarkIconTheme)
             r = "sukapura_svg";
         else
             r = "sukapura_dark_svg";
     }
-    else if ( desktopEnvironment.equalsIgnoreAsciiCase("gnome") ||
-         desktopEnvironment.equalsIgnoreAsciiCase("mate") ||
-         desktopEnvironment.equalsIgnoreAsciiCase("unity") ) {
+    else if (eDesktop == DesktopType::GNOME || eDesktop == DesktopType::MATE
+             || eDesktop == DesktopType::Unity)
+    {
         if (!bPreferDarkIconTheme)
             r = "elementary";
         else
             r = "sifr_dark";
-    } else
+    }
+    else
     {
         if (!bPreferDarkIconTheme)
             r = FALLBACK_LIGHT_ICON_THEME_ID;
@@ -101,10 +104,8 @@ IconThemeSelector::GetIconThemeForDesktopEnvironment(const OUString& desktopEnvi
 #endif // _WIN32
 }
 
-OUString
-IconThemeSelector::SelectIconThemeForDesktopEnvironment(
-        const std::vector<IconThemeInfo>& installedThemes,
-        const OUString& desktopEnvironment) const
+OUString IconThemeSelector::SelectIconThemeForDesktopEnvironment(
+    const std::vector<IconThemeInfo>& installedThemes, DesktopType eDesktop) const
 {
     if (!mPreferredIconTheme.isEmpty()) {
         if (icon_theme_is_in_installed_themes(mPreferredIconTheme, installedThemes)) {
@@ -112,7 +113,7 @@ IconThemeSelector::SelectIconThemeForDesktopEnvironment(
         }
     }
 
-    OUString themeForDesktop = GetIconThemeForDesktopEnvironment(desktopEnvironment, mPreferDarkIconTheme);
+    OUString themeForDesktop = GetIconThemeForDesktopEnvironment(eDesktop, mPreferDarkIconTheme);
     if (icon_theme_is_in_installed_themes(themeForDesktop, installedThemes)) {
         return themeForDesktop;
     }

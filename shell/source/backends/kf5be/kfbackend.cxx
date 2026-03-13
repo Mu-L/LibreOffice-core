@@ -41,6 +41,7 @@
 #include <rtl/ustring.hxx>
 #include <sal/types.h>
 #include <uno/current_context.hxx>
+#include <vcl/DesktopType.hxx>
 #include <vcl/svapp.hxx>
 
 #include <osl/process.h>
@@ -197,7 +198,7 @@ void initQApp(std::map<OUString, css::beans::Optional<css::uno::Any>>& rSettings
 
 Service::Service()
 {
-    if (Application::GetDesktopEnvironment() == u"PLASMA5")
+    if (Application::GetDesktopEnvironment() == DesktopType::Plasma5)
     {
         if (!qApp) // no qt event loop yet
         {

@@ -38,12 +38,12 @@
 #include <salinst.hxx>
 #include <sal/log.hxx>
 #include <svdata.hxx>
+#include <vcl/DesktopType.hxx>
 #include <vcl/svapp.hxx>
 
 #if HAVE_FEATURE_UI
 #if USING_X11
 #define UNIX_DESKTOP_DETECT 1
-#include <unx/desktops.hxx>
 #else
 #define UNIX_DESKTOP_DETECT 0
 #endif
@@ -78,9 +78,6 @@
 #include <headless/svpinst.hxx>
 #include <unx/gendata.hxx>
 #endif
-
-#include <frozen/bits/elsa_std.h>
-#include <frozen/unordered_map.h>
 
 namespace {
 
@@ -362,40 +359,28 @@ void SalAbort( const OUString& rErrorText, bool bDumpCore )
 #endif // !_WIN32
 }
 
-const OUString& SalGetDesktopEnvironment()
+DesktopType SalGetDesktopEnvironment()
 {
 #if !HAVE_FEATURE_UI
-    static OUString aDesktopEnvironment("headless");
+    return DesktopType::Headless;
 #elif defined(_WIN32)
-    static OUString aDesktopEnvironment( "Windows" );
+    return DesktopType::Windows;
 #elif defined(MACOSX)
-    static OUString aDesktopEnvironment( "MacOSX" );
+    return DesktopType::macOS;
 #elif defined(EMSCRIPTEN)
-    static OUString aDesktopEnvironment("WASM");
+    return DesktopType::WASM;
 #elif defined(ANDROID)
-    static OUString aDesktopEnvironment("android");
+    return DesktopType::Android;
 #elif defined(iOS)
-    static OUString aDesktopEnvironment("iOS");
+    return DesktopType::iOS;
 #elif UNIX_DESKTOP_DETECT
-    static constexpr auto aDesktopMap = frozen::make_unordered_map<DesktopType, OUString>(
-        { { DesktopType::Headless, u"none"_ustr },
-          { DesktopType::Unknown, u"unknown"_ustr },
-          { DesktopType::GNOME, u"GNOME"_ustr },
-          { DesktopType::Unity, u"UNITY"_ustr },
-          { DesktopType::Xfce, u"XFCE"_ustr },
-          { DesktopType::MATE, u"MATE"_ustr },
-          { DesktopType::Plasma5, u"PLASMA5"_ustr },
-          { DesktopType::Plasma6, u"PLASMA6"_ustr },
-          { DesktopType::LXQt, u"LXQT"_ustr } });
-    static OUString aDesktopEnvironment;
-    if( aDesktopEnvironment.isEmpty())
-    {
-        aDesktopEnvironment = aDesktopMap.at(get_desktop_environment());
-    }
+    static DesktopType eDesktop = DesktopType::Headless;
+    if (eDesktop == DesktopType::Headless)
+        eDesktop = get_desktop_environment();
+    return eDesktop;
 #else
-    static OUString aDesktopEnvironment("unknown");
+    return DesktopType::Unknown;
 #endif
-    return aDesktopEnvironment;
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

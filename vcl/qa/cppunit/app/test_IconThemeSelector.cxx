@@ -9,6 +9,7 @@
 
 #include <IconThemeSelector.hxx>
 
+#include <vcl/DesktopType.hxx>
 #include <vcl/IconThemeInfo.hxx>
 
 #include <cppunit/TestAssert.h>
@@ -75,7 +76,7 @@ IconThemeSelectorTest::BreezeIsReturnedForKde5Desktop()
 {
     std::vector<vcl::IconThemeInfo> themes = GetFakeInstalledThemes();
     vcl::IconThemeSelector s;
-    OUString r = s.SelectIconThemeForDesktopEnvironment(themes, u"plasma5"_ustr);
+    OUString r = s.SelectIconThemeForDesktopEnvironment(themes, DesktopType::Plasma5);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("'breeze' theme is returned for Plasma 5 desktop", u"breeze"_ustr, r);
 }
 
@@ -84,7 +85,7 @@ IconThemeSelectorTest::ElementaryIsReturnedForGnomeDesktop()
 {
     std::vector<vcl::IconThemeInfo> themes = GetFakeInstalledThemes();
     vcl::IconThemeSelector s;
-    OUString r = s.SelectIconThemeForDesktopEnvironment(themes, u"gnome"_ustr);
+    OUString r = s.SelectIconThemeForDesktopEnvironment(themes, DesktopType::GNOME);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("'elementary' theme is returned for gnome desktop", u"elementary"_ustr, r);
 }
 
@@ -95,7 +96,7 @@ IconThemeSelectorTest::ThemeIsOverriddenByPreferredTheme()
     OUString preferred(u"breeze"_ustr);
     s.SetPreferredIconTheme(preferred, false);
     std::vector<vcl::IconThemeInfo> themes = GetFakeInstalledThemes();
-    OUString selected = s.SelectIconThemeForDesktopEnvironment(themes, u"gnome"_ustr);
+    OUString selected = s.SelectIconThemeForDesktopEnvironment(themes, DesktopType::GNOME);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("'elementary' theme is overridden by breeze", preferred, selected);
 }
 

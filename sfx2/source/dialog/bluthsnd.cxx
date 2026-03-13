@@ -14,6 +14,7 @@
 #include <sfx2/app.hxx>
 #include <sfx2/sfxresid.hxx>
 #include <sfx2/strings.hrc>
+#include <vcl/DesktopType.hxx>
 #include <vcl/svapp.hxx>
 #include <vcl/vclenum.hxx>
 #include <vcl/weld/MessageDialog.hxx>
@@ -80,27 +81,27 @@ SfxBluetoothModel::SendMailResult SfxBluetoothModel::Send()
     OUString aToolName;
 #ifdef LINUX
     OUString aPackageName;
-    OUString aDesktopEnvironment = Application::GetDesktopEnvironment();
+    const DesktopType eDesktopEnvironment = Application::GetDesktopEnvironment();
 
-    if(aDesktopEnvironment == u"PLASMA5"_ustr || aDesktopEnvironment == u"PLASMA6"_ustr)
+    if (eDesktopEnvironment == DesktopType::Plasma5 || eDesktopEnvironment == DesktopType::Plasma6)
     {
         aPackageName = KdePackageName;
         aToolName =  KdeToolName;
         aSendCommand = aToolName + " -f " + aSystemPath;
     }
-    else if(aDesktopEnvironment == u"GNOME"_ustr)
+    else if (eDesktopEnvironment == DesktopType::GNOME)
     {
         aPackageName = GnomePackageName;
         aToolName = GnomeToolName;
         aSendCommand = aToolName + " " + aSystemPath;
     }
-    else if(aDesktopEnvironment == u"XFCE"_ustr || aDesktopEnvironment == u"LXQT"_ustr)
+    else if (eDesktopEnvironment == DesktopType::Xfce || eDesktopEnvironment == DesktopType::LXQt)
     {
         aPackageName = Xfce_Lxqt_PackageName;
         aToolName = Xfce_Lxqt_ToolName;
         aSendCommand = aToolName + " " + aSystemPath;
     }
-    else if(aDesktopEnvironment == u"MATE"_ustr)
+    else if (eDesktopEnvironment == DesktopType::MATE)
     {
         aPackageName = MatePackageName;
         aToolName = MateToolName;

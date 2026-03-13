@@ -17,6 +17,7 @@
  *   the License at http://www.apache.org/licenses/LICENSE-2.0 .
  */
 
+#include <vcl/DesktopType.hxx>
 #include <vcl/svapp.hxx>
 
 #include "kde5_filepicker.hxx"
@@ -64,7 +65,7 @@ void KDE5FilePicker::enableFolderMode()
     // and then confirming would return "foo" rather than "foo/bar";
     // on the other hand, non-native file dialog needs 'QFileDialog::Directory'
     // and doesn't allow folder selection otherwise
-    if (Application::GetDesktopEnvironment() != "PLASMA5")
+    if (Application::GetDesktopEnvironment() != DesktopType::Plasma5)
     {
         _dialog->setFileMode(QFileDialog::Directory);
     }
@@ -241,7 +242,7 @@ void KDE5FilePicker::setupCustomWidgets()
     // dialog there in order not to lose the custom controls and insert the custom
     // widget in the layout returned by QFileDialog::layout()
     // (which returns nullptr for native file dialogs)
-    if (Application::GetDesktopEnvironment() == "PLASMA5")
+    if (Application::GetDesktopEnvironment() == DesktopType::Plasma5)
     {
         qApp->installEventFilter(this);
     }

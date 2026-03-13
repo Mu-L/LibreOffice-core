@@ -56,6 +56,7 @@
 #include <svdata.hxx>
 #include <window.h>
 #include <boost/multi_array.hpp>
+#include <vcl/DesktopType.hxx>
 #include <vcl/toolkit/vclmedit.hxx>
 #include <vcl/uitest/uiobject.hxx>
 #include <sal/log.hxx>
@@ -795,11 +796,10 @@ static int getButtonPriority(std::u16string_view rType)
 
     const ButtonOrder* pOrder = &aDiscardCancelSave[0];
 
-    const OUString &rEnv = Application::GetDesktopEnvironment();
+    const DesktopType eDesktop = Application::GetDesktopEnvironment();
 
-    if (rEnv.equalsIgnoreAsciiCase("windows") ||
-        rEnv.equalsIgnoreAsciiCase("lxqt") ||
-        rEnv.startsWithIgnoreAsciiCase("plasma"))
+    if (eDesktop == DesktopType::Windows || eDesktop == DesktopType::LXQt
+        || eDesktop == DesktopType::Plasma5 || eDesktop == DesktopType::Plasma6)
     {
         pOrder = &aSaveDiscardCancel[0];
     }
