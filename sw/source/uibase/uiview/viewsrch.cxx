@@ -789,16 +789,20 @@ sal_Int32 SwView::FUNC_Search(const SwSearchOptions& rOptions)
     }
 
     std::optional<SfxItemSet> xReplSet;
-    if( bDoReplace && s_xReplaceList && s_xReplaceList->Count() )
+    if (bDoReplace)
     {
-        xReplSet.emplace( m_pWrtShell->GetAttrPool(), aSearchAttrRange );
-        s_xReplaceList->Get( *xReplSet );
+        // tdf#99672 - create empty replace set to check for replacements in SwCursor::FindAttrs
+        xReplSet.emplace(m_pWrtShell->GetAttrPool(), aSearchAttrRange);
+        if (s_xReplaceList && s_xReplaceList->Count())
+        {
+            s_xReplaceList->Get( *xReplSet );
 
-        // -- Page break with page template
-        ::SfxToSwPageDescAttr( *m_pWrtShell, *xReplSet );
+            // -- Page break with page template
+            ::SfxToSwPageDescAttr( *m_pWrtShell, *xReplSet );
 
-        if( !xReplSet->Count() )        // too bad, we don't know
-            xReplSet.reset();        // the attributes
+            if( !xReplSet->Count() )        // too bad, we don't know
+                xReplSet.reset();        // the attributes
+        }
     }
 
     // build SearchOptions to be used

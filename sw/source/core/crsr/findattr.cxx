@@ -1274,9 +1274,10 @@ int SwFindParaAttr::DoFind(SwPaM & rCursor, SwMoveFnCollection const & fnMove,
         const SwPaM & rRegion, bool bInReadOnly,
         std::unique_ptr<SvxSearchItem>& xSearchItem)
 {
-    // replace string (only if text given and search is not parameterized)?
-    bool bReplaceText = pSearchOpt && ( !pSearchOpt->replaceString.isEmpty() ||
-                                    !pSet->Count() );
+    // tdf#99672 - replace text if a search format exists, even when the replace string is empty
+    const bool bReplaceNoAttr = pReplSet && !pReplSet->Count();
+    bool bReplaceText
+        = pSearchOpt && (!pSearchOpt->replaceString.isEmpty() || !pSet->Count() || bReplaceNoAttr);
     bool bReplaceAttr = pReplSet && pReplSet->Count();
     bool bMoveFirst = !bReplaceAttr;
     if( bInReadOnly && (bReplaceAttr || bReplaceText ))
@@ -1427,9 +1428,8 @@ sal_Int32 SwCursor::FindAttrs( const SfxItemSet& rSet, bool bNoCollections,
     Link<bool,void> aLnk( rDoc.GetOle2Link() );
     rDoc.SetOle2Link( Link<bool,void>() );
 
-    bool bReplace = ( pSearchOpt && ( !pSearchOpt->replaceString.isEmpty() ||
-                                    !rSet.Count() ) ) ||
-                    (pReplSet && pReplSet->Count());
+    // tdf#99672 - replace text if a search format exists, even when the replace string is empty
+    bool bReplace = pReplSet || (pSearchOpt && (!pSearchOpt->replaceString.isEmpty() || !rSet.Count()));
     bool const bStartUndo = rDoc.GetIDocumentUndoRedo().DoesUndo() && bReplace;
     if (bStartUndo)
     {

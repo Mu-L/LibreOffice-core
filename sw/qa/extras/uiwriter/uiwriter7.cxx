@@ -210,6 +210,46 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest7, testTdf79236)
     CPPUNIT_ASSERT_EQUAL(SvxAdjust::ParaStart, Adjust5);
 }
 
+CPPUNIT_TEST_FIXTURE(SwUiWriterTest7, testTdf99672SearchReplaceEmptyStringUsingFormat)
+{
+    // Create a new empty Writer document
+    createSwDoc();
+    SwWrtShell* pWrtShell = getSwDocShell()->GetWrtShell();
+
+    // Insert and select some text
+    pWrtShell->Insert("abc");
+    pWrtShell->SttPara(/*bSelect=*/true);
+    SwPaM* pCursor = pWrtShell->GetCursor();
+    CPPUNIT_ASSERT_EQUAL(u"abc"_ustr, pCursor->GetText());
+
+    // Apply bold formatting to the selected text
+    SwView& rView = pWrtShell->GetView();
+    SvxWeightItem aWeightItem(WEIGHT_BOLD, RES_CHRATR_WEIGHT);
+    SfxItemSetFixed<RES_CHRATR_BEGIN, RES_CHRATR_END> aSet(rView.GetPool());
+    aSet.Put(aWeightItem);
+    pWrtShell->SetAttrSet(aSet);
+
+    // Search for the inserted text using a format without any replacement string
+    uno::Reference<util::XReplaceable> xReplace(mxComponent, uno::UNO_QUERY);
+    uno::Reference<util::XReplaceDescriptor> xReplaceDes = xReplace->createReplaceDescriptor();
+
+    // Search for text with bold formatting
+    uno::Reference<util::XPropertyReplace> xProp(xReplaceDes, uno::UNO_QUERY);
+    uno::Sequence<beans::PropertyValue> aSearchAttr(comphelper::InitPropertySequence(
+        { { "CharWeight", uno::Any(float(css::awt::FontWeight::BOLD)) } }));
+    xProp->setSearchAttributes(aSearchAttr);
+
+    xReplaceDes->setSearchString(u"abc"_ustr);
+    xReplaceDes->setReplaceString(u""_ustr);
+    xReplace->replaceAll(xReplaceDes);
+
+    // Without the fix in place, this test would have failed with
+    // - Expected: ""
+    // - Actual  : "abc"
+    // i.e. bold-formatted text was not replaced when using an empty replacement string
+    CPPUNIT_ASSERT_EQUAL(u""_ustr, pCursor->GetPointNode().GetTextNode()->GetText());
+}
+
 CPPUNIT_TEST_FIXTURE(SwUiWriterTest7, testTextSearch)
 {
     // Create a new empty Writer document
