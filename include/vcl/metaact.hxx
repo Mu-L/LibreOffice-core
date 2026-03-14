@@ -49,26 +49,6 @@ namespace rtl { template <class reference_type> class Reference; }
 namespace vcl { enum class PushFlags; }
 namespace vcl::text { enum class ComplexTextLayoutFlags : sal_uInt8; }
 
-struct ImplMetaReadData
-{
-    rtl_TextEncoding meActualCharSet;
-    int mnParseDepth;
-
-    ImplMetaReadData()
-        : meActualCharSet(RTL_TEXTENCODING_ASCII_US)
-        , mnParseDepth(0)
-    {}
-};
-
-struct ImplMetaWriteData
-{
-    rtl_TextEncoding meActualCharSet;
-
-    ImplMetaWriteData() :
-        meActualCharSet( RTL_TEXTENCODING_ASCII_US )
-    {}
-};
-
 class VCL_DLLPUBLIC MetaAction : public salhelper::SimpleReferenceObject
 {
 private:

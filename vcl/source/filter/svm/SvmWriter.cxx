@@ -29,6 +29,16 @@
 
 #include <osl/thread.h>
 
+struct ImplMetaWriteData
+{
+    rtl_TextEncoding meActualCharSet;
+
+    ImplMetaWriteData()
+        : meActualCharSet(RTL_TEXTENCODING_ASCII_US)
+    {
+    }
+};
+
 SvmWriter::SvmWriter(SvStream& rIStm)
     : mrStream(rIStm)
 {
