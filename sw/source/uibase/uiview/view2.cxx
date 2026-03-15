@@ -1321,7 +1321,15 @@ void SwView::Execute(SfxRequest &rReq)
                 SwResId(ST_PGE) + ":", nPhyPage, GetWrtShell().GetPageCnt());
             weld::DialogController::runAsync(xDialog,[this, xDialog, xRequest=std::move(xRequest)](sal_uInt32 nResult) {
                 if (nResult == RET_OK)
+                {
+                    const bool bWasLocked = m_pWrtShell->IsViewLocked();
+                    m_pWrtShell->LockView(true);
                     GetWrtShell().GotoPage(xDialog->GetPageSelection(), true);
+                    const Point aPt(m_pWrtShell->GetView().GetVisArea().Left(),
+                                    m_pWrtShell->GetPagePos(xDialog->GetPageSelection()).Y());
+                    m_pWrtShell->GetView().SetVisArea(aPt);
+                    m_pWrtShell->LockView(bWasLocked);
+                }
 
                 xRequest->Done();
             });
