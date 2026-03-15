@@ -22,7 +22,7 @@
 #include <vcl/weld/DialogController.hxx>
 #include <vcl/weld/weld.hxx>
 #include <vcl/weld/ComboBox.hxx>
-#include <vcl/weld/Entry.hxx>
+#include <vcl/weld/TextView.hxx>
 
 #include "viewdata.hxx"
 #include <dpobject.hxx>
@@ -48,7 +48,7 @@ private:
     OUString aStrModify;
 
     std::unique_ptr<weld::ComboBox> mxCalcNames;
-    std::unique_ptr<weld::Entry> mxCalculation;
+    std::unique_ptr<weld::TextView> mxCalculation;
 
     std::unique_ptr<weld::Button> mxBtnAdd;
     std::unique_ptr<weld::Button> mxBtnMod;
@@ -88,7 +88,7 @@ private:
     DECL_LINK(DoubleClickHdl, weld::TreeView&, bool);
     DECL_LINK(FieldListSelected, weld::TreeView&, void);
     DECL_LINK(CalcFieldNameSelected, weld::ComboBox&, void);
-    DECL_LINK(CalcEntryChanged, weld::Entry&, void);
+    DECL_LINK(CalcEntryChanged, weld::TextView&, void);
 };
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
