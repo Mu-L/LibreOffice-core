@@ -87,8 +87,6 @@ private:
     SvTreeListEntry*     m_pMostRightEntry;
     SvLBoxButton*        m_pActiveButton;
     SvTreeListEntry*     m_pActiveEntry;
-    SvLBoxTab*           m_pActiveTab;
-
     VclPtr<ScrollBarBox> m_aScrBarBox;
 
     static Image*       s_pDefCollapsed;

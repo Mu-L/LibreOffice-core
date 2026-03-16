@@ -93,7 +93,6 @@ SvImpLBox::SvImpLBox( SvTreeListBox* pLBView, SvTreeList* pLBTree, WinBits nWinS
     // button animation in listbox
     m_pActiveButton = nullptr;
     m_pActiveEntry = nullptr;
-    m_pActiveTab = nullptr;
 
     m_nFlags = LBoxFlags::NONE;
 
@@ -235,7 +234,6 @@ void SvImpLBox::Clear()
 
     m_pActiveButton = nullptr;
     m_pActiveEntry = nullptr;
-    m_pActiveTab = nullptr;
 
     m_nMostRight = -1;
     m_pMostRightEntry = nullptr;
@@ -1800,7 +1798,7 @@ void SvImpLBox::EntryInserted( SvTreeListEntry* pEntry )
 
 bool SvImpLBox::ButtonDownCheckCtrl(const MouseEvent& rMEvt, SvTreeListEntry* pEntry)
 {
-    SvLBoxItem* pItem = m_pView->GetItem(pEntry,rMEvt.GetPosPixel().X(),&m_pActiveTab);
+    SvLBoxItem* pItem = m_pView->GetItem(pEntry,rMEvt.GetPosPixel().X());
     if (pItem && pItem->GetType() == SvLBoxItemType::Button)
     {
         m_pActiveButton = static_cast<SvLBoxButton*>(pItem);
@@ -1864,7 +1862,6 @@ bool SvImpLBox::ButtonUpCheckCtrl( const MouseEvent& rMEvt )
             ShowCursor(true);
         m_pActiveButton = nullptr;
         m_pActiveEntry = nullptr;
-        m_pActiveTab = nullptr;
         return true;
     }
     return false;
