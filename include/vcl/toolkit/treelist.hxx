@@ -127,12 +127,7 @@ public:
                         SvTreeList(SvListView&);
                         ~SvTreeList();
 
-    void                Broadcast(
-                            SvListAction nActionId,
-                            SvTreeListEntry* pEntry1=nullptr,
-                            SvTreeListEntry* pEntry2=nullptr,
-                            sal_uInt32 nPos=0
-                        );
+    void Broadcast(SvListAction nActionId, SvTreeListEntry* pEntry = nullptr);
 
     void                EnableInvalidate( bool bEnable );
     bool                IsEnableInvalidate() const { return mbEnableInvalidate; }

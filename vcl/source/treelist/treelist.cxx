@@ -41,14 +41,9 @@ SvTreeList::~SvTreeList()
 {
 }
 
-void SvTreeList::Broadcast(
-    SvListAction nActionId,
-    SvTreeListEntry* pEntry1,
-    SvTreeListEntry* /* pEntry2 */,
-    sal_uInt32 /* nPos */
-)
+void SvTreeList::Broadcast(SvListAction nActionId, SvTreeListEntry* pEntry)
 {
-    mrOwnerListView.ModelNotification(nActionId, pEntry1);
+    mrOwnerListView.ModelNotification(nActionId, pEntry);
 }
 
 // an entry is visible if all parents are expanded
@@ -149,7 +144,7 @@ sal_uInt32 SvTreeList::Move(SvTreeListEntry* pSrcEntry,SvTreeListEntry* pTargetP
         pTargetParent = pRootItem.get();
     DBG_ASSERT(pSrcEntry!=pTargetParent,"Move:Source=Target");
 
-    Broadcast( SvListAction::MOVING, pSrcEntry, pTargetParent, nListPos );
+    Broadcast(SvListAction::MOVING, pSrcEntry);
 
     if ( pSrcEntry == pTargetParent )
         // You can't move an entry onto itself as the parent. Just return its
@@ -232,7 +227,7 @@ sal_uInt32 SvTreeList::Move(SvTreeListEntry* pSrcEntry,SvTreeListEntry* pTargetP
 
     sal_uInt32 nRetVal = findEntryPosition(rDst, pSrcEntry);
     OSL_ENSURE(nRetVal == pSrcEntry->GetChildListPos(), "ListPos not valid");
-    Broadcast( SvListAction::MOVED,pSrcEntry,pTargetParent,nRetVal);
+    Broadcast(SvListAction::MOVED, pSrcEntry);
     return nRetVal;
 }
 
