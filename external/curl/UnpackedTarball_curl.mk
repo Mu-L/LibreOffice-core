@@ -19,13 +19,6 @@ $(eval $(call gb_UnpackedTarball_update_autoconf_configs,curl))
 
 $(eval $(call gb_UnpackedTarball_add_patches,curl,\
 	external/curl/zlib.patch.0 \
-	external/curl/0001-const-up-readonly-H2_NON_FIELD.patch.1 \
-	external/curl/0001-cookie-don-t-treat-the-leading-slash-as-trailing.patch \
-	external/curl/0001-ws-get-a-new-mask-for-each-new-outgoing-frame.patch \
-	external/curl/0001-url-fix-reuse-of-connections-using-HTTP-Negotiate.patch \
-	external/curl/0001-url-fix-copy-and-paste-url_match_auth_nego-mistake.patch \
-	external/curl/0001-http-only-send-bearer-if-auth-is-allowed.patch \
-	external/curl/0001-proxy-auth-additional-tests.patch \
 ))
 
 ifeq ($(ENABLE_EMSCRIPTEN_PROXY_POSIX_SOCKETS),TRUE)

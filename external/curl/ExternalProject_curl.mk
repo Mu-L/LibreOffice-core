@@ -34,8 +34,7 @@ curl_LDFLAGS += -L$(SYSBASE)/usr/lib
 endif
 endif
 
-# use --with-secure-transport on macOS >10.5 and iOS to get a native UI for SSL certs for CMIS usage
-# use --with-openssl only on platforms other than macOS and iOS
+# use --with-openssl on all platforms
 $(call gb_ExternalProject_get_state_target,curl,build):
 	$(call gb_Trace_StartRange,curl,EXTERNAL)
 	$(call gb_ExternalProject_run,build,\
@@ -52,9 +51,8 @@ $(call gb_ExternalProject_get_state_target,curl,build):
 			--disable-ldap --disable-ldaps --disable-manual --disable-pop3 \
 			--disable-rtsp --disable-smb --disable-smtp --disable-telnet  \
 			--disable-tftp  \
-			$(if $(filter iOS MACOSX,$(OS)),\
-				--with-secure-transport,\
-				$(if $(ENABLE_OPENSSL),--with-openssl$(if $(SYSTEM_OPENSSL),,="$(gb_UnpackedTarball_workdir)/openssl"))) \
+			$(if $(ENABLE_OPENSSL),--with-openssl$(if $(SYSTEM_OPENSSL),,="$(gb_UnpackedTarball_workdir)/openssl")) \
+			$(if $(filter iOS MACOSX,$(OS)),--with-apple-sectrust) \
 			$(if $(filter LINUX,$(OS)),--without-ca-bundle --without-ca-path) \
 			$(gb_CONFIGURE_PLATFORMS) \
 			$(if $(filter TRUE,$(DISABLE_DYNLOADING)),--disable-shared,--disable-static) \
