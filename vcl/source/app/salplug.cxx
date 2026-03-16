@@ -374,9 +374,7 @@ DesktopType SalGetDesktopEnvironment()
 #elif defined(iOS)
     return DesktopType::iOS;
 #elif UNIX_DESKTOP_DETECT
-    static DesktopType eDesktop = DesktopType::Headless;
-    if (eDesktop == DesktopType::Headless)
-        eDesktop = get_desktop_environment();
+    static DesktopType eDesktop = get_desktop_environment();
     return eDesktop;
 #else
     return DesktopType::Unknown;
