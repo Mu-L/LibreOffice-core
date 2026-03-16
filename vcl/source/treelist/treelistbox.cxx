@@ -3834,36 +3834,6 @@ rtl::Reference<comphelper::OAccessible> SvTreeListBox::CreateAccessible()
     return {};
 }
 
-void SvTreeListBox::FillAccessibleEntryStateSet( SvTreeListEntry* pEntry, sal_Int64& rStateSet ) const
-{
-    assert(pEntry && "SvTreeListBox::FillAccessibleEntryStateSet: invalid entry");
-
-    if ( pEntry->HasChildrenOnDemand() || pEntry->HasChildren() )
-    {
-        rStateSet |= AccessibleStateType::EXPANDABLE;
-        if ( IsExpanded( pEntry ) )
-            rStateSet |= AccessibleStateType::EXPANDED;
-    }
-
-    if (nTreeFlags & SvTreeFlags::CHKBTN)
-        rStateSet |= AccessibleStateType::CHECKABLE;
-    if ( GetCheckButtonState( pEntry ) == SvButtonState::Checked )
-        rStateSet |= AccessibleStateType::CHECKED;
-    if ( IsEntryVisible( pEntry ) )
-        rStateSet |= AccessibleStateType::VISIBLE;
-    if ( IsSelected( pEntry ) )
-        rStateSet |= AccessibleStateType::SELECTED;
-    if ( IsEnabled() )
-    {
-        rStateSet |= AccessibleStateType::ENABLED;
-        rStateSet |= AccessibleStateType::FOCUSABLE;
-        rStateSet |= AccessibleStateType::SELECTABLE;
-        SvViewDataEntry* pViewDataNewCur = GetViewDataEntry(pEntry);
-        if (pViewDataNewCur && pViewDataNewCur->HasFocus())
-            rStateSet |= AccessibleStateType::FOCUSED;
-    }
-}
-
 tools::Rectangle SvTreeListBox::GetBoundingRect(const SvTreeListEntry* pEntry)
 {
     Point aPos = GetEntryPosition( pEntry );

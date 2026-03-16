@@ -532,13 +532,8 @@ public:
         SvTreeListEntry*& rpNewParent,   // New TargetParent
         sal_uInt32&        rNewChildPos); // The TargetParent's position in Childlist
 
-    // ACCESSIBILITY ==========================================================
-
     /** Creates and returns the accessible object of the Box. */
     virtual rtl::Reference<comphelper::OAccessible> CreateAccessible() override;
-
-    /** Fills the StateSet of one entry. */
-    void FillAccessibleEntryStateSet( SvTreeListEntry* pEntry, sal_Int64& rStateSet ) const;
 
     /** Calculate and return the bounding rectangle of an entry.
         @param pEntry

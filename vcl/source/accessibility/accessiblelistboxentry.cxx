@@ -20,6 +20,7 @@
 #include <accessibility/accessiblelistboxentry.hxx>
 #include <accessibility/accessiblelistbox.hxx>
 #include <vcl/toolkit/treelistbox.hxx>
+#include <vcl/toolkit/viewdataentry.hxx>
 #include <com/sun/star/awt/Rectangle.hpp>
 #include <com/sun/star/accessibility/AccessibleEventId.hpp>
 #include <com/sun/star/accessibility/AccessibleRelationType.hpp>
@@ -415,9 +416,34 @@ sal_Int64 SAL_CALL AccessibleListBoxEntry::getAccessibleStateSet(  )
                     nStateSet |= AccessibleStateType::SHOWING;
                 break;
         }
-        SvTreeListEntry *pEntry = m_pTreeListBox->GetEntryFromPath(m_aEntryPath);
-        if (pEntry)
-            m_pTreeListBox->FillAccessibleEntryStateSet(pEntry, nStateSet);
+
+        if (SvTreeListEntry* pEntry = m_pTreeListBox->GetEntryFromPath(m_aEntryPath))
+        {
+            if (pEntry->HasChildrenOnDemand() || pEntry->HasChildren())
+            {
+                nStateSet |= AccessibleStateType::EXPANDABLE;
+                if (m_pTreeListBox->IsExpanded(pEntry))
+                    nStateSet |= AccessibleStateType::EXPANDED;
+            }
+
+            if (m_pTreeListBox->GetTreeFlags() & SvTreeFlags::CHKBTN)
+                nStateSet |= AccessibleStateType::CHECKABLE;
+            if (m_pTreeListBox->GetCheckButtonState(pEntry) == SvButtonState::Checked)
+                nStateSet |= AccessibleStateType::CHECKED;
+            if (m_pTreeListBox->IsEntryVisible(pEntry))
+                nStateSet |= AccessibleStateType::VISIBLE;
+            if (m_pTreeListBox->IsSelected(pEntry))
+                nStateSet |= AccessibleStateType::SELECTED;
+            if (m_pTreeListBox->IsEnabled())
+            {
+                nStateSet |= AccessibleStateType::ENABLED;
+                nStateSet |= AccessibleStateType::FOCUSABLE;
+                nStateSet |= AccessibleStateType::SELECTABLE;
+                SvViewDataEntry* pViewDataNewCur = m_pTreeListBox->GetViewDataEntry(pEntry);
+                if (pViewDataNewCur && pViewDataNewCur->HasFocus())
+                    nStateSet |= AccessibleStateType::FOCUSED;
+            }
+        }
     }
     else
         nStateSet |= AccessibleStateType::DEFUNC;
