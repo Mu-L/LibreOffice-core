@@ -3319,15 +3319,15 @@ tools::Rectangle SvTreeListBox::GetFocusRect(const SvTreeListEntry* pEntry, tool
     return aRect;
 }
 
-sal_IntPtr SvTreeListBox::GetTabPos(const SvTreeListEntry* pEntry, const SvLBoxTab* pTab) const
+tools::Long SvTreeListBox::GetTabPos(const SvTreeListEntry* pEntry, const SvLBoxTab* pTab) const
 {
     assert(pTab);
-    sal_IntPtr nPos = pTab->GetPos();
+    tools::Long nPos = pTab->GetPos();
     if( pTab->IsDynamic() )
     {
         sal_uInt16 nDepth = m_pModel->GetDepth(pEntry);
         nDepth = nDepth * static_cast<sal_uInt16>(nIndent);
-        nPos += static_cast<sal_IntPtr>(nDepth);
+        nPos += nDepth;
     }
     return nPos + (pEntry->GetExtraIndent() * nIndent);
 }
