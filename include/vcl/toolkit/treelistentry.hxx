@@ -56,7 +56,6 @@ namespace o3tl
 class UNLESS_MERGELIBS_MORE(VCL_DLLPUBLIC) SvTreeListEntry
 {
     friend class SvTreeList;
-    friend class SvListView;
     friend class SvTreeListBox;
 
     typedef std::vector<std::unique_ptr<SvLBoxItem>> ItemsType;

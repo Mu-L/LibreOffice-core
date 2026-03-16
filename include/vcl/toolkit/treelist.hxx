@@ -48,8 +48,8 @@ enum class SvListAction
     CLEARED          = 11
 };
 
+class SvTreeListBox;
 class SvTreeListEntry;
-class SvListView;
 class SvViewDataEntry;
 
 enum class SvSortMode { Ascending, Descending, None };
@@ -65,9 +65,9 @@ struct SvSortData
 
 class UNLESS_MERGELIBS_MORE(VCL_DLLPUBLIC) SvTreeList final
 {
-    friend class        SvListView;
+    friend class SvTreeListBox;
 
-    SvListView&         mrOwnerListView;
+    SvTreeListBox& mrOwnerListView;
     sal_uInt32          nEntryCount;
 
     Link<SvTreeListEntry*, SvTreeListEntry*>  aCloneLink;
@@ -79,22 +79,25 @@ class UNLESS_MERGELIBS_MORE(VCL_DLLPUBLIC) SvTreeList final
     bool mbEnableInvalidate;
 
     SvTreeListEntry*        FirstVisible() const { return First(); }
-    SvTreeListEntry*        NextVisible( const SvListView*,SvTreeListEntry* pEntry, sal_uInt16* pDepth=nullptr ) const;
-    SvTreeListEntry*        PrevVisible( const SvListView*,SvTreeListEntry* pEntry ) const;
-    SvTreeListEntry*        LastVisible( const SvListView* ) const;
-    SvTreeListEntry*        NextVisible( const SvListView*,SvTreeListEntry* pEntry, sal_uInt16& rDelta ) const;
-    SvTreeListEntry*        PrevVisible( const SvListView*,SvTreeListEntry* pEntry, sal_uInt16& rDelta ) const;
+    SvTreeListEntry* NextVisible(const SvTreeListBox*, SvTreeListEntry* pEntry,
+                                 sal_uInt16* pDepth = nullptr) const;
+    SvTreeListEntry* PrevVisible(const SvTreeListBox*, SvTreeListEntry* pEntry) const;
+    SvTreeListEntry* LastVisible(const SvTreeListBox*) const;
+    SvTreeListEntry* NextVisible(const SvTreeListBox*, SvTreeListEntry* pEntry,
+                                 sal_uInt16& rDelta) const;
+    SvTreeListEntry* PrevVisible(const SvTreeListBox*, SvTreeListEntry* pEntry,
+                                 sal_uInt16& rDelta) const;
 
-    bool               IsEntryVisible( const SvListView*,SvTreeListEntry* pEntry ) const;
-    SvTreeListEntry*    GetEntryAtVisPos( const SvListView*, sal_uInt32 nVisPos ) const;
-    sal_uInt32           GetVisiblePos( const SvListView*,SvTreeListEntry const * pEntry ) const;
-    sal_uInt32           GetVisibleCount( SvListView* ) const;
-    sal_uInt32           GetVisibleChildCount( const SvListView*,SvTreeListEntry* pParent ) const;
+    bool IsEntryVisible(const SvTreeListBox*, SvTreeListEntry* pEntry) const;
+    SvTreeListEntry* GetEntryAtVisPos(const SvTreeListBox*, sal_uInt32 nVisPos) const;
+    sal_uInt32 GetVisiblePos(const SvTreeListBox*, SvTreeListEntry const* pEntry) const;
+    sal_uInt32 GetVisibleCount(SvTreeListBox*) const;
+    sal_uInt32 GetVisibleChildCount(const SvTreeListBox*, SvTreeListEntry* pParent) const;
 
-    SvTreeListEntry*        FirstSelected( const SvListView*) const;
-    SvTreeListEntry*        NextSelected( const SvListView*,SvTreeListEntry* pEntry ) const;
+    SvTreeListEntry* FirstSelected(const SvTreeListBox*) const;
+    SvTreeListEntry* NextSelected(const SvTreeListBox*, SvTreeListEntry* pEntry) const;
 
-    sal_uInt32           GetChildSelectionCount( const SvListView*,SvTreeListEntry* pParent ) const;
+    sal_uInt32 GetChildSelectionCount(const SvTreeListBox*, SvTreeListEntry* pParent) const;
 
     SAL_DLLPRIVATE void SetAbsolutePositions();
 
@@ -124,7 +127,7 @@ class UNLESS_MERGELIBS_MORE(VCL_DLLPUBLIC) SvTreeList final
 public:
 
                         SvTreeList() = delete;
-                        SvTreeList(SvListView&);
+                        SvTreeList(SvTreeListBox&);
                         ~SvTreeList();
 
     void Broadcast(SvListAction nActionId, SvTreeListEntry* pEntry = nullptr);
@@ -195,128 +198,6 @@ public:
     sal_Int32           Compare(const SvTreeListEntry* pLeft, const SvTreeListEntry* pRight) const;
     void                SetCompareHdl( const Link<const SvSortData&, sal_Int32>& rLink ) { aCompareLink = rLink; }
     void                Resort();
-};
-
-class UNLESS_MERGELIBS_MORE(VCL_DLLPUBLIC) SvListView
-{
-    friend class SvTreeList;
-
-    using SvDataTable = std::unordered_map<SvTreeListEntry*, std::unique_ptr<SvViewDataEntry>>;
-    SvDataTable m_DataTable; // Mapping SvTreeListEntry -> ViewData
-
-    sal_uInt32 m_nVisibleCount;
-    sal_uInt32 m_nSelectionCount;
-    bool m_bVisPositionsValid;
-
-protected:
-    std::unique_ptr<SvTreeList> m_pModel;
-
-    void                ExpandListEntry( SvTreeListEntry* pParent );
-    void                CollapseListEntry( SvTreeListEntry* pParent );
-    bool                SelectListEntry( SvTreeListEntry* pEntry, bool bSelect );
-
-public:
-                        SvListView();   // Sets the Model to 0
-    void                dispose();
-    virtual             ~SvListView();
-    void                Clear();
-    virtual void ModelNotification(SvListAction nActionId, SvTreeListEntry* pEntry);
-
-    sal_uInt32          GetVisibleCount() const
-    {
-        return m_pModel->GetVisibleCount(const_cast<SvListView*>(this));
-    }
-
-    SvTreeListEntry* FirstVisible() const { return m_pModel->FirstVisible(); }
-
-    SvTreeListEntry*        NextVisible( SvTreeListEntry* pEntry ) const
-    {
-        return m_pModel->NextVisible(this, pEntry);
-    }
-
-    SvTreeListEntry*        PrevVisible( SvTreeListEntry* pEntry ) const
-    {
-        return m_pModel->PrevVisible(this, pEntry);
-    }
-
-    SvTreeListEntry* LastVisible() const { return m_pModel->LastVisible(this); }
-
-    SvTreeListEntry*        NextVisible( SvTreeListEntry* pEntry, sal_uInt16& rDelta ) const
-    {
-        return m_pModel->NextVisible(this, pEntry, rDelta);
-    }
-
-    SvTreeListEntry*        PrevVisible( SvTreeListEntry* pEntry, sal_uInt16& rDelta ) const
-    {
-        return m_pModel->PrevVisible(this, pEntry, rDelta);
-    }
-
-    sal_uInt32              GetSelectionCount() const;
-
-    SvTreeListEntry* FirstSelected() const { return m_pModel->FirstSelected(this); }
-
-    SvTreeListEntry*        NextSelected( SvTreeListEntry* pEntry ) const
-    {
-        return m_pModel->NextSelected(this, pEntry);
-    }
-
-    SvTreeListEntry*        GetEntryAtAbsPos( sal_uInt32 nAbsPos ) const
-    {
-        return m_pModel->GetEntryAtAbsPos(nAbsPos);
-    }
-
-    SvTreeListEntry*        GetEntryAtVisPos( sal_uInt32 nVisPos ) const
-    {
-        return m_pModel->GetEntryAtVisPos(this, nVisPos);
-    }
-
-    sal_uInt32              GetAbsPos( SvTreeListEntry const * pEntry ) const
-    {
-        return m_pModel->GetAbsPos(pEntry);
-    }
-
-    sal_uInt32           GetVisiblePos( SvTreeListEntry const * pEntry ) const
-    {
-        return m_pModel->GetVisiblePos(this, pEntry);
-    }
-
-    sal_uInt32           GetVisibleChildCount(SvTreeListEntry* pParent ) const
-    {
-        return m_pModel->GetVisibleChildCount(this, pParent);
-    }
-
-    bool               IsEntryVisible( SvTreeListEntry* pEntry ) const
-    {
-        return m_pModel->IsEntryVisible(this, pEntry);
-    }
-
-    bool                IsExpanded( SvTreeListEntry* pEntry ) const;
-    bool                IsAllExpanded( SvTreeListEntry* pEntry) const;
-    bool                IsSelected(const SvTreeListEntry* pEntry) const;
-    void                SetEntryFocus( SvTreeListEntry* pEntry, bool bFocus );
-    const SvViewDataEntry*         GetViewData( const SvTreeListEntry* pEntry ) const;
-    SvViewDataEntry*         GetViewData( SvTreeListEntry* pEntry );
-    bool                HasViewData() const;
-
-    virtual void        InitViewData( SvViewDataEntry*, SvTreeListEntry* pEntry ) = 0;
-
-    virtual void        ModelHasCleared() = 0;
-    virtual void        ModelHasInserted( SvTreeListEntry* pEntry ) = 0;
-    virtual void        ModelHasInsertedTree( SvTreeListEntry* pEntry ) = 0;
-    virtual void        ModelIsMoving( SvTreeListEntry* pSource ) = 0;
-    virtual void        ModelHasMoved( SvTreeListEntry* pSource ) = 0;
-    virtual void        ModelIsRemoving( SvTreeListEntry* pEntry ) = 0;
-    virtual void        ModelHasRemoved( SvTreeListEntry* pEntry ) = 0;
-    virtual void        ModelHasEntryInvalidated( SvTreeListEntry* pEntry ) = 0;
-
-private:
-    void RemoveViewData(SvTreeListEntry* pParent);
-
-    void ActionMoving(SvTreeListEntry* pEntry);
-    void ActionMoved();
-    void ActionInserted(SvTreeListEntry* pEntry);
-    void ActionInsertedTree(SvTreeListEntry* pEntry);
-    void ActionRemoving(SvTreeListEntry* pEntry);
 };
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
