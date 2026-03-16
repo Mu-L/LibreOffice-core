@@ -1949,8 +1949,6 @@ void SvTreeListBox::ModelHasCleared()
     AdjustEntryHeight();
     AdjustEntryHeight( GetDefaultExpandedEntryBmp() );
     AdjustEntryHeight( GetDefaultCollapsedEntryBmp() );
-
-    SvListView::ModelHasCleared();
 }
 
 bool SvTreeListBox::PosOverBody(const Point& rPos) const
@@ -2228,6 +2226,9 @@ void SvTreeListBox::ModelIsRemoving( SvTreeListEntry* pEntry )
 
 void SvTreeListBox::ModelHasRemoved( SvTreeListEntry* pEntry  )
 {
+    // WARNING WARNING WARNING
+    // The supplied pointer should have been deleted
+    // before this call. Be careful not to use it!!!
     if (pEntry == pHdlEntry)
         pHdlEntry = nullptr;
 

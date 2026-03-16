@@ -1011,42 +1011,6 @@ void SvListView::Clear()
     }
 }
 
-void SvListView::ModelHasCleared()
-{
-}
-
-void SvListView::ModelHasInserted( SvTreeListEntry* )
-{
-}
-
-void SvListView::ModelHasInsertedTree( SvTreeListEntry* )
-{
-}
-
-void SvListView::ModelIsMoving( SvTreeListEntry* /*  pSource */ )
-{
-}
-
-
-void SvListView::ModelHasMoved( SvTreeListEntry* )
-{
-}
-
-void SvListView::ModelIsRemoving( SvTreeListEntry* )
-{
-}
-
-void SvListView::ModelHasRemoved( SvTreeListEntry* )
-{
-    //WARNING WARNING WARNING
-    //The supplied pointer should have been deleted
-    //before this call. Be careful not to use it!!!
-}
-
-void SvListView::ModelHasEntryInvalidated( SvTreeListEntry*)
-{
-}
-
 void SvListView::ActionMoving(SvTreeListEntry* pEntry)
 {
     SvTreeListEntry* pParent = pEntry->pParent;

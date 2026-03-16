@@ -310,14 +310,14 @@ public:
 
     virtual void        InitViewData( SvViewDataEntry*, SvTreeListEntry* pEntry );
 
-    virtual void        ModelHasCleared();
-    virtual void        ModelHasInserted( SvTreeListEntry* pEntry );
-    virtual void        ModelHasInsertedTree( SvTreeListEntry* pEntry );
-    virtual void        ModelIsMoving( SvTreeListEntry* pSource );
-    virtual void        ModelHasMoved( SvTreeListEntry* pSource );
-    virtual void        ModelIsRemoving( SvTreeListEntry* pEntry );
-    virtual void        ModelHasRemoved( SvTreeListEntry* pEntry );
-    virtual void        ModelHasEntryInvalidated( SvTreeListEntry* pEntry );
+    virtual void        ModelHasCleared() = 0;
+    virtual void        ModelHasInserted( SvTreeListEntry* pEntry ) = 0;
+    virtual void        ModelHasInsertedTree( SvTreeListEntry* pEntry ) = 0;
+    virtual void        ModelIsMoving( SvTreeListEntry* pSource ) = 0;
+    virtual void        ModelHasMoved( SvTreeListEntry* pSource ) = 0;
+    virtual void        ModelIsRemoving( SvTreeListEntry* pEntry ) = 0;
+    virtual void        ModelHasRemoved( SvTreeListEntry* pEntry ) = 0;
+    virtual void        ModelHasEntryInvalidated( SvTreeListEntry* pEntry ) = 0;
 
 private:
     void RemoveViewData(SvTreeListEntry* pParent);
