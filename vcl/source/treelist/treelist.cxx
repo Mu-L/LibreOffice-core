@@ -973,15 +973,6 @@ SvListView::SvListView()
     std::unique_ptr<SvViewDataEntry> pViewData(new SvViewDataEntry);
     pViewData->SetExpanded(true);
     m_DataTable.insert(std::make_pair(pEntry, std::move(pViewData)));
-    // now all the other entries
-    pEntry = m_pModel->First();
-    while( pEntry )
-    {
-        pViewData = std::make_unique<SvViewDataEntry>();
-        InitViewData(pViewData.get(), pEntry);
-        m_DataTable.insert(std::make_pair(pEntry, std::move(pViewData)));
-        pEntry = m_pModel->Next(pEntry);
-    }
 }
 
 void SvListView::dispose() { m_pModel.reset(); }
