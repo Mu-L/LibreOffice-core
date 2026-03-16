@@ -74,6 +74,7 @@
 #include <comphelper/diagnose_ex.hxx>
 #include <editeng/unoprnms.hxx>
 #include <tools/debug.hxx>
+#include <tools/fract.hxx>
 #include <tools/urlobj.hxx>
 #include <unotools/tempfile.hxx>
 #include <svtools/soerr.hxx>
@@ -2417,13 +2418,12 @@ void SfxViewShell::GetState_Impl( SfxItemSet &rSet )
     }
 }
 
-void SfxViewShell::SetZoomFactor( const Fraction &rZoomX,
-    const Fraction &rZoomY )
+void SfxViewShell::SetZoomFactor( double fZoomX, double fZoomY )
 {
     DBG_ASSERT( GetWindow(), "no window" );
     MapMode aMap( GetWindow()->GetMapMode() );
-    aMap.SetScaleX( rZoomX );
-    aMap.SetScaleY( rZoomY );
+    aMap.SetScaleX( Fraction(fZoomX) );
+    aMap.SetScaleY( Fraction(fZoomY) );
     GetWindow()->SetMapMode( aMap );
 }
 

@@ -1031,8 +1031,8 @@ void ScTabViewShell::Execute( SfxRequest& rReq )
                     //  for ole inplace editing, the scale is defined by the visarea and client size
                     //  and can't be changed directly
 
-                    const Fraction& rOldY = GetViewData().GetZoomY();
-                    sal_uInt16 nOld = tools::Long(rOldY * 100);
+                    double fOldY = GetViewData().GetZoomY();
+                    sal_uInt16 nOld = tools::Long(fOldY * 100);
                     sal_uInt16 nNew;
                     if (SID_ZOOM_OUT == nSlot)
                         nNew = std::max(MINZOOM, basegfx::zoomtools::zoomOut(nOld));
@@ -1042,8 +1042,8 @@ void ScTabViewShell::Execute( SfxRequest& rReq )
                     {
                         bool bSyncZoom = pScMod->GetAppOptions().GetSynchronizeZoom();
                         SetZoomType(SvxZoomType::PERCENT, bSyncZoom);
-                        Fraction aFract(nNew, 100);
-                        SetZoom(aFract, aFract, bSyncZoom);
+                        double fFract = double(nNew) / 100;
+                        SetZoom(fFract, fFract, bSyncZoom);
                         PaintGrid();
                         PaintTop();
                         PaintLeft();
@@ -1112,8 +1112,8 @@ void ScTabViewShell::Execute( SfxRequest& rReq )
                 bool bSyncZoom = pScMod->GetAppOptions().GetSynchronizeZoom();
                 SvxZoomType eOldZoomType = GetZoomType();
                 SvxZoomType eNewZoomType = eOldZoomType;
-                const Fraction& rOldY = GetViewData().GetZoomY();  // Y is shown
-                sal_uInt16 nOldZoom = static_cast<sal_uInt16>(tools::Long( rOldY * 100 ));
+                double fOldY = GetViewData().GetZoomY();  // Y is shown
+                sal_uInt16 nOldZoom = static_cast<sal_uInt16>(tools::Long( fOldY * 100 ));
                 sal_uInt16 nZoom = nOldZoom;
                 bool bCancel = false;
 
@@ -1195,8 +1195,8 @@ void ScTabViewShell::Execute( SfxRequest& rReq )
                         aNewOpt.SetZoomType( GetZoomType() );
                         pScMod->SetAppOptions( aNewOpt );
                     }
-                    Fraction aFract( nZoom, 100 );
-                    SetZoom( aFract, aFract, bSyncZoom );
+                    double fFract = double(nZoom) / 100;
+                    SetZoom( fFract, fFract, bSyncZoom );
                     PaintGrid();
                     PaintTop();
                     PaintLeft();
@@ -1225,8 +1225,8 @@ void ScTabViewShell::Execute( SfxRequest& rReq )
                             aNewOpt.SetZoomType( GetZoomType() );
                             pScMod->SetAppOptions( aNewOpt );
                         }
-                        Fraction aFract( nCurrentZoom,100 );
-                        SetZoom( aFract, aFract, bSyncZoom );
+                        double fFract = double(nCurrentZoom) / 100;
+                        SetZoom( fFract, fFract, bSyncZoom );
                         PaintGrid();
                         PaintTop();
                         PaintLeft();

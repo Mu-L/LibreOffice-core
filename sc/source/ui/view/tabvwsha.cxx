@@ -321,16 +321,16 @@ void ScTabViewShell::GetState( SfxItemSet& rSet )
 
             case SID_ZOOM_IN:
                 {
-                    const Fraction& rZoomY = GetViewData().GetZoomY();
-                    tools::Long nZoom = tools::Long(rZoomY * 100);
+                    double fZoomY = GetViewData().GetZoomY();
+                    tools::Long nZoom = tools::Long(fZoomY * 100);
                     if (nZoom >= MAXZOOM)
                         rSet.DisableItem(nWhich);
                 }
                 break;
             case SID_ZOOM_OUT:
                 {
-                    const Fraction& rZoomY = GetViewData().GetZoomY();
-                    tools::Long nZoom = tools::Long(rZoomY * 100);
+                    double fZoomY = GetViewData().GetZoomY();
+                    tools::Long nZoom = tools::Long(fZoomY * 100);
                     if (nZoom <= MINZOOM)
                         rSet.DisableItem(nWhich);
                 }
@@ -342,8 +342,8 @@ void ScTabViewShell::GetState( SfxItemSet& rSet )
                     rSet.DisableItem( nWhich );
                 else
                 {
-                    const Fraction& rOldY = GetViewData().GetZoomY();
-                    sal_uInt16 nZoom = static_cast<sal_uInt16>(tools::Long( rOldY * 100 ));
+                    double fOldY = GetViewData().GetZoomY();
+                    sal_uInt16 nZoom = static_cast<sal_uInt16>(tools::Long( fOldY * 100 ));
                     rSet.Put( SvxZoomItem( SvxZoomType::PERCENT, nZoom, TypedWhichId<SvxZoomItem>(nWhich) ) );
                 }
                 break;
@@ -354,8 +354,8 @@ void ScTabViewShell::GetState( SfxItemSet& rSet )
                         rSet.DisableItem( nWhich );
                     else
                     {
-                        const Fraction& rOldY = GetViewData().GetZoomY();
-                        sal_uInt16 nCurrentZoom = static_cast<sal_uInt16>(tools::Long( rOldY * 100 ));
+                        double fOldY = GetViewData().GetZoomY();
+                        sal_uInt16 nCurrentZoom = static_cast<sal_uInt16>(tools::Long( fOldY * 100 ));
 
                         if( nCurrentZoom )
                         {

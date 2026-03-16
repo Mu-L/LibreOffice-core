@@ -43,8 +43,8 @@ class ScEditUtil
     VclPtr<OutputDevice> pDev; // MapMode has to be set
     double          nPPTX;
     double          nPPTY;
-    Fraction        aZoomX;
-    Fraction        aZoomY;
+    double          fZoomX;
+    double          fZoomY;
     bool            bInPrintTwips;
 
 public:
@@ -78,7 +78,7 @@ public:
                 ScEditUtil( ScDocument& rDocument, SCCOL nX, SCROW nY, SCTAB nZ,
                             const Point& rCellPos,
                             OutputDevice* pDevice, double nScaleX, double nScaleY,
-                            const Fraction& rX, const Fraction& rY, bool bPrintTwips = false );
+                            double fZoomX, double fZoomY, bool bPrintTwips = false );
 
     tools::Rectangle   GetEditArea( const ScPatternAttr* pPattern, bool bForceToTop );
     tools::Long GetIndent(const ScPatternAttr* pPattern) const;

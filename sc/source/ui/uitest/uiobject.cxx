@@ -333,7 +333,7 @@ void ScGridWinUIObject::execute(const OUString& rAction,
                 ScAppOptions aNewOpt = pScMod->GetAppOptions();
                 aNewOpt.SetZoom( nVal );
                 pScMod->SetAppOptions( aNewOpt );
-                Fraction aFract( nVal, 100 );
+                double aFract = double(nVal) / 100;
                 pViewShell->SetZoom( aFract, aFract, true );
                 pViewShell->PaintGrid();
                 pViewShell->PaintTop();
