@@ -4699,7 +4699,7 @@ if test "$_os" = "WINNT"; then
 
     # Find the cmake.exe
     if test "$build_os" = "cygwin"; then
-        PathFormat "$VC_PRODUCT_DIR/../Common7/IDE//CommonExtensions/Microsoft/CMake/CMake/bin/cmake.exe"
+        PathFormat "$VC_PRODUCT_DIR/../Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/bin/cmake.exe"
         CMAKE="$formatted_path"
     else
         # in WSL cmake is picked up from strawberry-perl-portable
