@@ -3332,62 +3332,6 @@ tools::Long SvTreeListBox::GetTabPos(const SvTreeListEntry* pEntry, const SvLBox
     return nPos + (pEntry->GetExtraIndent() * nIndent);
 }
 
-SvLBoxItem* SvTreeListBox::GetItem_Impl( SvTreeListEntry* pEntry, tools::Long nX,
-    SvLBoxTab** ppTab )
-{
-    SvLBoxItem* pItemClicked = nullptr;
-    sal_uInt16 nTabCount = aTabs.size();
-    sal_uInt16 nItemCount = pEntry->ItemCount();
-    SvLBoxTab* pTab = aTabs.front().get();
-    SvLBoxItem* pItem = &pEntry->GetItem(0);
-    sal_uInt16 nNextItem = 1;
-    nX -= GetMapMode().GetOrigin().X();
-    tools::Long nRealWidth = pImpl->GetOutputSize().Width();
-    nRealWidth -= GetMapMode().GetOrigin().X();
-
-    while( true )
-    {
-        SvLBoxTab* pNextTab=nNextItem<nTabCount ? aTabs[nNextItem].get() : nullptr;
-        tools::Long nStart = GetTabPos( pEntry, pTab );
-
-        tools::Long nNextTabPos;
-        if( pNextTab )
-            nNextTabPos = GetTabPos( pEntry, pNextTab );
-        else
-        {
-            nNextTabPos = nRealWidth;
-            if( nStart > nRealWidth )
-                nNextTabPos += 50;
-        }
-
-        auto nItemWidth(pItem->GetWidth(this, pEntry));
-        nStart += pTab->CalcOffset(nItemWidth, nNextTabPos - nStart);
-        auto nLen = nItemWidth;
-        if( pNextTab )
-        {
-            tools::Long nTabWidth = GetTabPos( pEntry, pNextTab ) - nStart;
-            if( nTabWidth < nLen )
-                nLen = nTabWidth;
-        }
-
-        if( nX >= nStart && nX < (nStart+nLen ) )
-        {
-            pItemClicked = pItem;
-            if( ppTab )
-            {
-                *ppTab = pTab;
-                break;
-            }
-        }
-        if( nNextItem >= nItemCount || nNextItem >= nTabCount)
-            break;
-        pTab = aTabs[ nNextItem ].get();
-        pItem = &pEntry->GetItem( nNextItem );
-        nNextItem++;
-    }
-    return pItemClicked;
-}
-
 std::pair<tools::Long, tools::Long> SvTreeListBox::GetItemPos(SvTreeListEntry* pEntry, sal_uInt16 nTabIdx)
 {
     sal_uInt16 nTabCount = aTabs.size();
@@ -3484,13 +3428,63 @@ void SvTreeListBox::SetForceMakeVisible( bool bEnable )
 
 SvLBoxItem* SvTreeListBox::GetItem(SvTreeListEntry* pEntry,tools::Long nX,SvLBoxTab** ppTab)
 {
-    return GetItem_Impl( pEntry, nX, ppTab );
+    SvLBoxItem* pItemClicked = nullptr;
+    sal_uInt16 nTabCount = aTabs.size();
+    sal_uInt16 nItemCount = pEntry->ItemCount();
+    SvLBoxTab* pTab = aTabs.front().get();
+    SvLBoxItem* pItem = &pEntry->GetItem(0);
+    sal_uInt16 nNextItem = 1;
+    nX -= GetMapMode().GetOrigin().X();
+    tools::Long nRealWidth = pImpl->GetOutputSize().Width();
+    nRealWidth -= GetMapMode().GetOrigin().X();
+
+    while (true)
+    {
+        SvLBoxTab* pNextTab = nNextItem < nTabCount ? aTabs[nNextItem].get() : nullptr;
+        tools::Long nStart = GetTabPos(pEntry, pTab);
+
+        tools::Long nNextTabPos;
+        if (pNextTab)
+            nNextTabPos = GetTabPos(pEntry, pNextTab);
+        else
+        {
+            nNextTabPos = nRealWidth;
+            if (nStart > nRealWidth)
+                nNextTabPos += 50;
+        }
+
+        auto nItemWidth(pItem->GetWidth(this, pEntry));
+        nStart += pTab->CalcOffset(nItemWidth, nNextTabPos - nStart);
+        auto nLen = nItemWidth;
+        if (pNextTab)
+        {
+            tools::Long nTabWidth = GetTabPos(pEntry, pNextTab) - nStart;
+            if (nTabWidth < nLen)
+                nLen = nTabWidth;
+        }
+
+        if (nX >= nStart && nX < (nStart + nLen))
+        {
+            pItemClicked = pItem;
+            if (ppTab)
+            {
+                *ppTab = pTab;
+                break;
+            }
+        }
+        if (nNextItem >= nItemCount || nNextItem >= nTabCount)
+            break;
+        pTab = aTabs[nNextItem].get();
+        pItem = &pEntry->GetItem(nNextItem);
+        nNextItem++;
+    }
+    return pItemClicked;
 }
 
 SvLBoxItem* SvTreeListBox::GetItem(SvTreeListEntry* pEntry,tools::Long nX )
 {
     SvLBoxTab* pDummyTab;
-    return GetItem_Impl( pEntry, nX, &pDummyTab );
+    return GetItem(pEntry, nX, &pDummyTab);
 }
 
 void SvTreeListBox::AddTab(tools::Long nTabPos, SvLBoxTabFlags nFlags )

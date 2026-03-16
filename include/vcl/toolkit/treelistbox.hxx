@@ -563,7 +563,6 @@ protected:
     SAL_DLLPRIVATE void         PaintEntry1( SvTreeListEntry&, tools::Long nLine, vcl::RenderContext& rRenderContext );
 
     SAL_DLLPRIVATE void         InitTreeView();
-    SAL_DLLPRIVATE SvLBoxItem*  GetItem_Impl( SvTreeListEntry*, tools::Long nX, SvLBoxTab** ppTab );
     SAL_DLLPRIVATE void         ImplInitStyle();
 
     void            SetupDragOrigin();
