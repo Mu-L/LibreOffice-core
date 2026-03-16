@@ -289,7 +289,29 @@ constexpr SmTokenTableEntry aTokenTable[]
         { u"ٯا"_ustr, TSEC, '\0', TG::Function, 5 },
         { u"ٯاز"_ustr, TSECH, '\0', TG::Function, 5 },
         { u"ٯتا"_ustr, TCSC, '\0', TG::Function, 5 },
-        { u"ٯتاز"_ustr, TCSCH, '\0', TG::Function, 5 } };
+        { u"ٯتاز"_ustr, TCSCH, '\0', TG::Function, 5 },
+        { u"𞤣𞤫𞤱"_ustr, TEXP, '\0', TG::Function, 5 },
+        { u"𞤤𞤧𞤢𞤤"_ustr, TASIN, '\0', TG::Function, 5 },
+        { u"𞤤𞤬"_ustr, TLN, '\0', TG::Function, 5 },
+        { u"𞤤𞤭𞤬"_ustr, TLOG, '\0', TG::Function, 5 },
+        { u"𞤤𞤸𞤢𞤤"_ustr, TACOS, '\0', TG::Function, 5 },
+        { u"𞤤𞤼𞤢𞤳"_ustr, TATAN, '\0', TG::Function, 5 },
+        { u"𞤧𞤢𞤤"_ustr, TSIN, '\0', TG::Function, 5 },
+        { u"𞤧𞤢𞤤𞤬"_ustr, TSINH, '\0', TG::Function, 5 },
+        { u"𞤳𞤫𞥅𞤪"_ustr, TLIM, '\0', TG::Oper, 5 },
+        { u"𞤳𞤫𞥅𞤪𞤤𞤫𞤧"_ustr, TLIMINF, '\0', TG::Oper, 5 },
+        { u"𞤳𞤫𞥅𞤪𞤼𞤮𞥅𞤱"_ustr, TLIMSUP, '\0', TG::Oper, 5 },
+        { u"𞤳𞤼𞤢𞤰"_ustr, TCSC, '\0', TG::Function, 5 },
+        { u"𞤳𞤼𞤢𞤳"_ustr, TCOT, '\0', TG::Function, 5 },
+        { u"𞤳𞤼𞤰𞤬"_ustr, TCSCH, '\0', TG::Function, 5 },
+        { u"𞤳𞤼𞤰𞤬"_ustr, TCSCH, '\0', TG::Function, 5 },
+        { u"𞤳𞤼𞤳𞤬"_ustr, TCOTH, '\0', TG::Function, 5 },
+        { u"𞤸𞤢𞤤"_ustr, TCOS, '\0', TG::Function, 5 },
+        { u"𞤸𞤢𞤤𞤬"_ustr, TCOSH, '\0', TG::Function, 5 },
+        { u"𞤼𞤢𞤰"_ustr, TSEC, '\0', TG::Function, 5 },
+        { u"𞤼𞤢𞤰𞤬"_ustr, TSECH, '\0', TG::Function, 5 },
+        { u"𞤼𞤢𞤳"_ustr, TTAN, '\0', TG::Function, 5 },
+        { u"𞤼𞤢𞤳𞤬"_ustr, TTANH, '\0', TG::Function, 5 } };
 
 // First character may be any alphabetic
 const sal_Int32 coStartFlags = KParseTokens::ANY_LETTER | KParseTokens::IGNORE_LEADING_WS;
@@ -1967,17 +1989,23 @@ std::unique_ptr<SmNode> SmParser5::DoOper()
         case TLIMINF:
         case THADD:
         case TNAHA:
-            if (eType == TLIMSUP)
+            if (eType == TLIMSUP && m_aCurToken.aText == u"limsup"_ustr)
                 m_aCurToken.aText = u"lim sup"_ustr;
-            else if (eType == TLIMINF)
+            else if (eType == TLIMINF && m_aCurToken.aText == u"liminf"_ustr)
                 m_aCurToken.aText = u"lim inf"_ustr;
-            else if (eType == TNAHA)
+            else if (eType == TLIMSUP
+                     && m_aCurToken.aText == u"𞤳𞤫𞥅𞤪𞤼𞤮𞥅𞤱"_ustr)
+                m_aCurToken.aText = u"𞤳𞤫𞥅𞤪 𞤼𞤮𞥅𞤱"_ustr;
+            else if (eType == TLIMINF && m_aCurToken.aText == u"𞤳𞤫𞥅𞤪𞤤𞤫𞤧"_ustr)
+                m_aCurToken.aText = u"𞤳𞤫𞥅𞤪 𞤤𞤫𞤧"_ustr;
+            else if (eType == TNAHA && m_aCurToken.aText == u"نها"_ustr)
                 m_aCurToken.aText = u"نها"_ustr;
             else if (eType == THADD)
                 m_aCurToken.aText = OUString(&MS_HADD, 1);
-            else
+            else if (eType == TLIM && m_aCurToken.aText == u"lim"_ustr)
                 m_aCurToken.aText = u"lim"_ustr;
-            pNode.reset(new SmTextNode(m_aCurToken, FNT_TEXT));
+            // else keep original aText
+            pNode.reset(new SmTextNode(m_aCurToken, FNT_FUNCTION));
             pNode->SetSelection(m_aCurESelection);
             break;
 
