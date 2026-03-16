@@ -3384,26 +3384,26 @@ IMPL_LINK( SvTreeListBox, DefaultCompare, const SvSortData&, rData, sal_Int32 )
     return DefaultCompare(pLeftText, pRightText);
 }
 
-void SvTreeListBox::ModelNotification( SvListAction nActionId, SvTreeListEntry* pEntry1,
-                        SvTreeListEntry* pEntry2, sal_uInt32 nPos )
+void SvTreeListBox::ModelNotification(SvListAction nActionId, SvTreeListEntry* pEntry)
 {
     SolarMutexGuard aSolarGuard;
 
     if( nActionId == SvListAction::CLEARING )
         CancelTextEditing();
 
-    SvListView::ModelNotification( nActionId, pEntry1, pEntry2, nPos );
+    SvListView::ModelNotification(nActionId, pEntry);
     switch( nActionId )
     {
         case SvListAction::INSERTED:
         {
-            SvLBoxContextBmp* pBmpItem = static_cast< SvLBoxContextBmp* >( pEntry1->GetFirstItem( SvLBoxItemType::ContextBmp ) );
+            SvLBoxContextBmp* pBmpItem
+                = static_cast<SvLBoxContextBmp*>(pEntry->GetFirstItem(SvLBoxItemType::ContextBmp));
             if ( !pBmpItem )
                 break;
             const Image& rBitmap1( pBmpItem->GetBitmap1() );
             const Image& rBitmap2( pBmpItem->GetBitmap2() );
             short nMaxWidth = short( std::max( rBitmap1.GetSizePixel().Width(), rBitmap2.GetSizePixel().Width() ) );
-            nMaxWidth = pImpl->UpdateContextBmpWidthVector( pEntry1, nMaxWidth );
+            nMaxWidth = pImpl->UpdateContextBmpWidthVector(pEntry, nMaxWidth);
             if( nMaxWidth > nContextBmpWidthMax )
             {
                 nContextBmpWidthMax = nMaxWidth;

@@ -629,8 +629,7 @@ public:
     sal_Int32       DefaultCompare(const SvLBoxString* pLeftText, const SvLBoxString* pRightText);
 
     DECL_DLLPRIVATE_LINK( DefaultCompare, const SvSortData&, sal_Int32 );
-    virtual void    ModelNotification( SvListAction nActionId, SvTreeListEntry* pEntry1,
-                        SvTreeListEntry* pEntry2, sal_uInt32 nPos ) override;
+    virtual void ModelNotification(SvListAction nActionId, SvTreeListEntry* pEntry) override;
 
     SvTreeListEntry*    GetFirstEntryInView() const;
     SvTreeListEntry*    GetNextEntryInView(SvTreeListEntry*) const;

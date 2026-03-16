@@ -44,11 +44,11 @@ SvTreeList::~SvTreeList()
 void SvTreeList::Broadcast(
     SvListAction nActionId,
     SvTreeListEntry* pEntry1,
-    SvTreeListEntry* pEntry2,
-    sal_uInt32 nPos
+    SvTreeListEntry* /* pEntry2 */,
+    sal_uInt32 /* nPos */
 )
 {
-    mrOwnerListView.ModelNotification(nActionId, pEntry1, pEntry2, nPos);
+    mrOwnerListView.ModelNotification(nActionId, pEntry1);
 }
 
 // an entry is visible if all parents are expanded
@@ -1111,34 +1111,33 @@ void SvListView::ActionRemoving(SvTreeListEntry* pEntry)
     }
 }
 
-void SvListView::ModelNotification( SvListAction nActionId, SvTreeListEntry* pEntry1,
-                        SvTreeListEntry* /*pEntry2*/, sal_uInt32 /*nPos*/ )
+void SvListView::ModelNotification(SvListAction nActionId, SvTreeListEntry* pEntry)
 {
 
     switch( nActionId )
     {
         case SvListAction::INSERTED:
-            ActionInserted(pEntry1);
-            ModelHasInserted( pEntry1 );
+            ActionInserted(pEntry);
+            ModelHasInserted(pEntry);
             break;
         case SvListAction::INSERTED_TREE:
-            ActionInsertedTree(pEntry1);
-            ModelHasInsertedTree( pEntry1 );
+            ActionInsertedTree(pEntry);
+            ModelHasInsertedTree(pEntry);
             break;
         case SvListAction::REMOVING:
-            ModelIsRemoving( pEntry1 );
-            ActionRemoving(pEntry1);
+            ModelIsRemoving(pEntry);
+            ActionRemoving(pEntry);
             break;
         case SvListAction::REMOVED:
-            ModelHasRemoved( pEntry1 );
+            ModelHasRemoved(pEntry);
             break;
         case SvListAction::MOVING:
-            ModelIsMoving( pEntry1 );
-            ActionMoving(pEntry1);
+            ModelIsMoving(pEntry);
+            ActionMoving(pEntry);
             break;
         case SvListAction::MOVED:
             ActionMoved();
-            ModelHasMoved( pEntry1 );
+            ModelHasMoved(pEntry);
             break;
         case SvListAction::CLEARING:
             Clear();
@@ -1148,7 +1147,7 @@ void SvListView::ModelNotification( SvListAction nActionId, SvTreeListEntry* pEn
             break;
         case SvListAction::INVALIDATE_ENTRY:
             // no action for the base class
-            ModelHasEntryInvalidated( pEntry1 );
+            ModelHasEntryInvalidated(pEntry);
             break;
         case SvListAction::RESORTED:
             m_bVisPositionsValid = false;

@@ -225,12 +225,7 @@ public:
     void                dispose();
     virtual             ~SvListView();
     void                Clear();
-    virtual void        ModelNotification(
-                            SvListAction nActionId,
-                            SvTreeListEntry* pEntry1,
-                            SvTreeListEntry* pEntry2,
-                            sal_uInt32 nPos
-                        );
+    virtual void ModelNotification(SvListAction nActionId, SvTreeListEntry* pEntry);
 
     sal_uInt32          GetVisibleCount() const
     {
