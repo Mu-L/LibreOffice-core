@@ -827,7 +827,7 @@ sal_uInt32 SvTreeListBox::GetLevelChildCount( const SvTreeListEntry* _pParent ) 
 
 SvViewDataEntry* SvTreeListBox::GetViewDataEntry( SvTreeListEntry const * pEntry ) const
 {
-    return const_cast<SvViewDataEntry*>(SvListView::GetViewData(pEntry));
+    return const_cast<SvViewDataEntry*>(GetViewData(pEntry));
 }
 
 SvViewDataItem* SvTreeListBox::GetViewDataItem(SvTreeListEntry const * pEntry, SvLBoxItem const * pItem)
@@ -837,7 +837,7 @@ SvViewDataItem* SvTreeListBox::GetViewDataItem(SvTreeListEntry const * pEntry, S
 
 const SvViewDataItem* SvTreeListBox::GetViewDataItem(const SvTreeListEntry* pEntry, const SvLBoxItem* pItem) const
 {
-    const SvViewDataEntry* pEntryData = SvListView::GetViewData(pEntry);
+    const SvViewDataEntry* pEntryData = GetViewData(pEntry);
     assert(pEntryData && "Entry not in View");
     sal_uInt16 nItemPos = pEntry->GetPos(pItem);
     return &pEntryData->GetItem(nItemPos);
