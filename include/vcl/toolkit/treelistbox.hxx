@@ -193,7 +193,7 @@ class UNLESS_MERGELIBS_MORE(VCL_DLLPUBLIC) SvTreeListBox : public Control,
     friend class SvTreeList;
     friend class JSTreeView;
 
-    using SvDataTable = std::unordered_map<SvTreeListEntry*, std::unique_ptr<SvViewDataEntry>>;
+    using SvDataTable = std::unordered_map<SvTreeListEntry*, SvViewDataEntry>;
     SvDataTable m_DataTable; // Mapping SvTreeListEntry -> ViewData
 
     sal_uInt32 m_nVisibleCount;
