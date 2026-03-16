@@ -308,7 +308,7 @@ public:
     SvViewDataEntry*         GetViewData( SvTreeListEntry* pEntry );
     bool                HasViewData() const;
 
-    virtual void        InitViewData( SvViewDataEntry*, SvTreeListEntry* pEntry );
+    virtual void        InitViewData( SvViewDataEntry*, SvTreeListEntry* pEntry ) = 0;
 
     virtual void        ModelHasCleared() = 0;
     virtual void        ModelHasInserted( SvTreeListEntry* pEntry ) = 0;

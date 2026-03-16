@@ -1160,10 +1160,6 @@ void SvListView::ModelNotification( SvListAction nActionId, SvTreeListEntry* pEn
     }
 }
 
-void SvListView::InitViewData( SvViewDataEntry*, SvTreeListEntry* )
-{
-}
-
 bool SvListView::IsExpanded( SvTreeListEntry* pEntry ) const
 {
     DBG_ASSERT(pEntry,"IsExpanded:No Entry");
