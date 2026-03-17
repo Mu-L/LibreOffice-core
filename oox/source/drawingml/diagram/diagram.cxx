@@ -707,7 +707,7 @@ void loadDiagram( ShapePtr const & pShape,
             pDiagram->getData()->setThemeDocument(aTheme->getFragment());
 
         // Prepare support for the advanced DiagramHelper using Diagram & Theme data
-        // This is where pDiagram is moved to where it will stay, else it wil get
+        // This is where pDiagram is moved to where it will stay, else it will get
         // cleaned up (what is intended)
         pShape->prepareDiagramHelper(pDiagram, rFilter.getCurrentThemePtr());
     }
