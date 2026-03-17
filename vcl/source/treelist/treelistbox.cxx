@@ -2986,32 +2986,26 @@ void SvTreeListBox::PaintEntry1(SvTreeListEntry& rEntry, tools::Long nLine, vcl:
     // Draw items
 
     const size_t nItemCount = rEntry.ItemCount();
-    size_t nCurTab = 0;
-    size_t nCurItem = 0;
 
     const bool bEntryHighlighted = pViewDataEntry->IsHighlighted();
     // We need to track, if the area for the image area has selection background; otherwise,
     // the symbol may be drawn using aHighlightTextColor (usually white) on white background
     bool bImageHighlighted = false;
 
-    while (nCurTab < nTabCount && nCurItem < nItemCount)
+    for (size_t nCurIndex = 0; nCurIndex < nTabCount && nCurIndex < nItemCount; ++nCurIndex)
     {
-        SvLBoxTab* pTab = m_aTabs[nCurTab].get();
+        SvLBoxTab* pTab = m_aTabs[nCurIndex].get();
 
         if (pTab->IsHidden())
-        {
-            nCurItem++;
-            nCurTab++;
             continue;
-        }
 
-        const size_t nNextTab = nCurTab + 1;
+        const size_t nNextTab = nCurIndex + 1;
         SvLBoxTab* pNextTab = nNextTab < nTabCount ? m_aTabs[nNextTab].get() : nullptr;
-        SvLBoxItem& rItem = rEntry.GetItem(nCurItem);
+        SvLBoxItem& rItem = rEntry.GetItem(nCurIndex);
 
         SvLBoxTabFlags nFlags = pTab->nFlags;
-        Size aSize(rItem.GetWidth(this, pViewDataEntry, nCurItem),
-                   SvLBoxItem::GetHeight(pViewDataEntry, nCurItem));
+        Size aSize(rItem.GetWidth(this, pViewDataEntry, nCurIndex),
+                   SvLBoxItem::GetHeight(pViewDataEntry, nCurIndex));
         tools::Long nTabPos = GetTabPos(&rEntry, pTab);
 
         tools::Long nNextTabPos;
@@ -3032,7 +3026,7 @@ void SvTreeListBox::PaintEntry1(SvTreeListEntry& rEntry, tools::Long nLine, vcl:
             nX = nTabPos + pTab->CalcOffset(aSize.Width(), nNextTabPos - nTabPos);
 
         // add an indent if the context bitmap can't be centered without touching the expander
-        if (nCurTab == 0 && !(m_nTreeFlags & SvTreeFlags::CHKBTN) && bHasButtonsAtRoot &&
+        if (nCurIndex == 0 && !(m_nTreeFlags & SvTreeFlags::CHKBTN) && bHasButtonsAtRoot &&
                 pTab->nFlags & SvLBoxTabFlags::ADJUST_CENTER &&
                 !(pTab->nFlags & SvLBoxTabFlags::FORCE) &&
                 aSize.Width() > nMaxContextBmpWidthBeforeIndentIsNeeded)
@@ -3090,7 +3084,7 @@ void SvTreeListBox::PaintEntry1(SvTreeListEntry& rEntry, tools::Long nLine, vcl:
         else
         {
             // draw from the current to the next tab
-            if (nCurTab != 0)
+            if (nCurIndex != 0)
                 aRect.SetLeft( nTabPos );
             else
                 // if we're in the 0th tab, always draw from column 0 --
@@ -3114,7 +3108,7 @@ void SvTreeListBox::PaintEntry1(SvTreeListEntry& rEntry, tools::Long nLine, vcl:
         // A custom selection that starts at a tab position > 0, do not fill
         // the background of the 0th item, else e.g. we might not be able to
         // realize tab listboxes with lines.
-        if (!(nCurTab == 0 && (m_nTreeFlags & SvTreeFlags::USESEL) && m_nFirstSelTab))
+        if (!(nCurIndex == 0 && (m_nTreeFlags & SvTreeFlags::USESEL) && m_nFirstSelTab))
         {
             Color aBackgroundColor = aWallpaper.GetColor();
             if (aBackgroundColor != COL_TRANSPARENT)
@@ -3148,9 +3142,6 @@ void SvTreeListBox::PaintEntry1(SvTreeListEntry& rEntry, tools::Long nLine, vcl:
         }
 
         rRenderContext.SetFillColor(aBackupColor);
-
-        nCurItem++;
-        nCurTab++;
     }
 
     if (pViewDataEntry->IsDragTarget())
