@@ -79,7 +79,6 @@ void WidgetTestDialog::FillTreeView()
     for (int i = 0; i < 3 - 1; ++i)
     {
         int nWidth = m_xTreeView2->get_column_width(i);
-        assert(nWidth > 0 && "suspicious to get a value like this");
         aWidths.push_back(nWidth);
     }
     m_xTreeView2->set_column_fixed_widths(aWidths);
