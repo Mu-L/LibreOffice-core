@@ -26,6 +26,10 @@
 #include <tools/mapunit.hxx>
 #include <tools/stream.hxx>
 #include <i18nlangtag/languagetag.hxx>
+#include <editeng/brushitem.hxx>
+#include <editeng/eeitem.hxx>
+#include <editeng/flstitem.hxx>
+#include <editeng/langitem.hxx>
 #include <editeng/numitem.hxx>
 #include <svl/eitem.hxx>
 #include <vcl/svapp.hxx>
@@ -35,13 +39,11 @@
 #include <svx/nbdtmg.hxx>
 #include <svx/strarray.hxx>
 #include <svx/gallery.hxx>
-#include <editeng/brushitem.hxx>
 #include <svl/intitem.hxx>
 #include <sfx2/objsh.hxx>
 #include <vcl/graph.hxx>
 #include <vcl/settings.hxx>
 #include <svx/cuicharmap.hxx>
-#include <editeng/flstitem.hxx>
 #include <svx/numvset.hxx>
 #include <sfx2/htmlmode.hxx>
 #include <unotools/pathoptions.hxx>
@@ -1455,6 +1457,11 @@ void    SvxNumOptionsTabPage::Reset( const SfxItemSet* rSet )
 
     InitControls();
     bModified = false;
+    const SvxLanguageItem* pLangItem = rSet->GetItemIfSet(SID_ATTR_CHAR_LANGUAGE, true);
+    if (!pLangItem)
+        pLangItem = rSet->GetItemIfSet(EE_CHAR_LANGUAGE, true);
+    if (pLangItem)
+        m_aPreviewWIN.SetLanguage(pLangItem->GetLanguage());
 }
 
 void SvxNumOptionsTabPage::InitControls()

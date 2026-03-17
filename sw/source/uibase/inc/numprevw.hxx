@@ -22,6 +22,8 @@
 
 #include <names.hxx>
 #include <vcl/weld/customweld.hxx>
+#include <editeng/eeitem.hxx>
+#include <editeng/langitem.hxx>
 
 class SwNumRule;
 
@@ -29,10 +31,11 @@ class NumberingPreview final : public weld::CustomWidgetController
 {
     const SwNumRule*    m_pActNum;
     vcl::Font           m_aStdFont;
-    tools::Long                m_nPageWidth;
+    tools::Long         m_nPageWidth;
     const UIName*       m_pOutlineNames;
     bool                m_bPosition;
     sal_uInt16          m_nActLevel;
+    LanguageType        m_eLang;
 
 private:
     virtual void Paint(vcl::RenderContext& rRenderContext, const tools::Rectangle& rRect) override;
@@ -44,6 +47,7 @@ public:
         , m_pOutlineNames(nullptr)
         , m_bPosition(false)
         , m_nActLevel(USHRT_MAX)
+        , m_eLang(LANGUAGE_NONE)
     {
     }
 
@@ -60,6 +64,7 @@ public:
     void    SetPositionMode()
                     { m_bPosition = true;}
     void    SetLevel(sal_uInt16 nSet) {m_nActLevel = nSet;}
+    void    SetLanguage(LanguageType eLang) { m_eLang = eLang; }
 };
 
 #endif

@@ -22,6 +22,9 @@
 #include <svl/stritem.hxx>
 #include <editeng/numitem.hxx>
 #include <editeng/brushitem.hxx>
+#include <editeng/langitem.hxx>
+#include <editeng/eeitem.hxx>
+#include <svx/svxids.hrc>
 #include <osl/diagnose.h>
 #include <numrule.hxx>
 
@@ -119,7 +122,7 @@ void SwTextShell::ExecEnterNum(SfxRequest &rReq)
     case FN_NUMBER_BULLETS:
     case SID_OUTLINE_BULLET:
     {
-        SfxItemSetFixed<SID_HTML_MODE, SID_HTML_MODE,
+        SfxItemSetFixed<EE_CHAR_LANGUAGE, EE_CHAR_LANGUAGE, SID_HTML_MODE, SID_HTML_MODE,
                      SID_ATTR_NUMBERING_RULE, SID_PARAM_CUR_NUM_LEVEL>  aSet( GetPool() );
         SwDocShell* pDocSh = GetView().GetDocShell();
         const bool bHtml = dynamic_cast<SwWebDocShell*>( pDocSh  ) !=  nullptr;
@@ -185,6 +188,9 @@ void SwTextShell::ExecEnterNum(SfxRequest &rReq)
         }
 
         aSet.Put( SfxBoolItem( SID_PARAM_NUM_PRESET,false ));
+
+        LanguageType eLang = GetShell().GetCurLang();
+        aSet.Put(SvxLanguageItem(eLang, EE_CHAR_LANGUAGE));
 
         // Before the dialogue of the HTML mode will be dropped at the Docshell.
         pDocSh->PutItem(SfxUInt16Item(SID_HTML_MODE, ::GetHtmlMode(pDocSh)));

@@ -432,6 +432,11 @@ void SwNumPositionTabPage::Reset( const SfxItemSet* rSet )
     ShowControlsDependingOnPosAndSpaceMode();
     InitControls();
     m_bModified = false;
+    const SvxLanguageItem* pLangItem = rSet->GetItemIfSet(SID_ATTR_CHAR_LANGUAGE, true);
+    if (!pLangItem)
+        pLangItem = rSet->GetItemIfSet(EE_CHAR_LANGUAGE, true);
+    if (pLangItem)
+        m_aPreviewWIN.SetLanguage(pLangItem->GetLanguage());
 }
 
 void SwNumPositionTabPage::InitPosAndSpaceMode()

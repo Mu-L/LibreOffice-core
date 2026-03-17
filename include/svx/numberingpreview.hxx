@@ -11,6 +11,7 @@
 #include <svx/svxdllapi.h>
 #include <editeng/numitem.hxx>
 #include <vcl/weld/customweld.hxx>
+#include <i18nlangtag/lang.h>
 
 /// Provides the preview to show how looks bullet or numbering format before the apply.
 class SVXCORE_DLLPUBLIC SvxNumberingPreview final : public weld::CustomWidgetController
@@ -19,12 +20,14 @@ class SVXCORE_DLLPUBLIC SvxNumberingPreview final : public weld::CustomWidgetCon
     vcl::Font m_aStdFont;
     bool m_bPosition;
     sal_uInt16 m_nActLevel;
+    LanguageType m_eLang;
 
     virtual void Paint(vcl::RenderContext& rRenderContext,
                        const ::tools::Rectangle& rRect) override;
 
 public:
     SvxNumberingPreview();
+    void SetLanguage(LanguageType eLang) { m_eLang = eLang; }
 
     void SetNumRule(const SvxNumRule* pNum)
     {

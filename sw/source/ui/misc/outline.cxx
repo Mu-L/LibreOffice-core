@@ -913,7 +913,7 @@ void NumberingPreview::Paint(vcl::RenderContext& rRenderContext, const tools::Re
         const tools::Long nXStep = aSize.Width() / (3 * MAXLEVEL * ((MAXLEVEL < 10) ? 2 : 1));
         const tools::Long nYStep = (aSize.Height() - 6)/ MAXLEVEL;
         tools::Long nYStart = 4;
-        m_aStdFont = OutputDevice::GetDefaultFont(DefaultFontType::UI_SANS, GetAppLanguage(),
+        m_aStdFont = OutputDevice::GetDefaultFont(DefaultFontType::UI_SANS, m_eLang,
                                                 GetDefaultFontFlags::OnlyOne, &rRenderContext);
 
         if (svtools::ColorConfig().GetColorValue(svtools::FONTCOLOR, false).nColor == COL_AUTO)
@@ -981,7 +981,7 @@ void NumberingPreview::Paint(vcl::RenderContext& rRenderContext, const tools::Re
                     pVDev->SetFont(m_aStdFont);
                     if(m_pActNum->IsContinusNum())
                         aNumVector[nLevel] = nPreNum;
-                    OUString aText(m_pActNum->MakeNumString( aNumVector ));
+                    OUString aText(m_pActNum->MakeNumString(aNumVector, true, 255, false, nullptr, m_eLang));
                     pVDev->DrawText( Point(nNumberXPos, nYStart), aText );
                     nBulletWidth = pVDev->GetTextWidth(aText);
                     nPreNum++;

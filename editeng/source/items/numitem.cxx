@@ -1034,7 +1034,7 @@ void SvxNumRule::SetLevel(sal_uInt16 nLevel, const SvxNumberFormat* pFmt)
     }
 }
 
-OUString SvxNumRule::MakeNumString( const SvxNodeNum& rNum ) const
+OUString SvxNumRule::MakeNumString(const SvxNodeNum& rNum, LanguageType aLang) const
 {
     OUStringBuffer aStr;
     if( SVX_NO_NUM > rNum.GetLevel() && !( SVX_NO_NUMLEVEL & rNum.GetLevel() ) )
@@ -1071,8 +1071,8 @@ OUString SvxNumRule::MakeNumString( const SvxNodeNum& rNum ) const
                 {
                     if(SVX_NUM_BITMAP != rNFmt.GetNumberingType())
                     {
-                        const LanguageTag& rLang = Application::GetSettings().GetLanguageTag();
-                        aStr.append(rNFmt.GetNumStr( rNum.GetLevelVal()[ i ], rLang.getLocale(), rMyNFmt.GetIsLegal() ));
+                        css::lang::Locale aLocale(LanguageTag::convertToLocale(aLang));
+                        aStr.append(rNFmt.GetNumStr(rNum.GetLevelVal()[ i ], aLocale, rMyNFmt.GetIsLegal()));
                     }
                     else
                         bDot = false;

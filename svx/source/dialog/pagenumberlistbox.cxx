@@ -18,7 +18,9 @@
  */
 
 #include <editeng/brushitem.hxx>
+#include <editeng/eeitem.hxx>
 #include <editeng/numitem.hxx>
+#include <i18nlangtag/languagetag.hxx>
 #include <i18nlangtag/mslangid.hxx>
 #include <svtools/colorcfg.hxx>
 #include <svx/dialmgr.hxx>
@@ -30,7 +32,7 @@
 #include <vcl/rendercontext/GetDefaultFontFlags.hxx>
 #include <vcl/virdev.hxx>
 #include <numberingtype.hrc>
-
+#include <com/sun/star/lang/Locale.hpp>
 #include <com/sun/star/style/NumberingType.hpp>
 
 SvxPageNumberListBox::SvxPageNumberListBox(std::unique_ptr<weld::ComboBox> pControl)
@@ -63,6 +65,7 @@ SvxNumberingPreview::SvxNumberingPreview()
     : m_pActNum(nullptr)
     , m_bPosition(false)
     , m_nActLevel(SAL_MAX_UINT16)
+    , m_eLang(LANGUAGE_NONE)
 {
 }
 
@@ -159,8 +162,7 @@ void SvxNumberingPreview::Paint(vcl::RenderContext& rRenderContext,
         tools::Long nYStep = (aSize.Height() - 6)
                              / (m_pActNum->GetLevelCount() > 1 ? m_pActNum->GetLevelCount() : 5);
 
-        m_aStdFont = OutputDevice::GetDefaultFont(DefaultFontType::UI_SANS,
-                                                  MsLangId::getConfiguredSystemLanguage(),
+        m_aStdFont = OutputDevice::GetDefaultFont(DefaultFontType::UI_SANS, m_eLang,
                                                   GetDefaultFontFlags::OnlyOne);
         m_aStdFont.SetColor(aTextColor);
         m_aStdFont.SetFillColor(aBackColor);
@@ -245,7 +247,7 @@ void SvxNumberingPreview::Paint(vcl::RenderContext& rRenderContext,
                     aNum.SetLevel(nLevel);
                     if (m_pActNum->IsContinuousNumbering())
                         aNum.GetLevelVal()[nLevel] = nPreNum;
-                    OUString aText(m_pActNum->MakeNumString(aNum));
+                    OUString aText(m_pActNum->MakeNumString(aNum, m_eLang));
                     vcl::Font aSaveFont = pVDev->GetFont();
                     vcl::Font aColorFont(aSaveFont);
                     Color aTmpBulletColor = rFmt.GetBulletColor();
@@ -401,7 +403,7 @@ void SvxNumberingPreview::Paint(vcl::RenderContext& rRenderContext,
                     aNum.SetLevel(nLevel);
                     if (m_pActNum->IsContinuousNumbering())
                         aNum.GetLevelVal()[nLevel] = nPreNum;
-                    OUString aText(m_pActNum->MakeNumString(aNum));
+                    OUString aText(m_pActNum->MakeNumString(aNum, m_eLang));
                     tools::Long nY = nYStart;
                     nY -= (pVDev->GetTextHeight() - nTextHeight
                            - pVDev->GetFontMetric().GetDescent());

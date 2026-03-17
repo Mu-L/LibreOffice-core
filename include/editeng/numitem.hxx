@@ -308,7 +308,7 @@ public:
     SvxNumRuleFlags         GetFeatureFlags() const {return nFeatureFlags;}
     void                    SetFeatureFlag( SvxNumRuleFlags nFlag, bool bSet = true ) { if(bSet) nFeatureFlags |= nFlag; else nFeatureFlags &= ~nFlag; }
 
-    OUString                MakeNumString( const SvxNodeNum& ) const;
+    OUString                MakeNumString(const SvxNodeNum&, LanguageType eLang) const;
 
     SvxNumRuleType          GetNumRuleType() const { return eNumberingType; }
 
