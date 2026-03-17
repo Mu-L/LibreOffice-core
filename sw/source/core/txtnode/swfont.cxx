@@ -1149,7 +1149,7 @@ void SwSubFont::DrawText_( SwDrawTextInfo &rInf, const bool bGrey )
         ChgFnt( rInf.GetShell(), rInf.GetOut() );
 
     // change glyph scaling, if needed
-    if ( GetPropWidth() != rInf.GetScaleWidth() )
+    if ( rInf.GetScaleWidth() > 0 && GetPropWidth() != rInf.GetScaleWidth() )
     {
         SetPropWidth( rInf.GetScaleWidth() );
         ChgFnt( rInf.GetShell(), rInf.GetOut() );
