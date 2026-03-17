@@ -2728,7 +2728,7 @@ struct Portion {
     bool isRsidOnlyAutoFormat;
 };
 typedef std::vector< Portion > PortionMap;
-enum MergeResult { MATCH, DIFFER_ONLY_RSID, DIFFER };
+enum class MergeResult { Match, DifferOnlyRsid, Differ };
 }
 
 static MergeResult lcl_Compare_Attributes(
@@ -2835,7 +2835,7 @@ bool SwpHints::MergePortions( SwTextNode& rNode )
 
         MergeResult eMerge = lcl_Compare_Attributes(i, j, aRange1, aRange2, RsidOnlyAutoFormatFlagMap);
 
-        if (MATCH == eMerge)
+        if (MergeResult::Match == eMerge)
         {
             // important: delete second range so any IgnoreStart on the first
             // range is still valid
@@ -2876,7 +2876,7 @@ bool SwpHints::MergePortions( SwTextNode& rNode )
         {
             // when not merging the ignore flags need to be either set or reset
             // (reset too in case one of the autofmts was recently changed)
-            bool const bSetIgnoreFlag(DIFFER_ONLY_RSID == eMerge);
+            bool const bSetIgnoreFlag(MergeResult::DifferOnlyRsid == eMerge);
             for (auto aIter1 = aRange1.first; aIter1 != aRange1.second; ++aIter1)
             {
                 if (!aIter1->isRsidOnlyAutoFormat) // already set above, don't change
@@ -2903,7 +2903,7 @@ bool SwpHints::MergePortions( SwTextNode& rNode )
                     }
                 }
             }
-            i = j; // ++i not enough: i + 1 may have been deleted (MATCH)!
+            i = j; // ++i not enough: i + 1 may have been deleted (Match)!
             ++j;
         }
     }
@@ -2936,10 +2936,10 @@ static MergeResult lcl_Compare_Attributes(
          (nAttributesInPor2 - (isRsidOnlyAutoFormat2 ? 1 : 0))
          && (nAttributesInPor1 != 0 || nAttributesInPor2 != 0)))
     {
-        return DIFFER;
+        return MergeResult::Differ;
     }
 
-    MergeResult eMerge(MATCH);
+    MergeResult eMerge(MergeResult::Match);
 
     // _if_ there is one element more either in aRange1 or aRange2
     // it _must_ be an RSID-only AUTOFMT, which can be ignored here...
@@ -2950,22 +2950,22 @@ static MergeResult lcl_Compare_Attributes(
         if (aIter1 != aRange1.second && aIter2 != aRange2.second &&
             *aIter1->pTextAttr->End() < aIter2->pTextAttr->GetStart())
         {
-            return DIFFER;
+            return MergeResult::Differ;
         }
         // skip it - cannot be equal if bSkipRsidOnlyAutoFormat is set
         if (bSkipRsidOnlyAutoFormat
             && aIter1 != aRange1.second && aIter1->isRsidOnlyAutoFormat)
         {
-            assert(DIFFER != eMerge);
-            eMerge = DIFFER_ONLY_RSID;
+            assert(MergeResult::Differ != eMerge);
+            eMerge = MergeResult::DifferOnlyRsid;
             ++aIter1;
             continue;
         }
         if (bSkipRsidOnlyAutoFormat
             && aIter2 != aRange2.second && aIter2->isRsidOnlyAutoFormat)
         {
-            assert(DIFFER != eMerge);
-            eMerge = DIFFER_ONLY_RSID;
+            assert(MergeResult::Differ != eMerge);
+            eMerge = MergeResult::DifferOnlyRsid;
             ++aIter2;
             continue;
         }
@@ -2974,14 +2974,14 @@ static MergeResult lcl_Compare_Attributes(
         SwTextAttr const*const p2 = aIter2->pTextAttr;
         if (p1->Which() != p2->Which())
         {
-            return DIFFER;
+            return MergeResult::Differ;
         }
         if (!(*p1 == *p2))
         {
             // fdo#52028: for auto styles, check if they differ only
             // in the RSID, which should have no effect on text layout
             if (RES_TXTATR_AUTOFMT != p1->Which())
-                return DIFFER;
+                return MergeResult::Differ;
 
             const SfxItemSet& rSet1 = *p1->GetAutoFormat().GetStyleHandle();
             const SfxItemSet& rSet2 = *p2->GetAutoFormat().GetStyleHandle();
@@ -3000,7 +3000,7 @@ static MergeResult lcl_Compare_Attributes(
 
                 if (nullptr == pItem1 && nullptr == pItem2)
                 {
-                    eMerge = DIFFER_ONLY_RSID;
+                    eMerge = MergeResult::DifferOnlyRsid;
                     break;
                 }
 
@@ -3008,12 +3008,12 @@ static MergeResult lcl_Compare_Attributes(
                 {
                     // one ptr is nullptr, not both, that would
                     // have triggered above
-                    return DIFFER;
+                    return MergeResult::Differ;
                 }
 
                 if (!SfxPoolItem::areSame(*pItem1, *pItem2))
                 {
-                    return DIFFER;
+                    return MergeResult::Differ;
                 }
                 if (!iter1.IsAtEnd())
                     iter1.Next();
