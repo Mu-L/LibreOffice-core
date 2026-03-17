@@ -3996,7 +3996,7 @@ void SalInstanceTreeView::set_column_title(int nColumn, const OUString& rTitle)
 void SalInstanceTreeView::set_column_visible(int nColumn, const bool bVisible)
 {
     tools::Long width = bVisible ? m_xTreeView->GetEntryWidth() : 0;
-    m_xTreeView->SetTabWidth(nColumn, width, MapUnit::MapPixel);
+    m_xTreeView->SetTabWidth(nColumn, width);
 
     SvHeaderTabListBox* pHeaderBox = dynamic_cast<SvHeaderTabListBox*>(m_xTreeView.get());
     if (HeaderBar* pHeaderBar = pHeaderBox ? pHeaderBox->GetHeaderBar() : nullptr)

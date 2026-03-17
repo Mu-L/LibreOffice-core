@@ -302,25 +302,18 @@ void SvTabListBox::dispose()
     SvTreeListBox::dispose();
 }
 
-void SvTabListBox::SetTabWidth(sal_uInt16 nTab, tools::Long tabWidth, MapUnit eMapUnit)
+void SvTabListBox::SetTabWidth(sal_uInt16 nTab, tools::Long tabWidth)
 {
     // Ensure that mvTabList[nTab + 1] exists because it is required to calculate diff
     if (nTab + 2 > tools::Long(mvTabList.size()))
         mvTabList.resize(nTab + 2);
 
-    MapMode aMMSource( eMapUnit );
-    MapMode aMMDest( MapUnit::MapPixel );
     tools::Long diff = tabWidth -
             (mvTabList[nTab + 1].GetPos() - mvTabList[nTab].GetPos()); // Width change
 
     // Shift all tab positions after nTab by diff
     for( sal_uInt16 nIdx = nTab + 1; nIdx < sal_uInt16(mvTabList.size()); nIdx++)
-    {
-        Size aSize(mvTabList[nIdx].GetPos() + diff, 0);
-        aSize = LogicToLogic( aSize, &aMMSource, &aMMDest );
-        tools::Long nNewTab = aSize.Width();
-        mvTabList[nIdx].SetPos( nNewTab );
-    }
+        mvTabList[nIdx].SetPos(mvTabList[nIdx].GetPos() + diff);
     SvTreeListBox::m_nTreeFlags |= SvTreeFlags::RECALCTABS;
     if( IsUpdateMode() )
         Invalidate();
