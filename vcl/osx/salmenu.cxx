@@ -23,7 +23,9 @@
 
 #include <objc/objc-runtime.h>
 
+#include <osl/process.h>
 #include <rtl/ustrbuf.hxx>
+#include <rtl/ustring.hxx>
 #include <tools/debug.hxx>
 #include <tools/long.hxx>
 #include <vcl/commandevent.hxx>
@@ -207,7 +209,7 @@ std::unique_ptr<SalMenu> AquaSalInstance::CreateMenu( bool bMenuBar, Menu* pVCLM
 {
     initAppMenu();
 
-    AquaSalMenu *pAquaSalMenu = new AquaSalMenu( bMenuBar );
+    AquaSalMenu *pAquaSalMenu = new AquaSalMenu( bMenuBar, mpMenuTranslations );
     pAquaSalMenu->mpVCLMenu = pVCLMenu;
 
     return std::unique_ptr<SalMenu>(pAquaSalMenu);
@@ -215,7 +217,7 @@ std::unique_ptr<SalMenu> AquaSalInstance::CreateMenu( bool bMenuBar, Menu* pVCLM
 
 std::unique_ptr<SalMenuItem> AquaSalInstance::CreateMenuItem( const SalItemParams & rItemData )
 {
-    AquaSalMenuItem *pSalMenuItem = new AquaSalMenuItem( &rItemData );
+    AquaSalMenuItem *pSalMenuItem = new AquaSalMenuItem( &rItemData, mpMenuTranslations );
 
     return std::unique_ptr<SalMenuItem>(pSalMenuItem);
 }
@@ -224,7 +226,8 @@ std::unique_ptr<SalMenuItem> AquaSalInstance::CreateMenuItem( const SalItemParam
  * AquaSalMenu
  */
 
-AquaSalMenu::AquaSalMenu( bool bMenuBar ) :
+AquaSalMenu::AquaSalMenu( bool bMenuBar, NSDictionary *pMenuTranslations ) :
+    mpMenuTranslations( [pMenuTranslations retain] ),
     mbMenuBar( bMenuBar ),
     mpMenu( nil ),
     mpFrame( nullptr ),
@@ -291,6 +294,10 @@ AquaSalMenu::~AquaSalMenu()
             [mpMenu autorelease];
         }
     }
+
+    [mpMenuTranslations autorelease];
+    if( mpAltTitle )
+        [mpAltTitle autorelease];
 }
 
 bool AquaSalMenu::ShowNativePopupMenu(FloatingWindow * pWin, const tools::Rectangle& rRect, FloatWinPopupFlags nFlags)
@@ -395,10 +402,17 @@ void AquaSalMenu::unsetMainMenu()
 {
     pCurrentMenuBar = nullptr;
 
-    // remove items from main menu
+    // remove all menus except the app menu
     NSMenu* pMenu = [NSApp mainMenu];
+    [NSApp setMainMenu:nil];
     for( int nItems = [pMenu numberOfItems]; nItems > 1; nItems-- )
         [pMenu removeItemAtIndex: 1];
+}
+
+void AquaSalMenu::useAltTitle(bool bAltTitle)
+{
+    for( std::vector<AquaSalMenuItem *>::size_type i = 0; i < maItems.size(); i++ )
+        maItems[i]->useAltTitle(bAltTitle);
 }
 
 void AquaSalMenu::setMainMenu()
@@ -418,7 +432,7 @@ void AquaSalMenu::setMainMenu()
                 // tdf#165448 Allow macOS to add menu items in LibreOffice windows menu
                 // macOS will automatically insert menu items in NSApp's
                 // windows menu so set that menu to LibreOffice's windows menu.
-                if( maItems[i]->mpVCLMenu && maItems[i]->mpVCLMenu->GetItemCommand( maItems[i]->mnId ) == u".uno:WindowList"_ustr )
+                if ( maItems[i]->getItemCommand() == u".uno:WindowList"_ustr )
                 {
                     // Avoid macOS inserting duplicate menu items in the
                     // windows menu
@@ -428,6 +442,15 @@ void AquaSalMenu::setMainMenu()
                 }
             }
             pCurrentMenuBar = this;
+
+            // Flip menu/item names to alt ones so macOS will automatically add standard
+            // menu items like Dictation and Emojis & Symbols
+            useAltTitle(true);
+
+            [NSApp setMainMenu:mpMenu];
+
+            // Flip alt menu/item names back to LO ones
+            useAltTitle(false);
 
             // change status item
             statusLayout();
@@ -453,6 +476,7 @@ void AquaSalMenu::setDefaultMenu()
         if( [pItem menu] == nil )
             [pMenu insertItem: pItem atIndex: i+1];
     }
+    [NSApp setMainMenu:pMenu];
 
     // Related: tdf#128186 force key window to a native full screen window
     // AquaSalMenu::setDefaultMenu() is generally called when the key
@@ -672,25 +696,9 @@ void AquaSalMenu::SetItemImage( unsigned /*nPos*/, SalMenuItem* pSMI, const Imag
 
 void AquaSalMenu::SetItemText( unsigned /*i_nPos*/, SalMenuItem* i_pSalMenuItem, const OUString& i_rText )
 {
-    if (!i_pSalMenuItem)
-        return;
-
-    AquaSalMenuItem *pAquaSalMenuItem = static_cast<AquaSalMenuItem *>(i_pSalMenuItem);
-
-    // Delete all mnemonics of mbMenuBar and CJK-style mnemonic
-    OUString aText = MnemonicGenerator::EraseAllMnemonicChars(i_rText);
-
-    if (aText.endsWith("...", &aText))
-        aText += u"\u2026";
-
-    NSString* pString = CreateNSString( aText );
-    if (pString)
-    {
-        [pAquaSalMenuItem->mpMenuItem setTitle: pString];
-        // if the menu item has a submenu, change its title as well
-        if (pAquaSalMenuItem->mpSubMenu)
-            [pAquaSalMenuItem->mpSubMenu->mpMenu setTitle: pString];
-        [pString release];
+    if (i_pSalMenuItem) {
+        AquaSalMenuItem *pAquaSalMenuItem = static_cast<AquaSalMenuItem *>(i_pSalMenuItem);
+        pAquaSalMenuItem->setTitle( i_rText );
     }
 }
 
@@ -927,16 +935,46 @@ SAL_WNODEPRECATED_DECLARATIONS_POP
             );
 }
 
+static NSString *getMenuTranslation( NSDictionary *pDict, OUString rUnoCommand )
+{
+    NSDictionary *pLangs = pDict[ [CreateNSString(rUnoCommand) autorelease] ];
+
+    if ( !pLangs )
+        return NULL;
+
+    rtl_Locale *pLocale = NULL;
+    osl_getProcessLocale(&pLocale);
+
+    NSString *pLang = [CreateNSString(pLocale->Language) autorelease];
+    NSString *pRegion = [CreateNSString(pLocale->Country) autorelease];
+    NSString *pLangAndRegion = NULL;
+
+    // HACK: Español (Latinoamérica) is reported as es-419 but osl_getProcessLocale()
+    // can't deal with 3-character regions; convert back for translation lookup
+    if ([pLang isEqualToString:@"es"] && [pRegion isEqualToString:@"41"])
+        pLangAndRegion = @"es_419";
+
+    if (!pLangAndRegion)
+        pLangAndRegion = [[[NSString alloc] initWithFormat:@"%@_%@", pLang, pRegion] autorelease];
+
+    NSString *pAltTitle = pLangs[pLangAndRegion];
+    if ( !pAltTitle )
+        pAltTitle = pLangs[pLang];
+
+    return pAltTitle;
+}
+
 /*
  * SalMenuItem
  */
 
-AquaSalMenuItem::AquaSalMenuItem( const SalItemParams* pItemData ) :
+AquaSalMenuItem::AquaSalMenuItem( const SalItemParams* pItemData, NSDictionary *pMenuTranslations ) :
     mnId( pItemData->nId ),
     mpVCLMenu( pItemData->pMenu ),
     mpParentMenu( nullptr ),
     mpSubMenu( nullptr ),
-    mpMenuItem( nil )
+    mpMenuItem( nil ),
+    mpMenuTranslations( [pMenuTranslations retain] )
 {
     if (pItemData->eType == MenuItemType::SEPARATOR)
     {
@@ -950,14 +988,8 @@ AquaSalMenuItem::AquaSalMenuItem( const SalItemParams* pItemData ) :
         mpMenuItem = [[SalNSMenuItem alloc] initWithMenuItem: this];
         [static_cast<SalNSMenuItem*>(mpMenuItem) setReallyEnabled: YES];
 
-        // peel mnemonics because on mac there are no such things for menu items
-        // Delete CJK-style mnemonics for the dropdown menu of the 'New button' and lower menu of 'File > New'
-        NSString* pString = CreateNSString(MnemonicGenerator::EraseAllMnemonicChars(pItemData->aText));
-        if (pString)
-        {
-            [mpMenuItem setTitle: pString];
-            [pString release];
-        }
+        setTitle(pItemData->aText);
+
         // anything but a separator should set a menu to dispatch to
         SAL_WARN_IF( !mpVCLMenu, "vcl", "no menu" );
     }
@@ -973,6 +1005,49 @@ AquaSalMenuItem::~AquaSalMenuItem()
     */
     if( mpMenuItem )
         [mpMenuItem autorelease];
+    if( mpAltTitle )
+        [mpAltTitle autorelease];
+    [mpOrigTitle autorelease];
+    [mpMenuTranslations autorelease];
+}
+
+// getItemCommand() returns the UNO command ID of the menu item,
+// eg like ".uno:WindowList" or ".uno:EditMenu"
+OUString AquaSalMenuItem::getItemCommand()
+{
+    return mpVCLMenu ? mpVCLMenu->GetItemCommand( mnId ) : OUString();
+}
+
+void AquaSalMenuItem::useAltTitle(bool bUseAlt)
+{
+    NSString *pTitle = mpOrigTitle;
+
+    if (bUseAlt && mpAltTitle)
+        pTitle = mpAltTitle;
+
+    [mpMenuItem setTitle: pTitle];
+
+    // if the menu item has a submenu, change its title too
+    if (mpSubMenu)
+        [mpSubMenu->mpMenu setTitle: pTitle];
+}
+
+void AquaSalMenuItem::setTitle(const OUString& i_rText)
+{
+    // Delete all normal and CJK-style mnemonic
+    OUString aText = MnemonicGenerator::EraseAllMnemonicChars(i_rText);
+
+    if (aText.endsWith("...", &aText))
+        aText += u"\u2026";
+
+    mpOrigTitle = CreateNSString( aText );
+    if ( !mpOrigTitle )
+        return;
+
+    [mpAltTitle autorelease];
+    mpAltTitle = getMenuTranslation( mpMenuTranslations, getItemCommand() );
+
+    useAltTitle(false);
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

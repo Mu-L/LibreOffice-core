@@ -352,6 +352,9 @@ AquaSalInstance::AquaSalInstance()
     mpStepperCell = [[NSStepperCell alloc] init];
     mpListNodeCell = [[NSButtonCell alloc] init];
 
+    NSString *path = [[[NSBundle mainBundle] pathForResource:@"MenuTranslations" ofType:@"plist"] autorelease];
+    mpMenuTranslations = [NSDictionary dictionaryWithContentsOfFile:path];
+
 #if HAVE_FEATURE_SKIA
     AquaSkiaSalGraphicsImpl::prepareSkia();
 #endif
@@ -374,6 +377,8 @@ AquaSalInstance::~AquaSalInstance()
     [mpRadioCell release];
     [mpCheckCell release];
     [mpButtonCell release];
+
+    [mpMenuTranslations release];
 
 #if HAVE_FEATURE_SKIA
     SkiaHelper::cleanup();

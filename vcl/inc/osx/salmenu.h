@@ -47,11 +47,15 @@ public: // for OOStatusView
     };
 private:
     std::vector< MenuBarButtonEntry >   maButtons;
+    NSString *                          mpAltTitle;
+    NSDictionary *                      mpMenuTranslations;
 
     MenuBarButtonEntry* findButtonItem( sal_uInt16 i_nItemId );
     static void statusLayout();
+    void useAltTitle(bool bAltTitle);
+
 public:
-    AquaSalMenu( bool bMenuBar );
+    AquaSalMenu( bool bMenuBar, NSDictionary *pTranslations );
     virtual ~AquaSalMenu() override;
 
     virtual bool VisibleMenuBar() override;
@@ -95,14 +99,22 @@ public:
 class AquaSalMenuItem : public SalMenuItem
 {
 public:
-    AquaSalMenuItem( const SalItemParams* );
+    AquaSalMenuItem( const SalItemParams*, NSDictionary* );
     virtual ~AquaSalMenuItem() override;
+    OUString getItemCommand();
+    void setTitle(const OUString& i_rText);
+    void useAltTitle(bool bUseAlt);
 
     sal_uInt16          mnId;                 // Item ID
     VclPtr<Menu>        mpVCLMenu;            // VCL Menu into which this MenuItem is inserted
     AquaSalMenu*        mpParentMenu;         // The menu in which this menu item is inserted
     AquaSalMenu*        mpSubMenu;            // Sub menu of this item (if defined)
     NSMenuItem*         mpMenuItem;           // The NSMenuItem
+
+private:
+    NSString *          mpOrigTitle;
+    NSString *          mpAltTitle;
+    NSDictionary *      mpMenuTranslations;
 };
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

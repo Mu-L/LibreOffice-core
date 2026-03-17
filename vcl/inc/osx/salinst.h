@@ -165,6 +165,9 @@ public:
     static const short DispatchTimerEvent = 30;
 
     static NSMenu* GetDynamicDockMenu();
+
+private:
+    NSDictionary *mpMenuTranslations;
 };
 
 CGImageRef CreateCGImage( const Image& );
