@@ -3843,7 +3843,7 @@ SalInstanceTreeView::SalInstanceTreeView(SvTabListBox* pTreeView, SalInstanceBui
     m_xTreeView->SetCustomRenderHdl(LINK(this, SalInstanceTreeView, CustomRenderHdl));
     m_xTreeView->SetCustomMeasureHdl(LINK(this, SalInstanceTreeView, CustomMeasureHdl));
     const std::vector<tools::Long> aTabPositions{ 0 };
-    m_xTreeView->SetTabs(aTabPositions);
+    m_xTreeView->SetTabs(aTabPositions, MapUnit::MapPixel);
     // by default, 1st one is editable, others not; override with set_column_editables
     m_xTreeView->SetTabEditable(0, true);
 
