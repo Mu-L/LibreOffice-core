@@ -1182,20 +1182,18 @@ void SvTreeListBox::EnableSelectionAsDropTarget( bool bEnable )
 
 VclPtr<Edit> SvTreeListBox::GetEditWidget() const
 {
-    return pEdCtrl ? pEdCtrl->GetEditWidget() : nullptr;
+    return m_pEdCtrl ? m_pEdCtrl->GetEditWidget() : nullptr;
 }
 
 void SvTreeListBox::EditText( const OUString& rStr, const tools::Rectangle& rRect,
     const Selection& rSel )
 {
-    pEdCtrl.reset();
+    m_pEdCtrl.reset();
     m_nImpFlags |= SvTreeListBoxFlags::IN_EDT;
     m_nImpFlags &= ~SvTreeListBoxFlags::EDTEND_CALLED;
     HideFocus();
-    pEdCtrl.reset( new SvInplaceEdit2(
-        this, rRect.TopLeft(), rRect.GetSize(), rStr,
-        LINK( this, SvTreeListBox, TextEditEndedHdl_Impl ),
-        rSel ) );
+    m_pEdCtrl.reset(new SvInplaceEdit2(this, rRect.TopLeft(), rRect.GetSize(), rStr,
+                                       LINK(this, SvTreeListBox, TextEditEndedHdl_Impl), rSel));
 }
 
 IMPL_LINK_NOARG(SvTreeListBox, TextEditEndedHdl_Impl, SvInplaceEdit2&, void)
@@ -1204,30 +1202,30 @@ IMPL_LINK_NOARG(SvTreeListBox, TextEditEndedHdl_Impl, SvInplaceEdit2&, void)
         return;
     m_nImpFlags |= SvTreeListBoxFlags::EDTEND_CALLED;
     OUString aStr;
-    if ( !pEdCtrl->EditingCanceled() )
-        aStr = pEdCtrl->GetText();
+    if (!m_pEdCtrl->EditingCanceled())
+        aStr = m_pEdCtrl->GetText();
     else
-        aStr = pEdCtrl->GetSavedValue();
+        aStr = m_pEdCtrl->GetSavedValue();
     EditedText( aStr );
     // Hide may only be called after the new text was put into the entry, so
     // that we don't call the selection handler in the GetFocus of the listbox
     // with the old entry text.
-    pEdCtrl->Hide();
+    m_pEdCtrl->Hide();
     m_nImpFlags &= ~SvTreeListBoxFlags::IN_EDT;
     GrabFocus();
 }
 
 void SvTreeListBox::CancelTextEditing()
 {
-    if ( pEdCtrl )
-        pEdCtrl->StopEditing( true );
+    if (m_pEdCtrl)
+        m_pEdCtrl->StopEditing(true);
     m_nImpFlags &= ~SvTreeListBoxFlags::IN_EDT;
 }
 
 void SvTreeListBox::EndEditing( bool bCancel )
 {
-    if( pEdCtrl )
-        pEdCtrl->StopEditing( bCancel );
+    if (m_pEdCtrl)
+        m_pEdCtrl->StopEditing(bCancel);
     m_nImpFlags &= ~SvTreeListBoxFlags::IN_EDT;
 }
 
@@ -1566,7 +1564,7 @@ void SvTreeListBox::InitTreeView()
     m_pEdEntry = nullptr;
     m_pEdItem = nullptr;
     m_nEntryHeight = 0;
-    pEdCtrl = nullptr;
+    m_pEdCtrl = nullptr;
     m_nFirstSelTab = 0;
     m_nLastSelTab = 0;
     m_nFocusWidth = -1;
@@ -1632,7 +1630,7 @@ void SvTreeListBox::dispose()
     {
         ClearTabList();
 
-        pEdCtrl.reset();
+        m_pEdCtrl.reset();
 
         m_pModel.reset();
 
@@ -2224,7 +2222,7 @@ void SvTreeListBox::ModelHasCleared()
 {
     m_pImpl->m_pCursor = nullptr; // else we crash in GetFocus when editing in-place
     m_pTargetEntry = nullptr;
-    pEdCtrl.reset();
+    m_pEdCtrl.reset();
     m_pImpl->Clear();
     m_nFocusWidth = -1;
 

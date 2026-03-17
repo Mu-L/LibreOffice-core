@@ -264,6 +264,8 @@ protected:
     // Move/CopySelection: Position of the current Entry in SelectionList
     sal_uInt16 m_nCurEntrySelPos;
 
+    std::unique_ptr<SvInplaceEdit2> m_pEdCtrl;
+
 private:
     DECL_DLLPRIVATE_LINK( CheckButtonClick, SvLBoxButtonData *, void );
     DECL_DLLPRIVATE_LINK( TextEditEndedHdl_Impl, SvInplaceEdit2&, void );
@@ -329,7 +331,6 @@ protected:
     virtual void Insert(SvTreeListEntry* pEntry, sal_uInt32 nRootPos = TREELIST_APPEND);
 
     // In-place editing
-    std::unique_ptr<SvInplaceEdit2>  pEdCtrl;
     void            EditText( const OUString&, const tools::Rectangle&,const Selection&);
     void            CancelTextEditing();
 
