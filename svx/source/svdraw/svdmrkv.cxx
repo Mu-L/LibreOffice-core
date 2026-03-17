@@ -2121,7 +2121,7 @@ bool SdrMarkView::IsMarkedObjHit(const Point& rPnt, short nTol) const
         SdrMark* pM=rMarkList.GetMark(nm);
         SdrObject* pObj(pM->GetMarkedSdrObj());
 
-        // access possible SubSelectio
+        // access possible SubSelection
         if (nullptr != pObj)
             pObj = pObj->getDiagramSubSelection();
 
@@ -2153,7 +2153,7 @@ bool SdrMarkView::MarkObj(const Point& rPnt, short nTol, bool bToggle, bool bDee
         {
             if (pObj->isDiagram() && !bDeep)
             {
-                // Klick on Diagram, look again but deep to get possibly an object
+                // Click on Diagram, look again but deep to get possibly an object
                 // inside the SdrObjGroup associated with it
                 SdrObject* pCandidate = PickObj(rPnt, static_cast<sal_uInt16>(nTol), pPV, nOptions|SdrSearchOptions::DEEP);
 
