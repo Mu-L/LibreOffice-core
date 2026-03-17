@@ -205,8 +205,9 @@ void SvImpLBox::UpdateContextBmpWidthMax( SvTreeListEntry const * pEntry )
     if( m_aContextBmpWidthVector.empty() )
         return;
     short nWidth = m_aContextBmpWidthVector[ nDepth ];
-    if( nWidth != m_pView->nContextBmpWidthMax ) {
-        m_pView->nContextBmpWidthMax = nWidth;
+    if (nWidth != m_pView->m_nContextBmpWidthMax)
+    {
+        m_pView->m_nContextBmpWidthMax = nWidth;
         m_nFlags |= LBoxFlags::IgnoreChangedTabs;
         m_pView->SetTabs();
         m_nFlags &= ~LBoxFlags::IgnoreChangedTabs;
@@ -690,7 +691,7 @@ IMPL_LINK( SvImpLBox, ScrollLeftRightHdl, ScrollBar *, pScrollBar, void )
             m_pView->EndEditing( true ); // Cancel
             m_pView->PaintImmediately();
         }
-        m_pView->nFocusWidth = -1;
+        m_pView->m_nFocusWidth = -1;
         KeyLeftRight( nDelta );
     }
 }
@@ -1201,7 +1202,7 @@ void SvImpLBox::AdjustScrollBars( Size& rSize )
             m_pView->EndEditing( true ); // Cancel
             m_pView->PaintImmediately();
         }
-        m_pView->nFocusWidth = -1;
+        m_pView->m_nFocusWidth = -1;
         KeyLeftRight( nTemp );
     }
 
@@ -1303,7 +1304,7 @@ void SvImpLBox::ShowVerSBar()
     {
         if( !m_aVerSBar->IsVisible() )
         {
-            m_pView->nFocusWidth = -1;
+            m_pView->m_nFocusWidth = -1;
             AdjustScrollBars( m_aOutputSize );
             if( GetUpdateMode() )
                 m_aVerSBar->Invalidate();
@@ -1313,7 +1314,7 @@ void SvImpLBox::ShowVerSBar()
     {
         if( m_aVerSBar->IsVisible() )
         {
-            m_pView->nFocusWidth = -1;
+            m_pView->m_nFocusWidth = -1;
             AdjustScrollBars( m_aOutputSize );
         }
     }
@@ -1326,7 +1327,7 @@ void SvImpLBox::ShowVerSBar()
     {
         if( !m_aHorSBar->IsVisible() )
         {
-            m_pView->nFocusWidth = -1;
+            m_pView->m_nFocusWidth = -1;
             AdjustScrollBars( m_aOutputSize );
             if( GetUpdateMode() )
                 m_aHorSBar->Invalidate();
@@ -1341,7 +1342,7 @@ void SvImpLBox::ShowVerSBar()
             }
             else
             {
-                m_pView->nFocusWidth = -1;
+                m_pView->m_nFocusWidth = -1;
                 AdjustScrollBars( m_aOutputSize );
             }
         }
@@ -1350,7 +1351,7 @@ void SvImpLBox::ShowVerSBar()
     {
         if( m_aHorSBar->IsVisible() )
         {
-            m_pView->nFocusWidth = -1;
+            m_pView->m_nFocusWidth = -1;
             AdjustScrollBars( m_aOutputSize );
         }
     }
@@ -1512,7 +1513,7 @@ void SvImpLBox::SetNodeBmpWidth( const Image& rBmp )
 void SvImpLBox::SetNodeBmpTabDistance()
 {
     m_nNodeBmpTabDistance = -m_pView->GetIndent();
-    if( m_pView->nContextBmpWidthMax )
+    if (m_pView->m_nContextBmpWidthMax)
     {
         // only if the first dynamic tab is centered (we currently assume that)
         Size aSize = GetExpandedNodeBmp().GetSizePixel();
@@ -1897,7 +1898,7 @@ bool SvImpLBox::ButtonDownCheckExpand( const MouseEvent& rMEvt, SvTreeListEntry*
 {
     bool bRet = false;
 
-    if ( m_pView->IsEditingActive() && pEntry == m_pView->pEdEntry )
+    if (m_pView->IsEditingActive() && pEntry == m_pView->m_pEdEntry)
         // inplace editing -> nothing to do
         bRet = true;
     else if ( IsNodeButton( rMEvt.GetPosPixel(), pEntry ) )
@@ -1967,7 +1968,7 @@ void SvImpLBox::MouseButtonDown( const MouseEvent& rMEvt )
     if( (rMEvt.GetClicks() % 2) == 0)
     {
         m_nFlags &= ~LBoxFlags::StartEditTimer;
-        m_pView->pHdlEntry = pEntry;
+        m_pView->m_pHdlEntry = pEntry;
         if( !m_pView->DoubleClickHdl() )
         {
             // Handler signals nothing to be done anymore, bail out, 'this' may
@@ -1980,7 +1981,7 @@ void SvImpLBox::MouseButtonDown( const MouseEvent& rMEvt )
             pEntry = GetClickedEntry( aPos );
             if( !pEntry )
                 return;
-            if( pEntry != m_pView->pHdlEntry )
+            if (pEntry != m_pView->m_pHdlEntry)
             {
                 // select anew & bye
                 if( !m_bSimpleTravel && !m_aSelEng.IsAlwaysAdding())
@@ -2980,8 +2981,8 @@ SvLBoxTab* SvImpLBox::NextTab( SvLBoxTab const * pTab )
         return nullptr;
     for( int nTab=0; nTab < (nTabCount-1); nTab++)
     {
-        if( m_pView->aTabs[nTab].get() == pTab )
-            return m_pView->aTabs[nTab+1].get();
+        if (m_pView->m_aTabs[nTab].get() == pTab)
+            return m_pView->m_aTabs[nTab + 1].get();
     }
     return nullptr;
 }
@@ -2998,22 +2999,22 @@ void SvImpLBox::SetUpdateMode( bool bMode )
 
 void SvImpLBox::SetMostRight( SvTreeListEntry* pEntry )
 {
-    if( m_pView->nTreeFlags & SvTreeFlags::RECALCTABS )
+    if (m_pView->m_nTreeFlags & SvTreeFlags::RECALCTABS)
     {
         m_nFlags |= LBoxFlags::IgnoreChangedTabs;
         m_pView->SetTabs();
         m_nFlags &= ~LBoxFlags::IgnoreChangedTabs;
     }
 
-    sal_uInt16 nLastTab = m_pView->aTabs.size() - 1;
+    sal_uInt16 nLastTab = m_pView->m_aTabs.size() - 1;
     sal_uInt16 nLastItem = pEntry->ItemCount() - 1;
-    if( m_pView->aTabs.empty() || nLastItem == USHRT_MAX )
+    if (m_pView->m_aTabs.empty() || nLastItem == USHRT_MAX)
         return;
 
     if( nLastItem < nLastTab )
         nLastTab = nLastItem;
 
-    SvLBoxTab* pTab = m_pView->aTabs[ nLastTab ].get();
+    SvLBoxTab* pTab = m_pView->m_aTabs[nLastTab].get();
     SvLBoxItem& rItem = pEntry->GetItem( nLastTab );
 
     tools::Long nTabPos = m_pView->GetTabPos( pEntry, pTab );

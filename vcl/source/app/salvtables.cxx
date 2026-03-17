@@ -3604,7 +3604,7 @@ void SalInstanceItemView::do_clear()
 // index 0
 int SalInstanceTreeView::to_internal_model(int col) const
 {
-    if (m_xTreeView->nTreeFlags & SvTreeFlags::CHKBTN)
+    if (m_xTreeView->m_nTreeFlags & SvTreeFlags::CHKBTN)
         ++col; // skip checkbutton column
     ++col; //skip expander column
     return col;
@@ -3612,7 +3612,7 @@ int SalInstanceTreeView::to_internal_model(int col) const
 
 int SalInstanceTreeView::to_external_model(int col) const
 {
-    if (m_xTreeView->nTreeFlags & SvTreeFlags::CHKBTN)
+    if (m_xTreeView->m_nTreeFlags & SvTreeFlags::CHKBTN)
         --col; // skip checkbutton column
     --col; //skip expander column
     return col;
@@ -3672,7 +3672,7 @@ void SalInstanceTreeView::do_insert(const weld::TreeIter* pParent, int pos, cons
     if (bIsSeparator)
         pEntry->SetSeparator();
 
-    if (m_xTreeView->nTreeFlags & SvTreeFlags::CHKBTN)
+    if (m_xTreeView->m_nTreeFlags & SvTreeFlags::CHKBTN)
         AddStringItem(pEntry, u""_ustr, -1);
 
     if (pIconName || pImageSurface)
@@ -3773,7 +3773,7 @@ TriState SalInstanceTreeView::get_toggle(SvTreeListEntry* pEntry, int col) const
 {
     if (col == -1)
     {
-        assert(m_xTreeView->nTreeFlags & SvTreeFlags::CHKBTN);
+        assert(m_xTreeView->m_nTreeFlags & SvTreeFlags::CHKBTN);
         return do_get_toggle(pEntry, 0);
     }
     col = to_internal_model(col);
@@ -3784,7 +3784,7 @@ void SalInstanceTreeView::set_toggle(SvTreeListEntry* pEntry, TriState eState, i
 {
     if (col == -1)
     {
-        assert(m_xTreeView->nTreeFlags & SvTreeFlags::CHKBTN);
+        assert(m_xTreeView->m_nTreeFlags & SvTreeFlags::CHKBTN);
         do_set_toggle(pEntry, eState, 0);
         return;
     }
@@ -4071,12 +4071,12 @@ void SalInstanceTreeView::bulk_insert_for_each(
     }
     SalInstanceTreeIter aVclIter(static_cast<SvTreeListEntry*>(nullptr));
 
-    m_xTreeView->nTreeFlags |= SvTreeFlags::MANINS;
+    m_xTreeView->m_nTreeFlags |= SvTreeFlags::MANINS;
 
     if (pFixedWidths)
         set_header_item_width(*pFixedWidths);
 
-    bool bHasAutoCheckButton(m_xTreeView->nTreeFlags & SvTreeFlags::CHKBTN);
+    bool bHasAutoCheckButton(m_xTreeView->m_nTreeFlags & SvTreeFlags::CHKBTN);
     size_t nExtraCols = bHasAutoCheckButton ? 2 : 1;
 
     Image aDummy;
@@ -4104,7 +4104,7 @@ void SalInstanceTreeView::bulk_insert_for_each(
         }
     }
 
-    m_xTreeView->nTreeFlags &= ~SvTreeFlags::MANINS;
+    m_xTreeView->m_nTreeFlags &= ~SvTreeFlags::MANINS;
 
     thaw();
 }
@@ -4990,7 +4990,7 @@ IMPL_LINK(SalInstanceTreeView, ToggleHdl, SvLBoxButtonData*, pData, void)
     }
 
     // additionally set the cursor into the row the toggled element is in
-    m_xTreeView->pImpl->m_pCursor = pEntry;
+    m_xTreeView->m_pImpl->m_pCursor = pEntry;
 
     for (int i = 0, nCount = pEntry->ItemCount(); i < nCount; ++i)
     {

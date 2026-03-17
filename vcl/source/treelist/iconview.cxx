@@ -43,7 +43,7 @@ IconView::IconView(vcl::Window* pParent, WinBits nBits)
     mbCenterAndClipText = true;
     SetEntryWidth(0);
 
-    pImpl.reset(new IconViewImpl(this, GetModel(), GetStyle()));
+    m_pImpl.reset(new IconViewImpl(this, GetModel(), GetStyle()));
 }
 
 Size IconView::GetEntrySize(const SvTreeListEntry& entry) const
@@ -116,11 +116,11 @@ void IconView::CalcEntryHeight(SvTreeListEntry const* pEntry)
     if (bHasIcon && nCount > 1)
         nHeight += nSpacing; // between icon and label
 
-    if (nHeight > nEntryHeight)
+    if (nHeight > m_nEntryHeight)
     {
-        nEntryHeight = nHeight;
+        m_nEntryHeight = nHeight;
         Control::SetFont(GetFont());
-        pImpl->SetEntryHeight();
+        m_pImpl->SetEntryHeight();
     }
 }
 
@@ -132,7 +132,7 @@ void IconView::Resize()
         return;
 
     if (m_nFixedColumnCount == -1)
-        m_nColumnCount = nEntryWidth ? aBoxSize.Width() / nEntryWidth : 1;
+        m_nColumnCount = m_nEntryWidth ? aBoxSize.Width() / m_nEntryWidth : 1;
 
     SvTreeListBox::Resize();
 }
@@ -144,7 +144,7 @@ Size IconView::GetOptimalSize() const
         // if a fixed amount of columns has been set and only icons (no separators) are used,
         // calculate size needed for those
         const short nRowCount = std::ceil(double(GetEntryCount()) / GetColumnCount());
-        Size aSize(GetColumnCount() * nEntryWidth, nRowCount * nEntryHeight);
+        Size aSize(GetColumnCount() * m_nEntryWidth, nRowCount * m_nEntryHeight);
         if (GetStyle() & WB_VSCROLL)
             aSize.AdjustWidth(GetSettings().GetStyleSettings().GetScrollBarSize());
 
@@ -162,7 +162,7 @@ tools::Rectangle IconView::GetFocusRect(const SvTreeListEntry* pEntry, tools::Lo
 void IconView::PaintEntry(SvTreeListEntry& rEntry, tools::Long nX, tools::Long nY,
                           vcl::RenderContext& rRenderContext)
 {
-    pImpl->UpdateContextBmpWidthMax(&rEntry);
+    m_pImpl->UpdateContextBmpWidthMax(&rEntry);
 
     const Size entrySize = GetEntrySize(rEntry);
     short nTempEntryHeight = entrySize.Height();
@@ -195,7 +195,7 @@ void IconView::PaintEntry(SvTreeListEntry& rEntry, tools::Long nX, tools::Long n
 
     bool bFillColorSet = false;
     // draw background
-    if (!(nTreeFlags & SvTreeFlags::USESEL))
+    if (!(m_nTreeFlags & SvTreeFlags::USESEL))
     {
         // set background pattern/color
         Wallpaper aWallpaper = rRenderContext.GetBackground();

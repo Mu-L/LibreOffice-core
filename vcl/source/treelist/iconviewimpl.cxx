@@ -695,7 +695,7 @@ bool IconViewImpl::KeyInput( const KeyEvent& rKEvt )
         case KEY_RETURN:
         case KEY_SPACE:
         {
-            bHandled = !m_pView->aDoubleClickHdl.Call(m_pView);
+            bHandled = !m_pView->m_aDoubleClickHdl.Call(m_pView);
             break;
         }
 

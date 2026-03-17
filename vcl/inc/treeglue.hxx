@@ -88,9 +88,9 @@ public:
 
     SvTreeListEntry* GetTargetAtPoint(const Point& rPos, bool bHighLightTarget, bool bScroll = true)
     {
-        SvTreeListEntry* pOldTargetEntry = pTargetEntry;
-        pTargetEntry = PosOverBody(rPos) ? pImpl->GetEntry(rPos) : nullptr;
-        if (pOldTargetEntry != pTargetEntry)
+        SvTreeListEntry* pOldTargetEntry = m_pTargetEntry;
+        m_pTargetEntry = PosOverBody(rPos) ? m_pImpl->GetEntry(rPos) : nullptr;
+        if (pOldTargetEntry != m_pTargetEntry)
             ImplShowTargetEmphasis(pOldTargetEntry, false);
 
         if (bScroll)
@@ -98,23 +98,23 @@ public:
             // scroll
             if (rPos.Y() < 12)
             {
-                ImplShowTargetEmphasis(pTargetEntry, false);
+                ImplShowTargetEmphasis(m_pTargetEntry, false);
                 ScrollOutputArea(+1);
             }
             else
             {
-                Size aSize(pImpl->GetOutputSize());
+                Size aSize(m_pImpl->GetOutputSize());
                 if (rPos.Y() > aSize.Height() - 12)
                 {
-                    ImplShowTargetEmphasis(pTargetEntry, false);
+                    ImplShowTargetEmphasis(m_pTargetEntry, false);
                     ScrollOutputArea(-1);
                 }
             }
         }
 
-        if (pTargetEntry && bHighLightTarget)
-            ImplShowTargetEmphasis(pTargetEntry, true);
-        return pTargetEntry;
+        if (m_pTargetEntry && bHighLightTarget)
+            ImplShowTargetEmphasis(m_pTargetEntry, true);
+        return m_pTargetEntry;
     }
 
     virtual SvTreeListEntry* GetDropTarget(const Point& rPos) override
