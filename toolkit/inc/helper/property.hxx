@@ -17,8 +17,7 @@
  *   the License at http://www.apache.org/licenses/LICENSE-2.0 .
  */
 
-#ifndef INCLUDED_TOOLKIT_HELPER_PROPERTY_HXX
-#define INCLUDED_TOOLKIT_HELPER_PROPERTY_HXX
+#pragma once
 
 #include <sal/types.h>
 #include <rtl/ustring.hxx>
@@ -239,9 +238,5 @@ const OUString&        GetPropertyName( sal_uInt16 nPropertyId );
 sal_Int16                           GetPropertyAttribs( sal_uInt16 nPropertyId );
 bool                            DoesDependOnOthers( sal_uInt16 nPropertyId );
 bool                            CompareProperties( const css::uno::Any& r1, const css::uno::Any& r2 );
-
-
-#endif // INCLUDED_TOOLKIT_HELPER_PROPERTY_HXX
-
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
