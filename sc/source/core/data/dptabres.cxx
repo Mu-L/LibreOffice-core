@@ -982,12 +982,12 @@ ScDPResultMember::ScDPResultMember(
     const ScDPResultData* pData, const ScDPParentDimData& rParentDimData ) :
     pResultData( pData ),
        aParentDimData( rParentDimData ),
+    nMemberStep( 1 ),
     bHasElements( false ),
     bForceSubTotal( false ),
     bHasHiddenDetails( false ),
     bInitialized( false ),
-    bAutoHidden( false ),
-    nMemberStep( 1 )
+    bAutoHidden( false )
 {
     // pParentLevel/pMemberDesc is 0 for root members
 }
@@ -995,12 +995,12 @@ ScDPResultMember::ScDPResultMember(
 ScDPResultMember::ScDPResultMember(
     const ScDPResultData* pData, bool bForceSub ) :
     pResultData( pData ),
+    nMemberStep( 1 ),
     bHasElements( false ),
     bForceSubTotal( bForceSub ),
     bHasHiddenDetails( false ),
     bInitialized( false ),
-    bAutoHidden( false ),
-    nMemberStep( 1 )
+    bAutoHidden( false )
 {
 }
 ScDPResultMember::~ScDPResultMember()

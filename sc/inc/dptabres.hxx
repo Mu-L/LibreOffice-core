@@ -336,14 +336,14 @@ private:
     ScDPParentDimData        aParentDimData;
     std::unique_ptr<ScDPResultDimension>  pChildDimension;
     std::unique_ptr<ScDPDataMember>       pDataRoot;
+    ScDPAggData             aColTotal;              // to store column totals
+    sal_uInt16              nMemberStep;            // step to show details
     bool                    bHasElements:1;
     bool                    bForceSubTotal:1;
     bool                    bHasHiddenDetails:1;
     bool                    bInitialized:1;
     bool                    bAutoHidden:1;
-    ScDPAggData             aColTotal;              // to store column totals
 
-    sal_uInt16                  nMemberStep;            // step to show details
 public:
     ScDPResultMember(
         const ScDPResultData* pData,  const ScDPParentDimData& rParentDimData );  //! Ref
