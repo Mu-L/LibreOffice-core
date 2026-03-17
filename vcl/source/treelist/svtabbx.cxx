@@ -326,21 +326,14 @@ void SvTabListBox::SetTabWidth(sal_uInt16 nTab, tools::Long tabWidth, MapUnit eM
         Invalidate();
 }
 
-void SvTabListBox::SetTabs(const std::vector<tools::Long>& rTabPositions, MapUnit eMapUnit)
+void SvTabListBox::SetTabs(const std::vector<tools::Long>& rTabPositions)
 {
     assert(!rTabPositions.empty());
     mvTabList.resize(rTabPositions.size());
 
-    MapMode aMMSource( eMapUnit );
-    MapMode aMMDest( MapUnit::MapPixel );
-
     for( sal_uInt16 nIdx = 0; nIdx < sal_uInt16(mvTabList.size()); nIdx++)
-    {
-        Size aSize(rTabPositions.at(nIdx), 0);
-        aSize = LogicToLogic( aSize, &aMMSource, &aMMDest );
-        tools::Long nNewTab = aSize.Width();
-        mvTabList[nIdx].SetPos( nNewTab );
-    }
+        mvTabList[nIdx].SetPos(rTabPositions.at(nIdx));
+
     SvTreeListBox::nTreeFlags |= SvTreeFlags::RECALCTABS;
     if( IsUpdateMode() )
         Invalidate();

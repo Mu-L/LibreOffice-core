@@ -3843,7 +3843,7 @@ SalInstanceTreeView::SalInstanceTreeView(SvTabListBox* pTreeView, SalInstanceBui
     m_xTreeView->SetCustomRenderHdl(LINK(this, SalInstanceTreeView, CustomRenderHdl));
     m_xTreeView->SetCustomMeasureHdl(LINK(this, SalInstanceTreeView, CustomMeasureHdl));
     const std::vector<tools::Long> aTabPositions{ 0 };
-    m_xTreeView->SetTabs(aTabPositions, MapUnit::MapPixel);
+    m_xTreeView->SetTabs(aTabPositions);
     // by default, 1st one is editable, others not; override with set_column_editables
     m_xTreeView->SetTabEditable(0, true);
 
@@ -3946,7 +3946,7 @@ void SalInstanceTreeView::set_column_fixed_widths(const std::vector<int>& rWidth
     for (size_t i = 0; i < rWidths.size(); ++i)
         aTabPositions.push_back(aTabPositions[i]
                                 + (m_xTreeView->GetTabVisible(i) ? rWidths[i] : 0));
-    m_xTreeView->SetTabs(aTabPositions, MapUnit::MapPixel);
+    m_xTreeView->SetTabs(aTabPositions);
     set_header_item_width(rWidths);
     // call Resize to recalculate based on the new tabs
     m_xTreeView->Resize();
@@ -5028,7 +5028,7 @@ IMPL_LINK(SalInstanceTreeView, EndDragHdl, HeaderBar*, pHeaderBar, void)
     for (int i = 0; i < pHeaderBar->GetItemCount() - 1; ++i)
         aTabPositions.push_back(aTabPositions[i]
                                 + pHeaderBar->GetItemSize(pHeaderBar->GetItemId(i)));
-    m_xTreeView->SetTabs(aTabPositions, MapUnit::MapPixel);
+    m_xTreeView->SetTabs(aTabPositions);
 }
 
 IMPL_LINK(SalInstanceTreeView, HeaderBarClickedHdl, HeaderBar*, pHeaderBar, void)
