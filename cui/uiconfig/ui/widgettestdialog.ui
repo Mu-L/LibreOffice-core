@@ -577,7 +577,7 @@
                           <object class="GtkTreeSelection"/>
                         </child>
                         <child>
-                          <object class="GtkTreeViewColumn" id="treeviewcolumn0">
+                          <object class="GtkTreeViewColumn" id="treeviewcolumn">
                             <property name="spacing">6</property>
                             <child>
                               <object class="GtkCellRendererPixbuf" id="cellrendererpixbuf0"/>
