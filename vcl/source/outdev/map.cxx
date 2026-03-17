@@ -1502,80 +1502,72 @@ static tools::Long fn5( const tools::Long n1,
             a7 /= n8;
         } // of else
         return static_cast<tools::Long>(a7);
-    } // of if
-    else
+    }
+
+    tools::Long n6 = n2 * n3;
+    if (std::numeric_limits<tools::Long>::max() / std::abs(n1) < std::abs(n6))
     {
-        tools::Long n6 = n2 * n3;
+        BigInt a7 = n1;
+        a7 *= n6;
 
-        if (std::numeric_limits<tools::Long>::max() / std::abs(n1) < std::abs(n6))
+        if (std::numeric_limits<tools::Long>::max() / std::abs(n4) < std::abs(n5))
         {
-            BigInt a7 = n1;
-            a7 *= n6;
+            BigInt a8 = n4;
+            a8 *= n5;
 
-            if (std::numeric_limits<tools::Long>::max() / std::abs(n4) < std::abs(n5))
-            {
-                BigInt a8 = n4;
-                a8 *= n5;
-
-                BigInt a9 = a8;
-                a9 /= 2;
-                if ( a7.IsNeg() )
-                    a7 -= a9;
-                else
-                    a7 += a9;
-
-                a7 /= a8;
-            } // of if
+            BigInt a9 = a8;
+            a9 /= 2;
+            if ( a7.IsNeg() )
+                a7 -= a9;
             else
-            {
-                tools::Long n8 = n4 * n5;
+                a7 += a9;
 
-                if ( a7.IsNeg() )
-                    a7 -= n8 / 2;
-                else
-                    a7 += n8 / 2;
-
-                a7 /= n8;
-            } // of else
-            return static_cast<tools::Long>(a7);
+            a7 /= a8;
         } // of if
         else
         {
-            tools::Long n7 = n1 * n6;
+            tools::Long n8 = n4 * n5;
 
-            if (std::numeric_limits<tools::Long>::max() / std::abs(n4) < std::abs(n5))
-            {
-                BigInt a7 = n7;
-                BigInt a8 = n4;
-                a8 *= n5;
-
-                BigInt a9 = a8;
-                a9 /= 2;
-                if ( a7.IsNeg() )
-                    a7 -= a9;
-                else
-                    a7 += a9;
-
-                a7 /= a8;
-                return static_cast<tools::Long>(a7);
-            } // of if
+            if ( a7.IsNeg() )
+                a7 -= n8 / 2;
             else
-            {
-                const tools::Long n8 = n4 * n5;
-                const tools::Long n8_2 = n8 / 2;
+                a7 += n8 / 2;
 
-                if( n7 < 0 )
-                {
-                    if ((n7 - std::numeric_limits<tools::Long>::min()) >= n8_2)
-                        n7 -= n8_2;
-                }
-                else if ((std::numeric_limits<tools::Long>::max() - n7) >= n8_2)
-                    n7 += n8_2;
-
-                return n7 / n8;
-            } // of else
+            a7 /= n8;
         } // of else
-    } // of else
+        return static_cast<tools::Long>(a7);
+    }
+
+    tools::Long n7 = n1 * n6;
+    if (std::numeric_limits<tools::Long>::max() / std::abs(n4) < std::abs(n5))
+    {
+        BigInt a7 = n7;
+        BigInt a8 = n4;
+        a8 *= n5;
+
+        BigInt a9 = a8;
+        a9 /= 2;
+        if ( a7.IsNeg() )
+            a7 -= a9;
+        else
+            a7 += a9;
+
+        a7 /= a8;
+        return static_cast<tools::Long>(a7);
+    }
+
+    const tools::Long n8 = n4 * n5;
+    const tools::Long n8_2 = n8 / 2;
+
+    if( n7 < 0 )
+    {
+        if ((n7 - std::numeric_limits<tools::Long>::min()) >= n8_2)
+            n7 -= n8_2;
+    }
+    else if ((std::numeric_limits<tools::Long>::max() - n7) >= n8_2)
+        n7 += n8_2;
+
+    return n7 / n8;
 }
 
 static tools::Long fn3(const tools::Long n1, const o3tl::Length eFrom, const o3tl::Length eTo)
