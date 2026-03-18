@@ -77,7 +77,7 @@ enum class SvLBoxTabFlags
 };
 namespace o3tl
 {
-    template<> struct typed_flags<SvLBoxTabFlags> : is_typed_flags<SvLBoxTabFlags, 0x007f> {};
+    template<> struct typed_flags<SvLBoxTabFlags> : is_typed_flags<SvLBoxTabFlags, 0x00ff> {};
 }
 
 #define SV_TAB_BORDER 8
