@@ -1102,8 +1102,10 @@ Try:
 				If .sObjectType = cstBasicClass Then
 					bUno = False
 					&apos;	Try if the Basic object has an ObjectType property
-					.sObjectType = oValue.ObjectType
-					.sServiceName = oValue.ServiceName
+					If Left(oValue.Name, 3) = &quot;SF_&quot; Then
+						.sObjectType = oValue.ObjectType
+						.sServiceName = oValue.ServiceName
+					End If
 				End If
 				&apos;	Derive the return value from the object type
 				Select Case True

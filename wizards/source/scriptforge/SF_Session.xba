@@ -146,6 +146,7 @@ Public Function ExecuteBasicScript(Optional ByVal Scope As Variant _
 &apos;&apos;&apos;		The value returned by the call to the script
 &apos;&apos;&apos;	Exceptions:
 &apos;&apos;&apos;		NOSCRIPTERROR		The script could not be found
+&apos;&apos;&apos;		SCRIPTEXECERROR		Script execution failed
 &apos;&apos;&apos;	Examples:
 &apos;&apos;&apos;		session.ExecuteBasicScript(, &quot;XrayTool._Main.Xray&quot;, someuno)	&apos;	Sub: no return expected
 
@@ -1115,16 +1116,14 @@ Dim sScope As String			&apos;	The scope part of the script URI
 Dim sLanguage As String			&apos;	The language part of the script URI
 Dim sScript As String			&apos;	The script part of the script URI
 Dim vStrings As Variant			&apos;	Array of strings: (script, language, scope)
-Const cstComma = &quot;,&quot;
 
+	_ExecuteScript = Empty
+	
 Try:
 	If ScriptForge.SF_String.StartsWith(psScript, cstScript1) Then
 		&apos;	Parse script
-		vStrings = Split( _
-						Replace( _
-							Replace(Mid(psScript, Len(cstScript1) + 1), cstScript2, cstComma) _
-							, cstScript3, cstComma) _
-						, cstComma)
+		vStrings = SF_Session._ParseScriptURI(psScript)
+		If UBound(vStrings) &lt;&gt; 2 Then Exit Function
 		sScript = vStrings(0)	:	sLanguage = vStrings(1)	:	sScope = vStrings(2)
 		&apos;	Execute script
 		If UCase(sLanguage) = &quot;BASIC&quot; Then
@@ -1137,12 +1136,49 @@ Try:
 End Function	&apos;	ScriptForge.SF_Session._ExecuteScript
 
 REM -----------------------------------------------------------------------------
+Private Function _FindModule(psLibrary As String _
+								, psModule As String _
+								) As Object
+&apos;&apos;&apos;	Identify the given library + module to prepare a CallByName()
+&apos;&apos;&apos;		- only GlobalScope is considered
+&apos;&apos;&apos;		- the library must be loaded (ScriptForge will not load it)
+&apos;&apos;&apos;		- the Standard library is excluded
+&apos;&apos;&apos;		- library and module must exist
+&apos;&apos;&apos;		- implement a limited number of arguments (8)
+&apos;&apos;&apos;	Args:
+&apos;&apos;&apos;		psLibrary: a Basic library
+&apos;&apos;&apos;		psModule: a Basic module
+&apos;&apos;&apos;	Returns:
+&apos;&apos;&apos;		A module as a Basic object or Nothing
+
+Dim oModule As Object			&apos;	com.sun.star.script.NativeObjectWrapper
+
+	On Local Error GoTo Finally
+	Set oModule = Nothing
+
+Try:
+	With GlobalScope.BasicLibraries
+		If psLibrary &lt;&gt; &quot;Standard&quot; Then
+			If .hasByName(psLibrary) Then
+				If .isLibraryLoaded(psLibrary) Then
+					Set oModule = FindPropertyObject(FindObject(psLibrary), psModule)
+				End If
+			End If
+		End If
+	End With
+
+Finally:
+	Set _FindModule = oModule
+	Exit Function
+End Function	&apos;	ScriptForge.SF_Session._FindModule
+
+REM -----------------------------------------------------------------------------
 Private Function _GetScript(ByVal psLanguage As String _
 								, ByVal psScope As String _
 								, ByVal psScript As String _
 								) As Object
 &apos;&apos;&apos;	Get the adequate script provider and from there the requested script
-&apos;&apos;&apos;	Called by ExecuteBasicScript() and ExecutePythonScript()
+&apos;&apos;&apos;	Called a.o. by ExecuteBasicScript() and ExecutePythonScript()
 &apos;&apos;&apos;		The execution of the script is done by the caller
 &apos;&apos;&apos;	Args:
 &apos;&apos;&apos;		psLanguage: Basic or Python
@@ -1172,6 +1208,7 @@ Try:
 		Set oScript = oScriptProvider.getScript(sScript)
 	End If
   ForAllUsers:
+  	On Local Error GoTo 0
 	On Local Error GoTo CatchNotFound
 	If IsNull(oScript) Then
 		If psScope = SCRIPTISOXT Then psScope = SCRIPTISSHAROXT
@@ -1186,6 +1223,36 @@ CatchNotFound:
 	SF_Exception.RaiseFatal(NOSCRIPTERROR, psLanguage, &quot;Scope&quot;, psScope, &quot;Script&quot;, psScript)
 	GoTo Finally
 End Function	&apos;	ScriptForge.SF_Session._GetScript
+
+REM -----------------------------------------------------------------------------
+Private Function _ParseScriptURI(ByVal psScript As String) As Variant
+&apos;&apos;&apos;	Parse the script expressed in the scripting framework_URI notation
+&apos;&apos;&apos;	Args:
+&apos;&apos;&apos;		psScript: read https://wiki.documentfoundation.org/Documentation/DevGuide/Scripting_Framework#Scripting_Framework_URI_Specification
+&apos;&apos;&apos;	Returns:
+&apos;&apos;&apos;		An array of strings: (script, language, scope)
+
+Dim vStrings As Variant			&apos;	Array of strings: (script, language, scope)
+Const cstComma = &quot;,&quot;
+
+Try:
+	vStrings = Array()
+	If ScriptForge.SF_String.StartsWith(psScript, cstScript1) Then
+		&apos;	Parse script
+		vStrings = Split( _
+						Replace( _
+							Replace(Mid(psScript, Len(cstScript1) + 1), cstScript2, cstComma) _
+							, cstScript3, cstComma) _
+						, cstComma)
+	End If
+
+	&apos;	Verify that all required components are present
+	If UBound(vStrings) &lt;&gt; 2 Then vStrings = Array()
+
+Finally:
+	_ParseScriptURI = vStrings
+	Exit Function
+End Function	&apos;	ScriptForge.SF_Session._ParseScriptURI
 
 REM =============================================== END OF SCRIPTFORGE.SF_SESSION
 </script:module>

@@ -30,8 +30,13 @@ Const ARRAYINDEX1ERROR			=	&quot;ARRAYINDEX1ERROR&quot;			&apos;	Given index doe
 Const ARRAYINDEX2ERROR			=	&quot;ARRAYINDEX2ERROR&quot;			&apos;	Given indexes do not fit in array bounds
 Const CSVPARSINGERROR			=	&quot;CSVPARSINGERROR&quot;			&apos;	Parsing error detected while parsing a csv file
 Const CSVOVERFLOWWARNING		=	&quot;CSVOVERFLOWWARNING&quot;		&apos;	Array becoming too big, import process of csv file is interrupted
+Const NOSCRIPTERROR				=	&quot;NOSCRIPTERROR&quot;				&apos;	Script could not be located
+Const SCRIPTEXECERROR			=	&quot;SCRIPTEXECERROR&quot;			&apos;	Exception during script execution
 
 REM ============================================================ MODULE CONSTANTS
+
+&apos;	CallByName arguments
+Const vbGet = 2, vbLet = 4, vbMethod = 1, vbSet = 8
 
 Const MAXREPR					= 50	&apos;	Maximum length to represent an array in the console
 
@@ -1079,6 +1084,124 @@ CatchIndex:
 End Function	&apos;	ScriptForge.SF_Array.ExtractRow
 
 REM -----------------------------------------------------------------------------
+Public Function Filter(Optional ByVal Module As Variant _
+					, Optional ByVal Method As Variant _
+					, Optional ByRef Params As Variant _
+					, ParamArray Args() As Variant _
+					) As Variant
+&apos;&apos;&apos;	Execute the given script passing as argument consecutively each item of the Params array.
+&apos;&apos;&apos;	The script must be written in Basic.
+&apos;&apos;&apos;	Filter() returns a 1D array listing the items for which the called method has returned True.
+&apos;&apos;&apos;		Module: a Basic object referring either to a module, or to an instance of a Basic class.
+&apos;&apos;&apos;		Method: the method to execute, as a string
+&apos;&apos;&apos;			When Module is a ScriptForge object, Method may also be a property (get).
+&apos;&apos;&apos;		Params: a 1D array where each item represents the argument to pass for a given iteration.
+&apos;&apos;&apos;		Args: a list of positional arguments (maximum 8 items).
+&apos;&apos;&apos;	Return:
+&apos;&apos;&apos;		A 1D array listing the items for which the called method has returned True.
+&apos;&apos;&apos;		If an iteration causes an exception, the Filter() function raises an error.
+&apos;&apos;&apos;	Exceptions:
+&apos;&apos;&apos;		NOSCRIPTERROR		The script could not be found
+&apos;&apos;&apos;		SCRIPTEXECERROR		Script execution failed
+&apos;&apos;&apos;	Example:
+&apos;&apos;&apos;		SF_Array.Filter(Module1, &quot;POSITIVE&quot;, Array(1, 2, -3, 4, -5, 0))	&apos;	(1, 2, 4, 0)
+&apos;&apos;&apos;		&apos;----
+&apos;&apos;&apos;		Function POSITIVE(a) As Boolean
+&apos;&apos;&apos;			POSITIVE = ( a &gt;= 0 )
+&apos;&apos;&apos;		End Function
+
+Dim vReturn As Variant			&apos;	Return value
+Dim lMin As Long				&apos;	LBound1 of input array
+Dim lMax As Long				&apos;	UBound1 of input array
+Dim vParamsItem As Variant		&apos;	A single item or item of Params
+Dim iModuleType As Integer		&apos;	BASICOBJECT or SFOBJECT
+Dim iCallType As Integer		&apos;	One of the vbXXX constants
+Dim oModule As Object			&apos;	A SF_Utils._ObjectDescriptor type
+Dim sScript As String			&apos;	Library.Module.Method
+Dim bReturn As Boolean			&apos;	Value returned from called method
+Dim lCount As Long				&apos;	Number of times the called method has returned True
+Dim i As Long
+
+Const cstThisSub = &quot;Array.Filter&quot;
+Const cstSubArgs = &quot;Module, Method, Params, [Arg0, Arg1, ...]&quot;
+
+	If SF_Utils._ErrorHandling() Then On Local Error GoTo Finally
+	vReturn = Array()
+
+Check:
+	If SF_Utils._EnterFunction(cstThisSub, cstSubArgs) Then
+		If Not SF_Utils._Validate(Module, &quot;Module&quot;, V_OBJECT) Then GoTo Finally
+		If Not SF_Utils._Validate(Method, &quot;Method&quot;, V_STRING) Then GoTo Finally
+		If Not SF_Utils._ValidateArray(Params, &quot;Params&quot;, 1) Then GoTo Finally
+	End If
+
+	Set oModule = SF_Utils._VarTypeObj(Module)
+	&apos;	Prepare error messages method/script names
+	With oModule
+		iModuleType = .iVarType
+		If iModuleType = V_SFOBJECT Then
+			sScript = .sServiceName
+		ElseIf iModuleType = V_BASICOBJECT Then
+			sScript = Module.Name
+		Else
+			GoTo CatchNotFound
+		End If
+	End With
+	
+Try:
+	&apos;	Initialize the resulting array
+	lMin = LBound(Params, 1)			:	lMax = UBound(Params, 1)
+	ReDim vReturn(lMin To lMax)
+	lCount = -1
+
+	&apos;	For Basic dynamic calls, the choice is made to use the - much faster than script provider techniques - CallByName().
+	If SF_Utils._ErrorHandling() Then On Local Error GoTo CatchNotFound
+	&apos;	Set the right call type: get (property) or method
+	iCallType = vbMethod
+	If iModuleType = V_SFOBJECT Then
+		If SF_Array.Contains(Module.Properties, Method, CaseSensitive := False) Then iCallType = vbGet
+	End If
+	For i = lMin To lMax
+		vParamsItem = Params(i)
+		Select Case UBound(Args) + 1	&apos;	Number of arguments to pass to the called function
+			Case 0	:	bReturn = CBool(CallByName(Module, Method, iCallType, vParamsItem))
+			Case 1	:	bReturn = CBool(CallByName(Module, Method, iCallType, vParamsItem, Args(0)))
+			Case 2	:	bReturn = CBool(CallByName(Module, Method, iCallType, vParamsItem, Args(0), Args(1)))
+			Case 3	:	bReturn = CBool(CallByName(Module, Method, iCallType, vParamsItem, Args(0), Args(1), Args(2)))
+			Case 4	:	bReturn = CBool(CallByName(Module, Method, iCallType, vParamsItem, Args(0), Args(1), Args(2), Args(3)))
+			Case 5	:	bReturn = CBool(CallByName(Module, Method, iCallType, vParamsItem, Args(0), Args(1), Args(2), Args(3), Args(4)))
+			Case 6	:	bReturn = CBool(CallByName(Module, Method, iCallType, vParamsItem, Args(0), Args(1), Args(2), Args(3), Args(4), Args(5)))
+			Case 7	:	bReturn = CBool(CallByName(Module, Method, iCallType, vParamsItem, Args(0), Args(1), Args(2), Args(3), Args(4), Args(5), Args(6)))
+			Case 8	:	bReturn = CBool(CallByName(Module, Method, iCallType, vParamsItem, Args(0), Args(1), Args(2), Args(3), Args(4), Args(5), Args(6), Args(7)))
+		End Select
+		&apos;	Retain the output only when True
+		If bReturn Then
+			lCount = lCount + 1
+			vReturn(lMin + lCount) = Params(i)
+		End If
+	Next i
+
+	&apos;	Cut items in excess
+	If lCount &lt; 0 Then
+		vReturn = Array()
+	Else
+		ReDim Preserve vReturn(lMin To lMin + lCount)
+	End If
+
+Finally:
+	Filter = vReturn
+	SF_Utils._ExitFunction(cstThisSub)
+	Exit Function
+CatchExec:
+	SF_Exception.RaiseFatal(SCRIPTEXECERROR, &quot;Script&quot;, sScript &amp; &quot;.&quot; &amp; Method, Error$)
+	GoTo Finally
+CatchNotFound:
+	If Err &gt; 0 And Err &lt;&gt; 35 Then GoTo CatchExec	&apos;	Error 35 = Sub-procedure or function procedure not defined
+	SF_Exception.RaiseFatal(NOSCRIPTERROR, &quot;Basic&quot;, &quot;Module&quot;, sScript, &quot;Method&quot;, Method)
+	GoTo Finally
+End Function	&apos;	ScriptForge.SF_Array.Filter
+
+REM -----------------------------------------------------------------------------
 Public Function Flatten(Optional ByRef Array_1D As Variant) As Variant
 &apos;&apos;&apos;	Stack all items and all items in subarrays into one array without subarrays
 &apos;&apos;&apos;	Args
@@ -1631,10 +1754,10 @@ Public Function Join2D(Optional ByRef Array_2D As Variant _
 Dim sJoin As String				&apos;	The return value
 Dim sItem As String				&apos;	The string representation of a single item
 Dim vItem As Variant			&apos;	Single item
-Dim lMin1 As Long					&apos;	LBound1 of input array
-Dim lMax1 As Long					&apos;	UBound1 of input array
-Dim lMin2 As Long					&apos;	LBound2 of input array
-Dim lMax2 As Long					&apos;	UBound2 of input array
+Dim lMin1 As Long				&apos;	LBound1 of input array
+Dim lMax1 As Long				&apos;	UBound1 of input array
+Dim lMin2 As Long				&apos;	LBound2 of input array
+Dim lMax2 As Long				&apos;	UBound2 of input array
 Dim i As Long
 Dim j As Long
 Const cstThisSub = &quot;Array.Join2D&quot;
@@ -1681,6 +1804,124 @@ Catch:
 End Function	&apos;	ScriptForge.SF_Array.Join2D
 
 REM -----------------------------------------------------------------------------
+Public Function Map(Optional ByVal Module As Variant _
+					, Optional ByVal Method As Variant _
+					, Optional ByRef Params As Variant _
+					, ParamArray Args() As Variant _
+					) As Variant
+&apos;&apos;&apos;	Execute the given method passing as argument consecutively
+&apos;&apos;&apos;		- a list of specific arguments, i.e. the Params() array;
+&apos;&apos;&apos;		- a list of fixed arguments, i.e. the Args() array.
+&apos;&apos;&apos;	The script must be written in Basic.
+&apos;&apos;&apos;	Map() returns a 1D array of the got results.
+&apos;&apos;&apos;	Args:
+&apos;&apos;&apos;		Module: a Basic object referring either to a module, or to an instance of a Basic class.
+&apos;&apos;&apos;		Method: the method to execute, as a string
+&apos;&apos;&apos;			When Module is a ScriptForge object, Method may also be a property (get).
+&apos;&apos;&apos;		Params: a 1D or 2D array where each row represents the set of variable arguments to pass for a given iteration.
+&apos;&apos;&apos;		Args: a list of positional arguments (maximum 8 items).
+&apos;&apos;&apos;	Return:
+&apos;&apos;&apos;		A 1D array of the results obtained in each iteration. Its size is equal to the number of rows in the input array.
+&apos;&apos;&apos;		If an iteration causes an exception, the Map() function raises an error.
+&apos;&apos;&apos;	Exceptions:
+&apos;&apos;&apos;		NOSCRIPTERROR		The script could not be found
+&apos;&apos;&apos;		SCRIPTEXECERROR		Script execution failed
+&apos;&apos;&apos;	Example:
+&apos;&apos;&apos;										| 1, 2|
+&apos;&apos;&apos;		SF_Array.Map(Module1, &quot;SUM&quot;,	| 6, 7|)
+&apos;&apos;&apos;				&apos;	(3, 13)
+&apos;&apos;&apos;		&apos;----
+&apos;&apos;&apos;		Function SUM(a)
+&apos;&apos;&apos;			SUM = a(0) + a(1)
+&apos;&apos;&apos;		End Function
+&apos;&apos;&apos;		&apos;====================================
+&apos;&apos;&apos;		fs = CreateScriptService(&quot;FileSystem&quot;)
+&apos;&apos;&apos;		ui = CreateScriptService(&quot;UI&quot;)
+&apos;&apos;&apos;		folder = &quot;C:\MyFolder&quot;
+&apos;&apos;&apos;		opencalcdocs = SF_Array.Map(ui, &quot;OpenDocument&quot;, fs.Files(folder, filter := &quot;*.ods&quot;), &quot;&quot;, True)
+&apos;&apos;&apos;			&apos;	Open read-only all Calc documents stored in folder
+
+Dim vReturn As Variant			&apos;	Return value
+Dim iCountDims As Integer		&apos;	Number of dimensions of the input array
+Dim lMin As Long				&apos;	LBound1 of input array
+Dim lMax As Long				&apos;	UBound1 of input array
+Dim vParamsRow As Variant		&apos;	A single row or item of Params
+Dim iModuleType As Integer		&apos;	BASICOBJECT or SFOBJECT
+Dim iCallType As Integer		&apos;	One of the vbXXX constants
+Dim oModule As Object			&apos;	A SF_Utils._ObjectDescriptor type
+Dim sScript As String			&apos;	Library.Module.Method
+Dim i As Long
+
+Const cstThisSub = &quot;Array.Map&quot;
+Const cstSubArgs = &quot;Module, Method, Params, [Arg0, Arg1, ...]&quot;
+
+	If SF_Utils._ErrorHandling() Then On Local Error GoTo Finally
+	vReturn = Array()
+
+Check:
+	If SF_Utils._EnterFunction(cstThisSub, cstSubArgs) Then
+		If Not SF_Utils._Validate(Module, &quot;Module&quot;, V_OBJECT) Then GoTo Finally
+		If Not SF_Utils._Validate(Method, &quot;Method&quot;, V_STRING) Then GoTo Finally
+		If Not SF_Utils._ValidateArray(Params, &quot;Params&quot;) Then GoTo Finally
+	End If
+
+	Set oModule = SF_Utils._VarTypeObj(Module)
+	&apos;	Prepare error messages method/script names
+	With oModule
+		iModuleType = .iVarType
+		If iModuleType = V_SFOBJECT Then
+			sScript = .sServiceName
+		ElseIf iModuleType = V_BASICOBJECT Then
+			sScript = Module.Name
+		Else
+			GoTo CatchNotFound
+		End If
+	End With
+	
+	iCountDims = SF_Array.CountDims(Params)
+	If iCountDims &lt;= 0 Or iCountDims &gt; 2 Then GoTo Finally
+
+Try:
+	&apos;	Initialize the resulting array
+	lMin = LBound(Params, 1)			:	lMax = UBound(Params, 1)
+	ReDim vReturn(lMin To lMax)
+
+	&apos;	For Basic dynamic calls, the choice is made to use the - much faster than script provider techniques - CallByName().
+	If SF_Utils._ErrorHandling() Then On Local Error GoTo CatchNotFound
+	&apos;	Set the right call type: get (property) or method
+	iCallType = vbMethod
+	If iModuleType = V_SFOBJECT Then
+		If SF_Array.Contains(Module.Properties, Method, CaseSensitive := False) Then iCallType = vbGet
+	End If
+	For i = lMin To lMax
+		If iCountDims = 1 Then vParamsRow = Params(i) Else vParamsRow = SF_Array.ExtractRow(Params, i)
+		Select Case UBound(Args) + 1	&apos;	Number of arguments to pass to the called function
+			Case 0	:	vReturn (i) = CallByName(Module, Method, iCallType, vParamsRow)
+			Case 1	:	vReturn (i) = CallByName(Module, Method, iCallType, vParamsRow, Args(0))
+			Case 2	:	vReturn (i) = CallByName(Module, Method, iCallType, vParamsRow, Args(0), Args(1))
+			Case 3	:	vReturn (i) = CallByName(Module, Method, iCallType, vParamsRow, Args(0), Args(1), Args(2))
+			Case 4	:	vReturn (i) = CallByName(Module, Method, iCallType, vParamsRow, Args(0), Args(1), Args(2), Args(3))
+			Case 5	:	vReturn (i) = CallByName(Module, Method, iCallType, vParamsRow, Args(0), Args(1), Args(2), Args(3), Args(4))
+			Case 6	:	vReturn (i) = CallByName(Module, Method, iCallType, vParamsRow, Args(0), Args(1), Args(2), Args(3), Args(4), Args(5))
+			Case 7	:	vReturn (i) = CallByName(Module, Method, iCallType, vParamsRow, Args(0), Args(1), Args(2), Args(3), Args(4), Args(5), Args(6))
+			Case 8	:	vReturn (i) = CallByName(Module, Method, iCallType, vParamsRow, Args(0), Args(1), Args(2), Args(3), Args(4), Args(5), Args(6), Args(7))
+		End Select
+	Next i
+
+Finally:
+	Map = vReturn
+	SF_Utils._ExitFunction(cstThisSub)
+	Exit Function
+CatchExec:
+	SF_Exception.RaiseFatal(SCRIPTEXECERROR, &quot;Script&quot;, sScript &amp; &quot;.&quot; &amp; Method, Error$)
+	GoTo Finally
+CatchNotFound:
+	If Err &gt; 0 And Err &lt;&gt; 35 Then GoTo CatchExec	&apos;	Error 35 = Sub-procedure or function procedure not defined
+	SF_Exception.RaiseFatal(NOSCRIPTERROR, &quot;Basic&quot;, &quot;Module&quot;, sScript, &quot;Method&quot;, Method)
+	GoTo Finally
+End Function	&apos;	ScriptForge.SF_Array.Map
+
+REM -----------------------------------------------------------------------------
 Public Function Methods() As Variant
 &apos;&apos;&apos;	Return the list of public methods of the Array service as an array
 
@@ -1699,6 +1940,7 @@ Public Function Methods() As Variant
 					, &quot;ExportToTextFile&quot; _
 					, &quot;ExtractColumn&quot; _
 					, &quot;ExtractRow&quot; _
+					, &quot;Filter&quot; _
 					, &quot;Flatten&quot; _
 					, &quot;ImportFromCSVFile&quot; _
 					, &quot;IndexOf&quot; _
@@ -1706,10 +1948,12 @@ Public Function Methods() As Variant
 					, &quot;InsertSorted&quot; _
 					, &quot;Intersection&quot; _
 					, &quot;Join2D&quot; _
+					, &quot;Map&quot; _
 					, &quot;Prepend&quot; _
 					, &quot;PrependColumn&quot; _
 					, &quot;PrependRow&quot; _
 					, &quot;RangeInit&quot; _
+					, &quot;Reduce&quot; _
 					, &quot;Reverse&quot; _
 					, &quot;Shuffle&quot; _
 					, &quot;Slice&quot; _
@@ -1998,6 +2242,102 @@ CatchSequence:
 	SF_Exception.RaiseFatal(ARRAYSEQUENCEERROR, From, UpTo, ByStep)
 	GoTo Finally
 End Function	&apos;	ScriptForge.SF_Array.RangeInit
+
+REM -----------------------------------------------------------------------------
+Public Function Reduce(Optional ByVal Module As Variant _
+					, Optional ByVal Method As Variant _
+					, Optional ByRef Params As Variant _
+					, Optional ByVal InitialValue As Variant _
+					) As Variant
+&apos;&apos;&apos;	Apply a function of two arguments cumulatively to the elements of an iterable, optionally starting with an initial argument.
+&apos;&apos;&apos;	The returned value is input as first argument in the next iteration.
+&apos;&apos;&apos;	The script must be written in Basic.
+&apos;&apos;&apos;	Reduce() returns the value returned by the last iteration.
+&apos;&apos;&apos;		Module: a Basic object referring either to a module, or to an instance of a Basic class.
+&apos;&apos;&apos;		Method: the method to execute, as a string
+&apos;&apos;&apos;			When Module is a ScriptForge object, Method may also be a property (get).
+&apos;&apos;&apos;		Params: a 1D array where each item represents the argument to pass for a given iteration.
+&apos;&apos;&apos;		InitialValue: when present, the first argument of the first iteration.
+&apos;&apos;&apos;	Return:
+&apos;&apos;&apos;		A scalar value as returned by the last iteration.
+&apos;&apos;&apos;	If the input array is empty, return the InitalValue or Null
+&apos;&apos;&apos;		If an iteration causes an exception, the Reduce() function raises an error.
+&apos;&apos;&apos;	Exceptions:
+&apos;&apos;&apos;		NOSCRIPTERROR		The script could not be found
+&apos;&apos;&apos;		SCRIPTEXECERROR		Script execution failed
+&apos;&apos;&apos;	Example:
+&apos;&apos;&apos;		SF_Array.Reduce(Module1, &quot;SUM&quot;, Array(1, 2, -3, 4, -5, 0), 10)	&apos;	9
+&apos;&apos;&apos;		&apos;----
+&apos;&apos;&apos;		Function SUM(a, b) As Double
+&apos;&apos;&apos;			SUM = a + b
+&apos;&apos;&apos;		End Function
+
+Dim vReturn As Variant			&apos;	Return value
+Dim lMin As Long				&apos;	LBound1 of input array
+Dim lMax As Long				&apos;	UBound1 of input array
+Dim iModuleType As Integer		&apos;	BASICOBJECT or SFOBJECT
+Dim oModule As Object			&apos;	A SF_Utils._ObjectDescriptor type
+Dim sScript As String			&apos;	Library.Module.Method
+Dim i As Long
+
+Const cstThisSub = &quot;Array.Reduce&quot;
+Const cstSubArgs = &quot;Module, Method, Params, [Arg0, Arg1, ...], [InitialValue]&quot;
+
+	If SF_Utils._ErrorHandling() Then On Local Error GoTo Finally
+	vReturn = Null
+
+Check:
+	If IsMissing(InitialValue) Or IsEmpty(InitialValue) Then InitialValue = Null
+	If SF_Utils._EnterFunction(cstThisSub, cstSubArgs) Then
+		If Not SF_Utils._Validate(Module, &quot;Module&quot;, V_OBJECT) Then GoTo Finally
+		If Not SF_Utils._Validate(Method, &quot;Method&quot;, V_STRING) Then GoTo Finally
+		If Not SF_Utils._ValidateArray(Params, &quot;Params&quot;, 1) Then GoTo Finally
+	End If
+
+	Set oModule = SF_Utils._VarTypeObj(Module)
+	&apos;	Prepare error messages method/script names
+	With oModule
+		iModuleType = .iVarType
+		If iModuleType = V_SFOBJECT Then
+			sScript = .sServiceName
+		ElseIf iModuleType = V_BASICOBJECT Then
+			sScript = Module.Name
+		Else
+			GoTo CatchNotFound
+		End If
+	End With
+	
+Try:
+	lMin = LBound(Params, 1)			:	lMax = UBound(Params, 1)
+
+	&apos;	For Basic dynamic calls, the choice is made to use the - much faster than script provider techniques - CallByName().
+	If SF_Utils._ErrorHandling() Then On Local Error GoTo CatchNotFound
+	If lMin &gt; lMax Then		&apos;	Empt array
+		vReturn = InitialValue
+	Else
+		If Not IsNull(InitialValue) Then	&apos;	The 1st iteration groups initial value + lMin-th item
+			vReturn = InitialValue
+		Else								&apos;	The 1st iteration groups the first 2 items
+			vreturn = Params(lMin)
+			lMin = lMin + 1
+		End If
+		For i = lMin To lMax
+			vReturn = CallByName(Module, Method, vbMethod, vReturn, Params(i))
+		Next i
+	End If
+
+Finally:
+	Reduce = vReturn
+	SF_Utils._ExitFunction(cstThisSub)
+	Exit Function
+CatchExec:
+	SF_Exception.RaiseFatal(SCRIPTEXECERROR, &quot;Script&quot;, sScript &amp; &quot;.&quot; &amp; Method, Error$)
+	GoTo Finally
+CatchNotFound:
+	If Err &gt; 0 And Err &lt;&gt; 35 Then GoTo CatchExec	&apos;	Error 35 = Sub-procedure or function procedure not defined
+	SF_Exception.RaiseFatal(NOSCRIPTERROR, &quot;Basic&quot;, &quot;Module&quot;, sScript, &quot;Method&quot;, Method)
+	GoTo Finally
+End Function	&apos;	ScriptForge.SF_Array.Reduce
 
 REM -----------------------------------------------------------------------------
 Public Function Reverse(Optional ByRef Array_1D As Variant) As Variant
