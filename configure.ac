@@ -1063,6 +1063,7 @@ cygwin*|wsl*)
     using_x11=no
     test_unix_dlapi=no
     test_openldap=no
+    test_win=yes
     enable_pagein=no
     build_skia=yes
     _os=WINNT
@@ -1304,6 +1305,7 @@ test "$test_kf5" = yes -a "$test_qt5" = no && test_kf5=no
 test "$test_kf5" = yes && test_qt5=yes
 test "$test_gtk3" != yes && enable_gtk3=no
 test "$test_gtk3" != yes -o "$test_kf5" != yes && test_gtk3_kde5=no
+test "$test_win" != yes && enable_win=no
 test "$using_freetype_fontconfig" = no && using_headless_plugin=no
 test "$using_freetype_fontconfig" = yes && test_cairo=yes
 
@@ -1966,6 +1968,11 @@ AC_ARG_ENABLE(headless,
     AS_HELP_STRING([--enable-headless],
         [Enable headless plugin (svp) even on macOS or Windows.]),
 ,using_headless_plugin=yes)
+
+AC_ARG_ENABLE(win,
+    AS_HELP_STRING([--disable-win],
+        [Determines whether to use the win vclplug when building on Windows.]),
+,test "${test_win}" = no -o "${enable_win+set}" = set || enable_win=yes)
 
 AC_ARG_ENABLE(gui,
     AS_HELP_STRING([--disable-gui],
@@ -12580,6 +12587,7 @@ libo_ENABLE_VCLPLUG([kf5])
 libo_ENABLE_VCLPLUG([kf6])
 libo_ENABLE_VCLPLUG([qt5])
 libo_ENABLE_VCLPLUG([qt6])
+libo_ENABLE_VCLPLUG([win])
 
 if test "$_os" = "WINNT"; then
     R="$R win"
