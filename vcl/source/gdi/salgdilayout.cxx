@@ -885,6 +885,32 @@ OUString SalGraphics::getRenderBackendName() const
     return OUString();
 }
 
+#if ENABLE_CAIRO_CANVAS
+bool SalGraphics::SupportsCairo() const { return false; }
+
+cairo::SurfaceSharedPtr SalGraphics::CreateSurface(const cairo::CairoSurfaceSharedPtr&) const
+{
+    return {};
+}
+
+cairo::SurfaceSharedPtr SalGraphics::CreateSurface(const OutputDevice&, int, int, int, int) const
+{
+    return {};
+}
+
+cairo::SurfaceSharedPtr SalGraphics::CreateBitmapSurface(const OutputDevice&,
+                                                         const BitmapSystemData&, const Size&) const
+{
+    return {};
+}
+
+css::uno::Any SalGraphics::GetNativeSurfaceHandle(cairo::SurfaceSharedPtr&,
+                                                  const basegfx::B2ISize&) const
+{
+    return css::uno::Any();
+}
+#endif // ENABLE_CAIRO_CANVAS
+
 bool SalGraphics::ShouldDownscaleIconsAtSurface(double& rScaleOut) const
 {
     rScaleOut = comphelper::LibreOfficeKit::getDPIScale();
