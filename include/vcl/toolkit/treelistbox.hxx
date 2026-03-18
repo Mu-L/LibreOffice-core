@@ -36,13 +36,12 @@
 #include <tools/gen.hxx>
 #include <tools/contnr.hxx>
 #include <vcl/toolkit/treelist.hxx>
+#include <vcl/toolkit/viewdataentry.hxx>
 #include <vcl/transfer.hxx>
 #include <o3tl/typed_flags_set.hxx>
 
 class SvTreeListBox;
 class SvTreeListEntry;
-struct SvViewDataItem;
-class SvViewDataEntry;
 class SvInplaceEdit2;
 class SvLBoxString;
 class SvImpLBox;
