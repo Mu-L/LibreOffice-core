@@ -103,7 +103,6 @@ void DocumentStatisticsManager::UpdateDocStat( bool bCompleteAsync, bool bFields
 // returns true while there is more to do
 bool DocumentStatisticsManager::IncrementalDocStatCalculate(tools::Long nChars, bool bFields)
 {
-    mbInitialized = true;
     mpDocStat->Reset();
     mpDocStat->nPara = 0; // default is 1!
 
@@ -196,7 +195,7 @@ bool DocumentStatisticsManager::IncrementalDocStatCalculate(tools::Long nChars, 
         SwFieldType *pType = m_rDoc.getIDocumentFieldsAccess().GetSysFieldType(SwFieldIds::DocStat);
         pType->UpdateFields();
     }
-
+    mbInitialized = nChars > 0;
     return nChars < 0;
 }
 
