@@ -2248,6 +2248,10 @@ void DomainMapper_Impl::finishParagraph( const ParagraphPropertyMapPtr& pParaCon
         {
             if (pFieldContext->GetFieldId() == FIELD_IF || pFieldContext->GetFieldId() == FIELD_REF)
             {
+                // in case a cell needs to start: make sure it knows the current text position
+                if (hasTableManager())
+                    getTableManager().handle(m_rDMapper.GetCurrentTextRange()->getEnd());
+
                 // Conditional text fields can't contain newlines, finish the paragraph later.
                 FieldParagraph aFinish{pParaContext, bRemove};
                 pFieldContext->GetParagraphsToFinish().push_back(aFinish);
