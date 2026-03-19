@@ -2468,7 +2468,7 @@ void ScOutputData::DrawSparklines(vcl::RenderContext& rRenderContext)
                     Size aSize(nWidth, nHeight);
 
                     sc::SparklineRenderer renderer(*mpDoc);
-                    renderer.render(pSparkline, rRenderContext, tools::Rectangle(aPoint, aSize), 1, 1, double(mfZoomX), double(mfZoomY));
+                    renderer.render(pSparkline, rRenderContext, tools::Rectangle(aPoint, aSize), 1, 1, mfZoomX, mfZoomY);
                 }
 
                 nPosX += mpRowInfo[0].basicCellInfo(nX).nWidth * nLayoutSign;
