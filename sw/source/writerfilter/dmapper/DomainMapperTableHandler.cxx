@@ -751,7 +751,9 @@ CellPropertyValuesSeq_t DomainMapperTableHandler::endTableGetCellProperties(Tabl
 
         sal_Int32 nRowStyleMask = 0;
 
-        if (aRowOfCellsIterator==m_aCellProperties.begin())
+        if (*aRowIter && (*aRowIter)->isSet(PROP_TBL_HEADER))
+            nRowStyleMask |= CNF_FIRST_ROW; // table header implies first row style must be applied
+        else if (aRowOfCellsIterator==m_aCellProperties.begin())
         {
             if(rInfo.nTblLook&0x20)
                 nRowStyleMask |= CNF_FIRST_ROW;     // first row style used
@@ -761,8 +763,7 @@ CellPropertyValuesSeq_t DomainMapperTableHandler::endTableGetCellProperties(Tabl
             if(rInfo.nTblLook&0x40)
                 nRowStyleMask |= CNF_LAST_ROW;      // last row style used
         }
-        else if (*aRowIter && (*aRowIter)->isSet(PROP_TBL_HEADER))
-            nRowStyleMask |= CNF_FIRST_ROW; // table header implies first row
+
         if(!nRowStyleMask)                          // if no row style used yet
         {
             // banding used only if not first and or last row style used
