@@ -374,7 +374,7 @@ public:
     int getOptionCount(PDFiumDocument* pDoc) override;
 };
 
-class VCL_DLLPUBLIC PDFiumLinkImpl final : public PDFiumLink
+class PDFiumLinkImpl final : public PDFiumLink
 {
     FPDF_LINK mpLink;
     OUString maURI;
