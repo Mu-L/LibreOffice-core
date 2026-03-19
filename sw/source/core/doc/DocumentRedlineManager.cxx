@@ -2626,8 +2626,7 @@ DocumentRedlineManager::AppendRedline(SwRangeRedline* pNewRedl, bool const bCall
         }
         else
         {
-            if ( bCallDelete && RedlineType::Delete == pNewRedl->GetType()
-                 && !comphelper::IsFuzzing() )
+            if ( bCallDelete && RedlineType::Delete == pNewRedl->GetType() )
             {
                 if ( pStart->GetContentIndex() != 0 )
                 {
