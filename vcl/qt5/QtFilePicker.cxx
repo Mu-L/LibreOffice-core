@@ -158,8 +158,8 @@ void QtFilePicker::prepareExecute()
 
     updateAutomaticFileExtension();
 
-    uno::Reference<css::frame::XDesktop> xDesktop(css::frame::Desktop::create(m_context),
-                                                  UNO_QUERY_THROW);
+    uno::Reference<css::frame::XDesktop2> xDesktop = css::frame::Desktop::create(m_context);
+    assert(xDesktop);
     m_pFileDialog->setParent(pTransientParent, m_pFileDialog->windowFlags());
     xDesktop->addTerminateListener(this);
 }
@@ -167,8 +167,9 @@ void QtFilePicker::prepareExecute()
 void QtFilePicker::finished(int nResult)
 {
     SolarMutexGuard g;
-    uno::Reference<css::frame::XDesktop> xDesktop(css::frame::Desktop::create(m_context),
-                                                  UNO_QUERY_THROW);
+
+    uno::Reference<css::frame::XDesktop2> xDesktop = css::frame::Desktop::create(m_context);
+    assert(xDesktop);
     xDesktop->removeTerminateListener(this);
     m_pFileDialog->setParent(nullptr, m_pFileDialog->windowFlags());
 
