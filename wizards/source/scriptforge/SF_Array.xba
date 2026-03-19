@@ -2260,7 +2260,7 @@ Public Function Reduce(Optional ByVal Module As Variant _
 &apos;&apos;&apos;		InitialValue: when present, the first argument of the first iteration.
 &apos;&apos;&apos;	Return:
 &apos;&apos;&apos;		A scalar value as returned by the last iteration.
-&apos;&apos;&apos;	If the input array is empty, return the InitalValue or Null
+&apos;&apos;&apos;	If the input array is empty, return the InitialValue or Null
 &apos;&apos;&apos;		If an iteration causes an exception, the Reduce() function raises an error.
 &apos;&apos;&apos;	Exceptions:
 &apos;&apos;&apos;		NOSCRIPTERROR		The script could not be found
@@ -2306,13 +2306,13 @@ Check:
 			GoTo CatchNotFound
 		End If
 	End With
-	
+
 Try:
 	lMin = LBound(Params, 1)			:	lMax = UBound(Params, 1)
 
 	&apos;	For Basic dynamic calls, the choice is made to use the - much faster than script provider techniques - CallByName().
 	If SF_Utils._ErrorHandling() Then On Local Error GoTo CatchNotFound
-	If lMin &gt; lMax Then		&apos;	Empt array
+	If lMin &gt; lMax Then		&apos;	Empty array
 		vReturn = InitialValue
 	Else
 		If Not IsNull(InitialValue) Then	&apos;	The 1st iteration groups initial value + lMin-th item
