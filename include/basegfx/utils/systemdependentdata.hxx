@@ -42,7 +42,7 @@ namespace basegfx
     };
 
     // (S)ystem(D)ependent(D)ata_Type
-    enum class BASEGFX_DLLPUBLIC SDD_Type : sal_uInt16 {
+    enum class SDD_Type : sal_uInt16 {
         SDDType_CairoPathGeometry,
         SDDType_CairoSurface,
         SDDType_ID2D1PathGeometry,

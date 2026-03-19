@@ -25,7 +25,7 @@
 
 namespace svx::diagram
 {
-enum class SVXCORE_DLLPUBLIC DomMapFlag : sal_uInt16
+enum class DomMapFlag : sal_uInt16
 {
     OOXData = 0,
     OOXDataImageRels = 1,
