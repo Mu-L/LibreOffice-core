@@ -68,8 +68,6 @@ public:
     virtual bool isCurrent();
     /// Is any GL context the current context ?
     virtual bool isAnyCurrent();
-    /// release bound resources from the current context
-    static void clearCurrent();
     /// release contexts etc. before (potentially) allowing another thread run.
     SAL_DLLPRIVATE static void prepareForYield();
     /// Is there a current GL context ?

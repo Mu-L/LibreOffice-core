@@ -48,8 +48,6 @@ void QtOpenGLContext::swapBuffers()
 
 void QtOpenGLContext::resetCurrent()
 {
-    clearCurrent();
-
     OpenGLZone aZone;
 
     if (m_pContext)
@@ -117,8 +115,6 @@ void QtOpenGLContext::makeCurrent()
         return;
 
     OpenGLZone aZone;
-
-    clearCurrent();
 
     if (m_pContext && m_pWindow)
     {

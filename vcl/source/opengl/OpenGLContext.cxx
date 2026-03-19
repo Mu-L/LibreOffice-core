@@ -366,8 +366,6 @@ void OpenGLContext::makeCurrent()
 
     OpenGLZone aZone;
 
-    clearCurrent();
-
     // by default nothing else to do
 
     registerAsCurrent();
@@ -383,10 +381,6 @@ bool OpenGLContext::hasCurrent()
     ImplSVData* pSVData = ImplGetSVData();
     rtl::Reference<OpenGLContext> pCurrentCtx = pSVData->maGDIData.mpLastContext;
     return pCurrentCtx.is() && pCurrentCtx->isAnyCurrent();
-}
-
-void OpenGLContext::clearCurrent()
-{
 }
 
 void OpenGLContext::prepareForYield()
@@ -441,8 +435,7 @@ void OpenGLContext::registerAsCurrent()
 
 void OpenGLContext::resetCurrent()
 {
-    clearCurrent();
-    // by default nothing else to do
+    // by default nothing to do
 }
 
 void OpenGLContext::swapBuffers()

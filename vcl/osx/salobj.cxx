@@ -320,8 +320,6 @@ void AquaOpenGLContext::resetCurrent()
 {
     OSX_SALDATA_RUNINMAIN( resetCurrent() )
 
-    clearCurrent();
-
     OpenGLZone aZone;
 
     (void) this; // loplugin:staticmethods
@@ -340,8 +338,6 @@ void AquaOpenGLContext::makeCurrent()
         return;
 
     OpenGLZone aZone;
-
-    clearCurrent();
 
 SAL_WNODEPRECATED_DECLARATIONS_PUSH
         // "'NSOpenGLView' is deprecated: first deprecated in macOS 10.14 - Please use MTKView

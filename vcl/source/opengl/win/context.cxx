@@ -79,8 +79,6 @@ void WinOpenGLContext::swapBuffers()
 
 void WinOpenGLContext::resetCurrent()
 {
-    clearCurrent();
-
     OpenGLZone aZone;
 
     wglMakeCurrent(nullptr, nullptr);
@@ -117,8 +115,6 @@ void WinOpenGLContext::makeCurrent()
         return;
 
     OpenGLZone aZone;
-
-    clearCurrent();
 
     ensureDispatchTable();
 

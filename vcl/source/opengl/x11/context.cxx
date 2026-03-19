@@ -195,8 +195,6 @@ void X11OpenGLContext::swapBuffers()
 
 void X11OpenGLContext::resetCurrent()
 {
-    clearCurrent();
-
     OpenGLZone aZone;
 
     if (m_aGLWin.dpy)
@@ -387,8 +385,6 @@ void X11OpenGLContext::makeCurrent()
         return;
 
     OpenGLZone aZone;
-
-    clearCurrent();
 
 #ifdef DBG_UTIL
     TempErrorHandler aErrorHandler(m_aGLWin.dpy, unxErrorHandler);

@@ -1954,8 +1954,6 @@ private:
         if (isCurrent())
             return;
 
-        clearCurrent();
-
         if (m_pGLArea)
         {
             int scale = gtk_widget_get_scale_factor(m_pGLArea);
@@ -1993,7 +1991,6 @@ private:
 
     virtual void resetCurrent() override
     {
-        clearCurrent();
         gdk_gl_context_clear_current();
     }
 
