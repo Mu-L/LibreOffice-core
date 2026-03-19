@@ -261,6 +261,11 @@ void PhysicalFontFamily::UpdateCloneFontList(vcl::font::PhysicalFontCollection& 
         }
         assert(pFamily);
         pFamily->AddFontFace( pFoundFontFace );
+
+        for (const OUString& rStr : pFoundFontFace->GetAliases())
+        {
+            rFontCollection.AddFontFamilyAlias(rStr, aFamilyName);
+        }
     }
 }
 }

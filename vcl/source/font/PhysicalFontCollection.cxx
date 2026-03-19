@@ -98,6 +98,8 @@ void PhysicalFontCollection::Clear()
 
     // clear all entries in the device font list
     maPhysicalFontFamilies.clear();
+    maFontLookupAliases.clear();
+    maFontFamilyNameAliases.clear();
 
     // match data must be recalculated too
     mbMatchData = false;
@@ -299,6 +301,26 @@ void PhysicalFontCollection::Add(PhysicalFontFace* pNewData)
     PhysicalFontFamily* pFoundData = FindOrCreateFontFamily(aSearchName);
 
     pFoundData->AddFontFace( pNewData );
+
+    for (const OUString& rStr : pNewData->GetAliases())
+    {
+        AddFontFamilyAlias(rStr, pNewData->GetFamilyName());
+    }
+}
+
+void PhysicalFontCollection::AddFontFamilyAlias(const OUString& rAlias, const OUString& rFamilyName)
+{
+    if (rAlias != rFamilyName)
+    {
+        maFontLookupAliases.insert_or_assign(GetEnglishSearchFontName(rAlias),
+                                             GetEnglishSearchFontName(rFamilyName));
+        maFontFamilyNameAliases.insert_or_assign(rAlias, rFamilyName);
+    }
+}
+
+const PhysicalFontCollection::FontFamilyAliases& PhysicalFontCollection::GetFontFamilyNameAliases() const
+{
+    return maFontFamilyNameAliases;
 }
 
 // find the font from the normalized font family name
@@ -307,12 +329,20 @@ PhysicalFontFamily* PhysicalFontCollection::ImplFindFontFamilyBySearchName(const
     // must be called with a normalized name.
     assert( GetEnglishSearchFontName( rSearchName ) == rSearchName );
 
-    PhysicalFontFamilies::const_iterator it = maPhysicalFontFamilies.find( rSearchName );
-    if( it == maPhysicalFontFamilies.end() )
-        return nullptr;
+    if (auto it = maPhysicalFontFamilies.find(rSearchName); it != maPhysicalFontFamilies.end())
+    {
+        return it->second.get();
+    }
 
-    PhysicalFontFamily* pFoundData = (*it).second.get();
-    return pFoundData;
+    if (auto it = maFontLookupAliases.find(rSearchName); it != maFontLookupAliases.end())
+    {
+        if (auto jt = maPhysicalFontFamilies.find(it->second); jt != maPhysicalFontFamilies.end())
+        {
+            return jt->second.get();
+        }
+    }
+
+    return nullptr;
 }
 
 PhysicalFontFamily* PhysicalFontCollection::FindFontFamily(std::u16string_view rFontName) const
@@ -910,6 +940,9 @@ std::shared_ptr<PhysicalFontCollection> PhysicalFontCollection::Clone() const
         const PhysicalFontFamily* pFontFace = family.second.get();
         pFontFace->UpdateCloneFontList(*xClonedCollection);
     }
+
+    xClonedCollection->maFontLookupAliases = maFontLookupAliases;
+    xClonedCollection->maFontFamilyNameAliases = maFontFamilyNameAliases;
 
     return xClonedCollection;
 }
