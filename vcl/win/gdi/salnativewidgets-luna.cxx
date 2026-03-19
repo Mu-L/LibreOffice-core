@@ -42,7 +42,7 @@
 #include <vcl/svapp.hxx>
 #include <vcl/settings.hxx>
 #include <vcl/themecolors.hxx>
-#include <vcl/skia/skiahelper.hxx>
+#include <vcl/skia/SkiaHelper.hxx>
 #include <salinst.hxx>
 #include <toolbarvalue.hxx>
 #include <menubarvalue.hxx>
