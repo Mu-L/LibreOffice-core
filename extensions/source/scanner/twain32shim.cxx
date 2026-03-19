@@ -95,7 +95,7 @@ private:
 //static
 bool ImpTwain::IsTwainClassWnd(HWND hWnd)
 {
-    const int nBufSize = SAL_N_ELEMENTS(sTwainWndClass);
+    const int nBufSize = static_cast<int>(std::size(sTwainWndClass));
     wchar_t sClassName[nBufSize];
     return (GetClassNameW(hWnd, sClassName, nBufSize) && wcscmp(sClassName, sTwainWndClass) == 0);
 }
