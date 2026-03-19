@@ -497,7 +497,7 @@ public:
     void                CopyString( SotClipboardFormatId nFmt, const OUString& rStr );
 
     void                CopyByteString( SotClipboardFormatId nFormatId, const OString& rStr );
-    void                CopyAnyData( SotClipboardFormatId nFormatId, const char* pData, sal_uLong nLen );
+    void                CopyAnyData( SotClipboardFormatId nFormatId, const char* pData, sal_uInt32 nLen );
 
     bool                HasAnyData() const;
 
