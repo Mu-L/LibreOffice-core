@@ -22,7 +22,7 @@
 #include <headless/svpvd.hxx>
 #include <QtSvpGraphics.hxx>
 
-class VCL_DLLPUBLIC QtSvpVirtualDevice : public SvpSalVirtualDevice
+class QtSvpVirtualDevice : public SvpSalVirtualDevice
 {
 public:
     QtSvpVirtualDevice(cairo_surface_t* pRefSurface, cairo_surface_t* pPreExistingTarget)
