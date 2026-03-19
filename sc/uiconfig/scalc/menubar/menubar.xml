@@ -116,6 +116,7 @@
           <menu:menuitem menu:id=".uno:SelectUnprotectedCells"/>
           <menu:menuitem menu:id=".uno:SelectVisibleRows"/>
           <menu:menuitem menu:id=".uno:SelectVisibleColumns"/>
+          <menu:menuitem menu:id=".uno:SelectArrayFormula"/>
         </menu:menupopup>
       </menu:menu>
       <menu:menuseparator/>
