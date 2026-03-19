@@ -90,9 +90,7 @@ void QtGraphics::GetDevFontList(vcl::font::PhysicalFontCollection* pPFC)
 
     FreetypeManager& rFontManager = FreetypeManager::get();
     psp::PrintFontManager& rMgr = psp::PrintFontManager::get();
-    ::std::vector<psp::fontID> aList;
-
-    rMgr.getFontList(aList);
+    std::vector<psp::fontID> aList = rMgr.getFontList();
     for (auto const& nFontId : aList)
     {
         auto const* pFont = rMgr.getFont(nFontId);

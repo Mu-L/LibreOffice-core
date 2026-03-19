@@ -433,12 +433,13 @@ bool PrintFontManager::analyzeSfntFile( PrintFont& rFont ) const
     return bSuccess;
 }
 
-void PrintFontManager::getFontList( ::std::vector< fontID >& rFontIDs )
+std::vector<fontID> PrintFontManager::getFontList()
 {
-    rFontIDs.clear();
-
+    std::vector<fontID> aFontIDs;
     for (auto const& font : m_aFonts)
-        rFontIDs.push_back(font.first);
+        aFontIDs.push_back(font.first);
+
+    return aFontIDs;
 }
 
 int PrintFontManager::getFontFaceNumber( fontID nFontID ) const

@@ -146,7 +146,7 @@ public:
     }
 
     // returns the ids of all managed fonts.
-    void getFontList( std::vector< fontID >& rFontIDs );
+    std::vector<fontID> getFontList();
 
     // routines to get font info in small pieces
 
