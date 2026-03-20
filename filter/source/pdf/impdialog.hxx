@@ -234,6 +234,7 @@ class ImpPDFTabGeneralPage : public SfxTabPage
     DECL_LINK(ToggleReduceImageResolutionHdl, weld::Toggleable&, void);
     DECL_LINK(ToggleWatermarkHdl, weld::Toggleable&, void);
     DECL_LINK(ToggleAddStreamHdl, weld::Toggleable&, void);
+    DECL_LINK(ToggleSinglePageSheetsHdl, weld::Toggleable&, void);
     DECL_LINK(ToggleExportFormFieldsHdl, weld::Toggleable&, void);
     DECL_LINK(ToggleExportNotesPagesHdl, weld::Toggleable&, void);
 

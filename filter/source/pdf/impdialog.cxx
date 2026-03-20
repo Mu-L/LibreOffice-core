@@ -60,6 +60,7 @@ using namespace ::com::sun::star::uno;
     Please note: the default used here are the same as per specification,
     They should be the same in  PDFFilter::implExport and  in PDFExport::PDFExport
  */
+static bool bDialogUsedThisSession = false;
 ImpPDFTabDialog::ImpPDFTabDialog(weld::Window* pParent, const Sequence< PropertyValue >& rFilterData,
     const Reference< XComponent >& rxDoc)
     : SfxTabDialogController(pParent, u"filter/ui/pdfoptionsdialog.ui"_ustr, u"PdfOptionsDialog"_ustr)
@@ -722,8 +723,10 @@ void ImpPDFTabGeneralPage::SetFilterConfigItem(ImpPDFTabDialog* pParent)
         mxEdSheets->show();
 
         mxCbSinglePageSheets->show();
-        mxCbSinglePageSheets->set_active(pParent->mbSinglePageSheets);
+        mxCbSinglePageSheets->set_active(bDialogUsedThisSession ? pParent->mbSinglePageSheets : false);
         mxCbSinglePageSheets->set_sensitive(!pParent->maConfigItem.IsReadOnly(u"SinglePageSheets"_ustr));
+        mxCbSinglePageSheets->connect_toggled(LINK(this, ImpPDFTabGeneralPage, ToggleSinglePageSheetsHdl));
+        ToggleSinglePageSheetsHdl(*mxCbSinglePageSheets);
     }
     else
     {
@@ -766,7 +769,10 @@ void ImpPDFTabGeneralPage::GetFilterConfigItem( ImpPDFTabDialog* pParent )
         pParent->mbExportHiddenSlides = mxCbExportHiddenSlides->get_active();
 
     if (mbIsSpreadsheet)
+    {
         pParent->mbSinglePageSheets = mxCbSinglePageSheets->get_active();
+        bDialogUsedThisSession = true;
+    }
 
     pParent->mbIsSkipEmptyPages = !mxCbExportEmptyPages->get_active();
     pParent->mbIsExportPlaceholders = mxCbExportPlaceholders->get_active();
@@ -945,6 +951,17 @@ IMPL_LINK_NOARG(ImpPDFTabGeneralPage, ToggleAddStreamHdl, weld::Toggleable&, voi
         mxRbSheetRange->set_sensitive(true);
         mxRbSelection->set_sensitive(true);
     }
+}
+
+IMPL_LINK_NOARG(ImpPDFTabGeneralPage, ToggleSinglePageSheetsHdl, weld::Toggleable&, void)
+{
+    const bool bSinglePageSheets = mxCbSinglePageSheets->get_active();
+    mxRbAll->set_sensitive(!bSinglePageSheets);
+    mxRbPageRange->set_sensitive(!bSinglePageSheets);
+    mxRbSheetRange->set_sensitive(!bSinglePageSheets);
+    mxRbSelection->set_sensitive(!bSinglePageSheets);
+    mxEdPages->set_sensitive(!bSinglePageSheets && mxRbPageRange->get_active());
+    mxEdSheets->set_sensitive(!bSinglePageSheets && mxRbSheetRange->get_active());
 }
 
 void ImpPDFTabGeneralPage::thePDFVersionChanged()
