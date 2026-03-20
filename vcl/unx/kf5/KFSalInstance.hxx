@@ -84,11 +84,10 @@ public:
     {
     }
 
-    virtual OUString GetToolkitName() const override
+    virtual OUString getToolkitId() const override
     {
-        const OUString sToolkit = u"kf"_ustr + OUString::number(QT_VERSION_MAJOR);
-        return QtInstanceBaseClass::constructToolkitID(sToolkit);
-    }
+        return u"kf"_ustr + OUString::number(QT_VERSION_MAJOR);
+    };
 };
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

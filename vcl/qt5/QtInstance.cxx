@@ -263,17 +263,6 @@ bool QtInstance::useCairo()
     return bUseCairo;
 }
 
-OUString QtInstance::constructToolkitID(std::u16string_view sTKname)
-{
-    OUString sID(sTKname + OUString::Concat(u" ("));
-    if (useCairo())
-        sID += "cairo+";
-    else
-        sID += "qfont+";
-    sID += toOUString(QGuiApplication::platformName()) + OUString::Concat(u")");
-    return sID;
-}
-
 QtInstance::QtInstance()
     : SalGenericInstance(std::make_unique<QtYieldMutex>(), new GenericUnixSalData)
     , m_pTimer(nullptr)
@@ -645,10 +634,20 @@ Platform QtInstance::GetPlatform() const
 
 Toolkit QtInstance::GetToolkit() const { return Toolkit::Qt; }
 
+OUString QtInstance::getToolkitId() const
+{
+    return u"qt"_ustr + OUString::number(QT_VERSION_MAJOR);
+}
+
 OUString QtInstance::GetToolkitName() const
 {
-    const OUString sToolkit = u"qt"_ustr + OUString::number(QT_VERSION_MAJOR);
-    return constructToolkitID(sToolkit);
+    OUString sToolkit = getToolkitId() + u" (";
+    if (useCairo())
+        sToolkit += "cairo+";
+    else
+        sToolkit += "qfont+";
+    sToolkit += toOUString(QGuiApplication::platformName()) + u")";
+    return sToolkit;
 };
 
 IMPL_LINK_NOARG(QtInstance, updateStyleHdl, Timer*, void)

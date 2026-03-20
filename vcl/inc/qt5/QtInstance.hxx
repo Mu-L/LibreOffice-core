@@ -119,8 +119,7 @@ protected:
     createPicker(css::uno::Reference<css::uno::XComponentContext> const& context,
                  QFileDialog::FileMode);
     void connectQScreenSignals(const QScreen*);
-    // encodes cairo usage and Qt platform name into the ToolkitName
-    static OUString constructToolkitID(std::u16string_view sTKname);
+    virtual OUString getToolkitId() const;
     void notifyDisplayChanged();
 
     virtual QtFrame* DoCreateFrame(SalFrameStyleFlags nStyle, QtFrame* pParent) = 0;
