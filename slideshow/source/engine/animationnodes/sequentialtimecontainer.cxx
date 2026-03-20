@@ -83,9 +83,9 @@ bool SequentialTimeContainer::resolveChild(
             mpCurrentSkipEvent->dispose();
 
         // event that will deactivate the resolved/running child:
-        auto pSelf = std::dynamic_pointer_cast<SequentialTimeContainer>(getSelf());
         mpCurrentSkipEvent = makeEvent(
-            ([pSelf, pChildNode] () { pSelf->skipEffect(pChildNode); }),
+            ([pSelf = std::static_pointer_cast<SequentialTimeContainer>(getSelf()),
+            pChildNode] { pSelf->skipEffect(pChildNode); }),
             u"SequentialTimeContainer::skipEffect, resolveChild"_ustr );
 
         // deactivate child node when skip event occurs:
