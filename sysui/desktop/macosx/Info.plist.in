@@ -1953,6 +1953,8 @@
     <string>1</string>
     <key>NSPrincipalClass</key>
     <string>VCL_NSApplication</string>
+    <key>NSMainNibFile</key>
+    <string>MainMenu</string>
     <key>LSApplicationCategoryType</key>
     <string>public.app-category.productivity</string>
     <key>LSMinimumSystemVersion</key>
