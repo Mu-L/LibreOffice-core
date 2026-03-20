@@ -55,6 +55,7 @@ $(BUILDDIR)/config_host.mk : $(wildcard \
 		$(SRCDIR)/config_host/*.h.in \
 		$(SRCDIR)/distro-configs/*.conf $(SRCDIR)/distro-configs/Jenkins/* \
 		$(SRCDIR)/download.lst \
+		$(SRCDIR)/sysui/desktop/macosx/*.in \
 		$(SRCDIR)/m4/*.m4 \
 		$(BUILDDIR)/autogen.input \
 		$(BUILDDIR)/autogen.lastrun \
