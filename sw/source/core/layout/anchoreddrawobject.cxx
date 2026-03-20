@@ -737,7 +737,8 @@ SwRect SwAnchoredDrawObject::GetObjBoundRect() const
             nTargetHeight = nHeight * (*GetDrawObj()->GetRelativeHeight());
         }
 
-        if ( nTargetWidth != aCurrObjRect.GetWidth( ) || nTargetHeight != aCurrObjRect.GetHeight( ) )
+        if ( (nTargetWidth != aCurrObjRect.GetWidth( ) || nTargetHeight != aCurrObjRect.GetHeight( ))
+             && aCurrObjRect.GetWidth() && aCurrObjRect.GetHeight() )
         {
             SwDoc& rDoc = const_cast<SwDoc&>(GetPageFrame()->GetFormat()->GetDoc());
 

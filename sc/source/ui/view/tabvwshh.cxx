@@ -111,11 +111,11 @@ void ScTabViewShell::ExecuteObject( const SfxRequest& rReq )
                                 pDrView->MoveMarkedObj( Size( nNewVal - aRect.Left(), 0 ) );
                             else if ( nSlotId == SID_OBJECT_TOP )
                                 pDrView->MoveMarkedObj( Size( 0, nNewVal - aRect.Top() ) );
-                            else if ( nSlotId == SID_OBJECT_WIDTH )
+                            else if ( nSlotId == SID_OBJECT_WIDTH && aRect.GetWidth() )
                                 pDrView->ResizeMarkedObj( aRect.TopLeft(),
                                                 double(nNewVal) / aRect.GetWidth(),
                                                 1.0 );
-                            else // if ( nSlotId == SID_OBJECT_HEIGHT )
+                            else if ( nSlotId == SID_OBJECT_HEIGHT && aRect.GetHeight() )
                                 pDrView->ResizeMarkedObj( aRect.TopLeft(),
                                                 1.0,
                                                 double(nNewVal) / aRect.GetHeight() );
