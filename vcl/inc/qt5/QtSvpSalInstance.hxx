@@ -39,9 +39,11 @@ public:
 
     virtual std::shared_ptr<SalBitmap> CreateSalBitmap() override;
 
-    virtual QtFrame* DoCreateFrame(SalFrameStyleFlags nStyle, QtFrame* pParent) override;
-
     virtual const cairo_font_options_t* GetCairoFontOptions() override;
+
+protected:
+    virtual QtFrame* DoCreateFrame(SalFrameStyleFlags nStyle, QtFrame* pParent) override;
+    OUString getRenderingBackendName() const override;
 };
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab cinoptions=b1,g0,N-s cinkeys+=0=break: */

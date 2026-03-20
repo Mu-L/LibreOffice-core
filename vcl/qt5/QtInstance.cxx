@@ -641,13 +641,8 @@ OUString QtInstance::getToolkitId() const
 
 OUString QtInstance::GetToolkitName() const
 {
-    OUString sToolkit = getToolkitId() + u" (";
-    if (useCairo())
-        sToolkit += "cairo+";
-    else
-        sToolkit += "qfont+";
-    sToolkit += toOUString(QGuiApplication::platformName()) + u")";
-    return sToolkit;
+    return getToolkitId() + u" (" + getRenderingBackendName() + u"+"
+           + toOUString(QGuiApplication::platformName()) + u")";
 };
 
 IMPL_LINK_NOARG(QtInstance, updateStyleHdl, Timer*, void)

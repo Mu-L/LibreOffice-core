@@ -123,6 +123,7 @@ protected:
     void notifyDisplayChanged();
 
     virtual QtFrame* DoCreateFrame(SalFrameStyleFlags nStyle, QtFrame* pParent) = 0;
+    virtual OUString getRenderingBackendName() const = 0;
 
 public:
     explicit QtInstance();
