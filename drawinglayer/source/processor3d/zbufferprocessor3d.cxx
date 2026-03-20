@@ -593,22 +593,20 @@ namespace drawinglayer::processor3d
         void ZBufferProcessor3D::finish()
         {
             if(maRasterPrimitive3Ds.empty())
-                return;
-
-            // there are transparent rasterprimitives
-            const sal_uInt32 nSize(maRasterPrimitive3Ds.size());
-
-            if(nSize > 1)
             {
-                // sort them from back to front
+                return;
+            }
+            else
+            {
+                // sort the transparent rasterprimitives from back to front
                 std::sort(maRasterPrimitive3Ds.begin(), maRasterPrimitive3Ds.end());
             }
 
-            for(sal_uInt32 a(0); a < nSize; a++)
+            for(const auto &a : maRasterPrimitive3Ds)
             {
                 // paint each one by setting the remembered data and calling
                 // the render method
-                const RasterPrimitive3D& rCandidate = maRasterPrimitive3Ds[a];
+                const RasterPrimitive3D& rCandidate(a);
 
                 mpGeoTexSvx = rCandidate.getGeoTexSvx();
                 mpTransparenceGeoTexSvx = rCandidate.getTransparenceGeoTexSvx();
