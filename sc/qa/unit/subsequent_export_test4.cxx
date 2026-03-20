@@ -1184,6 +1184,19 @@ CPPUNIT_TEST_FIXTURE(ScExportTest4, testEmptyExternalDefinedNames)
                        u"TRIM([2]!_xludf.SplitsItems($A1,\",\",COLUMN()-1))");
 }
 
+CPPUNIT_TEST_FIXTURE(ScExportTest4, testLocalePrefix)
+{
+    createScDoc("ods/fdo67682-2.ods");
+    save(TestFilter::XLSX);
+
+    xmlDocUniquePtr pStyle = parseExport(u"xl/styles.xml"_ustr);
+    CPPUNIT_ASSERT(pStyle);
+
+    // earlier "[$-407]#,##0.00\ [$€];[RED]\-#,##0.00\ [$€]"
+    assertXPath(pStyle, "/x:styleSheet/x:numFmts/x:numFmt[6]", "formatCode",
+                u"#,##0.00\\ [$€-407];[RED]\\-#,##0.00\\ [$€]");
+}
+
 CPPUNIT_PLUGIN_IMPLEMENT();
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
