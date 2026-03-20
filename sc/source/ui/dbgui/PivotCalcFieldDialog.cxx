@@ -407,7 +407,7 @@ bool ScPivotCalcFieldDlg::DoAddMod()
             if (pLabelData->mbCalculatedField && pLabelData->maName == aFieldName)
             {
                 pLabelData->maCalculation = aCalculation;
-                pLabelData->mpCompiledFormula = pTokenArray;
+                pLabelData->mpCompiledFormula = std::move(pTokenArray);
                 break;
             }
         }
