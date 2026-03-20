@@ -49,6 +49,7 @@ class SdrObjGeoData;
 
 namespace svx { namespace diagram {
     class DiagramDataState;
+    class DiagramHelper_svx;
 }}
 
 /**
@@ -236,6 +237,21 @@ class UNLESS_MERGELIBS(SVXCORE_DLLPUBLIC) SdrUndoDiagramModelData final : public
 public:
     SdrUndoDiagramModelData(SdrObject& rNewObj, const std::shared_ptr< svx::diagram::DiagramDataState >& rStartState);
     virtual ~SdrUndoDiagramModelData() override;
+
+    virtual void Undo() override;
+    virtual void Redo() override;
+
+    virtual OUString GetComment() const override;
+};
+
+class UNLESS_MERGELIBS(SVXCORE_DLLPUBLIC) SdrUndoDiagramDissolveModel final : public SdrUndoObj
+{
+    std::shared_ptr< svx::diagram::DiagramHelper_svx > mrDiagramHelper;
+    std::map<SdrObject*, OUString> maPreservedModelIDs;
+
+public:
+    SdrUndoDiagramDissolveModel(SdrObject& rNewObj);
+    virtual ~SdrUndoDiagramDissolveModel() override;
 
     virtual void Undo() override;
     virtual void Redo() override;
@@ -762,6 +778,7 @@ public:
 
     // Diagram ModelData changes
     virtual std::unique_ptr<SdrUndoAction> CreateUndoDiagramModelData( SdrObject& rObject, std::shared_ptr< svx::diagram::DiagramDataState >& rStartState );
+    virtual std::unique_ptr<SdrUndoAction> CreateUndoDiagramDissolveModel( SdrObject& rObject );
 
     // Layer
     virtual std::unique_ptr<SdrUndoAction> CreateUndoNewLayer(sal_uInt16 nLayerNum, SdrLayerAdmin& rNewLayerAdmin, SdrModel& rNewModel);
