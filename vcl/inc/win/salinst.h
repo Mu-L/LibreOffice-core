@@ -29,8 +29,6 @@
 #include <svdata.hxx>
 #include <win/salframe.h>
 
-class SalYieldMutex;
-
 class WinSalInstance : public WindowsInstance
 {
 public:
