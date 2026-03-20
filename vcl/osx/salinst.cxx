@@ -217,16 +217,16 @@ void AquaSalInstance::AfterAppInit()
     SalInstance::MacStartupWorkarounds();
 }
 
-SalYieldMutex::SalYieldMutex()
+AquaSalYieldMutex::AquaSalYieldMutex()
     : m_aCodeBlock( nullptr )
 {
 }
 
-SalYieldMutex::~SalYieldMutex()
+AquaSalYieldMutex::~AquaSalYieldMutex()
 {
 }
 
-void SalYieldMutex::doAcquire( sal_uInt32 nLockCount )
+void AquaSalYieldMutex::doAcquire( sal_uInt32 nLockCount )
 {
     AquaSalInstance *pInst = GetSalData()->mpInstance;
     if ( pInst && pInst->IsMainThread() )
@@ -270,7 +270,7 @@ void SalYieldMutex::doAcquire( sal_uInt32 nLockCount )
     comphelper::SolarMutex::doAcquire( nLockCount );
 }
 
-sal_uInt32 SalYieldMutex::doRelease( const bool bUnlockAll )
+sal_uInt32 AquaSalYieldMutex::doRelease( const bool bUnlockAll )
 {
     AquaSalInstance *pInst = GetSalData()->mpInstance;
     if ( pInst->mbNoYieldLock && pInst->IsMainThread() )
@@ -289,7 +289,7 @@ sal_uInt32 SalYieldMutex::doRelease( const bool bUnlockAll )
     return nCount;
 }
 
-bool SalYieldMutex::IsCurrentThread() const
+bool AquaSalYieldMutex::IsCurrentThread() const
 {
     if ( !GetSalData()->mpInstance->mbNoYieldLock )
         return comphelper::SolarMutex::IsCurrentThread();
@@ -335,7 +335,7 @@ VCLPLUG_OSX_PUBLIC SalInstance* create_SalInstance()
 }
 
 AquaSalInstance::AquaSalInstance()
-    : SalInstance(std::make_unique<SalYieldMutex>(), new SalData)
+    : SalInstance(std::make_unique<AquaSalYieldMutex>(), new SalData)
     , mnActivePrintJobs( 0 )
     , mbNoYieldLock( false )
     , mbTimerProcessed( false )

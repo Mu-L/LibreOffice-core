@@ -49,7 +49,7 @@ enum class SalEvent;
 
 typedef void(^RuninmainBlock)(void);
 
-class SalYieldMutex : public comphelper::SolarMutex
+class AquaSalYieldMutex : public comphelper::SolarMutex
 {
 public:
     OSX_RUNINMAIN_MEMBERS
@@ -59,8 +59,8 @@ protected:
     virtual sal_uInt32      doRelease( bool bUnlockAll ) override;
 
 public:
-    SalYieldMutex();
-    virtual ~SalYieldMutex() override;
+    AquaSalYieldMutex();
+    virtual ~AquaSalYieldMutex() override;
 
     virtual bool IsCurrentThread() const override;
 };

@@ -69,7 +69,7 @@ union RuninmainResult
     if ( !instance->IsMainThread() ) \
     { \
         DBG_TESTSOLARMUTEX(); \
-        SalYieldMutex *aMutex = static_cast<SalYieldMutex*>(instance->GetYieldMutex()); \
+        AquaSalYieldMutex *aMutex = static_cast<AquaSalYieldMutex*>(instance->GetYieldMutex()); \
         { \
             std::scoped_lock<std::mutex> g(aMutex->m_runInMainMutex); \
             assert( !aMutex->m_aCodeBlock ); \
@@ -95,7 +95,7 @@ union RuninmainResult
     if ( !instance->IsMainThread() ) \
     { \
         DBG_TESTSOLARMUTEX(); \
-        SalYieldMutex *aMutex = static_cast<SalYieldMutex*>(instance->GetYieldMutex()); \
+        AquaSalYieldMutex *aMutex = static_cast<AquaSalYieldMutex*>(instance->GetYieldMutex()); \
         { \
             std::scoped_lock<std::mutex> g(aMutex->m_runInMainMutex); \
             assert( !aMutex->m_aCodeBlock ); \
@@ -121,7 +121,7 @@ union RuninmainResult
     if ( !instance->IsMainThread() ) \
     { \
         DBG_TESTSOLARMUTEX(); \
-        SalYieldMutex *aMutex = static_cast<SalYieldMutex*>(instance->GetYieldMutex()); \
+        AquaSalYieldMutex *aMutex = static_cast<AquaSalYieldMutex*>(instance->GetYieldMutex()); \
         { \
             std::scoped_lock<std::mutex> g(aMutex->m_runInMainMutex); \
             assert( !aMutex->m_aCodeBlock ); \
