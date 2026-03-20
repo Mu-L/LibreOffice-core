@@ -88,7 +88,6 @@ private:
     const std::unique_ptr<comphelper::SolarMutex> m_pYieldMutex;
     css::uno::Reference<css::datatransfer::clipboard::XClipboard> m_clipboard;
     o3tl::sorted_vector<OUString> m_usedUI;
-    const OUString m_sToolkitName;
 
 protected:
     bool m_bSupportsOpenGL = false;
@@ -98,8 +97,7 @@ protected:
 #endif
 
 public:
-    SalInstance(std::unique_ptr<comphelper::SolarMutex> pMutex, SalData* pSalData,
-                const OUString& rToolkitName);
+    SalInstance(std::unique_ptr<comphelper::SolarMutex> pMutex, SalData* pSalData);
     virtual ~SalInstance();
 
     bool supportsOpenGL() const { return m_bSupportsOpenGL; }
@@ -225,7 +223,7 @@ public:
     virtual OUString        getOSVersion() { return u"-"_ustr; }
     virtual Platform GetPlatform() const { return Platform::Other; }
     virtual Toolkit GetToolkit() const { return Toolkit::Invalid; }
-    const OUString& GetToolkitName() { return m_sToolkitName; };
+    virtual OUString GetToolkitName() const { return u""_ustr; };
 
     virtual const cairo_font_options_t* GetCairoFontOptions() { return nullptr; }
 

@@ -74,6 +74,8 @@ public:
 
     static DWORD getWindowsBuildNumber();
     virtual OUString            getOSVersion() override;
+    virtual OUString GetToolkitName() const override;
+
     virtual void BeforeAbort(const OUString&, bool) override;
 
     static int WorkaroundExceptionHandlingInUSER32Lib(int nExcept, LPEXCEPTION_POINTERS pExceptionInfo);

@@ -119,12 +119,14 @@ protected:
     createPicker(css::uno::Reference<css::uno::XComponentContext> const& context,
                  QFileDialog::FileMode);
     void connectQScreenSignals(const QScreen*);
+    // encodes cairo usage and Qt platform name into the ToolkitName
+    static OUString constructToolkitID(std::u16string_view sTKname);
     void notifyDisplayChanged();
 
     virtual QtFrame* DoCreateFrame(SalFrameStyleFlags nStyle, QtFrame* pParent) = 0;
 
 public:
-    explicit QtInstance(const OUString& rToolkitName);
+    explicit QtInstance();
     virtual ~QtInstance() override;
 
     void RunInMainThread(std::function<void()> func);
@@ -203,6 +205,7 @@ public:
 
     virtual Platform GetPlatform() const override;
     virtual Toolkit GetToolkit() const override;
+    virtual OUString GetToolkitName() const override;
 
 #if QT_VERSION < QT_VERSION_CHECK(6, 12, 0)
     // Helper to implement QtFrame::GetUseReducedAnimation for Qt < 6.12
@@ -229,9 +232,6 @@ public:
 private:
     QtFrame* CreateFrame(SalFrameStyleFlags nStyle, QtFrame* pParent);
     std::unique_ptr<QApplication> CreateQApplication();
-
-    // encodes cairo usage and Qt platform name into the ToolkitName
-    static OUString constructToolkitID(std::u16string_view sTKname);
 };
 
 inline QtInstance& GetQtInstance()

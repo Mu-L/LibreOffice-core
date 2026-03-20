@@ -26,7 +26,7 @@ class VCLPLUG_QT_PUBLIC QtSvpSalInstance : public QtInstance
     Q_OBJECT
 
 public:
-    explicit QtSvpSalInstance(const OUString& rToolkitName);
+    explicit QtSvpSalInstance();
     virtual ~QtSvpSalInstance() override;
 
     virtual std::unique_ptr<SalVirtualDevice>

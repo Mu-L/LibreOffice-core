@@ -26,8 +26,7 @@
 class VCLPLUG_WIN_PUBLIC WindowsInstance : public SalInstance
 {
 public:
-    WindowsInstance(std::unique_ptr<comphelper::SolarMutex> pMutex, SalData* pSalData,
-                    const OUString& rToolkitName);
+    WindowsInstance(std::unique_ptr<comphelper::SolarMutex> pMutex, SalData* pSalData);
     virtual ~WindowsInstance();
 
     virtual SalInfoPrinter* CreateInfoPrinter(SalPrinterQueueInfo* pQueueInfo,

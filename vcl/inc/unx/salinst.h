@@ -91,6 +91,7 @@ public:
 
     virtual Platform GetPlatform() const override;
     virtual Toolkit GetToolkit() const override;
+    virtual OUString GetToolkitName() const override;
 
     /** Get the DisplayConnection. It allows to send display events to the application. */
     static rtl::Reference<X11DisplayConnectionDispatch> GetDisplayConnection();

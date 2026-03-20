@@ -134,6 +134,7 @@ public:
                                                     const OUString& rDocumentService) override;
 
     virtual OUString        getOSVersion() override;
+    virtual OUString GetToolkitName() const override;
 
     // dtrans implementation
     virtual css::uno::Reference<css::datatransfer::clipboard::XClipboard>

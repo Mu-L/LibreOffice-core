@@ -230,12 +230,8 @@ static VclInputFlags categorizeEvent(const GdkEvent *pEvent)
 }
 #endif
 
-#ifndef GTK_TOOLKIT_NAME
-#define GTK_TOOLKIT_NAME "gtk3"
-#endif
-
-GtkInstance::GtkInstance( std::unique_ptr<SalYieldMutex> pMutex )
-    : SvpSalInstance(std::move(pMutex), new GtkSalData, GTK_TOOLKIT_NAME)
+GtkInstance::GtkInstance(std::unique_ptr<SalYieldMutex> pMutex)
+    : SvpSalInstance(std::move(pMutex), new GtkSalData)
     , m_pTimer(nullptr)
     , bNeedsInit(true)
     , m_pLastCairoFontOptions(nullptr)
@@ -562,6 +558,12 @@ Platform GtkInstance::GetPlatform() const
 }
 
 Toolkit GtkInstance::GetToolkit() const { return Toolkit::Gtk; }
+
+#ifndef GTK_TOOLKIT_NAME
+#define GTK_TOOLKIT_NAME "gtk3"
+#endif
+
+OUString GtkInstance::GetToolkitName() const { return GTK_TOOLKIT_NAME; }
 
 const cairo_font_options_t* GtkInstance::GetCairoFontOptions()
 {

@@ -24,8 +24,8 @@
 #include <QtSvpSalInstance.moc>
 #include <headless/svpbmp.hxx>
 
-QtSvpSalInstance::QtSvpSalInstance(const OUString& rToolkitName)
-    : QtInstance(rToolkitName)
+QtSvpSalInstance::QtSvpSalInstance()
+    : QtInstance()
 {
 }
 

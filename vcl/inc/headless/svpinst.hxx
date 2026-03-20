@@ -103,8 +103,7 @@ class VCL_DLLPUBLIC SvpSalInstance : public SalGenericInstance, public SalUserEv
 public:
     static SvpSalInstance*  s_pDefaultInstance;
 
-    SvpSalInstance(std::unique_ptr<SalYieldMutex> pMutex, SalData* pSalData,
-                   const OUString& rToolkitName = EMPTY_OUSTRING);
+    SvpSalInstance(std::unique_ptr<SalYieldMutex> pMutex, SalData* pSalData);
     virtual void AfterAppInit() override;
     virtual ~SvpSalInstance() override;
 

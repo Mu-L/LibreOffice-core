@@ -1423,10 +1423,7 @@ Platform Application::GetPlatform() { return GetSalInstance()->GetPlatform(); }
 
 Toolkit Application::GetToolkit() { return GetSalInstance()->GetToolkit(); }
 
-const OUString & Application::GetToolkitName()
-{
-    return GetSalInstance()->GetToolkitName();
-}
+OUString Application::GetToolkitName() { return GetSalInstance()->GetToolkitName(); }
 
 vcl::Window* Dialog::GetDefDialogParent()
 {

@@ -360,7 +360,7 @@ VCLPLUG_WIN_PUBLIC SalInstance* create_SalInstance()
 }
 
 WinSalInstance::WinSalInstance(SalData* pSalData)
-    : WindowsInstance(std::make_unique<SalYieldMutex>(), pSalData, u"win"_ustr)
+    : WindowsInstance(std::make_unique<SalYieldMutex>(), pSalData)
     , mhInst( nullptr )
     , mhComWnd( nullptr )
 {
@@ -965,6 +965,8 @@ OUString WinSalInstance::getOSVersion()
 {
     return getOSVersionString(getWindowsBuildNumber());
 }
+
+OUString WinSalInstance::GetToolkitName() const { return u"win"_ustr; }
 
 void WinSalInstance::BeforeAbort(const OUString&, bool)
 {

@@ -23,8 +23,8 @@
 #include <QtSalInstance.moc>
 #include <QtVirtualDevice.hxx>
 
-QtSalInstance::QtSalInstance(const OUString& rToolkitName)
-    : QtInstance(rToolkitName)
+QtSalInstance::QtSalInstance()
+    : QtInstance()
 {
 }
 

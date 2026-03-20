@@ -61,7 +61,7 @@ extern "C"
 }
 
 X11SalInstance::X11SalInstance(std::unique_ptr<SalYieldMutex> pMutex)
-    : SalGenericInstance(std::move(pMutex), new X11SalData, u"x11"_ustr)
+    : SalGenericInstance(std::move(pMutex), new X11SalData)
 {
     mpXLib = GetX11SalData()->GetLib();
 
@@ -223,6 +223,8 @@ std::shared_ptr<SalBitmap> X11SalInstance::CreateSalBitmap()
 Platform X11SalInstance::GetPlatform() const { return Platform::Xcb; }
 
 Toolkit X11SalInstance::GetToolkit() const { return Toolkit::Gen; }
+
+OUString X11SalInstance::GetToolkitName() const { return u"x11"_ustr; }
 
 rtl::Reference<X11DisplayConnectionDispatch> X11SalInstance::GetDisplayConnection()
 {

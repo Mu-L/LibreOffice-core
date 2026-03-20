@@ -88,9 +88,8 @@ static PrintQueueFlags ImplWinQueueStatusToSal(DWORD nWinStatus)
     return nStatus;
 }
 
-WindowsInstance::WindowsInstance(std::unique_ptr<comphelper::SolarMutex> pMutex, SalData* pSalData,
-                                 const OUString& rToolkitName)
-    : SalInstance(std::move(pMutex), pSalData, rToolkitName)
+WindowsInstance::WindowsInstance(std::unique_ptr<comphelper::SolarMutex> pMutex, SalData* pSalData)
+    : SalInstance(std::move(pMutex), pSalData)
 {
     WinSkiaSalGraphicsImpl::prepareSkia();
 }

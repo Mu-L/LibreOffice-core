@@ -353,7 +353,7 @@ VCLPLUG_OSX_PUBLIC SalInstance* create_SalInstance()
 }
 
 AquaSalInstance::AquaSalInstance()
-    : SalInstance(std::make_unique<SalYieldMutex>(), new SalData, u"osx"_ustr)
+    : SalInstance(std::make_unique<SalYieldMutex>(), new SalData)
     , mnActivePrintJobs( 0 )
     , mbNoYieldLock( false )
     , mbTimerProcessed( false )
@@ -1033,6 +1033,8 @@ OUString AquaSalInstance::getOSVersion()
 
     return aVersion;
 }
+
+OUString AquaSalInstance::GetToolkitName() const { return u"osx"_ustr; };
 
 CGImageRef CreateCGImage( const Image& rImage )
 {

@@ -273,9 +273,8 @@ OUString QtInstance::constructToolkitID(std::u16string_view sTKname)
     return sID;
 }
 
-QtInstance::QtInstance(const OUString& rToolkitName)
-    : SalGenericInstance(std::make_unique<QtYieldMutex>(), new GenericUnixSalData,
-                         constructToolkitID(rToolkitName))
+QtInstance::QtInstance()
+    : SalGenericInstance(std::make_unique<QtYieldMutex>(), new GenericUnixSalData)
     , m_pTimer(nullptr)
     , m_bSleeping(false)
     , m_aUpdateStyleTimer("vcl::qt5 m_aUpdateStyleTimer")
@@ -645,6 +644,12 @@ Platform QtInstance::GetPlatform() const
 
 Toolkit QtInstance::GetToolkit() const { return Toolkit::Qt; }
 
+OUString QtInstance::GetToolkitName() const
+{
+    const OUString sToolkit = u"qt"_ustr + OUString::number(QT_VERSION_MAJOR);
+    return constructToolkitID(sToolkit);
+};
+
 IMPL_LINK_NOARG(QtInstance, updateStyleHdl, Timer*, void)
 {
     SolarMutexGuard aGuard;
@@ -985,12 +990,11 @@ VCLPLUG_QT_PUBLIC SalInstance* create_SalInstance()
 {
     initResources();
 
-    const OUString sToolkit = "qt" + OUString::number(QT_VERSION_MAJOR);
 #if USE_HEADLESS_CODE
     if (QtInstance::useCairo())
-        return new QtSvpSalInstance(sToolkit);
+        return new QtSvpSalInstance();
 #endif
-    return new QtSalInstance(sToolkit);
+    return new QtSalInstance();
 }
 }
 

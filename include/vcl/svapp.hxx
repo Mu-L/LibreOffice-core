@@ -973,7 +973,7 @@ public:
 
      @returns The toolkit name.
     */
-    static const OUString &     GetToolkitName();
+    static OUString GetToolkitName();
 
     /** Get the number of screens available for the display.
 

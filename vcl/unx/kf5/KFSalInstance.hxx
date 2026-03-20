@@ -80,8 +80,14 @@ class KFSalInstance final : public QtInstanceBaseClass
 
 public:
     explicit KFSalInstance()
-        : QtInstanceBaseClass(u"kf" + OUString::number(QT_VERSION_MAJOR))
+        : QtInstanceBaseClass()
     {
+    }
+
+    virtual OUString GetToolkitName() const override
+    {
+        const OUString sToolkit = u"kf"_ustr + OUString::number(QT_VERSION_MAJOR);
+        return QtInstanceBaseClass::constructToolkitID(sToolkit);
     }
 };
 
