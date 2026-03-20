@@ -3917,6 +3917,8 @@ bool ScCompiler::ParseDPFieldName( const OUString& rName )
             return false;
 
         sField = OUString(cSymbol + 1, nLen - 1);
+        if (sField.indexOf('\'') >= 0)
+            sField = sField.replaceAll(u"''", u"'");
     }
     else
     {
@@ -6098,11 +6100,9 @@ void ScCompiler::CreateStringFromIndex( OUStringBuffer& rBuffer, const FormulaTo
 void ScCompiler::CreateStringFromDPFieldName( OUStringBuffer& rBuffer, const FormulaToken* _pTokenP ) const
 {
     OUString aFieldName = _pTokenP->GetString().getString();
-
-    if (aFieldName.indexOf(' ') != -1)
-        rBuffer.append("'" + aFieldName + "'");
-    else
-        rBuffer.append(aFieldName);
+    if (aFieldName.indexOf('\'') >= 0)
+        aFieldName = aFieldName.replaceAll(u"'", u"''");
+    rBuffer.append("'" + aFieldName + "'");
 }
 
 void ScCompiler::LocalizeString( OUString& rName ) const
