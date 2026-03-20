@@ -563,7 +563,6 @@ void SdrEditView::CheckPossibilities()
             SdrObject* pObj=pM->GetMarkedSdrObj();
 
             // try to get DiagramSubSelection
-            if(nullptr != pObj)
             {
                 SdrObject* pSubSelection(pObj->getDiagramSubSelection());
                 if(nullptr != pSubSelection && !pSubSelection->isDiagramBackgroundShape())
