@@ -531,7 +531,7 @@ bool FuSelection::MouseButtonUp(const MouseEvent& rMEvt)
             bReturn = true;
     }
 
-    if (!bWasDragged)
+    if (!bWasDragged && pView)
     {
         const SdrMarkList& rMarkList(pView->GetMarkedObjectList());
         if (rMarkList.GetMarkCount() == 1)
