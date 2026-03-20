@@ -25,6 +25,7 @@
 
 #include <tools/link.hxx>
 
+#include <SalYieldMutex.hxx>
 #include "headless/svpinst.hxx"
 #include "headless/svpframe.hxx"
 

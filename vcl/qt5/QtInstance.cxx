@@ -42,6 +42,7 @@
 #include <QtInstanceWidget.hxx>
 #include <QtInstanceMessageDialog.hxx>
 
+#include <SalYieldMutex.hxx>
 #include <salvtables.hxx>
 #include <unx/gendata.hxx>
 

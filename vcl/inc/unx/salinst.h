@@ -21,6 +21,7 @@
 
 #include "X11DisplayConnectionDispatch.hxx"
 
+#include <SalYieldMutex.hxx>
 #include <salinst.hxx>
 #include <unx/geninst.h>
 

@@ -36,19 +36,6 @@
 #include <unx/geninst.h>
 #include <o3tl/string_view.hxx>
 
-// SalYieldMutex
-
-SalYieldMutex::SalYieldMutex()
-{
-#if HAVE_FEATURE_OPENGL
-    SetBeforeReleaseHandler( &OpenGLContext::prepareForYield );
-#endif
-}
-
-SalYieldMutex::~SalYieldMutex()
-{
-}
-
 SalGenericInstance::~SalGenericInstance()
 {
 }

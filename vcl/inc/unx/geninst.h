@@ -29,13 +29,6 @@
 #include <svdata.hxx>
 #include <unx/genprn.h>
 
-class VCL_DLLPUBLIC SalYieldMutex : public comphelper::SolarMutex
-{
-public:
-    SalYieldMutex();
-    virtual ~SalYieldMutex() override;
-};
-
 /*
  * Abstract generic class to build vclplugin's instance classes from
  */

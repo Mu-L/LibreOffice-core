@@ -24,6 +24,7 @@
 #include <stack>
 
 #include <DropTarget.hxx>
+#include <SalYieldMutex.hxx>
 #include <unx/X11Helper.hxx>
 #include <headless/svpinst.hxx>
 #include <com/sun/star/datatransfer/DataFlavor.hpp>

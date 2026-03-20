@@ -13,6 +13,8 @@
 #include <android/input.h>
 #include <android/log.h>
 #include <android/native_window.h>
+
+#include <SalYieldMutex.hxx>
 #include <headless/svpinst.hxx>
 #include <headless/svpframe.hxx>
 

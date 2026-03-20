@@ -21,6 +21,7 @@
 
 #include <osl/thread.hxx>
 #include <osl/conditn.hxx>
+#include <SalYieldMutex.hxx>
 #include <salinst.hxx>
 #include <saltimer.hxx>
 #include <salusereventlist.hxx>
