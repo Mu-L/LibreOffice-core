@@ -3032,6 +3032,7 @@ const SystemEnvData& GtkSalFrame::GetSystemData() const
     return m_aSystemData;
 }
 
+#if defined(UNX) && !defined(ANDROID) && !defined(IOS) && !defined(MACOSX)
 void GtkSalFrame::ResolveWindowHandle(SystemEnvData& rData) const
 {
     if (!rData.pWidget)
@@ -3039,6 +3040,7 @@ void GtkSalFrame::ResolveWindowHandle(SystemEnvData& rData) const
     SAL_WARN("vcl.gtk3", "its undesirable to need the NativeWindowHandle, see tdf#139609");
     rData.SetWindowHandle(GetNativeWindowHandle(static_cast<GtkWidget*>(rData.pWidget)));
 }
+#endif
 
 void GtkSalFrame::SetParent( SalFrame* pNewParent )
 {

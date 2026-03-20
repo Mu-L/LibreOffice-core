@@ -221,7 +221,9 @@ public:
 
     virtual void SetScreenNumber(unsigned int) override;
     virtual void SetApplicationID(const OUString&) override;
+#if defined(UNX) && !defined(ANDROID) && !defined(IOS) && !defined(MACOSX)
     virtual void ResolveWindowHandle(SystemEnvData& rData) const override;
+#endif
     virtual bool GetUseDarkMode() const override;
     virtual bool GetUseReducedAnimation() const override;
 

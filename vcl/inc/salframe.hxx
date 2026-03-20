@@ -220,9 +220,11 @@ public:
     // returns system data (most prominent: window handle)
     virtual const SystemEnvData& GetSystemData() const = 0;
 
+#if defined(UNX) && !defined(ANDROID) && !defined(IOS) && !defined(MACOSX)
     // tdf#139609 SystemEnvData::GetWindowHandle() calls this to on-demand fill the aWindow
     // member of SystemEnvData for backends that want to defer doing that
     virtual void            ResolveWindowHandle(SystemEnvData& /*rData*/) const {};
+#endif
 
     // get current modifier, button mask and mouse position
     struct SalPointerState

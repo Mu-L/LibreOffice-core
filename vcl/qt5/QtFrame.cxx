@@ -1196,6 +1196,7 @@ void QtFrame::SetApplicationID(const OUString& rWMClass)
 #endif
 }
 
+#if defined(UNX) && !defined(ANDROID) && !defined(IOS) && !defined(MACOSX)
 void QtFrame::ResolveWindowHandle(SystemEnvData& rData) const
 {
     if (!rData.pWidget)
@@ -1213,6 +1214,7 @@ void QtFrame::ResolveWindowHandle(SystemEnvData& rData) const
         rData.SetWindowHandle(static_cast<QWidget*>(rData.pWidget)->winId());
     }
 }
+#endif
 
 bool QtFrame::GetUseReducedAnimation() const
 {

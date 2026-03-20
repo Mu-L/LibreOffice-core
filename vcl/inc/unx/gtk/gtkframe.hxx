@@ -575,7 +575,9 @@ public:
     // returns system data (most prominent: window handle)
     virtual const SystemEnvData& GetSystemData() const override;
 
+#if defined(UNX) && !defined(ANDROID) && !defined(IOS) && !defined(MACOSX)
     virtual void                ResolveWindowHandle(SystemEnvData& rData) const override;
+#endif
 
     // get current modifier and button mask
     virtual SalPointerState     GetPointerState() override;
