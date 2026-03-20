@@ -185,10 +185,7 @@ void* SystemChildWindow::CreateGStreamerSink()
     return GetSalInstance()->CreateGStreamerSink(this);
 }
 
-#if defined( MACOSX )
-#elif defined( ANDROID )
-#elif defined( IOS )
-#elif defined( UNX )
+#if defined(UNX) && !defined(ANDROID) && !defined(IOS) && !defined(MACOSX)
 sal_uIntPtr SystemEnvData::GetWindowHandle(const SalFrame* pReference) const
 {
     if (!aWindow && pReference)
