@@ -269,11 +269,12 @@ SalInstance *CreateSalInstance()
 
     // fallback, try everything
     static constexpr OUString aPlugins[] = {
+#if defined(MACOSX)
+        u"osx"_ustr,
+#endif
 #if ENABLE_WIN
         u"win"_ustr,
-#elif defined(MACOSX)
-        u"osx"_ustr,
-#else // !_WIN32 && !MACOSX
+#endif
 #if ENABLE_GTK3
         u"gtk3"_ustr,
 #endif
@@ -295,7 +296,6 @@ SalInstance *CreateSalInstance()
 #if ENABLE_QT6
         u"qt6"_ustr,
 #endif
-#endif // !_WIN32 && !MACOSX
     };
 
     for (const OUString& rPlugin : aPlugins)
