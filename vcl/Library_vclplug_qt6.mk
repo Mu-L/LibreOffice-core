@@ -178,12 +178,4 @@ $(eval $(call gb_Library_add_libs,vclplug_qt6,\
 ))
 endif
 
-# Workaround for clang+icecream (clang's -frewrite-includes
-# doesn't handle Qt6's QT_HAS_INCLUDE that Qt6 uses for <chrono>).
-ifeq ($(COM_IS_CLANG),TRUE)
-$(eval $(call gb_Library_add_cxxflags,vclplug_qt6, \
-    -include chrono \
-))
-endif
-
 # vim: set noet sw=4 ts=4:
