@@ -73,7 +73,7 @@
 
 static LRESULT CALLBACK SalComWndProcW( HWND hWnd, UINT nMsg, WPARAM wParam, LPARAM lParam );
 
-class SalYieldMutex : public comphelper::SolarMutex
+class WinSalYieldMutex : public comphelper::SolarMutex
 {
 public: // for ImplSalYield() and ImplSalYieldMutexAcquireWithWait()
     osl::Condition            m_condition; /// for MsgWaitForMultipleObjects()
@@ -85,15 +85,15 @@ protected:
     static void               BeforeReleaseHandler();
 
 public:
-    explicit SalYieldMutex();
+    explicit WinSalYieldMutex();
 };
 
-SalYieldMutex::SalYieldMutex()
+WinSalYieldMutex::WinSalYieldMutex()
 {
-    SetBeforeReleaseHandler( &SalYieldMutex::BeforeReleaseHandler );
+    SetBeforeReleaseHandler(&WinSalYieldMutex::BeforeReleaseHandler);
 }
 
-void SalYieldMutex::BeforeReleaseHandler()
+void WinSalYieldMutex::BeforeReleaseHandler()
 {
     OpenGLContext::prepareForYield();
 
@@ -108,7 +108,7 @@ void SalYieldMutex::BeforeReleaseHandler()
 /// note: while VCL is fully up and running (other threads started and
 /// before shutdown), the main thread must acquire SolarMutex only via
 /// this function to avoid deadlock
-void SalYieldMutex::doAcquire( sal_uInt32 nLockCount )
+void WinSalYieldMutex::doAcquire(sal_uInt32 nLockCount)
 {
     WinSalInstance* pInst = GetWinSalInstance();
     if ( pInst && pInst->IsMainThread() )
@@ -131,7 +131,7 @@ void SalYieldMutex::doAcquire( sal_uInt32 nLockCount )
             m_condition.reset();
             if (m_aMutex.tryToAcquire())
                 break;
-            // wait for SalYieldMutex::release() to set the condition
+            // wait for WinSalYieldMutex::release() to set the condition
             osl::Condition::Result res = m_condition.wait();
             assert(osl::Condition::Result::result_ok == res);
             (void) res;
@@ -146,7 +146,7 @@ void SalYieldMutex::doAcquire( sal_uInt32 nLockCount )
     comphelper::SolarMutex::doAcquire( nLockCount );
 }
 
-sal_uInt32 SalYieldMutex::doRelease( const bool bUnlockAll )
+sal_uInt32 WinSalYieldMutex::doRelease(const bool bUnlockAll)
 {
     sal_uInt32 nCount = comphelper::SolarMutex::doRelease( bUnlockAll );
     // wake up ImplSalYieldMutexAcquireWithWait() after release
@@ -360,7 +360,7 @@ VCLPLUG_WIN_PUBLIC SalInstance* create_SalInstance()
 }
 
 WinSalInstance::WinSalInstance(SalData* pSalData)
-    : WindowsInstance(std::make_unique<SalYieldMutex>(), pSalData)
+    : WindowsInstance(std::make_unique<WinSalYieldMutex>(), pSalData)
     , mhInst( nullptr )
     , mhComWnd( nullptr )
 {
