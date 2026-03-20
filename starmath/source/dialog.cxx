@@ -2351,6 +2351,7 @@ void MatrixCreatorDialog::shapeMatrix()
                 {
                     if (row > col)
                     {
+                        // coverity[swapped_arguments : FALSE] - intentional transpose for symmetric matrix
                         mxMatrix->set_text(*xIter, mxMatrix->get_text(col, row), col);
                         mxMatrix->set_sensitive(*xIter, false, col);
                     }
