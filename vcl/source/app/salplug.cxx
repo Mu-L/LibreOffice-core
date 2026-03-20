@@ -269,7 +269,7 @@ SalInstance *CreateSalInstance()
 
     // fallback, try everything
     static constexpr OUString aPlugins[] = {
-#ifdef _WIN32
+#if ENABLE_WIN
         u"win"_ustr,
 #elif defined(MACOSX)
         u"osx"_ustr,
