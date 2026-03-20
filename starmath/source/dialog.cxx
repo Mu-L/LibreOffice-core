@@ -2281,7 +2281,7 @@ void MatrixCreatorDialog::resizeMatrix()
         {
             auto xIterRemove = mxMatrix->make_iterator();
             mxMatrix->copy_iterator(*xIter, *xIterRemove);
-            mxMatrix->iter_next(*xIter);
+            (void)mxMatrix->iter_next(*xIter);
             mxMatrix->remove(*xIterRemove);
             continue;
         }
@@ -2519,15 +2519,12 @@ IMPL_LINK(MatrixCreatorDialog, EditedEntryHdl, const IterString&, rIterString, b
         }
 
         // Sort of complicated, because set_text(row, column, value) seems to have no effect
-        int row = 0;
-        mxMatrix->get_iter_first(*xIter);
-        while (row < mClickedColumn)
-        {
-            mxMatrix->iter_next(*xIter);
-            ++row;
-        }
+        bool bValidIter = mxMatrix->get_iter_first(*xIter);
+        for (int row = 0; row < mClickedColumn && bValidIter; ++row)
+            bValidIter = mxMatrix->iter_next(*xIter);
 
-        mxMatrix->set_text(*xIter, rIterString.second, clickedRow);
+        if (bValidIter)
+            mxMatrix->set_text(*xIter, rIterString.second, clickedRow);
     }
 
     mxMatrix->set_text(rIterString.first, rIterString.second, mEditedColumn); // Required for EditingCanceledHdl()
