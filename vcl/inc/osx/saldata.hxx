@@ -100,7 +100,4 @@ public:
     static NSStatusItem* getStatusItem();
 };
 
-bool ImplSalYieldMutexTryToAcquire();
-void ImplSalYieldMutexRelease();
-
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

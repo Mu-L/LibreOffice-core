@@ -297,24 +297,6 @@ bool SalYieldMutex::IsCurrentThread() const
         return GetSalData()->mpInstance->IsMainThread();
 }
 
-// some convenience functions regarding the yield mutex, aka solar mutex
-
-bool ImplSalYieldMutexTryToAcquire()
-{
-    AquaSalInstance* pInst = GetSalData()->mpInstance;
-    if ( pInst )
-        return pInst->GetYieldMutex()->tryToAcquire();
-    else
-        return false;
-}
-
-void ImplSalYieldMutexRelease()
-{
-    AquaSalInstance* pInst = GetSalData()->mpInstance;
-    if ( pInst )
-        pInst->GetYieldMutex()->release();
-}
-
 extern "C" {
 VCLPLUG_OSX_PUBLIC SalInstance* create_SalInstance()
 {
