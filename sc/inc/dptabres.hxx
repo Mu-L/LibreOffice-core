@@ -497,7 +497,7 @@ class ScDPResultDimension
 {
 public:
     typedef std::vector<std::unique_ptr<ScDPResultMember>> MemberArray;
-    typedef std::map<SCROW, ScDPResultMember*> MemberHash;
+    typedef std::unordered_map<SCROW, ScDPResultMember*> MemberHash;
 private:
     const ScDPResultData*   pResultData;
     MemberArray             maMemberArray;
