@@ -260,7 +260,7 @@ public:
 
     vcl::Cursor*        mpCursor;
     PointerStyle        maPointer;
-    Fraction            maZoom;
+    double              mfZoom;
     double              mfPartialScrollX;
     double              mfPartialScrollY;
     OUString            maText;

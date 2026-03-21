@@ -617,7 +617,7 @@ void NavigationBar::SetPointFontAndZoom(const vcl::Font& rFont, double fZoom)
     ScaleButton(*m_xLastBtn, fZoom);
     ScaleButton(*m_xNewBtn, fZoom);
 
-    SetZoom(Fraction(fZoom));
+    SetZoom(fZoom);
 
     InvalidateChildSizeCache();
 }
@@ -908,7 +908,7 @@ void DbGridControl::ImplInitWindow( const InitWindowFacet _eInitWhat )
             if (IsControlFont())
                 aFont.Merge(GetControlFont());
 
-            m_aBar->SetPointFontAndZoom(aFont, double(GetZoom()));
+            m_aBar->SetPointFontAndZoom(aFont, GetZoom());
         }
     }
 
