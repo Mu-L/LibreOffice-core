@@ -219,15 +219,15 @@ tools::Rectangle IMapRectangleObject::GetRectangle( bool bPixelCoords ) const
     return aNewRect;
 }
 
-void IMapRectangleObject::Scale( const Fraction& rFracX, const Fraction& rFracY )
+void IMapRectangleObject::Scale( double fFracX, double fFracY )
 {
     Point   aTL( aRect.TopLeft() );
     Point   aBR( aRect.BottomRight() );
 
-    if ( rFracX.GetDenominator() && rFracY.GetDenominator() )
+    if ( fFracX != 0.0 && fFracY != 0.0 )
     {
-        SCALEPOINT( aTL, rFracX, rFracY );
-        SCALEPOINT( aBR, rFracX, rFracY );
+        SCALEPOINT( aTL, fFracX, fFracY );
+        SCALEPOINT( aBR, fFracX, fFracY );
     }
 
     aRect = tools::Rectangle( aTL, aBR );
@@ -350,22 +350,19 @@ sal_Int32 IMapCircleObject::GetRadius( bool bPixelCoords ) const
     return nNewRadius;
 }
 
-void IMapCircleObject::Scale( const Fraction& rFracX, const Fraction& rFracY )
+void IMapCircleObject::Scale( double fFracX, double fFracY )
 {
-    Fraction aAverage( rFracX );
+    double fAverage = (fFracX + fFracY) / 2;
 
-    aAverage += rFracY;
-    aAverage *= Fraction( 1, 2 );
-
-    if ( rFracX.GetDenominator() && rFracY.GetDenominator() )
+    if ( fFracX != 0.0 && fFracY != 0.0 )
     {
-        SCALEPOINT( aCenter, rFracX, rFracY );
+        SCALEPOINT( aCenter, fFracX, fFracY );
     }
 
-    if (!aAverage.GetDenominator())
+    if (fAverage == 0.0)
         throw o3tl::divide_by_zero();
 
-    nRadius = double(nRadius * aAverage);
+    nRadius = nRadius * fAverage;
 }
 
 bool IMapCircleObject::IsEqual( const IMapCircleObject& rEqObj ) const
@@ -478,7 +475,7 @@ void IMapPolygonObject::SetExtraEllipse( const tools::Rectangle& rEllipse )
     }
 }
 
-void IMapPolygonObject::Scale( const Fraction& rFracX, const Fraction& rFracY )
+void IMapPolygonObject::Scale( double fFracX, double fFracY )
 {
     sal_uInt16 nCount = aPoly.GetSize();
 
@@ -486,9 +483,9 @@ void IMapPolygonObject::Scale( const Fraction& rFracX, const Fraction& rFracY )
     {
         Point aScaledPt( aPoly[ i ] );
 
-        if ( rFracX.GetDenominator() && rFracY.GetDenominator() )
+        if ( fFracX != 0.0 && fFracY != 0.0 )
         {
-            SCALEPOINT( aScaledPt, rFracX, rFracY );
+            SCALEPOINT( aScaledPt, fFracX, fFracY );
         }
 
         aPoly[ i ] = aScaledPt;
@@ -500,10 +497,10 @@ void IMapPolygonObject::Scale( const Fraction& rFracX, const Fraction& rFracY )
     Point   aTL( aEllipse.TopLeft() );
     Point   aBR( aEllipse.BottomRight() );
 
-    if ( rFracX.GetDenominator() && rFracY.GetDenominator() )
+    if ( fFracX != 0.0 && fFracY != 0.0 )
     {
-        SCALEPOINT( aTL, rFracX, rFracY );
-        SCALEPOINT( aBR, rFracX, rFracY );
+        SCALEPOINT( aTL, fFracX, fFracY );
+        SCALEPOINT( aBR, fFracX, fFracY );
     }
 
     aEllipse = tools::Rectangle( aTL, aBR );
@@ -800,7 +797,7 @@ IMapObject* ImageMap::GetHitIMapObject( const Size& rTotalSize,
     return( pObj ? ( pObj->IsActive() ? pObj : nullptr ) : nullptr );
 }
 
-void ImageMap::Scale( const Fraction& rFracX, const Fraction& rFracY )
+void ImageMap::Scale( double fFracX, double fFracY )
 {
     size_t nCount = maList.size();
 
@@ -811,15 +808,15 @@ void ImageMap::Scale( const Fraction& rFracX, const Fraction& rFracY )
         switch( pObj->GetType() )
         {
             case IMapObjectType::Rectangle:
-                static_cast<IMapRectangleObject*>( pObj )->Scale( rFracX, rFracY );
+                static_cast<IMapRectangleObject*>( pObj )->Scale( fFracX, fFracY );
             break;
 
             case IMapObjectType::Circle:
-                static_cast<IMapCircleObject*>( pObj )->Scale( rFracX, rFracY );
+                static_cast<IMapCircleObject*>( pObj )->Scale( fFracX, fFracY );
             break;
 
             case IMapObjectType::Polygon:
-                static_cast<IMapPolygonObject*>( pObj )->Scale( rFracX, rFracY );
+                static_cast<IMapPolygonObject*>( pObj )->Scale( fFracX, fFracY );
             break;
 
             default:
