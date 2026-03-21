@@ -208,7 +208,7 @@ void SdVectorizeDlg::Calculate( Bitmap const & rBmp, GDIMetaFile& rMtf )
 void SdVectorizeDlg::AddTile( BitmapReadAccess const * pRAcc, GDIMetaFile& rMtf,
                               tools::Long nPosX, tools::Long nPosY, tools::Long nWidth, tools::Long nHeight )
 {
-    sal_uLong           nSumR = 0, nSumG = 0, nSumB = 0;
+    sal_uInt32           nSumR = 0, nSumG = 0, nSumB = 0;
     const tools::Long      nRight = nPosX + nWidth - 1;
     const tools::Long      nBottom = nPosY + nHeight - 1;
     const double    fMult = 1.0 / ( nWidth * nHeight );
