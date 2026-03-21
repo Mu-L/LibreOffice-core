@@ -473,7 +473,7 @@ void FuInsertFile::InsTextOrRTFinDrMode(SfxMedium* pMedium)
                 while ( aOutliner.GetParagraphCount() > 1 )
                 {
                     Paragraph* pPara = aOutliner.GetParagraph( 0 );
-                    sal_uLong nLen = aOutliner.GetText( pPara ).getLength();
+                    sal_Int32 nLen = aOutliner.GetText( pPara ).getLength();
                     aOutliner.QuickInsertLineBreak(ESelection(0, nLen, 1, 0));
                 }
             }
