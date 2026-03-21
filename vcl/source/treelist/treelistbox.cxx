@@ -348,31 +348,32 @@ SvLBoxItem::~SvLBoxItem()
 {
 }
 
-int SvLBoxItem::GetWidth(const SvTreeListBox* pView, const SvTreeListEntry* pEntry) const
+int SvLBoxItem::GetWidth(const SvTreeListBox& rView, const SvTreeListEntry* pEntry) const
 {
-    const SvViewDataItem* pViewData = pView->GetViewDataItem( pEntry, this );
+    const SvViewDataItem* pViewData = rView.GetViewDataItem(pEntry, this);
     int nWidth = pViewData->mnWidth;
     if (nWidth == -1)
     {
-        nWidth = CalcWidth(pView);
+        nWidth = CalcWidth(&rView);
         const_cast<SvViewDataItem*>(pViewData)->mnWidth = nWidth;
     }
     return nWidth;
 }
 
-int SvLBoxItem::GetHeight(const SvTreeListBox* pView, const SvTreeListEntry* pEntry) const
+int SvLBoxItem::GetHeight(const SvTreeListBox& rView, const SvTreeListEntry* pEntry) const
 {
-    const SvViewDataItem* pViewData = pView->GetViewDataItem( pEntry, this );
+    const SvViewDataItem* pViewData = rView.GetViewDataItem(pEntry, this);
     return pViewData->mnHeight;
 }
 
-int SvLBoxItem::GetWidth(const SvTreeListBox* pView, const SvViewDataEntry* pData, sal_uInt16 nItemPos) const
+int SvLBoxItem::GetWidth(const SvTreeListBox& rView, const SvViewDataEntry* pData,
+                         sal_uInt16 nItemPos) const
 {
     const SvViewDataItem& rIData = pData->GetItem(nItemPos);
     int nWidth = rIData.mnWidth;
     if (nWidth == -1)
     {
-        nWidth = CalcWidth(pView);
+        nWidth = CalcWidth(&rView);
         const_cast<SvViewDataItem&>(rIData).mnWidth = nWidth;
     }
     return nWidth;
@@ -1956,7 +1957,7 @@ void SvTreeListBox::CheckBoxInserted(SvTreeListEntry* pEntry)
     SvLBoxButton* pItem = static_cast<SvLBoxButton*>(pEntry->GetFirstItem(SvLBoxItemType::Button));
     if( pItem )
     {
-        auto nWidth = pItem->GetWidth(this, pEntry);
+        auto nWidth = pItem->GetWidth(*this, pEntry);
         if( mnCheckboxItemWidth < nWidth )
         {
             mnCheckboxItemWidth = nWidth;
@@ -2713,7 +2714,7 @@ void SvTreeListBox::EditItemText(SvTreeListEntry* pEntry, SvLBoxString* pItem, c
     SvLBoxTab* pTab = GetTab( pEntry, pItem );
     DBG_ASSERT(pTab,"EditItemText:Tab not found");
 
-    auto nItemHeight( pItem->GetHeight(this, pEntry) );
+    auto nItemHeight(pItem->GetHeight(*this, pEntry));
     Point aPos = GetEntryPosition( pEntry );
     aPos.AdjustY((m_nEntryHeight - nItemHeight) / 2);
     aPos.setX( GetTabPos( pEntry, pTab ) );
@@ -3004,7 +3005,7 @@ void SvTreeListBox::PaintEntry1(SvTreeListEntry& rEntry, tools::Long nLine, vcl:
         SvLBoxItem& rItem = rEntry.GetItem(nCurIndex);
 
         SvLBoxTabFlags nFlags = pTab->nFlags;
-        Size aSize(rItem.GetWidth(this, pViewDataEntry, nCurIndex),
+        Size aSize(rItem.GetWidth(*this, pViewDataEntry, nCurIndex),
                    SvLBoxItem::GetHeight(pViewDataEntry, nCurIndex));
         tools::Long nTabPos = GetTabPos(&rEntry, pTab);
 
@@ -3275,7 +3276,7 @@ tools::Rectangle SvTreeListBox::GetFocusRect(const SvTreeListEntry* pEntry, tool
         if( pTab && nCurTab < pEntry->ItemCount() )
         {
             const SvLBoxItem& rItem = pEntry->GetItem( nCurTab );
-            aSize.setWidth(rItem.GetWidth(this, pEntry));
+            aSize.setWidth(rItem.GetWidth(*this, pEntry));
             if( !aSize.Width() )
                 aSize.setWidth( 15 );
             tools::Long nX = nTabPos; //GetTabPos( pEntry, pTab );
@@ -3375,7 +3376,7 @@ std::pair<tools::Long, tools::Long> SvTreeListBox::GetItemPos(SvTreeListEntry* p
             nNextTabPos += 50;
     }
 
-    auto nItemWidth(pItem->GetWidth(this, pEntry));
+    auto nItemWidth(pItem->GetWidth(*this, pEntry));
     nStart += pTab->CalcOffset(nItemWidth, nNextTabPos - nStart);
     auto nLen = nItemWidth;
     if (pNextTab)
@@ -3401,7 +3402,7 @@ tools::Long SvTreeListBox::getPreferredDimensions(std::vector<tools::Long> &rWid
         while (nCurPos < nCount)
         {
             SvLBoxItem& rItem = pEntry->GetItem( nCurPos );
-            auto nWidth = rItem.GetWidth(this, pEntry);
+            auto nWidth = rItem.GetWidth(*this, pEntry);
             if (nWidth)
             {
                 nWidth += SV_TAB_BORDER * 2;
@@ -3466,7 +3467,7 @@ SvLBoxItem* SvTreeListBox::GetItem(SvTreeListEntry* pEntry,tools::Long nX,SvLBox
                 nNextTabPos += 50;
         }
 
-        auto nItemWidth(pItem->GetWidth(this, pEntry));
+        auto nItemWidth(pItem->GetWidth(*this, pEntry));
         nStart += pTab->CalcOffset(nItemWidth, nNextTabPos - nStart);
         auto nLen = nItemWidth;
         if (pNextTab)

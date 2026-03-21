@@ -266,7 +266,7 @@ void IconView::PaintEntry(SvTreeListEntry& rEntry, tools::Long nX, tools::Long n
     if (nIconItem < nItemCount)
     {
         SvLBoxItem& rItem = rEntry.GetItem(nIconItem);
-        auto nItemWidth = rItem.GetWidth(this, pViewDataEntry, nIconItem);
+        auto nItemWidth = rItem.GetWidth(*this, pViewDataEntry, nIconItem);
         auto nItemHeight = SvLBoxItem::GetHeight(pViewDataEntry, nIconItem);
 
         aEntryPos.setY(nY);
