@@ -136,7 +136,7 @@ public:
 
     virtual void Paint(const Point& rPos, SvTreeListBox& rOutDev, vcl::RenderContext& rRenderContext, const SvViewDataEntry* pView, const SvTreeListEntry& rEntry) = 0;
 
-    virtual void InitViewData(SvTreeListBox* pView, SvTreeListEntry* pEntry,
+    virtual void InitViewData(SvTreeListBox& rView, SvTreeListEntry* pEntry,
                             // If != 0: this Pointer must be used!
                             // If == 0: it needs to be retrieved via the View
                             SvViewDataItem* pViewData = nullptr) = 0;

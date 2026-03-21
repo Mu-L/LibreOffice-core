@@ -264,11 +264,11 @@ std::unique_ptr<SvLBoxItem> SvLBoxString::Clone(SvLBoxItem const * pSource) cons
     return std::unique_ptr<SvLBoxItem>(pNew.release());
 }
 
-void SvLBoxString::InitViewData(
-    SvTreeListBox* pView, SvTreeListEntry* pEntry, SvViewDataItem* pViewData)
+void SvLBoxString::InitViewData(SvTreeListBox& rView, SvTreeListEntry* pEntry,
+                                SvViewDataItem* pViewData)
 {
     if( !pViewData )
-        pViewData = pView->GetViewDataItem( pEntry, this );
+        pViewData = rView.GetViewDataItem(pEntry, this);
 
     if (pEntry->IsSeparator())
     {
@@ -279,26 +279,26 @@ void SvLBoxString::InitViewData(
 
     if (mbEmphasized)
     {
-        pView->GetOutDev()->Push();
-        vcl::Font aFont( pView->GetFont());
+        rView.GetOutDev()->Push();
+        vcl::Font aFont(rView.GetFont());
         aFont.SetWeight(WEIGHT_BOLD);
-        pView->Control::SetFont( aFont );
+        rView.Control::SetFont(aFont);
     }
 
     if (mbCustom)
     {
-        Size aSize = pView->MeasureCustomEntry(*pView->GetOutDev(), *pEntry);
+        Size aSize = rView.MeasureCustomEntry(*rView.GetOutDev(), *pEntry);
         pViewData->mnWidth = aSize.Width();
         pViewData->mnHeight = aSize.Height();
     }
     else
     {
         pViewData->mnWidth = -1; // calc on demand
-        pViewData->mnHeight = pView->GetTextHeight();
+        pViewData->mnHeight = rView.GetTextHeight();
     }
 
     if (mbEmphasized)
-        pView->GetOutDev()->Pop();
+        rView.GetOutDev()->Pop();
 }
 
 int SvLBoxString::CalcWidth(const SvTreeListBox& rView) const
@@ -421,15 +421,15 @@ void SvLBoxButton::ImplAdjustBoxSize(Size& io_rSize, ControlType i_eType, vcl::R
     }
 }
 
-void SvLBoxButton::InitViewData(SvTreeListBox* pView,SvTreeListEntry* pEntry, SvViewDataItem* pViewData)
+void SvLBoxButton::InitViewData(SvTreeListBox& rView, SvTreeListEntry* pEntry,
+                                SvViewDataItem* pViewData)
 {
     if( !pViewData )
-        pViewData = pView->GetViewDataItem( pEntry, this );
+        pViewData = rView.GetViewDataItem(pEntry, this);
     Size aSize = pData->GetSize();
 
     ControlType eCtrlType = (pData->IsRadio())? ControlType::Radiobutton : ControlType::Checkbox;
-    if ( pView )
-        ImplAdjustBoxSize(aSize, eCtrlType, *pView->GetOutDev());
+    ImplAdjustBoxSize(aSize, eCtrlType, *rView.GetOutDev());
     pViewData->mnWidth = aSize.Width();
     pViewData->mnHeight = aSize.Height();
 }
@@ -459,11 +459,11 @@ SvLBoxItemType SvLBoxContextBmp::GetType() const
     return SvLBoxItemType::ContextBmp;
 }
 
-void SvLBoxContextBmp::InitViewData( SvTreeListBox* pView,SvTreeListEntry* pEntry,
-    SvViewDataItem* pViewData)
+void SvLBoxContextBmp::InitViewData(SvTreeListBox& rView, SvTreeListEntry* pEntry,
+                                    SvViewDataItem* pViewData)
 {
     if( !pViewData )
-        pViewData = pView->GetViewDataItem( pEntry, this );
+        pViewData = rView.GetViewDataItem(pEntry, this);
     Size aSize = m_aImage1.GetSizePixel();
     pViewData->mnWidth = aSize.Width();
     pViewData->mnHeight = aSize.Height();
