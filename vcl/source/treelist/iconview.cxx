@@ -43,7 +43,7 @@ IconView::IconView(vcl::Window* pParent, WinBits nBits)
     mbCenterAndClipText = true;
     SetEntryWidth(0);
 
-    m_pImpl.reset(new IconViewImpl(this, GetModel(), GetStyle()));
+    m_pImpl.reset(new IconViewImpl(*this, GetModel(), GetStyle()));
 }
 
 Size IconView::GetEntrySize(const SvTreeListEntry& entry) const

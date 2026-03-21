@@ -22,8 +22,8 @@
 #include <tools/debug.hxx>
 #include "iconviewimpl.hxx"
 
-IconViewImpl::IconViewImpl(IconView* pIconView, SvTreeList* pTreeList, WinBits nWinStyle)
-    : SvImpLBox(pIconView, pTreeList, nWinStyle)
+IconViewImpl::IconViewImpl(IconView& rIconView, SvTreeList* pTreeList, WinBits nWinStyle)
+    : SvImpLBox(&rIconView, pTreeList, nWinStyle)
 {
 }
 
