@@ -1128,17 +1128,14 @@ OUString SvTreeListBox::GetEntryTooltip(SvTreeListEntry* pEntry) const
 
 void SvTreeListBox::InitViewData( SvViewDataEntry* pData, SvTreeListEntry* pEntry )
 {
-    SvTreeListEntry* pInhEntry = pEntry;
-    SvViewDataEntry* pEntryData = pData;
-
-    pEntryData->Init(pInhEntry->ItemCount());
-    sal_uInt16 nCount = pInhEntry->ItemCount();
+    pData->Init(pEntry->ItemCount());
+    sal_uInt16 nCount = pEntry->ItemCount();
     sal_uInt16 nCurPos = 0;
     while( nCurPos < nCount )
     {
-        SvLBoxItem& rItem = pInhEntry->GetItem( nCurPos );
-        SvViewDataItem& rItemData = pEntryData->GetItem(nCurPos);
-        rItem.InitViewData(*this, pInhEntry, &rItemData);
+        SvLBoxItem& rItem = pEntry->GetItem(nCurPos);
+        SvViewDataItem& rItemData = pData->GetItem(nCurPos);
+        rItem.InitViewData(*this, pEntry, &rItemData);
         nCurPos++;
     }
 }
