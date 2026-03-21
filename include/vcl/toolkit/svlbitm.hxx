@@ -118,7 +118,7 @@ public:
                               SvTreeListEntry* pEntry,
                               SvViewDataItem* pViewData = nullptr) override;
 
-    virtual int CalcWidth(const SvTreeListBox* pView) const override;
+    virtual int CalcWidth(const SvTreeListBox& rView) const override;
 
     void Align(TxtAlign eAlign) { meAlign = eAlign; }
 

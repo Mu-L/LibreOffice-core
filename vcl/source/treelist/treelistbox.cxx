@@ -354,7 +354,7 @@ int SvLBoxItem::GetWidth(const SvTreeListBox& rView, const SvTreeListEntry* pEnt
     int nWidth = pViewData->mnWidth;
     if (nWidth == -1)
     {
-        nWidth = CalcWidth(&rView);
+        nWidth = CalcWidth(rView);
         const_cast<SvViewDataItem*>(pViewData)->mnWidth = nWidth;
     }
     return nWidth;
@@ -373,7 +373,7 @@ int SvLBoxItem::GetWidth(const SvTreeListBox& rView, const SvViewDataEntry* pDat
     int nWidth = rIData.mnWidth;
     if (nWidth == -1)
     {
-        nWidth = CalcWidth(&rView);
+        nWidth = CalcWidth(rView);
         const_cast<SvViewDataItem&>(rIData).mnWidth = nWidth;
     }
     return nWidth;
@@ -385,7 +385,7 @@ int SvLBoxItem::GetHeight(const SvViewDataEntry* pData, sal_uInt16 nItemPos)
     return rIData.mnHeight;
 }
 
-int SvLBoxItem::CalcWidth(const SvTreeListBox* /*pView*/) const
+int SvLBoxItem::CalcWidth(const SvTreeListBox& /*rView*/) const
 {
     return 0;
 }

@@ -125,7 +125,7 @@ public:
                         SvLBoxItem();
     virtual             ~SvLBoxItem();
     virtual SvLBoxItemType GetType() const = 0;
-    virtual int CalcWidth(const SvTreeListBox* pView) const;
+    virtual int CalcWidth(const SvTreeListBox& rView) const;
     int GetWidth(const SvTreeListBox& rView, const SvTreeListEntry* pEntry) const;
     int GetWidth(const SvTreeListBox& rView, const SvViewDataEntry* pData,
                  sal_uInt16 nItemPos) const;

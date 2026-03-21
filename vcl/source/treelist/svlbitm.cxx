@@ -301,9 +301,9 @@ void SvLBoxString::InitViewData(
         pView->GetOutDev()->Pop();
 }
 
-int SvLBoxString::CalcWidth(const SvTreeListBox* pView) const
+int SvLBoxString::CalcWidth(const SvTreeListBox& rView) const
 {
-    return pView->GetTextWidth(maText);
+    return rView.GetTextWidth(maText);
 }
 
 // ***************************************************************
