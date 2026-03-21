@@ -1573,7 +1573,7 @@ void SvTreeListBox::InitTreeView()
     m_nTreeFlags = SvTreeFlags::RECALCTABS;
     m_nIndent = SV_LBOX_DEFAULT_INDENT_PIXEL;
     m_nEntryHeightOffs = SV_ENTRYHEIGHTOFFS_PIXEL;
-    m_pImpl.reset(new SvImpLBox(this, GetModel(), GetStyle()));
+    m_pImpl.reset(new SvImpLBox(*this, GetModel(), GetStyle()));
 
     mbContextBmpExpanded = true;
     m_nContextBmpWidthMax = 0;

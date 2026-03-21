@@ -175,7 +175,7 @@ private:
     void CollapseTo(SvTreeListEntry* pParentToCollapse);
 
 protected:
-    VclPtr<SvTreeListBox>   m_pView;
+    SvTreeListBox& m_rView;
     VclPtr<ScrollBar>       m_aHorSBar;
     VclPtr<ScrollBar>       m_aVerSBar;
     SvTreeListEntry*        m_pCursor;
@@ -214,7 +214,7 @@ protected:
     DECL_LINK( MyUserEvent,  void*, void);
 
 public:
-    SvImpLBox( SvTreeListBox* pView, SvTreeList*, WinBits nWinStyle );
+    SvImpLBox(SvTreeListBox& rView, SvTreeList*, WinBits nWinStyle);
     virtual ~SvImpLBox();
 
     void                Clear();

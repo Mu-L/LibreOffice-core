@@ -23,15 +23,11 @@
 #include "iconviewimpl.hxx"
 
 IconViewImpl::IconViewImpl(IconView& rIconView, SvTreeList* pTreeList, WinBits nWinStyle)
-    : SvImpLBox(&rIconView, pTreeList, nWinStyle)
+    : SvImpLBox(rIconView, pTreeList, nWinStyle)
 {
 }
 
-IconView& IconViewImpl::GetIconView() const
-{
-    assert(m_pView);
-    return static_cast<IconView&>(*m_pView);
-}
+IconView& IconViewImpl::GetIconView() const { return static_cast<IconView&>(m_rView); }
 
 Size IconViewImpl::GetEntrySize(const SvTreeListEntry& entry) const
 {
@@ -42,10 +38,10 @@ void IconViewImpl::IterateVisibleEntryAreas(const IterateEntriesFunc& f, bool fr
 {
     tools::Long x = 0, y = 0;
     short column = 0;
-    const tools::Long rowWidth = m_pView->GetEntryWidth() * GetIconView().GetColumnCount();
+    const tools::Long rowWidth = m_rView.GetEntryWidth() * GetIconView().GetColumnCount();
     tools::Long nPrevHeight = 0;
-    for (auto entry = fromStartEntry ? m_pStartEntry : m_pView->FirstVisible(); entry;
-         entry = m_pView->NextVisible(entry))
+    for (auto entry = fromStartEntry ? m_pStartEntry : m_rView.FirstVisible(); entry;
+         entry = m_rView.NextVisible(entry))
     {
         const Size s = GetEntrySize(*entry);
         if (x >= rowWidth || entry->IsSeparator())
@@ -102,7 +98,7 @@ void IconViewImpl::SetStartEntry(SvTreeListEntry* entry)
 
     m_pStartEntry = entry;
     m_aVerSBar->SetThumbPos(row);
-    m_pView->Invalidate(GetVisibleArea());
+    m_rView.Invalidate(GetVisibleArea());
 }
 
 void IconViewImpl::ScrollTo(SvTreeListEntry& rEntry)
@@ -135,7 +131,7 @@ SvTreeListEntry* IconViewImpl::GoToPrevRow(SvTreeListEntry* pEntry, int nRows) c
                 pPrev = prevs[i];
                 for (short column = info.column; column; --column)
                 {
-                    SvTreeListEntry* pNext = m_pView->NextVisible(pPrev);
+                    SvTreeListEntry* pNext = m_rView.NextVisible(pPrev);
                     if (!pNext || pNext->IsSeparator())
                         break;
                     pPrev = pNext;
@@ -185,7 +181,7 @@ void IconViewImpl::CursorUp()
     ShowCursor( false );
     SetStartEntry(pPrevFirstToDraw);
     ShowCursor( true );
-    m_pView->NotifyScrolled();
+    m_rView.NotifyScrolled();
 }
 
 void IconViewImpl::CursorDown()
@@ -199,7 +195,7 @@ void IconViewImpl::CursorDown()
     ShowCursor( false );
     SetStartEntry(pNextFirstToDraw);
     ShowCursor( true );
-    m_pView->NotifyScrolled();
+    m_rView.NotifyScrolled();
 }
 
 void IconViewImpl::PageDown( sal_uInt16 nDelta )
@@ -289,7 +285,7 @@ tools::Long IconViewImpl::GetEntryLine(const SvTreeListEntry* pEntry) const
 
 Point IconViewImpl::GetEntryPosition(const SvTreeListEntry* pEntry) const
 {
-    Point result{ -m_pView->GetEntryWidth(), -m_pView->GetEntryHeight() }; // invisible
+    Point result{ -m_rView.GetEntryWidth(), -m_rView.GetEntryHeight() }; // invisible
     auto FindEntryPos = [pEntry, &result](const EntryAreaInfo& info)
     {
         if (pEntry == &info.entry)
@@ -307,10 +303,10 @@ Point IconViewImpl::GetEntryPosition(const SvTreeListEntry* pEntry) const
 // Returns the last entry (in respective row) if position is just past the last entry
 SvTreeListEntry* IconViewImpl::GetClickedEntry( const Point& rPoint ) const
 {
-    DBG_ASSERT( m_pView->GetModel(), "IconViewImpl::GetClickedEntry: how can this ever happen?" );
-    if ( !m_pView->GetModel() )
+    DBG_ASSERT(m_rView.GetModel(), "IconViewImpl::GetClickedEntry: how can this ever happen?");
+    if (!m_rView.GetModel())
         return nullptr;
-    if( m_pView->GetEntryCount() == 0 || !m_pStartEntry || !m_pView->GetEntryHeight() || !m_pView->GetEntryWidth())
+    if (m_rView.GetEntryCount() == 0 || !m_pStartEntry || !m_rView.GetEntryHeight() || !m_rView.GetEntryWidth())
         return nullptr;
 
     SvTreeListEntry* pEntry = nullptr;
@@ -339,7 +335,7 @@ SvTreeListEntry* IconViewImpl::GetClickedEntry( const Point& rPoint ) const
 bool IconViewImpl::IsEntryInView( SvTreeListEntry* pEntry ) const
 {
     // parent collapsed
-    if( !m_pView->IsEntryVisible(pEntry) )
+    if (!m_rView.IsEntryVisible(pEntry))
         return false;
 
     tools::Long nY = GetEntryLine( pEntry );
@@ -355,15 +351,15 @@ bool IconViewImpl::IsEntryInView( SvTreeListEntry* pEntry ) const
 
 void IconViewImpl::AdjustScrollBars( Size& rSize )
 {
-    tools::Long nEntryHeight = m_pView->GetEntryHeight();
+    tools::Long nEntryHeight = m_rView.GetEntryHeight();
     if( !nEntryHeight )
         return;
 
     sal_uInt16 nResult = 0;
 
-    Size aOSize( m_pView->Control::GetOutputSizePixel() );
+    Size aOSize(m_rView.Control::GetOutputSizePixel());
 
-    const WinBits nWindowStyle = m_pView->GetStyle();
+    const WinBits nWindowStyle = m_rView.GetStyle();
     bool bVerSBar = ( nWindowStyle & WB_VSCROLL ) != 0;
 
     // number of entries visible within the view
@@ -389,10 +385,10 @@ void IconViewImpl::AdjustScrollBars( Size& rSize )
 
     // do we need a Horizontal scrollbar?
     bool bHorSBar = (nWindowStyle & WB_HSCROLL) != 0;
-    if (bHorSBar || m_pView->GetEntryWidth() > aOSize.Width())
+    if (bHorSBar || m_rView.GetEntryWidth() > aOSize.Width())
     {
         nResult += 2;
-        m_aHorSBar->SetRange(Range(0, m_pView->GetEntryWidth()));
+        m_aHorSBar->SetRange(Range(0, m_rView.GetEntryWidth()));
         m_aHorSBar->SetVisibleSize(aOSize.Width());
     }
 
@@ -433,10 +429,10 @@ void IconViewImpl::AdjustScrollBars( Size& rSize )
 // returns 0 if position is just past the last entry
 SvTreeListEntry* IconViewImpl::GetEntry( const Point& rPoint ) const
 {
-    if( (m_pView->GetEntryCount() == 0) || !m_pStartEntry ||
+    if ((m_rView.GetEntryCount() == 0) || !m_pStartEntry ||
         (rPoint.Y() > m_aOutputSize.Height())
-        || !m_pView->GetEntryHeight()
-        || !m_pView->GetEntryWidth())
+        || !m_rView.GetEntryHeight()
+        || !m_rView.GetEntryWidth())
         return nullptr;
 
     SvTreeListEntry* pEntry = nullptr;
@@ -470,26 +466,26 @@ void IconViewImpl::UpdateAll()
     SyncVerThumb();
     FillView();
     ShowVerSBar();
-    if( m_bSimpleTravel && m_pCursor && m_pView->HasFocus() )
-        m_pView->Select( m_pCursor );
+    if (m_bSimpleTravel && m_pCursor && m_rView.HasFocus())
+        m_rView.Select(m_pCursor);
     ShowCursor( true );
-    m_pView->Invalidate( GetVisibleArea() );
+    m_rView.Invalidate(GetVisibleArea());
 }
 
 void IconViewImpl::Paint(vcl::RenderContext& rRenderContext, const tools::Rectangle& rRect)
 {
-    if (!m_pView->GetVisibleCount())
+    if (!m_rView.GetVisibleCount())
         return;
 
     m_nFlags |= LBoxFlags::InPaint;
 
     if (m_nFlags & LBoxFlags::Filling)
     {
-        SvTreeListEntry* pFirst = m_pView->First();
+        SvTreeListEntry* pFirst = m_rView.First();
         if (pFirst != m_pStartEntry)
         {
             ShowCursor(false);
-            m_pStartEntry = m_pView->First();
+            m_pStartEntry = m_rView.First();
             m_aVerSBar->SetThumbPos( 0 );
             StopUserEvent();
             ShowCursor(true);
@@ -501,7 +497,7 @@ void IconViewImpl::Paint(vcl::RenderContext& rRenderContext, const tools::Rectan
 
     if (!m_pStartEntry)
     {
-        m_pStartEntry = m_pView->First();
+        m_pStartEntry = m_rView.First();
     }
 
     if (!m_pCursor && !mbNoAutoCurEntry)
@@ -543,7 +539,7 @@ void IconViewImpl::InvalidateEntry( tools::Long nId ) const
     if (nId > aRect.Bottom())
         return;
     aRect.SetTop(nId); // Invalidate everything below
-    m_pView->Invalidate( aRect );
+    m_rView.Invalidate(aRect);
 }
 
 bool IconViewImpl::KeyInput( const KeyEvent& rKEvt )
@@ -578,7 +574,7 @@ bool IconViewImpl::KeyInput( const KeyEvent& rKEvt )
             pNewCursor = m_pCursor;
             do
             {
-                pNewCursor = m_pView->PrevVisible(pNewCursor);
+                pNewCursor = m_rView.PrevVisible(pNewCursor);
             } while( pNewCursor && !IsSelectable(pNewCursor) );
 
             // if there is no next entry, take the current one
@@ -600,7 +596,7 @@ bool IconViewImpl::KeyInput( const KeyEvent& rKEvt )
             pNewCursor = m_pCursor;
             do
             {
-                pNewCursor = m_pView->NextVisible(pNewCursor);
+                pNewCursor = m_rView.NextVisible(pNewCursor);
             } while( pNewCursor && !IsSelectable(pNewCursor) );
 
             // if there is no next entry, take the current one
@@ -617,7 +613,7 @@ bool IconViewImpl::KeyInput( const KeyEvent& rKEvt )
                 else
                 {
                     if( m_pCursor )
-                        m_pView->Select( m_pCursor, false );
+                        m_rView.Select(m_pCursor, false);
                     KeyDown( false );
                     SetCursor( pNewCursor, bMod1 ); // no selection, when Ctrl is on
                 }
@@ -695,17 +691,17 @@ bool IconViewImpl::KeyInput( const KeyEvent& rKEvt )
         case KEY_RETURN:
         case KEY_SPACE:
         {
-            bHandled = !m_pView->m_aDoubleClickHdl.Call(m_pView);
+            bHandled = !m_rView.m_aDoubleClickHdl.Call(&m_rView);
             break;
         }
 
         case KEY_END:
         {
-            pNewCursor = m_pView->GetModel()->Last();
+            pNewCursor = m_rView.GetModel()->Last();
 
             while( pNewCursor && !IsSelectable(pNewCursor) )
             {
-                pNewCursor = m_pView->PrevVisible(pNewCursor);
+                pNewCursor = m_rView.PrevVisible(pNewCursor);
             }
 
             SetStartEntry(pNewCursor);
