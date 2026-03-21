@@ -69,7 +69,6 @@ class IndexBitSet;
 class JobSetup;
 class OutputDevice;
 class Color;
-class Fraction;
 class SvGlobalName;
 class SvStream;
 class InfobarData;
@@ -753,8 +752,8 @@ public:
 
     SAL_DLLPRIVATE void DoDraw_Impl( OutputDevice* pDev,
                                             const Point & rViewPos,
-                                            const Fraction & rScaleX,
-                                            const Fraction & rScaleY,
+                                            double fScaleX,
+                                            double fScaleY,
                                             const JobSetup & rSetup,
                                             sal_uInt16 nAspect,
                                             bool bOutputForScreen );
