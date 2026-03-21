@@ -101,6 +101,7 @@ public:
     void testPageDescName();
     void testFileNameFields();
     void testDocStat();
+    void testTdf171046_IncrementalDocStatComplete();
     void testModelToViewHelperPassthrough();
     void testModelToViewHelperExpandFieldsExpandFootnote();
     void testModelToViewHelperExpandFieldsExpandFootnoteReplaceMode();
@@ -140,6 +141,7 @@ public:
     CPPUNIT_TEST(testPageDescName);
     CPPUNIT_TEST(testFileNameFields);
     CPPUNIT_TEST(testDocStat);
+    CPPUNIT_TEST(testTdf171046_IncrementalDocStatComplete);
     CPPUNIT_TEST(testModelToViewHelperPassthrough);
     CPPUNIT_TEST(testModelToViewHelperExpandFieldsExpandFootnote);
     CPPUNIT_TEST(testModelToViewHelperExpandFieldsExpandFootnoteReplaceMode);
@@ -276,6 +278,39 @@ void SwDocTest::testDocStat()
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Should now have updated count", nLen, aDocStat.nChar);
 
     CPPUNIT_ASSERT_EQUAL_MESSAGE("And cache is updated too", nLen, m_pDoc->getIDocumentStatistics().GetDocStat().nChar);
+}
+
+// tdf#171046: GetUpdatedDocStat() should return the complete character count
+// even after a prior incremental update did not finish the whole document.
+void SwDocTest::testTdf171046_IncrementalDocStatComplete()
+{
+    // Create 100 paragraphs of 100 character each (= 10000 characters total).
+    // The budget check happens between nodes, so the incremental pass only covers
+    // part of the document. Without the fix, the statistic is left incomplete
+    // and GetUpdatedDocStat() returns a wrong count.
+    OUStringBuffer sBuf(100);
+    for (int j = 0; j < 100; ++j)
+        sBuf.append('a');
+
+    OUString sPara = sBuf.makeStringAndClear();
+    SwNodeIndex aIdx(m_pDoc->GetNodes().GetEndOfContent(), -1);
+    SwPaM aPaM(aIdx);
+
+    m_pDoc->getIDocumentContentOperations().InsertString(aPaM, sPara);
+
+    for (int i = 0; i < 99; ++i)
+    {
+        m_pDoc->getIDocumentContentOperations().AppendTextNode(*aPaM.GetPoint());
+        m_pDoc->getIDocumentContentOperations().InsertString(aPaM, sPara);
+    }
+
+    // Trigger an incremental update that only covers part of the document.
+    m_pDoc->getIDocumentStatistics().UpdateDocStat(true, false);
+
+    // GetUpdatedDocStat() must recalculate fully and return the correct total.
+    const SwDocStat& rDocStat = m_pDoc->getIDocumentStatistics().GetUpdatedDocStat(false, true);
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("All characters must be counted", static_cast<sal_uInt32>(10000), rDocStat.nChar);
 }
 
 //For UI character counts we should follow UAX#29 and display the user
