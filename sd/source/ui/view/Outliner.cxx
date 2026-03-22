@@ -868,7 +868,7 @@ bool SdOutliner::SearchAndReplaceOnce(std::vector<sd::SearchSelection>* pSelecti
         auto& rVectorGraphicSearchContext = mpImpl->getVectorGraphicSearchContext();
         if (nullptr != dynamic_cast<const sd::DrawViewShell*>(pViewShell.get()))
         {
-            sal_uLong nMatchCount = 0;
+            sal_Int32 nMatchCount = 0;
 
             if (rVectorGraphicSearchContext.mbCurrentIsVectorGraphic)
             {
