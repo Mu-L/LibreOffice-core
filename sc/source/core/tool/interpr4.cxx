@@ -1956,7 +1956,7 @@ void ScInterpreter::PushError( FormulaError nError )
         for (int i = 0; i < nNumErrorTokens; i++)
         {
             FormulaError err = static_cast<FormulaError>(i + static_cast<int>(gFirstError));
-            aVec[i] = FormulaErrorToken(err);
+            aVec[i].SetError(err);
             // given them an elevated ref-count so they are never deleted
             aVec[i].IncRef();
         }
