@@ -2302,7 +2302,8 @@ void MatrixCreatorDialog::resizeMatrix()
             }
         }
 
-        mxMatrix->iter_next(*xIter);
+        if (!mxMatrix->iter_next(*xIter))
+            break;
     }
 
     mxMatrix->columns_autosize();
