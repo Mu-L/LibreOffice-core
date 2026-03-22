@@ -1906,7 +1906,7 @@ namespace emfio
                             SAL_INFO("emfio", "\t\tBounds: " << nLeftRect << ", " << nTopRect << ", " << nRightRect << ", " << nBottomRect);
                         }
 
-                        if (!mpInputStream->good())
+                        if (!mpInputStream->good() || mpInputStream->Tell() > nNextPos)
                         {
                             bStatus = false;
                         }
@@ -1927,7 +1927,7 @@ namespace emfio
                             OUString aText;
                             if ( nOptions & ETO_SMALL_CHARS )
                             {
-                                if ( nLen <= ( mnEndPos - mpInputStream->Tell() ) )
+                                if ( nLen <= ( nNextPos - mpInputStream->Tell() ) )
                                 {
                                     std::vector<char> pBuf( nLen );
                                     mpInputStream->ReadBytes(pBuf.data(), nLen);
@@ -1936,7 +1936,7 @@ namespace emfio
                             }
                             else
                             {
-                                if ( ( nLen * sizeof(sal_Unicode) ) <= ( mnEndPos - mpInputStream->Tell() ) )
+                                if ( ( nLen * sizeof(sal_Unicode) ) <= ( nNextPos - mpInputStream->Tell() ) )
                                 {
                                     aText = read_uInt16s_ToOUString(*mpInputStream, nLen);
                                 }
@@ -2010,14 +2010,14 @@ namespace emfio
                             SAL_WARN_IF( ( nOptions & ( ETO_PDY | ETO_GLYPH_INDEX ) ) != 0, "emfio", "SJ: ETO_PDY || ETO_GLYPH_INDEX in EMF" );
 
                             Point aPos( ptlReferenceX, ptlReferenceY );
-                            bool bOffStringSane = nOffString <= mnEndPos - nCurPos;
+                            bool bOffStringSane = nOffString <= nNextPos - nCurPos;
                             if ( bOffStringSane )
                             {
                                 mpInputStream->Seek( nCurPos + nOffString );
                                 OUString aText;
                                 if ( bFlag )
                                 {
-                                    if ( nLen <= ( mnEndPos - mpInputStream->Tell() ) )
+                                    if ( nLen <= ( nNextPos - mpInputStream->Tell() ) )
                                     {
                                         std::vector<char> pBuf( nLen );
                                         mpInputStream->ReadBytes(pBuf.data(), nLen);
@@ -2026,7 +2026,7 @@ namespace emfio
                                 }
                                 else
                                 {
-                                    if ( ( nLen * sizeof(sal_Unicode) ) <= ( mnEndPos - mpInputStream->Tell() ) )
+                                    if ( ( nLen * sizeof(sal_Unicode) ) <= ( nNextPos - mpInputStream->Tell() ) )
                                     {
                                         aText = read_uInt16s_ToOUString(*mpInputStream, nLen);
                                     }
