@@ -2177,8 +2177,8 @@ void SwViewShell::PaintTile(VirtualDevice &rDevice, int contextWidth, int contex
     // Scaling. Must convert from pixels to twips. We know
     // that VirtualDevices use a DPI of 96.
     const double scale = conversionFract(o3tl::Length::px, o3tl::Length::twip);
-    Fraction scaleX = Fraction(contextWidth, tileWidth) * scale;
-    Fraction scaleY = Fraction(contextHeight, tileHeight) * scale;
+    double scaleX = double(contextWidth) / tileWidth * scale;
+    double scaleY = double(contextHeight) / tileHeight * scale;
     aMapMode.SetScaleX(scaleX);
     aMapMode.SetScaleY(scaleY);
     rDevice.SetMapMode(aMapMode);
@@ -2187,7 +2187,7 @@ void SwViewShell::PaintTile(VirtualDevice &rDevice, int contextWidth, int contex
     sal_uInt16 nOldZoomValue = 0;
     if (GetWin() && GetWin()->GetMapMode().GetScaleX() != scaleX)
     {
-        double fScale = double(scaleX);
+        double fScale = scaleX;
         SwViewOption aOption(*GetViewOptions());
         nOldZoomValue = aOption.GetZoom();
         aOption.SetZoom(fScale * 100);
@@ -2502,9 +2502,9 @@ void SwViewShell::ImplApplyViewOptions( const SwViewOption &rOpt )
     if( mpOpt->GetZoom() != rOpt.GetZoom() && !IsPreview() )
     {
         MapMode aMode( pMyWin->GetMapMode() );
-        Fraction aNewFactor( rOpt.GetZoom(), 100 );
-        aMode.SetScaleX( aNewFactor );
-        aMode.SetScaleY( aNewFactor );
+        double fNewFactor = double(rOpt.GetZoom()) / 100;
+        aMode.SetScaleX( fNewFactor );
+        aMode.SetScaleY( fNewFactor );
         pMyWin->SetMapMode( aMode );
         // if not a reference device (printer) is used for formatting,
         // but the screen, new formatting is needed for zoomfactor changes.
@@ -2758,7 +2758,7 @@ rtl::Reference<comphelper::OAccessible> SwViewShell::CreateAccessiblePreview()
     {
         return Imp()->GetAccessibleMap().GetDocumentPreview(
                     PagePreviewLayout()->maPreviewPages,
-                    double(GetWin()->GetMapMode().GetScaleX()),
+                    GetWin()->GetMapMode().GetScaleX(),
                     GetLayout()->GetPageByPageNum( PagePreviewLayout()->mnSelectedPageNum ),
                     PagePreviewLayout()->maWinSize );
     }

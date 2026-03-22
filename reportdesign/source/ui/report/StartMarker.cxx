@@ -102,7 +102,7 @@ void OStartMarker::Paint(vcl::RenderContext& rRenderContext, const tools::Rectan
     auto popIt = rRenderContext.ScopedPush(vcl::PushFlags::TEXTCOLOR);
 
     Size aSize(GetOutputSizePixel());
-    const tools::Long nCornerWidth = tools::Long(CORNER_SPACE * double(GetMapMode().GetScaleX()));
+    const tools::Long nCornerWidth = tools::Long(CORNER_SPACE * GetMapMode().GetScaleX());
 
     if (isCollapsed())
     {
@@ -154,7 +154,7 @@ void OStartMarker::Paint(vcl::RenderContext& rRenderContext, const tools::Rectan
 
     if (m_bMarked)
     {
-        const tools::Long nCornerHeight = tools::Long(CORNER_SPACE * double(GetMapMode().GetScaleY()));
+        const tools::Long nCornerHeight = tools::Long(CORNER_SPACE * GetMapMode().GetScaleY());
         tools::Rectangle aRect(Point(nCornerWidth, nCornerHeight),
                         Size(aSize.Width() - nCornerWidth - nCornerWidth,
                              aSize.Height() - nCornerHeight - nCornerHeight));
@@ -226,8 +226,8 @@ void OStartMarker::Resize()
 
     Size aImageSize = m_aImage.GetSizePixel();
     const MapMode& rMapMode = GetMapMode();
-    aImageSize.setWidth( tools::Long(aImageSize.Width() * static_cast<double>(rMapMode.GetScaleX())) );
-    aImageSize.setHeight( tools::Long(aImageSize.Height() * static_cast<double>(rMapMode.GetScaleY())) );
+    aImageSize.setWidth( tools::Long(aImageSize.Width() * rMapMode.GetScaleX()) );
+    aImageSize.setHeight( tools::Long(aImageSize.Height() * rMapMode.GetScaleY()) );
 
     tools::Long nExtraWidth = tools::Long(REPORT_EXTRA_SPACE * rMapMode.GetScaleX());
 

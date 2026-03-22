@@ -50,8 +50,8 @@ CPPUNIT_TEST_FIXTURE(CppUnit::TestFixture, testFractionScaling)
     // Converting 100 Source -> 50 Dest
 
     MapMode aSource(MapUnit::MapMM);
-    aSource.SetScaleX(Fraction(1, 2));
-    aSource.SetScaleY(Fraction(1, 2));
+    aSource.SetScaleX(0.5);
+    aSource.SetScaleY(0.5);
 
     MapMode aDest(MapUnit::MapMM); // Default 1:1
 
@@ -70,10 +70,10 @@ CPPUNIT_TEST_FIXTURE(CppUnit::TestFixture, testIntermediateOverflow)
     constexpr tools::Long nExpected = static_cast<tools::Long>(25400000000);
 
     MapMode aSource(MapUnit::MapInch);
-    aSource.SetScaleX(Fraction(nLarge, 1));
+    aSource.SetScaleX(nLarge);
 
     MapMode aDest(MapUnit::Map100thMM);
-    aDest.SetScaleX(Fraction(nLarge, 1));
+    aDest.SetScaleX(nLarge);
 
     // n1 (Coord) = 10,000,000
     // n2 (Scale) = 2^30 (~10^9)
@@ -219,8 +219,8 @@ CPPUNIT_TEST_FIXTURE(CppUnit::TestFixture, testZoomScaling)
     // Dest:   100thMM at 100% zoom (Scale 1:1)
 
     MapMode aSource(MapUnit::Map100thMM);
-    aSource.SetScaleX(Fraction(4, 1));
-    aSource.SetScaleY(Fraction(4, 1));
+    aSource.SetScaleX(4.0);
+    aSource.SetScaleY(4.0);
 
     MapMode aDest(MapUnit::Map100thMM);
 
@@ -244,10 +244,10 @@ CPPUNIT_TEST_FIXTURE(CppUnit::TestFixture, testComplexFractions)
     // Conversion:   Val * (1/3) / (1/7) = Val * 7/3 ~= Val * 2.333
 
     MapMode aSource(MapUnit::MapMM);
-    aSource.SetScaleX(Fraction(1, 3));
+    aSource.SetScaleX(1.0 / 3);
 
     MapMode aDest(MapUnit::MapMM);
-    aDest.SetScaleX(Fraction(1, 7));
+    aDest.SetScaleX(1.0 / 7);
 
     Point aPt(300, 0);
     // 300 * 7 / 3 = 100 * 7 = 700

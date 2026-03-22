@@ -377,11 +377,11 @@ OUString convertMapUnitToString(MapUnit eUnit)
     }
 }
 
-OUString convertFractionToString(const Fraction& aFraction)
+OUString convertFractionToString(double fFraction)
 {
     std::stringstream ss;
 
-    ss << aFraction;
+    ss << Fraction(fFraction);
 
     return OUString::createFromAscii(ss.str());
 }
