@@ -2468,7 +2468,7 @@ int getClickedCell(std::unique_ptr<weld::TreeView>& treeview, const MouseEvent& 
     if (!found)
         return -1;
 
-    for (int col = -1; col < lastColumn; ++col)
+    for (int col = 0; col < lastColumn; ++col)
     {
         tools::Rectangle cellArea = treeview->get_cell_area(rIter, col);
         if (cellArea.Contains(mousePos))
