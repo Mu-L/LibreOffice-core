@@ -4724,18 +4724,18 @@ sal_uInt32 INetURLObject::scanDomain(sal_Unicode const *& rBegin,
                                      sal_Unicode const * pEnd,
                                      bool bEager)
 {
-    enum State { STATE_DOT, STATE_LABEL, STATE_HYPHEN };
-    State eState = STATE_DOT;
+    enum class State { Dot, Label, Hyphen };
+    State eState = State::Dot;
     sal_Int32 nLabels = 0;
     sal_Unicode const * pLastAlphanumeric = nullptr;
     for (sal_Unicode const * p = rBegin;; ++p)
         switch (eState)
         {
-            case STATE_DOT:
+            case State::Dot:
                 if (p != pEnd && (rtl::isAsciiAlphanumeric(*p) || *p == '_'))
                 {
                     ++nLabels;
-                    eState = STATE_LABEL;
+                    eState = State::Label;
                     break;
                 }
                 if (bEager || nLabels == 0)
@@ -4743,32 +4743,32 @@ sal_uInt32 INetURLObject::scanDomain(sal_Unicode const *& rBegin,
                 rBegin = p - 1;
                 return nLabels;
 
-            case STATE_LABEL:
+            case State::Label:
                 if (p != pEnd)
                 {
                     if (rtl::isAsciiAlphanumeric(*p) || *p == '_')
                         break;
                     else if (*p == '.')
                     {
-                        eState = STATE_DOT;
+                        eState = State::Dot;
                         break;
                     }
                     else if (*p == '-')
                     {
                         pLastAlphanumeric = p;
-                        eState = STATE_HYPHEN;
+                        eState = State::Hyphen;
                         break;
                     }
                 }
                 rBegin = p;
                 return nLabels;
 
-            case STATE_HYPHEN:
+            case State::Hyphen:
                 if (p != pEnd)
                 {
                     if (rtl::isAsciiAlphanumeric(*p) || *p == '_')
                     {
-                        eState = STATE_LABEL;
+                        eState = State::Label;
                         break;
                     }
                     else if (*p == '-')
