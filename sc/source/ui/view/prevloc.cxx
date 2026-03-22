@@ -391,7 +391,7 @@ tools::Long ScPreviewLocationData::GetNoteCountInRange( const tools::Rectangle& 
 {
     ScPreviewLocationType eType = bNoteMarks ? SC_PLOC_NOTEMARK : SC_PLOC_NOTETEXT;
 
-    sal_uLong nRet = 0;
+    tools::Long nRet = 0;
     for (auto const& it : m_Entries)
     {
         if ( it->eType == eType && it->aPixelRect.Overlaps( rVisiblePixel ) )
@@ -406,12 +406,12 @@ bool ScPreviewLocationData::GetNoteInRange( const tools::Rectangle& rVisiblePixe
 {
     ScPreviewLocationType eType = bNoteMarks ? SC_PLOC_NOTEMARK : SC_PLOC_NOTETEXT;
 
-    sal_uLong nPos = 0;
+    tools::Long nPos = 0;
     for (auto const& it : m_Entries)
     {
         if ( it->eType == eType && it->aPixelRect.Overlaps( rVisiblePixel ) )
         {
-            if ( nPos == sal::static_int_cast<sal_uLong>(nIndex) )
+            if ( nPos == nIndex )
             {
                 rCellPos = it->aCellRange.aStart;
                 rNoteRect = it->aPixelRect;
