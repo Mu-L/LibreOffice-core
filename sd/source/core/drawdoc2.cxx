@@ -682,10 +682,10 @@ void SdDrawDocument::CreateFirstPages( SdDrawDocument const * pRefDocument /* = 
                 aPageOffset -= pPrinter->PixelToLogic( Point() );
                 ::tools::Long nOffset = !aPageOffset.X() && !aPageOffset.Y() ? 0 : PRINT_OFFSET;
 
-                sal_uLong nTop    = aPageOffset.Y();
-                sal_uLong nLeft   = aPageOffset.X();
-                sal_uLong nBottom = std::max(::tools::Long(aDefSize.Height() - aOutSize.Height() - nTop + nOffset), ::tools::Long(0));
-                sal_uLong nRight  = std::max(::tools::Long(aDefSize.Width() - aOutSize.Width() - nLeft + nOffset), ::tools::Long(0));
+                tools::Long nTop    = aPageOffset.Y();
+                tools::Long nLeft   = aPageOffset.X();
+                tools::Long nBottom = std::max(::tools::Long(aDefSize.Height() - aOutSize.Height() - nTop + nOffset), ::tools::Long(0));
+                tools::Long nRight  = std::max(::tools::Long(aDefSize.Width() - aOutSize.Width() - nLeft + nOffset), ::tools::Long(0));
 
                 pPage->SetBorder(nLeft, nTop, nRight, nBottom);
             }
