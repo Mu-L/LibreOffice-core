@@ -2758,7 +2758,7 @@ rtl::Reference<comphelper::OAccessible> SwViewShell::CreateAccessiblePreview()
     {
         return Imp()->GetAccessibleMap().GetDocumentPreview(
                     PagePreviewLayout()->maPreviewPages,
-                    GetWin()->GetMapMode().GetScaleX(),
+                    double(GetWin()->GetMapMode().GetScaleX()),
                     GetLayout()->GetPageByPageNum( PagePreviewLayout()->mnSelectedPageNum ),
                     PagePreviewLayout()->maWinSize );
     }
