@@ -54,23 +54,15 @@ namespace sdr::properties
         }
 
 
-        void ScaleItemSet(SfxItemSet& rSet, const Fraction& rScale)
+        void ScaleItemSet(SfxItemSet& rSet, double fScale)
         {
-            sal_Int32 nMul(rScale.GetNumerator());
-            sal_Int32 nDiv(rScale.GetDenominator());
-
-            if(!rScale.IsValid() || !nDiv)
-            {
-                return;
-            }
-
             for (SfxItemIter aIter(rSet); !aIter.IsAtEnd(); aIter.Next())
             {
                 const SfxPoolItem *pItem = aIter.GetCurItem();
                 if(!IsDisabledItem(pItem) && pItem->HasMetrics())
                 {
                     std::unique_ptr<SfxPoolItem> pNewItem(pItem->Clone());
-                    pNewItem->ScaleMetrics(nMul, nDiv);
+                    pNewItem->ScaleMetrics(fScale);
                     rSet.Put(std::move(pNewItem));
                 }
             }

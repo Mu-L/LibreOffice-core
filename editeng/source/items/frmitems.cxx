@@ -278,10 +278,10 @@ bool SvxSizeItem::GetPresentation
 }
 
 
-void SvxSizeItem::ScaleMetrics( tools::Long nMult, tools::Long nDiv )
+void SvxSizeItem::ScaleMetrics(double fScale)
 {
-    m_aSize.setWidth( BigInt::Scale( m_aSize.Width(), nMult, nDiv ) );
-    m_aSize.setHeight( BigInt::Scale( m_aSize.Height(), nMult, nDiv ) );
+    m_aSize.setWidth( BigInt::Scale( m_aSize.Width(), fScale ) );
+    m_aSize.setHeight( BigInt::Scale( m_aSize.Height(), fScale ) );
 }
 
 
@@ -332,9 +332,9 @@ sal_Int32 SvxIndentValue::ResolveVariablePart(const SvxFontUnitMetrics& rMetrics
     return Resolve(rMetrics);
 }
 
-void SvxIndentValue::ScaleMetrics(tools::Long const nMult, tools::Long const nDiv)
+void SvxIndentValue::ScaleMetrics(double fScale)
 {
-    m_dValue = (m_dValue * static_cast<double>(nMult)) / static_cast<double>(nDiv);
+    m_dValue = m_dValue * fScale;
 }
 
 size_t SvxIndentValue::hashCode() const
@@ -1011,9 +1011,9 @@ bool SvxLeftMarginItem::GetPresentation
     return false;
 }
 
-void SvxLeftMarginItem::ScaleMetrics(tools::Long const nMult, tools::Long const nDiv)
+void SvxLeftMarginItem::ScaleMetrics(double fScale)
 {
-    m_nLeftMargin = BigInt::Scale(m_nLeftMargin, nMult, nDiv);
+    m_nLeftMargin = BigInt::Scale(m_nLeftMargin, fScale);
 }
 
 bool SvxLeftMarginItem::HasMetrics() const
@@ -1232,10 +1232,10 @@ bool SvxTextLeftMarginItem::GetPresentation
     return false;
 }
 
-void SvxTextLeftMarginItem::ScaleMetrics(tools::Long const nMult, tools::Long const nDiv)
+void SvxTextLeftMarginItem::ScaleMetrics(double fScale)
 {
     ASSERT_CHANGE_REFCOUNTED_ITEM;
-    m_stTextLeftMargin.ScaleMetrics(nMult, nDiv);
+    m_stTextLeftMargin.ScaleMetrics(fScale);
 }
 
 bool SvxTextLeftMarginItem::HasMetrics() const
@@ -1492,10 +1492,10 @@ bool SvxFirstLineIndentItem::GetPresentation
     return false;
 }
 
-void SvxFirstLineIndentItem::ScaleMetrics(tools::Long const nMult, tools::Long const nDiv)
+void SvxFirstLineIndentItem::ScaleMetrics(double fScale)
 {
     ASSERT_CHANGE_REFCOUNTED_ITEM;
-    m_stFirstLineOffset.ScaleMetrics(nMult, nDiv);
+    m_stFirstLineOffset.ScaleMetrics(fScale);
 }
 
 bool SvxFirstLineIndentItem::HasMetrics() const
@@ -1710,10 +1710,10 @@ bool SvxRightMarginItem::GetPresentation
     return false;
 }
 
-void SvxRightMarginItem::ScaleMetrics(tools::Long const nMult, tools::Long const nDiv)
+void SvxRightMarginItem::ScaleMetrics(double fScale)
 {
     ASSERT_CHANGE_REFCOUNTED_ITEM;
-    m_stRightMargin.ScaleMetrics(nMult, nDiv);
+    m_stRightMargin.ScaleMetrics(fScale);
 }
 
 bool SvxRightMarginItem::HasMetrics() const
@@ -1819,7 +1819,7 @@ bool SvxGutterLeftMarginItem::GetPresentation
     return false;
 }
 
-void SvxGutterLeftMarginItem::ScaleMetrics(tools::Long const /*nMult*/, tools::Long const /*nDiv*/)
+void SvxGutterLeftMarginItem::ScaleMetrics(double /*fScale*/)
 {
     // TODO?
 }
@@ -1925,7 +1925,7 @@ bool SvxGutterRightMarginItem::GetPresentation
     return false;
 }
 
-void SvxGutterRightMarginItem::ScaleMetrics(tools::Long const /*nMult*/, tools::Long const /*nDiv*/)
+void SvxGutterRightMarginItem::ScaleMetrics(double /*fScale*/)
 {
     // TODO?
 }
@@ -2109,11 +2109,11 @@ bool SvxLRSpaceItem::GetPresentation
 }
 
 
-void SvxLRSpaceItem::ScaleMetrics( tools::Long nMult, tools::Long nDiv )
+void SvxLRSpaceItem::ScaleMetrics(double fScale)
 {
-    m_stFirstLineOffset.ScaleMetrics(nMult, nDiv);
-    m_stLeftMargin.ScaleMetrics(nMult, nDiv);
-    m_stRightMargin.ScaleMetrics(nMult, nDiv);
+    m_stFirstLineOffset.ScaleMetrics(fScale);
+    m_stLeftMargin.ScaleMetrics(fScale);
+    m_stRightMargin.ScaleMetrics(fScale);
 }
 
 
@@ -2384,11 +2384,11 @@ bool SvxULSpaceItem::GetPresentation
 }
 
 
-void SvxULSpaceItem::ScaleMetrics( tools::Long nMult, tools::Long nDiv )
+void SvxULSpaceItem::ScaleMetrics(double fScale)
 {
     ASSERT_CHANGE_REFCOUNTED_ITEM;
-    nUpper = static_cast<sal_uInt16>(BigInt::Scale( nUpper, nMult, nDiv ));
-    nLower = static_cast<sal_uInt16>(BigInt::Scale( nLower, nMult, nDiv ));
+    nUpper = static_cast<sal_uInt16>(BigInt::Scale( nUpper, fScale ));
+    nLower = static_cast<sal_uInt16>(BigInt::Scale( nLower, fScale ));
 }
 
 
@@ -2793,10 +2793,10 @@ bool SvxShadowItem::GetPresentation
 }
 
 
-void SvxShadowItem::ScaleMetrics( tools::Long nMult, tools::Long nDiv )
+void SvxShadowItem::ScaleMetrics(double fScale)
 {
     ASSERT_CHANGE_REFCOUNTED_ITEM;
-    nWidth = static_cast<sal_uInt16>(BigInt::Scale( nWidth, nMult, nDiv ));
+    nWidth = static_cast<sal_uInt16>(BigInt::Scale( nWidth, fScale ));
 }
 
 
@@ -3543,22 +3543,22 @@ bool SvxBoxItem::GetPresentation
 }
 
 
-void SvxBoxItem::ScaleMetrics( tools::Long nMult, tools::Long nDiv )
+void SvxBoxItem::ScaleMetrics(double fScale)
 {
     ASSERT_CHANGE_REFCOUNTED_ITEM;
     if (mpTopBorderLine)
-        mpTopBorderLine->ScaleMetrics( nMult, nDiv );
+        mpTopBorderLine->ScaleMetrics( fScale );
     if (mpBottomBorderLine)
-        mpBottomBorderLine->ScaleMetrics( nMult, nDiv );
+        mpBottomBorderLine->ScaleMetrics( fScale );
     if (mpLeftBorderLine)
-        mpLeftBorderLine->ScaleMetrics( nMult, nDiv );
+        mpLeftBorderLine->ScaleMetrics( fScale );
     if (mpRightBorderLine)
-        mpRightBorderLine->ScaleMetrics( nMult, nDiv );
+        mpRightBorderLine->ScaleMetrics( fScale );
 
-    mnTopDistance = static_cast<sal_Int16>(BigInt::Scale(mnTopDistance, nMult, nDiv));
-    mnBottomDistance = static_cast<sal_Int16>(BigInt::Scale(mnBottomDistance, nMult, nDiv));
-    mnLeftDistance = static_cast<sal_Int16>(BigInt::Scale(mnLeftDistance, nMult, nDiv));
-    mnRightDistance = static_cast<sal_Int16>(BigInt::Scale(mnRightDistance, nMult, nDiv));
+    mnTopDistance = static_cast<sal_Int16>(BigInt::Scale(mnTopDistance, fScale));
+    mnBottomDistance = static_cast<sal_Int16>(BigInt::Scale(mnBottomDistance, fScale));
+    mnLeftDistance = static_cast<sal_Int16>(BigInt::Scale(mnLeftDistance, fScale));
+    mnRightDistance = static_cast<sal_Int16>(BigInt::Scale(mnRightDistance, fScale));
 }
 
 
@@ -3889,13 +3889,13 @@ bool SvxBoxInfoItem::GetPresentation
 }
 
 
-void SvxBoxInfoItem::ScaleMetrics( tools::Long nMult, tools::Long nDiv )
+void SvxBoxInfoItem::ScaleMetrics( double fScale )
 {
     if (mpHorizontalLine)
-        mpHorizontalLine->ScaleMetrics(nMult, nDiv);
+        mpHorizontalLine->ScaleMetrics(fScale);
     if (mpVerticalLine)
-        mpVerticalLine->ScaleMetrics(nMult, nDiv);
-    mnDefaultMinimumDistance = sal_uInt16(BigInt::Scale(mnDefaultMinimumDistance, nMult, nDiv));
+        mpVerticalLine->ScaleMetrics(fScale);
+    mnDefaultMinimumDistance = sal_uInt16(BigInt::Scale(mnDefaultMinimumDistance, fScale));
 }
 
 
@@ -4494,9 +4494,9 @@ bool SvxLineItem::GetPresentation
 }
 
 
-void SvxLineItem::ScaleMetrics( tools::Long nMult, tools::Long nDiv )
+void SvxLineItem::ScaleMetrics(double fScale)
 {
-    if ( pLine ) pLine->ScaleMetrics( nMult, nDiv );
+    if ( pLine ) pLine->ScaleMetrics( fScale );
 }
 
 
