@@ -85,6 +85,7 @@ public:
 
     void             SetTabAlignCenter(sal_uInt16 nTab);
     void             SetTabEditable( sal_uInt16 nTab, bool bEditable );
+    // Note that to make a tab visible, the width must also be set to a non-zero value
     void             SetTabVisible( sal_uInt16 nTab, bool bVisible );
     bool             GetTabVisible( sal_uInt16 nTab );
 

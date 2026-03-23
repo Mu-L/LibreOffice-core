@@ -191,12 +191,13 @@ enum class HeaderBarItemBits
     FLAT                = 0x0800,
     DOWNARROW           = 0x1000,
     UPARROW             = 0x2000,
+    HIDDEN              = 0x4000,
     STDSTYLE            = LEFT | LEFTIMAGE | CLICKABLE,
 };
 
 namespace o3tl
 {
-    template<> struct typed_flags<HeaderBarItemBits> : is_typed_flags<HeaderBarItemBits, 0x3c37> {};
+    template<> struct typed_flags<HeaderBarItemBits> : is_typed_flags<HeaderBarItemBits, 0x7c37> {};
 }
 
 #define HEADERBAR_APPEND            (sal_uInt16(0xFFFF))
@@ -291,6 +292,9 @@ public:
 
     void                SetItemSize( sal_uInt16 nItemId, tools::Long nNewSize );
     tools::Long                GetItemSize( sal_uInt16 nItemId ) const;
+    // Note that to make an item visible, the width must also be set to a non-zero value
+    void                SetItemVisible( sal_uInt16 nItemId, bool bVisible );
+    bool                GetItemVisible( sal_uInt16 nItemId) const;
     void                SetItemBits( sal_uInt16 nItemId, HeaderBarItemBits nNewBits );
     HeaderBarItemBits   GetItemBits( sal_uInt16 nItemId ) const;
 

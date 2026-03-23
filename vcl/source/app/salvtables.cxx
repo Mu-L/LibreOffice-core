@@ -4003,7 +4003,11 @@ void SalInstanceTreeView::set_column_visible(int nColumn, const bool bVisible)
 
     SvHeaderTabListBox* pHeaderBox = dynamic_cast<SvHeaderTabListBox*>(m_xTreeView.get());
     if (HeaderBar* pHeaderBar = pHeaderBox ? pHeaderBox->GetHeaderBar() : nullptr)
-        pHeaderBar->SetItemSize(pHeaderBar->GetItemId(nColumn), width);
+    {
+        sal_uInt16 nItemId = pHeaderBar->GetItemId(nColumn);
+        pHeaderBar->SetItemVisible(nItemId, bVisible);
+        pHeaderBar->SetItemSize(nItemId, width);
+    }
 
     // Set flag for columns_autosize() to respect the visibility
     m_xTreeView->SetTabVisible(nColumn, bVisible);

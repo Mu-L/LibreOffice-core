@@ -610,6 +610,11 @@ void HeaderBar::ImplStartDrag( const Point& rMousePos, bool bCommand )
     if ( !nHitTest )
         return;
 
+    while (nPos > 0 && !GetItemVisible(GetItemId(nPos)))
+        --nPos;
+    if (!GetItemVisible(GetItemId(nPos)))
+        return;
+
     mbDrag = false;
     auto& pItem = mvItemList[ nPos ];
     if ( nHitTest & HEAD_HITTEST_DIVIDER )
@@ -1186,6 +1191,24 @@ tools::Long HeaderBar::GetItemSize( sal_uInt16 nItemId ) const
         return mvItemList[ nPos ]->mnSize;
     else
         return 0;
+}
+
+void HeaderBar::SetItemVisible( sal_uInt16 nItemId, bool bVisible )
+{
+    if (bVisible)
+    {
+        SetItemBits(nItemId, GetItemBits(nItemId) & ~HeaderBarItemBits::HIDDEN);
+    }
+    else
+    {
+        SetItemBits(nItemId, GetItemBits(nItemId) | HeaderBarItemBits::HIDDEN);
+        SetItemSize(nItemId, 0);
+    }
+}
+
+bool HeaderBar::GetItemVisible( sal_uInt16 nItemId) const
+{
+    return !(GetItemBits(nItemId) & HeaderBarItemBits::HIDDEN);
 }
 
 void HeaderBar::SetItemBits( sal_uInt16 nItemId, HeaderBarItemBits nNewBits )
