@@ -92,7 +92,6 @@ public:
     SalPrinterError         mnError;                // error code
     sal_uInt32              mnCopies;               // copies
     bool                    mbCollate;              // collated copies
-    bool                    mbAbort;                // Job Aborted
 
     bool                    mbValid;
 

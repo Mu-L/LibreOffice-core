@@ -1146,7 +1146,7 @@ static BOOL CALLBACK SalPrintAbortProc( HDC hPrnDC, int /* nError */ )
             pPrinter = pPrinter->mpNextPrinter;
         }
 
-        if ( !pPrinter || pPrinter->mbAbort )
+        if (!pPrinter)
             return FALSE;
     }
     while ( bWhile );
@@ -1183,7 +1183,6 @@ WinSalPrinter::WinSalPrinter() :
     mnError( SalPrinterError::NONE ),
     mnCopies( 0 ),
     mbCollate( false ),
-    mbAbort( false ),
     mbValid( true )
 {
     SalData* pSalData = GetSalData();
@@ -1255,7 +1254,6 @@ bool WinSalPrinter::StartJob( const OUString* pFileName,
                            ImplJobSetup* pSetupData )
 {
     mnError     = SalPrinterError::NONE;
-    mbAbort     = false;
     mnCopies        = nCopies;
     mbCollate   = bCollate;
 
@@ -1296,7 +1294,6 @@ bool WinSalPrinter::StartJob( const OUString* pFileName,
     }
 
     mnError = SalPrinterError::NONE;
-    mbAbort = false;
 
     // As the Telecom Balloon Fax driver tends to send messages repeatedly
     // we try to process first all, and then insert a dummy message
