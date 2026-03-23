@@ -169,7 +169,7 @@ enum class SwPasteSdr
 #define SW_ALLOW_TEXTBOX  8
 /// SmartArt/Diagram SubSelection needs to know in SwFEShell::SelectObj
 /// if that action came from keyboard or mouse
-#define SW_FROM_KLICK  16
+#define SW_FROM_CLICK  16
 
 enum class SwMove
 {

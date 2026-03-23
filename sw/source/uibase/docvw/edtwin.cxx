@@ -4832,7 +4832,7 @@ void SwEditWin::MouseButtonUp(const MouseEvent& rMEvt)
                     if (!pShapeFormat)
                     {
                         pSdrView->UnmarkAllObj();
-                        rSh.SelectObj(aDocPos, SW_FROM_KLICK, pObj);
+                        rSh.SelectObj(aDocPos, SW_FROM_CLICK, pObj);
                         if (rMEvt.IsLeft() && rMEvt.GetClicks() == 1 &&
                             SwModule::get()->GetUsrPref(
                                 dynamic_cast<const SwWebView*>(&m_rView) != nullptr)->
