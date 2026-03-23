@@ -219,7 +219,6 @@ SalData::SalData()
     mnCmdShow = 0;
     mhSalObjMsgHook = nullptr;
     mhWantLeaveMsg = nullptr;
-    mpFirstVD = nullptr;
     mpFirstPrinter = nullptr;
     mh50Bmp = nullptr;
     mh50Brush = nullptr;

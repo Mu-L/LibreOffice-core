@@ -36,7 +36,6 @@ private:
     ScopedHBITMAP           mhBmp;                  // Memory Bitmap
     HBITMAP                 mhDefBmp;               // Default Bitmap
     std::unique_ptr<WinSalGraphics> mpGraphics;     // current VirDev graphics
-    WinSalVirtualDevice*    mpNext;                 // next VirDev
     sal_uInt16              mnBitCount;             // BitCount (0 or 1)
     bool                    mbGraphicsAcquired;     // is Graphics used
     bool                    mbForeignDC;            // uses a foreign DC instead of a bitmap

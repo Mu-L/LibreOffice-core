@@ -149,11 +149,6 @@ WinSalVirtualDevice::WinSalVirtualDevice(HDC hDC, HBITMAP hBMP, sal_uInt16 nBitC
     else
         mhDefBmp = nullptr;
 
-    // insert VirDev into list of virtual devices
-    SalData* pSalData = GetSalData();
-    mpNext = pSalData->mpFirstVD;
-    pSalData->mpFirstVD = this;
-
     WinSalGraphics* pVirGraphics = new WinSalGraphics(WinSalGraphics::VIRTUAL_DEVICE,
                                                       bIsScreen, nullptr, this);
 
@@ -168,13 +163,6 @@ WinSalVirtualDevice::WinSalVirtualDevice(HDC hDC, HBITMAP hBMP, sal_uInt16 nBitC
 
 WinSalVirtualDevice::~WinSalVirtualDevice()
 {
-    // remove VirDev from list of virtual devices
-    SalData* pSalData = GetSalData();
-    WinSalVirtualDevice** ppVirDev = &pSalData->mpFirstVD;
-    for(; (*ppVirDev != this) && *ppVirDev; ppVirDev = &(*ppVirDev)->mpNext );
-    if( *ppVirDev )
-        *ppVirDev = mpNext;
-
     HDC hDC = mpGraphics->getHDC();
     // restore the mpGraphics' original HDC values, so the HDC can be deleted in the !mbForeignDC case
     mpGraphics->setHDC(nullptr);
