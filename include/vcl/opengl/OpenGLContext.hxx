@@ -117,12 +117,6 @@ protected:
     bool mbInitialized;
     int  mnRefCount;
     bool mbRequestLegacyContext;
-
-public:
-
-    // Don't hold references to ourselves:
-    OpenGLContext *mpPrevContext;
-    OpenGLContext *mpNextContext;
 };
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

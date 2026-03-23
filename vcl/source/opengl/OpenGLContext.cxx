@@ -45,19 +45,12 @@ OpenGLContext::OpenGLContext():
     m_pChildWindow(nullptr),
     mbInitialized(false),
     mnRefCount(0),
-    mbRequestLegacyContext(false),
-    mpPrevContext(nullptr),
-    mpNextContext(nullptr)
+    mbRequestLegacyContext(false)
 {
     VCL_GL_INFO("new context: " << this);
 
     ImplSVData* pSVData = ImplGetSVData();
-    if( pSVData->maGDIData.mpLastContext )
-    {
-        pSVData->maGDIData.mpLastContext->mpNextContext = this;
-        mpPrevContext = pSVData->maGDIData.mpLastContext;
-    }
-    pSVData->maGDIData.mpLastContext = this;
+    pSVData->maGDIData.maOpenGLContexts.push_back(this);
 
     // FIXME: better hope we call 'makeCurrent' soon to preserve
     // the invariant that the last item is the current context.
@@ -72,13 +65,7 @@ OpenGLContext::~OpenGLContext()
 
     reset();
 
-    ImplSVData* pSVData = ImplGetSVData();
-    if( mpPrevContext )
-        mpPrevContext->mpNextContext = mpNextContext;
-    if( mpNextContext )
-        mpNextContext->mpPrevContext = mpPrevContext;
-    else
-        pSVData->maGDIData.mpLastContext = mpPrevContext;
+    ImplGetSVData()->maGDIData.maOpenGLContexts.remove(this);
 
     m_pChildWindow.disposeAndClear();
     assert (mnRefCount == 1);
@@ -379,8 +366,10 @@ bool OpenGLContext::isAnyCurrent()
 bool OpenGLContext::hasCurrent()
 {
     ImplSVData* pSVData = ImplGetSVData();
-    rtl::Reference<OpenGLContext> pCurrentCtx = pSVData->maGDIData.mpLastContext;
-    return pCurrentCtx.is() && pCurrentCtx->isAnyCurrent();
+    if (pSVData->maGDIData.maOpenGLContexts.empty())
+        return false;
+
+    return pSVData->maGDIData.maOpenGLContexts.back()->isAnyCurrent();
 }
 
 void OpenGLContext::prepareForYield()
@@ -389,25 +378,22 @@ void OpenGLContext::prepareForYield()
 
     // release all framebuffers from the old context so we can re-attach the
     // texture in the new context
-    rtl::Reference<OpenGLContext> pCurrentCtx = pSVData->maGDIData.mpLastContext;
-
-    if ( !pCurrentCtx.is() )
-        return;                 // Not using OpenGL
+    if (pSVData->maGDIData.maOpenGLContexts.empty())
+        return; // Not using OpenGL
 
     SAL_INFO("vcl.opengl", "Unbinding contexts in preparation for yield");
 
     // Find the first context that is current and reset it.
     // Usually the last context is the current, but not in case a new
     // OpenGLContext is created already but not yet initialized.
-    while (pCurrentCtx.is())
+    for (auto aContextIt = pSVData->maGDIData.maOpenGLContexts.rbegin();
+         aContextIt != pSVData->maGDIData.maOpenGLContexts.rend(); ++aContextIt)
     {
-        if (pCurrentCtx->isCurrent())
+        if ((*aContextIt)->isCurrent())
         {
-            pCurrentCtx->resetCurrent();
+            (*aContextIt)->resetCurrent();
             break;
         }
-
-        pCurrentCtx = pCurrentCtx->mpPrevContext;
     }
 
     assert (!hasCurrent());
@@ -420,17 +406,8 @@ void OpenGLContext::registerAsCurrent()
     // move the context to the end of the contexts list
     static int nSwitch = 0;
     VCL_GL_INFO("******* CONTEXT SWITCH " << ++nSwitch << " *********");
-    if( mpNextContext )
-    {
-        if( mpPrevContext )
-            mpPrevContext->mpNextContext = mpNextContext;
-        mpNextContext->mpPrevContext = mpPrevContext;
-
-        mpPrevContext = pSVData->maGDIData.mpLastContext;
-        mpNextContext = nullptr;
-        pSVData->maGDIData.mpLastContext->mpNextContext = this;
-        pSVData->maGDIData.mpLastContext = this;
-    }
+    pSVData->maGDIData.maOpenGLContexts.remove(this);
+    pSVData->maGDIData.maOpenGLContexts.push_back(this);
 }
 
 void OpenGLContext::resetCurrent()

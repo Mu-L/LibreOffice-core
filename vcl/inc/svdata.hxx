@@ -51,6 +51,7 @@
 #include "displayconnectiondispatch.hxx"
 
 #include <atomic>
+#include <list>
 #include <mutex>
 #include <optional>
 #include <vector>
@@ -229,7 +230,7 @@ struct ImplSVGDIData
     VclPtr<Printer>         mpFirstPrnGraphics;             // First OutputDevice with an InfoPrinter Graphics
     VclPtr<Printer>         mpLastPrnGraphics;              // Last OutputDevice with an InfoPrinter Graphics
     VclPtr<VirtualDevice>   mpFirstVirDev;                  // First VirtualDevice
-    OpenGLContext*          mpLastContext = nullptr;        // Last OpenGLContext
+    std::list<OpenGLContext*> maOpenGLContexts; // OpenGL contexts
     VclPtr<Printer>         mpFirstPrinter;                 // First Printer
     std::unique_ptr<ImplPrnQueueList> mpPrinterQueueList;   // List of all printer queue
     std::shared_ptr<vcl::font::PhysicalFontCollection> mxScreenFontList; // Screen-Font-List

@@ -814,12 +814,11 @@ X11SalFrame::~X11SalFrame()
     pFreeGraphics_.reset();
 
     // reset all OpenGL contexts using this window
-    rtl::Reference<OpenGLContext> pContext = ImplGetSVData()->maGDIData.mpLastContext;
-    while( pContext.is() )
+    const std::list<OpenGLContext*>& rContexts = ImplGetSVData()->maGDIData.maOpenGLContexts;
+    for (auto aContextIt = rContexts.rbegin(); aContextIt != rContexts.rend(); ++aContextIt)
     {
-        if (static_cast<const GLX11Window&>(pContext->getOpenGLWindow()).win == mhWindow)
-            pContext->reset();
-        pContext = pContext->mpPrevContext;
+        if (static_cast<const GLX11Window&>((*aContextIt)->getOpenGLWindow()).win == mhWindow)
+            (*aContextIt)->reset();
     }
 
     if (mpSurface)
