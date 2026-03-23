@@ -33,7 +33,7 @@ public:
     }
 };
 
-CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf92029)
+CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf92029_DutchApostropheNotReplacedByOpeningQuote)
 {
     createSwDoc("nl-BE.fodt");
 
@@ -45,7 +45,7 @@ CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf92029)
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
 }
 
-CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf158703)
+CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf158703_FrenchSpacesBeforeColonToNBSP)
 {
     createSwDoc("fr-FR.fodt");
 
@@ -55,7 +55,7 @@ CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf158703)
     CPPUNIT_ASSERT_EQUAL(u"Foo\u00A0:"_ustr, getParagraph(1)->getString());
 }
 
-CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf38394)
+CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf38394_FrenchOpeningQuoteAfterApostrophe)
 {
     createSwDoc("fr-FR.fodt");
 
@@ -64,7 +64,7 @@ CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf38394)
     CPPUNIT_ASSERT_EQUAL(u"l\u2019« "_ustr, getParagraph(1)->getString());
 }
 
-CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf132301)
+CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf132301_FrenchOpeningQuoteAfterQu)
 {
     createSwDoc("fr-FR.fodt");
 
@@ -73,7 +73,7 @@ CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf132301)
     CPPUNIT_ASSERT_EQUAL(u" qu\u2019« "_ustr, getParagraph(1)->getString());
 }
 
-CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, tdfTdf44293)
+CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf44293_BrazilianPortugueseOrdinalSuffixes)
 {
     createSwDoc("pt-BR.fodt");
 
@@ -86,7 +86,7 @@ CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, tdfTdf44293)
                          getParagraph(1)->getString());
 }
 
-CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf151801)
+CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf151801_GermanCustomSingleQuotes)
 {
     // Set Single Quotes › and ‹
     ScopedConfigValue<officecfg::Office::Common::AutoCorrect::SingleQuoteAtStart> aCfg1(8250);
@@ -108,7 +108,7 @@ CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf151801)
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
 }
 
-CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf128860)
+CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf128860_GermanSecondLevelQuoteAndApostrophe)
 {
     createSwDoc("de-DE.fodt");
 
@@ -126,7 +126,7 @@ CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf128860)
     CPPUNIT_ASSERT_EQUAL(sReplaced2, getParagraph(1)->getString());
 }
 
-CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf123786)
+CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf123786_RussianSecondLevelEndingQuote)
 {
     createSwDoc("ru-RU.fodt");
 
@@ -151,7 +151,7 @@ CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf123786)
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
 }
 
-CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf106164)
+CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf106164_CapitalizeFirstWordWithCurlyApostrophe)
 {
     createSwDoc(); // Default lang is en-US
 
@@ -160,7 +160,7 @@ CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf106164)
     CPPUNIT_ASSERT_EQUAL(u"We\u2019re "_ustr, getParagraph(1)->getString());
 }
 
-CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf59666)
+CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf59666_SingleGreekLetterNotCapitalized)
 {
     createSwDoc(); // Default lang is en-US
 
@@ -169,7 +169,7 @@ CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf59666)
     CPPUNIT_ASSERT_EQUAL(u"\u03C0 "_ustr, getParagraph(1)->getString());
 }
 
-CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf74363)
+CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf74363_InitialCapsFirstParagraph)
 {
     createSwDoc(); // Default lang is en-US
 
@@ -180,7 +180,7 @@ CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf74363)
     CPPUNIT_ASSERT_EQUAL(u"Testing "_ustr, getParagraph(1)->getString());
 }
 
-CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf155407)
+CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf155407_DashReplacementInsideQuotes)
 {
     createSwDoc(); // Default lang is en-US
 
@@ -199,7 +199,7 @@ CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf155407)
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
 }
 
-CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf159797)
+CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf159797_DashReplacementAfterSentenceEnd)
 {
     createSwDoc(); // Default lang is en-US
 
@@ -211,7 +211,7 @@ CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf159797)
                          getParagraph(1)->getString());
 }
 
-CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf54409)
+CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf54409_TypographicDoubleQuotes)
 {
     createSwDoc(); // Default lang is en-US
 
@@ -229,7 +229,7 @@ CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf54409)
     CPPUNIT_ASSERT_EQUAL(sReplaced3, getParagraph(1)->getString());
 }
 
-CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf108423)
+CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf108423_LowercaseIApostropheCapitalized)
 {
     createSwDoc(); // Default lang is en-US
 
@@ -243,7 +243,7 @@ CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf108423)
     CPPUNIT_ASSERT_EQUAL(sText, getParagraph(1)->getString());
 }
 
-CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf57640)
+CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf57640_DZDigraphCapitalizedToTitleCase)
 {
     createSwDoc(); // Default lang is en-US
 
@@ -254,7 +254,7 @@ CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf57640)
     CPPUNIT_ASSERT_EQUAL(u"ǅ  "_ustr, getParagraph(1)->getString());
 }
 
-CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf62923)
+CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf62923_DoubleDashToEnDashBetweenDigits)
 {
     createSwDoc(); // Default lang is en-US
 
@@ -270,7 +270,7 @@ CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf62923)
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
 }
 
-CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf42893)
+CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf42893_NoCapAfterAbbreviationWithDots)
 {
     createSwDoc(); // Default lang is en-US
 
@@ -286,7 +286,7 @@ CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf42893)
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
 }
 
-CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf55693)
+CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf55693_TwoInitialCapsCorrection)
 {
     createSwDoc(); // Default lang is en-US
 
@@ -356,7 +356,7 @@ CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testUnderlineWeight)
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
 }
 
-CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf133524)
+CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf133524_HungarianAngleQuotesAndLevels)
 {
     createSwDoc("hu-HU.fodt");
     // 1. Testing autocorrect of >> and <<
@@ -388,7 +388,7 @@ CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf133524)
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
 }
 
-CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf134940)
+CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf134940_HungarianNoDashInArrowSequence)
 {
     createSwDoc("hu-HU.fodt");
 
@@ -401,7 +401,7 @@ CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf134940)
     CPPUNIT_ASSERT_EQUAL(u" → "_ustr, getParagraph(1)->getString());
 }
 
-CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf83037)
+CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf83037_HungarianArrowSymbols)
 {
     createSwDoc("hu-HU.fodt");
 
@@ -450,7 +450,7 @@ CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf133524_Romanian)
     CPPUNIT_ASSERT_EQUAL(sReplaced, getParagraph(1)->getString());
 }
 
-CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf158051)
+CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf158051_GreekSigmaNotFinalBeforeApostrophe)
 {
     createSwDoc("el-GR.fodt");
 
@@ -462,7 +462,7 @@ CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf158051)
     CPPUNIT_ASSERT_EQUAL(u"Π Τάκης σ’ ευχαριστώ"_ustr, getParagraph(1)->getString());
 }
 
-CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf162911)
+CPPUNIT_TEST_FIXTURE(SwAutoCorrectTest, testTdf162911_EmailAutolinkUndoCrash)
 {
     createSwDoc();
 
