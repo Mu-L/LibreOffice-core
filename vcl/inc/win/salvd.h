@@ -47,7 +47,6 @@ public:
     HDC getHDC() const { return mhLocalDC; }
     WinSalGraphics* getGraphics() const { return mpGraphics.get(); }
     void setGraphics(WinSalGraphics* pVirGraphics) { mpGraphics.reset(pVirGraphics); }
-    WinSalVirtualDevice* getNext() const { return mpNext; }
 
     WinSalVirtualDevice(HDC hDC, HBITMAP hBMP, sal_uInt16 nBitCount, bool bForeignDC, tools::Long nWidth, tools::Long nHeight, bool bIsScreen);
     virtual ~WinSalVirtualDevice() override;
