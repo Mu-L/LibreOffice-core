@@ -87,7 +87,6 @@ class WinSalPrinter : public SalPrinter
 public:
     std::unique_ptr<WinSalGraphics> mxGraphics;    // current Printer graphics
     WinSalInfoPrinter*      mpInfoPrinter;          // pointer to the compatible InfoPrinter
-    WinSalPrinter*          mpNextPrinter;          // next printing printer
     HDC                     mhDC;                   // printer hdc
     SalPrinterError         mnError;                // error code
     sal_uInt32              mnCopies;               // copies
