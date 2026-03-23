@@ -33,7 +33,6 @@ public:
     RGNDATA*                mpStdClipRgnData;       // Cache Standard-ClipRegion-Data
     RECT*                   mpNextClipRect;         // next ClipRegion-Rect
     bool                    mbFirstClipRect;        // Flag for first cliprect to insert
-    WinSalObject*           mpNextObject;           // pointer to next object
 
     WinSalObject();
     virtual ~WinSalObject() override;

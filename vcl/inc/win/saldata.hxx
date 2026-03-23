@@ -99,7 +99,7 @@ public:
     HHOOK                   mhSalObjMsgHook;        // hook to get interesting msg for SalObject
     HWND                    mhWantLeaveMsg;         // window handle, that want a MOUSELEAVE message
     std::list<WinSalFrame*> maFrames; // frames
-    WinSalObject*           mpFirstObject;          // pointer of first object window
+    std::list<WinSalObject*> maObjects; // objects
     WinSalVirtualDevice*    mpFirstVD;              // first VirDev
     WinSalPrinter*          mpFirstPrinter;         // first printing printer
     std::array<HDCCache, CACHESIZE_HDC> maHDCCache; // Cache for three DC's

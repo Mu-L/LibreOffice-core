@@ -1424,13 +1424,11 @@ void WinSalFrame::ImplSetParentFrame( HWND hNewParentWnd, bool bAsChild )
     }
 
     // search system child windows (plugins etc.)
-    WinSalObject *pObject = pSalData->mpFirstObject;
-    while( pObject )
+    for (WinSalObject* pObject : pSalData->maObjects)
     {
         HWND hWndParent = ::GetParent( pObject->mhWnd );
         if( mhWnd == hWndParent )
             systemChildren.push_back( pObject );
-        pObject = pObject->mpNextObject;
     }
 
     // to recreate the DCs, if they were destroyed
