@@ -78,7 +78,7 @@ private:
     DECL_LINK(SearchFindsListRender, weld::TreeView::render_args, void);
     DECL_LINK(SearchFindsListSelectionChangedHandler, weld::TreeView&, void);
     DECL_LINK(SearchFindsListRowActivatedHandler, weld::TreeView&, bool);
-    DECL_LINK(SearchFindsListMousePressHandler, const MouseEvent&, bool);
+    DECL_LINK(SearchFindsListKeyPressHandler, const KeyEvent&, bool);
     DECL_LINK(SearchOptionsToolbarClickedHandler, const OUString&, void);
     DECL_LINK(FindAndReplaceToolbarClickedHandler, const OUString&, void);
     DECL_LINK(SimilarityCheckButtonToggledHandler, weld::Toggleable&, void);

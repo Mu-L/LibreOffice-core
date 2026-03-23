@@ -194,8 +194,8 @@ QuickFindPanel::QuickFindPanel(weld::Widget* pParent, const uno::Reference<frame
         LINK(this, QuickFindPanel, SearchFindsListSelectionChangedHandler));
     m_xSearchFindsList->connect_row_activated(
         LINK(this, QuickFindPanel, SearchFindsListRowActivatedHandler));
-    m_xSearchFindsList->connect_mouse_press(
-        LINK(this, QuickFindPanel, SearchFindsListMousePressHandler));
+    m_xSearchFindsList->connect_key_press(
+        LINK(this, QuickFindPanel, SearchFindsListKeyPressHandler));
 }
 
 // tdf#162580 related: When upgrading from Find toolbar search to advanced Find and Replace
@@ -275,13 +275,40 @@ IMPL_LINK_NOARG(QuickFindPanel, SearchComboBoxActivateHandler, weld::ComboBox&, 
     return true;
 }
 
-IMPL_LINK(QuickFindPanel, SearchFindsListMousePressHandler, const MouseEvent&, rMEvt, bool)
+IMPL_LINK(QuickFindPanel, SearchFindsListKeyPressHandler, const KeyEvent&, rKeyEvt, bool)
 {
-    if (std::unique_ptr<weld::TreeIter> xEntry
-        = m_xSearchFindsList->get_dest_row_at_pos(rMEvt.GetPosPixel(), false, false))
+    vcl::KeyCode aCode = rKeyEvt.GetKeyCode();
+    sal_uInt16 nCode = aCode.GetCode();
+
+    if (nCode == KEY_DOWN)
     {
-        return m_xSearchFindsList->get_id(*xEntry)[0] == '-';
+        if (std::unique_ptr<weld::TreeIter> xEntry = m_xSearchFindsList->get_cursor();
+            xEntry && m_xSearchFindsList->iter_next(*xEntry)
+            && m_xSearchFindsList->get_id(*xEntry)[0] == '-'
+            && m_xSearchFindsList->iter_next(*xEntry))
+        {
+            m_xSearchFindsList->set_cursor(*xEntry);
+            SearchFindsListSelectionChangedHandler(*m_xSearchFindsList);
+            return true;
+        }
     }
+    else if (nCode == KEY_UP)
+    {
+        if (std::unique_ptr<weld::TreeIter> xEntry = m_xSearchFindsList->get_cursor();
+            xEntry && m_xSearchFindsList->iter_previous(*xEntry)
+            && m_xSearchFindsList->get_id(*xEntry)[0] == '-')
+        {
+            if (m_xSearchFindsList->iter_previous(*xEntry))
+            {
+                m_xSearchFindsList->set_cursor(*xEntry);
+                SearchFindsListSelectionChangedHandler(*m_xSearchFindsList);
+            }
+            else
+                m_xSearchFindsList->scroll_to_row(0);
+            return true;
+        }
+    }
+
     return false;
 }
 
@@ -417,7 +444,13 @@ IMPL_LINK_NOARG(QuickFindPanel, SearchFindsListSelectionChangedHandler, weld::Tr
 
     // check for page number entry
     if (sId[0] == '-')
-        return;
+    {
+        int nRow = m_xSearchFindsList->get_selected_index();
+        (void)m_xSearchFindsList->iter_next(*xEntry);
+        m_xSearchFindsList->set_cursor(*xEntry);
+        m_xSearchFindsList->scroll_to_row(nRow);
+        sId = m_xSearchFindsList->get_id(*xEntry);
+    }
 
     std::unique_ptr<SwPaM>& rxPaM = m_vPaMs[sId.toUInt64()];
 
@@ -461,10 +494,6 @@ IMPL_LINK_NOARG(QuickFindPanel, SearchFindsListRowActivatedHandler, weld::TreeVi
 {
     std::unique_ptr<weld::TreeIter> xEntry = m_xSearchFindsList->get_cursor();
     if (!xEntry)
-        return false;
-
-    // check for page number entry
-    if (m_xSearchFindsList->get_id(*xEntry)[0] == '-')
         return false;
 
     m_pWrtShell->GetView().GetEditWin().GrabFocus();
