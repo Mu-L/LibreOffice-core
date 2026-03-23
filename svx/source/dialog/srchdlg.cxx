@@ -2356,16 +2356,16 @@ SvxSearchDialogWrapper::SvxSearchDialogWrapper( vcl::Window* _pParent, sal_uInt1
                                                 SfxBindings* pBindings,
                                                 SfxChildWinInfo const * pInfo )
     : SfxChildWindow( _pParent, nId )
-    , dialog(std::make_shared<SvxSearchDialog>(_pParent->GetFrameWeld(), this, *pBindings))
+    , m_dialog(std::make_shared<SvxSearchDialog>(_pParent->GetFrameWeld(), this, *pBindings))
 {
-    SetController(dialog);
-    dialog->Initialize( pInfo );
+    SetController(m_dialog);
+    m_dialog->Initialize( pInfo );
 
     pBindings->Update( SID_SEARCH_ITEM );
     pBindings->Update( SID_SEARCH_OPTIONS );
     pBindings->Update( SID_SEARCH_SEARCHSET );
     pBindings->Update( SID_SEARCH_REPLACESET );
-    dialog->m_bConstruct = false;
+    m_dialog->m_bConstruct = false;
 }
 
 SvxSearchDialogWrapper::~SvxSearchDialogWrapper ()
