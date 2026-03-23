@@ -98,89 +98,12 @@ public:
     virtual void setUp() override;
     virtual void tearDown() override;
 
-    void testPageDescName();
-    void testFileNameFields();
-    void testDocStat();
-    void testTdf171046_IncrementalDocStatComplete();
-    void testModelToViewHelperPassthrough();
-    void testModelToViewHelperExpandFieldsExpandFootnote();
-    void testModelToViewHelperExpandFieldsExpandFootnoteReplaceMode();
-    void testModelToViewHelperExpandFields();
-    void testModelToViewHelperExpandFieldsReplaceMode();
-    void testModelToViewHelperExpandFieldsHideInvisible();
-    void testModelToViewHelperExpandFieldsHideRedlined();
-    void testModelToViewHelperExpandFieldsHideInvisibleExpandFootnote();
-    void testModelToViewHelperExpandFieldsHideInvisibleExpandFootnoteReplaceMode();
-    void testModelToViewHelperExpandFieldsHideHideRedlinedExpandFootnote();
-    void testModelToViewHelperExpandFieldsHideHideRedlinedExpandFootnoteReplaceMode();
-    void testModelToViewHelperHideInvisibleHideRedlined();
-    void testModelToViewHelperExpandFieldsHideInvisibleHideRedlinedExpandFootnote();
-    void testModelToViewHelperExpandFieldsHideInvisibleHideRedlinedExpandFootnoteReplaceMode();
-    void testModelToViewHelperExpandFieldsExpandFootnote2();
-    void testModelToViewHelperExpandFieldsExpandFootnoteReplaceMode2();
-    void testSwScanner();
-    void testUserPerceivedCharCount();
-    void testMergePortionsDeleteNotSorted();
-    void testGraphicAnchorDeletion();
-    void testTransliterate();
-    void testMarkMove();
-    void testFormulas();
-    void testIntrusiveRing();
-    void testClientModify();
-    void testBroadcastingModify();
-    void testWriterMultiListener();
-    void test64kPageDescs();
-    void testTdf92308();
-    void testTableCellComparison();
-    void testFillRubyList();
-    void testSetRubyList();
-
-    CPPUNIT_TEST_SUITE(SwDocTest);
-
-    CPPUNIT_TEST(testTransliterate);
-    CPPUNIT_TEST(testPageDescName);
-    CPPUNIT_TEST(testFileNameFields);
-    CPPUNIT_TEST(testDocStat);
-    CPPUNIT_TEST(testTdf171046_IncrementalDocStatComplete);
-    CPPUNIT_TEST(testModelToViewHelperPassthrough);
-    CPPUNIT_TEST(testModelToViewHelperExpandFieldsExpandFootnote);
-    CPPUNIT_TEST(testModelToViewHelperExpandFieldsExpandFootnoteReplaceMode);
-    CPPUNIT_TEST(testModelToViewHelperExpandFields);
-    CPPUNIT_TEST(testModelToViewHelperExpandFieldsReplaceMode);
-    CPPUNIT_TEST(testModelToViewHelperExpandFieldsHideInvisible);
-    CPPUNIT_TEST(testModelToViewHelperExpandFieldsHideRedlined);
-    CPPUNIT_TEST(testModelToViewHelperExpandFieldsHideInvisibleExpandFootnote);
-    CPPUNIT_TEST(testModelToViewHelperExpandFieldsHideInvisibleExpandFootnoteReplaceMode);
-    CPPUNIT_TEST(testModelToViewHelperExpandFieldsHideHideRedlinedExpandFootnote);
-    CPPUNIT_TEST(testModelToViewHelperExpandFieldsHideHideRedlinedExpandFootnoteReplaceMode);
-    CPPUNIT_TEST(testModelToViewHelperHideInvisibleHideRedlined);
-    CPPUNIT_TEST(testModelToViewHelperExpandFieldsHideInvisibleHideRedlinedExpandFootnote);
-    CPPUNIT_TEST(testModelToViewHelperExpandFieldsHideInvisibleHideRedlinedExpandFootnoteReplaceMode);
-    CPPUNIT_TEST(testModelToViewHelperExpandFieldsExpandFootnote2);
-    CPPUNIT_TEST(testModelToViewHelperExpandFieldsExpandFootnoteReplaceMode2);
-    CPPUNIT_TEST(testSwScanner);
-    CPPUNIT_TEST(testUserPerceivedCharCount);
-    CPPUNIT_TEST(testMergePortionsDeleteNotSorted);
-    CPPUNIT_TEST(testGraphicAnchorDeletion);
-    CPPUNIT_TEST(testMarkMove);
-    CPPUNIT_TEST(testFormulas);
-    CPPUNIT_TEST(testIntrusiveRing);
-    CPPUNIT_TEST(testClientModify);
-    CPPUNIT_TEST(testBroadcastingModify);
-    CPPUNIT_TEST(testWriterMultiListener);
-    CPPUNIT_TEST(test64kPageDescs);
-    CPPUNIT_TEST(testTdf92308);
-    CPPUNIT_TEST(testTableCellComparison);
-    CPPUNIT_TEST(testFillRubyList);
-    CPPUNIT_TEST(testSetRubyList);
-    CPPUNIT_TEST_SUITE_END();
-
-private:
+protected:
     SwDoc *m_pDoc;
     SwDocShellRef m_xDocShRef;
 };
 
-void SwDocTest::testPageDescName()
+CPPUNIT_TEST_FIXTURE(SwDocTest, testPageDescName)
 {
     ShellResource aShellResources;
 
@@ -200,7 +123,7 @@ void SwDocTest::testPageDescName()
 }
 
 //See https://bugs.libreoffice.org/show_bug.cgi?id=32463
-void SwDocTest::testFileNameFields()
+CPPUNIT_TEST_FIXTURE(SwDocTest, testFileNameFields)
 {
     //Here's a file name with some chars in it that will be %% encoded, when expanding
     //SwFileNameFields we want to restore the original readable filename
@@ -260,7 +183,7 @@ void SwDocTest::testFileNameFields()
 //See http://lists.freedesktop.org/archives/libreoffice/2011-August/016666.html
 //Remove unnecessary parameter to IDocumentStatistics::UpdateDocStat for
 //motivation
-void SwDocTest::testDocStat()
+CPPUNIT_TEST_FIXTURE(SwDocTest, testDocStat)
 {
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Expected initial 0 count", static_cast<sal_uInt32>(0), m_pDoc->getIDocumentStatistics().GetDocStat().nChar);
 
@@ -282,7 +205,7 @@ void SwDocTest::testDocStat()
 
 // tdf#171046: GetUpdatedDocStat() should return the complete character count
 // even after a prior incremental update did not finish the whole document.
-void SwDocTest::testTdf171046_IncrementalDocStatComplete()
+CPPUNIT_TEST_FIXTURE(SwDocTest, testTdf171046_IncrementalDocStatComplete)
 {
     // Create 100 paragraphs of 100 character each (= 10000 characters total).
     // The budget check happens between nodes, so the incremental pass only covers
@@ -316,7 +239,7 @@ void SwDocTest::testTdf171046_IncrementalDocStatComplete()
 //For UI character counts we should follow UAX#29 and display the user
 //perceived characters, not the number of codepoints, nor the number of code
 //units http://unicode.org/reports/tr29/
-void SwDocTest::testUserPerceivedCharCount()
+CPPUNIT_TEST_FIXTURE(SwDocTest, testUserPerceivedCharCount)
 {
     SwBreakIt *pBreakIter = SwBreakIt::Get();
 
@@ -402,7 +325,7 @@ static SwTextNode* getModelToViewTestDocument2(SwDoc *pDoc)
     return pTextNode;
 }
 
-void SwDocTest::testModelToViewHelperPassthrough()
+CPPUNIT_TEST_FIXTURE(SwDocTest, testModelToViewHelperPassthrough)
 {
     SwTextNode* pTextNode = getModelToViewTestDocument(m_pDoc);
 
@@ -412,7 +335,7 @@ void SwDocTest::testModelToViewHelperPassthrough()
     CPPUNIT_ASSERT_EQUAL(sModelText, sViewText);
 }
 
-void SwDocTest::testModelToViewHelperExpandFieldsExpandFootnote()
+CPPUNIT_TEST_FIXTURE(SwDocTest, testModelToViewHelperExpandFieldsExpandFootnote)
 {
     SwTextNode* pTextNode = getModelToViewTestDocument(m_pDoc);
 
@@ -423,7 +346,7 @@ void SwDocTest::testModelToViewHelperExpandFieldsExpandFootnote()
         u"AAAAA BBBBB foo CCCCC foo DDDDD"_ustr, sViewText);
 }
 
-void SwDocTest::testModelToViewHelperExpandFieldsExpandFootnoteReplaceMode()
+CPPUNIT_TEST_FIXTURE(SwDocTest, testModelToViewHelperExpandFieldsExpandFootnoteReplaceMode)
 {
     SwTextNode* pTextNode = getModelToViewTestDocument(m_pDoc);
 
@@ -443,7 +366,7 @@ void SwDocTest::testModelToViewHelperExpandFieldsExpandFootnoteReplaceMode()
         aModelToViewHelper.getFieldPositions().size());
 }
 
-void SwDocTest::testModelToViewHelperExpandFields()
+CPPUNIT_TEST_FIXTURE(SwDocTest, testModelToViewHelperExpandFields)
 {
     SwTextNode* pTextNode = getModelToViewTestDocument(m_pDoc);
 
@@ -453,7 +376,7 @@ void SwDocTest::testModelToViewHelperExpandFields()
         u"AAAAA BBBBB  CCCCC  DDDDD"_ustr, sViewText);
 }
 
-void SwDocTest::testModelToViewHelperExpandFieldsReplaceMode()
+CPPUNIT_TEST_FIXTURE(SwDocTest, testModelToViewHelperExpandFieldsReplaceMode)
 {
     SwTextNode* pTextNode = getModelToViewTestDocument(m_pDoc);
 
@@ -468,7 +391,7 @@ void SwDocTest::testModelToViewHelperExpandFieldsReplaceMode()
         aModelToViewHelper.getFieldPositions().size());
 }
 
-void SwDocTest::testModelToViewHelperExpandFieldsHideInvisible()
+CPPUNIT_TEST_FIXTURE(SwDocTest, testModelToViewHelperExpandFieldsHideInvisible)
 {
     SwTextNode* pTextNode = getModelToViewTestDocument(m_pDoc);
 
@@ -479,7 +402,7 @@ void SwDocTest::testModelToViewHelperExpandFieldsHideInvisible()
         sViewText);
 }
 
-void SwDocTest::testModelToViewHelperExpandFieldsHideRedlined()
+CPPUNIT_TEST_FIXTURE(SwDocTest, testModelToViewHelperExpandFieldsHideRedlined)
 {
     SwTextNode* pTextNode = getModelToViewTestDocument(m_pDoc);
 
@@ -490,7 +413,7 @@ void SwDocTest::testModelToViewHelperExpandFieldsHideRedlined()
         sViewText);
 }
 
-void SwDocTest::testModelToViewHelperExpandFieldsHideInvisibleExpandFootnote()
+CPPUNIT_TEST_FIXTURE(SwDocTest, testModelToViewHelperExpandFieldsHideInvisibleExpandFootnote)
 {
     SwTextNode* pTextNode = getModelToViewTestDocument(m_pDoc);
 
@@ -500,7 +423,7 @@ void SwDocTest::testModelToViewHelperExpandFieldsHideInvisibleExpandFootnote()
     CPPUNIT_ASSERT_EQUAL(u"AAAAA CCCCC foo DDDDD"_ustr, sViewText);
 }
 
-void SwDocTest::testModelToViewHelperExpandFieldsHideInvisibleExpandFootnoteReplaceMode()
+CPPUNIT_TEST_FIXTURE(SwDocTest, testModelToViewHelperExpandFieldsHideInvisibleExpandFootnoteReplaceMode)
 {
     SwTextNode* pTextNode = getModelToViewTestDocument(m_pDoc);
 
@@ -518,7 +441,7 @@ void SwDocTest::testModelToViewHelperExpandFieldsHideInvisibleExpandFootnoteRepl
         aModelToViewHelper.getFieldPositions().size());
 }
 
-void SwDocTest::testModelToViewHelperExpandFieldsHideHideRedlinedExpandFootnote()
+CPPUNIT_TEST_FIXTURE(SwDocTest, testModelToViewHelperExpandFieldsHideHideRedlinedExpandFootnote)
 {
     SwTextNode* pTextNode = getModelToViewTestDocument(m_pDoc);
 
@@ -529,7 +452,7 @@ void SwDocTest::testModelToViewHelperExpandFieldsHideHideRedlinedExpandFootnote(
         u"AAAABB foo CCCCC foo DDDDD"_ustr, sViewText);
 }
 
-void SwDocTest::testModelToViewHelperExpandFieldsHideHideRedlinedExpandFootnoteReplaceMode()
+CPPUNIT_TEST_FIXTURE(SwDocTest, testModelToViewHelperExpandFieldsHideHideRedlinedExpandFootnoteReplaceMode)
 {
     SwTextNode* pTextNode = getModelToViewTestDocument(m_pDoc);
 
@@ -549,7 +472,7 @@ void SwDocTest::testModelToViewHelperExpandFieldsHideHideRedlinedExpandFootnoteR
         aModelToViewHelper.getFieldPositions().size());
 }
 
-void SwDocTest::testModelToViewHelperHideInvisibleHideRedlined()
+CPPUNIT_TEST_FIXTURE(SwDocTest, testModelToViewHelperHideInvisibleHideRedlined)
 {
     SwTextNode* pTextNode = getModelToViewTestDocument(m_pDoc);
 
@@ -562,7 +485,7 @@ void SwDocTest::testModelToViewHelperHideInvisibleHideRedlined()
     CPPUNIT_ASSERT_EQUAL(aBuffer, sViewText);
 }
 
-void SwDocTest::testModelToViewHelperExpandFieldsHideInvisibleHideRedlinedExpandFootnote()
+CPPUNIT_TEST_FIXTURE(SwDocTest, testModelToViewHelperExpandFieldsHideInvisibleHideRedlinedExpandFootnote)
 {
     SwTextNode* pTextNode = getModelToViewTestDocument(m_pDoc);
 
@@ -572,7 +495,7 @@ void SwDocTest::testModelToViewHelperExpandFieldsHideInvisibleHideRedlinedExpand
     CPPUNIT_ASSERT_EQUAL(u"AAAACCCCC foo DDDDD"_ustr, sViewText);
 }
 
-void SwDocTest::testModelToViewHelperExpandFieldsHideInvisibleHideRedlinedExpandFootnoteReplaceMode()
+CPPUNIT_TEST_FIXTURE(SwDocTest, testModelToViewHelperExpandFieldsHideInvisibleHideRedlinedExpandFootnoteReplaceMode)
 {
     SwTextNode* pTextNode = getModelToViewTestDocument(m_pDoc);
 
@@ -589,7 +512,7 @@ void SwDocTest::testModelToViewHelperExpandFieldsHideInvisibleHideRedlinedExpand
         aModelToViewHelper.getFieldPositions().size());
 }
 
-void SwDocTest::testModelToViewHelperExpandFieldsExpandFootnote2()
+CPPUNIT_TEST_FIXTURE(SwDocTest, testModelToViewHelperExpandFieldsExpandFootnote2)
 {
     SwTextNode* pTextNode = getModelToViewTestDocument2(m_pDoc);
 
@@ -599,7 +522,7 @@ void SwDocTest::testModelToViewHelperExpandFieldsExpandFootnote2()
     CPPUNIT_ASSERT_EQUAL(u"AAAAABBBBBCCCCC"_ustr, sViewText);
 }
 
-void SwDocTest::testModelToViewHelperExpandFieldsExpandFootnoteReplaceMode2()
+CPPUNIT_TEST_FIXTURE(SwDocTest, testModelToViewHelperExpandFieldsExpandFootnoteReplaceMode2)
 {
     SwTextNode* pTextNode = getModelToViewTestDocument2(m_pDoc);
 
@@ -617,7 +540,7 @@ void SwDocTest::testModelToViewHelperExpandFieldsExpandFootnoteReplaceMode2()
         aModelToViewHelper.getFieldPositions()[0]);
 }
 
-void SwDocTest::testSwScanner()
+CPPUNIT_TEST_FIXTURE(SwDocTest, testSwScanner)
 {
     SwNodeIndex aIdx(m_pDoc->GetNodes().GetEndOfContent(), -1);
     SwPaM aPaM(aIdx);
@@ -1012,7 +935,7 @@ void SwDocTest::testSwScanner()
     }
 }
 
-void SwDocTest::testMergePortionsDeleteNotSorted()
+CPPUNIT_TEST_FIXTURE(SwDocTest, testMergePortionsDeleteNotSorted)
 {
     SwNodeIndex aIdx(m_pDoc->GetNodes().GetEndOfContent(), -1);
     SwPaM aPaM(aIdx);
@@ -1041,7 +964,7 @@ void SwDocTest::testMergePortionsDeleteNotSorted()
 }
 
 //See https://bugs.libreoffice.org/show_bug.cgi?id=40599
-void SwDocTest::testGraphicAnchorDeletion()
+CPPUNIT_TEST_FIXTURE(SwDocTest, testGraphicAnchorDeletion)
 {
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Expected initial 0 count", static_cast<sal_uInt32>(0), m_pDoc->getIDocumentStatistics().GetDocStat().nChar);
 
@@ -1105,7 +1028,7 @@ translitTest(SwDoc & rDoc, const SwPaM & rPaM, TransliterationFlags const nType)
     return rPaM.GetText();
 }
 
-void SwDocTest::testTransliterate()
+CPPUNIT_TEST_FIXTURE(SwDocTest, testTransliterate)
 {
     // just some simple test to see if it's totally broken
     SwNodeIndex aIdx(m_pDoc->GetNodes().GetEndOfContent(), -1);
@@ -1163,7 +1086,7 @@ namespace
 }
 
 //tdf#66353 Expression is faulty
-void SwDocTest::testFormulas()
+CPPUNIT_TEST_FIXTURE(SwDocTest, testFormulas)
 {
     SwNodeIndex aIdx(m_pDoc->GetNodes().GetEndOfContent(), -1);
     SwPosition aPos(aIdx);
@@ -1192,7 +1115,7 @@ void SwDocTest::testFormulas()
     CPPUNIT_ASSERT_EQUAL(sal_Int32(0), val.GetLong());
 }
 
-void SwDocTest::testMarkMove()
+CPPUNIT_TEST_FIXTURE(SwDocTest, testMarkMove)
 {
     IDocumentMarkAccess* pMarksAccess = m_pDoc->getIDocumentMarkAccess();
 
@@ -1343,7 +1266,7 @@ namespace
     };
 }
 
-void SwDocTest::testIntrusiveRing()
+CPPUNIT_TEST_FIXTURE(SwDocTest, testIntrusiveRing)
 {
     TestRing aRing1, aRing2, aRing3, aRing4, aRing5;
     std::vector<TestRing*> vRings
@@ -1455,7 +1378,8 @@ namespace
         }
     };
 }
-void SwDocTest::testClientModify()
+
+CPPUNIT_TEST_FIXTURE(SwDocTest, testClientModify)
 {
     (void) OtherTestClient(); // avoid loplugin:unreffun
     TestModify aMod;
@@ -1555,7 +1479,8 @@ void SwDocTest::testClientModify()
     CPPUNIT_ASSERT_EQUAL(1,aClient1.m_nNotifyCount);
     CPPUNIT_ASSERT_EQUAL(1,aClient2.m_nNotifyCount);
 }
-void SwDocTest::testBroadcastingModify()
+
+CPPUNIT_TEST_FIXTURE(SwDocTest, testBroadcastingModify)
 {
     sw::BroadcastingModify aMod;
     TestClient aClient;
@@ -1569,7 +1494,7 @@ void SwDocTest::testBroadcastingModify()
     CPPUNIT_ASSERT_EQUAL(1,aClient.m_nModifyCount);
     CPPUNIT_ASSERT_EQUAL(1,aListener.m_nNotifyCount);
 }
-void SwDocTest::testWriterMultiListener()
+CPPUNIT_TEST_FIXTURE(SwDocTest, testWriterMultiListener)
 {
     TestModify aMod;
     TestClient aClient;
@@ -1594,7 +1519,7 @@ void SwDocTest::testWriterMultiListener()
     CPPUNIT_ASSERT_EQUAL(static_cast<const SwModify*>(&aMod),aClient.m_pLastChangedModify);
 }
 
-void SwDocTest::test64kPageDescs()
+CPPUNIT_TEST_FIXTURE(SwDocTest, test64kPageDescs)
 {
     size_t nPageDescCount = 65536; // USHRT_MAX + 1
 
@@ -1641,12 +1566,12 @@ void SwDocTest::test64kPageDescs()
     CPPUNIT_ASSERT_EQUAL( static_cast<size_t>(0), nPos );
 }
 
-void SwDocTest::testTdf92308()
+CPPUNIT_TEST_FIXTURE(SwDocTest, testTdf92308)
 {
     CPPUNIT_ASSERT_EQUAL(false, m_pDoc->HasInvisibleContent());
 }
 
-void SwDocTest::testTableCellComparison()
+CPPUNIT_TEST_FIXTURE(SwDocTest, testTableCellComparison)
 {
     CPPUNIT_ASSERT_EQUAL( -1, sw_CompareCellsByColFirst(u"A1", u"Z1") );
     CPPUNIT_ASSERT_EQUAL( +1, sw_CompareCellsByColFirst(u"Z1", u"A1") );
@@ -1722,7 +1647,7 @@ void SwDocTest::tearDown()
     BootstrapFixture::tearDown();
 }
 
-void SwDocTest::testFillRubyList()
+CPPUNIT_TEST_FIXTURE(SwDocTest, testFillRubyList)
 {
     SwNodeIndex aIdx(m_pDoc->GetNodes().GetEndOfContent(), -1);
     SwPaM aPaM(aIdx);
@@ -1946,7 +1871,7 @@ void SwDocTest::testFillRubyList()
     }
 }
 
-void SwDocTest::testSetRubyList()
+CPPUNIT_TEST_FIXTURE(SwDocTest, testSetRubyList)
 {
     SwNodeIndex aIdx(m_pDoc->GetNodes().GetEndOfContent(), -1);
     SwPaM aPaM(aIdx);
@@ -2385,8 +2310,6 @@ void SwDocTest::testSetRubyList()
                              fnGetCombinedString());
     }
 }
-
-CPPUNIT_TEST_SUITE_REGISTRATION(SwDocTest);
 
 CPPUNIT_PLUGIN_IMPLEMENT();
 
