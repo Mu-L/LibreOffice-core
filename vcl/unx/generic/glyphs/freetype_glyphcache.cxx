@@ -308,13 +308,10 @@ void FreetypeManager::AnnounceFonts( vcl::font::PhysicalFontCollection* pToAdd )
     }
 }
 
-FreetypeFont* FreetypeManager::CreateFont(FreetypeFontInstance* pFontInstance)
+FreetypeFont* FreetypeManager::CreateFont(FreetypeFontInstance& rFontInstance)
 {
     // find a FontInfo matching to the font id
-    if (!pFontInstance)
-        return nullptr;
-
-    const vcl::font::PhysicalFontFace* pFontFace = pFontInstance->GetFontFace();
+    const vcl::font::PhysicalFontFace* pFontFace = rFontInstance.GetFontFace();
     if (!pFontFace)
         return nullptr;
 
@@ -324,7 +321,7 @@ FreetypeFont* FreetypeManager::CreateFont(FreetypeFontInstance* pFontInstance)
     if (it == m_aFontInfoList.end())
         return nullptr;
 
-    return new FreetypeFont(*pFontInstance, it->second);
+    return new FreetypeFont(rFontInstance, it->second);
 }
 
 FreetypeFontFace::FreetypeFontFace( FreetypeFontInfo* pFI, const FontAttributes& rDFA )

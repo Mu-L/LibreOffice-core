@@ -89,7 +89,7 @@ public:
 
     void                    ClearFontCache();
 
-    SAL_DLLPRIVATE FreetypeFont* CreateFont(FreetypeFontInstance* pLogicalFont);
+    SAL_DLLPRIVATE FreetypeFont* CreateFont(FreetypeFontInstance& rLogicalFont);
 
 private:
     // to access the constructor

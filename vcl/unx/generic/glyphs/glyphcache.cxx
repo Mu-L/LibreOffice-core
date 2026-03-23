@@ -67,7 +67,7 @@ FreetypeFontFile* FreetypeManager::FindFontFile(const OString& rNativeFileName)
 
 FreetypeFontInstance::FreetypeFontInstance(const vcl::font::PhysicalFontFace& rPFF, const vcl::font::FontSelectPattern& rFSP)
     : LogicalFontInstance(rPFF, rFSP)
-    , mxFreetypeFont(FreetypeManager::get().CreateFont(this))
+    , mxFreetypeFont(FreetypeManager::get().CreateFont(*this))
 {
 }
 
