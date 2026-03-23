@@ -685,11 +685,6 @@ CPPUNIT_TEST_FIXTURE(Test, testMultiSelectionTextSelectionCallback)
     // Without the fix in place, this test would have failed, only the non-range "after B" selection
     // was part of the payload.
     CPPUNIT_ASSERT(!aPayload->isEmpty());
-
-    // Tear down LOK:
-    mxComponent->dispose();
-    mxComponent.clear();
-    comphelper::LibreOfficeKit::setActive(false);
 }
 
 CPPUNIT_PLUGIN_IMPLEMENT();
