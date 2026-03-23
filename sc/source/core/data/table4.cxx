@@ -65,7 +65,7 @@ namespace {
 
 enum HeadNoneTail
 {
-    // The code relies on "head" less than zero ("none"), and "tail" greater then zero
+    // The code relies on "head" less than zero ("none"), and "tail" greater than zero
     NumHead = -1,
     NumNone = 0,
     NumTail = 1,
