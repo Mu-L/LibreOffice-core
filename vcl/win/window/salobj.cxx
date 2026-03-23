@@ -68,23 +68,19 @@ WinSalObject* ImplFindSalObject( HWND hWndChild )
 
 static WinSalFrame* ImplFindSalObjectFrame( HWND hWnd )
 {
-    WinSalFrame* pFrame = nullptr;
     WinSalObject* pObject = ImplFindSalObject( hWnd );
     if ( pObject )
     {
         // find matching frame
         HWND hWnd2 = ::GetParent( pObject->mhWnd );
-        pFrame = GetSalData()->mpFirstFrame;
-        while ( pFrame )
+        for (WinSalFrame* pFrame : GetSalData()->maFrames)
         {
             if ( pFrame->mhWnd == hWnd2 )
-                break;
-
-            pFrame = pFrame->mpNextFrame;
+                return pFrame;
         }
     }
 
-    return pFrame;
+    return nullptr;
 }
 
 static LRESULT CALLBACK SalSysMsgProc( int nCode, WPARAM wParam, LPARAM lParam )

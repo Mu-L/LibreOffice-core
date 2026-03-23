@@ -34,6 +34,7 @@
 #include <win/wincomp.hxx>
 
 #include <set>
+#include <list>
 #include <map>
 #include <unordered_map>
 
@@ -97,7 +98,7 @@ public:
     int                     mnCmdShow;              // default frame show style
     HHOOK                   mhSalObjMsgHook;        // hook to get interesting msg for SalObject
     HWND                    mhWantLeaveMsg;         // window handle, that want a MOUSELEAVE message
-    WinSalFrame*            mpFirstFrame;           // pointer of first frame
+    std::list<WinSalFrame*> maFrames; // frames
     WinSalObject*           mpFirstObject;          // pointer of first object window
     WinSalVirtualDevice*    mpFirstVD;              // first VirDev
     WinSalPrinter*          mpFirstPrinter;         // first printing printer

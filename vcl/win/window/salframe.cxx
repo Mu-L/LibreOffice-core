@@ -903,7 +903,7 @@ WinSalFrame::WinSalFrame()
     maFirstPanGesturePt = POINT(0,0);
 
     // get data, when making 1st frame
-    if ( !pSalData->mpFirstFrame )
+    if (pSalData->maFrames.empty())
     {
         if ( !aSalShlData.mnWheelScrollLines )
             aSalShlData.mnWheelScrollLines = ImplSalGetWheelScrollLines();
@@ -912,8 +912,7 @@ WinSalFrame::WinSalFrame()
     }
 
     // insert frame in framelist
-    mpNextFrame = pSalData->mpFirstFrame;
-    pSalData->mpFirstFrame = this;
+    pSalData->maFrames.insert(pSalData->maFrames.begin(), this);
 }
 
 void WinSalFrame::updateScreenNumber()
@@ -946,11 +945,7 @@ WinSalFrame::~WinSalFrame()
         delete [] reinterpret_cast<BYTE*>(mpClipRgnData);
 
     // remove frame from framelist
-    WinSalFrame** ppFrame = &pSalData->mpFirstFrame;
-    for(; (*ppFrame != this) && *ppFrame; ppFrame = &(*ppFrame)->mpNextFrame );
-    if( *ppFrame )
-        *ppFrame = mpNextFrame;
-    mpNextFrame = nullptr;
+    pSalData->maFrames.remove(this);
 
     // destroy the SalGraphics
     if (mpGraphics)
@@ -1421,13 +1416,11 @@ void WinSalFrame::ImplSetParentFrame( HWND hNewParentWnd, bool bAsChild )
     ::std::vector< WinSalObject* > systemChildren;
 
     // search child windows
-    WinSalFrame *pFrame = pSalData->mpFirstFrame;
-    while( pFrame )
+    for (WinSalFrame* pFrame : pSalData->maFrames)
     {
         HWND hWndParent = ::GetParent( pFrame->mhWnd );
         if( mhWnd == hWndParent )
             children.push_back( pFrame );
-        pFrame = pFrame->mpNextFrame;
     }
 
     // search system child windows (plugins etc.)

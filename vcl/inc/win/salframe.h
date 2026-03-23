@@ -41,7 +41,6 @@ public:
     HCURSOR                 mhCursor;               // cursor handle
     HIMC                    mhDefIMEContext;        // default IME-Context
     WinSalGraphics*         mpGraphics;             // current main thread frame graphics
-    WinSalFrame*            mpNextFrame;            // pointer to next frame
     HMENU                   mSelectedhMenu;         // the menu where highlighting is currently going on
     HMENU                   mLastActivatedhMenu;    // the menu that was most recently opened
     SystemEnvData           maSysData;              // system data
