@@ -71,7 +71,7 @@ public:
     SmFace & operator = (const SmFace &rFace);
 };
 
-SmFace & operator *= (SmFace &rFace, const Fraction &rFrac);
+SmFace & operator *= (SmFace &rFace, double fFrac);
 
 
 // SmFontPickList
