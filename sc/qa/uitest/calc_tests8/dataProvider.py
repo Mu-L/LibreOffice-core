@@ -12,8 +12,6 @@ from uitest.uihelper.common import get_state_as_dict, get_url_for_data_file, sel
 from libreoffice.uno.propertyvalue import mkPropertyValues
 from libreoffice.calc.document import get_cell_by_position
 from org.libreoffice.unotest import systemPathToFileUrl
-from libreoffice.calc.document import get_cell_by_position
-from libreoffice.uno.propertyvalue import mkPropertyValues
 from tempfile import TemporaryDirectory
 
 import os
