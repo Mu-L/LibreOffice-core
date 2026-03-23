@@ -887,7 +887,7 @@
                                           <object class="GtkToggleToolButton" id="vertcenteralign">
                                             <property name="visible">True</property>
                                             <property name="can-focus">False</property>
-                                            <property name="tooltip-text" translatable="yes" context="vertcenteralign|tooltip-text">Center Verticaly</property>
+                                            <property name="tooltip-text" translatable="yes" context="vertcenteralign|tooltip-text">Center Vertically</property>
                                             <property name="label" translatable="yes" context="vertcenteralign|label">Align Center</property>
                                             <property name="use-underline">True</property>
                                             <property name="icon-name">cmd/lc_alignverticalcenter.png</property>

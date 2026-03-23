@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.38.2 -->
+<!-- Generated with glade 3.40.0 -->
 <interface domain="cui">
   <requires lib="gtk+" version="3.24"/>
   <object class="GtkListStore" id="liststore1">
@@ -176,7 +176,7 @@
                 </child>
                 <child internal-child="accessible">
                   <object class="AtkObject" id="asianlanguage-atkobject">
-                    <property name="AtkObject::accessible-description" translatable="yes" context="extended_tip|asianlanguage">Specifies the language used for the spellcheck function in Asian alphabets.</property>
+                    <property name="AtkObject::accessible-description" translatable="yes" context="extended_tip|asianlanguage">Specifies the Asian language used for the spellcheck function.</property>
                   </object>
                 </child>
               </object>
