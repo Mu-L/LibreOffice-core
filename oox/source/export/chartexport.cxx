@@ -3967,7 +3967,13 @@ void ChartExport::exportSeries_chartex( const Reference<chart2::XChartType>& xCh
                 rSeries, getModel() );
             if( xOldPropSet.is() )
             {
-                exportShapeProps( xOldPropSet, XML_cx );
+                bool bHasExplicitFill = false;
+                xOldPropSet->getPropertyValue(u"HasExplicitFill"_ustr) >>= bHasExplicitFill;
+
+                if (bHasExplicitFill)
+                {
+                    exportShapeProps( xOldPropSet, XML_cx );
+                }
             }
 
             DataLabelsRange aDLblsRange;

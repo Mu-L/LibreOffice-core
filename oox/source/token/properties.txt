@@ -252,6 +252,7 @@ HScroll
 Handles
 HasAutoShowInfo
 HasColumnRowHeaders
+HasExplicitFill
 HasHorizontalScrollBar
 HasLayoutInfo
 HasMainTitle

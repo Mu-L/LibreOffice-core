@@ -87,6 +87,12 @@ void DataSeriesProperties::AddPropertiesToVector(
                   beans::PropertyAttribute::BOUND
                   | beans::PropertyAttribute::MAYBEVOID );
 
+    rOutProperties.emplace_back( "HasExplicitFill",
+                  PROP_DATASERIES_HAS_EXPLICIT_FILL,
+                  cppu::UnoType<sal_Bool>::get(),
+                  beans::PropertyAttribute::BOUND
+                  | beans::PropertyAttribute::MAYBEVOID );
+
     // add properties of service DataPointProperties
     DataPointProperties::AddPropertiesToVector( rOutProperties );
 }
@@ -100,6 +106,7 @@ void DataSeriesProperties::AddDefaultsToMap(
     PropertyHelper::setPropertyValueDefault( rOutMap, PROP_DATASERIES_SHOW_LEGEND_ENTRY, true );
     PropertyHelper::setPropertyValueDefault( rOutMap, PROP_DATASERIES_SHOW_CUSTOM_LEADERLINES, true );
     PropertyHelper::setPropertyValueDefault( rOutMap, PROP_DATASERIES_INVERT_NEGATIVE, false );
+    PropertyHelper::setPropertyValueDefault( rOutMap, PROP_DATASERIES_HAS_EXPLICIT_FILL, false );
 
     // PROP_DATASERIES_ATTRIBUTED_DATA_POINTS has no default
 
