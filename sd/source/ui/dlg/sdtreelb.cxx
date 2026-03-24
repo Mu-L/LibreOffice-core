@@ -1208,7 +1208,7 @@ bool SdPageObjsTLV::PageBelongsToCurrentShow(const SdPage* pPage) const
         SdCustomShowList* pShowList = const_cast<SdDrawDocument*>(m_pDoc)->GetCustomShowList();
         if (pShowList != nullptr)
         {
-            sal_uLong nCurrentShowIndex = pShowList->GetCurPos();
+            sal_uInt16 nCurrentShowIndex = pShowList->GetCurPos();
             pCustomShow = (*pShowList)[nCurrentShowIndex].get();
         }
 
