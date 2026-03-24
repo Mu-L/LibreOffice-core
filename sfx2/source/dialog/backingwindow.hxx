@@ -106,6 +106,7 @@ class BackingWindow : public InterimItemWindow
     DECL_LINK(OpenTemplateHdl, const OUString&, void);
     DECL_LINK(EditTemplateHdl, const OUString&, void);
     DECL_LINK(ResizeHdl, const Size&, void);
+    DECL_STATIC_LINK(BackingWindow, MouseReleaseHdl, const MouseEvent&, bool);
 
     void initControls();
 
@@ -119,6 +120,7 @@ class BackingWindow : public InterimItemWindow
     void ApplyStyleSettings();
 
 private:
+    long nRand;
     void applyFilter();
 
 public:

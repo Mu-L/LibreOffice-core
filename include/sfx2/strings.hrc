@@ -391,10 +391,6 @@
 #define STR_QUERY_CLR_UNAVAILABLE_DOCS_TEXT     NC_("STR_QUERY_CLR_UNAVAILABLE_DOCS_TEXT", "This action is irreversible.")
 #define STR_QUERY_CLR_UNAVAILABLE_DOCS_QUESTION NC_("STR_QUERY_CLR_UNAVAILABLE_DOCS_QUESTION", "Do you want to clear all unavailable Documents?")
 
-#define STR_DONATIONBANNER                      NC_("STR_DONATIONBANNER", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum consequat mi quis pretium semper. Proin luctus orci ac neque venenatis, quis commodo dolor posuere.")
-#define DONATIONBANNER_HEIGHT                   0.25 // banner height as percentage of the app height
-#define DONATIONBANNER_FREQ                     1   // frequency of days to show the banner; 1 = every start
-
 #endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
