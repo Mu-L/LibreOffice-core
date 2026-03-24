@@ -379,6 +379,8 @@ public:
     void setDiagaramExport(bool bNew) { mbDiagaramExport = bNew; }
     bool isDiagaramExport() const { return mbDiagaramExport;}
 
+    void SetParent(const css::uno::Reference<css::drawing::XShape>& xShape) { m_xParent = xShape; }
+
     void SetBackgroundDark(bool bIsDark) { mbIsBackgroundDark = bIsDark; }
     /// If bRelPathToMedia is true add "../" to image folder path while adding the image relationship
     OOX_DLLPUBLIC OUString writeGraphicToStorage(const Graphic &rGraphic , bool bRelPathToMedia = false, GraphicExport::TypeHint eHint = GraphicExport::TypeHint::Detect);
