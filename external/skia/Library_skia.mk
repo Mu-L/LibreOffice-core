@@ -258,13 +258,13 @@ $(eval $(call gb_Library_add_generated_exception_objects,skia,\
 ))
 else ifeq ($(OS),MACOSX)
 $(eval $(call gb_Library_add_generated_exception_objects,skia,\
-    UnpackedTarball/skia/src/ports/SkDebug_stdio \
+    UnpackedTarball/skia/src/ports/SkLog_stdio \
     UnpackedTarball/skia/src/ports/SkImageGeneratorCG \
     UnpackedTarball/skia/src/ports/SkOSFile_posix \
 ))
 else
 $(eval $(call gb_Library_add_generated_exception_objects,skia,\
-    UnpackedTarball/skia/src/ports/SkDebug_stdio \
+    UnpackedTarball/skia/src/ports/SkLog_stdio \
     UnpackedTarball/skia/src/ports/SkOSFile_posix \
 ))
 endif
@@ -926,6 +926,7 @@ $(eval $(call gb_Library_add_generated_exception_objects,skia,\
     UnpackedTarball/skia/src/gpu/ganesh/Device_drawTexture \
     UnpackedTarball/skia/src/gpu/ganesh/GrAHardwareBufferImageGenerator \
     UnpackedTarball/skia/src/gpu/ganesh/GrAHardwareBufferUtils \
+    UnpackedTarball/skia/src/gpu/ganesh/GrAtlasTypes \
     UnpackedTarball/skia/src/gpu/ganesh/GrAttachment \
     UnpackedTarball/skia/src/gpu/ganesh/GrAuditTrail \
     UnpackedTarball/skia/src/gpu/ganesh/GrBackendSemaphore \
@@ -1067,7 +1068,6 @@ $(eval $(call gb_Library_add_generated_exception_objects,skia,\
     UnpackedTarball/skia/src/gpu/ganesh/gradients/GrGradientBitmapCache \
     UnpackedTarball/skia/src/gpu/ganesh/gradients/GrGradientShader \
     UnpackedTarball/skia/src/gpu/ganesh/image/GrImageUtils \
-    UnpackedTarball/skia/src/gpu/ganesh/image/GrMippedBitmap \
     UnpackedTarball/skia/src/gpu/ganesh/image/GrTextureGenerator \
     UnpackedTarball/skia/src/gpu/ganesh/image/SkImage_Ganesh \
     UnpackedTarball/skia/src/gpu/ganesh/image/SkImage_GaneshBase \
@@ -1124,8 +1124,9 @@ $(eval $(call gb_Library_add_generated_exception_objects,skia,\
     UnpackedTarball/skia/src/gpu/ganesh/tessellate/GrTessellationShader \
     UnpackedTarball/skia/src/gpu/ganesh/tessellate/PathTessellator \
     UnpackedTarball/skia/src/gpu/ganesh/tessellate/StrokeTessellator \
-    UnpackedTarball/skia/src/gpu/ganesh/text/GaneshVertexFiller \
+    UnpackedTarball/skia/src/gpu/ganesh/text/GlyphData \
     UnpackedTarball/skia/src/gpu/ganesh/text/GrAtlasManager \
+    UnpackedTarball/skia/src/gpu/ganesh/text/TextStrike \
 ))
 endif
 
@@ -1133,7 +1134,6 @@ endif
 #
 ifneq ($(SKIA_GPU),)
 $(eval $(call gb_Library_add_generated_exception_objects,skia,\
-    UnpackedTarball/skia/src/gpu/AtlasTypes \
     UnpackedTarball/skia/src/gpu/Blend \
     UnpackedTarball/skia/src/gpu/BlendFormula \
     UnpackedTarball/skia/src/gpu/BlurUtils \
@@ -1293,11 +1293,6 @@ $(eval $(call gb_Library_add_generated_exception_objects,skia,\
 ))
 endif
 
-
-# I need these, but they dont appear anywhere in the *.gn* build files?
-$(eval $(call gb_Library_add_generated_exception_objects,skia,\
-    UnpackedTarball/skia/src/ports/SkImageGenerator_none \
-))
 ifeq ($(OS),MACOSX)
 ifeq ($(SKIA_GPU),METAL)
 $(eval $(call gb_Library_add_generated_objcxxobjects,skia,\
