@@ -25,7 +25,7 @@ ScGoalSeekTest::ScGoalSeekTest()
 {
 }
 
-CPPUNIT_TEST_FIXTURE(ScGoalSeekTest, testTdf161511)
+CPPUNIT_TEST_FIXTURE(ScGoalSeekTest, testTdf161511_GoalSeek_on_blank_document)
 {
     createScDoc();
 
@@ -47,7 +47,7 @@ CPPUNIT_TEST_FIXTURE(ScGoalSeekTest, testTdf161511)
     CPPUNIT_ASSERT_EQUAL(DBL_MAX, res.Divergence);
 }
 
-CPPUNIT_TEST_FIXTURE(ScGoalSeekTest, testTdf37341)
+CPPUNIT_TEST_FIXTURE(ScGoalSeekTest, testTdf37341_GoalSeek_long_formula_chain)
 {
     createScDoc("ods/tdf37341.ods");
 
@@ -72,7 +72,7 @@ CPPUNIT_TEST_FIXTURE(ScGoalSeekTest, testTdf37341)
     CPPUNIT_ASSERT_EQUAL(DBL_MAX, res.Divergence);
 }
 
-CPPUNIT_TEST_FIXTURE(ScGoalSeekTest, testTdf68034)
+CPPUNIT_TEST_FIXTURE(ScGoalSeekTest, testTdf68034_GoalSeek_empty_variable_cell)
 {
     createScDoc();
 
@@ -98,7 +98,7 @@ CPPUNIT_TEST_FIXTURE(ScGoalSeekTest, testTdf68034)
     CPPUNIT_ASSERT_EQUAL(0.0, res.Divergence);
 }
 
-CPPUNIT_TEST_FIXTURE(ScGoalSeekTest, testTdf161616)
+CPPUNIT_TEST_FIXTURE(ScGoalSeekTest, testTdf161616_GoalSeek_no_error_set_upon_failure)
 {
     createScDoc();
 
