@@ -785,7 +785,7 @@ bool SvTreeListBox::IsExpanded(SvTreeListEntry* pEntry) const
 
 bool SvTreeListBox::IsAllExpanded(SvTreeListEntry* pEntry) const
 {
-    DBG_ASSERT(pEntry, "IsAllExpanded:No Entry");
+    assert(pEntry && "IsAllExpanded:No Entry");
     if (!IsExpanded(pEntry))
         return false;
     const SvTreeListEntries& rChildren = pEntry->GetChildEntries();
