@@ -479,6 +479,8 @@ add
 additionalCharacteristics
 additive
 addlxml
+address
+address1
 addressBook
 addressFieldName
 adec
@@ -489,6 +491,8 @@ adjustColumnWidth
 adjustLineHeightInTable
 adjustRightInd
 adjusthandles
+adminDistrict1
+adminDistrict2
 administrators
 advAuto
 advClick
@@ -694,6 +698,7 @@ attr
 attrName
 attrNameLst
 attribute
+attribution
 audio
 audioCd
 audioFile
@@ -884,6 +889,7 @@ bilevel
 billions
 binCount
 binSize
+binary
 binning
 birds
 birdsFlight
@@ -1444,6 +1450,8 @@ coordorigin
 coordsize
 copies
 copy
+copyright
+copyrights
 coral
 coreProperties
 corner
@@ -1457,6 +1465,7 @@ countASubtotal
 countBy
 countNums
 countSubtotal
+countryRegion
 couponCutoutDashes
 couponCutoutDots
 cover
@@ -1515,6 +1524,8 @@ ctrlPr
 cube
 cubicBezTo
 culture
+cultureLanguage
+cultureRegion
 cup
 curly
 current
@@ -2069,6 +2080,7 @@ eachPage
 eachSect
 earth1
 earth2
+east
 eastAsia
 eastAsiaTheme
 eastAsianLayout
@@ -2161,6 +2173,9 @@ entr
 entries
 entry
 entryMacro
+entityId
+entityName
+entityType
 envelopes
 eol
 eq
@@ -2523,6 +2538,33 @@ gear6
 gear9
 gems
 general
+geoCache
+geoChildEntities
+geoChildEntitiesQuery
+geoChildEntitiesQueryResult
+geoChildEntitiesQueryResults
+geoChildTypes
+geoData
+geoDataEntityQuery
+geoDataEntityQueryResult
+geoDataEntityQueryResults
+geoDataPointQuery
+geoDataPointToEntityQuery
+geoDataPointToEntityQueryResult
+geoDataPointToEntityQueryResults
+geoEntity
+geoHierarchyEntity
+geoLocation
+geoLocationQuery
+geoLocationQueryResult
+geoLocationQueryResults
+geoLocations
+geoParentEntitiesQuery
+geoParentEntitiesQueryResult
+geoParentEntitiesQueryResults
+geoParentEntity
+geoPolygon
+geoPolygons
 geography
 gfxdata
 ghostCol
@@ -2949,6 +2991,7 @@ isLgl
 isNarration
 isPhoto
 iscomment
+isoCountryCode
 isometricBottomDown
 isometricBottomUp
 isometricLeftDown
@@ -3056,6 +3099,7 @@ lat
 latentStyles
 latin
 latinLnBrk
+latitude
 lavender
 lavenderBlush
 lawnGreen
@@ -3246,6 +3290,7 @@ local
 localConnection
 localRefresh
 localSheetId
+locality
 location
 lock
 lockRevision
@@ -3260,6 +3305,7 @@ log
 logBase
 lon
 long
+longitude
 longCurve
 longFileNames
 longText
@@ -3673,6 +3719,7 @@ normal
 normalViewPr
 normalizeH
 normalizedString
+north
 northwest
 notBeside
 notBetween
@@ -3713,6 +3760,7 @@ numIdMacAtCleanup
 numLit
 numPicBullet
 numPicBulletId
+numPoints
 numPr
 numRef
 numRestart
@@ -3977,6 +4025,7 @@ pattFill
 pattern
 patternFill
 patternType
+pcaRings
 pct
 pct10
 pct12
@@ -4127,6 +4176,7 @@ points
 polar
 poly
 polyline
+polygonId
 portrait
 pos
 posEven
@@ -4139,6 +4189,7 @@ positiveInteger
 post
 postSp
 postageStamp
+postalCode
 powder
 powderBlue
 power
@@ -4203,6 +4254,7 @@ product
 productSubtotal
 progId
 progress
+projectionType
 prompt
 promptTitle
 promptedSolutions
@@ -4217,6 +4269,7 @@ protectedRange
 protectedRanges
 protection
 provid
+provider
 proxy
 prst
 prstClr
@@ -4945,6 +4998,7 @@ sourceObject
 sourceRef
 sourceSheetId
 sourceType
+south
 southwest
 sp
 sp3d
@@ -5786,6 +5840,7 @@ view3D
 viewMergedData
 viewPr
 viewpoint
+viewedRegionType
 viewpointorigin
 vine
 violet
@@ -5855,6 +5910,7 @@ wedgeEllipseCallout
 wedgeRectCallout
 wedgeRoundRectCallout
 weight
+west
 wgp
 wheat
 wheel
