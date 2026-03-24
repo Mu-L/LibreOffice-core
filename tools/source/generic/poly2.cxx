@@ -248,15 +248,15 @@ void PolyPolygon::Move( tools::Long nHorzMove, tools::Long nVertMove )
 void PolyPolygon::Translate( const Point& rTrans )
 {
     // move points
-    for ( sal_uInt16 i = 0, nCount = mpImplPolyPolygon->mvPolyAry.size(); i < nCount; i++ )
-        mpImplPolyPolygon->mvPolyAry[ i ].Translate( rTrans );
+    for ( auto& rPolyAryItem : mpImplPolyPolygon->mvPolyAry )
+        rPolyAryItem.Translate( rTrans );
 }
 
 void PolyPolygon::Scale( double fScaleX, double fScaleY )
 {
     // Move points
-    for ( sal_uInt16 i = 0, nCount = mpImplPolyPolygon->mvPolyAry.size(); i < nCount; i++ )
-        mpImplPolyPolygon->mvPolyAry[ i ].Scale( fScaleX, fScaleY );
+    for ( auto& rPolyAryItem : mpImplPolyPolygon->mvPolyAry )
+        rPolyAryItem.Scale( fScaleX, fScaleY );
 }
 
 void PolyPolygon::Rotate( const Point& rCenter, Degree10 nAngle10 )
@@ -273,8 +273,8 @@ void PolyPolygon::Rotate( const Point& rCenter, Degree10 nAngle10 )
 void PolyPolygon::Rotate( const Point& rCenter, double fSin, double fCos )
 {
     // move points
-    for ( sal_uInt16 i = 0, nCount = mpImplPolyPolygon->mvPolyAry.size(); i < nCount; i++ )
-        mpImplPolyPolygon->mvPolyAry[ i ].Rotate( rCenter, fSin, fCos );
+    for ( auto& rPolyAryItem : mpImplPolyPolygon->mvPolyAry )
+        rPolyAryItem.Rotate( rCenter, fSin, fCos );
 }
 
 void PolyPolygon::Clip( const tools::Rectangle& rRect )
