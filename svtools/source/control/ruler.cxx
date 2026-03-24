@@ -2453,8 +2453,8 @@ void Ruler::SetZoom( double fNewZoom )
     if ( maZoom != fNewZoom )
     {
         maZoom = fNewZoom;
-        maMapMode.SetScaleX( Fraction(maZoom) );
-        maMapMode.SetScaleY( Fraction(maZoom) );
+        maMapMode.SetScaleX( maZoom );
+        maMapMode.SetScaleY( maZoom );
         ImplUpdate();
     }
 }

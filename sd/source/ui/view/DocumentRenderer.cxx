@@ -1920,8 +1920,8 @@ private:
     {
         MapMode aMap (rInfo.maMap);
         Point aPageOfs (rInfo.mpPrinter->GetPageOffset() );
-        aMap.SetScaleX(Fraction(1,2));
-        aMap.SetScaleY(Fraction(1,2));
+        aMap.SetScaleX(0.5);
+        aMap.SetScaleY(0.5);
         mpPrinter->SetMapMode(aMap);
 
         ::tools::Rectangle aOutRect(aPageOfs, rInfo.mpPrinter->GetOutputSize());
@@ -2319,8 +2319,8 @@ private:
         }
 
         MapMode aMap (rInfo.maMap);
-        aMap.SetScaleX( Fraction( aPageSize_2.Width(), rInfo.maPageSize.Width() ) );
-        aMap.SetScaleY( Fraction( aPageSize_2.Height(), rInfo.maPageSize.Height() ) );
+        aMap.SetScaleX( double(aPageSize_2.Width()) / rInfo.maPageSize.Width() );
+        aMap.SetScaleY( double(aPageSize_2.Height()) / rInfo.maPageSize.Height() );
 
         // calculate adjusted print size
         const Size aAdjustedPrintSize (OutputDevice::LogicToLogic(

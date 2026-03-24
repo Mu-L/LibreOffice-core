@@ -228,8 +228,8 @@ Graphic DocumentToGraphicRenderer::renderToGraphic(
 
     pOutputDev->SetAntialiasing(pOutputDev->GetAntialiasing() | AntialiasingFlags::Enable);
     MapMode mm = pOutputDev->GetMapMode();
-    mm.SetScaleX( Fraction(fScaleX) );
-    mm.SetScaleY( Fraction(fScaleY) );
+    mm.SetScaleX( fScaleX );
+    mm.SetScaleY( fScaleY );
     pOutputDev->SetMapMode( mm );
 
     aMtf.Record( pOutputDev );
