@@ -375,7 +375,7 @@ IMPL_LINK_NOARG(AnimationWindow, ClickRbtHdl, weld::Toggleable&, void)
     }
     else if (m_xRbtBitmap->get_active())
     {
-        sal_uLong n = m_xNumFldBitmap->get_value();
+        sal_uInt64 n = m_xNumFldBitmap->get_value();
         if( n > 0 )
         {
             ::tools::Time const & rTime = m_FrameList[n - 1].second;
