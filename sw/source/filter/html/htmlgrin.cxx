@@ -235,9 +235,11 @@ void SwHTMLParser::SetAnchorAndAdjustment( sal_Int16 eVertOri,
 
             if( nUpper )
             {
-                NewAttr(m_xAttrTab, &m_xAttrTab->pULSpace, SvxULSpaceItem(0, nLower, RES_UL_SPACE));
-                m_aParaAttrs.push_back( m_xAttrTab->pULSpace );
-                EndAttr( m_xAttrTab->pULSpace, false );
+                if (NewAttr(m_xAttrTab, &m_xAttrTab->pULSpace, SvxULSpaceItem(0, nLower, RES_UL_SPACE)))
+                {
+                    m_aParaAttrs.push_back( m_xAttrTab->pULSpace );
+                    EndAttr( m_xAttrTab->pULSpace, false );
+                }
             }
         }
 

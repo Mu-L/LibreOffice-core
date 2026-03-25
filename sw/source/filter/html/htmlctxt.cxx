@@ -564,10 +564,11 @@ void SwHTMLParser::InsertAttrs( SfxItemSet &rItemSet,
         // We only set the DropCap attribute if the initial spans multiple lines
         if( aDrop.GetLines() > 1 )
         {
-            NewAttr(m_xAttrTab, &m_xAttrTab->pDropCap, aDrop);
-
-            HTMLAttrs &rAttrs = pContext->GetAttrs();
-            rAttrs.push_back( m_xAttrTab->pDropCap );
+            if (NewAttr(m_xAttrTab, &m_xAttrTab->pDropCap, aDrop))
+            {
+                HTMLAttrs &rAttrs = pContext->GetAttrs();
+                rAttrs.push_back( m_xAttrTab->pDropCap );
+            }
 
             return;
         }
@@ -661,16 +662,16 @@ void SwHTMLParser::InsertAttrs( SfxItemSet &rItemSet,
                 // Set the attribute on the current paragraph
                 SvxFirstLineIndentItem firstLine(SvxIndentValue::twips(nIndent),
                                                  RES_MARGIN_FIRSTLINE);
-                NewAttr(m_xAttrTab, &m_xAttrTab->pFirstLineIndent, firstLine);
-                EndAttr(m_xAttrTab->pFirstLineIndent, false);
+                if (NewAttr(m_xAttrTab, &m_xAttrTab->pFirstLineIndent, firstLine))
+                    EndAttr(m_xAttrTab->pFirstLineIndent, false);
                 SvxTextLeftMarginItem const leftMargin(SvxIndentValue::twips(nLeft),
                                                        RES_MARGIN_TEXTLEFT);
-                NewAttr(m_xAttrTab, &m_xAttrTab->pTextLeftMargin, leftMargin);
-                EndAttr(m_xAttrTab->pTextLeftMargin, false);
+                if (NewAttr(m_xAttrTab, &m_xAttrTab->pTextLeftMargin, leftMargin))
+                    EndAttr(m_xAttrTab->pTextLeftMargin, false);
                 SvxRightMarginItem const rightMargin(SvxIndentValue::twips(nRight),
                                                      RES_MARGIN_RIGHT);
-                NewAttr(m_xAttrTab, &m_xAttrTab->pRightMargin, rightMargin);
-                EndAttr(m_xAttrTab->pRightMargin, false);
+                if (NewAttr(m_xAttrTab, &m_xAttrTab->pRightMargin, rightMargin))
+                    EndAttr(m_xAttrTab->pRightMargin, false);
             }
 #endif
 
@@ -693,11 +694,12 @@ void SwHTMLParser::InsertAttrs( SfxItemSet &rItemSet,
                 if( !rPropInfo.m_bBottomMargin )
                     aULSpace.SetLower( nLower );
 
-                NewAttr(m_xAttrTab, &m_xAttrTab->pULSpace, aULSpace);
-
-                // save context information
-                HTMLAttrs &rAttrs = pContext->GetAttrs();
-                rAttrs.push_back( m_xAttrTab->pULSpace );
+                if (NewAttr(m_xAttrTab, &m_xAttrTab->pULSpace, aULSpace))
+                {
+                    // save context information
+                    HTMLAttrs &rAttrs = pContext->GetAttrs();
+                    rAttrs.push_back( m_xAttrTab->pULSpace );
+                }
 
                 pContext->SetULSpace( aULSpace.GetUpper(), aULSpace.GetLower() );
             }
@@ -730,11 +732,12 @@ void SwHTMLParser::InsertAttrs( SfxItemSet &rItemSet,
                 aBrushItem.SetWhich( RES_CHRATR_BACKGROUND );
 
                 // Set the attribute
-                NewAttr(m_xAttrTab, &m_xAttrTab->pCharBrush, aBrushItem);
-
-                // and save context information
-                HTMLAttrs &rAttrs = pContext->GetAttrs();
-                rAttrs.push_back( m_xAttrTab->pCharBrush );
+                if (NewAttr(m_xAttrTab, &m_xAttrTab->pCharBrush, aBrushItem))
+                {
+                    // and save context information
+                    HTMLAttrs &rAttrs = pContext->GetAttrs();
+                    rAttrs.push_back( m_xAttrTab->pCharBrush );
+                }
             }
             else if( pContext->GetToken() != HtmlTokenId::TABLEHEADER_ON &&
                      pContext->GetToken() != HtmlTokenId::TABLEDATA_ON )
@@ -749,10 +752,11 @@ void SwHTMLParser::InsertAttrs( SfxItemSet &rItemSet,
                 SvxBoxItem aBoxItem( pItem->StaticWhichCast(RES_BOX) );
                 aBoxItem.SetWhich( RES_CHRATR_BOX );
 
-                NewAttr(m_xAttrTab, &m_xAttrTab->pCharBox, aBoxItem);
-
-                HTMLAttrs &rAttrs = pContext->GetAttrs();
-                rAttrs.push_back( m_xAttrTab->pCharBox );
+                if (NewAttr(m_xAttrTab, &m_xAttrTab->pCharBox, aBoxItem))
+                {
+                    HTMLAttrs &rAttrs = pContext->GetAttrs();
+                    rAttrs.push_back( m_xAttrTab->pCharBox );
+                }
             }
             else
             {

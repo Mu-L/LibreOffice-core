@@ -2262,13 +2262,15 @@ void SwHTMLParser::InsertParaAttrs( const SfxItemSet& rItemSet )
 
         if( ppAttr )
         {
-            NewAttr(m_xAttrTab, ppAttr, *pItem);
-            if( RES_PARATR_BEGIN > nWhich )
-                (*ppAttr)->SetLikePara();
-            m_aParaAttrs.push_back( *ppAttr );
-            bool bSuccess = EndAttr( *ppAttr, false );
-            if (!bSuccess)
-                m_aParaAttrs.pop_back();
+            if (NewAttr(m_xAttrTab, ppAttr, *pItem))
+            {
+                if( RES_PARATR_BEGIN > nWhich )
+                    (*ppAttr)->SetLikePara();
+                m_aParaAttrs.push_back( *ppAttr );
+                bool bSuccess = EndAttr( *ppAttr, false );
+                if (!bSuccess)
+                    m_aParaAttrs.pop_back();
+            }
         }
     }
 }

@@ -4582,10 +4582,11 @@ void SwHTMLParser::BuildTableCaption( HTMLTable *pCurTable )
         std::unique_ptr<HTMLAttrContext> xCntxt(new HTMLAttrContext(HtmlTokenId::CAPTION_ON));
 
         // Table headers are always centered
-        NewAttr(m_xAttrTab, &m_xAttrTab->pAdjust, SvxAdjustItem(SvxAdjust::Center, RES_PARATR_ADJUST));
-
-        HTMLAttrs &rAttrs = xCntxt->GetAttrs();
-        rAttrs.push_back( m_xAttrTab->pAdjust );
+        if (NewAttr(m_xAttrTab, &m_xAttrTab->pAdjust, SvxAdjustItem(SvxAdjust::Center, RES_PARATR_ADJUST)))
+        {
+            HTMLAttrs &rAttrs = xCntxt->GetAttrs();
+            rAttrs.push_back( m_xAttrTab->pAdjust );
+        }
 
         PushContext(xCntxt);
 

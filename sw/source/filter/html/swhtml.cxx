@@ -1537,8 +1537,8 @@ void SwHTMLParser::NextToken( HtmlTokenId nToken )
             AppendTextNode();
         if (!m_xTable && !m_xDoc->IsInHeaderFooter(m_pPam->GetPoint()->GetNode()))
         {
-            NewAttr(m_xAttrTab, &m_xAttrTab->pBreak, SvxFormatBreakItem(SvxBreak::PageBefore, RES_BREAK));
-            EndAttr( m_xAttrTab->pBreak, false );
+            if (NewAttr(m_xAttrTab, &m_xAttrTab->pBreak, SvxFormatBreakItem(SvxBreak::PageBefore, RES_BREAK)))
+                EndAttr( m_xAttrTab->pBreak, false );
         }
         break;
 
@@ -4885,18 +4885,24 @@ void SwHTMLParser::SetTextCollAttrs( HTMLAttrContext *pContext )
         }
         else
         {
-            NewAttr(m_xAttrTab, &m_xAttrTab->pFirstLineIndent, firstLine);
-            m_xAttrTab->pFirstLineIndent->SetLikePara();
-            m_aParaAttrs.push_back(m_xAttrTab->pFirstLineIndent);
-            EndAttr(m_xAttrTab->pFirstLineIndent, false);
-            NewAttr(m_xAttrTab, &m_xAttrTab->pTextLeftMargin, leftMargin);
-            m_xAttrTab->pTextLeftMargin->SetLikePara();
-            m_aParaAttrs.push_back(m_xAttrTab->pTextLeftMargin);
-            EndAttr(m_xAttrTab->pTextLeftMargin, false);
-            NewAttr(m_xAttrTab, &m_xAttrTab->pRightMargin, rightMargin);
-            m_xAttrTab->pRightMargin->SetLikePara();
-            m_aParaAttrs.push_back(m_xAttrTab->pRightMargin);
-            EndAttr(m_xAttrTab->pRightMargin, false);
+            if (NewAttr(m_xAttrTab, &m_xAttrTab->pFirstLineIndent, firstLine))
+            {
+                m_xAttrTab->pFirstLineIndent->SetLikePara();
+                m_aParaAttrs.push_back(m_xAttrTab->pFirstLineIndent);
+                EndAttr(m_xAttrTab->pFirstLineIndent, false);
+            }
+            if (NewAttr(m_xAttrTab, &m_xAttrTab->pTextLeftMargin, leftMargin))
+            {
+                m_xAttrTab->pTextLeftMargin->SetLikePara();
+                m_aParaAttrs.push_back(m_xAttrTab->pTextLeftMargin);
+                EndAttr(m_xAttrTab->pTextLeftMargin, false);
+            }
+            if (NewAttr(m_xAttrTab, &m_xAttrTab->pRightMargin, rightMargin))
+            {
+                m_xAttrTab->pRightMargin->SetLikePara();
+                m_aParaAttrs.push_back(m_xAttrTab->pRightMargin);
+                EndAttr(m_xAttrTab->pRightMargin, false);
+            }
         }
     }
 
@@ -5086,8 +5092,8 @@ void SwHTMLParser::InsertSpacer()
             }
             else
             {
-                NewAttr(m_xAttrTab, &m_xAttrTab->pULSpace, SvxULSpaceItem(0, o3tl::narrowing<sal_uInt16>(nSize), RES_UL_SPACE));
-                EndAttr( m_xAttrTab->pULSpace, false );
+                if (NewAttr(m_xAttrTab, &m_xAttrTab->pULSpace, SvxULSpaceItem(0, o3tl::narrowing<sal_uInt16>(nSize), RES_UL_SPACE)))
+                    EndAttr( m_xAttrTab->pULSpace, false );
 
                 AppendTextNode();    // Don't change spacing!
             }
@@ -5116,18 +5122,20 @@ void SwHTMLParser::InsertSpacer()
                 SvxRightMarginItem const rightMargin(SvxIndentValue::twips(nRight),
                                                      RES_MARGIN_RIGHT);
 
-                NewAttr(m_xAttrTab, &m_xAttrTab->pFirstLineIndent, firstLine);
-                EndAttr(m_xAttrTab->pFirstLineIndent, false);
-                NewAttr(m_xAttrTab, &m_xAttrTab->pTextLeftMargin, leftMargin);
-                EndAttr(m_xAttrTab->pTextLeftMargin, false);
-                NewAttr(m_xAttrTab, &m_xAttrTab->pRightMargin, rightMargin);
-                EndAttr(m_xAttrTab->pRightMargin, false);
+                if (NewAttr(m_xAttrTab, &m_xAttrTab->pFirstLineIndent, firstLine))
+                    EndAttr(m_xAttrTab->pFirstLineIndent, false);
+                if (NewAttr(m_xAttrTab, &m_xAttrTab->pTextLeftMargin, leftMargin))
+                    EndAttr(m_xAttrTab->pTextLeftMargin, false);
+                if (NewAttr(m_xAttrTab, &m_xAttrTab->pRightMargin, rightMargin))
+                    EndAttr(m_xAttrTab->pRightMargin, false);
             }
             else
             {
-                NewAttr(m_xAttrTab, &m_xAttrTab->pKerning, SvxKerningItem( static_cast<short>(nSize), RES_CHRATR_KERNING ));
-                m_xDoc->getIDocumentContentOperations().InsertString( *m_pPam, u" "_ustr );
-                EndAttr( m_xAttrTab->pKerning );
+                if (NewAttr(m_xAttrTab, &m_xAttrTab->pKerning, SvxKerningItem( static_cast<short>(nSize), RES_CHRATR_KERNING )))
+                {
+                    m_xDoc->getIDocumentContentOperations().InsertString( *m_pPam, u" "_ustr );
+                    EndAttr( m_xAttrTab->pKerning );
+                }
             }
         }
     }
@@ -5246,8 +5254,8 @@ void SwHTMLParser::InsertLineBreak()
 
     if( bBreakItem && SvxBreak::PageAfter == aBreakItem->GetBreak() )
     {
-        NewAttr(m_xAttrTab, &m_xAttrTab->pBreak, *aBreakItem);
-        EndAttr( m_xAttrTab->pBreak, false );
+        if (NewAttr(m_xAttrTab, &m_xAttrTab->pBreak, *aBreakItem))
+            EndAttr( m_xAttrTab->pBreak, false );
     }
 
     if (!bBreakItem)
@@ -5280,8 +5288,8 @@ void SwHTMLParser::InsertLineBreak()
     }
     if( bBreakItem && SvxBreak::PageBefore == aBreakItem->GetBreak() )
     {
-        NewAttr(m_xAttrTab, &m_xAttrTab->pBreak, *aBreakItem);
-        EndAttr( m_xAttrTab->pBreak, false );
+        if (NewAttr(m_xAttrTab, &m_xAttrTab->pBreak, *aBreakItem))
+            EndAttr( m_xAttrTab->pBreak, false );
     }
 }
 
