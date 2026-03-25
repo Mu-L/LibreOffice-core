@@ -23,7 +23,9 @@
 #include <QtFontFace.hxx>
 #include <QtTools.hxx>
 #include <QtTransferable.hxx>
+#if USE_HEADLESS_CODE
 #include <unx/fontmanager.hxx>
+#endif
 
 #include <o3tl/enumarray.hxx>
 #include <tools/stream.hxx>
@@ -339,6 +341,7 @@ QFont toQtFont(const vcl::Font& rVclFont)
 
 std::optional<vcl::Font> toVclFont(const QFont& rQFont, const css::lang::Locale& rLocale)
 {
+#if USE_HEADLESS_CODE
     FontAttributes aFA;
     QtFontFace::fillAttributesFromQFont(rQFont, aFA);
 
@@ -367,6 +370,11 @@ std::optional<vcl::Font> toVclFont(const QFont& rQFont, const css::lang::Locale&
         aFont.SetPitch(aFA.GetPitch());
 
     return aFont;
+#else
+    (void)rQFont;
+    (void)rLocale;
+    return {};
+#endif
 }
 
 static QCursor* getQCursorFromIconTheme(const OUString& rIconName, int nXHot, int nYHot)

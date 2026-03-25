@@ -18,6 +18,7 @@
  */
 
 #include <sal/config.h>
+#include <config_vclplug.h>
 
 #include <QtGraphics.hxx>
 
@@ -28,9 +29,11 @@
 #include <QtInstance.hxx>
 #include <QtPainter.hxx>
 #include <font/PhysicalFontCollection.hxx>
+#if USE_HEADLESS_CODE
 #include <unx/fontmanager.hxx>
 #include <unx/geninst.h>
 #include <unx/glyphcache.hxx>
+#endif
 #include <sallayout.hxx>
 
 #include <vcl/fontcharmap.hxx>
@@ -141,6 +144,7 @@ void QtGraphics::GetDevFontList(vcl::font::PhysicalFontCollection* pPFC)
     if (pPFC->Count())
         return;
 
+#if USE_HEADLESS_CODE
     FreetypeManager& rFontManager = FreetypeManager::get();
     psp::PrintFontManager& rMgr = psp::PrintFontManager::get();
     std::vector<psp::fontID> aList = rMgr.getFontList();
@@ -164,6 +168,7 @@ void QtGraphics::GetDevFontList(vcl::font::PhysicalFontCollection* pPFC)
     static const bool bUseFontconfig = (nullptr == getenv("SAL_VCL_QT_NO_FONTCONFIG"));
     if (bUseFontconfig)
         SalGenericInstance::RegisterFontSubstitutors(pPFC);
+#endif
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     for (auto& family : QFontDatabase::families())
