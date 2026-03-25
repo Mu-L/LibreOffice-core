@@ -33,7 +33,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QPointer>
 
-#if !defined EMSCRIPTEN
+#if defined LINUX || defined __sun || defined FREEBSD || defined OPENBSD
 #include <unx/sessioninhibitor.hxx>
 #endif
 #if CHECK_ANY_QT_USING_X11
@@ -98,7 +98,7 @@ class VCLPLUG_QT_PUBLIC QtFrame : public QObject, public SalFrame
     sal_uInt32 m_nRestoreScreen;
     QRect m_aRestoreGeometry;
 
-#if !defined EMSCRIPTEN
+#if defined LINUX || defined __sun || defined FREEBSD || defined OPENBSD
     SessionManagerInhibitor m_SessionManagerInhibitor;
 #endif
 #if CHECK_ANY_QT_USING_X11
