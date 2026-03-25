@@ -25,6 +25,9 @@ import types
 import time
 import ast
 import platform
+import subprocess
+import urllib.parse
+import re
 from com.sun.star.uri.RelativeUriExcessParentSegments import RETAIN
 
 from com.sun.star.uno import RuntimeException
@@ -42,6 +45,7 @@ from com.sun.star.awt import XActionListener
 from com.sun.star.script.provider import XScriptProvider, XScript, ScriptFrameworkErrorException
 from com.sun.star.script.browse import XBrowseNode
 from com.sun.star.script.browse.BrowseNodeTypes import SCRIPT, CONTAINER
+from com.sun.star.system import SystemShellExecuteFlags
 
 class LogLevel:
     NONE = 0  # production level
@@ -163,6 +167,57 @@ def toIniName(str):
         return str + ".ini"
     else:
         return str + "rc"
+
+
+# Tries to check whether the default app for opening the given file looks like a Python interpreter
+# that will execute the script. If there’s any doubt, returns True
+def windowsDefaultAppMightExecute():
+    import ctypes
+
+    try:
+        assocQueryString = ctypes.windll.shlwapi.AssocQueryStringW
+    except (AttributeError, FileNotFoundError):
+        log.debug("Couldn’t find AssocQueryStringW function")
+        return True
+
+    flags = 0
+    assocStr = 2 # ASSOCSTR_EXECUTABLE
+    length = ctypes.c_uint16()
+
+    # First get the length of the string
+    if assocQueryString(flags, assocStr, ".py", None, None, ctypes.byref(length)) != 1: # S_FALSE
+        log.debug("AsscQueryStringW failed")
+        return True
+
+    exeBuf = ctypes.create_unicode_buffer(length.value)
+
+    if assocQueryString(flags, assocStr, ".py", None, exeBuf, ctypes.byref(length)) != 0: # S_OK
+        log.debug("AsscQueryStringW failed")
+        return True
+
+    if length.value < 2:
+        return True
+
+    exe = exeBuf[0:length.value - 1]
+
+    return re.search(r'(?:\\|^)py(?:thon\d*)?\.exe$', exe, re.IGNORECASE) is not None
+
+
+def openExternalEditor(ctx, uri):
+    if platform.system() == 'Windows':
+        filePath = uno.fileUrlToSystemPath(uri)
+
+        # If it looks like the default windows app might be a Python interpreter then open the file
+        # in Notepad instead
+        if windowsDefaultAppMightExecute():
+            subprocess.call(('notepad', filePath))
+        else:
+            # Otherwise try the 'open' verb
+            os.startfile(filePath)
+    else:
+        shellExecute = ctx.ServiceManager.createInstanceWithContext(
+            "com.sun.star.system.SystemShellExecute", ctx)
+        shellExecute.execute(uri, "", SystemShellExecuteFlags.URIS_ONLY)
 
 
 """ definition: storageURI is the system dependent, absolute file url, where the script is stored on disk
@@ -516,74 +571,58 @@ def isScript(candidate):
 
 
 # -------------------------------------------------------
-class ScriptBrowseNode(unohelper.Base, XBrowseNode, XPropertySet, XInvocation, XActionListener):
-    def __init__(self, provCtx, uri, fileName, funcName):
-        self.fileName = fileName
-        self.funcName = funcName
-        self.provCtx = provCtx
-        self.uri = uri
+# A mixin class for nodes that have a uri property so that an editor can be used on it
+class EditableNode(XInvocation, XActionListener):
+    def _edit_with_dialog(self):
+        servicename = "com.sun.star.awt.DialogProvider"
+        ctx = self.provCtx.scriptContext.getComponentContext()
+        dlgprov = ctx.ServiceManager.createInstanceWithContext(servicename, ctx)
 
-    def getName(self):
-        return self.funcName
+        self.editor = dlgprov.createDialog(
+            "vnd.sun.star.script:" + "ScriptBindingLibrary.MacroEditor?location=application"
+        )
 
-    def getChildNodes(self):
-        return ()
+        code = readTextFromStream(self.provCtx.sfa.openFileRead(self.uri))
+        code = ensureSourceState(code)
+        self.editor.getControl("EditorTextField").setText(code)
 
-    def hasChildNodes(self):
+        self.editor.getControl("RunButton").setActionCommand("Run")
+        self.editor.getControl("RunButton").addActionListener(self)
+        self.editor.getControl("SaveButton").setActionCommand("Save")
+        self.editor.getControl("SaveButton").addActionListener(self)
+
+        self.editor.execute()
+
+    def invoke(self, name, params, outparamindex, outparams):
+        if name == "Editable":
+            if ENABLE_EDIT_DIALOG:
+                self._edit_with_dialog()
+            else:
+                openExternalEditor(self.provCtx.scriptContext.getComponentContext(), self.uri)
+
+        return None
+
+    def setValue(self, name, value):
+        return None
+
+    def getValue(self, name):
+        return None
+
+    def hasMethod(self, name):
         return False
 
-    def getType(self):
-        return SCRIPT
-
-    def getPropertyValue(self, name):
-        ret = None
-        try:
-            if name == "URI":
-                ret = self.provCtx.uriHelper.getScriptURI(
-                    self.provCtx.getPersistentUrlFromStorageUrl(self.uri + "$" + self.funcName)
-                )
-            elif name == "Editable" and ENABLE_EDIT_DIALOG:
-                ret = not self.provCtx.sfa.isReadOnly(self.uri)
-
-            log.debug("ScriptBrowseNode.getPropertyValue called for " + name + ", returning " + str(ret))
-        except Exception:
-            log.error("ScriptBrowseNode.getPropertyValue error " + lastException2String())
-            raise
-
-        return ret
-
-    def setPropertyValue(self, name, value):
-        log.debug("ScriptBrowseNode.setPropertyValue called " + name + "=" + str(value))
-
-    def getPropertySetInfo(self):
-        log.debug("ScriptBrowseNode.getPropertySetInfo called ")
-        return None
+    def hasProperty(self, name):
+        return False
 
     def getIntrospection(self):
         return None
 
-    def invoke(self, name, params, outparamindex, outparams):
-        if name == "Editable":
-            servicename = "com.sun.star.awt.DialogProvider"
-            ctx = self.provCtx.scriptContext.getComponentContext()
-            dlgprov = ctx.ServiceManager.createInstanceWithContext(servicename, ctx)
-
-            self.editor = dlgprov.createDialog(
-                "vnd.sun.star.script:" + "ScriptBindingLibrary.MacroEditor?location=application"
-            )
-
-            code = readTextFromStream(self.provCtx.sfa.openFileRead(self.uri))
-            code = ensureSourceState(code)
-            self.editor.getControl("EditorTextField").setText(code)
-
-            self.editor.getControl("RunButton").setActionCommand("Run")
-            self.editor.getControl("RunButton").addActionListener(self)
-            self.editor.getControl("SaveButton").setActionCommand("Save")
-            self.editor.getControl("SaveButton").addActionListener(self)
-
-            self.editor.execute()
-
-        return None
+    def isEditable(self):
+        if self.provCtx.sfa.isReadOnly(self.uri):
+            return False
+        if urllib.parse.urlsplit(self.uri).scheme != 'file':
+            return False
+        return True
 
     def actionPerformed(self, event):
         try:
@@ -620,21 +659,54 @@ class ScriptBrowseNode(unohelper.Base, XBrowseNode, XPropertySet, XInvocation, X
             # TODO: add an error box here!
             log.error(lastException2String())
 
-    def setValue(self, name, value):
-        return None
 
-    def getValue(self, name):
-        return None
+# -------------------------------------------------------
+class ScriptBrowseNode(unohelper.Base, XBrowseNode, XPropertySet, EditableNode):
+    def __init__(self, provCtx, uri, fileName, funcName):
+        self.fileName = fileName
+        self.funcName = funcName
+        self.provCtx = provCtx
+        self.uri = uri
 
-    def hasMethod(self, name):
+    def getName(self):
+        return self.funcName
+
+    def getChildNodes(self):
+        return ()
+
+    def hasChildNodes(self):
         return False
 
-    def hasProperty(self, name):
-        return False
+    def getType(self):
+        return SCRIPT
+
+    def getPropertyValue(self, name):
+        ret = None
+        try:
+            if name == "URI":
+                ret = self.provCtx.uriHelper.getScriptURI(
+                    self.provCtx.getPersistentUrlFromStorageUrl(self.uri + "$" + self.funcName)
+                )
+            elif name == "Editable":
+                ret = self.isEditable()
+
+            log.debug("ScriptBrowseNode.getPropertyValue called for " + name + ", returning " + str(ret))
+        except Exception:
+            log.error("ScriptBrowseNode.getPropertyValue error " + lastException2String())
+            raise
+
+        return ret
+
+    def setPropertyValue(self, name, value):
+        log.debug("ScriptBrowseNode.setPropertyValue called " + name + "=" + str(value))
+
+    def getPropertySetInfo(self):
+        log.debug("ScriptBrowseNode.getPropertySetInfo called ")
+        return None
 
 
 # -------------------------------------------------------
-class FileBrowseNode(unohelper.Base, XBrowseNode):
+class FileBrowseNode(unohelper.Base, XBrowseNode, EditableNode, XPropertySet):
     def __init__(self, provCtx, uri, name):
         self.provCtx = provCtx
         self.uri = uri
@@ -668,6 +740,22 @@ class FileBrowseNode(unohelper.Base, XBrowseNode):
 
     def getType(self):
         return CONTAINER
+
+    def getPropertyValue(self, name):
+        ret = None
+        if name == "Editable":
+            ret = self.isEditable()
+
+        log.debug("FileBrowseNode.getPropertyValue called for " + name + ", returning " + str(ret))
+
+        return ret
+
+    def setPropertyValue(self, name, value):
+        log.debug("FileBrowseNode.setPropertyValue called " + name + "=" + str(value))
+
+    def getPropertySetInfo(self):
+        log.debug("FileBrowseNode.getPropertySetInfo called ")
+        return None
 
 
 class DirBrowseNode(unohelper.Base, XBrowseNode):
