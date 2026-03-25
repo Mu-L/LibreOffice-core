@@ -251,10 +251,8 @@ vcl::Font QtInstanceWidget::get_font()
         const QFont& rWidgetFont = getQWidget()->font();
         const css::lang::Locale& rLocale
             = Application::GetSettings().GetUILanguageTag().getLocale();
-        if (toVclFont(rWidgetFont, rLocale, aFont))
-            return;
-
-        aFont = Application::GetSettings().GetStyleSettings().GetAppFont();
+        const std::optional<vcl::Font> oFont = toVclFont(rWidgetFont, rLocale);
+        aFont = oFont.value_or(Application::GetSettings().GetStyleSettings().GetAppFont());
     });
 
     return aFont;

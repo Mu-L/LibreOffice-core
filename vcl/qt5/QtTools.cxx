@@ -337,7 +337,7 @@ QFont toQtFont(const vcl::Font& rVclFont)
     return aQFont;
 }
 
-bool toVclFont(const QFont& rQFont, const css::lang::Locale& rLocale, vcl::Font& rVclFont)
+std::optional<vcl::Font> toVclFont(const QFont& rQFont, const css::lang::Locale& rLocale)
 {
     FontAttributes aFA;
     QtFontFace::fillAttributesFromQFont(rQFont, aFA);
@@ -349,7 +349,7 @@ bool toVclFont(const QFont& rQFont, const css::lang::Locale& rLocale, vcl::Font&
                  << (bFound ? OUString::Concat("'") + aFA.GetFamilyName() + "'" : u"failed"_ustr));
 
     if (!bFound)
-        return false;
+        return {};
 
     QFontInfo qFontInfo(rQFont);
     int nPointHeight = qFontInfo.pointSize();
@@ -366,8 +366,7 @@ bool toVclFont(const QFont& rQFont, const css::lang::Locale& rLocale, vcl::Font&
     if (aFA.GetPitch() != PITCH_DONTKNOW)
         aFont.SetPitch(aFA.GetPitch());
 
-    rVclFont = aFont;
-    return true;
+    return aFont;
 }
 
 static QCursor* getQCursorFromIconTheme(const OUString& rIconName, int nXHot, int nYHot)

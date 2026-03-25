@@ -49,6 +49,7 @@
 #include <com/sun/star/datatransfer/dnd/DNDConstants.hpp>
 
 #include <memory>
+#include <optional>
 
 class Image;
 class QImage;
@@ -169,7 +170,7 @@ Image toImage(const QImage& rImage);
 
 QFont toQtFont(const vcl::Font& rVclFont);
 
-bool toVclFont(const QFont& rQFont, const css::lang::Locale& rLocale, vcl::Font& rVclFont);
+std::optional<vcl::Font> toVclFont(const QFont& rQFont, const css::lang::Locale& rLocale);
 
 const QCursor& toQCursor(PointerStyle ePointerStyle);
 

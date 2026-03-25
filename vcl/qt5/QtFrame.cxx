@@ -1058,22 +1058,21 @@ void QtFrame::UpdateSettings(AllSettings& rSettings)
         style.SetMenuBarHighlightTextColor(style.GetMenuHighlightTextColor());
 
         // Default fonts
-        vcl::Font aFont;
-        if (toVclFont(QApplication::font(), aLocale, aFont))
+        if (std::optional<vcl::Font> oFont = toVclFont(QApplication::font(), aLocale))
         {
-            style.BatchSetFonts(aFont, aFont);
-            aFont.SetWeight(WEIGHT_BOLD);
-            style.SetTitleFont(aFont);
-            style.SetFloatTitleFont(aFont);
+            style.BatchSetFonts(*oFont, *oFont);
+            oFont->SetWeight(WEIGHT_BOLD);
+            style.SetTitleFont(*oFont);
+            style.SetFloatTitleFont(*oFont);
         }
 
         // Tooltip font
-        if (toVclFont(QToolTip::font(), aLocale, aFont))
-            style.SetHelpFont(aFont);
+        if (std::optional<vcl::Font> oFont = toVclFont(QToolTip::font(), aLocale))
+            style.SetHelpFont(*oFont);
 
         // Menu bar font
-        if (toVclFont(pMenuBar->font(), aLocale, aFont))
-            style.SetMenuFont(aFont);
+        if (std::optional<vcl::Font> oFont = toVclFont(pMenuBar->font(), aLocale))
+            style.SetMenuFont(*oFont);
 
         // Icon theme
         const bool bPreferDarkTheme = GetUseDarkMode();
