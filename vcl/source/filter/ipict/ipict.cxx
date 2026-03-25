@@ -1259,8 +1259,10 @@ void PictReader::ReadHeader()
             fHRes /= 65536;
             double fVRes = nVResFixed;
             fVRes /= 65536;
-            fHRes /= fHRes;
-            fVRes /= fVRes;
+            if (fHRes != 0)
+                mfHRes /= fHRes;
+            if (fVRes != 0)
+                mfVRes /= fVRes;
             aBoundingRect=tools::Rectangle( x1,y1, x2, y2 );
             pPict->SeekRel( 4 ); // 4 bytes reserved
             return;
