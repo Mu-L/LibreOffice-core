@@ -253,7 +253,7 @@ $(eval $(call gb_Library_add_generated_exception_objects,skia,\
 ))
 ifeq ($(OS),WNT)
 $(eval $(call gb_Library_add_generated_exception_objects,skia,\
-    UnpackedTarball/skia/src/ports/SkDebug_win \
+    UnpackedTarball/skia/src/ports/SkLog_win \
     UnpackedTarball/skia/src/ports/SkOSFile_win \
 ))
 else ifeq ($(OS),MACOSX)
@@ -365,6 +365,7 @@ $(eval $(call gb_Library_add_generated_exception_objects,skia,\
     UnpackedTarball/skia/src/base/SkDebug \
     UnpackedTarball/skia/src/base/SkFloatingPoint \
     UnpackedTarball/skia/src/base/SkHalf \
+    UnpackedTarball/skia/src/base/SkLog \
     UnpackedTarball/skia/src/base/SkMalloc \
     UnpackedTarball/skia/src/base/SkMathPriv \
     UnpackedTarball/skia/src/base/SkQuads \
