@@ -539,7 +539,7 @@ void SvTabListBox::SetTabEditable(sal_uInt16 nTab, bool bEditable)
 
 void SvTabListBox::SetTabVisible(sal_uInt16 nTab, bool bVisible)
 {
-    DBG_ASSERT(nTab<mvTabList.size(),"GetTabPos:Invalid Tab");
+    DBG_ASSERT(nTab<mvTabList.size(),"SetTabVisible:Invalid Tab");
     if( nTab >= mvTabList.size() )
         return;
 
@@ -558,9 +558,9 @@ void SvTabListBox::SetTabVisible(sal_uInt16 nTab, bool bVisible)
 
 bool SvTabListBox::GetTabVisible(sal_uInt16 nTab)
 {
-    DBG_ASSERT(nTab<mvTabList.size(),"GetTabPos:Invalid Tab");
+    DBG_ASSERT(nTab<mvTabList.size(),"GetTabVisible:Invalid Tab");
     if( nTab >= mvTabList.size() )
-        return false;
+        return true;
 
     if( SvTreeListBox::m_nTreeFlags & SvTreeFlags::RECALCTABS )
         SetTabs();
