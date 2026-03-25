@@ -19,6 +19,7 @@
 
 #include <ooxformulaparser.hxx>
 
+#include <com/sun/star/lang/IllegalArgumentException.hpp>
 #include <com/sun/star/lang/XMultiServiceFactory.hpp>
 #include <com/sun/star/lang/XComponent.hpp>
 #include <osl/diagnose.h>
@@ -128,7 +129,7 @@ void SAL_CALL OOXMLFormulaParser::initialize( const Sequence< Any >& rArgs )
 {
     OSL_ENSURE( rArgs.hasElements(), "OOXMLFormulaParser::initialize - missing arguments" );
     if( !rArgs.hasElements() )
-        throw RuntimeException();
+        throw IllegalArgumentException("Initialization argument contains no elements.", static_cast<cppu::OWeakObject*>(this), 0);
     mxComponent.set( rArgs[ 0 ], UNO_QUERY_THROW );
 }
 
@@ -157,7 +158,7 @@ OUString SAL_CALL OOXMLFormulaParser::printFormula(
         const Sequence< FormulaToken >& /*rTokens*/, const CellAddress& /*rReferencePos*/ )
 {
     // not implemented
-    throw RuntimeException();
+    throw RuntimeException("The method is not implemented.", static_cast<cppu::OWeakObject*>(this));
 }
 
 } // namespace oox::xls
