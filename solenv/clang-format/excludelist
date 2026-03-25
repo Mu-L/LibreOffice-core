@@ -12632,7 +12632,6 @@ sw/source/ui/misc/impfnote.hxx
 sw/source/ui/misc/insfnote.cxx
 sw/source/ui/misc/linenum.cxx
 sw/source/ui/misc/num.cxx
-sw/source/ui/misc/outline.cxx
 sw/source/ui/misc/pgfnote.cxx
 sw/source/ui/misc/pggrid.cxx
 sw/source/ui/misc/srtdlg.cxx
