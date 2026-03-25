@@ -602,12 +602,10 @@ namespace drawinglayer::processor3d
                 std::sort(maRasterPrimitive3Ds.begin(), maRasterPrimitive3Ds.end());
             }
 
-            for(const auto &a : maRasterPrimitive3Ds)
+            for(const auto &rCandidate : maRasterPrimitive3Ds)
             {
                 // paint each one by setting the remembered data and calling
                 // the render method
-                const RasterPrimitive3D& rCandidate(a);
-
                 mpGeoTexSvx = rCandidate.getGeoTexSvx();
                 mpTransparenceGeoTexSvx = rCandidate.getTransparenceGeoTexSvx();
                 mbModulate = rCandidate.getModulate();
