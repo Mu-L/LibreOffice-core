@@ -97,7 +97,6 @@ $(eval $(call gb_Library_add_exception_objects,vclplug_qt5,\
     vcl/qt5/QtGraphicsBase \
     vcl/qt5/QtGraphics_Controls \
     vcl/qt5/QtGraphics_GDI \
-    vcl/qt5/QtGraphics_Text \
     vcl/qt5/QtHyperlinkLabel \
     vcl/qt5/QtInstance \
     vcl/qt5/QtInstanceAssistant \
