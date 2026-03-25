@@ -295,7 +295,7 @@ void ScCsvGrid::InitFonts()
     aDefSet.Put(aComplexItem);
 
     // set Asian/Complex font size to height of character in Latin font
-    sal_uLong nFontHt = static_cast< sal_uLong >( maMonoFont.GetFontSize().Height() );
+    sal_uInt32 nFontHt = static_cast< sal_uInt32 >( maMonoFont.GetFontSize().Height() );
     aDefSet.Put(SvxFontHeightItem(nFontHt, 100, EE_CHAR_FONTHEIGHT_CJK));
     aDefSet.Put(SvxFontHeightItem(nFontHt, 100, EE_CHAR_FONTHEIGHT_CTL));
 
