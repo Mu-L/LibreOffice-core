@@ -23,14 +23,10 @@
 
 #include <worksheetbuffer.hxx>
 
-#include <com/sun/star/container/XIndexAccess.hpp>
-#include <com/sun/star/container/XNamed.hpp>
-#include <com/sun/star/sheet/XSpreadsheetDocument.hpp>
 #include <osl/diagnose.h>
 #include <rtl/ustrbuf.hxx>
 #include <oox/helper/attributelist.hxx>
 #include <oox/helper/binaryinputstream.hxx>
-#include <oox/helper/containerhelper.hxx>
 #include <oox/token/namespaces.hxx>
 #include <oox/token/tokens.hxx>
 #include <document.hxx>
@@ -38,13 +34,8 @@
 #include <biffhelper.hxx>
 #include <globstr.hrc>
 #include <scresid.hxx>
-#include <docuno.hxx>
 
 namespace oox::xls {
-
-using namespace ::com::sun::star::container;
-using namespace ::com::sun::star::sheet;
-using namespace ::com::sun::star::uno;
 
 SheetInfoModel::SheetInfoModel() :
     mnSheetId( -1 ),
@@ -187,40 +178,38 @@ WorksheetBuffer::SheetInfo::SheetInfo( const SheetInfoModel& rModel, sal_Int16 n
 
 WorksheetBuffer::IndexNamePair WorksheetBuffer::createSheet( const OUString& rPreferredName, sal_Int32 nSheetPos )
 {
-    //FIXME: Rewrite this block using ScDocument[Import] instead of UNO
-    try
+    ScDocument& rDoc = getScDocument();
+    sal_Int16 nCalcSheet = -1;
+    OUString aSheetName = rPreferredName.isEmpty() ? ScResId(STR_TABLE_DEF) : rPreferredName;
+    if( nSheetPos < rDoc.GetTableCount() )
     {
-        Reference< XSpreadsheets > xSheets( getDocument()->getSheets(), UNO_SET_THROW );
-        Reference< XIndexAccess > xSheetsIA( xSheets, UNO_QUERY_THROW );
-        sal_Int16 nCalcSheet = -1;
-        OUString aSheetName = rPreferredName.isEmpty() ? ScResId(STR_TABLE_DEF) : rPreferredName;
-        if( nSheetPos < xSheetsIA->getCount() )
+        nCalcSheet = static_cast< sal_Int16 >( nSheetPos );
+        // existing sheet - try to rename
+        OUString aOldName;
+        if( rDoc.GetName(nCalcSheet, aOldName) && aOldName != aSheetName )
         {
-            nCalcSheet = static_cast< sal_Int16 >( nSheetPos );
-            // existing sheet - try to rename
-            Reference< XNamed > xSheetName( xSheetsIA->getByIndex( nSheetPos ), UNO_QUERY_THROW );
-            if( xSheetName->getName() != aSheetName )
+            rDoc.CreateValidTabName(aSheetName);
+            if(!rDoc.RenameTab(nCalcSheet, aSheetName))
             {
-                aSheetName = ContainerHelper::getUnusedName( xSheets, aSheetName, ' ' );
-                xSheetName->setName( aSheetName );
+                OSL_FAIL( "WorksheetBuffer::createSheet - cannot rename worksheet" );
+                return IndexNamePair(-1, OUString());
             }
         }
-        else
-        {
-            nCalcSheet = static_cast< sal_Int16 >( xSheetsIA->getCount() );
-            // new sheet - insert with unused name
-            aSheetName = ContainerHelper::getUnusedName( xSheets, aSheetName, ' ' );
-            xSheets->insertNewByName( aSheetName, nCalcSheet );
-        }
-
-        // return final sheet index if sheet exists
-        return IndexNamePair( nCalcSheet, aSheetName );
     }
-    catch (const Exception&)
+    else
     {
-        OSL_FAIL( "WorksheetBuffer::createSheet - cannot insert or rename worksheet" );
+        nCalcSheet = static_cast< sal_Int16 >( rDoc.GetTableCount() );
+        // new sheet - insert with unused name
+        rDoc.CreateValidTabName(aSheetName);
+        if(!rDoc.InsertTab(nCalcSheet, aSheetName))
+        {
+            OSL_FAIL( "WorksheetBuffer::createSheet - cannot insert worksheet" );
+            return IndexNamePair(-1, OUString());
+        }
     }
-    return IndexNamePair( -1, OUString() );
+
+    // return final sheet index if sheet exists
+    return IndexNamePair( nCalcSheet, aSheetName );
 }
 
 void WorksheetBuffer::insertSheet( const SheetInfoModel& rModel )
