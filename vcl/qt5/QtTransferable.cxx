@@ -8,17 +8,18 @@
  *
  */
 
+#include <sal/config.h>
+
+#include <QtInstance.hxx>
 #include <QtTransferable.hxx>
 #include <QtTransferable.moc>
 
-#include <sal/log.hxx>
 #include <o3tl/string_view.hxx>
+#include <sal/log.hxx>
 #include <tools/debug.hxx>
 #include <vcl/qt/QtUtils.hxx>
 
 #include <QtWidgets/QApplication>
-
-#include <QtInstance.hxx>
 
 #include <cassert>
 

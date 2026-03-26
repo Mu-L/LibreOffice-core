@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include <sal/config.h>
+
 #include <vcl/weld/TreeView.hxx>
 
 #include <QtCore/QSortFilterProxyModel>

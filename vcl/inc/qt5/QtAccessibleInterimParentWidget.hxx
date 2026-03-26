@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include <sal/config.h>
+
 #include "QtAccessibleWidget.hxx"
 
 #include <QtWidgets/QWidget>

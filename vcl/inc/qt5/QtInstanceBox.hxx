@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include <sal/config.h>
+
 #include "QtInstanceContainer.hxx"
 
 class QtInstanceBox : public QtInstanceContainer, public virtual weld::Box

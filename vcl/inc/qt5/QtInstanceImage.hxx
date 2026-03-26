@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include <sal/config.h>
+
 #include "QtInstanceWidget.hxx"
 
 #include <QtWidgets/QLabel>

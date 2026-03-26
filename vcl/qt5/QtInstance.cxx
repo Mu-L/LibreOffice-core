@@ -17,10 +17,9 @@
  *   the License at http://www.apache.org/licenses/LICENSE-2.0 .
  */
 
-#include <QtInstance.hxx>
-#include <QtInstance.moc>
-
-#include <com/sun/star/lang/IllegalArgumentException.hpp>
+#include <sal/config.h>
+#include <config_emscripten.h>
+#include <config_vclplug.h>
 
 #include <QtAccessibleRegistry.hxx>
 #include <QtAccessibleInterimChildWidget.hxx>
@@ -28,8 +27,12 @@
 #include <QtDragAndDrop.hxx>
 #include <QtFilePicker.hxx>
 #include <QtFrame.hxx>
+#include <QtInstance.hxx>
+#include <QtInstance.moc>
 #include <QtInstanceBuilder.hxx>
 #include <QtInstanceColorChooserDialog.hxx>
+#include <QtInstanceMessageDialog.hxx>
+#include <QtInstanceWidget.hxx>
 #include <QtMenu.hxx>
 #include <QtObject.hxx>
 #include <QtOpenGLContext.hxx>
@@ -39,12 +42,26 @@
 #endif
 #include <QtSystem.hxx>
 #include <QtTimer.hxx>
-#include <QtInstanceWidget.hxx>
-#include <QtInstanceMessageDialog.hxx>
-
 #include <SalYieldMutex.hxx>
 #include <salvtables.hxx>
 #include <unx/gendata.hxx>
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0) && ENABLE_GSTREAMER_1_0 && QT5_HAVE_GOBJECT
+#include <unx/gstsink.hxx>
+#endif
+#include <vclpluginapi.h>
+
+#include <comphelper/emscriptenthreading.hxx>
+#include <i18nlangtag/languagetag.hxx>
+#include <osl/process.h>
+#include <o3tl/temporary.hxx>
+#include <o3tl/unreachable.hxx>
+#include <sal/log.hxx>
+#include <tools/debug.hxx>
+#include <vcl/qt/QtUtils.hxx>
+#include <vcl/stdtext.hxx>
+#include <vcl/sysdata.hxx>
+
+#include <com/sun/star/lang/IllegalArgumentException.hpp>
 
 #include <QtCore/QAbstractEventDispatcher>
 #include <QtCore/QLibraryInfo>
@@ -54,26 +71,6 @@
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QMessageBox>
-
-#include <vclpluginapi.h>
-#include <tools/debug.hxx>
-#include <comphelper/emscriptenthreading.hxx>
-#include <config_emscripten.h>
-#include <config_vclplug.h>
-#include <i18nlangtag/languagetag.hxx>
-#include <vcl/qt/QtUtils.hxx>
-#include <vcl/stdtext.hxx>
-#include <vcl/sysdata.hxx>
-#include <sal/log.hxx>
-#include <o3tl/unreachable.hxx>
-#include <o3tl/temporary.hxx>
-#include <osl/process.h>
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0) && ENABLE_GSTREAMER_1_0 && QT5_HAVE_GOBJECT
-#include <unx/gstsink.hxx>
-#endif
-
-#include <mutex>
-#include <condition_variable>
 
 #ifdef EMSCRIPTEN
 #include <QtCore/QtPlugin>
@@ -89,6 +86,9 @@ Q_IMPORT_PLUGIN(QWasmIntegrationPlugin)
 #include <emscripten/threading.h>
 #include <pthread.h>
 #endif
+
+#include <condition_variable>
+#include <mutex>
 
 namespace
 {

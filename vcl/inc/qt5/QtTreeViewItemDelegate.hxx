@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include <sal/config.h>
+
 #include <QtCore/QPointer>
 #include <QtWidgets/QStyledItemDelegate>
 #include <QtWidgets/QWidget>

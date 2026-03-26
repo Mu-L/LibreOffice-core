@@ -19,10 +19,12 @@
 
 #pragma once
 
-#include <vclpluginapi.h>
-#include <headless/svpgdi.hxx>
+#include <sal/config.h>
 
 #include "QtGraphicsBase.hxx"
+
+#include <headless/svpgdi.hxx>
+#include <vclpluginapi.h>
 
 class QtFrame;
 

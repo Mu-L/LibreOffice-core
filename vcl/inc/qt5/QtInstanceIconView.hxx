@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include <sal/config.h>
+
 #include "QtInstanceItemView.hxx"
 
 #include <vcl/weld/IconView.hxx>

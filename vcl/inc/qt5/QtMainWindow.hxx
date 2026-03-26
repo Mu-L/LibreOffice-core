@@ -19,10 +19,12 @@
 
 #pragma once
 
-#include <QtWidgets/QWidget>
-#include <QtWidgets/QMainWindow>
+#include <sal/config.h>
 
 #include "QtFrame.hxx"
+
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QMainWindow>
 
 class QtMainWindow final : public QMainWindow
 {

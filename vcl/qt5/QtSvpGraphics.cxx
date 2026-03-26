@@ -8,7 +8,6 @@
  */
 
 #include <sal/config.h>
-
 #include <config_cairo_canvas.h>
 
 #include <QtFrame.hxx>

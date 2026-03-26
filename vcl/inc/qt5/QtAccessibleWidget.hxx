@@ -9,11 +9,13 @@
 
 #pragma once
 
+#include <sal/config.h>
 #include <vclpluginapi.h>
 
-#include <com/sun/star/accessibility/XAccessible.hpp>
 #include <comphelper/OAccessible.hxx>
 #include <rtl/ref.hxx>
+
+#include <com/sun/star/accessibility/XAccessible.hpp>
 
 SAL_WNODEPRECATED_DECLARATIONS_PUSH
 #include <QtCore/QObject>

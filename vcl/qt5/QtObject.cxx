@@ -17,10 +17,11 @@
  *   the License at http://www.apache.org/licenses/LICENSE-2.0 .
  */
 
-#include <QtObject.hxx>
-#include <QtObject.moc>
+#include <sal/config.h>
 
 #include <QtFrame.hxx>
+#include <QtObject.hxx>
+#include <QtObject.moc>
 
 #include <QtCore/QLibraryInfo>
 #include <QtGui/QGuiApplication>

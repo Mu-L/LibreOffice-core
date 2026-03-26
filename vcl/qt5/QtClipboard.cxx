@@ -8,18 +8,19 @@
  *
  */
 
+#include <sal/config.h>
+
 #include <QtClipboard.hxx>
 #include <QtClipboard.moc>
+#include <QtInstance.hxx>
+#include <QtTools.hxx>
+#include <QtTransferable.hxx>
 
 #include <cppuhelper/supportsservice.hxx>
 #include <sal/log.hxx>
 #include <vcl/svapp.hxx>
 
 #include <QtWidgets/QApplication>
-
-#include <QtInstance.hxx>
-#include <QtTools.hxx>
-#include <QtTransferable.hxx>
 
 #include <cassert>
 #include <map>

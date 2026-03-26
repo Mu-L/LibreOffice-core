@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include <sal/config.h>
+
 #include <vcl/weld/Menu.hxx>
 
 #include <QtCore/QPointer>

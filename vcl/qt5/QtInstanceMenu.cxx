@@ -7,17 +7,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include <QtInstanceMenu.hxx>
-#include <QtInstanceMenu.moc>
+#include <sal/config.h>
 
 #include <QtInstance.hxx>
+#include <QtInstanceMenu.hxx>
+#include <QtInstanceMenu.moc>
 #include <QtInstanceWidget.hxx>
 #include <QtTools.hxx>
 
 #include <tools/debug.hxx>
 #include <vcl/help.hxx>
-#include <vcl/svapp.hxx>
 #include <vcl/qt/QtUtils.hxx>
+#include <vcl/svapp.hxx>
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 #include <QtGui/QActionGroup>

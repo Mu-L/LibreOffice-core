@@ -7,13 +7,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <sal/config.h>
+
+#include <QtInstanceButton.hxx>
 #include <QtInstanceMessageDialog.hxx>
 #include <QtInstanceMessageDialog.moc>
 
-#include <QtInstanceButton.hxx>
-
-#include <vcl/stdtext.hxx>
 #include <vcl/qt/QtUtils.hxx>
+#include <vcl/stdtext.hxx>
 
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QPushButton>

@@ -7,14 +7,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <sal/config.h>
+
 #include <IconThemeSelector.hxx>
 #include <QtCustomStyle.hxx>
 #include <QtTools.hxx>
-#include <QtWidgets/qdrawutil.h>
-#include <QtWidgets/QApplication>
+
+#include <vcl/qt/QtUtils.hxx>
 #include <vcl/svapp.hxx>
 #include <vcl/themecolors.hxx>
-#include <vcl/qt/QtUtils.hxx>
+
+#include <QtWidgets/qdrawutil.h>
+#include <QtWidgets/QApplication>
 
 void QtCustomStyle::drawPrimitive(PrimitiveElement element, const QStyleOption* option,
                                   QPainter* painter, const QWidget* widget) const

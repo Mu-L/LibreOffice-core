@@ -18,6 +18,8 @@
  * VCL plugins are defined in `vcl/inc/qt5/QtTools.hxx`.
  **/
 
+#include <sal/config.h>
+
 #include <i18nlangtag/languagetag.hxx>
 #include <rtl/ustring.hxx>
 #include <tools/stream.hxx>

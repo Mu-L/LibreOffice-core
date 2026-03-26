@@ -19,9 +19,13 @@
 
 #pragma once
 
+#include <sal/config.h>
 #include <vclpluginapi.h>
 
 #include <cppuhelper/compbase.hxx>
+#include <osl/conditn.hxx>
+#include <osl/mutex.hxx>
+#include <unotools/resmgr.hxx>
 
 #include <com/sun/star/frame/XTerminateListener.hpp>
 #include <com/sun/star/lang/XInitialization.hpp>
@@ -31,10 +35,6 @@
 #include <com/sun/star/ui/dialogs/XFilePickerControlAccess.hpp>
 #include <com/sun/star/ui/dialogs/XFolderPicker2.hpp>
 #include <com/sun/star/uno/XComponentContext.hpp>
-
-#include <osl/conditn.hxx>
-#include <osl/mutex.hxx>
-#include <unotools/resmgr.hxx>
 
 SAL_WNODEPRECATED_DECLARATIONS_PUSH
 #include <QtCore/QObject>

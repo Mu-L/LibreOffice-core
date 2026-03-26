@@ -19,10 +19,10 @@
 
 #pragma once
 
+#include <sal/config.h>
+
 #include <vclpluginapi.h>
 #include <WidgetDrawInterface.hxx>
-
-#include <memory>
 
 #include <QtGui/QImage>
 #include <QtGui/QPainter>
@@ -30,6 +30,8 @@
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QStyle>
 #include <QtWidgets/QStyleOption>
+
+#include <memory>
 
 class QtGraphicsBase;
 

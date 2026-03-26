@@ -19,13 +19,15 @@
 
 #pragma once
 
-#include <QtCore/QRectF>
-#include <QtGui/QPainter>
-#include <QtWidgets/QWidget>
+#include <sal/config.h>
 
 #include "QtFrame.hxx"
 #include "QtGraphics.hxx"
 #include "QtTools.hxx"
+
+#include <QtCore/QRectF>
+#include <QtGui/QPainter>
+#include <QtWidgets/QWidget>
 
 class QtPainter final : public QPainter
 {

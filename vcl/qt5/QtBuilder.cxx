@@ -7,8 +7,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include <QtBuilder.hxx>
+#include <sal/config.h>
 
+#include <QtBuilder.hxx>
 #include <QtDoubleSpinBox.hxx>
 #include <QtExpander.hxx>
 #include <QtInstanceMenu.hxx>

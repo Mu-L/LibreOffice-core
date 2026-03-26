@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include <sal/config.h>
+
 #include "QtInstanceDialog.hxx"
 
 #include <vcl/weld/ColorChooserDialog.hxx>

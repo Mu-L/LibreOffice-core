@@ -7,15 +7,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  */
+
+#include <sal/config.h>
+
 #include <QtDragAndDrop.hxx>
 #include <QtDragAndDrop.moc>
-
 #include <QtFrame.hxx>
 #include <QtTools.hxx>
 #include <QtTransferable.hxx>
 
-#include <com/sun/star/datatransfer/dnd/DNDConstants.hpp>
 #include <cppuhelper/supportsservice.hxx>
+
+#include <com/sun/star/datatransfer/dnd/DNDConstants.hpp>
 
 #include <QtGui/QDrag>
 

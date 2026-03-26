@@ -7,14 +7,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include <utility>
-
-#include <QtSvpSurface.hxx>
+#include <sal/config.h>
 
 #include <QtSvpGraphics.hxx>
+#include <QtSvpSurface.hxx>
 
 #include <vcl/sysdata.hxx>
 #include <vcl/virdev.hxx>
+
+#include <utility>
 
 namespace
 {

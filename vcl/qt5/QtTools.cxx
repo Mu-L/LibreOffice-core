@@ -17,6 +17,8 @@
  *   the License at http://www.apache.org/licenses/LICENSE-2.0 .
  */
 
+#include <sal/config.h>
+
 #include <bitmaps.hlst>
 #include <cursor_hotspots.hxx>
 #include <QtFont.hxx>
@@ -30,9 +32,9 @@
 #include <o3tl/enumarray.hxx>
 #include <tools/stream.hxx>
 #include <vcl/event.hxx>
-#include <vcl/image.hxx>
 #include <vcl/filter/PngImageReader.hxx>
 #include <vcl/filter/PngImageWriter.hxx>
+#include <vcl/image.hxx>
 #include <vcl/qt/QtUtils.hxx>
 #include <vcl/svapp.hxx>
 

@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include <sal/config.h>
+
 #include <salsys.hxx>
 
 class QtSystem final : public SalSystem

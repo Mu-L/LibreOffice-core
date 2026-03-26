@@ -19,6 +19,8 @@
 
 #pragma once
 
+#include <sal/config.h>
+
 #include <vcl/opengl/OpenGLContext.hxx>
 
 class QWindow;

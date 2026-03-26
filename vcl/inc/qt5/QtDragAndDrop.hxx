@@ -10,12 +10,15 @@
 
 #pragma once
 
+#include <sal/config.h>
+
 #include <DropTarget.hxx>
+
+#include <cppuhelper/compbase.hxx>
 
 #include <com/sun/star/datatransfer/dnd/XDragSource.hpp>
 #include <com/sun/star/datatransfer/dnd/XDropTarget.hpp>
 #include <com/sun/star/lang/XServiceInfo.hpp>
-#include <cppuhelper/compbase.hxx>
 
 SAL_WNODEPRECATED_DECLARATIONS_PUSH
 #include <QtCore/QObject>

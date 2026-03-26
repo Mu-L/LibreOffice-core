@@ -19,16 +19,17 @@
 
 #pragma once
 
+#include <sal/config.h>
 #include <config_vclplug.h>
 
 #include <ClipboardSelectionType.hxx>
 
-#include <QtGui/QClipboard>
 #include <QtCore/QDate>
 #include <QtCore/QPoint>
 #include <QtCore/QRect>
 #include <QtCore/QSize>
 #include <QtCore/QString>
+#include <QtGui/QClipboard>
 #include <QtGui/QImage>
 #include <QtGui/QMouseEvent>
 #include <QtWidgets/QMessageBox>

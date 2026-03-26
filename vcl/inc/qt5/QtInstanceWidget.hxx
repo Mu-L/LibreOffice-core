@@ -9,16 +9,21 @@
 
 #pragma once
 
+#include <sal/config.h>
+
 #include "QtDragAndDrop.hxx"
 #include "QtInstance.hxx"
-#include <QtWidgets/QApplication>
-#include <QtWidgets/QWidget>
-#include <QtWidgets/QMessageBox>
 #include "QtTools.hxx"
-#include <vcl/weld/weld.hxx>
-#include <string_view>
+
 #include <rtl/ustring.hxx>
 #include <vcl/sysdata.hxx>
+#include <vcl/weld/weld.hxx>
+
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QWidget>
+
+#include <string_view>
 
 class QtInstanceWidget : public QObject, public virtual weld::Widget
 {

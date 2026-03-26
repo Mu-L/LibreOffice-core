@@ -7,10 +7,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include <QtInstanceDrawingArea.hxx>
-#include <QtInstanceDrawingArea.moc>
+#include <sal/config.h>
 
 #include <QtAccessibleWidget.hxx>
+#include <QtInstanceDrawingArea.hxx>
+#include <QtInstanceDrawingArea.moc>
 
 #include <vcl/qt/QtUtils.hxx>
 

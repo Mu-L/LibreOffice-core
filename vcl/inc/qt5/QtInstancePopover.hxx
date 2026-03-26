@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include <sal/config.h>
+
 #include "QtInstanceContainer.hxx"
 
 #include <vcl/weld/Popover.hxx>

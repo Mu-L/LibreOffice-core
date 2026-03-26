@@ -17,10 +17,11 @@
  *   the License at http://www.apache.org/licenses/LICENSE-2.0 .
  */
 
-#include <QtVirtualDevice.hxx>
+#include <sal/config.h>
 
 #include <QtGraphics.hxx>
 #include <QtTools.hxx>
+#include <QtVirtualDevice.hxx>
 
 #include <QtGui/QImage>
 

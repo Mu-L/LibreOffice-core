@@ -7,12 +7,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <sal/config.h>
+
 #include <QtGraphicsBase.hxx>
 #include <QtInstance.hxx>
 
-#include <QtGui/QScreen>
-
 #include <o3tl/string_view.hxx>
+
+#include <QtGui/QScreen>
 
 void QtGraphicsBase::ImplGetResolution(const QtFrame* pFrame, sal_Int32& rDPIX, sal_Int32& rDPIY)
 {

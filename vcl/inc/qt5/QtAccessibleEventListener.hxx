@@ -9,13 +9,15 @@
 
 #pragma once
 
-#include <com/sun/star/accessibility/XAccessible.hpp>
-#include <com/sun/star/accessibility/XAccessibleEventListener.hpp>
-#include <com/sun/star/lang/EventObject.hpp>
+#include <sal/config.h>
 
 #include "QtAccessibleWidget.hxx"
 
 #include <cppuhelper/implbase.hxx>
+
+#include <com/sun/star/accessibility/XAccessible.hpp>
+#include <com/sun/star/accessibility/XAccessibleEventListener.hpp>
+#include <com/sun/star/lang/EventObject.hpp>
 
 class QtAccessibleEventListener final
     : public cppu::WeakImplHelper<css::accessibility::XAccessibleEventListener>

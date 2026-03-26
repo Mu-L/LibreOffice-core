@@ -17,17 +17,20 @@
  *   the License at http://www.apache.org/licenses/LICENSE-2.0 .
  */
 
+#include <sal/config.h>
+
 #include <QtBitmap.hxx>
 #include <QtTools.hxx>
 #include <QtGraphics.hxx>
 
-#include <QtGui/QImage>
-#include <QtCore/QVector>
-#include <QtGui/QColor>
-
-#include <vcl/BitmapColor.hxx>
 #include <svdata.hxx>
 #include <salinst.hxx>
+
+#include <vcl/BitmapColor.hxx>
+
+#include <QtCore/QVector>
+#include <QtGui/QImage>
+#include <QtGui/QColor>
 
 QtBitmap::QtBitmap() {}
 

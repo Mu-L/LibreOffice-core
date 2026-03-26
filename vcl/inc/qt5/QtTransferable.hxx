@@ -10,7 +10,10 @@
 
 #pragma once
 
+#include <sal/config.h>
+
 #include <cppuhelper/compbase.hxx>
+
 #include <com/sun/star/datatransfer/XTransferable.hpp>
 
 #include <QtCore/QMimeData>

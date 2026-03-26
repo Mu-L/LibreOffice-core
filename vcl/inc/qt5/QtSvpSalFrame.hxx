@@ -19,6 +19,8 @@
 
 #pragma once
 
+#include <sal/config.h>
+
 #include "QtFrame.hxx"
 
 #include <headless/CairoCommon.hxx>

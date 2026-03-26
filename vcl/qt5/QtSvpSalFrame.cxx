@@ -17,6 +17,8 @@
  *   the License at http://www.apache.org/licenses/LICENSE-2.0 .
  */
 
+#include <sal/config.h>
+
 #include <QtSvpGraphics.hxx>
 #include <QtSvpSalFrame.hxx>
 #include <QtSvpSalFrame.moc>

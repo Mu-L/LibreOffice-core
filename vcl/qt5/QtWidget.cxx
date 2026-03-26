@@ -17,13 +17,26 @@
  *   the License at http://www.apache.org/licenses/LICENSE-2.0 .
  */
 
-#include <QtWidget.hxx>
-#include <QtWidget.moc>
+#include <sal/config.h>
 
 #include <QtFrame.hxx>
 #include <QtInstance.hxx>
 #include <QtTransferable.hxx>
 #include <QtTools.hxx>
+#include <QtWidget.hxx>
+#include <QtWidget.moc>
+
+#include <window.h>
+
+#include <comphelper/OAccessible.hxx>
+#include <comphelper/diagnose_ex.hxx>
+#include <vcl/commandevent.hxx>
+#include <vcl/event.hxx>
+#include <vcl/toolkit/floatwin.hxx>
+#include <vcl/qt/QtUtils.hxx>
+
+#include <com/sun/star/accessibility/XAccessible.hpp>
+#include <com/sun/star/accessibility/XAccessibleEditableText.hpp>
 
 #include <QtCore/QMimeData>
 #include <QtGui/QDrag>
@@ -41,17 +54,6 @@
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QToolTip>
 #include <QtWidgets/QWidget>
-
-#include <vcl/commandevent.hxx>
-#include <vcl/event.hxx>
-#include <vcl/qt/QtUtils.hxx>
-#include <vcl/toolkit/floatwin.hxx>
-#include <window.h>
-#include <comphelper/OAccessible.hxx>
-#include <comphelper/diagnose_ex.hxx>
-
-#include <com/sun/star/accessibility/XAccessible.hpp>
-#include <com/sun/star/accessibility/XAccessibleEditableText.hpp>
 
 #if CHECK_ANY_QT_USING_X11
 #define XK_MISCELLANY

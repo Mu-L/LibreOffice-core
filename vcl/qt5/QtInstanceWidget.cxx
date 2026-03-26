@@ -7,15 +7,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <sal/config.h>
+
+#include <QtInstanceContainer.hxx>
 #include <QtInstanceWidget.hxx>
 #include <QtInstanceWidget.moc>
 
-#include <QtInstanceContainer.hxx>
-
 #include <i18nlangtag/languagetag.hxx>
 #include <vcl/commandevent.hxx>
-#include <vcl/transfer.hxx>
 #include <vcl/qt/QtUtils.hxx>
+#include <vcl/transfer.hxx>
 
 #include <QtGui/QMouseEvent>
 #include <QtGui/QTextDocumentFragment>

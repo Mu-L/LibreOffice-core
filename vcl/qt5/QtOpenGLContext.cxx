@@ -17,18 +17,18 @@
  *   the License at http://www.apache.org/licenses/LICENSE-2.0 .
  */
 
-#include <QtOpenGLContext.hxx>
-
-#include <epoxy/gl.h>
-
-#include <vcl/sysdata.hxx>
-#include <opengl/zone.hxx>
-#include <sal/log.hxx>
-
-#include <window.h>
+#include <sal/config.h>
 
 #include <QtObject.hxx>
+#include <QtOpenGLContext.hxx>
 
+#include <opengl/zone.hxx>
+#include <window.h>
+
+#include <sal/log.hxx>
+#include <vcl/sysdata.hxx>
+
+#include <epoxy/gl.h>
 #include <QtGui/QOpenGLContext>
 #include <QtGui/QWindow>
 

@@ -19,6 +19,8 @@
 
 #pragma once
 
+#include <sal/config.h>
+
 #include "QtInstance.hxx"
 
 class VCLPLUG_QT_PUBLIC QtSalInstance : public QtInstance

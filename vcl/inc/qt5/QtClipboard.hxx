@@ -10,15 +10,18 @@
 
 #pragma once
 
+#include <sal/config.h>
+
 #include <ClipboardBase.hxx>
+
+#include <cppuhelper/compbase.hxx>
+#include <rtl/ref.hxx>
 
 #include <com/sun/star/datatransfer/XTransferable.hpp>
 #include <com/sun/star/datatransfer/clipboard/XSystemClipboard.hpp>
 #include <com/sun/star/datatransfer/clipboard/XFlushableClipboard.hpp>
 #include <com/sun/star/datatransfer/clipboard/XClipboardOwner.hpp>
 #include <com/sun/star/datatransfer/clipboard/XClipboardListener.hpp>
-#include <cppuhelper/compbase.hxx>
-#include <rtl/ref.hxx>
 
 #include <QtGui/QClipboard>
 

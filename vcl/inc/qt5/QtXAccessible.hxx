@@ -9,9 +9,11 @@
 
 #pragma once
 
-#include <QtCore/QObject>
+#include <sal/config.h>
 
 #include <com/sun/star/accessibility/XAccessible.hpp>
+
+#include <QtCore/QObject>
 
 // Wrapper class to hold a css::accessibility::XAccessible object
 // while being able to pass it as a QObject

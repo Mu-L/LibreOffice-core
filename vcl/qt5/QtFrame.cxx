@@ -17,12 +17,13 @@
  *   the License at http://www.apache.org/licenses/LICENSE-2.0 .
  */
 
+#include <sal/config.h>
+
 #include <IconHelper.hxx>
 #include <QtCustomStyle.hxx>
+#include <QtDragAndDrop.hxx>
 #include <QtFrame.hxx>
 #include <QtFrame.moc>
-
-#include <QtDragAndDrop.hxx>
 #include <QtInstance.hxx>
 #include <QtMainWindow.hxx>
 #include <QtTools.hxx>
@@ -30,6 +31,11 @@
 #if CHECK_ANY_QT_USING_X11
 #include <QtX11Support.hxx>
 #endif
+#include <window.h>
+
+#include <vcl/qt/QtUtils.hxx>
+
+#include <com/sun/star/datatransfer/dnd/DNDConstants.hpp>
 
 #include <QtCore/QLibraryInfo>
 #include <QtCore/QMimeData>
@@ -55,11 +61,6 @@
 #if CHECK_QT5_USING_X11
 #include <QtX11Extras/QX11Info>
 #endif
-
-#include <window.h>
-#include <vcl/qt/QtUtils.hxx>
-
-#include <com/sun/star/datatransfer/dnd/DNDConstants.hpp>
 
 QtFrame::QtFrame(QtFrame* pParent, SalFrameStyleFlags nStyle)
     : m_pTopLevel(nullptr)

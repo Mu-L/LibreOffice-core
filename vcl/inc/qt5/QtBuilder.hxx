@@ -9,7 +9,11 @@
 
 #pragma once
 
-#include <vector>
+#include <sal/config.h>
+
+#include <rtl/ustring.hxx>
+#include <unotools/resmgr.hxx>
+#include <vcl/builder.hxx>
 
 #include <QtCore/QObject>
 #include <QtWidgets/QDialog>
@@ -24,9 +28,7 @@
 #include <QtWidgets/QToolButton>
 #include <QtWidgets/QTreeView>
 
-#include <rtl/ustring.hxx>
-#include <unotools/resmgr.hxx>
-#include <vcl/builder.hxx>
+#include <vector>
 
 class QtBuilder : public WidgetBuilder<QObject, QObject*, QMenu, QMenu*>
 {

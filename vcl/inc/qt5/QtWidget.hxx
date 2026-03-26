@@ -19,14 +19,17 @@
 
 #pragma once
 
-#include <QtCore/QRect>
-#include <QtWidgets/QGestureEvent>
-#include <QtWidgets/QWidget>
+#include <sal/config.h>
+
 #include <rtl/ustring.hxx>
 #include <tools/solar.h>
 
 #include <com/sun/star/uno/Reference.hxx>
 #include <com/sun/star/accessibility/XAccessibleEditableText.hpp>
+
+#include <QtCore/QRect>
+#include <QtWidgets/QGestureEvent>
+#include <QtWidgets/QWidget>
 
 class QInputEvent;
 class QtFrame;

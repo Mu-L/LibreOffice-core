@@ -21,11 +21,11 @@
 
 #include <sal/config.h>
 
+#include "QtFontFace.hxx"
+
 #include <font/LogicalFontInstance.hxx>
 
 #include <QtGui/QFont>
-
-#include "QtFontFace.hxx"
 
 class QtFont final : public QFont, public LogicalFontInstance
 {

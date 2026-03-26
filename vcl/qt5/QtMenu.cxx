@@ -7,42 +7,37 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include <QtCustomStyle.hxx>
-#include <vcl/themecolors.hxx>
-#include <QtMenu.hxx>
-#include <QtMenu.moc>
+#include <sal/config.h>
 
+#include <QtCustomStyle.hxx>
 #include <QtFrame.hxx>
 #include <QtInstance.hxx>
 #include <QtMainWindow.hxx>
+#include <QtMenu.hxx>
+#include <QtMenu.moc>
 #include <QtTools.hxx>
+#include <bitmaps.hlst>
+#include <strings.hrc>
+#include <window.h>
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-#include <QtWidgets/QActionGroup>
-#else
+#include <o3tl/safeint.hxx>
+#include <vcl/qt/QtUtils.hxx>
+#include <vcl/svapp.hxx>
+#include <vcl/themecolors.hxx>
+#include <vcl/toolkit/floatwin.hxx>
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 #include <QtGui/QActionGroup>
+#include <QtGui/QShortcut>
+#else
+#include <QtWidgets/QActionGroup>
+#include <QtWidgets/QShortcut>
 #endif
-
 #include <QtWidgets/QButtonGroup>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPushButton>
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-#include <QtGui/QShortcut>
-#else
-#include <QtWidgets/QShortcut>
-#endif
 #include <QtWidgets/QStyle>
-
-#include <o3tl/safeint.hxx>
-#include <vcl/svapp.hxx>
-
-#include <strings.hrc>
-#include <bitmaps.hlst>
-
-#include <vcl/qt/QtUtils.hxx>
-#include <vcl/toolkit/floatwin.hxx>
-#include <window.h>
 
 // LO SalMenuButtonItem::mnId is sal_uInt16, so we go with -2, as -1 has a special meaning as automatic id
 constexpr int CLOSE_BUTTON_ID = -2;

@@ -17,18 +17,19 @@
  *   the License at http://www.apache.org/licenses/LICENSE-2.0 .
  */
 
+#include <sal/config.h>
+
+#include <QtGraphicsBase.hxx>
 #include <QtGraphics_Controls.hxx>
+#include <QtInstance.hxx>
+#include <QtTools.hxx>
+#include <scrollbarvalue.hxx>
 
 #include <QtGui/QPainter>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QFrame>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
-
-#include <QtInstance.hxx>
-#include <QtTools.hxx>
-#include <QtGraphicsBase.hxx>
-#include <scrollbarvalue.hxx>
 
 /**
   Conversion function between VCL ControlState together with

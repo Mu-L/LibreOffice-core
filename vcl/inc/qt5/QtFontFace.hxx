@@ -21,8 +21,8 @@
 
 #include <sal/config.h>
 
-#include <vclpluginapi.h>
 #include <font/PhysicalFontFace.hxx>
+#include <vclpluginapi.h>
 
 #include <tools/ref.hxx>
 

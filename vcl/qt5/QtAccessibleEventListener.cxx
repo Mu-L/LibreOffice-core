@@ -17,17 +17,19 @@
  *   the License at http://www.apache.org/licenses/LICENSE-2.0 .
  */
 
+#include <sal/config.h>
+
 #include <QtAccessibleEventListener.hxx>
 #include <QtAccessibleRegistry.hxx>
 
 #include <sal/log.hxx>
+#include <vcl/qt/QtUtils.hxx>
 
 #include <com/sun/star/accessibility/AccessibleEventId.hpp>
 #include <com/sun/star/accessibility/AccessibleStateType.hpp>
 #include <com/sun/star/accessibility/AccessibleTableModelChange.hpp>
 #include <com/sun/star/accessibility/AccessibleTableModelChangeType.hpp>
 #include <com/sun/star/accessibility/TextSegment.hpp>
-#include <vcl/qt/QtUtils.hxx>
 
 #include <QtGui/QAccessible>
 #include <QtGui/QAccessibleTextSelectionEvent>

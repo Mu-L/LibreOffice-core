@@ -19,23 +19,25 @@
 
 #pragma once
 
+#include <sal/config.h>
 #include <config_vclplug.h>
-
-#include <salframe.hxx>
-#include <vclpluginapi.h>
 
 #include "QtTools.hxx"
 #include "QtWidget.hxx"
 
+#include <salframe.hxx>
+#if defined LINUX || defined __sun || defined FREEBSD || defined OPENBSD
+#include <unx/sessioninhibitor.hxx>
+#endif
+#include <vclpluginapi.h>
+
+#include <sal/types.h>
 #include <vcl/svapp.hxx>
 #include <vcl/sysdata.hxx>
 
 #include <QtCore/QObject>
 #include <QtCore/QPointer>
 
-#if defined LINUX || defined __sun || defined FREEBSD || defined OPENBSD
-#include <unx/sessioninhibitor.hxx>
-#endif
 #if CHECK_ANY_QT_USING_X11
 // any better way to get rid of the X11 / Qt type clashes?
 #undef Bool

@@ -7,11 +7,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include <QtInstanceBuilder.hxx>
+#include <sal/config.h>
 
 #include <QtBuilder.hxx>
 #include <QtInstanceAssistant.hxx>
 #include <QtInstanceBox.hxx>
+#include <QtInstanceBuilder.hxx>
 #include <QtInstanceCalendar.hxx>
 #include <QtInstanceCheckButton.hxx>
 #include <QtInstanceComboBox.hxx>

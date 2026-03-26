@@ -9,11 +9,13 @@
 
 #pragma once
 
-#include <map>
+#include <sal/config.h>
+
+#include <com/sun/star/accessibility/XAccessible.hpp>
 
 #include <QtCore/QObject>
 
-#include <com/sun/star/accessibility/XAccessible.hpp>
+#include <map>
 
 using namespace css::accessibility;
 

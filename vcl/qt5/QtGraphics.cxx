@@ -20,11 +20,10 @@
 #include <sal/config.h>
 #include <config_vclplug.h>
 
-#include <QtGraphics.hxx>
-
 #include <QtFont.hxx>
 #include <QtFontFace.hxx>
 #include <QtFrame.hxx>
+#include <QtGraphics.hxx>
 #include <QtGraphics_Controls.hxx>
 #include <QtInstance.hxx>
 #include <QtPainter.hxx>

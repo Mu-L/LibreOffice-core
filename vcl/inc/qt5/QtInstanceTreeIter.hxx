@@ -9,8 +9,11 @@
 
 #pragma once
 
-#include <QtGui/QStandardItemModel>
+#include <sal/config.h>
+
 #include <vcl/weld/weld.hxx>
+
+#include <QtGui/QStandardItemModel>
 
 class QtInstanceTreeIter final : public weld::TreeIter
 {

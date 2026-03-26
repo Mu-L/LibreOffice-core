@@ -9,8 +9,10 @@
 
 #pragma once
 
-#include "QtInstanceTreeIter.hxx"
+#include <sal/config.h>
+
 #include "QtInstanceItemView.hxx"
+#include "QtInstanceTreeIter.hxx"
 #include "QtTreeViewModel.hxx"
 
 #include <vcl/weld/TreeView.hxx>

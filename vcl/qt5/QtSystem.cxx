@@ -7,15 +7,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include <QtGui/QGuiApplication>
-#include <QtGui/QScreen>
-
-#include <tools/gen.hxx>
-#include <vcl/svapp.hxx>
+#include <sal/config.h>
 
 #include <QtInstance.hxx>
 #include <QtSystem.hxx>
 #include <QtTools.hxx>
+
+#include <tools/gen.hxx>
+#include <vcl/svapp.hxx>
+
+#include <QtGui/QGuiApplication>
+#include <QtGui/QScreen>
 
 unsigned int QtSystem::GetDisplayScreenCount() { return QGuiApplication::screens().size(); }
 

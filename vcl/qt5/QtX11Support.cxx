@@ -7,13 +7,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <sal/config.h>
+
 #include <QtX11Support.hxx>
 #include <unx/X11Helper.hxx>
-
-#include <QtCore/QVersionNumber>
-
 #include <QtTools.hxx>
 
+#include <QtCore/QVersionNumber>
 #if CHECK_QT5_USING_X11
 #include <QtX11Extras/QX11Info>
 #endif

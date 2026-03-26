@@ -8,9 +8,11 @@
  *
  */
 
+#include <sal/config.h>
+
+#include <QtAccessibleWidget.hxx>
 #include <QtMainWindow.hxx>
 #include <QtMainWindow.moc>
-#include <QtAccessibleWidget.hxx>
 
 #include <QtGui/QAccessible>
 #include <QtGui/QCloseEvent>

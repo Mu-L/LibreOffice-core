@@ -9,11 +9,9 @@
 
 #pragma once
 
+#include <sal/config.h>
+
 #include "QtBuilder.hxx"
-
-#include <string_view>
-
-#include <QtWidgets/QWidget>
 
 #include <rtl/ustring.hxx>
 #include <vcl/weld/Assistant.hxx>
@@ -35,6 +33,10 @@
 #include <vcl/weld/Toolbar.hxx>
 #include <vcl/weld/TreeView.hxx>
 #include <vcl/weld/weld.hxx>
+
+#include <QtWidgets/QWidget>
+
+#include <string_view>
 
 class QtInstanceBuilder : public weld::Builder
 {

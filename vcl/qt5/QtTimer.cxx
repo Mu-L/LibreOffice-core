@@ -17,19 +17,19 @@
  *   the License at http://www.apache.org/licenses/LICENSE-2.0 .
  */
 
-#include <QtTimer.hxx>
-#include <QtTimer.moc>
-
-#include <QtInstance.hxx>
-
-#include <QtWidgets/QApplication>
-#include <QtCore/QThread>
-
+#include <sal/config.h>
 #include <config_emscripten.h>
 #include <config_vclplug.h>
+
+#include <QtInstance.hxx>
+#include <QtTimer.hxx>
+#include <QtTimer.moc>
+#include <svdata.hxx>
+
 #include <vcl/svapp.hxx>
 
-#include <svdata.hxx>
+#include <QtCore/QThread>
+#include <QtWidgets/QApplication>
 
 QtTimer::QtTimer()
 {

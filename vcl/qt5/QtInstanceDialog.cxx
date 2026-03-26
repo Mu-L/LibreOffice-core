@@ -7,10 +7,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include <QtInstanceDialog.hxx>
-#include <QtInstanceDialog.moc>
+#include <sal/config.h>
 
 #include <QtInstanceButton.hxx>
+#include <QtInstanceDialog.hxx>
+#include <QtInstanceDialog.moc>
 
 #include <vcl/help.hxx>
 

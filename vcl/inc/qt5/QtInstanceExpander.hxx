@@ -9,8 +9,10 @@
 
 #pragma once
 
-#include "QtInstanceWidget.hxx"
+#include <sal/config.h>
+
 #include "QtExpander.hxx"
+#include "QtInstanceWidget.hxx"
 
 class QtInstanceExpander : public QtInstanceWidget, public virtual weld::Expander
 {

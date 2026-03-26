@@ -19,15 +19,20 @@
 
 #pragma once
 
+#include <sal/config.h>
 #include <config_emscripten.h>
 #include <config_vclplug.h>
-#include <vclpluginapi.h>
-#include <unx/geninst.h>
+
+#include "QtFilePicker.hxx"
+
+#include <salinst.hxx>
 #include <salusereventlist.hxx>
-#include <vcl/timer.hxx>
-#include <vcl/weld/ColorChooserDialog.hxx>
+#include <unx/geninst.h>
+#include <vclpluginapi.h>
 
 #include <osl/conditn.hxx>
+#include <vcl/timer.hxx>
+#include <vcl/weld/ColorChooserDialog.hxx>
 
 SAL_WNODEPRECATED_DECLARATIONS_PUSH
 #include <QtCore/QObject>
@@ -40,9 +45,6 @@ SAL_WNODEPRECATED_DECLARATIONS_POP
 #include <type_traits>
 #include <utility>
 #include <vector>
-
-#include "QtFilePicker.hxx"
-#include <salinst.hxx>
 
 class QtClipboard;
 class QtFrame;

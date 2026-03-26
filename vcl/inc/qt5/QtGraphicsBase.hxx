@@ -9,12 +9,14 @@
 
 #pragma once
 
+#include <sal/config.h>
+
 #include "QtFrame.hxx"
 #include "QtInstance.hxx"
 
-#include <QtWidgets/QApplication>
-
 #include <sal/types.h>
+
+#include <QtWidgets/QApplication>
 
 class QtGraphicsBase
 {

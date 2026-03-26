@@ -17,19 +17,25 @@
  *   the License at http://www.apache.org/licenses/LICENSE-2.0 .
  */
 
-#include <QtAccessibleWidget.hxx>
-#include <QtAccessibleWidget.moc>
-
-#include <QtGui/QAccessibleInterface>
+#include <sal/config.h>
 
 #include <QtAccessibleEventListener.hxx>
 #include <QtAccessibleInterimChildWidget.hxx>
 #include <QtAccessibleInterimParentWidget.hxx>
 #include <QtAccessibleRegistry.hxx>
+#include <QtAccessibleWidget.hxx>
+#include <QtAccessibleWidget.moc>
 #include <QtFrame.hxx>
 #include <QtTools.hxx>
 #include <QtWidget.hxx>
 #include <QtXAccessible.hxx>
+
+#include <comphelper/AccessibleImplementationHelper.hxx>
+#include <sal/log.hxx>
+#include <vcl/accessibility/AccessibleTextAttributeHelper.hxx>
+#include <vcl/accessibility/vclxaccessiblecomponent.hxx>
+#include <vcl/qt/QtUtils.hxx>
+#include <vcl/syschild.hxx>
 
 #include <com/sun/star/accessibility/AccessibleRelationType.hpp>
 #include <com/sun/star/accessibility/AccessibleRole.hpp>
@@ -55,12 +61,7 @@
 #include <com/sun/star/lang/DisposedException.hpp>
 #include <com/sun/star/uno/Sequence.hxx>
 
-#include <comphelper/AccessibleImplementationHelper.hxx>
-#include <sal/log.hxx>
-#include <vcl/accessibility/AccessibleTextAttributeHelper.hxx>
-#include <vcl/accessibility/vclxaccessiblecomponent.hxx>
-#include <vcl/qt/QtUtils.hxx>
-#include <vcl/syschild.hxx>
+#include <QtGui/QAccessibleInterface>
 
 using namespace css;
 using namespace css::accessibility;

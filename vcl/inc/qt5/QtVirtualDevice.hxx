@@ -19,13 +19,15 @@
 
 #pragma once
 
-#include <salvd.hxx>
+#include <sal/config.h>
 
-#include <memory>
-#include <vector>
+#include <salvd.hxx>
 
 #include <QtCore/QSize>
 #include <QtGui/QImage>
+
+#include <memory>
+#include <vector>
 
 class QtGraphics;
 class QImage;

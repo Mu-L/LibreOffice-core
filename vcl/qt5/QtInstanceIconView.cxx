@@ -7,9 +7,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <sal/config.h>
+
 #include <QtInstanceIconView.hxx>
 #include <QtInstanceIconView.moc>
-
 #include <QtInstanceTreeIter.hxx>
 
 #include <vcl/qt/QtUtils.hxx>

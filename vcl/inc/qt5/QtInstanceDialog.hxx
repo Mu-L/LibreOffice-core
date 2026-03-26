@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include <sal/config.h>
+
 #include "QtInstanceWindow.hxx"
 
 #include <vcl/weld/Dialog.hxx>

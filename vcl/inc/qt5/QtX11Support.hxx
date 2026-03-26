@@ -9,9 +9,11 @@
 
 #pragma once
 
-#include <string_view>
+#include <sal/config.h>
 
 #include <xcb/xproto.h>
+
+#include <string_view>
 
 class QtX11Support final
 {

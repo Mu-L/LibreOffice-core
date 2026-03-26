@@ -22,13 +22,13 @@
 #include <QtFontFace.hxx>
 #include <QtFont.hxx>
 #include <QtTools.hxx>
-
 #include <font/LogicalFontInstance.hxx>
 
 #include <QtGui/QFont>
 #include <QtGui/QFontDatabase>
 #include <QtGui/QFontInfo>
 #include <QtGui/QRawFont>
+
 #include <utility>
 
 using namespace vcl;

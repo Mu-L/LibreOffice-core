@@ -21,16 +21,16 @@
 
 #include <sal/config.h>
 
-#include <salgdi.hxx>
+#include "QtGraphicsBase.hxx"
 
-#include <memory>
-#include <optional>
+#include <salgdi.hxx>
 
 #include <QtGui/QPainter>
 #include <QtGui/QPainterPath>
 #include <QtGui/QRegion>
 
-#include "QtGraphicsBase.hxx"
+#include <memory>
+#include <optional>
 
 namespace vcl::font
 {

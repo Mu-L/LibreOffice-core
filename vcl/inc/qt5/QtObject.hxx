@@ -19,7 +19,10 @@
 
 #pragma once
 
+#include <sal/config.h>
+
 #include <salobj.hxx>
+
 #include <vcl/sysdata.hxx>
 
 #include <QtCore/QObject>

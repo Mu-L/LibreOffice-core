@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include <sal/config.h>
+
 #include "QtHyperlinkLabel.hxx"
 #include "QtInstanceWidget.hxx"
 

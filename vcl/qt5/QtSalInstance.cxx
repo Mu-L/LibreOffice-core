@@ -17,6 +17,8 @@
  *   the License at http://www.apache.org/licenses/LICENSE-2.0 .
  */
 
+#include <sal/config.h>
+
 #include <QtBitmap.hxx>
 #include <QtSalFrame.hxx>
 #include <QtSalInstance.hxx>

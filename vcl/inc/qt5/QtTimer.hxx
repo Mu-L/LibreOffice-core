@@ -19,7 +19,10 @@
 
 #pragma once
 
+#include <sal/config.h>
+
 #include <saltimer.hxx>
+
 #include <QtCore/QTimer>
 
 class QtTimer final : public QObject, public SalTimer

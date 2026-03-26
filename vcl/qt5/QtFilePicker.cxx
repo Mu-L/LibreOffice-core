@@ -17,15 +17,21 @@
  *   the License at http://www.apache.org/licenses/LICENSE-2.0 .
  */
 
+#include <sal/config.h>
 #include <config_gpgme.h>
 
-#include <fpicker/fpsofficeResMgr.hxx>
 #include <QtFilePicker.hxx>
 #include <QtFilePicker.moc>
-
 #include <QtFrame.hxx>
 #include <QtInstance.hxx>
 #include <QtXWindow.hxx>
+#include <fpicker/fpsofficeResMgr.hxx>
+
+#include <cppuhelper/supportsservice.hxx>
+#include <fpicker/strings.hrc>
+#include <sal/log.hxx>
+#include <vcl/qt/QtUtils.hxx>
+#include <vcl/toolkit/unowrap.hxx>
 
 #include <com/sun/star/awt/XWindow.hpp>
 #include <com/sun/star/frame/Desktop.hpp>
@@ -38,10 +44,6 @@
 #include <com/sun/star/ui/dialogs/ExtendedFilePickerElementIds.hpp>
 #include <com/sun/star/ui/dialogs/TemplateDescription.hpp>
 #include <com/sun/star/uri/ExternalUriReferenceTranslator.hpp>
-#include <cppuhelper/supportsservice.hxx>
-#include <sal/log.hxx>
-#include <vcl/qt/QtUtils.hxx>
-#include <vcl/toolkit/unowrap.hxx>
 
 #include <QtCore/QDebug>
 #include <QtCore/QRegularExpression>
@@ -59,7 +61,6 @@
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QWidget>
 
-#include <fpicker/strings.hrc>
 #include <utility>
 
 using namespace ::com::sun::star;
