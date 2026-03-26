@@ -9,7 +9,23 @@
 
 #include <sal/config.h>
 
+#include "QtFrameGrabber.hxx"
+#include "QtPlayer.hxx"
+#include <QtPlayer.moc>
+
+#include <gstwindow.hxx>
+#include <mediamisc.hxx>
+
+#include <comphelper/processfactory.hxx>
+#include <cppuhelper/supportsservice.hxx>
+#include <sal/log.hxx>
 #include <sal/types.h>
+#include <vcl/qt/QtUtils.hxx>
+#include <vcl/syschild.hxx>
+#include <vcl/sysdata.hxx>
+
+#include <com/sun/star/media/XManager.hpp>
+#include <com/sun/star/uno/XComponentContext.hpp>
 
 SAL_WNODEPRECATED_DECLARATIONS_PUSH
 #include <QtCore/QCoreApplication>
@@ -20,22 +36,6 @@ SAL_WNODEPRECATED_DECLARATIONS_POP
 #include <QtMultimediaWidgets/QVideoWidget>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLayout>
-
-#include <com/sun/star/media/XManager.hpp>
-#include <com/sun/star/uno/XComponentContext.hpp>
-#include <comphelper/processfactory.hxx>
-#include <cppuhelper/supportsservice.hxx>
-#include <sal/log.hxx>
-#include <vcl/qt/QtUtils.hxx>
-#include <vcl/syschild.hxx>
-#include <vcl/sysdata.hxx>
-
-#include <gstwindow.hxx>
-#include <mediamisc.hxx>
-#include "QtFrameGrabber.hxx"
-#include "QtPlayer.hxx"
-
-#include <QtPlayer.moc>
 
 using namespace ::com::sun::star;
 

@@ -7,8 +7,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include <QtCore/QBuffer>
-#include <QtCore/QByteArray>
+#include <sal/config.h>
+
+#include "QtFrameGrabber.hxx"
+#include <QtFrameGrabber.moc>
 
 #include <sal/log.hxx>
 #include <vcl/filter/PngImageReader.hxx>
@@ -17,8 +19,8 @@
 #include <vcl/scheduler.hxx>
 #include <vcl/svapp.hxx>
 
-#include "QtFrameGrabber.hxx"
-#include <QtFrameGrabber.moc>
+#include <QtCore/QBuffer>
+#include <QtCore/QByteArray>
 
 using namespace ::com::sun::star;
 

@@ -9,20 +9,21 @@
 
 #pragma once
 
-#include <mutex>
+#include <sal/config.h>
+
+#include <comphelper/compbase.hxx>
+
+#include <com/sun/star/graphic/XGraphic.hpp>
+#include <com/sun/star/media/XFrameGrabber.hpp>
 
 #include <QtCore/QObject>
 #include <QtCore/QThread>
-
 #include <QtMultimedia/QMediaPlayer>
 #include <QtMultimedia/QVideoFrame>
 #include <QtMultimedia/QVideoSink>
 
-#include <com/sun/star/graphic/XGraphic.hpp>
-#include <com/sun/star/media/XFrameGrabber.hpp>
-#include <comphelper/compbase.hxx>
-
 #include <condition_variable>
+#include <mutex>
 
 namespace avmedia::qt
 {

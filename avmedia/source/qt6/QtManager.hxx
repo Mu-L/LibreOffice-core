@@ -9,9 +9,12 @@
 
 #pragma once
 
+#include <sal/config.h>
+
+#include <cppuhelper/implbase.hxx>
+
 #include <com/sun/star/lang/XServiceInfo.hpp>
 #include <com/sun/star/media/XManager.hpp>
-#include <cppuhelper/implbase.hxx>
 
 namespace avmedia::qt
 {

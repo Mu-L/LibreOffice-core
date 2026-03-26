@@ -11,15 +11,16 @@
 
 #include <sal/config.h>
 
-#include <QtMultimedia/QMediaPlayer>
-#include <QtWidgets/QWidget>
+#include <comphelper/multicontainer2.hxx>
+#include <cppuhelper/compbase.hxx>
+#include <cppuhelper/basemutex.hxx>
 
 #include <com/sun/star/lang/XServiceInfo.hpp>
 #include <com/sun/star/media/XPlayer.hpp>
 #include <com/sun/star/media/XPlayerNotifier.hpp>
-#include <comphelper/multicontainer2.hxx>
-#include <cppuhelper/compbase.hxx>
-#include <cppuhelper/basemutex.hxx>
+
+#include <QtMultimedia/QMediaPlayer>
+#include <QtWidgets/QWidget>
 
 namespace avmedia::qt
 {

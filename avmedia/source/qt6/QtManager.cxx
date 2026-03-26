@@ -7,13 +7,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#include <com/sun/star/uno/XComponentContext.hpp>
+#include <sal/config.h>
+
+#include "QtManager.hxx"
+#include "QtPlayer.hxx"
+
 #include <cppuhelper/supportsservice.hxx>
 #include <rtl/ref.hxx>
 #include <tools/urlobj.hxx>
 
-#include "QtManager.hxx"
-#include "QtPlayer.hxx"
+#include <com/sun/star/uno/XComponentContext.hpp>
 
 namespace avmedia::qt
 {
