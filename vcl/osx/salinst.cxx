@@ -893,19 +893,15 @@ OUString AquaSalInstance::GetDefaultPrinter()
     return aDefaultPrinter;
 }
 
-SalInfoPrinter* AquaSalInstance::CreateInfoPrinter( SalPrinterQueueInfo* pQueueInfo,
-                                                    ImplJobSetup* pSetupData )
+SalInfoPrinter* AquaSalInstance::CreateInfoPrinter(SalPrinterQueueInfo& rQueueInfo,
+                                                   ImplJobSetup* pSetupData)
 {
     // #i113170# may not be the main thread if called from UNO API
     SalData::ensureThreadAutoreleasePool();
 
-    SalInfoPrinter* pNewInfoPrinter = nullptr;
-    if( pQueueInfo )
-    {
-        pNewInfoPrinter = new AquaSalInfoPrinter( *pQueueInfo );
-        if( pSetupData )
-            pNewInfoPrinter->SetPrinterData( pSetupData );
-    }
+    SalInfoPrinter* pNewInfoPrinter = new AquaSalInfoPrinter(rQueueInfo);
+    if (pSetupData)
+        pNewInfoPrinter->SetPrinterData(pSetupData);
 
     return pNewInfoPrinter;
 }

@@ -36,7 +36,7 @@ public:
     WindowsInstance(std::unique_ptr<comphelper::SolarMutex> pMutex, SalData* pSalData);
     virtual ~WindowsInstance();
 
-    virtual SalInfoPrinter* CreateInfoPrinter(SalPrinterQueueInfo* pQueueInfo,
+    virtual SalInfoPrinter* CreateInfoPrinter(SalPrinterQueueInfo& rQueueInfo,
                                               ImplJobSetup* pSetupData) override;
     virtual std::unique_ptr<SalPrinter> CreatePrinter(SalInfoPrinter* pInfoPrinter) override;
     virtual void GetPrinterQueueInfo(ImplPrnQueueList& rList) override;

@@ -125,8 +125,8 @@ static void copyJobDataToJobSetup( ImplJobSetup* pJobSetup, JobData& rData )
 
 // SalInstance
 
-SalInfoPrinter* SvpSalInstance::CreateInfoPrinter( SalPrinterQueueInfo* pQueueInfo,
-                                                   ImplJobSetup*        pJobSetup )
+SalInfoPrinter* SvpSalInstance::CreateInfoPrinter(SalPrinterQueueInfo& rQueueInfo,
+                                                  ImplJobSetup* pJobSetup)
 {
     // create and initialize SalInfoPrinter
     SvpSalInfoPrinter* pPrinter = new SvpSalInfoPrinter;
@@ -134,7 +134,7 @@ SalInfoPrinter* SvpSalInstance::CreateInfoPrinter( SalPrinterQueueInfo* pQueueIn
     if( pJobSetup )
     {
         PrinterInfoManager& rManager( PrinterInfoManager::get() );
-        PrinterInfo aInfo( rManager.getPrinterInfo( pQueueInfo->maPrinterName ) );
+        PrinterInfo aInfo(rManager.getPrinterInfo(rQueueInfo.maPrinterName));
         pPrinter->m_aJobData = aInfo;
 
         if( pJobSetup->GetDriverData() )
@@ -142,7 +142,7 @@ SalInfoPrinter* SvpSalInstance::CreateInfoPrinter( SalPrinterQueueInfo* pQueueIn
                                                 pJobSetup->GetDriverDataLen(), aInfo );
 
         pJobSetup->SetSystem( JOBSETUP_SYSTEM_UNIX );
-        pJobSetup->SetPrinterName( pQueueInfo->maPrinterName );
+        pJobSetup->SetPrinterName(rQueueInfo.maPrinterName);
         pJobSetup->SetDriver( aInfo.m_aDriverName );
         copyJobDataToJobSetup( pJobSetup, aInfo );
     }

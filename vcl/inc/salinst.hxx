@@ -142,8 +142,8 @@ public:
     // pSetupData->mpDriverData can be 0
     // pSetupData must be updated with the current
     // JobSetup
-    virtual SalInfoPrinter* CreateInfoPrinter( SalPrinterQueueInfo* pQueueInfo,
-                                               ImplJobSetup* pSetupData ) = 0;
+    virtual SalInfoPrinter* CreateInfoPrinter(SalPrinterQueueInfo& rQueueInfo,
+                                              ImplJobSetup* pSetupData) = 0;
     virtual void DestroyInfoPrinter(SalInfoPrinter* pPrinter);
     virtual std::unique_ptr<SalPrinter> CreatePrinter( SalInfoPrinter* pInfoPrinter ) = 0;
 

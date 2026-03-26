@@ -148,8 +148,8 @@ public:
     // pSetupData->mpDriverData can be 0
     // pSetupData must be updated with the current
     // JobSetup
-    SAL_DLLPRIVATE virtual SalInfoPrinter* CreateInfoPrinter( SalPrinterQueueInfo* pQueueInfo,
-                                               ImplJobSetup* pSetupData ) override;
+    SAL_DLLPRIVATE virtual SalInfoPrinter* CreateInfoPrinter(SalPrinterQueueInfo& rQueueInfo,
+                                                             ImplJobSetup* pSetupData) override;
     SAL_DLLPRIVATE virtual std::unique_ptr<SalPrinter> CreatePrinter( SalInfoPrinter* pInfoPrinter ) override;
 
     virtual void GetPrinterQueueInfo(ImplPrnQueueList& rList) override;

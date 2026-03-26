@@ -96,15 +96,15 @@ WindowsInstance::WindowsInstance(std::unique_ptr<comphelper::SolarMutex> pMutex,
 
 WindowsInstance::~WindowsInstance() { SkiaHelper::cleanup(); }
 
-SalInfoPrinter* WindowsInstance::CreateInfoPrinter(SalPrinterQueueInfo* pQueueInfo,
+SalInfoPrinter* WindowsInstance::CreateInfoPrinter(SalPrinterQueueInfo& rQueueInfo,
                                                    ImplJobSetup* pSetupData)
 {
     WinSalInfoPrinter* pPrinter = new WinSalInfoPrinter;
-    if (!pQueueInfo->moPortName)
-        GetPrinterQueueState(pQueueInfo);
-    pPrinter->maDriverName = pQueueInfo->maDriver;
-    pPrinter->maDeviceName = pQueueInfo->maPrinterName;
-    pPrinter->maPortName = pQueueInfo->moPortName ? *pQueueInfo->moPortName : OUString();
+    if (!rQueueInfo.moPortName)
+        GetPrinterQueueState(&rQueueInfo);
+    pPrinter->maDriverName = rQueueInfo.maDriver;
+    pPrinter->maDeviceName = rQueueInfo.maPrinterName;
+    pPrinter->maPortName = rQueueInfo.moPortName ? *rQueueInfo.moPortName : OUString();
 
     // check if the provided setup data match the actual printer
     ImplTestSalJobSetup(pPrinter, pSetupData, true);
