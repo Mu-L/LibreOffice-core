@@ -846,7 +846,9 @@ void SvxScriptOrgDialog::createEntry(const weld::TreeIter& rEntry)
         }
         else
         {
-            insertEntry(aChildName, RID_CUIBMP_LIB, &rEntry, false,
+            // bChildrenOnDemand is set to true even though this is a new entry in case the provider
+            // created a container with example content
+            insertEntry(aChildName, RID_CUIBMP_LIB, &rEntry, true,
                         std::make_unique<SFEntry>(aChildNode,xDocumentModel), true);
 
             // If the Parent is not loaded then set to
