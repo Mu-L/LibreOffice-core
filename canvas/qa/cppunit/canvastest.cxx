@@ -104,7 +104,7 @@ public:
     }
 
     // Draw a dashed line scaled, make sure the dashing is scaled properly.
-    void testTdf134053()
+    void testTdf134053_dashed_line_round_cap_rendering()
     {
         setupCanvas(Size(1000, 100));
         // Scale everything up by 10 (2 in render state, 5 in view state).
@@ -174,7 +174,7 @@ public:
 
     CPPUNIT_TEST_SUITE(CanvasTest);
     CPPUNIT_TEST(testDrawLine);
-    CPPUNIT_TEST(testTdf134053);
+    CPPUNIT_TEST(testTdf134053_dashed_line_round_cap_rendering);
     CPPUNIT_TEST_SUITE_END();
 };
 
