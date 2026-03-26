@@ -986,7 +986,8 @@ def expandUri(uri):
 
 
 # --------------------------------------------------------------
-class PythonScriptProvider(unohelper.Base, XBrowseNode, XScriptProvider, XNameContainer):
+class PythonScriptProvider(unohelper.Base, XBrowseNode, XScriptProvider, XNameContainer,
+                           XPropertySet, XInvocation):
     def __init__(self, ctx, *args):
         if log.isDebugLevel():
             mystr = ""
@@ -1060,6 +1061,38 @@ class PythonScriptProvider(unohelper.Base, XBrowseNode, XScriptProvider, XNameCo
 
     def getType(self):
         return self.dirBrowseNode.getType()
+
+    def getPropertyValue(self, name):
+        if hasattr(self.dirBrowseNode, "getPropertyValue"):
+            return self.dirBrowseNode.getPropertyValue(name)
+
+    def setPropertyValue(self, name, value):
+        if hasattr(self.dirBrowseNode, "setPropertyValue"):
+            return self.dirBrowseNode.setPropertyValue(name, value)
+
+    def getPropertySetInfo(self):
+        if hasattr(self.dirBrowseNode, "getPropertySetInfo"):
+            return self.dirBrowseNode.getPropertySetInfo()
+
+    def invoke(self, name, params, outparamindex, outparams):
+        if hasattr(self.dirBrowseNode, "invoke"):
+            return self.dirBrowseNode.invoke(name, params, outparamindex, outparams)
+
+    def getValue(self, name):
+        if hasattr(self.dirBrowseNode, "getValue"):
+            return self.dirBrowseNode.getValue(name)
+
+    def hasMethod(self, name):
+        if hasattr(self.dirBrowseNode, "hasMethod"):
+            return self.dirBrowseNode.hasMethod(name)
+
+    def hasProperty(self, name):
+        if hasattr(self.dirBrowseNode, "hasProperty"):
+            return self.dirBrowseNode.hasProperty(name)
+
+    def getIntrospection(self):
+        if hasattr(self.dirBrowseNode, "getIntrospection"):
+            return self.dirBrowseNode.getIntrospection()
 
     # retrieve function args in parenthesis
     def getFunctionArguments(self, func_signature):
