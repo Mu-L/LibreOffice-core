@@ -11,6 +11,7 @@ $(eval $(call gb_Package_Package,scripting_scriptbindinglib,$(SRCDIR)/scripting/
 
 $(eval $(call gb_Package_add_files,scripting_scriptbindinglib,$(LIBO_SHARE_FOLDER)/basic/ScriptBindingLibrary,\
 	Highlight.xdl \
+	MacroEditor.xdl \
 	dialog.xlb \
 	script.xlb \
 ))
