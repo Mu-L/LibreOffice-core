@@ -589,6 +589,7 @@ class ScriptBrowseNode(unohelper.Base, XBrowseNode, XPropertySet, XInvocation, X
         try:
             if event.ActionCommand == "Run":
                 code = self.editor.getControl("EditorTextField").getText()
+                code = code.encode(sys.getdefaultencoding())
                 code = ensureSourceState(code)
                 mod = types.ModuleType("ooo_script_framework")
                 mod.__dict__[GLOBAL_SCRIPTCONTEXT_NAME] = self.provCtx.scriptContext
