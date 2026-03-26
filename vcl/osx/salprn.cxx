@@ -170,16 +170,16 @@ bool AquaSalInfoPrinter::Setup( weld::Window*, ImplJobSetup* )
     return false;
 }
 
-bool AquaSalInfoPrinter::SetPrinterData( ImplJobSetup* io_pSetupData )
+bool AquaSalInfoPrinter::SetPrinterData(ImplJobSetup& rSetupData)
 {
     // FIXME: implement driver data
-    if( io_pSetupData && io_pSetupData->GetDriverData() )
-        return SetData( JobSetFlags::ALL, io_pSetupData );
+    if (rSetupData.GetDriverData())
+        return SetData(JobSetFlags::ALL, &rSetupData);
 
     bool bSuccess = true;
 
     // set system type
-    io_pSetupData->SetSystem( JOBSETUP_SYSTEM_MAC );
+    rSetupData.SetSystem(JOBSETUP_SYSTEM_MAC);
 
     // get paper format
     if( mpPrintInfo )
@@ -189,23 +189,23 @@ bool AquaSalInfoPrinter::SetPrinterData( ImplJobSetup* io_pSetupData )
         // set paper
         PaperInfo aInfo( PtTo10Mu( width ), PtTo10Mu( height ) );
         aInfo.doSloppyFit();
-        io_pSetupData->SetPaperFormat( aInfo.getPaper() );
-        if( io_pSetupData->GetPaperFormat() == PAPER_USER )
+        rSetupData.SetPaperFormat(aInfo.getPaper());
+        if (rSetupData.GetPaperFormat() == PAPER_USER)
         {
-            io_pSetupData->SetPaperWidth( PtTo10Mu( width ) );
-            io_pSetupData->SetPaperHeight( PtTo10Mu( height ) );
+            rSetupData.SetPaperWidth(PtTo10Mu(width));
+            rSetupData.SetPaperHeight(PtTo10Mu(height));
         }
         else
         {
-            io_pSetupData->SetPaperWidth( 0 );
-            io_pSetupData->SetPaperHeight( 0 );
+            rSetupData.SetPaperWidth(0);
+            rSetupData.SetPaperHeight(0);
         }
 
         // set orientation
-        io_pSetupData->SetOrientation( mePageOrientation );
+        rSetupData.SetOrientation(mePageOrientation);
 
-        io_pSetupData->SetPaperBin( 0 );
-        io_pSetupData->SetDriverData( std::make_unique<sal_uInt8[]>(4), 4 );
+        rSetupData.SetPaperBin(0);
+        rSetupData.SetDriverData(std::make_unique<sal_uInt8[]>(4), 4);
     }
     else
         bSuccess = false;
@@ -562,7 +562,7 @@ bool AquaSalInfoPrinter::AbortJob()
 SalGraphics* AquaSalInfoPrinter::StartPage( ImplJobSetup* i_pSetupData, bool i_bNewJobData )
 {
     if( i_bNewJobData && i_pSetupData )
-        SetPrinterData( i_pSetupData );
+        SetPrinterData(*i_pSetupData);
 
     CGContextRef rContext = [[NSGraphicsContext currentContext] CGContext];
 

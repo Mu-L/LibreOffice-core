@@ -957,7 +957,7 @@ bool Printer::SetJobSetup( const JobSetup& rSetup )
     JobSetup aJobSetup = rSetup;
 
     ReleaseGraphics();
-    if ( mpInfoPrinter->SetPrinterData( &aJobSetup.ImplGetData() ) )
+    if (mpInfoPrinter->SetPrinterData(aJobSetup.ImplGetData()))
     {
         ImplUpdateJobSetupPaper( aJobSetup );
         mbNewJobSetup = true;

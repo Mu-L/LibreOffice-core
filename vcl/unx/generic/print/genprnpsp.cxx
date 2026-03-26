@@ -436,12 +436,12 @@ bool PspSalInfoPrinter::Setup( weld::Window* pFrame, ImplJobSetup* pJobSetup )
 // data should be merged into the driver data
 // If pJobSetup->GetDriverData() IS NULL, then the driver defaults
 // should be merged into the independent data
-bool PspSalInfoPrinter::SetPrinterData( ImplJobSetup* pJobSetup )
+bool PspSalInfoPrinter::SetPrinterData(ImplJobSetup& rJobSetup)
 {
-    if( pJobSetup->GetDriverData() )
-        return SetData( JobSetFlags::ALL, pJobSetup );
+    if (rJobSetup.GetDriverData())
+        return SetData(JobSetFlags::ALL, &rJobSetup);
 
-    copyJobDataToJobSetup( pJobSetup, m_aJobData );
+    copyJobDataToJobSetup(&rJobSetup, m_aJobData);
 
     return true;
 }

@@ -65,8 +65,8 @@ public:
 
     virtual bool                    Setup(weld::Window* pFrame, ImplJobSetup* pSetupData) = 0;
     // This function set the driver data and
-    // set the new indepen data in pSetupData
-    virtual bool                    SetPrinterData( ImplJobSetup* pSetupData ) = 0;
+    // set the new indepen data in rSetupData
+    virtual bool SetPrinterData(ImplJobSetup& rSetupData) = 0;
     // This function merged the indepen driver data
     // and set the new indepen data in pSetupData
     // Only the data must changed, where the bit

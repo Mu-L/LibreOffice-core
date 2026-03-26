@@ -900,7 +900,7 @@ SalInfoPrinter* AquaSalInstance::CreateInfoPrinter(SalPrinterQueueInfo& rQueueIn
     SalData::ensureThreadAutoreleasePool();
 
     SalInfoPrinter* pNewInfoPrinter = new AquaSalInfoPrinter(rQueueInfo);
-    pNewInfoPrinter->SetPrinterData(&rSetupData);
+    pNewInfoPrinter->SetPrinterData(rSetupData);
 
     return pNewInfoPrinter;
 }

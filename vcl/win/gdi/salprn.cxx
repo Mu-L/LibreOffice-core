@@ -981,11 +981,11 @@ bool WinSalInfoPrinter::Setup(weld::Window* pFrame, ImplJobSetup* pSetupData)
     return false;
 }
 
-bool WinSalInfoPrinter::SetPrinterData( ImplJobSetup* pSetupData )
+bool WinSalInfoPrinter::SetPrinterData(ImplJobSetup& rSetupData)
 {
-    if ( !ImplTestSalJobSetup( this, pSetupData, false ) )
+    if (!ImplTestSalJobSetup(this, &rSetupData, false))
         return false;
-    return ImplUpdateSalPrnIC( this, pSetupData );
+    return ImplUpdateSalPrnIC(this, &rSetupData);
 }
 
 bool WinSalInfoPrinter::SetData( JobSetFlags nFlags, ImplJobSetup* pSetupData )
