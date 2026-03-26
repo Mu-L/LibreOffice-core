@@ -821,7 +821,7 @@ std::unique_ptr<SalPrinter> AquaSalInstance::CreatePrinter( SalInfoPrinter* pInf
     return std::unique_ptr<SalPrinter>(new AquaSalPrinter( dynamic_cast<AquaSalInfoPrinter*>(pInfoPrinter) ));
 }
 
-void AquaSalInstance::GetPrinterQueueInfo( ImplPrnQueueList* pList )
+void AquaSalInstance::GetPrinterQueueInfo(ImplPrnQueueList& rList)
 {
     NSArray* pNames = [NSPrinter printerNames];
     NSArray* pTypes = [NSPrinter printerTypes];
@@ -841,7 +841,7 @@ void AquaSalInstance::GetPrinterQueueInfo( ImplPrnQueueList* pList )
             pInfo->mnStatus         = PrintQueueFlags::NONE;
             pInfo->mnJobs           = 0;
 
-            pList->Add( std::move(pInfo) );
+            rList.Add(std::move(pInfo));
         }
     }
 
@@ -856,7 +856,7 @@ void AquaSalInstance::GetPrinterQueueInfo( ImplPrnQueueList* pList )
         pInfo->mnStatus         = PrintQueueFlags::NONE;
         pInfo->mnJobs           = 0;
 
-        pList->Add( std::move(pInfo) );
+        rList.Add(std::move(pInfo));
     }
 }
 

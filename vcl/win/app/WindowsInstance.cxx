@@ -132,7 +132,7 @@ std::unique_ptr<SalPrinter> WindowsInstance::CreatePrinter(SalInfoPrinter* pInfo
     return std::unique_ptr<SalPrinter>(pPrinter);
 }
 
-void WindowsInstance::GetPrinterQueueInfo(ImplPrnQueueList* pList)
+void WindowsInstance::GetPrinterQueueInfo(ImplPrnQueueList& rList)
 {
     DWORD i;
     DWORD nBytes = 0;
@@ -153,7 +153,7 @@ void WindowsInstance::GetPrinterQueueInfo(ImplPrnQueueList* pList)
             pInfo->maPrinterName = o3tl::toU(pWinInfo4[i].pPrinterName);
             pInfo->mnStatus = PrintQueueFlags::NONE;
             pInfo->mnJobs = 0;
-            pList->Add(std::move(pInfo));
+            rList.Add(std::move(pInfo));
         }
     }
     std::free(pWinInfo4);

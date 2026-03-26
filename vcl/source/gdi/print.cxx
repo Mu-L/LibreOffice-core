@@ -359,7 +359,7 @@ static void ImplInitPrnQueueList()
 
     static const char* pEnv = getenv( "SAL_DISABLE_PRINTERLIST" );
     if( !pEnv || !*pEnv )
-        pSVData->mpDefInst->GetPrinterQueueInfo( pSVData->maGDIData.mpPrinterQueueList.get() );
+        pSVData->mpDefInst->GetPrinterQueueInfo(*pSVData->maGDIData.mpPrinterQueueList);
 }
 
 void ImplDeletePrnQueueList()
@@ -1580,7 +1580,7 @@ void Printer::updatePrinters()
         return;
 
     std::unique_ptr<ImplPrnQueueList> pNewList(new ImplPrnQueueList);
-    pSVData->mpDefInst->GetPrinterQueueInfo( pNewList.get() );
+    pSVData->mpDefInst->GetPrinterQueueInfo(*pNewList);
 
     bool bChanged = pPrnList->m_aQueueInfos.size() != pNewList->m_aQueueInfos.size();
     for( decltype(pPrnList->m_aQueueInfos)::size_type i = 0; ! bChanged && i < pPrnList->m_aQueueInfos.size(); i++ )

@@ -55,7 +55,7 @@ public:
     virtual SalInfoPrinter*     CreateInfoPrinter      ( SalPrinterQueueInfo* pQueueInfo,
                                                          ImplJobSetup* pSetupData ) override;
     virtual std::unique_ptr<SalPrinter> CreatePrinter  ( SalInfoPrinter* pInfoPrinter ) override;
-    virtual void                GetPrinterQueueInfo    ( ImplPrnQueueList* pList ) override;
+    virtual void GetPrinterQueueInfo(ImplPrnQueueList& rList) override;
     virtual OUString            GetDefaultPrinter() override;
     virtual void                PostPrintersChanged() {};
     // callbacks for printer updates

@@ -152,7 +152,7 @@ public:
                                                ImplJobSetup* pSetupData ) override;
     SAL_DLLPRIVATE virtual std::unique_ptr<SalPrinter> CreatePrinter( SalInfoPrinter* pInfoPrinter ) override;
 
-    virtual void            GetPrinterQueueInfo( ImplPrnQueueList* pList ) override;
+    virtual void GetPrinterQueueInfo(ImplPrnQueueList& rList) override;
     virtual OUString        GetDefaultPrinter() override;
     virtual void            PostPrintersChanged() override;
 

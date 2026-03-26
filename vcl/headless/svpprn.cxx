@@ -159,7 +159,7 @@ std::unique_ptr<SalPrinter> SvpSalInstance::CreatePrinter( SalInfoPrinter* pInfo
     return std::unique_ptr<SalPrinter>(pPrinter);
 }
 
-void SvpSalInstance::GetPrinterQueueInfo( ImplPrnQueueList* pList )
+void SvpSalInstance::GetPrinterQueueInfo(ImplPrnQueueList& rList)
 {
     PrinterInfoManager& rManager( PrinterInfoManager::get() );
     static const char* pNoSyncDetection = getenv( "SAL_DISABLE_SYNCHRONOUS_PRINTER_DETECTION" );
@@ -184,7 +184,7 @@ void SvpSalInstance::GetPrinterQueueInfo( ImplPrnQueueList* pList )
         if (getPdfDir(rInfo, sPdfDir))
             pInfo->maLocation = sPdfDir;
 
-        pList->Add( std::move(pInfo) );
+        rList.Add(std::move(pInfo));
     }
 }
 

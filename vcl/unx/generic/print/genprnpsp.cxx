@@ -301,7 +301,7 @@ std::unique_ptr<SalPrinter> SalGenericInstance::CreatePrinter( SalInfoPrinter* p
     return std::unique_ptr<SalPrinter>(pPrinter);
 }
 
-void SalGenericInstance::GetPrinterQueueInfo( ImplPrnQueueList* pList )
+void SalGenericInstance::GetPrinterQueueInfo(ImplPrnQueueList& rList)
 {
     mbPrinterInit = true;
     PrinterInfoManager& rManager( PrinterInfoManager::get() );
@@ -327,7 +327,7 @@ void SalGenericInstance::GetPrinterQueueInfo( ImplPrnQueueList* pList )
         if (getPdfDir(rInfo, sPdfDir))
             pInfo->maLocation = sPdfDir;
 
-        pList->Add( std::move(pInfo) );
+        rList.Add(std::move(pInfo));
     }
 }
 

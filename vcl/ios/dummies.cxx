@@ -44,7 +44,7 @@ SalInfoPrinter* SvpSalInstance::CreateInfoPrinter( SalPrinterQueueInfo* /* pQueu
     return NULL;
 }
 
-void SvpSalInstance::GetPrinterQueueInfo( ImplPrnQueueList* /* pList */ )
+void SvpSalInstance::GetPrinterQueueInfo(ImplPrnQueueList& /* rList */)
 {
 }
 
@@ -68,7 +68,7 @@ SalInfoPrinter* SalGenericInstance::CreateInfoPrinter( SalPrinterQueueInfo* /* p
     return NULL;
 }
 
-void SalGenericInstance::GetPrinterQueueInfo( ImplPrnQueueList* /* pList */ )
+void SalGenericInstance::GetPrinterQueueInfo(ImplPrnQueueList& /* rList */)
 {
 }
 
