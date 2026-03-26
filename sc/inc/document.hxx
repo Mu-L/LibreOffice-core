@@ -117,8 +117,6 @@ class SparklineList;
 class SheetViewManager;
 }
 
-class Fraction;
-
 class OutputDevice;
 class SdrObject;
 class SfxBroadcaster;
