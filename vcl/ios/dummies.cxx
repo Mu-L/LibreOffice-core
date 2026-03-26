@@ -58,10 +58,6 @@ OUString SalGenericInstance::GetDefaultPrinter()
     return OUString();
 }
 
-void SalGenericInstance::PostPrintersChanged()
-{
-}
-
 SalInfoPrinter* SalGenericInstance::CreateInfoPrinter(SalPrinterQueueInfo& /* rQueueInfo */,
                                                       ImplJobSetup& /* rJobSetup */)
 {
