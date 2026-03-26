@@ -126,26 +126,23 @@ static void copyJobDataToJobSetup( ImplJobSetup* pJobSetup, JobData& rData )
 // SalInstance
 
 SalInfoPrinter* SvpSalInstance::CreateInfoPrinter(SalPrinterQueueInfo& rQueueInfo,
-                                                  ImplJobSetup* pJobSetup)
+                                                  ImplJobSetup& rJobSetup)
 {
     // create and initialize SalInfoPrinter
     SvpSalInfoPrinter* pPrinter = new SvpSalInfoPrinter;
 
-    if( pJobSetup )
-    {
-        PrinterInfoManager& rManager( PrinterInfoManager::get() );
-        PrinterInfo aInfo(rManager.getPrinterInfo(rQueueInfo.maPrinterName));
-        pPrinter->m_aJobData = aInfo;
+    PrinterInfoManager& rManager(PrinterInfoManager::get());
+    PrinterInfo aInfo(rManager.getPrinterInfo(rQueueInfo.maPrinterName));
+    pPrinter->m_aJobData = aInfo;
 
-        if( pJobSetup->GetDriverData() )
-            JobData::constructFromStreamBuffer( pJobSetup->GetDriverData(),
-                                                pJobSetup->GetDriverDataLen(), aInfo );
+    if (rJobSetup.GetDriverData())
+        JobData::constructFromStreamBuffer(rJobSetup.GetDriverData(), rJobSetup.GetDriverDataLen(),
+                                           aInfo);
 
-        pJobSetup->SetSystem( JOBSETUP_SYSTEM_UNIX );
-        pJobSetup->SetPrinterName(rQueueInfo.maPrinterName);
-        pJobSetup->SetDriver( aInfo.m_aDriverName );
-        copyJobDataToJobSetup( pJobSetup, aInfo );
-    }
+    rJobSetup.SetSystem(JOBSETUP_SYSTEM_UNIX);
+    rJobSetup.SetPrinterName(rQueueInfo.maPrinterName);
+    rJobSetup.SetDriver(aInfo.m_aDriverName);
+    copyJobDataToJobSetup(&rJobSetup, aInfo);
 
     return pPrinter;
 }

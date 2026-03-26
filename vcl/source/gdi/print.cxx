@@ -609,7 +609,7 @@ void Printer::ImplInit(SalPrinterQueueInfo& rInfo)
     rData.SetPrinterName( maPrinterName );
     rData.SetDriver( maDriver );
 
-    mpInfoPrinter = pSalInstance->CreateInfoPrinter(rInfo, &rData);
+    mpInfoPrinter = pSalInstance->CreateInfoPrinter(rInfo, rData);
     mpPrinter       = nullptr;
     mpJobGraphics   = nullptr;
     ImplUpdateJobSetupPaper( maJobSetup );

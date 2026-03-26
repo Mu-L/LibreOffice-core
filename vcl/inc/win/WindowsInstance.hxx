@@ -37,7 +37,7 @@ public:
     virtual ~WindowsInstance();
 
     virtual SalInfoPrinter* CreateInfoPrinter(SalPrinterQueueInfo& rQueueInfo,
-                                              ImplJobSetup* pSetupData) override;
+                                              ImplJobSetup& rSetupData) override;
     virtual std::unique_ptr<SalPrinter> CreatePrinter(SalInfoPrinter* pInfoPrinter) override;
     virtual void GetPrinterQueueInfo(ImplPrnQueueList& rList) override;
     virtual void GetPrinterQueueState(SalPrinterQueueInfo* pInfo) override;

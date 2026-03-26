@@ -282,12 +282,12 @@ bool SalGenericInstance::getPdfDir(const PrinterInfo& rInfo, OUString& rDir)
 }
 
 SalInfoPrinter* SalGenericInstance::CreateInfoPrinter(SalPrinterQueueInfo& rQueueInfo,
-                                                      ImplJobSetup* pJobSetup)
+                                                      ImplJobSetup& rJobSetup)
 {
     mbPrinterInit = true;
     // create and initialize SalInfoPrinter
     PspSalInfoPrinter* pPrinter = new PspSalInfoPrinter();
-    configurePspInfoPrinter(pPrinter, &rQueueInfo, pJobSetup);
+    configurePspInfoPrinter(pPrinter, &rQueueInfo, &rJobSetup);
     return pPrinter;
 }
 

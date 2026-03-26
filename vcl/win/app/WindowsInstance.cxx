@@ -97,7 +97,7 @@ WindowsInstance::WindowsInstance(std::unique_ptr<comphelper::SolarMutex> pMutex,
 WindowsInstance::~WindowsInstance() { SkiaHelper::cleanup(); }
 
 SalInfoPrinter* WindowsInstance::CreateInfoPrinter(SalPrinterQueueInfo& rQueueInfo,
-                                                   ImplJobSetup* pSetupData)
+                                                   ImplJobSetup& rSetupData)
 {
     WinSalInfoPrinter* pPrinter = new WinSalInfoPrinter;
     if (!rQueueInfo.moPortName)
@@ -107,9 +107,9 @@ SalInfoPrinter* WindowsInstance::CreateInfoPrinter(SalPrinterQueueInfo& rQueueIn
     pPrinter->maPortName = rQueueInfo.moPortName ? *rQueueInfo.moPortName : OUString();
 
     // check if the provided setup data match the actual printer
-    ImplTestSalJobSetup(pPrinter, pSetupData, true);
+    ImplTestSalJobSetup(pPrinter, &rSetupData, true);
 
-    HDC hDC = ImplCreateSalPrnIC(pPrinter, pSetupData);
+    HDC hDC = ImplCreateSalPrnIC(pPrinter, &rSetupData);
     if (!hDC)
     {
         delete pPrinter;
@@ -117,10 +117,10 @@ SalInfoPrinter* WindowsInstance::CreateInfoPrinter(SalPrinterQueueInfo& rQueueIn
     }
 
     pPrinter->setHDC(hDC);
-    if (!pSetupData->GetDriverData())
-        ImplUpdateSalJobSetup(pPrinter, pSetupData, false, nullptr);
-    ImplDevModeToJobSetup(pPrinter, pSetupData, JobSetFlags::ALL);
-    pSetupData->SetSystem(JOBSETUP_SYSTEM_WINDOWS);
+    if (!rSetupData.GetDriverData())
+        ImplUpdateSalJobSetup(pPrinter, &rSetupData, false, nullptr);
+    ImplDevModeToJobSetup(pPrinter, &rSetupData, JobSetFlags::ALL);
+    rSetupData.SetSystem(JOBSETUP_SYSTEM_WINDOWS);
 
     return pPrinter;
 }

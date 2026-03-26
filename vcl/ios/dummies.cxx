@@ -39,7 +39,7 @@ void SvpSalInstance::PostPrintersChanged()
 }
 
 SalInfoPrinter* SvpSalInstance::CreateInfoPrinter(SalPrinterQueueInfo& /* rQueueInfo */,
-                                                  ImplJobSetup* /* pJobSetup */)
+                                                  ImplJobSetup& /* rJobSetup */)
 {
     return NULL;
 }
@@ -63,7 +63,7 @@ void SalGenericInstance::PostPrintersChanged()
 }
 
 SalInfoPrinter* SalGenericInstance::CreateInfoPrinter(SalPrinterQueueInfo& /* rQueueInfo */,
-                                                      ImplJobSetup* /* pJobSetup */)
+                                                      ImplJobSetup& /* rJobSetup */)
 {
     return NULL;
 }

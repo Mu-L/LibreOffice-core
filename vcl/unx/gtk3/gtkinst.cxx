@@ -317,10 +317,10 @@ void GtkInstance::AddToRecentDocumentList(const OUString& rFileUrl, const OUStri
 }
 
 SalInfoPrinter* GtkInstance::CreateInfoPrinter(SalPrinterQueueInfo& rQueueInfo,
-                                               ImplJobSetup* pSetupData)
+                                               ImplJobSetup& rSetupData)
 {
     EnsureInit();
-    return SalGenericInstance::CreateInfoPrinter(rQueueInfo, pSetupData);
+    return SalGenericInstance::CreateInfoPrinter(rQueueInfo, rSetupData);
 }
 
 std::unique_ptr<SalPrinter> GtkInstance::CreatePrinter( SalInfoPrinter* pInfoPrinter )
