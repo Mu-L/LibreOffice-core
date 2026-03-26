@@ -71,6 +71,19 @@ ENABLE_EDIT_DIALOG = False  # offers a minimal editor for editing.
 # -------------------------------------------------------------------
 
 
+EXAMPLE_MACRO = """\
+def exampleMacro():
+    # Add some text to the end of the document
+    text = XSCRIPTCONTEXT.getDocument().getText()
+    text.getEnd().setString("example text")
+
+
+# lists the scripts, that shall be visible inside LibreOffice. Can be omitted,
+# if all functions shall be visible
+g_exportedScripts = (exampleMacro,)
+"""
+
+
 def encfile(uni):
     return uni.encode(sys.getfilesystemencoding())
 
@@ -758,7 +771,7 @@ class FileBrowseNode(unohelper.Base, XBrowseNode, EditableNode, XPropertySet):
         return None
 
 
-class DirBrowseNode(unohelper.Base, XBrowseNode):
+class DirBrowseNode(unohelper.Base, XBrowseNode, XPropertySet, XInvocation):
     def __init__(self, provCtx, name, rootUrl):
         self.provCtx = provCtx
         self.name = name
@@ -795,6 +808,67 @@ class DirBrowseNode(unohelper.Base, XBrowseNode):
     def getScript(self, uri):
         log.debug("DirBrowseNode getScript " + uri + " invoked")
         raise IllegalArgumentException("DirBrowseNode couldn't instantiate script " + uri, self, 0)
+
+    def getPropertyValue(self, name):
+        ret = None
+        try:
+            if name == "Creatable":
+                ret = urllib.parse.urlsplit(self.rootUrl).scheme == 'file'
+
+            log.debug(f"DirBrowseNode.getPropertyValue called for {name} returning {str(ret)}")
+        except Exception:
+            log.error(f"DirBrowseNode.getPropertyValue error {lastException2String()}")
+            raise
+
+        return ret
+
+    def setPropertyValue(self, name, value):
+        log.debug(f"DirBrowseNode.setPropertyValue called {name}={str(value)}")
+
+    def getPropertySetInfo(self):
+        log.debug("DirBrowseNode.getPropertySetInfo called ")
+        return None
+
+    def invoke(self, name, params, outparamindex, outparams):
+        if name == "Creatable":
+            scriptName = params[0]
+            uri = f"{self.rootUrl}/{scriptName}.py"
+
+            # Create the file with an example macro
+            try:
+                filePath = uno.fileUrlToSystemPath(uri)
+
+                os.makedirs(os.path.dirname(filePath), exist_ok=True)
+
+                with open(filePath, "x", encoding="utf-8") as f:
+                    f.write(EXAMPLE_MACRO)
+
+            except OSError as e:
+                log.error(f"DirBrowseNode Creatable error {e}")
+                raise
+
+            except Exception:
+                log.error(f"DirBrowseNode Creatable error {lastException2String()}")
+                raise
+
+            return (FileBrowseNode(self.provCtx, uri, scriptName), [], [])
+
+        return None
+
+    def setValue(self, name, value):
+        return None
+
+    def getValue(self, name):
+        return None
+
+    def hasMethod(self, name):
+        return False
+
+    def hasProperty(self, name):
+        return False
+
+    def getIntrospection(self):
+        return None
 
 
 class ManifestHandler(XDocumentHandler, unohelper.Base):
