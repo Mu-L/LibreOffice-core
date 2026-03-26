@@ -33,7 +33,6 @@ namespace vcl { class Window; }
 class SfxInPlaceClient_Impl;
 class SfxViewShell;
 class SfxObjectShell;
-class Fraction;
 class ErrCodeMsg;
 namespace tools { class Rectangle; }
 
