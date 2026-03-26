@@ -41,7 +41,7 @@ void SvpSalInstance::PostPrintersChanged()
 SalInfoPrinter* SvpSalInstance::CreateInfoPrinter(SalPrinterQueueInfo& /* rQueueInfo */,
                                                   ImplJobSetup& /* rJobSetup */)
 {
-    return NULL;
+    return nullptr;
 }
 
 void SvpSalInstance::GetPrinterQueueInfo(ImplPrnQueueList& /* rList */)
@@ -65,7 +65,7 @@ void SalGenericInstance::PostPrintersChanged()
 SalInfoPrinter* SalGenericInstance::CreateInfoPrinter(SalPrinterQueueInfo& /* rQueueInfo */,
                                                       ImplJobSetup& /* rJobSetup */)
 {
-    return NULL;
+    return nullptr;
 }
 
 void SalGenericInstance::GetPrinterQueueInfo(ImplPrnQueueList& /* rList */)
