@@ -69,10 +69,12 @@ public:
     static void RegisterFontSubstitutors( vcl::font::PhysicalFontCollection* pFontCollection );
 
 protected:
-    static void configurePspInfoPrinter( PspSalInfoPrinter* pInfoPrinter,
-                                         SalPrinterQueueInfo const * pQueueInfo,
-                                         ImplJobSetup* pSetupData );
     static bool getPdfDir(const psp::PrinterInfo& rInfo, OUString& rDir);
+
+private:
+    static void configurePspInfoPrinter(PspSalInfoPrinter& rPrinter,
+                                        const SalPrinterQueueInfo& rQueueInfo,
+                                        ImplJobSetup& rJobSetup);
 };
 
 inline SalGenericInstance *GetGenericInstance()

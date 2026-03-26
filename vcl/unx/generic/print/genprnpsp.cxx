@@ -242,24 +242,22 @@ static std::vector<OUString> getFaxNumbers()
  *  SalInstance
  */
 
-void SalGenericInstance::configurePspInfoPrinter(PspSalInfoPrinter *pPrinter,
-    SalPrinterQueueInfo const * pQueueInfo, ImplJobSetup* pJobSetup)
+void SalGenericInstance::configurePspInfoPrinter(PspSalInfoPrinter& rPrinter,
+                                                 const SalPrinterQueueInfo& rQueueInfo,
+                                                 ImplJobSetup& rJobSetup)
 {
-    if( !pJobSetup )
-        return;
-
     PrinterInfoManager& rManager( PrinterInfoManager::get() );
-    PrinterInfo aInfo( rManager.getPrinterInfo( pQueueInfo->maPrinterName ) );
-    pPrinter->m_aJobData = aInfo;
+    PrinterInfo aInfo(rManager.getPrinterInfo(rQueueInfo.maPrinterName));
+    rPrinter.m_aJobData = aInfo;
 
-    if( pJobSetup->GetDriverData() )
-        JobData::constructFromStreamBuffer( pJobSetup->GetDriverData(),
-                                            pJobSetup->GetDriverDataLen(), aInfo );
+    if (rJobSetup.GetDriverData())
+        JobData::constructFromStreamBuffer(rJobSetup.GetDriverData(), rJobSetup.GetDriverDataLen(),
+                                           aInfo);
 
-    pJobSetup->SetSystem( JOBSETUP_SYSTEM_UNIX );
-    pJobSetup->SetPrinterName( pQueueInfo->maPrinterName );
-    pJobSetup->SetDriver( aInfo.m_aDriverName );
-    copyJobDataToJobSetup( pJobSetup, aInfo );
+    rJobSetup.SetSystem(JOBSETUP_SYSTEM_UNIX);
+    rJobSetup.SetPrinterName(rQueueInfo.maPrinterName);
+    rJobSetup.SetDriver(aInfo.m_aDriverName);
+    copyJobDataToJobSetup(&rJobSetup, aInfo);
 }
 
 bool SalGenericInstance::getPdfDir(const PrinterInfo& rInfo, OUString& rDir)
@@ -287,7 +285,7 @@ SalInfoPrinter* SalGenericInstance::CreateInfoPrinter(SalPrinterQueueInfo& rQueu
     mbPrinterInit = true;
     // create and initialize SalInfoPrinter
     PspSalInfoPrinter* pPrinter = new PspSalInfoPrinter();
-    configurePspInfoPrinter(pPrinter, &rQueueInfo, &rJobSetup);
+    configurePspInfoPrinter(*pPrinter, rQueueInfo, rJobSetup);
     return pPrinter;
 }
 
