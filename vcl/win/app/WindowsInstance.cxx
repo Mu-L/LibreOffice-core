@@ -210,4 +210,10 @@ OUString WindowsInstance::GetDefaultPrinter()
     return OUString();
 }
 
+const std::list<WinSalPrinter*>& WindowsInstance::GetPrinters() const { return m_aPrinters; }
+
+void WindowsInstance::InsertPrinter(WinSalPrinter* pPrinter) { m_aPrinters.push_front(pPrinter); }
+
+void WindowsInstance::RemovePrinter(WinSalPrinter* pPrinter) { m_aPrinters.remove(pPrinter); }
+
 /* vim:set shiftwidth=4 softtabstop=4 expandtab cinoptions=b1,g0,N-s cinkeys+=0=break: */

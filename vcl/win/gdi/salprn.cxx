@@ -1121,7 +1121,6 @@ void WinSalInfoPrinter::GetPageInfo( const ImplJobSetup*,
 
 static BOOL CALLBACK SalPrintAbortProc( HDC hPrnDC, int /* nError */ )
 {
-    SalData*    pSalData = GetSalData();
     int         i = 0;
     bool        bWhile = true;
 
@@ -1136,10 +1135,11 @@ static BOOL CALLBACK SalPrintAbortProc( HDC hPrnDC, int /* nError */ )
         else
             ++i;
 
+        const std::list<WinSalPrinter*>& rPrinters = GetWindowsInstance().GetPrinters();
         auto aPrinterIt
-            = std::ranges::find_if(pSalData->maPrinters, [&hPrnDC](WinSalPrinter* pPrinter)
+            = std::ranges::find_if(rPrinters, [&hPrnDC](WinSalPrinter* pPrinter)
                                    { return pPrinter && pPrinter->mhDC == hPrnDC; });
-        if (aPrinterIt == pSalData->maPrinters.end())
+        if (aPrinterIt == rPrinters.end())
             return FALSE;
     }
     while ( bWhile );
@@ -1177,9 +1177,7 @@ WinSalPrinter::WinSalPrinter() :
     mbCollate( false ),
     mbValid( true )
 {
-    SalData* pSalData = GetSalData();
-    // insert printer in printerlist
-    pSalData->maPrinters.insert(pSalData->maPrinters.begin(), this);
+    GetWindowsInstance().InsertPrinter(this);
 }
 
 WinSalPrinter::~WinSalPrinter()
@@ -1194,8 +1192,7 @@ WinSalPrinter::~WinSalPrinter()
         DeleteDC( hDC );
     }
 
-    // remove printer from printerlist
-    GetSalData()->maPrinters.remove(this);
+    GetWindowsInstance().RemovePrinter(this);
 }
 
 void WinSalPrinter::markInvalid()

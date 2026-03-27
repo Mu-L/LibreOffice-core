@@ -100,7 +100,6 @@ public:
     HWND                    mhWantLeaveMsg;         // window handle, that want a MOUSELEAVE message
     std::list<WinSalFrame*> maFrames; // frames
     std::list<WinSalObject*> maObjects; // objects
-    std::list<WinSalPrinter*> maPrinters; // printers
     std::array<HDCCache, CACHESIZE_HDC> maHDCCache; // Cache for three DC's
     HBITMAP                 mh50Bmp;                // 50% Bitmap
     HBRUSH                  mh50Brush;              // 50% Brush

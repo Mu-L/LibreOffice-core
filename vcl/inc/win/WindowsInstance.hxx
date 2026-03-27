@@ -20,11 +20,18 @@
 #pragma once
 
 #include <salinst.hxx>
+#include <svdata.hxx>
 #include <vclpluginapi.h>
+
+#include <list>
+
+class WinSalPrinter;
 
 /** Abstract base class for SalInstance implementations on Windows. */
 class VCLPLUG_WIN_PUBLIC WindowsInstance : public SalInstance
 {
+    std::list<WinSalPrinter*> m_aPrinters;
+
 public:
     WindowsInstance(std::unique_ptr<comphelper::SolarMutex> pMutex, SalData* pSalData);
     virtual ~WindowsInstance();
@@ -37,6 +44,17 @@ public:
     virtual OUString GetDefaultPrinter() override;
 
     virtual Platform GetPlatform() const override { return Platform::Windows; }
+
+    const std::list<WinSalPrinter*>& GetPrinters() const;
+    void InsertPrinter(WinSalPrinter* pPrinter);
+    void RemovePrinter(WinSalPrinter* pPrinter);
 };
+
+inline WindowsInstance& GetWindowsInstance()
+{
+    WindowsInstance* pInstance = dynamic_cast<WindowsInstance*>(GetSalInstance());
+    assert(pInstance);
+    return *pInstance;
+}
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab cinoptions=b1,g0,N-s cinkeys+=0=break: */
