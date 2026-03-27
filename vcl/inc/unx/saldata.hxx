@@ -23,6 +23,8 @@
 
 #include <unx/gendata.hxx>
 
+#include <osl/socket.hxx>
+
 class SalX11Display;
 
 class SalXLib;

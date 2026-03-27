@@ -9,8 +9,6 @@
 
 #pragma once
 
-#include <osl/socket.hxx>
-
 #include <svdata.hxx>
 
 #include <memory>
@@ -18,7 +16,6 @@
 #ifndef IOS
 class FreetypeManager;
 #endif
-class SalGenericDisplay;
 
 #ifndef IOS
 
