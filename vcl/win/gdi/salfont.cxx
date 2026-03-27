@@ -62,6 +62,7 @@
 #include <font/PhysicalFontFace.hxx>
 #include <font/fontsubstitution.hxx>
 #include <sft.hxx>
+#include <win/WindowsInstance.hxx>
 #include <win/saldata.hxx>
 #include <win/salgdi.h>
 #include <win/winlayout.hxx>
@@ -892,7 +893,7 @@ static int CALLBACK SalEnumFontsProcExW( const LOGFONTW* lpelfe,
     return 1;
 }
 
-static int lcl_AddFontResource(SalData& rSalData, const OUString& rFontFileURL)
+static int lcl_AddFontResource(WindowsInstance& rWinInstance, const OUString& rFontFileURL)
 {
     OUString aFontSystemPath;
     OSL_VERIFY(!osl::FileBase::getSystemPathFromFileURL(rFontFileURL, aFontSystemPath));
@@ -902,16 +903,17 @@ static int lcl_AddFontResource(SalData& rSalData, const OUString& rFontFileURL)
     if (nRet <= 0)
         return nRet;
 
-    rSalData.maTempFontPaths.insert(aFontSystemPath);
+    rWinInstance.GetData().m_aTempFontPaths.insert(aFontSystemPath);
 
     return nRet;
 }
 
-void ImplReleaseTempFonts(SalData& rSalData)
+void ImplReleaseTempFonts()
 {
-    for (const OUString& rFontPath : rSalData.maTempFontPaths)
+    std::unordered_set<OUString>& rTempFontPaths = GetWindowsInstance().GetData().m_aTempFontPaths;
+    for (const OUString& rFontPath : rTempFontPaths)
         RemoveFontResourceExW(o3tl::toW(rFontPath.getStr()), FR_PRIVATE, nullptr);
-    rSalData.maTempFontPaths.clear();
+    rTempFontPaths.clear();
 }
 
 bool WinSalGraphics::AddTempDevFont(vcl::font::PhysicalFontCollection* pFontCollection,
@@ -930,7 +932,7 @@ bool WinSalGraphics::AddTempDevFont(vcl::font::PhysicalFontCollection* pFontColl
         return false;
     }
 
-    int nFonts = lcl_AddFontResource(*GetSalData(), rFontFileURL);
+    int nFonts = lcl_AddFontResource(GetWindowsInstance(), rFontFileURL);
     if (nFonts <= 0)
         return false;
 
@@ -957,12 +959,12 @@ bool WinSalGraphics::RemoveTempDevFont(const OUString& rFileURL, const OUString&
 {
     OUString path;
     osl::FileBase::getSystemPathFromFileURL(rFileURL, path);
-    auto pSalData = GetSalData();
-    auto aIt = pSalData->maTempFontPaths.find(path);
-    if (aIt != pSalData->maTempFontPaths.end())
+    std::unordered_set<OUString>& rTempFontPaths = GetWindowsInstance().GetData().m_aTempFontPaths;
+    auto aIt = rTempFontPaths.find(path);
+    if (aIt != rTempFontPaths.end())
     {
         RemoveFontResourceExW(o3tl::toW(path.getStr()), FR_PRIVATE, nullptr);
-        pSalData->maTempFontPaths.erase(aIt);
+        rTempFontPaths.erase(aIt);
         return true;
     }
 
@@ -982,16 +984,14 @@ void WinSalGraphics::GetDevFontList( vcl::font::PhysicalFontCollection* pFontCol
             osl::FileBase::RC rcOSL = aFontDir.open();
             if (rcOSL == osl::FileBase::E_None)
             {
+                WindowsInstance& rWinInstance = GetWindowsInstance();
                 osl::DirectoryItem aDirItem;
-                SalData* pSalData = GetSalData();
-                assert(pSalData);
-
                 while (aFontDir.getNextItem(aDirItem, 10) == osl::FileBase::E_None)
                 {
                     osl::FileStatus aFileStatus(osl_FileStatus_Mask_FileURL);
                     rcOSL = aDirItem.getFileStatus(aFileStatus);
                     if (rcOSL == osl::FileBase::E_None)
-                        lcl_AddFontResource(*pSalData, aFileStatus.getFileURL());
+                        lcl_AddFontResource(rWinInstance, aFileStatus.getFileURL());
                 }
             }
         };

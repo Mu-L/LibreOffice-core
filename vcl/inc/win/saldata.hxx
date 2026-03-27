@@ -114,7 +114,6 @@ public:
     bool                    mbObjClassInit;         // is SALOBJECTCLASS initialised
     DWORD                   mnAppThreadId;          // Id from Application-Thread
     std::unordered_map<int, SalIcon> maIconCache;   // icon cache
-    std::unordered_set<OUString> maTempFontPaths; // LibreOffice own fonts (shared and embedded)
     bool                    mbThemeChanged;         // true if visual theme was changed: throw away theme handles
     bool                    mbThemeMenuSupport;
 
@@ -142,8 +141,6 @@ extern SalShlData aSalShlData;
 void ImplClearHDCCache( SalData* pData );
 HDC ImplGetCachedDC( sal_uLong nID, HBITMAP hBmp = nullptr );
 void ImplReleaseCachedDC( sal_uLong nID );
-
-void ImplReleaseTempFonts(SalData&);
 
 HCURSOR ImplLoadSalCursor( int nId );
 HBITMAP ImplLoadSalBitmap( int nId );

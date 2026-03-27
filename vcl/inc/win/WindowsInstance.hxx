@@ -27,10 +27,17 @@
 
 class WinSalPrinter;
 
+struct WindowsInstanceData
+{
+    std::unordered_set<OUString> m_aTempFontPaths;
+};
+
 /** Abstract base class for SalInstance implementations on Windows. */
 class VCLPLUG_WIN_PUBLIC WindowsInstance : public SalInstance
 {
     std::list<WinSalPrinter*> m_aPrinters;
+
+    WindowsInstanceData m_aData;
 
 public:
     WindowsInstance(std::unique_ptr<comphelper::SolarMutex> pMutex, SalData* pSalData);
@@ -48,6 +55,8 @@ public:
     const std::list<WinSalPrinter*>& GetPrinters() const;
     void InsertPrinter(WinSalPrinter* pPrinter);
     void RemovePrinter(WinSalPrinter* pPrinter);
+
+    WindowsInstanceData& GetData() { return m_aData; }
 };
 
 inline WindowsInstance& GetWindowsInstance()

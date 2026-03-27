@@ -303,6 +303,8 @@ private:
     int                     mnPenWidth;         // line width
 };
 
+void ImplReleaseTempFonts();
+
 // Init/Deinit Graphics
 void    ImplUpdateSysColorEntries();
 int     ImplIsSysColorEntry( Color nColor );

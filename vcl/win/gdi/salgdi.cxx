@@ -114,7 +114,7 @@ void ImplFreeSalGDI()
     pSalData->maIconCache.clear();
 
     // delete temporary font list
-    ImplReleaseTempFonts(*pSalData);
+    ImplReleaseTempFonts();
 
     pSalData->mbResourcesAlreadyFreed = true;
 }
