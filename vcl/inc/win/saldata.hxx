@@ -47,7 +47,6 @@ class WinSalVirtualDevice;
 class WinSalPrinter;
 namespace vcl { class Font; }
 struct HDCCache;
-struct TempFontItem;
 class TextOutRenderer;
 class SkiaControlsCache;
 
@@ -114,7 +113,7 @@ public:
     bool                    mbObjClassInit;         // is SALOBJECTCLASS initialised
     DWORD                   mnAppThreadId;          // Id from Application-Thread
     std::unordered_map<int, SalIcon> maIconCache;   // icon cache
-    std::unordered_set<TempFontItem*> maTempFontItems; // LibreOffice own fonts (shared and embedded)
+    std::unordered_set<OUString> maTempFontPaths; // LibreOffice own fonts (shared and embedded)
     bool                    mbThemeChanged;         // true if visual theme was changed: throw away theme handles
     bool                    mbThemeMenuSupport;
 

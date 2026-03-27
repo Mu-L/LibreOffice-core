@@ -892,11 +892,6 @@ static int CALLBACK SalEnumFontsProcExW( const LOGFONTW* lpelfe,
     return 1;
 }
 
-struct TempFontItem
-{
-    OUString maFontResourcePath;
-};
-
 static int lcl_AddFontResource(SalData& rSalData, const OUString& rFontFileURL)
 {
     OUString aFontSystemPath;
@@ -907,22 +902,16 @@ static int lcl_AddFontResource(SalData& rSalData, const OUString& rFontFileURL)
     if (nRet <= 0)
         return nRet;
 
-    TempFontItem* pNewItem = new TempFontItem;
-    pNewItem->maFontResourcePath = aFontSystemPath;
-
-    rSalData.maTempFontItems.insert(pNewItem);
+    rSalData.maTempFontPaths.insert(aFontSystemPath);
 
     return nRet;
 }
 
 void ImplReleaseTempFonts(SalData& rSalData)
 {
-    for (TempFontItem* p : rSalData.maTempFontItems)
-    {
-        RemoveFontResourceExW(o3tl::toW(p->maFontResourcePath.getStr()), FR_PRIVATE, nullptr);
-        delete p;
-    }
-    rSalData.maTempFontItems.clear();
+    for (const OUString& rFontPath : rSalData.maTempFontPaths)
+        RemoveFontResourceExW(o3tl::toW(rFontPath.getStr()), FR_PRIVATE, nullptr);
+    rSalData.maTempFontPaths.clear();
 }
 
 bool WinSalGraphics::AddTempDevFont(vcl::font::PhysicalFontCollection* pFontCollection,
@@ -969,12 +958,11 @@ bool WinSalGraphics::RemoveTempDevFont(const OUString& rFileURL, const OUString&
     OUString path;
     osl::FileBase::getSystemPathFromFileURL(rFileURL, path);
     auto pSalData = GetSalData();
-    auto aIt = std::ranges::find_if(pSalData->maTempFontItems, [&path](const TempFontItem* pItem) { return pItem->maFontResourcePath == path; } );
-    if (aIt != pSalData->maTempFontItems.end())
+    auto aIt = pSalData->maTempFontPaths.find(path);
+    if (aIt != pSalData->maTempFontPaths.end())
     {
         RemoveFontResourceExW(o3tl::toW(path.getStr()), FR_PRIVATE, nullptr);
-        delete *aIt;
-        pSalData->maTempFontItems.erase(aIt);
+        pSalData->maTempFontPaths.erase(aIt);
         return true;
     }
 
