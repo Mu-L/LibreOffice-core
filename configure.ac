@@ -14101,13 +14101,6 @@ then
         qt6_libdirs="$qt6_libdirs /usr/lib64/qt6 /usr/lib64/qt /usr/lib64"
     fi
 
-    qt6_test_include="QtWidgets/qapplication.h"
-    if test "$_os" = "Emscripten"; then
-        qt6_test_library="libQt6Widgets.a"
-    else
-        qt6_test_library="libQt6Widgets.so"
-    fi
-
     dnl Check for qmake6
     if test -n "$QT6DIR"; then
         AC_PATH_PROG(QMAKE6, [qmake], no, [$QT6DIR/bin])
@@ -14129,6 +14122,7 @@ then
     qt6_platformsdir="`$QMAKE6 -query QT_INSTALL_PLUGINS`/platforms"
     QT6_PLATFORMS_SRCDIR="$qt6_platformsdir"
 
+    qt6_test_include="QtWidgets/qapplication.h"
     AC_MSG_CHECKING([for Qt6 headers])
     qt6_incdir="no"
     for inc_dir in $qt6_incdirs; do
@@ -14150,10 +14144,17 @@ then
     CPPFLAGS=$save_CPPFLAGS
     AC_LANG_POP([C++])
 
+    if test "$_os" = "Emscripten"; then
+        qt6_library_suffix=".a"
+    else
+        qt6_library_suffix=".so"
+    fi
+
+    qt6_test_library="libQt6Widgets"
     AC_MSG_CHECKING([for Qt6 libraries])
     qt6_libdir="no"
     for lib_dir in $qt6_libdirs; do
-        if test -r "$lib_dir/$qt6_test_library"; then
+        if test -r "$lib_dir/${qt6_test_library}${qt6_library_suffix}"; then
             qt6_libdir="$lib_dir"
             break
         fi
