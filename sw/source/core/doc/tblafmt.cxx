@@ -854,10 +854,10 @@ void SwCellStyleTable::RemoveBoxFormat(const OUString& sName)
 
 UIName SwCellStyleTable::GetBoxFormatName(const SwBoxAutoFormat& rBoxFormat) const
 {
-    for (size_t i = 0; i < m_aCellStyles.size(); ++i)
+    for (const auto& rCellStyle : m_aCellStyles)
     {
-        if (m_aCellStyles[i].second.get() == &rBoxFormat)
-            return m_aCellStyles[i].first;
+        if (rCellStyle.second.get() == &rBoxFormat)
+            return rCellStyle.first;
     }
 
     // box format not found
@@ -866,10 +866,10 @@ UIName SwCellStyleTable::GetBoxFormatName(const SwBoxAutoFormat& rBoxFormat) con
 
 SwBoxAutoFormat* SwCellStyleTable::GetBoxFormat(const UIName& sName) const
 {
-    for (size_t i = 0; i < m_aCellStyles.size(); ++i)
+    for (const auto& rCellStyle : m_aCellStyles)
     {
-        if (m_aCellStyles[i].first == sName)
-            return m_aCellStyles[i].second.get();
+        if (rCellStyle.first == sName)
+            return rCellStyle.second.get();
     }
 
     return nullptr;
@@ -882,11 +882,11 @@ void SwCellStyleTable::ChangeBoxFormatName(std::u16string_view sFromName, const 
         SAL_INFO("sw.core", "SwCellStyleTable::ChangeBoxName, box with given name already exists");
         return;
     }
-    for (size_t i = 0; i < m_aCellStyles.size(); ++i)
+    for (auto& rCellStyle : m_aCellStyles)
     {
-        if (m_aCellStyles[i].first == sFromName)
+        if (rCellStyle.first == sFromName)
         {
-            m_aCellStyles[i].first = sToName;
+            rCellStyle.first = sToName;
             // changed successfully
             return;
         }

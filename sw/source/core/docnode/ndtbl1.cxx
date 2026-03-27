@@ -1288,10 +1288,8 @@ void SwDoc::SetBoxAttr( const SwCursor& rCursor, const SfxPoolItem &rNew )
 
     std::vector<std::unique_ptr<SwTableFormatCmp>> aFormatCmp;
     aFormatCmp.reserve(std::max<size_t>(255, aBoxes.size()));
-    for (size_t i = 0; i < aBoxes.size(); ++i)
+    for (auto pBox : aBoxes)
     {
-        SwTableBox *pBox = aBoxes[i];
-
         SwFrameFormat *pNewFormat = SwTableFormatCmp::FindNewFormat( aFormatCmp, pBox->GetFrameFormat(), 0 );
         if ( nullptr != pNewFormat )
             pBox->ChgFrameFormat( static_cast<SwTableBoxFormat*>(pNewFormat) );
@@ -1330,14 +1328,14 @@ bool SwDoc::GetBoxAttr( const SwCursor& rCursor, std::unique_ptr<SfxPoolItem>& r
         bRet = true;
         bool bOneFound = false;
         const sal_uInt16 nWhich = rToFill->Which();
-        for (size_t i = 0; i < aBoxes.size(); ++i)
+        for (auto pBox : aBoxes)
         {
             switch ( nWhich )
             {
                 case RES_BACKGROUND:
                 {
                     std::unique_ptr<SvxBrushItem> xBack =
-                        aBoxes[i]->GetFrameFormat()->makeBackgroundBrushItem();
+                        pBox->GetFrameFormat()->makeBackgroundBrushItem();
                     if( !bOneFound )
                     {
                         rToFill = std::move(xBack);
@@ -1351,7 +1349,7 @@ bool SwDoc::GetBoxAttr( const SwCursor& rCursor, std::unique_ptr<SfxPoolItem>& r
                 case RES_FRAMEDIR:
                 {
                     const SvxFrameDirectionItem& rDir =
-                                    aBoxes[i]->GetFrameFormat()->GetFrameDir();
+                                    pBox->GetFrameFormat()->GetFrameDir();
                     if( !bOneFound )
                     {
                         rToFill.reset(rDir.Clone());
@@ -1364,7 +1362,7 @@ bool SwDoc::GetBoxAttr( const SwCursor& rCursor, std::unique_ptr<SfxPoolItem>& r
                 case RES_VERT_ORIENT:
                 {
                     const SwFormatVertOrient& rOrient =
-                                    aBoxes[i]->GetFrameFormat()->GetVertOrient();
+                                    pBox->GetFrameFormat()->GetVertOrient();
                     if( !bOneFound )
                     {
                         rToFill.reset(rOrient.Clone());
@@ -1399,10 +1397,10 @@ sal_uInt16 SwDoc::GetBoxAlign( const SwCursor& rCursor )
     SwSelBoxes aBoxes;
     if( pTableNd && ::lcl_GetBoxSel( rCursor, aBoxes ))
     {
-        for (size_t i = 0; i < aBoxes.size(); ++i)
+        for (auto pBox : aBoxes)
         {
             const SwFormatVertOrient &rOri =
-                            aBoxes[i]->GetFrameFormat()->GetVertOrient();
+                            pBox->GetFrameFormat()->GetVertOrient();
             if( USHRT_MAX == nAlign )
                 nAlign = o3tl::narrowing<sal_uInt16>(rOri.GetVertOrient());
             else if( rOri.GetVertOrient() != nAlign )
