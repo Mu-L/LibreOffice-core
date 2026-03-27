@@ -45,7 +45,6 @@ $(eval $(call gb_Executable_add_libs,lo_kde5filepicker,\
 ))
 
 $(eval $(call gb_Executable_use_libraries,lo_kde5filepicker,\
-    vclplug_gen \
     vcl \
     tl \
     utl \
