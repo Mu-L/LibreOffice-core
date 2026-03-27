@@ -24,7 +24,7 @@
 class SvpSalInfoPrinter final : public PspSalInfoPrinter
 {
 public:
-    virtual bool Setup(weld::Window* pFrame, ImplJobSetup* pSetupData) override;
+    virtual bool Setup(weld::Window& rFrame, ImplJobSetup& rSetupData) override;
 };
 
 class SvpSalPrinter final : public PspSalPrinter

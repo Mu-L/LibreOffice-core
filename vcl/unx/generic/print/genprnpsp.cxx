@@ -394,34 +394,33 @@ void PspSalInfoPrinter::ReleaseGraphics( SalGraphics* pGraphics )
     }
 }
 
-bool PspSalInfoPrinter::Setup( weld::Window* pFrame, ImplJobSetup* pJobSetup )
+bool PspSalInfoPrinter::Setup(weld::Window& rFrame, ImplJobSetup& rJobSetup)
 {
-    if( ! pFrame || ! pJobSetup )
-        return false;
-
     PrinterInfoManager& rManager = PrinterInfoManager::get();
 
-    PrinterInfo aInfo( rManager.getPrinterInfo( pJobSetup->GetPrinterName() ) );
-    if ( pJobSetup->GetDriverData() )
+    PrinterInfo aInfo(rManager.getPrinterInfo(rJobSetup.GetPrinterName()));
+    if (rJobSetup.GetDriverData())
     {
-        SetData( JobSetFlags::ALL, pJobSetup );
-        JobData::constructFromStreamBuffer( pJobSetup->GetDriverData(), pJobSetup->GetDriverDataLen(), aInfo );
+        SetData(JobSetFlags::ALL, &rJobSetup);
+        JobData::constructFromStreamBuffer(rJobSetup.GetDriverData(), rJobSetup.GetDriverDataLen(),
+                                           aInfo);
     }
-    aInfo.m_bPapersizeFromSetup = pJobSetup->GetPapersizeFromSetup();
-    aInfo.meSetupMode = pJobSetup->GetPrinterSetupMode();
+    aInfo.m_bPapersizeFromSetup = rJobSetup.GetPapersizeFromSetup();
+    aInfo.meSetupMode = rJobSetup.GetPrinterSetupMode();
 
-    if (SetupPrinterDriver(pFrame, aInfo))
+    if (SetupPrinterDriver(&rFrame, aInfo))
     {
-        pJobSetup->SetDriverData( nullptr, 0 );
+        rJobSetup.SetDriverData(nullptr, 0);
 
         sal_uInt32 nBytes;
         std::unique_ptr<sal_uInt8[]> pBuffer;
         aInfo.getStreamBuffer( pBuffer, nBytes );
-        pJobSetup->SetDriverData( std::move(pBuffer), nBytes );
+        rJobSetup.SetDriverData(std::move(pBuffer), nBytes);
 
         // copy everything to job setup
-        copyJobDataToJobSetup( pJobSetup, aInfo );
-        JobData::constructFromStreamBuffer( pJobSetup->GetDriverData(), pJobSetup->GetDriverDataLen(), m_aJobData );
+        copyJobDataToJobSetup(&rJobSetup, aInfo);
+        JobData::constructFromStreamBuffer(rJobSetup.GetDriverData(), rJobSetup.GetDriverDataLen(),
+                                           m_aJobData);
         return true;
     }
     return false;

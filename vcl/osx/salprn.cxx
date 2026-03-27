@@ -165,7 +165,7 @@ void AquaSalInfoPrinter::ReleaseGraphics( SalGraphics* )
     mbGraphicsAcquired = false;
 }
 
-bool AquaSalInfoPrinter::Setup( weld::Window*, ImplJobSetup* )
+bool AquaSalInfoPrinter::Setup( weld::Window&, ImplJobSetup&)
 {
     return false;
 }

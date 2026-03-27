@@ -970,12 +970,12 @@ void WinSalInfoPrinter::ReleaseGraphics( SalGraphics* )
     m_bGraphics = false;
 }
 
-bool WinSalInfoPrinter::Setup(weld::Window* pFrame, ImplJobSetup* pSetupData)
+bool WinSalInfoPrinter::Setup(weld::Window& rFrame, ImplJobSetup& rSetupData)
 {
-    if ( ImplUpdateSalJobSetup(this, pSetupData, true, pFrame))
+    if (ImplUpdateSalJobSetup(this, &rSetupData, true, &rFrame))
     {
-        ImplDevModeToJobSetup( this, pSetupData, JobSetFlags::ALL );
-        return ImplUpdateSalPrnIC( this, pSetupData );
+        ImplDevModeToJobSetup(this, &rSetupData, JobSetFlags::ALL);
+        return ImplUpdateSalPrnIC(this, &rSetupData);
     }
 
     return false;

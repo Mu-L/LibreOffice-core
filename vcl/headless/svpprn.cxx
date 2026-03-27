@@ -196,7 +196,7 @@ void SvpSalInstance::PostPrintersChanged()
         pInst->PostEvent( pSalFrame, nullptr, SalEvent::PrinterChanged );
 }
 
-bool SvpSalInfoPrinter::Setup( weld::Window*, ImplJobSetup* )
+bool SvpSalInfoPrinter::Setup( weld::Window&, ImplJobSetup&)
 {
     return false;
 }

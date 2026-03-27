@@ -995,7 +995,7 @@ bool Printer::Setup(weld::Window* pWindow, PrinterSetupMode eMode)
     ImplSVData* pSVData = ImplGetSVData();
     pSVData->maAppData.mnModalMode++;
     nImplSysDialog++;
-    bool bSetup = mpInfoPrinter->Setup(pWindow, &rData);
+    bool bSetup = mpInfoPrinter->Setup(*pWindow, rData);
     pSVData->maAppData.mnModalMode--;
     nImplSysDialog--;
     if ( bSetup )
