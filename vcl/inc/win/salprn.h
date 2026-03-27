@@ -64,7 +64,7 @@ public:
     virtual void                    ReleaseGraphics( SalGraphics* pGraphics ) override;
     virtual bool Setup(weld::Window& rFrame, ImplJobSetup& rSetupData) override;
     virtual bool SetPrinterData(ImplJobSetup& rSetupData) override;
-    virtual bool                    SetData( JobSetFlags nFlags, ImplJobSetup* pSetupData ) override;
+    virtual bool SetData(JobSetFlags nFlags, ImplJobSetup& rSetupData) override;
     virtual void                    GetPageInfo( const ImplJobSetup* pSetupData,
                                                  tools::Long& rOutWidth, tools::Long& rOutHeight,
                                                  Point& rPageOffset,

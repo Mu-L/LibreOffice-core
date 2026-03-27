@@ -401,7 +401,7 @@ bool PspSalInfoPrinter::Setup(weld::Window& rFrame, ImplJobSetup& rJobSetup)
     PrinterInfo aInfo(rManager.getPrinterInfo(rJobSetup.GetPrinterName()));
     if (rJobSetup.GetDriverData())
     {
-        SetData(JobSetFlags::ALL, &rJobSetup);
+        SetData(JobSetFlags::ALL, rJobSetup);
         JobData::constructFromStreamBuffer(rJobSetup.GetDriverData(), rJobSetup.GetDriverDataLen(),
                                            aInfo);
     }
@@ -426,27 +426,26 @@ bool PspSalInfoPrinter::Setup(weld::Window& rFrame, ImplJobSetup& rJobSetup)
     return false;
 }
 
-// This function gets the driver data and puts it into pJobSetup
-// If pJobSetup->GetDriverData() is NOT NULL, then the independent
+// This function gets the driver data and puts it into rJobSetup
+// If rJobSetup.GetDriverData() is NOT NULL, then the independent
 // data should be merged into the driver data
-// If pJobSetup->GetDriverData() IS NULL, then the driver defaults
+// If rJobSetup.GetDriverData() IS NULL, then the driver defaults
 // should be merged into the independent data
 bool PspSalInfoPrinter::SetPrinterData(ImplJobSetup& rJobSetup)
 {
     if (rJobSetup.GetDriverData())
-        return SetData(JobSetFlags::ALL, &rJobSetup);
+        return SetData(JobSetFlags::ALL, rJobSetup);
 
     copyJobDataToJobSetup(&rJobSetup, m_aJobData);
 
     return true;
 }
 
-bool PspSalInfoPrinter::SetData(
-    JobSetFlags nSetDataFlags,
-    ImplJobSetup* pJobSetup )
+bool PspSalInfoPrinter::SetData(JobSetFlags nSetDataFlags, ImplJobSetup& rJobSetup)
 {
     JobData aData;
-    JobData::constructFromStreamBuffer( pJobSetup->GetDriverData(), pJobSetup->GetDriverDataLen(), aData );
+    JobData::constructFromStreamBuffer(rJobSetup.GetDriverData(), rJobSetup.GetDriverDataLen(),
+                                       aData);
 
     if( aData.m_pParser )
     {
@@ -455,29 +454,31 @@ bool PspSalInfoPrinter::SetData(
 
         // merge orientation if necessary
         if( nSetDataFlags & JobSetFlags::ORIENTATION )
-            aData.m_eOrientation = pJobSetup->GetOrientation() == Orientation::Landscape ? orientation::Landscape : orientation::Portrait;
+            aData.m_eOrientation = rJobSetup.GetOrientation() == Orientation::Landscape
+                                       ? orientation::Landscape
+                                       : orientation::Portrait;
 
         // merge papersize if necessary
         if( nSetDataFlags & JobSetFlags::PAPERSIZE )
         {
             OUString aPaper;
 
-            if( pJobSetup->GetPaperFormat() == PAPER_USER )
-                aPaper = aData.m_pParser->matchPaper(
-                    TenMuToPt( pJobSetup->GetPaperWidth() ),
-                    TenMuToPt( pJobSetup->GetPaperHeight() ),
-                    &aData.m_eOrientation );
+            if (rJobSetup.GetPaperFormat() == PAPER_USER)
+                aPaper = aData.m_pParser->matchPaper(TenMuToPt(rJobSetup.GetPaperWidth()),
+                                                     TenMuToPt(rJobSetup.GetPaperHeight()),
+                                                     &aData.m_eOrientation);
             else
-                aPaper = OStringToOUString(PaperInfo::toPSName(pJobSetup->GetPaperFormat()), RTL_TEXTENCODING_ISO_8859_1);
+                aPaper = OStringToOUString(PaperInfo::toPSName(rJobSetup.GetPaperFormat()),
+                                           RTL_TEXTENCODING_ISO_8859_1);
 
             pKey = aData.m_pParser->getKey( u"PageSize"_ustr );
             pValue = pKey ? pKey->getValueCaseInsensitive( aPaper ) : nullptr;
 
             // some PPD files do not specify the standard paper names (e.g. C5 instead of EnvC5)
             // try to find the correct paper anyway using the size
-            if( pKey && ! pValue && pJobSetup->GetPaperFormat() != PAPER_USER )
+            if (pKey && !pValue && rJobSetup.GetPaperFormat() != PAPER_USER)
             {
-                PaperInfo aInfo( pJobSetup->GetPaperFormat() );
+                PaperInfo aInfo(rJobSetup.GetPaperFormat());
                 aPaper = aData.m_pParser->matchPaper(
                     TenMuToPt( aInfo.getWidth() ),
                     TenMuToPt( aInfo.getHeight() ),
@@ -495,11 +496,11 @@ bool PspSalInfoPrinter::SetData(
             pKey = aData.m_pParser->getKey( u"InputSlot"_ustr );
             if( pKey )
             {
-                int nPaperBin = pJobSetup->GetPaperBin();
+                int nPaperBin = rJobSetup.GetPaperBin();
                 if( nPaperBin >= pKey->countValues() )
                     pValue = pKey->getDefaultValue();
                 else
-                    pValue = pKey->getValue( pJobSetup->GetPaperBin() );
+                    pValue = pKey->getValue(rJobSetup.GetPaperBin());
 
                 // may fail due to constraints;
                 // real paper bin is copied back to jobsetup in that case
@@ -516,7 +517,7 @@ bool PspSalInfoPrinter::SetData(
             if( pKey )
             {
                 pValue = nullptr;
-                switch( pJobSetup->GetDuplexMode() )
+                switch (rJobSetup.GetDuplexMode())
                 {
                 case DuplexMode::Off:
                     pValue = pKey->getValue( u"None"_ustr );
@@ -539,10 +540,10 @@ bool PspSalInfoPrinter::SetData(
                 aData.m_aContext.setValue( pKey, pValue );
             }
         }
-        aData.m_bPapersizeFromSetup = pJobSetup->GetPapersizeFromSetup();
+        aData.m_bPapersizeFromSetup = rJobSetup.GetPapersizeFromSetup();
 
         m_aJobData = aData;
-        copyJobDataToJobSetup( pJobSetup, aData );
+        copyJobDataToJobSetup(&rJobSetup, aData);
         return true;
     }
 

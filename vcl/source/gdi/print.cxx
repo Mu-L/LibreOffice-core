@@ -1104,7 +1104,7 @@ bool Printer::SetOrientation( Orientation eOrientation )
         }
 
         ReleaseGraphics();
-        if ( mpInfoPrinter->SetData( JobSetFlags::ORIENTATION, &rData ) )
+        if (mpInfoPrinter->SetData(JobSetFlags::ORIENTATION, rData))
         {
             ImplUpdateJobSetupPaper( aJobSetup );
             mbNewJobSetup = true;
@@ -1145,7 +1145,7 @@ bool Printer::SetPaperBin( sal_uInt16 nPaperBin )
         }
 
         ReleaseGraphics();
-        if ( mpInfoPrinter->SetData( JobSetFlags::PAPERBIN, &rData ) )
+        if (mpInfoPrinter->SetData(JobSetFlags::PAPERBIN, rData))
         {
             ImplUpdateJobSetupPaper( aJobSetup );
             mbNewJobSetup = true;
@@ -1269,7 +1269,7 @@ void Printer::SetPaper( Paper ePaper )
     ReleaseGraphics();
     if ( ePaper == PAPER_USER )
         ImplFindPaperFormatForUserSize( aJobSetup );
-    if ( mpInfoPrinter->SetData( JobSetFlags::PAPERSIZE | JobSetFlags::ORIENTATION, &rData ))
+    if (mpInfoPrinter->SetData(JobSetFlags::PAPERSIZE | JobSetFlags::ORIENTATION, rData))
     {
         ImplUpdateJobSetupPaper( aJobSetup );
         mbNewJobSetup = true;
@@ -1331,7 +1331,7 @@ bool Printer::SetPaperSizeUser( const Size& rSize )
         ImplFindPaperFormatForUserSize( aJobSetup );
 
         // Changing the paper size can also change the orientation!
-        if ( mpInfoPrinter->SetData( JobSetFlags::PAPERSIZE | JobSetFlags::ORIENTATION, &rData ))
+        if (mpInfoPrinter->SetData(JobSetFlags::PAPERSIZE | JobSetFlags::ORIENTATION, rData))
         {
             ImplUpdateJobSetupPaper( aJobSetup );
             mbNewJobSetup = true;
@@ -1425,7 +1425,7 @@ void Printer::SetDuplexMode( DuplexMode eDuplex )
     }
 
     ReleaseGraphics();
-    if ( mpInfoPrinter->SetData( JobSetFlags::DUPLEXMODE, &rData ) )
+    if (mpInfoPrinter->SetData(JobSetFlags::DUPLEXMODE, rData))
     {
         ImplUpdateJobSetupPaper( aJobSetup );
         mbNewJobSetup = true;

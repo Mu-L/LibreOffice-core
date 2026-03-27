@@ -174,7 +174,7 @@ bool AquaSalInfoPrinter::SetPrinterData(ImplJobSetup& rSetupData)
 {
     // FIXME: implement driver data
     if (rSetupData.GetDriverData())
-        return SetData(JobSetFlags::ALL, &rSetupData);
+        return SetData(JobSetFlags::ALL, rSetupData);
 
     bool bSuccess = true;
 
@@ -237,32 +237,32 @@ void AquaSalInfoPrinter::setPaperSize( tools::Long i_nWidth, tools::Long i_nHeig
     mePageOrientation = i_eSetOrientation;
 }
 
-bool AquaSalInfoPrinter::SetData( JobSetFlags i_nFlags, ImplJobSetup* io_pSetupData )
+bool AquaSalInfoPrinter::SetData(JobSetFlags i_nFlags, ImplJobSetup& rSetupData)
 {
-    if( ! io_pSetupData || io_pSetupData->GetSystem() != JOBSETUP_SYSTEM_MAC )
+    if (rSetupData.GetSystem() != JOBSETUP_SYSTEM_MAC)
         return false;
 
     if( mpPrintInfo )
     {
         if( i_nFlags & JobSetFlags::ORIENTATION )
-            mePageOrientation = io_pSetupData->GetOrientation();
+            mePageOrientation = rSetupData.GetOrientation();
 
         if( i_nFlags & JobSetFlags::PAPERSIZE )
         {
             // set paper format
             tools::Long width = 21000, height = 29700;
-            if( io_pSetupData->GetPaperFormat() == PAPER_USER )
+            if (rSetupData.GetPaperFormat() == PAPER_USER)
             {
                 // #i101108# sanity check
-                if( io_pSetupData->GetPaperWidth() && io_pSetupData->GetPaperHeight() )
+                if (rSetupData.GetPaperWidth() && rSetupData.GetPaperHeight())
                 {
-                    width = io_pSetupData->GetPaperWidth();
-                    height = io_pSetupData->GetPaperHeight();
+                    width = rSetupData.GetPaperWidth();
+                    height = rSetupData.GetPaperHeight();
                 }
             }
             else
             {
-                PaperInfo aInfo( io_pSetupData->GetPaperFormat() );
+                PaperInfo aInfo(rSetupData.GetPaperFormat());
                 width = aInfo.getWidth();
                 height = aInfo.getHeight();
             }
@@ -379,7 +379,7 @@ bool AquaSalInfoPrinter::StartJob( const OUString* i_pFileName,
 
     // update job data
     if( i_pSetupData )
-        SetData( JobSetFlags::ALL, i_pSetupData );
+        SetData(JobSetFlags::ALL, *i_pSetupData);
 
     // do we want a progress panel ?
     bool bShowProgressPanel = true;

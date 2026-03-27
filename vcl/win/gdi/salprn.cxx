@@ -988,13 +988,13 @@ bool WinSalInfoPrinter::SetPrinterData(ImplJobSetup& rSetupData)
     return ImplUpdateSalPrnIC(this, &rSetupData);
 }
 
-bool WinSalInfoPrinter::SetData( JobSetFlags nFlags, ImplJobSetup* pSetupData )
+bool WinSalInfoPrinter::SetData(JobSetFlags nFlags, ImplJobSetup& rSetupData)
 {
-    ImplJobSetupToDevMode( this, pSetupData, nFlags );
-    if ( ImplUpdateSalJobSetup( this, pSetupData, true, nullptr ) )
+    ImplJobSetupToDevMode(this, &rSetupData, nFlags);
+    if (ImplUpdateSalJobSetup(this, &rSetupData, true, nullptr))
     {
-        ImplDevModeToJobSetup( this, pSetupData, nFlags );
-        return ImplUpdateSalPrnIC( this, pSetupData );
+        ImplDevModeToJobSetup(this, &rSetupData, nFlags);
+        return ImplUpdateSalPrnIC(this, &rSetupData);
     }
 
     return false;
