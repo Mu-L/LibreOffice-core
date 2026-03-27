@@ -995,8 +995,7 @@ void SchXMLTableHelper::switchRangesFromOuterToInternalIfNecessary(
                         }
 
                         ::std::vector< sal_Int32 > aSequenceIndexesToDelete;
-                        std::copy_if(rTable.aHiddenColumns.begin(), rTable.aHiddenColumns.end(),
-                            std::back_inserter(aSequenceIndexesToDelete),
+                        std::ranges::copy_if(rTable.aHiddenColumns, std::back_inserter(aSequenceIndexesToDelete),
                             [&aUsageMap](sal_Int32 nSequenceIndex) { return aUsageMap.find(nSequenceIndex) == aUsageMap.end(); });
 
                         // delete unnecessary sequences of the internal data

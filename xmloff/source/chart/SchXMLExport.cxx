@@ -513,7 +513,7 @@ Reference< chart2::data::XDataSource > lcl_pressUsedDataIntoRectangularFormat( c
 
     //add all other sequences now without x-values
     lcl_MatchesRole aHasXValues( u"values-x"_ustr );
-    std::copy_if(aSeriesSeqVector.begin(), aSeriesSeqVector.end(), std::back_inserter(aLabeledSeqVector),
+    std::ranges::copy_if(aSeriesSeqVector, std::back_inserter(aLabeledSeqVector),
                  [&aHasXValues](const auto& rSeriesSeq) { return !aHasXValues( rSeriesSeq ); });
 
     Sequence< Reference< chart2::data::XLabeledDataSequence > > aSeq( comphelper::containerToSequence(aLabeledSeqVector) );
