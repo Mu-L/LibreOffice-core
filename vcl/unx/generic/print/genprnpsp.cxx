@@ -441,10 +441,6 @@ bool PspSalInfoPrinter::SetPrinterData(ImplJobSetup& rJobSetup)
     return true;
 }
 
-// This function merges the independent driver data
-// and sets the new independent data in pJobSetup
-// Only the data must be changed, where the bit
-// in nGetDataFlags is set
 bool PspSalInfoPrinter::SetData(
     JobSetFlags nSetDataFlags,
     ImplJobSetup* pJobSetup )

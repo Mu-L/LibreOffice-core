@@ -67,10 +67,9 @@ public:
     // This function set the driver data and
     // set the new indepen data in rSetupData
     virtual bool SetPrinterData(ImplJobSetup& rSetupData) = 0;
-    // This function merged the indepen driver data
-    // and set the new indepen data in pSetupData
-    // Only the data must changed, where the bit
-    // in nFlags is set
+    // This function merges the independent driver data
+    // and sets the new independent data in pSetupData
+    // Only the data must be changed for which the bit in nFlags is set.
     virtual bool                    SetData( JobSetFlags nFlags, ImplJobSetup* pSetupData ) = 0;
 
     virtual void                    GetPageInfo( const ImplJobSetup* pSetupData,
