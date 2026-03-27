@@ -115,8 +115,8 @@ public:
     // get PrinterInfoManager type
     Type getType() const { return m_eType; }
 
-    // lists the names of all known printers
-    std::vector<OUString> listPrinters() const;
+    // retrieve all known printers
+    const std::unordered_map<OUString, PrinterInfo>& getPrinters() const { return m_aPrinters; }
 
     // gets info about a named printer
     const PrinterInfo& getPrinterInfo( const OUString& rPrinter ) const;

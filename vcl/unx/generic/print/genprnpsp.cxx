@@ -310,13 +310,11 @@ void SalGenericInstance::GetPrinterQueueInfo(ImplPrnQueueList& rList)
         rManager.checkPrintersChanged( true );
     }
 
-    std::vector<OUString> aPrinters = rManager.listPrinters();
-    for (auto const& printer : aPrinters)
+    for (const auto& [rPrinterName, rInfo] : rManager.getPrinters())
     {
-        const PrinterInfo& rInfo( rManager.getPrinterInfo(printer) );
         // create new entry
         std::unique_ptr<SalPrinterQueueInfo> pInfo(new SalPrinterQueueInfo);
-        pInfo->maPrinterName    = printer;
+        pInfo->maPrinterName = rPrinterName;
         pInfo->maDriver         = rInfo.m_aDriverName;
         pInfo->maLocation       = rInfo.m_aLocation;
         pInfo->maComment        = rInfo.m_aComment;

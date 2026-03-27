@@ -522,14 +522,6 @@ void PrinterInfoManager::initialize()
     }
 }
 
-std::vector<OUString> PrinterInfoManager::listPrinters() const
-{
-    std::vector<OUString> aPrinters;
-    for (auto const& printer : m_aPrinters)
-        aPrinters.push_back(printer.first);
-    return aPrinters;
-}
-
 const PrinterInfo& PrinterInfoManager::getPrinterInfo( const OUString& rPrinter ) const
 {
     static PrinterInfo aEmptyInfo;

@@ -62,11 +62,6 @@ void PrinterInfoManager::initialize()
     // ???
 }
 
-std::vector<OUString> PrinterInfoManager::listPrinters() const
-{
-    return {};
-}
-
 const PrinterInfo& PrinterInfoManager::getPrinterInfo(
     [[maybe_unused]] const OUString& /* rPrinter */ ) const
 {
