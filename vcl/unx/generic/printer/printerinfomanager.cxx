@@ -448,14 +448,6 @@ void PrinterInfoManager::initialize()
                 setDefaultPaper( aPrinter.m_aInfo.m_aContext );
 
                 // finally insert printer
-                FileBase::getFileURLFromSystemPath( aFile.PathToFileName(), aPrinter.m_aFile );
-                std::unordered_map< OUString, Printer >::const_iterator find_it =
-                m_aPrinters.find( aPrinterName );
-                if( find_it != m_aPrinters.end() )
-                {
-                    aPrinter.m_aAlternateFiles = find_it->second.m_aAlternateFiles;
-                    aPrinter.m_aAlternateFiles.insert( find_it->second.m_aFile );
-                }
                 m_aPrinters[ aPrinterName ] = std::move(aPrinter);
             }
         }
