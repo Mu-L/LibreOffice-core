@@ -453,8 +453,7 @@ void PPDParser::initPPDFiles(PPDCache &rPPDCache)
     rPPDCache.xAllPPDFiles.emplace();
 
     // check installation directories
-    std::vector< OUString > aPathList;
-    psp::getPrinterPathList( aPathList, PRINTER_PPDDIR );
+    std::vector<OUString> aPathList = psp::getPrinterPathList(PRINTER_PPDDIR);
     for (auto const& path : aPathList)
     {
         INetURLObject aPPDDir( path, INetProtocol::File, INetURLObject::EncodeMechanism::All );

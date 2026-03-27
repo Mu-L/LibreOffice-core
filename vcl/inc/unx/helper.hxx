@@ -26,7 +26,7 @@
 namespace psp
 {
 
-void getPrinterPathList( std::vector< OUString >& rPathList, const char* pSubDir );
+std::vector<OUString> getPrinterPathList(const char* pSubDir);
 
 OUString const & getFontPath();
 

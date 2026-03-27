@@ -96,9 +96,9 @@ static OString getEnvironmentPath( const char* pKey )
 
 } // namespace psp
 
-void psp::getPrinterPathList( std::vector< OUString >& rPathList, const char* pSubDir )
+std::vector<OUString> psp::getPrinterPathList(const char* pSubDir)
 {
-    rPathList.clear();
+    std::vector<OUString> aPathList;
     rtl_TextEncoding aEncoding = osl_getThreadTextEncoding();
 
     OUStringBuffer aPathBuffer( 256 );
@@ -113,7 +113,7 @@ void psp::getPrinterPathList( std::vector< OUString >& rPathList, const char* pS
             aPathBuffer.append( '/' );
             aPathBuffer.appendAscii( pSubDir );
         }
-        rPathList.push_back( aPathBuffer.makeStringAndClear() );
+        aPathList.push_back(aPathBuffer.makeStringAndClear());
     }
     // append user path
     aPathBuffer.append( getOfficePath( whichOfficePath::UserPath ) );
@@ -125,7 +125,7 @@ void psp::getPrinterPathList( std::vector< OUString >& rPathList, const char* pS
             aPathBuffer.append( '/' );
             aPathBuffer.appendAscii( pSubDir );
         }
-        rPathList.push_back( aPathBuffer.makeStringAndClear() );
+        aPathList.push_back(aPathBuffer.makeStringAndClear());
     }
 
     OString aPath( getEnvironmentPath("SAL_PSPRINT") );
@@ -144,7 +144,7 @@ void psp::getPrinterPathList( std::vector< OUString >& rPathList, const char* pS
         if( wrap_stat( aDir.getStr(), &aStat ) || ! S_ISDIR( aStat.st_mode ) )
             continue;
 
-        rPathList.push_back( OStringToOUString( aDir, aEncoding ) );
+        aPathList.push_back(OStringToOUString(aDir, aEncoding));
     } while( nIndex != -1 );
 
     #ifdef SYSTEM_PPD_DIR
@@ -154,8 +154,8 @@ void psp::getPrinterPathList( std::vector< OUString >& rPathList, const char* pS
     }
     #endif
 
-    if( !rPathList.empty() )
-        return;
+    if (!aPathList.empty())
+        return aPathList;
 
     // last resort: next to program file (mainly for setup)
     OUString aExe;
@@ -167,9 +167,11 @@ void psp::getPrinterPathList( std::vector< OUString >& rPathList, const char* pS
         OUString aSysPath;
         if( osl_getSystemPathFromFileURL( aExe.pData, &aSysPath.pData ) == osl_File_E_None )
         {
-            rPathList.push_back( aSysPath );
+            aPathList.push_back(aSysPath);
         }
     }
+
+    return aPathList;
 }
 
 OUString const & psp::getFontPath()

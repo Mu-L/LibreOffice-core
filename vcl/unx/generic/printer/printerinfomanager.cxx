@@ -209,8 +209,7 @@ void PrinterInfoManager::initialize()
         return;
     }
 
-    std::vector< OUString > aDirList;
-    psp::getPrinterPathList( aDirList, nullptr );
+    std::vector<OUString> aDirList = psp::getPrinterPathList(nullptr);
     for (auto const& printDir : aDirList)
     {
         INetURLObject aFile( printDir, INetProtocol::File, INetURLObject::EncodeMechanism::All );
