@@ -48,6 +48,8 @@ $(eval $(call gb_Module_add_check_targets,sc,\
 	CppunitTest_sc_ucalc_copypaste \
 	CppunitTest_sc_ucalc_datatransformation \
 	CppunitTest_sc_ucalc_document_themes \
+	CppunitTest_sc_ucalc_tablestyles \
+	CppunitTest_sc_tablestyle_totalrow \
 	CppunitTest_sc_ucalc_formula \
 	CppunitTest_sc_ucalc_formula2 \
 	CppunitTest_sc_ucalc_parallelism \
@@ -102,6 +104,7 @@ $(eval $(call gb_Module_add_slowcheck_targets,sc, \
 	CppunitTest_sc_subsequent_export_test3 \
 	CppunitTest_sc_subsequent_export_test4 \
 	CppunitTest_sc_subsequent_export_test5 \
+	CppunitTest_sc_subsequent_export_test6 \
 	CppunitTest_sc_uicalc \
 	CppunitTest_sc_uicalc2 \
 	CppunitTest_sc_vba_macro_test \
