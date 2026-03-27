@@ -341,10 +341,10 @@ void CUPSManager::initialize()
 
         // initialize printer with possible configuration from psprint.conf
         bool bSetToGlobalDefaults = m_aPrinters.find( aPrinterName ) == m_aPrinters.end();
-        Printer aPrinter = m_aPrinters[ aPrinterName ];
+        PrinterInfo aPrinterInfo = m_aPrinters[aPrinterName];
         if( bSetToGlobalDefaults )
-            aPrinter.m_aInfo = m_aGlobalDefaults;
-        aPrinter.m_aInfo.m_aPrinterName = aPrinterName;
+            aPrinterInfo = m_aGlobalDefaults;
+        aPrinterInfo.m_aPrinterName = aPrinterName;
         if( pDest->is_default )
             m_aDefaultPrinter = aPrinterName;
 
@@ -355,35 +355,36 @@ void CUPSManager::initialize()
         // would mean we'd have to download PPDs for each and
         // every printer - which would be really bad runtime
         // behaviour
-        aPrinter.m_aInfo.m_pParser = nullptr;
-        aPrinter.m_aInfo.m_aContext.setParser( nullptr );
+        aPrinterInfo.m_pParser = nullptr;
+        aPrinterInfo.m_aContext.setParser(nullptr);
         std::unordered_map< OUString, PPDContext >::const_iterator c_it = m_aDefaultContexts.find( aPrinterName );
         if( c_it != m_aDefaultContexts.end() )
         {
-            aPrinter.m_aInfo.m_pParser = c_it->second.getParser();
-            aPrinter.m_aInfo.m_aContext = c_it->second;
+            aPrinterInfo.m_pParser = c_it->second.getParser();
+            aPrinterInfo.m_aContext = c_it->second;
         }
-        aPrinter.m_aInfo.m_aDriverName = "CUPS:" + aPrinterName;
+        aPrinterInfo.m_aDriverName = "CUPS:" + aPrinterName;
 
         for( int k = 0; k < pDest->num_options; k++ )
         {
             if(!strcmp(pDest->options[k].name, "printer-info"))
-                aPrinter.m_aInfo.m_aComment=OStringToOUString(pDest->options[k].value, aEncoding);
+                aPrinterInfo.m_aComment = OStringToOUString(pDest->options[k].value, aEncoding);
             if(!strcmp(pDest->options[k].name, "printer-location"))
-                aPrinter.m_aInfo.m_aLocation=OStringToOUString(pDest->options[k].value, aEncoding);
+                aPrinterInfo.m_aLocation = OStringToOUString(pDest->options[k].value, aEncoding);
             if(!strcmp(pDest->options[k].name, "auth-info-required"))
-                aPrinter.m_aInfo.m_aAuthInfoRequired=OStringToOUString(pDest->options[k].value, aEncoding);
+                aPrinterInfo.m_aAuthInfoRequired
+                    = OStringToOUString(pDest->options[k].value, aEncoding);
             // tdf#149439 Update Custom values that may have changed if this is not a newly discovered printer
-            SetIfCustomOption(aPrinter.m_aInfo.m_aContext, pDest->options[k], aEncoding);
+            SetIfCustomOption(aPrinterInfo.m_aContext, pDest->options[k], aEncoding);
         }
 
-        m_aPrinters[ aPrinter.m_aInfo.m_aPrinterName ] = aPrinter;
-        m_aCUPSDestMap[ aPrinter.m_aInfo.m_aPrinterName ] = nPrinter;
+        m_aPrinters[aPrinterInfo.m_aPrinterName] = aPrinterInfo;
+        m_aCUPSDestMap[aPrinterInfo.m_aPrinterName] = nPrinter;
     }
 
     // remove everything that is not a CUPS printer and not
     // a special purpose printer (PDF, Fax)
-    std::unordered_map< OUString, Printer >::iterator it = m_aPrinters.begin();
+    auto it = m_aPrinters.begin();
     while(it != m_aPrinters.end())
     {
         if( m_aCUPSDestMap.contains( it->first ) )
@@ -392,7 +393,7 @@ void CUPSManager::initialize()
             continue;
         }
 
-        if( !it->second.m_aInfo.m_aFeatures.isEmpty() )
+        if (!it->second.m_aFeatures.isEmpty())
         {
             ++it;
             continue;
@@ -490,7 +491,7 @@ SAL_WNODEPRECATED_DECLARATIONS_POP
                             SAL_INFO("vcl.unx.print",
                                 "   \"" << pDest->options[k].name <<
                                 "\" = \"" << pDest->options[k].value << "\"");
-                        PrinterInfo& rInfo = m_aPrinters[ aPrinter ].m_aInfo;
+                        PrinterInfo& rInfo = m_aPrinters[aPrinter];
 
                         // remember the default context for later use
                         PPDContext& rContext = m_aDefaultContexts[ aPrinter ];
@@ -540,7 +541,7 @@ SAL_WNODEPRECATED_DECLARATIONS_POP
         pNewParser = PPDParser::getParser( u"SGENPRT"_ustr );
         SAL_INFO("vcl.unx.print", "Parsing default SGENPRT PPD" );
 
-        PrinterInfo& rInfo = m_aPrinters[ aPrinter ].m_aInfo;
+        PrinterInfo& rInfo = m_aPrinters[aPrinter];
 
         rInfo.m_pParser = pNewParser;
         rInfo.m_aContext.setParser( pNewParser );
@@ -557,8 +558,7 @@ void CUPSManager::setupJobContextData( JobData& rData )
     if( dest_it == m_aCUPSDestMap.end() )
         return PrinterInfoManager::setupJobContextData( rData );
 
-    std::unordered_map< OUString, Printer >::iterator p_it =
-        m_aPrinters.find( rData.m_aPrinterName );
+    auto p_it = m_aPrinters.find(rData.m_aPrinterName);
     if( p_it == m_aPrinters.end() ) // huh ?
     {
         SAL_WARN("vcl.unx.print", "CUPS printer list in disorder, "
@@ -566,25 +566,25 @@ void CUPSManager::setupJobContextData( JobData& rData )
         return;
     }
 
-    if( p_it->second.m_aInfo.m_pParser == nullptr )
+    if (p_it->second.m_pParser == nullptr)
     {
         // in turn calls createCUPSParser
         // which updates the printer info
-        p_it->second.m_aInfo.m_pParser = PPDParser::getParser( p_it->second.m_aInfo.m_aDriverName );
+        p_it->second.m_pParser = PPDParser::getParser(p_it->second.m_aDriverName);
     }
-    if( p_it->second.m_aInfo.m_aContext.getParser() == nullptr )
+    if (p_it->second.m_aContext.getParser() == nullptr)
     {
         OUString aPrinter;
-        if( p_it->second.m_aInfo.m_aDriverName.startsWith("CUPS:") )
-            aPrinter = p_it->second.m_aInfo.m_aDriverName.copy( 5 );
+        if (p_it->second.m_aDriverName.startsWith("CUPS:"))
+            aPrinter = p_it->second.m_aDriverName.copy(5);
         else
-            aPrinter = p_it->second.m_aInfo.m_aDriverName;
+            aPrinter = p_it->second.m_aDriverName;
 
-        p_it->second.m_aInfo.m_aContext = m_aDefaultContexts[ aPrinter ];
+        p_it->second.m_aContext = m_aDefaultContexts[aPrinter];
     }
 
-    rData.m_pParser     = p_it->second.m_aInfo.m_pParser;
-    rData.m_aContext    = p_it->second.m_aInfo.m_aContext;
+    rData.m_pParser = p_it->second.m_pParser;
+    rData.m_aContext = p_it->second.m_aContext;
 }
 
 FILE* CUPSManager::startSpool( const OUString& rPrintername, bool bQuickCommand )

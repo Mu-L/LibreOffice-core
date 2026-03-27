@@ -144,8 +144,7 @@ void CPDManager::printerRemoved(GDBusConnection*, const gchar*, const gchar*, co
         return;
     }
     pManager->m_aCPDDestMap.erase(it);
-    std::unordered_map<OUString, Printer>::iterator printersIt
-        = pManager->m_aPrinters.find(aUniqueName);
+    auto printersIt = pManager->m_aPrinters.find(aUniqueName);
     if (printersIt == pManager->m_aPrinters.end())
     {
         SAL_WARN("vcl.unx.print", "CPD trying to remove non-existent printer from m_aPrinters");
@@ -181,10 +180,10 @@ void CPDManager::addNewPrinter(const OUString& aPrinterName, const OUString& aUn
 {
     m_aCPDDestMap[aUniqueName] = pDest;
     bool bSetToGlobalDefaults = m_aPrinters.find(aUniqueName) == m_aPrinters.end();
-    Printer aPrinter = m_aPrinters[aUniqueName];
+    PrinterInfo aPrinterInfo = m_aPrinters[aUniqueName];
     if (bSetToGlobalDefaults)
-        aPrinter.m_aInfo = m_aGlobalDefaults;
-    aPrinter.m_aInfo.m_aPrinterName = aPrinterName;
+        aPrinterInfo = m_aGlobalDefaults;
+    aPrinterInfo.m_aPrinterName = aPrinterName;
 
     // TODO: I don't know how this should work when we have multiple
     // sources with multiple possible defaults for each
@@ -192,8 +191,8 @@ void CPDManager::addNewPrinter(const OUString& aPrinterName, const OUString& aUn
     //     m_aDefaultPrinter = aPrinterName;
 
     rtl_TextEncoding aEncoding = osl_getThreadTextEncoding();
-    aPrinter.m_aInfo.m_aComment = OStringToOUString(pDest->info, aEncoding);
-    aPrinter.m_aInfo.m_aLocation = OStringToOUString(pDest->location, aEncoding);
+    aPrinterInfo.m_aComment = OStringToOUString(pDest->info, aEncoding);
+    aPrinterInfo.m_aLocation = OStringToOUString(pDest->location, aEncoding);
     // note: the parser that goes with the PrinterInfo
     // is created implicitly by the JobData::operator=()
     // when it detects the NULL ptr m_pParser.
@@ -201,17 +200,17 @@ void CPDManager::addNewPrinter(const OUString& aPrinterName, const OUString& aUn
     // would mean we'd have to send a dbus message for each and
     // every printer - which would be really bad runtime
     // behaviour
-    aPrinter.m_aInfo.m_pParser = nullptr;
-    aPrinter.m_aInfo.m_aContext.setParser(nullptr);
+    aPrinterInfo.m_pParser = nullptr;
+    aPrinterInfo.m_aContext.setParser(nullptr);
     std::unordered_map<OUString, PPDContext>::const_iterator c_it
         = m_aDefaultContexts.find(aUniqueName);
     if (c_it != m_aDefaultContexts.end())
     {
-        aPrinter.m_aInfo.m_pParser = c_it->second.getParser();
-        aPrinter.m_aInfo.m_aContext = c_it->second;
+        aPrinterInfo.m_pParser = c_it->second.getParser();
+        aPrinterInfo.m_aContext = c_it->second;
     }
-    aPrinter.m_aInfo.m_aDriverName = "CPD:" + aUniqueName;
-    m_aPrinters[aUniqueName] = aPrinter;
+    aPrinterInfo.m_aDriverName = "CPD:" + aUniqueName;
+    m_aPrinters[aUniqueName] = aPrinterInfo;
 }
 #endif
 
@@ -421,7 +420,7 @@ const PPDParser* CPDManager::createCPDParser(const OUString& rPrinter)
             keys.emplace_back(pKey);
 
             pNewParser = new PPDParser(aPrinter, keys);
-            PrinterInfo& rInfo = m_aPrinters[aPrinter].m_aInfo;
+            PrinterInfo& rInfo = m_aPrinters[aPrinter];
             PPDContext& rContext = m_aDefaultContexts[aPrinter];
             rContext.setParser(pNewParser);
             setDefaultPaper(rContext);
@@ -466,7 +465,7 @@ const PPDParser* CPDManager::createCPDParser(const OUString& rPrinter)
         pNewParser = PPDParser::getParser(u"SGENPRT"_ustr);
         SAL_WARN("vcl.unx.print", "Parsing default SGENPRT PPD");
 
-        PrinterInfo& rInfo = m_aPrinters[aPrinter].m_aInfo;
+        PrinterInfo& rInfo = m_aPrinters[aPrinter];
 
         rInfo.m_pParser = pNewParser;
         rInfo.m_aContext.setParser(pNewParser);
@@ -507,7 +506,7 @@ void CPDManager::initialize()
 
     // remove everything that is not a CUPS printer and not
     // a special purpose printer (PDF, Fax)
-    std::unordered_map<OUString, Printer>::iterator it = m_aPrinters.begin();
+    auto it = m_aPrinters.begin();
     while (it != m_aPrinters.end())
     {
         if (m_aCPDDestMap.contains(it->first))
@@ -516,7 +515,7 @@ void CPDManager::initialize()
             continue;
         }
 
-        if (!it->second.m_aInfo.m_aFeatures.isEmpty())
+        if (!it->second.m_aFeatures.isEmpty())
         {
             ++it;
             continue;
@@ -535,7 +534,7 @@ void CPDManager::setupJobContextData(JobData& rData)
     if (dest_it == m_aCPDDestMap.end())
         return PrinterInfoManager::setupJobContextData(rData);
 
-    std::unordered_map<OUString, Printer>::iterator p_it = m_aPrinters.find(rData.m_aPrinterName);
+    auto p_it = m_aPrinters.find(rData.m_aPrinterName);
     if (p_it == m_aPrinters.end()) // huh ?
     {
         SAL_WARN("vcl.unx.print", "CPD printer list in disorder, "
@@ -544,25 +543,25 @@ void CPDManager::setupJobContextData(JobData& rData)
         return;
     }
 
-    if (p_it->second.m_aInfo.m_pParser == nullptr)
+    if (p_it->second.m_pParser == nullptr)
     {
         // in turn calls createCPDParser
         // which updates the printer info
-        p_it->second.m_aInfo.m_pParser = PPDParser::getParser(p_it->second.m_aInfo.m_aDriverName);
+        p_it->second.m_pParser = PPDParser::getParser(p_it->second.m_aDriverName);
     }
-    if (p_it->second.m_aInfo.m_aContext.getParser() == nullptr)
+    if (p_it->second.m_aContext.getParser() == nullptr)
     {
         OUString aPrinter;
-        if (p_it->second.m_aInfo.m_aDriverName.startsWith("CPD:"))
-            aPrinter = p_it->second.m_aInfo.m_aDriverName.copy(4);
+        if (p_it->second.m_aDriverName.startsWith("CPD:"))
+            aPrinter = p_it->second.m_aDriverName.copy(4);
         else
-            aPrinter = p_it->second.m_aInfo.m_aDriverName;
+            aPrinter = p_it->second.m_aDriverName;
 
-        p_it->second.m_aInfo.m_aContext = m_aDefaultContexts[aPrinter];
+        p_it->second.m_aContext = m_aDefaultContexts[aPrinter];
     }
 
-    rData.m_pParser = p_it->second.m_aInfo.m_pParser;
-    rData.m_aContext = p_it->second.m_aInfo.m_aContext;
+    rData.m_pParser = p_it->second.m_pParser;
+    rData.m_aContext = p_it->second.m_aContext;
 #else
     (void)rData;
 #endif

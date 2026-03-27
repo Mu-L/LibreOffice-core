@@ -319,26 +319,26 @@ void PrinterInfoManager::initialize()
                 if (nNamePos == -1)
                     continue;
 
-                Printer aPrinter;
                 // initialize to global defaults
-                aPrinter.m_aInfo = m_aGlobalDefaults;
+                PrinterInfo aPrinter = m_aGlobalDefaults;
 
                 aPrinterName = OStringToOUString(aValue.subView(nNamePos+1),
                     RTL_TEXTENCODING_UTF8);
-                aPrinter.m_aInfo.m_aPrinterName = aPrinterName;
-                aPrinter.m_aInfo.m_aDriverName = OStringToOUString(aValue.subView(0, nNamePos), RTL_TEXTENCODING_UTF8);
+                aPrinter.m_aPrinterName = aPrinterName;
+                aPrinter.m_aDriverName
+                    = OStringToOUString(aValue.subView(0, nNamePos), RTL_TEXTENCODING_UTF8);
 
                 // set parser, merge settings
                 // don't do this for CUPS printers as this is done
                 // by the CUPS system itself
-                if( !aPrinter.m_aInfo.m_aDriverName.startsWith( "CUPS:" ) )
+                if (!aPrinter.m_aDriverName.startsWith("CUPS:"))
                 {
-                    aPrinter.m_aInfo.m_pParser          = PPDParser::getParser( aPrinter.m_aInfo.m_aDriverName );
-                    aPrinter.m_aInfo.m_aContext.setParser( aPrinter.m_aInfo.m_pParser );
+                    aPrinter.m_pParser = PPDParser::getParser(aPrinter.m_aDriverName);
+                    aPrinter.m_aContext.setParser(aPrinter.m_pParser);
                     // note: setParser also purges the context
 
                     // ignore this printer if its driver is not found
-                    if( ! aPrinter.m_aInfo.m_pParser )
+                    if (!aPrinter.m_pParser)
                         continue;
 
                     // merge the ppd context keys if the printer has the same keys and values
@@ -350,7 +350,8 @@ void PrinterInfoManager::initialize()
                     {
                         const PPDKey* pDefKey = m_aGlobalDefaults.m_aContext.getModifiedKey( nPPDValueModified );
                         const PPDValue* pDefValue = m_aGlobalDefaults.m_aContext.getValue( pDefKey );
-                        const PPDKey* pPrinterKey = pDefKey ? aPrinter.m_aInfo.m_pParser->getKey( pDefKey->getKey() ) : nullptr;
+                        const PPDKey* pPrinterKey
+                            = pDefKey ? aPrinter.m_pParser->getKey(pDefKey->getKey()) : nullptr;
                         if( pDefKey && pPrinterKey )
                             // at least the options exist in both PPDs
                         {
@@ -359,10 +360,10 @@ void PrinterInfoManager::initialize()
                                 const PPDValue* pPrinterValue = pPrinterKey->getValue( pDefValue->m_aOption );
                                 if( pPrinterValue )
                                     // the printer has a corresponding option for the key
-                                    aPrinter.m_aInfo.m_aContext.setValue( pPrinterKey, pPrinterValue );
+                                    aPrinter.m_aContext.setValue(pPrinterKey, pPrinterValue);
                             }
                             else
-                                aPrinter.m_aInfo.m_aContext.setValue( pPrinterKey, nullptr );
+                                aPrinter.m_aContext.setValue(pPrinterKey, nullptr);
                         }
                     }
 
@@ -380,14 +381,14 @@ void PrinterInfoManager::initialize()
                         aValue = "lpr"_ostr;
                         #endif
                     }
-                    aPrinter.m_aInfo.m_aCommand = OStringToOUString(aValue, RTL_TEXTENCODING_UTF8);
+                    aPrinter.m_aCommand = OStringToOUString(aValue, RTL_TEXTENCODING_UTF8);
                 }
 
                 aValue = aConfig.ReadKey( "QuickCommand"_ostr );
-                aPrinter.m_aInfo.m_aQuickCommand = OStringToOUString(aValue, RTL_TEXTENCODING_UTF8);
+                aPrinter.m_aQuickCommand = OStringToOUString(aValue, RTL_TEXTENCODING_UTF8);
 
                 aValue = aConfig.ReadKey( "Features"_ostr );
-                aPrinter.m_aInfo.m_aFeatures = OStringToOUString(aValue, RTL_TEXTENCODING_UTF8);
+                aPrinter.m_aFeatures = OStringToOUString(aValue, RTL_TEXTENCODING_UTF8);
 
                 // override the settings in m_aGlobalDefaults if keys exist
                 aValue = aConfig.ReadKey( "DefaultPrinter"_ostr );
@@ -395,57 +396,66 @@ void PrinterInfoManager::initialize()
                     aDefaultPrinter = aPrinterName;
 
                 aValue = aConfig.ReadKey( "Location"_ostr );
-                aPrinter.m_aInfo.m_aLocation = OStringToOUString(aValue, RTL_TEXTENCODING_UTF8);
+                aPrinter.m_aLocation = OStringToOUString(aValue, RTL_TEXTENCODING_UTF8);
 
                 aValue = aConfig.ReadKey( "Comment"_ostr );
-                aPrinter.m_aInfo.m_aComment = OStringToOUString(aValue, RTL_TEXTENCODING_UTF8);
+                aPrinter.m_aComment = OStringToOUString(aValue, RTL_TEXTENCODING_UTF8);
 
                 aValue = aConfig.ReadKey( "Copies"_ostr );
                 if (!aValue.isEmpty())
-                    aPrinter.m_aInfo.m_nCopies = aValue.toInt32();
+                    aPrinter.m_nCopies = aValue.toInt32();
 
                 aValue = aConfig.ReadKey( "Orientation"_ostr );
                 if (!aValue.isEmpty())
-                    aPrinter.m_aInfo.m_eOrientation = aValue.equalsIgnoreAsciiCase("Landscape") ? orientation::Landscape : orientation::Portrait;
+                    aPrinter.m_eOrientation = aValue.equalsIgnoreAsciiCase("Landscape")
+                                                  ? orientation::Landscape
+                                                  : orientation::Portrait;
 
                 aValue = aConfig.ReadKey( "MarginAdjust"_ostr );
                 if (!aValue.isEmpty())
                 {
                     sal_Int32 nIdx {0};
-                    aPrinter.m_aInfo.m_nLeftMarginAdjust = o3tl::toInt32(o3tl::getToken(aValue, 0, ',', nIdx));
-                    aPrinter.m_aInfo.m_nRightMarginAdjust = o3tl::toInt32(o3tl::getToken(aValue, 0, ',', nIdx));
-                    aPrinter.m_aInfo.m_nTopMarginAdjust = o3tl::toInt32(o3tl::getToken(aValue, 0, ',', nIdx));
-                    aPrinter.m_aInfo.m_nBottomMarginAdjust = o3tl::toInt32(o3tl::getToken(aValue, 0, ',', nIdx));
+                    aPrinter.m_nLeftMarginAdjust
+                        = o3tl::toInt32(o3tl::getToken(aValue, 0, ',', nIdx));
+                    aPrinter.m_nRightMarginAdjust
+                        = o3tl::toInt32(o3tl::getToken(aValue, 0, ',', nIdx));
+                    aPrinter.m_nTopMarginAdjust
+                        = o3tl::toInt32(o3tl::getToken(aValue, 0, ',', nIdx));
+                    aPrinter.m_nBottomMarginAdjust
+                        = o3tl::toInt32(o3tl::getToken(aValue, 0, ',', nIdx));
                 }
 
                 aValue = aConfig.ReadKey( "ColorDepth"_ostr );
                 if (!aValue.isEmpty())
-                    aPrinter.m_aInfo.m_nColorDepth = aValue.toInt32();
+                    aPrinter.m_nColorDepth = aValue.toInt32();
 
                 aValue = aConfig.ReadKey( "ColorDevice"_ostr );
                 if (!aValue.isEmpty())
-                    aPrinter.m_aInfo.m_nColorDevice = aValue.toInt32();
+                    aPrinter.m_nColorDevice = aValue.toInt32();
 
                 // now iterate over all keys to extract multi key information:
                 // 1. PPDContext information
                 for( int nKey = 0; nKey < aConfig.GetKeyCount(); ++nKey )
                 {
                     OString aKey( aConfig.GetKeyName( nKey ) );
-                    if( aKey.startsWith("PPD_") && aPrinter.m_aInfo.m_pParser )
+                    if (aKey.startsWith("PPD_") && aPrinter.m_pParser)
                     {
                         aValue = aConfig.ReadKey( aKey );
-                        const PPDKey* pKey = aPrinter.m_aInfo.m_pParser->getKey(OStringToOUString(aKey.subView(4), RTL_TEXTENCODING_ISO_8859_1));
+                        const PPDKey* pKey = aPrinter.m_pParser->getKey(
+                            OStringToOUString(aKey.subView(4), RTL_TEXTENCODING_ISO_8859_1));
                         if( pKey )
                         {
-                            aPrinter.m_aInfo.m_aContext.
-                            setValue( pKey,
-                                      aValue == "*nil" ? nullptr : pKey->getValue(OStringToOUString(aValue, RTL_TEXTENCODING_ISO_8859_1)),
-                                      true );
+                            aPrinter.m_aContext.setValue(
+                                pKey,
+                                aValue == "*nil" ? nullptr
+                                                 : pKey->getValue(OStringToOUString(
+                                                       aValue, RTL_TEXTENCODING_ISO_8859_1)),
+                                true);
                         }
                     }
                 }
 
-                setDefaultPaper( aPrinter.m_aInfo.m_aContext );
+                setDefaultPaper(aPrinter.m_aContext);
 
                 // finally insert printer
                 m_aPrinters[ aPrinterName ] = std::move(aPrinter);
@@ -501,14 +511,12 @@ void PrinterInfoManager::initialize()
         OUString aCmd( m_aSystemPrintCommand );
         aCmd = aCmd.replaceAll( "(PRINTER)", printQueue.m_aQueue );
 
-        Printer aPrinter;
-
         // initialize to merged defaults
-        aPrinter.m_aInfo = aMergeInfo;
-        aPrinter.m_aInfo.m_aPrinterName     = aPrinterName;
-        aPrinter.m_aInfo.m_aCommand         = aCmd;
-        aPrinter.m_aInfo.m_aComment         = printQueue.m_aComment;
-        aPrinter.m_aInfo.m_aLocation        = printQueue.m_aLocation;
+        PrinterInfo aPrinter = aMergeInfo;
+        aPrinter.m_aPrinterName = aPrinterName;
+        aPrinter.m_aCommand = aCmd;
+        aPrinter.m_aComment = printQueue.m_aComment;
+        aPrinter.m_aLocation = printQueue.m_aLocation;
 
         m_aPrinters[aPrinterName] = std::move(aPrinter);
     }
@@ -525,11 +533,11 @@ std::vector<OUString> PrinterInfoManager::listPrinters() const
 const PrinterInfo& PrinterInfoManager::getPrinterInfo( const OUString& rPrinter ) const
 {
     static PrinterInfo aEmptyInfo;
-    std::unordered_map< OUString, Printer >::const_iterator it = m_aPrinters.find( rPrinter );
+    auto it = m_aPrinters.find(rPrinter);
 
     SAL_WARN_IF( it == m_aPrinters.end(), "vcl", "Do not ask for info about nonexistent printers" );
 
-    return it != m_aPrinters.end() ? it->second.m_aInfo : aEmptyInfo;
+    return it != m_aPrinters.end() ? it->second : aEmptyInfo;
 }
 
 bool PrinterInfoManager::checkFeatureToken( const OUString& rPrinterName, std::string_view pToken ) const
@@ -563,12 +571,11 @@ bool PrinterInfoManager::endSpool( const OUString& /*rPrintername*/, const OUStr
 
 void PrinterInfoManager::setupJobContextData( JobData& rData )
 {
-    std::unordered_map< OUString, Printer >::iterator it =
-    m_aPrinters.find( rData.m_aPrinterName );
+    auto it = m_aPrinters.find(rData.m_aPrinterName);
     if( it != m_aPrinters.end() )
     {
-        rData.m_pParser     = it->second.m_aInfo.m_pParser;
-        rData.m_aContext    = it->second.m_aInfo.m_aContext;
+        rData.m_pParser = it->second.m_pParser;
+        rData.m_aContext = it->second.m_aContext;
     }
 }
 

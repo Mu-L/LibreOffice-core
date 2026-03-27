@@ -84,14 +84,7 @@ protected:
         TimeValue               m_aModified;
     };
 
-    // internal data to describe a printer
-    struct Printer
-    {
-        // the corresponding info and job data
-        PrinterInfo             m_aInfo;
-    };
-
-    std::unordered_map< OUString, Printer > m_aPrinters;
+    std::unordered_map<OUString, PrinterInfo> m_aPrinters;
     PrinterInfo                         m_aGlobalDefaults;
     std::vector< WatchFile >            m_aWatchFiles;
     OUString                     m_aDefaultPrinter;
