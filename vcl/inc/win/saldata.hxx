@@ -31,6 +31,7 @@
 #include <systools/win32/comtools.hxx>
 #include <tools/long.hxx>
 
+#include <win/DWriteTextRenderer.hxx>
 #include <win/wincomp.hxx>
 
 #include <set>
@@ -123,7 +124,7 @@ public:
     std::set< HMENU >       mhMenuSet;              // keeps track of menu handles created by VCL, used by IsKnownMenuHandle()
     std::map< UINT,sal_uInt16 > maVKMap;      // map some dynamic VK_* entries
 
-    std::unique_ptr<TextOutRenderer> m_pD2DWriteTextOutRenderer;
+    std::unique_ptr<D2DWriteTextOutRenderer> m_pD2DWriteTextOutRenderer;
     // tdf#107205 need 2 instances because D2DWrite can't rotate text
     std::unique_ptr<TextOutRenderer> m_pExTextOutRenderer;
     std::unique_ptr<SkiaControlsCache> m_pSkiaControlsCache;

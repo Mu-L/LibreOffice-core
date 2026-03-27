@@ -64,9 +64,7 @@ TextOutRenderer& TextOutRenderer::get(bool bUseDWrite, bool bRenderingModeNatura
         const auto mode = D2DWriteTextOutRenderer::GetMode(bRenderingModeNatural, bAntiAlias);
         if (pSalData->m_pD2DWriteTextOutRenderer)
         {
-            auto pRenderer
-                = static_cast<D2DWriteTextOutRenderer*>(pSalData->m_pD2DWriteTextOutRenderer.get());
-            if (pRenderer->GetRenderingMode() == mode)
+            if (pSalData->m_pD2DWriteTextOutRenderer->GetRenderingMode() == mode)
                 return *pSalData->m_pD2DWriteTextOutRenderer;
         }
 
