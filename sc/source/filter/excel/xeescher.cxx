@@ -1432,13 +1432,6 @@ OUString XclExpTbxControlObj::SaveControlPropertiesXml(XclExpXmlStream& rStrm) c
             if (mnState == EXC_OBJ_CHECKBOX_CHECKED)
                 pFormControl->write(" checked=\"Checked\"");
 
-            pFormControl->write(" autoLine=\"false\"");
-
-            if (mbPrint)
-                pFormControl->write(" print=\"true\"");
-            else
-                pFormControl->write(" print=\"false\"");
-
             if (mxCellLinkAddress.IsValid())
             {
                 OUString aCellLink = mxCellLinkAddress.Format(ScRefFlags::ADDR_ABS,
