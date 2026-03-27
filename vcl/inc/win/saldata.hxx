@@ -37,6 +37,7 @@
 #include <list>
 #include <map>
 #include <unordered_map>
+#include <unordered_set>
 
 class AutoTimer;
 class WinSalInstance;
@@ -113,7 +114,7 @@ public:
     bool                    mbObjClassInit;         // is SALOBJECTCLASS initialised
     DWORD                   mnAppThreadId;          // Id from Application-Thread
     std::unordered_map<int, SalIcon> maIconCache;   // icon cache
-    TempFontItem*           mpTempFontItem;         // LibreOffice own fonts (shared and embedded)
+    std::unordered_set<TempFontItem*> maTempFontItems; // LibreOffice own fonts (shared and embedded)
     bool                    mbThemeChanged;         // true if visual theme was changed: throw away theme handles
     bool                    mbThemeMenuSupport;
 

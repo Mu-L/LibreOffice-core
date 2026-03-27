@@ -237,7 +237,6 @@ SalData::SalData()
     mnSalObjWantKeyEvt = 0;
     mbObjClassInit = false;
     mnAppThreadId = 0;
-    mpTempFontItem = nullptr;
     mbThemeChanged = false;
     mbThemeMenuSupport = false;
 
