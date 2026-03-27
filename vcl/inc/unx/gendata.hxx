@@ -15,9 +15,6 @@
 
 #ifndef IOS
 class FreetypeManager;
-#endif
-
-#ifndef IOS
 
 namespace psp
 {
@@ -48,9 +45,7 @@ class VCL_PLUGIN_PUBLIC GenericUnixSalData : public SalData
 {
 #ifndef IOS
     friend class ::psp::PrinterInfoManager;
-#endif
 
-#ifndef IOS
     std::unique_ptr<FreetypeManager> m_pFreetypeManager;
     std::unique_ptr<psp::PrintFontManager> m_pPrintFontManager;
     std::unique_ptr<psp::PrinterInfoManager> m_pPrinterInfoManager;
