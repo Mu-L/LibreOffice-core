@@ -17,6 +17,8 @@
 
 class QtInstanceFrame : public QtInstanceContainer, public virtual weld::Frame
 {
+    Q_OBJECT
+
     QGroupBox* m_pGroupBox;
 
 public:

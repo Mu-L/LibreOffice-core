@@ -10,6 +10,7 @@
 #include <sal/config.h>
 
 #include <QtInstanceFrame.hxx>
+#include <QtInstanceFrame.moc>
 
 #include <vcl/qt/QtUtils.hxx>
 

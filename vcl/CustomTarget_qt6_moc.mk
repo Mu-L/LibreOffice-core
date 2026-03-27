@@ -32,6 +32,7 @@ $(call gb_CustomTarget_get_target,vcl/qt6) : \
 	$(gb_CustomTarget_workdir)/vcl/qt6/QtInstanceEntryTreeView.moc \
 	$(gb_CustomTarget_workdir)/vcl/qt6/QtInstanceExpander.moc \
 	$(gb_CustomTarget_workdir)/vcl/qt6/QtInstanceFormattedSpinButton.moc \
+	$(gb_CustomTarget_workdir)/vcl/qt6/QtInstanceFrame.moc \
 	$(gb_CustomTarget_workdir)/vcl/qt6/QtInstanceGrid.moc \
 	$(gb_CustomTarget_workdir)/vcl/qt6/QtInstanceIconView.moc \
 	$(gb_CustomTarget_workdir)/vcl/qt6/QtInstanceImage.moc \
