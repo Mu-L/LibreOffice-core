@@ -94,7 +94,7 @@ css::uno::Reference< css::bridge::XBridge > BridgeFactory::createBridge(
                 u"BridgeFactory disposed"_ustr,
                 getXWeak());
         }
-        if (named_.find(sName) != named_.end()) {
+        if (named_.contains(sName)) {
             throw css::bridge::BridgeExistsException(
                 sName, getXWeak());
         }

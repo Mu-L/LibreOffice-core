@@ -2218,7 +2218,7 @@ bool LineArrayComparator::Compare( int nIdx1, int nIdx2 ) const
         nHash = nHash*nMul + pTextNd2->GetText()[ i ];
     }
 
-    if( aHashes.find( nHash ) != aHashes.end() )
+    if( aHashes.contains( nHash ) )
     {
         return true;
     }
@@ -2227,7 +2227,7 @@ bool LineArrayComparator::Compare( int nIdx1, int nIdx2 ) const
     {
         nHash = nHash - nPow*pTextNd2->GetText()[ i - nBorderLen ];
         nHash = nHash*nMul + pTextNd2->GetText()[ i ];
-        if( aHashes.find( nHash ) != aHashes.end() )
+        if( aHashes.contains( nHash ) )
         {
             return true;
         }

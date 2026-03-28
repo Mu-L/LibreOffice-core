@@ -291,7 +291,7 @@ namespace internal
 
     bool PropertyForwarder::isResponsibleFor( sal_Int32 _nHandle ) const
     {
-        return m_aProperties.find( _nHandle ) != m_aProperties.end();
+        return m_aProperties.contains( _nHandle );
     }
 
 

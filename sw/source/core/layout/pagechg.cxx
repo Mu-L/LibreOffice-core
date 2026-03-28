@@ -1787,7 +1787,7 @@ void SwRootFrame::AssertFlyPages()
 
         if(pPage->IsEmptyPage() &&
             nullptr != pPrevPage &&
-            neededPages.find(nPageNum) != neededPages.end())
+            neededPages.contains(nPageNum) )
         {
             // This is an empty page, but it *is* needed since a SwFrame
             // is anchored at it directly. Initially these SwFrames are

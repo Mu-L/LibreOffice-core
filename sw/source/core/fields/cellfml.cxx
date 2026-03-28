@@ -536,7 +536,7 @@ void SwTableFormula::PtrToBoxNms( const SwTable& rTable, OUStringBuffer& rNewStr
         pBox = reinterpret_cast<SwTableBox*>(sal::static_int_cast<sal_IntPtr>(pLastBox->toInt64()));
 
         // Is it actually a valid pointer?
-        if( rTable.GetTabSortBoxes().find( pBox ) != rTable.GetTabSortBoxes().end() )
+        if( rTable.GetTabSortBoxes().contains( pBox ) )
             rNewStr.append(pBox->GetName());
         else
             rNewStr.append("?");
@@ -546,7 +546,7 @@ void SwTableFormula::PtrToBoxNms( const SwTable& rTable, OUStringBuffer& rNewStr
 
     pBox = reinterpret_cast<SwTableBox*>(sal::static_int_cast<sal_IntPtr>(rFirstBox.toInt64()));
     // Is it actually a valid pointer?
-    if( rTable.GetTabSortBoxes().find( pBox ) != rTable.GetTabSortBoxes().end() )
+    if( rTable.GetTabSortBoxes().contains( pBox ) )
         rNewStr.append(pBox->GetName());
     else
         rNewStr.append("?");

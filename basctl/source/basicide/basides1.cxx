@@ -498,7 +498,7 @@ void Shell::ExecuteGlobal( SfxRequest& rReq )
             DBG_ASSERT( rReq.GetArgs(), "arguments expected" );
             const SfxUInt16Item &rTabId = rReq.GetArgs()->Get(SID_BASICIDE_ARG_TABID );
             const SfxStringItem &rModName = rReq.GetArgs()->Get(SID_BASICIDE_ARG_MODULENAME );
-            if ( aWindowTable.find( rTabId.GetValue() ) !=  aWindowTable.end() )
+            if ( aWindowTable.contains( rTabId.GetValue() ))
             {
                 VclPtr<BaseWindow> pWin = aWindowTable[ rTabId.GetValue() ];
                 const OUString& aNewName( rModName.GetValue() );

@@ -180,7 +180,7 @@ public:
     }
     virtual sal_Bool SAL_CALL hasByName( const OUString& aName ) override
     {
-        return ( mTemplateToProject.find( aName ) != mTemplateToProject.end() );
+        return mTemplateToProject.contains( aName );
     }
     virtual css::uno::Any SAL_CALL getByName( const OUString& aName ) override
     {
