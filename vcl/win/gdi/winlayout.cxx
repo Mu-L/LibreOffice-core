@@ -35,6 +35,7 @@
 #include <ImplOutDevData.hxx>
 
 #include <win/DWriteTextRenderer.hxx>
+#include <win/WindowsInstance.hxx>
 #include <win/scoped_gdi.hxx>
 
 #include <sallayout.hxx>
@@ -51,31 +52,24 @@
 
 TextOutRenderer& TextOutRenderer::get(bool bUseDWrite, bool bRenderingModeNatural, bool bAntiAlias)
 {
-    SalData* const pSalData = GetSalData();
-
-    if (!pSalData)
-    { // don't call this after DeInitVCL()
-        SAL_WARN("vcl.gdi", "TextOutRenderer fatal error: no SalData");
-        abort();
-    }
-
+    WindowsInstanceData& rWinInstanceData = GetWindowsInstance().GetData();
     if (bUseDWrite)
     {
         const auto mode = D2DWriteTextOutRenderer::GetMode(bRenderingModeNatural, bAntiAlias);
-        if (pSalData->m_pD2DWriteTextOutRenderer)
+        if (rWinInstanceData.m_pD2DWriteTextOutRenderer)
         {
-            if (pSalData->m_pD2DWriteTextOutRenderer->GetRenderingMode() == mode)
-                return *pSalData->m_pD2DWriteTextOutRenderer;
+            if (rWinInstanceData.m_pD2DWriteTextOutRenderer->GetRenderingMode() == mode)
+                return *rWinInstanceData.m_pD2DWriteTextOutRenderer;
         }
 
-        pSalData->m_pD2DWriteTextOutRenderer.reset(new D2DWriteTextOutRenderer(mode));
-        return *pSalData->m_pD2DWriteTextOutRenderer;
+        rWinInstanceData.m_pD2DWriteTextOutRenderer.reset(new D2DWriteTextOutRenderer(mode));
+        return *rWinInstanceData.m_pD2DWriteTextOutRenderer;
     }
-    if (!pSalData->m_pExTextOutRenderer)
+    if (!rWinInstanceData.m_pExTextOutRenderer)
     {
-        pSalData->m_pExTextOutRenderer.reset(new ExTextOutRenderer);
+        rWinInstanceData.m_pExTextOutRenderer.reset(new ExTextOutRenderer);
     }
-    return *pSalData->m_pExTextOutRenderer;
+    return *rWinInstanceData.m_pExTextOutRenderer;
 }
 
 bool ExTextOutRenderer::operator()(GenericSalLayout const& rLayout, SalGraphics& /*rGraphics*/,

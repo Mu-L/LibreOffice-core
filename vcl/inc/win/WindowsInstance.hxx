@@ -19,17 +19,28 @@
 
 #pragma once
 
+#include <sal/config.h>
+
 #include <salinst.hxx>
 #include <svdata.hxx>
 #include <vclpluginapi.h>
+#include <win/DWriteTextRenderer.hxx>
 
 #include <list>
 
 class WinSalPrinter;
 
+#ifdef GetDefaultPrinter
+#undef GetDefaultPrinter
+#endif
+
 struct WindowsInstanceData
 {
     std::unordered_set<OUString> m_aTempFontPaths;
+
+    std::unique_ptr<D2DWriteTextOutRenderer> m_pD2DWriteTextOutRenderer;
+    // tdf#107205 need 2 instances because D2DWrite can't rotate text
+    std::unique_ptr<TextOutRenderer> m_pExTextOutRenderer;
 };
 
 /** Abstract base class for SalInstance implementations on Windows. */
