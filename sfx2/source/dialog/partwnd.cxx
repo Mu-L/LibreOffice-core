@@ -68,7 +68,7 @@ SfxPartChildWnd_Impl::~SfxPartChildWnd_Impl()
 {
     css::uno::Reference< css::frame::XFrame > xFrame = GetFrame();
 
-    // If xFrame=NULL release pMgr! Because this window lives longer then the manager!
+    // If xFrame=NULL release pMgr! Because this window lives longer than the manager!
     // In these case we got a xFrame->dispose() call from outside ... and has release our
     // frame reference in our own DisposingListener.
     // But don't do it, if xFrame already exist. Then dispose() must come from inside ...

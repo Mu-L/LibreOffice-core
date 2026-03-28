@@ -48,7 +48,7 @@ public:
     /** The key for looking up preview bitmaps is a pointer to an SdrPage
         object.  The prior use of PageObjectViewObjectContact objects (which
         ultimately use them) turned out to be less suitable because their
-        life time is shorter then that of the page objects.  Frequent
+        life time is shorter than that of the page objects.  Frequent
         destruction and re-creation of the preview bitmaps was the result.
     */
     typedef const SdrPage* CacheKey;

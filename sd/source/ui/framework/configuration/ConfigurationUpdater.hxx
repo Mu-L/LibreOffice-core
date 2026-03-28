@@ -116,7 +116,7 @@ private:
     bool mbUpdateBeingProcessed;
 
     /** The ConfigurationController is locked when this count has a value
-        larger then zero.  If the controller is locked then updates of the
+        larger than zero.  If the controller is locked then updates of the
         current configuration are not made.
     */
     sal_Int32 mnLockCount;

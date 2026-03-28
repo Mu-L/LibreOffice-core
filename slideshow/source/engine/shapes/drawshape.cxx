@@ -463,7 +463,7 @@ namespace slideshow::internal
 
             tools::Long nFramesToLoad = aAnimation.Count();
 
-            // if the Animation is bigger then 5 million pixels, we do not load the
+            // if the Animation is bigger than 5 million pixels, we do not load the
             // whole animation now.
             if (nBitmapPixels * aAnimation.Count() > 5000000)
             {

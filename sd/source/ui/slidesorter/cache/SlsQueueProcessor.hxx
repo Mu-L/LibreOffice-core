@@ -54,7 +54,7 @@ public:
         @param nPriorityClass
             A priority class of 0 tells the processor that a high priority
             request is waiting in the queue.  The time to wait is thus
-            shorter then that for a low priority request (denoted by a value
+            shorter than that for a low priority request (denoted by a value
             of 1.)  When the timer is already running it is not modified.
     */
     void Start (int nPriorityClass);
