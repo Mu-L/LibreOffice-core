@@ -217,10 +217,12 @@ QrCodeGenDialog::QrCodeGenDialog(weld::Widget* pParent, Reference<XModel> xModel
     , mpParent(pParent)
 #endif
 {
+#if ENABLE_ZXING
 #if ZXING_VERSION_MAJOR >= 3
     // The new API simply does not allow to specify an arbitrary number of margin pixels.
     m_xLabelMargin->hide();
     m_xSpinBorder->hide();
+#endif
 #endif
 
     m_xEdittext->set_size_request(m_xEdittext->get_approximate_digit_width() * 28,
