@@ -209,7 +209,7 @@ namespace basegfx::utils
                             }
 
                             // make sure bound value is not too small. The base units are 1/100th mm, thus
-                            // just make sure it's not smaller then 1/100th of that
+                            // just make sure it's not smaller than 1/100th of that
                             if(fBound < 0.01)
                             {
                                 fBound = 0.01;

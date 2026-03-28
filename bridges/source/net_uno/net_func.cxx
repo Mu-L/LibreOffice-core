@@ -107,7 +107,7 @@ bool Bridge::call_uno_func(uno_Interface* pUnoI, const typelib_TypeDescription* 
     // Prepare a memory block to contain all the converted arguments and return value
     //
     // The memory block contains pointers to small arguments stored in the same block.
-    // If an argument is larger then `largest` union, such as a struct, then the pointer
+    // If an argument is larger than the `largest` union, such as a struct, then the pointer
     // points to an extra block of memory.
     //
     // The argument pointers are followed by the return value. If the return value is

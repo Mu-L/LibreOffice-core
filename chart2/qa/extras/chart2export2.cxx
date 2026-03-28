@@ -1645,7 +1645,7 @@ CPPUNIT_TEST_FIXTURE(Chart2ExportTest2, testGraphicBlipXLSX)
     GfxLink aLink = aGraphic.GetGfxLink();
     std::size_t nDataSize = aLink.GetDataSize();
 
-    // test the image size is bigger then 0.
+    // test the image size is bigger than 0.
     CPPUNIT_ASSERT_GREATER(size_t(0), nDataSize);
 }
 

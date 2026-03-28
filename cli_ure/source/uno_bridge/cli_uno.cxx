@@ -65,7 +65,7 @@ System::Object^ Bridge::call_uno(uno_Interface * pUnoI,
     //      | Arg 1
     //      | Arg 2
     //
-    // If an argument is larger then union largest, such as some structures, then the pointer
+    // If an argument is larger than union largest, such as some structures, then the pointer
     // points to an extra block of memory. The same goes for a big return value.
 
     char * mem = (char *)alloca(

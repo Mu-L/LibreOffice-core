@@ -1903,7 +1903,7 @@ bool SvxAutoCorrect::CreateLanguageFile( const LanguageTag& rLanguageTag, bool b
     }
     if (lastCheckLessThan2MinutesAgo)
     {
-        // no need to test the file, because the last check is not older then
+        // no need to test the file, because the last check is not older than
         // 2 minutes.
         if( bNewFile )
         {
