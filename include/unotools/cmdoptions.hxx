@@ -44,7 +44,7 @@ class XFrame;
     @short          forward declaration to our private date container implementation
     @descr          We use these class as internal member to support small memory requirements.
                     You can create the container if it is necessary. The class which use these mechanism
-                    is faster and smaller then a complete implementation!
+                    is faster and smaller than a complete implementation!
 **-***********************************************************************************************************/
 
 class SvtCommandOptions_Impl;

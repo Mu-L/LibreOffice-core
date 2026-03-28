@@ -436,7 +436,7 @@ class FWK_DLLPUBLIC Desktop final : private cppu::BaseMutex,
           * So we uses a trick: a special listener (exactly these one here) listen for notifyTermination()
           * and shutdown the process asynchronous. But desktop has to make this special
           * notification as really last one ... Otherwise it can happen that asynchronous
-          * shutdown will be faster then all other code around Desktop.terminate() .-))
+          * shutdown will be faster than all other code around Desktop.terminate() .-))
           */
         css::uno::Reference< css::frame::XTerminateListener > m_xSfxTerminator;
 
