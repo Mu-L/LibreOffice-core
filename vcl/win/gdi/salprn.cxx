@@ -1135,7 +1135,7 @@ static BOOL CALLBACK SalPrintAbortProc( HDC hPrnDC, int /* nError */ )
         else
             ++i;
 
-        const std::list<WinSalPrinter*>& rPrinters = GetWindowsInstance().GetPrinters();
+        const std::list<WinSalPrinter*>& rPrinters = GetWindowsInstance().GetData().m_aPrinters;
         auto aPrinterIt
             = std::ranges::find_if(rPrinters, [&hPrnDC](WinSalPrinter* pPrinter)
                                    { return pPrinter && pPrinter->mhDC == hPrnDC; });
@@ -1177,7 +1177,7 @@ WinSalPrinter::WinSalPrinter() :
     mbCollate( false ),
     mbValid( true )
 {
-    GetWindowsInstance().InsertPrinter(this);
+    GetWindowsInstance().GetData().m_aPrinters.push_front(this);
 }
 
 WinSalPrinter::~WinSalPrinter()
@@ -1192,7 +1192,7 @@ WinSalPrinter::~WinSalPrinter()
         DeleteDC( hDC );
     }
 
-    GetWindowsInstance().RemovePrinter(this);
+    GetWindowsInstance().GetData().m_aPrinters.remove(this);
 }
 
 void WinSalPrinter::markInvalid()

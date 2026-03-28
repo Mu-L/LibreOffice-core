@@ -36,6 +36,7 @@ class WinSalPrinter;
 
 struct WindowsInstanceData
 {
+    std::list<WinSalPrinter*> m_aPrinters;
     std::unordered_set<OUString> m_aTempFontPaths;
 
     std::unique_ptr<D2DWriteTextOutRenderer> m_pD2DWriteTextOutRenderer;
@@ -46,8 +47,6 @@ struct WindowsInstanceData
 /** Abstract base class for SalInstance implementations on Windows. */
 class VCLPLUG_WIN_PUBLIC WindowsInstance : public SalInstance
 {
-    std::list<WinSalPrinter*> m_aPrinters;
-
     WindowsInstanceData m_aData;
 
 public:
@@ -62,10 +61,6 @@ public:
     virtual OUString GetDefaultPrinter() override;
 
     virtual Platform GetPlatform() const override { return Platform::Windows; }
-
-    const std::list<WinSalPrinter*>& GetPrinters() const;
-    void InsertPrinter(WinSalPrinter* pPrinter);
-    void RemovePrinter(WinSalPrinter* pPrinter);
 
     WindowsInstanceData& GetData() { return m_aData; }
 };
