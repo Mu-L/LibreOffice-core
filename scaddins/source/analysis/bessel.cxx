@@ -324,7 +324,7 @@ static double Bessely0( double fX )
     if (fX <= 0 || !rtl::math::isValidArcArg(fX))
         throw IllegalArgumentException();
     const double fMaxIteration = 9000000.0; // should not be reached
-    if (fX > 5.0e+6) // iteration is not considerable better then approximation
+    if (fX > 5.0e+6) // iteration is not considerably better than approximation
         return sqrt(1/M_PI/fX)
                 *(std::sin(fX)-std::cos(fX));
     const double epsilon = 1.0e-15;
@@ -377,7 +377,7 @@ static double Bessely1( double fX )
     if (fX <= 0 || !rtl::math::isValidArcArg(fX))
         throw IllegalArgumentException();
     const double fMaxIteration = 9000000.0; // should not be reached
-    if (fX > 5.0e+6) // iteration is not considerable better then approximation
+    if (fX > 5.0e+6) // iteration is not considerably better than approximation
         return - sqrt(1/M_PI/fX)
                 *(std::sin(fX)+std::cos(fX));
     const double epsilon = 1.0e-15;

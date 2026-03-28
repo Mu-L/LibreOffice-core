@@ -53,7 +53,7 @@ interface XAccessibleKeyBinding : ::com::sun::star::uno::XInterface
         in which to press them.
         @param nIndex
             The index selects one of alternative key bindings.  It has to
-            non-negative and smaller then the number of key bindings as
+            non-negative and smaller than the number of key bindings as
             returned by the getAccessibleKeyBindingCount()
             method.
         @return
