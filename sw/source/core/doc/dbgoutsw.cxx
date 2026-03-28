@@ -646,9 +646,9 @@ static OUString lcl_dbg_out(SwOutlineNodes const & rNodes)
 {
     OUStringBuffer aStr("[\n");
 
-    for (size_t i = 0; i < rNodes.size(); i++)
+    for (const auto &rNode : rNodes)
     {
-        aStr.append(lcl_dbg_out(*rNodes[i]) + "\n");
+        aStr.append(lcl_dbg_out(*rNode) + "\n");
     }
 
     aStr.append("]\n");

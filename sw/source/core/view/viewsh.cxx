@@ -1952,8 +1952,8 @@ bool SwViewShell::CheckInvalidForPaint( const SwRect &rRect )
                 }
                 if ( bRet )
                 {
-                    for ( size_t i = 0; i < aRegion.size(); ++i )
-                        GetWin()->Invalidate( aRegion[i].SVRect() );
+                    for ( const SwRect &rRegionRect : aRegion )
+                        GetWin()->Invalidate( rRegionRect.SVRect() );
 
                     if ( rRect != VisArea() )
                     {
