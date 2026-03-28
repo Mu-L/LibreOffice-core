@@ -44,7 +44,7 @@ class ViewInformation2D;
 namespace drawinglayer
 {
 // Helper that just creates the AlphaMask for a given Seq of Primitives.
-// If only the mask is needed this can be significantly faster then
+// If only the mask is needed this can be significantly faster than
 // creating content & mask in a Bitmap (since the creation uses
 // e.g. a unified color for gradients instead of having to fully paint
 // these)

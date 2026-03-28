@@ -64,7 +64,7 @@ class InterceptionHelper final : public  ::cppu::WeakImplHelper<
 
             @descr If the interceptor component does not support the optional interface
                    XInterceptorInfo, it will be registered for one pattern "*" by default.
-                   That would make it possible to handle it in the same manner then real
+                   That would make it possible to handle it in the same manner than real
                    registered interceptor objects and we must not implement any special code. */
         css::uno::Sequence< OUString > lURLPattern;
     };

@@ -361,7 +361,7 @@ css::uno::Reference< css::container::XEnumeration > SAL_CALL BaseContainer::crea
 
     /* Note: It's not allowed to return NULL. Because an empty enumeration
              transport the same information but make no trouble outside.
-             Further its easier to work directly with the return value
+             Further it's easier to work directly with the return value
              instead of checking of NULL returns! */
 
     return new ::comphelper::OEnumerationByName(this, std::move(lKeys));

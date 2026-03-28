@@ -1027,7 +1027,7 @@ void FilterCache::impl_validateAndOptimize()
         // a "Preferred" one - set it to the front of this list.
         // Of course multiple "Preferred" registrations can occur
         // (they shouldn't - but they can!) ... Ignore it. The last
-        // preferred type is usable in the same manner then every
+        // preferred type is usable in the same manner than every
         // other type!
         bool bPreferred = false;
         it = aType.find(PROPNAME_PREFERRED);
