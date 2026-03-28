@@ -14206,7 +14206,12 @@ then
             qt6_libexec_dirs="$qt6_libexec_dirs:$lib_dir/libexec"
         fi
     done
-    AC_PATH_PROGS( MOC6, [moc-qt6 moc], no, [`dirname $qt6_libdir`/libexec:$QT6DIR/libexec:$qt6_libexec_dirs:`echo $qt6_libdirs | $SED -e 's/ /:/g'`:$PATH])
+
+    moc6_search_path=`dirname $qt6_libdir`/libexec:$qt6_libexec_dirs:`echo $qt6_libdirs | $SED -e 's/ /:/g'`:$PATH
+    if test -n "${QT6DIR}"; then
+        moc6_search_path=${QT6DIR}/libexec:${QT6DIR}/bin:${moc6_search_path}
+    fi
+    AC_PATH_PROGS( MOC6, [moc-qt6 moc], no, [${moc6_search_path}])
     if test "$MOC6" = "no"; then
         AC_MSG_ERROR([Qt Meta Object Compiler not found.  Please specify
 the root of your Qt installation by exporting QT6DIR before running "configure".])
