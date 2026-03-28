@@ -29,6 +29,11 @@
 #include <salusereventlist.hxx>
 #include <unx/geninst.h>
 #include <vclpluginapi.h>
+#ifdef _WIN32
+#include <win/WindowsInstance.hxx>
+#else
+#include <unx/geninst.h>
+#endif
 
 #include <osl/conditn.hxx>
 #include <vcl/timer.hxx>
@@ -72,7 +77,14 @@ using FreeableCStr = std::unique_ptr<char[], StdFreeCStr>;
  *  methods using a specific graphics backend.
  */
 class VCLPLUG_QT_PUBLIC QtInstance : public QObject,
+// avoid moc failing due to not evaluating all macros
+#ifndef Q_MOC_RUN
+#ifdef _WIN32
+                                     public WindowsInstance,
+#else
                                      public SalGenericInstance,
+#endif
+#endif
                                      public SalUserEventList
 {
     Q_OBJECT

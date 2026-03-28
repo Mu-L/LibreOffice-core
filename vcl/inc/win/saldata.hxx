@@ -27,6 +27,7 @@
 
 #include <svdata.hxx>
 #include <salwtype.hxx>
+#include <vclpluginapi.h>
 
 #include <systools/win32/comtools.hxx>
 #include <tools/long.hxx>
@@ -75,7 +76,7 @@ struct SalIcon
     HICON   hSmallIcon;
 };
 
-class SalData : public sal::systools::CoInitializeGuard
+class VCLPLUG_WIN_PUBLIC SalData : public sal::systools::CoInitializeGuard
 {
 public:
     SalData();

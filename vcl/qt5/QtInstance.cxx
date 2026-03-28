@@ -44,11 +44,15 @@
 #include <QtTimer.hxx>
 #include <SalYieldMutex.hxx>
 #include <salvtables.hxx>
-#include <unx/gendata.hxx>
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0) && ENABLE_GSTREAMER_1_0 && QT5_HAVE_GOBJECT
 #include <unx/gstsink.hxx>
 #endif
 #include <vclpluginapi.h>
+#if USE_HEADLESS_CODE
+#include <unx/gendata.hxx>
+#elif defined _WIN32
+#include <win/saldata.hxx>
+#endif
 
 #include <comphelper/emscriptenthreading.hxx>
 #include <i18nlangtag/languagetag.hxx>
@@ -264,7 +268,15 @@ bool QtInstance::useCairo()
 }
 
 QtInstance::QtInstance()
+#if defined _WIN32
+#if USE_HEADLESS_CODE
+    : WindowsInstance(std::make_unique<QtYieldMutex>(), new GenericUnixSalData)
+#else
+    : WindowsInstance(std::make_unique<QtYieldMutex>(), new SalData)
+#endif
+#else
     : SalGenericInstance(std::make_unique<QtYieldMutex>(), new GenericUnixSalData)
+#endif
     , m_pTimer(nullptr)
     , m_bSleeping(false)
     , m_aUpdateStyleTimer("vcl::qt5 m_aUpdateStyleTimer")

@@ -1063,6 +1063,7 @@ cygwin*|wsl*)
     using_x11=no
     test_unix_dlapi=no
     test_openldap=no
+    test_qt6=yes
     test_win=yes
     enable_pagein=no
     build_skia=yes
@@ -14117,9 +14118,9 @@ then
         AC_MSG_NOTICE([Detected Qt6 version: $qmake6_test_ver])
     fi
 
-    qt6_incdirs="`$QMAKE6 -query QT_INSTALL_HEADERS` $qt6_incdirs"
-    qt6_libdirs="`$QMAKE6 -query QT_INSTALL_LIBS` $qt6_libdirs"
-    qt6_platformsdir="`$QMAKE6 -query QT_INSTALL_PLUGINS`/platforms"
+    qt6_incdirs="`$QMAKE6 -query QT_INSTALL_HEADERS | tr -d '\r'` $qt6_incdirs"
+    qt6_libdirs="`$QMAKE6 -query QT_INSTALL_LIBS | tr -d '\r'` $qt6_libdirs"
+    qt6_platformsdir="`$QMAKE6 -query QT_INSTALL_PLUGINS | tr -d '\r'`/platforms"
     QT6_PLATFORMS_SRCDIR="$qt6_platformsdir"
 
     qt6_test_include="QtWidgets/qapplication.h"
@@ -14145,19 +14146,29 @@ then
     AC_LANG_POP([C++])
 
     if test "$_os" = "Emscripten"; then
-        qt6_library_suffix=".a"
+        qt6_library_prefix="lib"
+        qt6_library_suffixes=".a"
+    elif test "$_os" = "WINNT"; then
+        qt6_library_prefix=""
+        # file names of libraries built in debug mode have an additional
+        # "d" suffix in the file name, e.g. "libQt6Widgetsd.lib"
+        qt6_library_suffixes=".lib d.lib"
     else
-        qt6_library_suffix=".so"
+        qt6_library_prefix="lib"
+        qt6_library_suffixes=".so"
     fi
 
-    qt6_test_library="libQt6Widgets"
+    qt6_test_library="Qt6Widgets"
     AC_MSG_CHECKING([for Qt6 libraries])
     qt6_libdir="no"
     for lib_dir in $qt6_libdirs; do
-        if test -r "$lib_dir/${qt6_test_library}${qt6_library_suffix}"; then
-            qt6_libdir="$lib_dir"
-            break
-        fi
+        for suffix in $qt6_library_suffixes; do
+            if test -r "$lib_dir/${qt6_library_prefix}${qt6_test_library}${suffix}"; then
+                qt6_libdir="$lib_dir"
+                qt6_library_suffix="$suffix"
+                break
+            fi
+        done
     done
     AC_MSG_RESULT([$qt6_libdir])
     if test "x$qt6_libdir" = "xno"; then
@@ -14175,7 +14186,12 @@ then
 
     QT6_CFLAGS="-I$qt6_incdir -DQT_NO_VERSION_TAGGING"
     QT6_CFLAGS=$(printf '%s' "$QT6_CFLAGS" | sed -e "s/-I/${ISYSTEM?}/g")
-    QT6_LIBS="-L$qt6_libdir -lQt6Core -lQt6Gui -lQt6Widgets"
+    if test "$build_os" = "cygwin"; then
+        QT6_LIBS="-LIBPATH:${qt6_libdir} Qt6Core${qt6_library_suffix} Qt6Gui${qt6_library_suffix} Qt6Widgets${qt6_library_suffix}"
+    else
+        QT6_LIBS="-L$qt6_libdir -lQt6Core -lQt6Gui -lQt6Widgets"
+    fi
+
     if test "$_os" = "Emscripten"; then
         QT6_LIBS="$QT6_LIBS -lQt6BundledPcre2 -lQt6BundledZLIB -L${qt6_platformsdir} -lqwasm -sGL_ENABLE_GET_PROC_ADDRESS"
     else
@@ -14185,7 +14201,11 @@ then
                 break
             fi
             ENABLE_QT6_MULTIMEDIA=TRUE
-            QT6_LIBS="$QT6_LIBS -lQt6Multimedia -lQt6MultimediaWidgets"
+            if test "$build_os" = "cygwin"; then
+                QT6_LIBS="$QT6_LIBS Qt6Multimedia${qt6_library_suffix} Qt6MultimediaWidgets${qt6_library_suffix}"
+            else
+                QT6_LIBS="$QT6_LIBS -lQt6Multimedia -lQt6MultimediaWidgets"
+            fi
         fi
     fi
 
