@@ -39,7 +39,7 @@ public:
     void testWildcardSearch();
     void testApostropheSearch();
     void testQuotationMarkSearch();
-    void testTdf138410();
+    void testTdf91764_searchArabicDiacritics();
 
     CPPUNIT_TEST_SUITE(TestTextSearch);
     CPPUNIT_TEST(testICU);
@@ -47,7 +47,7 @@ public:
     CPPUNIT_TEST(testWildcardSearch);
     CPPUNIT_TEST(testApostropheSearch);
     CPPUNIT_TEST(testQuotationMarkSearch);
-    CPPUNIT_TEST(testTdf138410);
+    CPPUNIT_TEST(testTdf91764_searchArabicDiacritics);
     CPPUNIT_TEST_SUITE_END();
 private:
     uno::Reference<util::XTextSearch> m_xSearch;
@@ -492,7 +492,7 @@ void TestTextSearch::testQuotationMarkSearch()
     CPPUNIT_ASSERT_EQUAL( static_cast<sal_Int32>(15), aRes.endOffset[0] );
 }
 
-void TestTextSearch::testTdf138410()
+void TestTextSearch::testTdf91764_searchArabicDiacritics()
 {
     OUString str(u"\u0643\u064f\u062a\u064f\u0628 \u0643\u062a\u0628"_ustr);
     sal_Int32 startPos = 0, endPos = str.getLength();
