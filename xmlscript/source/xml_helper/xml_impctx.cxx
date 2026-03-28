@@ -649,7 +649,7 @@ OUString ExtendedAttributes::getQNameByIndex( sal_Int32 nIndex )
 
 OUString ExtendedAttributes::getTypeByIndex( sal_Int32 nIndex )
 {
-    SAL_WARN_IF( nIndex >= m_nAttributes , "xmlscript.xmlhelper", "nIndex is bigger then m_nAttributes");
+    SAL_WARN_IF( nIndex >= m_nAttributes , "xmlscript.xmlhelper", "nIndex is bigger than m_nAttributes");
     return OUString(); // unsupported
 }
 

@@ -816,7 +816,7 @@ static void impCreateAlternateTiming(const SfxItemSet& rSet, drawinglayer::anima
         rAnimList.append(aOutIn);
     }
 
-    // loop. In loop, move out and in again. fInnerMovePath may be negative when text is bigger then frame,
+    // loop. In loop, move out and in again. fInnerMovePath may be negative when text is bigger than frame,
     // so use absolute value
     const double fInnerMovePath(fabs(1.0 - (fRelativeTextLength * 2.0)));
     const double fTimeForInnerPath(fTimeFullPath * fInnerMovePath);

@@ -893,7 +893,7 @@ static void FitTextOutlinesToShapeOutlines(const tools::PolyPolygon& aOutlines2d
                                     rDistance /= fCurWidth;
                             }
 
-                            // if the current outline is longer then the text to fit in,
+                            // if the current outline is longer than the text to fit in,
                             // then we have to divide the bonus space between the
                             // before-/after- text area.
                             // fAdjust means how much space we put before the text.

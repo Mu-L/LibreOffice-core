@@ -390,7 +390,7 @@ an implementation.
 ### Re-evaluate the macOS `ImplNSAppPostEvent`
 
 Probably a solution comparable to the Windows backends delayed PostMessage
-workaround using a validation timestamp is better then the current peek,
+workaround using a validation timestamp is better than the current peek,
 remove, re-postEvent, which has to run in the main thread.
 
 Originally I didn't evaluate, if the event is actually lost or just delayed.
