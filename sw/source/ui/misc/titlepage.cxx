@@ -50,7 +50,7 @@ namespace
         sal_uInt16 nDontCare;
         lcl_GetPageDesc(rSh, nDontCare, &pPageFormatDesc);
 
-        // If we want a new number then set it, otherwise reuse the existing one
+        // If we want a new number than set it, otherwise reuse the existing one
         sal_uInt16 nPgNo = 0;
         if (nNewNumber)
         {

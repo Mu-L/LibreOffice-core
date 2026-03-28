@@ -126,7 +126,7 @@ class SwAccessibleParagraph :
     // is nBegin...nEnd a valid range? (nEnd points past the last character)
     bool IsValidRange(sal_Int32 nBegin, sal_Int32 nEnd);
 
-    // Ensure ordered range (i.e. nBegin is smaller then nEnd)
+    // Ensure ordered range (i.e. nBegin is smaller than nEnd)
     static void OrderRange(sal_Int32& nBegin, sal_Int32& nEnd)
     {
         if( nBegin > nEnd )

@@ -827,7 +827,7 @@ CPPUNIT_TEST_FIXTURE(Test, testTextInput)
         uno::Reference<beans::XPropertySet> xPropertySet(aField, uno::UNO_QUERY);
         uno::Reference<text::XTextContent> xText(aField, uno::UNO_QUERY);
 
-        // why is the enumeration not in the same order then the fields in the document?
+        // why is the enumeration not in the same order than the fields in the document?
         // it seems to be stable and the navigation in the GUI is actually correct.
         OUString sContent, sHint;
         switch (nElements)

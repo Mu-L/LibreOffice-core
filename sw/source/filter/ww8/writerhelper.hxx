@@ -142,7 +142,7 @@ namespace ww8
         /** Even if the frame isn't an inline frame, force it to behave as one
 
             There are a variety of circumstances where word cannot have
-            anything except inline elements, e.g. inside frames. So its easier
+            anything except inline elements, e.g. inside frames. So it's easier
             to force this ww8::Frame into behaving as one, instead of special
             casing export code all over the place.
 

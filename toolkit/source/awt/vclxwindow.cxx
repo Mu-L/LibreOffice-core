@@ -139,7 +139,7 @@ public:
     /** ctor
     @param _pAntiImpl
         the <type>VCLXWindow</type> instance which the object belongs to. Must
-        live longer then the object just being constructed.
+        live longer than the object just being constructed.
     */
     VCLXWindowImpl( VCLXWindow& _rAntiImpl, bool _bWithDefaultProps );
 
