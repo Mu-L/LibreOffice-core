@@ -32,7 +32,7 @@ static sal_uInt16 ImplAccelEntryGetIndex( const ImplAccelList* pList, sal_uInt16
     size_t  nCount = pList->size();
     sal_uInt16  nCompareId;
 
-    // check if first key is larger then the key to compare
+    // check if first key is larger than the key to compare
     if ( !nCount || (nId < (*pList)[ 0 ]->mnId) )
     {
         if ( pIndex )

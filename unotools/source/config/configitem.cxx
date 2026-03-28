@@ -250,7 +250,7 @@ static void impl_unpackLocalizedProperties(    const   Sequence< OUString >&   l
     //  =>  I think we should make it fast for i). ii) is a special case and mustn't be SOOOO... fast.
     //      We should reserve same space for output list like input ones first.
     //      Follow algorithm looks for these borders and change it for ii) only!
-    //      It will be faster then a "realloc()" call in every loop ...
+    //      It will be faster than a "realloc()" call in every loop ...
     nSourceSize = lInNames.getLength();
 
     lOutNames.realloc   ( nSourceSize );

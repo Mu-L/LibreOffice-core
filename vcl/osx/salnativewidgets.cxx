@@ -55,7 +55,7 @@
 // API calls, all widgets are drawn without text. Drawing of text is done separately by VCL on top of graphical Carbon widget
 // representation. drawNativeControl is called by VCL using content rectangle determined by getNativeControlRegion.
 
-// FIXME: when calculation bounding rectangle larger then content rectangle, text displayed by VCL will become misaligned. To avoid
+// FIXME: when calculation bounding rectangle larger than content rectangle, text displayed by VCL will become misaligned. To avoid
 // misalignment bounding rectangle and content rectangle are calculated equally including adornments. Reduction of size for content
 // is done by drawNativeControl subsequently. Only exception is editbox: As other widgets have distinct ControlPart::SubEdit control
 // parts, editbox bounding rectangle and content rectangle are both calculated to reflect content area. Extending size for

@@ -464,7 +464,7 @@ public class AccessibilityTreeModel
     // Map to translate from accessible object to corresponding tree node.
     private final NodeMap maNodeMap;
 
-    // If the lock count is higher then zero, then no events are processed.
+    // If the lock count is higher than zero, then no events are processed.
     private int mnLockCount;
 
     private Canvas maCanvas;
