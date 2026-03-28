@@ -3141,11 +3141,13 @@ void MathType::HandleAttributes(SmNode *pNode,int nLevel)
             //we have to drop them
             nOldPending = StartTemplate(0x2f,0x01);
             break;
+        case TWIDELVEC: //Not Exportable
         case TCHECK: //Not Exportable
         case TACUTE: //Not Exportable
         case TGRAVE: //Not Exportable
         case TCIRCLE: //Not Exportable
         case TWIDEHARPOON: //Not Exportable
+        case TWIDELHARPOON: //Not Exportable
         case TWIDETILDE: //Not Exportable
         case TWIDEHAT: //Not Exportable
             break;
@@ -3234,7 +3236,9 @@ void MathType::HandleAttributes(SmNode *pNode,int nLevel)
                 pS->WriteUChar( 20 );
                 break;
             case TWIDEVEC:
+            case TWIDELVEC:
             case TWIDEHARPOON:
+            case TWIDELHARPOON:
             case TUNDERLINE:
             case TWIDETILDE:
             case TWIDEHAT:

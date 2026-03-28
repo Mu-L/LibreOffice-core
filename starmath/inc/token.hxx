@@ -119,8 +119,10 @@ enum SmTokenType
     TUNDERLINE,     TOVERLINE,      TOVERSTRIKE,    TBAR,           // Lines
     TFIXED,         TSANS,          TSERIF,                         // Types
     TACUTE,         TGRAVE,         THAT,           TBREVE,         // Accents
-    TWIDEVEC,       TWIDEHARPOON,   TWIDETILDE,     TWIDEHAT,       // Wide math
-    TVEC,           THARPOON,       TTILDE,         TCIRCLE,        // math
+    TWIDEVEC,       TWIDELVEC,      TWIDEHARPOON,   TWIDELHARPOON,
+    TWIDETILDE,     TWIDEHAT,                                       // Wide math
+    TVEC,           TLVEC,          THARPOON,       TLHARPOON,
+    TTILDE,         TCIRCLE,                                        // math
     TCHECK,
     TTEXT,          TNUMBER,        TCHARACTER,     TIDENT,         // Content type
     // Brackets

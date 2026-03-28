@@ -1064,7 +1064,9 @@ void SmXMLExport::ExportAttributes(const SmNode* pNode, int nLevel)
         case TWIDETILDE:
         case TWIDEHAT:
         case TWIDEVEC:
+        case TWIDELVEC:
         case TWIDEHARPOON:
+        case TWIDELHARPOON:
         {
             // make these wide accents stretchy
             AddAttribute(XML_NAMESPACE_MATH, XML_STRETCHY, XML_TRUE);

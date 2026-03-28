@@ -1877,7 +1877,7 @@ public:
 /** Attribute node
  *
  * Used to give an attribute to another node. Used for commands such as:
- * UNDERLINE, OVERLINE, OVERSTRIKE, WIDEVEC, WIDEHARPOON, WIDEHAT and WIDETILDE.
+ * UNDERLINE, OVERLINE, OVERSTRIKE, WIDEVEC, WIDELVEC WIDEHARPOON, WIDELHARPOON, WIDEHAT and WIDETILDE.
  *
  * Children:<BR>
  * 0: Attribute<BR>

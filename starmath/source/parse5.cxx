@@ -140,6 +140,8 @@ constexpr SmTokenTableEntry aTokenTable[]
         { u"le"_ustr, TLE, MS_LE, TG::Relation, 0 },
         { u"left"_ustr, TLEFT, '\0', TG::NONE, 5 },
         { u"leftarrow"_ustr, TLEFTARROW, MS_LEFTARROW, TG::Standalone, 5 },
+        { u"leftharpoon"_ustr, TLHARPOON, MS_LHARPOON, TG::Attribute, 5 },
+        { u"leftvec"_ustr, TLVEC, MS_LVEC, TG::Attribute, 5 },
         { u"leslant"_ustr, TLESLANT, MS_LESLANT, TG::Relation, 0 },
         { u"lfloor"_ustr, TLFLOOR, MS_LFLOOR, TG::LBrace, 5 },
         { u"lim"_ustr, TLIM, '\0', TG::Oper, 5 },
@@ -258,6 +260,8 @@ constexpr SmTokenTableEntry aTokenTable[]
         { u"widebslash"_ustr, TWIDEBACKSLASH, MS_BACKSLASH, TG::Product, 0 },
         { u"wideharpoon"_ustr, TWIDEHARPOON, MS_HARPOON, TG::Attribute, 5 },
         { u"widehat"_ustr, TWIDEHAT, MS_HAT, TG::Attribute, 5 },
+        { u"wideleftharpoon"_ustr, TWIDELHARPOON, MS_LHARPOON, TG::Attribute, 5 },
+        { u"wideleftvec"_ustr, TWIDELVEC, MS_LVEC, TG::Attribute, 5 },
         { u"wideslash"_ustr, TWIDESLASH, MS_SLASH, TG::Product, 0 },
         { u"widetilde"_ustr, TWIDETILDE, MS_TILDE, TG::Attribute, 5 },
         { u"widevec"_ustr, TWIDEVEC, MS_VEC, TG::Attribute, 5 },
@@ -2163,7 +2167,9 @@ std::unique_ptr<SmStructureNode> SmParser5::DoAttribute()
             break;
 
         case TWIDEVEC:
+        case TWIDELVEC:
         case TWIDEHARPOON:
+        case TWIDELHARPOON:
         case TWIDEHAT:
         case TWIDETILDE:
             xAttr.reset(new SmMathSymbolNode(m_aCurToken));

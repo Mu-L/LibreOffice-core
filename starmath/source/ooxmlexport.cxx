@@ -208,7 +208,9 @@ void SmOoxmlExport::HandleAttribute( const SmAttributeNode* pNode, int nLevel )
         case TWIDETILDE:
         case TWIDEHAT:
         case TWIDEHARPOON:
+        case TWIDELHARPOON:
         case TWIDEVEC:
+        case TWIDELVEC:
         case TBAR:
         {
             m_pSerializer->startElementNS(XML_m, XML_acc);

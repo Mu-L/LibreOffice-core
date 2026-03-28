@@ -104,7 +104,9 @@ void SmRtfExport::HandleAttribute(const SmAttributeNode* pNode, int nLevel)
         case TWIDETILDE:
         case TWIDEHAT:
         case TWIDEHARPOON:
+        case TWIDELHARPOON:
         case TWIDEVEC:
+        case TWIDELVEC:
         case TBAR:
         {
             m_pBuffer->append("{" LO_STRING_SVTOOLS_RTF_MACC " ");

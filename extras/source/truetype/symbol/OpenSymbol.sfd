@@ -1,10 +1,10 @@
-SplineFontDB: 3.0
+SplineFontDB: 3.2
 FontName: OpenSymbol
 FullName: OpenSymbol
 FamilyName: OpenSymbol
 Weight: Book
-Copyright: (c) 2009 Sun Microsystems Inc.\nTHERE DOES NOT EXIST (c) 2011 Julien Nabet\nPRECEDES <-> DOES NOT SUCCEED (c) 2011 Olivier Hallot\nPRIME <-> TRIPLE PRIME (c) 2013 Mathias Hasselmann\nphi <-> phi1 (c) 2015 Khaled Hosny\n(c) 2016 Mike Kaganski\nzero, one, two, three, four, five, six, seven, eight, nine, question, underscore, copyright, registered, uni2215, angle, therefore, lozenge (c) 2010 Google Corporation\nuni20D1 (c) 2019 Takeshi Abe\nuniF030 <-> uniF039 (c) 2020 Ming Hua
-Version: 102.12
+Copyright: (c) 2009 Sun Microsystems Inc.\nTHERE DOES NOT EXIST (c) 2011 Julien Nabet\nPRECEDES <-> DOES NOT SUCCEED (c) 2011 Olivier Hallot\nPRIME <-> TRIPLE PRIME (c) 2013 Mathias Hasselmann\nphi <-> phi1 (c) 2015 Khaled Hosny\n(c) 2016 Mike Kaganski\nzero, one, two, three, four, five, six, seven, eight, nine, question, underscore, copyright, registered, uni2215, angle, therefore, lozenge (c) 2010 Google Corporation\nuni20D1 (c) 2019 Takeshi Abe\nuniF030 <-> uniF039 (c) 2020 Ming Hua\nuni20D6, uni20D0 (c) 2026 Neil Patel
+Version: 102.13
 ItalicAngle: 0
 UnderlinePosition: -143
 UnderlineWidth: 20
@@ -20,7 +20,7 @@ OS2Version: 0
 OS2_WeightWidthSlopeOnly: 0
 OS2_UseTypoMetrics: 1
 CreationTime: 1144938807
-ModificationTime: 1605567303
+ModificationTime: 1774635515
 PfmFamily: 81
 TTFWeight: 400
 TTFWidth: 5
@@ -775,16 +775,16 @@ ShortTable: maxp 16
 EndShort
 LangName: 1033 "" "" "Regular" "OpenSymbol"
 GaspTable: 1 65535 2 0
-Encoding: Original
+Encoding: Custom
 UnicodeInterp: none
 NameList: Adobe Glyph List
 DisplaySize: -72
 AntiAlias: 1
 FitToEm: 1
-WinInfo: 0 34 12
+WinInfo: 608 32 15
 BeginPrivate: 0
 EndPrivate
-BeginChars: 1063 1063
+BeginChars: 1065 1065
 
 StartChar: Alpha
 Encoding: 0 913 0
@@ -108813,6 +108813,42 @@ Flags: W
 LayerCount: 2
 Fore
 Refer: 1040 57 N 1 0 0 1 0 0 2
+EndChar
+
+StartChar: uni20D6
+Encoding: 1063 8406 1063
+Width: 1056
+Flags: W
+HStem: 1313 112<84 672>
+LayerCount: 2
+Fore
+SplineSet
+958 1313 m 1,0,-1
+ 370 1313 l 1,1,-1
+ 411 1163 l 1,2,-1
+ 30 1368 l 1,3,-1
+ 411 1575 l 1,4,-1
+ 370 1425 l 1,5,-1
+ 958 1425 l 1,6,-1
+ 958 1313 l 1,0,-1
+EndSplineSet
+EndChar
+
+StartChar: uni20D0
+Encoding: 1064 8400 1064
+Width: 1056
+Flags: WO
+HStem: 1313 112<30 618>
+LayerCount: 2
+Fore
+SplineSet
+958 1313 m 1,0,-1
+ 30 1313 l 1,1,-1
+ 411 1575 l 1,2,-1
+ 370 1425 l 1,3,-1
+ 958 1425 l 1,4,-1
+ 958 1313 l 1,0,-1
+EndSplineSet
 EndChar
 EndChars
 EndSplineFont
