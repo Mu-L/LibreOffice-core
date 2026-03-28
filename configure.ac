@@ -9563,7 +9563,7 @@ if test -n "$ENABLE_JAVA" -a -z "$JAVAINC"; then
         test -d "$JAVA_HOME/include/native_thread" && JAVAINC="$JAVAINC -I$JAVA_HOME/include/native_thread"
         ;;
 
-    linux-gnu*)
+    linux-gnu*|linux-musl*)
         JAVAINC="-I$JAVA_HOME/include"
         JAVAINC="$JAVAINC -I$JAVA_HOME/include/linux"
         test -d "$JAVA_HOME/include/native_thread" && JAVAINC="$JAVAINC -I$JAVA_HOME/include/native_thread"
