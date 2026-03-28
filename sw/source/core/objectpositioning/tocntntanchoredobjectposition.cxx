@@ -250,7 +250,7 @@ void SwToContentAnchoredObjectPosition::CalcPosition()
                     if (!pAnchor)
                     {
                         SAL_WARN("sw.core", "SwToContentAnchoredObjectPosition::CalcPosition: fly "
-                                            "chain length is longer then anchor chain length");
+                                            "chain length is longer than anchor chain length");
                         break;
                     }
                     pAnchor = pAnchor->GetFollow();

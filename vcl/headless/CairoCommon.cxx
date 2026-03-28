@@ -2133,7 +2133,7 @@ cairo_surface_t* SurfaceHelper::getSurface(unsigned long nTargetWidth,
 {
     if (bDisableDownScale || 0 == nTargetWidth || 0 == nTargetHeight || !pSurface || isTrivial())
     {
-        // caller asks for original or disabled or trivial (smaller then a minimal square size)
+        // caller asks for original or disabled or trivial (smaller than a minimal square size)
         // also excludes zero cases for width/height after this point if need to prescale
         return pSurface;
     }

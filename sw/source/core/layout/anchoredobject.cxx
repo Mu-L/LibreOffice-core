@@ -757,7 +757,7 @@ SwTextFrame* SwAnchoredObject::FindAnchorCharFrame()
                         {
                             SAL_WARN("sw.layout",
                                      "SwAnchoredObject::FindAnchorCharFrame: fly chain "
-                                     "length is longer then anchor chain length");
+                                     "length is longer than anchor chain length");
                             break;
                         }
                         pAnchor = pAnchor->GetFollow();

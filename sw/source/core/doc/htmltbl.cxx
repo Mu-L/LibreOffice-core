@@ -1289,7 +1289,7 @@ void SwHTMLTableLayout::AutoLayoutPass2( sal_uInt16 nAbsAvail, sal_uInt16 nRelAv
         if( !nAbsTabWidth )
             nAbsTabWidth = o3tl::narrowing<sal_uInt16>(m_nMax);
 
-        // A top table may also get wider then the available space.
+        // A top table may also get wider than the available space.
         if( nAbsTabWidth > nAbsAvail )
         {
             OSL_ENSURE( IsTopTable(),

@@ -524,7 +524,7 @@ void SwHTMLParser::EndMarquee()
 
     if( m_bFixMarqueeWidth )
     {
-        // Because there is no fixed height make the text object wider then
+        // Because there is no fixed height make the text object wider than
         // the text, so that there is no line break.
         const tools::Rectangle& rOldRect = m_pMarquee->GetLogicRect();
         m_pMarquee->SetLogicRect( tools::Rectangle( rOldRect.TopLeft(),

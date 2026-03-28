@@ -325,7 +325,7 @@ tools::Rectangle SwCommentRuler::GetCommentControlRegion()
 
     const tools::ULong nSidebarWidth = pPostItMgr->GetSidebarWidth(true);
 
-    //FIXME When the page width is larger then screen, the ruler is misplaced by one pixel
+    //FIXME When the page width is larger than screen, the ruler is misplaced by one pixel
     tools::Long nLeft = GetPageOffset();
     if (GetSidebarPosition() == sw::sidebarwindows::SidebarPosition::LEFT)
         nLeft += GetBorderOffset() - nSidebarWidth;

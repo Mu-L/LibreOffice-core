@@ -267,7 +267,7 @@ ClassificationDialog::ClassificationDialog(weld::Window* pParent, const css::uno
     }
 }
 
-//do it async so gtk has a chance to shrink it to best size, otherwise its larger than min
+//do it async so gtk has a chance to shrink it to best size, otherwise it's larger than min
 IMPL_LINK_NOARG(ClassificationDialog, OnAsyncExpandHdl, void*, void)
 {
     m_nAsyncExpandEvent = nullptr;
