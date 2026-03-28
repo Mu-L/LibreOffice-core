@@ -2919,6 +2919,20 @@ ScDPResultMember *ScDPResultDimension::FindMember(  SCROW  iData ) const
         OSL_FAIL("problem!  hash result is not the same as IsNamedItem");
     }
 
+    // Normal late allocation normally always finds it in the hash
+    if (!pResultData->IsLateInit())
+    {
+        // For full (non-late) init, we don't use the hash since it's huge
+        // but we can normally use a binary search for efficiency
+        SCROW nIndex;
+        if (lcl_SearchMember(maMemberArray, iData, nIndex))
+        {
+            // I *think* this is always true, but check for sanity
+            ScDPResultMember* pResultMember = maMemberArray[nIndex].get();
+            if (pResultMember->IsNamedItem(iData))
+                return pResultMember;
+        }
+    }
     unsigned int i;
     unsigned int nCount = maMemberArray.size();
     for( i = 0; i < nCount ; i++ )
@@ -4115,7 +4129,8 @@ ScDPResultMember* ScDPResultDimension::AddMember(const ScDPParentDimData &aData 
     SCROW   nDataIndex = pMember->GetDataId();
     maMemberArray.emplace_back( pMember );
 
-    maMemberHash.emplace( nDataIndex, pMember );
+    if (pResultData->IsLateInit())
+        maMemberHash.emplace(nDataIndex, pMember);
     return pMember;
 }
 
@@ -4128,7 +4143,8 @@ ScDPResultMember* ScDPResultDimension::InsertMember(const ScDPParentDimData *pMe
         maMemberArray.emplace( maMemberArray.begin()+nInsert, pNew );
 
         SCROW   nDataIndex = pMemberData->mpMemberDesc->GetItemDataId();
-        maMemberHash.emplace( nDataIndex, pNew );
+        if (pResultData->IsLateInit())
+            maMemberHash.emplace(nDataIndex, pNew);
         return pNew;
     }
     return maMemberArray[ nInsert ].get();
