@@ -119,6 +119,8 @@ static bool g_bDebugDisableCompression = getenv("VCL_DEBUG_DISABLE_PDFCOMPRESSIO
 namespace vcl
 {
 
+constexpr sal_Int32 PDFWRITER_IMPL_BUFFERSIZE = 1024;
+
 namespace
 {
 
@@ -703,7 +705,7 @@ sal_Int32 PDFWriterImpl::emitStructParentTree( sal_Int32 nObject )
 {
     if( nObject > 0 )
     {
-        OStringBuffer aLine( 1024 );
+        OStringBuffer aLine( PDFWRITER_IMPL_BUFFERSIZE );
 
         aLine.append( OString::number(nObject)
             + " 0 obj\n"
@@ -1278,7 +1280,7 @@ bool PDFWriterImpl::emitGradients()
 
 bool PDFWriterImpl::emitTilings()
 {
-    OStringBuffer aTilingObj( 1024 );
+    OStringBuffer aTilingObj( PDFWRITER_IMPL_BUFFERSIZE );
 
     for (auto & tiling : m_aTilings)
     {
@@ -1378,7 +1380,7 @@ sal_Int32 PDFWriterImpl::emitBuildinFont(const pdf::BuildinFontFace* pFD, sal_In
         return 0;
     const pdf::BuildinFont& rBuildinFont = pFD->GetBuildinFont();
 
-    OStringBuffer aLine( 1024 );
+    OStringBuffer aLine( PDFWRITER_IMPL_BUFFERSIZE );
 
     if( nFontObject <= 0 )
         nFontObject = createObject();
@@ -1437,7 +1439,7 @@ std::map< sal_Int32, sal_Int32 > PDFWriterImpl::emitSystemFont( const vcl::font:
         sal_Int32 nObject = createObject();
         if( updateObject( nObject ) )
         {
-            OStringBuffer aLine( 1024 );
+            OStringBuffer aLine( PDFWRITER_IMPL_BUFFERSIZE );
             aLine.append(
                 OString::number(nObject)
                 + " 0 obj\n"
@@ -1551,7 +1553,7 @@ bool PDFWriterImpl::emitType3Font(const vcl::font::PhysicalFontFace* pFace,
         if (!updateObject(nFontObject))
             return false;
 
-        OStringBuffer aLine(1024);
+        OStringBuffer aLine(PDFWRITER_IMPL_BUFFERSIZE);
         aLine.append(
             OString::number(nFontObject)
             + " 0 obj\n"
@@ -1645,7 +1647,7 @@ bool PDFWriterImpl::emitType3Font(const vcl::font::PhysicalFontFace* pFace,
             auto nStream = pGlyphStreams[i];
             if (!updateObject(nStream))
                 return false;
-            OStringBuffer aContents(1024);
+            OStringBuffer aContents(PDFWRITER_IMPL_BUFFERSIZE);
             appendDouble(pWidths[i] * fScale, aContents);
             aContents.append(" 0 d0\n");
 
@@ -1883,7 +1885,7 @@ sal_Int32 PDFWriterImpl::createToUnicodeCMap( sal_uInt8 const * pEncoding,
     sal_Int32 nStream = createObject();
     if (!updateObject(nStream))
         return 0;
-    OStringBuffer aContents( 1024 );
+    OStringBuffer aContents( PDFWRITER_IMPL_BUFFERSIZE );
     aContents.append(
                      "/CIDInit/ProcSet findresource begin\n"
                      "12 dict begin\n"
@@ -1976,7 +1978,7 @@ sal_Int32 PDFWriterImpl::createToUnicodeCMap( sal_uInt8 const * pEncoding,
 
 sal_Int32 PDFWriterImpl::emitFontDescriptor( const vcl::font::PhysicalFontFace* pFace, FontSubsetInfo const & rInfo, sal_Int32 nSubsetID, sal_Int32 nFontStream )
 {
-    OStringBuffer aLine( 1024 );
+    OStringBuffer aLine( PDFWRITER_IMPL_BUFFERSIZE );
     // get font flags, see PDF reference 1.4 p. 358
     // possibly characters outside Adobe standard encoding
     // so set Symbolic flag
@@ -2068,7 +2070,7 @@ void PDFWriterImpl::appendBuildinFontsToDict( OStringBuffer& rDict ) const
 
 bool PDFWriterImpl::emitFonts()
 {
-    OStringBuffer aLine( 1024 );
+    OStringBuffer aLine( PDFWRITER_IMPL_BUFFERSIZE );
 
     std::map< sal_Int32, sal_Int32 > aFontIDToObject;
 
@@ -2267,7 +2269,7 @@ bool PDFWriterImpl::emitFonts()
             return false;
     }
 
-    OStringBuffer aFontDict( 1024 );
+    OStringBuffer aFontDict( PDFWRITER_IMPL_BUFFERSIZE );
     aFontDict.append( OString::number(getFontDictObject())
         + " 0 obj\n"
           "<<" );
@@ -2408,7 +2410,7 @@ sal_Int32 PDFWriterImpl::emitOutline()
     for( i = 0; i < nItems; ++i )
     {
         PDFOutlineEntry& rItem = m_aOutline[i];
-        OStringBuffer aLine( 1024 );
+        OStringBuffer aLine( PDFWRITER_IMPL_BUFFERSIZE );
         COSWriter aWriter(aLine, m_aContext.Encryption.getParams(), m_pPDFEncryptor);
 
         if (!updateObject(rItem.m_nObject))
@@ -2682,7 +2684,7 @@ bool PDFWriterImpl::emitLinkAnnotations()
         if( m_aContext.DefaultLinkAction == PDFWriter::RemoveExternalLinks && rLink.m_nDest < 0 )
             continue;
 
-        OStringBuffer aLine( 1024 );
+        OStringBuffer aLine( PDFWRITER_IMPL_BUFFERSIZE );
         COSWriter aWriter(aLine, m_aContext.Encryption.getParams(), m_pPDFEncryptor);
         aLine.append( rLink.m_nObject );
         aLine.append( " 0 obj\n" );
@@ -2891,7 +2893,7 @@ we check in the following sequence:
                     if(m_aContext.DefaultLinkAction == PDFWriter::URIActionDestination &&
                                bTargetHasPDFExtension && !aFragment.isEmpty() )
                     {
-                        OStringBuffer aLineLoc( 1024 );
+                        OStringBuffer aLineLoc( PDFWRITER_IMPL_BUFFERSIZE );
                         appendDestinationName( aFragment , aLineLoc );
                         //substitute the fragment
                         aTargetURL.SetMark( OStringToOUString(aLineLoc, RTL_TEXTENCODING_ASCII_US) );
@@ -3119,7 +3121,7 @@ bool PDFWriterImpl::emitNoteAnnotations()
             if (!updateObject(rNote.m_nObject))
                 return false;
 
-            OStringBuffer aLine(1024);
+            OStringBuffer aLine(PDFWRITER_IMPL_BUFFERSIZE);
 
             emitTextAnnotationLine(aLine, rNote);
 
@@ -3132,7 +3134,7 @@ bool PDFWriterImpl::emitNoteAnnotations()
             if (!updateObject(rPopUp.m_nObject))
                 return false;
 
-            OStringBuffer aLine(1024);
+            OStringBuffer aLine(PDFWRITER_IMPL_BUFFERSIZE);
 
             emitPopupAnnotationLine(aLine, rPopUp);
 
@@ -3325,7 +3327,7 @@ Font PDFWriterImpl::drawFieldBorder( PDFWidget& rIntern,
 void PDFWriterImpl::createDefaultEditAppearance( PDFWidget& rEdit, const PDFWriter::EditWidget& rWidget )
 {
     const StyleSettings& rSettings = m_aWidgetStyleSettings;
-    SvMemoryStream* pEditStream = new SvMemoryStream( 1024, 1024 );
+    SvMemoryStream* pEditStream = new SvMemoryStream( PDFWRITER_IMPL_BUFFERSIZE, PDFWRITER_IMPL_BUFFERSIZE );
 
     push( PushFlags::ALL );
 
@@ -3370,7 +3372,7 @@ void PDFWriterImpl::createDefaultEditAppearance( PDFWidget& rEdit, const PDFWrit
 void PDFWriterImpl::createDefaultListBoxAppearance( PDFWidget& rBox, const PDFWriter::ListBoxWidget& rWidget )
 {
     const StyleSettings& rSettings = m_aWidgetStyleSettings;
-    SvMemoryStream* pListBoxStream = new SvMemoryStream( 1024, 1024 );
+    SvMemoryStream* pListBoxStream = new SvMemoryStream( PDFWRITER_IMPL_BUFFERSIZE, PDFWRITER_IMPL_BUFFERSIZE );
 
     push( PushFlags::ALL );
 
@@ -3790,7 +3792,7 @@ bool PDFWriterImpl::emitWidgetAnnotations()
             }
         }
 
-        OStringBuffer aLine( 1024 );
+        OStringBuffer aLine( PDFWRITER_IMPL_BUFFERSIZE );
         COSWriter aWriter(aLine, m_aContext.Encryption.getParams(), m_pPDFEncryptor);
         OStringBuffer aValue( 256 );
         COSWriter aValueWriter(aValue, m_aContext.Encryption.getParams(), m_pPDFEncryptor);
@@ -4839,7 +4841,7 @@ sal_Int32 PDFWriterImpl::emitNamedDestinations()
     if( updateObject( nObject ) )
     {
         //emit the dictionary
-        OStringBuffer aLine( 1024 );
+        OStringBuffer aLine( PDFWRITER_IMPL_BUFFERSIZE );
         aLine.append( nObject );
         aLine.append( " 0 obj\n"
                       "<<" );
@@ -4909,7 +4911,7 @@ sal_Int32 PDFWriterImpl::emitOutputIntent()
 
     //emit the sRGB standard profile, in ICC format, in a stream, per IEC61966-2.1
 
-    OStringBuffer aLine( 1024 );
+    OStringBuffer aLine( PDFWRITER_IMPL_BUFFERSIZE );
     COSWriter aWriter(aLine, m_aContext.Encryption.getParams(), m_pPDFEncryptor);
     sal_Int32 nICCObject = createObject();
     sal_Int32 nStreamLengthObject = createObject();
@@ -7308,7 +7310,7 @@ void PDFWriterImpl::beginTransparencyGroup()
 {
     updateGraphicsState();
     if( m_aContext.Version >= PDFWriter::PDFVersion::PDF_1_4 )
-        beginRedirect( new SvMemoryStream( 1024, 1024 ), tools::Rectangle() );
+        beginRedirect( new SvMemoryStream( PDFWRITER_IMPL_BUFFERSIZE, PDFWRITER_IMPL_BUFFERSIZE ), tools::Rectangle() );
 }
 
 void PDFWriterImpl::endTransparencyGroup( const tools::Rectangle& rBoundingBox, sal_uInt32 nTransparentPercent )
@@ -8734,7 +8736,7 @@ bool PDFWriterImpl::writeBitmapObject( const BitmapEmit& rObject )
     {
         emitComment( "PDFWriterImpl::writeBitmapObject" );
     }
-    OStringBuffer aLine(1024);
+    OStringBuffer aLine(PDFWRITER_IMPL_BUFFERSIZE);
     aLine.append( rObject.m_nObject );
     aLine.append( " 0 obj\n"
                   "<</Type/XObject/Subtype/Image/Width " );
@@ -8903,7 +8905,7 @@ bool PDFWriterImpl::writeBitmapMaskObject( sal_Int32 nMaskObject, const AlphaMas
     {
         emitComment( "PDFWriterImpl::writeBitmapObject" );
     }
-    OStringBuffer aLine(1024);
+    OStringBuffer aLine(PDFWRITER_IMPL_BUFFERSIZE);
     aLine.append( nMaskObject );
     aLine.append( " 0 obj\n"
                   "<</Type/XObject/Subtype/Image/Width " );
