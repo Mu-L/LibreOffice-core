@@ -949,18 +949,28 @@ void LockedEmbedDocument_Impl::ExecuteMethod( sal_Int16 nId )
 {
     if ( m_pEmbedDocument )
     {
-        if ( nId == OLESERV_SAVEOBJECT )
-            m_pEmbedDocument->SaveObject();
-        else if ( nId == OLESERV_CLOSE )
-            m_pEmbedDocument->Close( 0 );
-        else if ( nId == OLESERV_NOTIFY )
-            m_pEmbedDocument->notify();
-        else if ( nId == OLESERV_NOTIFYCLOSING )
-            m_pEmbedDocument->OLENotifyClosing();
-        else if ( nId == OLESERV_SHOWOBJECT )
-            m_pEmbedDocument->ShowObject();
-        else if ( nId == OLESERV_DEACTIVATE )
-            m_pEmbedDocument->Deactivate();
+        switch( static_cast<OLEServ>(nId) )
+        {
+            case OLEServ::SaveObject:
+                m_pEmbedDocument->SaveObject();
+                break;
+            case OLEServ::Close:
+                m_pEmbedDocument->Close( 0 );
+                break;
+            case OLEServ::Notify:
+                m_pEmbedDocument->notify();
+                break;
+            case OLEServ::NotifyClosing:
+                m_pEmbedDocument->OLENotifyClosing();
+                break;
+            case OLEServ::ShowObject:
+                m_pEmbedDocument->ShowObject();
+                break;
+            case OLEServ::Deactivate:
+                m_pEmbedDocument->Deactivate();
+                break;
+            default:;
+        }
     }
 }
 

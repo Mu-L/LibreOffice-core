@@ -19,13 +19,6 @@
 
 #pragma once
 
-#define OLESERV_SAVEOBJECT      1
-#define OLESERV_CLOSE           2
-#define OLESERV_NOTIFY          3
-#define OLESERV_NOTIFYCLOSING   4
-#define OLESERV_SHOWOBJECT      5
-#define OLESERV_DEACTIVATE      6
-
 #include <oleidl.h>
 #if defined __clang__
 #pragma clang diagnostic push
@@ -38,6 +31,15 @@
 #pragma clang diagnostic pop
 #endif
 #include <cppuhelper/weak.hxx>
+
+enum class OLEServ : sal_Int16 {
+    SaveObject    = 1,
+    Close         = 2,
+    Notify        = 3,
+    NotifyClosing = 4,
+    ShowObject    = 5,
+    Deactivate    = 6
+};
 
 class EmbedDocument_Impl;
 struct LockedEmbedDocument_Impl
