@@ -1643,6 +1643,11 @@ void Application::AppEvent( const ApplicationEvent& /*rAppEvent*/ )
 {
 }
 
+bool Application::hasNativeColorChooserDialog()
+{
+    return GetSalInstance()->hasNativeColorChooserDialog();
+}
+
 bool Application::hasNativeFileSelection()
 {
     return GetSalInstance()->hasNativeFileSelection();
