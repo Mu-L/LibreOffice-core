@@ -27,7 +27,6 @@
 
 #include <salinst.hxx>
 #include <salusereventlist.hxx>
-#include <unx/geninst.h>
 #include <vclpluginapi.h>
 #ifdef _WIN32
 #include <win/WindowsInstance.hxx>
