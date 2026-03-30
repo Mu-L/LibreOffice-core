@@ -14151,7 +14151,7 @@ then
     elif test "$_os" = "WINNT"; then
         qt6_library_prefix=""
         # file names of libraries built in debug mode have an additional
-        # "d" suffix in the file name, e.g. "libQt6Widgetsd.lib"
+        # "d" suffix in the file name, e.g. "Qt6Widgetsd.lib"
         qt6_library_suffixes=".lib d.lib"
     else
         qt6_library_prefix="lib"
