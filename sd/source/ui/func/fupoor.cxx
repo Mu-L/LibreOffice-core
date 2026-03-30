@@ -795,28 +795,31 @@ bool FuPoor::KeyInput(const KeyEvent& rKEvt)
                         pObj = pSubSelection;
                 }
 
-                // FIXME: MSVC analyzer complains about
-                // warning C6011: Dereferencing NULL pointer 'pObj'
-                // which is a false positive since DynCastSdrTextObj already checks pObj
-                assert(pObj);
                 // #i118485# allow TextInput for OLEs, too
-                if( DynCastSdrTextObj( pObj ) !=  nullptr && pObj->HasTextEdit())
+                if(DynCastSdrTextObj( pObj ) !=  nullptr)
                 {
-                    // use common IsSimpleCharInput from the EditEngine.
-                    bool bPrintable(EditEngine::IsSimpleCharInput(rKEvt));
-
-                    if(bPrintable)
+                    // FIXME: MSVC analyzer complains about
+                    // warning C6011: Dereferencing NULL pointer 'pObj'
+                    // which is a false positive since DynCastSdrTextObj already checks pObj
+                    assert(pObj);
+                    if(pObj->HasTextEdit())
                     {
-                        // try to activate textedit mode for the selected object
-                        SfxStringItem aInputString(SID_ATTR_CHAR, OUString(rKEvt.GetCharCode()));
+                        // use common IsSimpleCharInput from the EditEngine.
+                        bool bPrintable(EditEngine::IsSimpleCharInput(rKEvt));
 
-                        mrViewShell.GetViewFrame()->GetDispatcher()->ExecuteList(
-                            SID_ATTR_CHAR,
-                            SfxCallMode::ASYNCHRON,
-                            { &aInputString });
+                        if(bPrintable)
+                        {
+                            // try to activate textedit mode for the selected object
+                            SfxStringItem aInputString(SID_ATTR_CHAR, OUString(rKEvt.GetCharCode()));
 
-                        // consumed
-                        bReturn = true;
+                            mrViewShell.GetViewFrame()->GetDispatcher()->ExecuteList(
+                                SID_ATTR_CHAR,
+                                SfxCallMode::ASYNCHRON,
+                                { &aInputString });
+
+                            // consumed
+                            bReturn = true;
+                        }
                     }
                 }
             }
