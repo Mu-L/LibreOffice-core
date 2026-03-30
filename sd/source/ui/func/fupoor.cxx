@@ -795,6 +795,10 @@ bool FuPoor::KeyInput(const KeyEvent& rKEvt)
                         pObj = pSubSelection;
                 }
 
+                // FIXME: MSVC analyzer complains about
+                // warning C6011: Dereferencing NULL pointer 'pObj'
+                // which is a false positive since DynCastSdrTextObj already checks pObj
+                assert(pObj);
                 // #i118485# allow TextInput for OLEs, too
                 if( DynCastSdrTextObj( pObj ) !=  nullptr && pObj->HasTextEdit())
                 {
