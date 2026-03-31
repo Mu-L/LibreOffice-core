@@ -87,6 +87,18 @@ CPPUNIT_TEST_FIXTURE(ScExportTest5, testInvalidNamedRange)
     CPPUNIT_ASSERT(!xNamedRanges->hasByName(u"myname"_ustr));
 }
 
+CPPUNIT_TEST_FIXTURE(ScExportTest5, testQueryTableHeaders)
+{
+    createScDoc("xlsx/TableEmptyHeaders.xlsx");
+    save(TestFilter::XLSX);
+
+    xmlDocUniquePtr pTable = parseExport(u"xl/tables/table1.xml"_ustr);
+    CPPUNIT_ASSERT(pTable);
+
+    assertXPath(pTable, "/x:table/x:tableColumns/x:tableColumn[1]", "name", u"Column1");
+    assertXPath(pTable, "/x:table/x:tableColumns/x:tableColumn[2]", "name", u"Column2");
+}
+
 CPPUNIT_TEST_FIXTURE(ScExportTest5, testExternalDefinedNameXLSX)
 {
     createScDoc("xlsx/tdf144397.xlsx");
