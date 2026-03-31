@@ -60,7 +60,7 @@
           </packing>
         </child>
         <child>
-          <!-- n-columns=3 n-rows=7 -->
+          <!-- n-columns=3 n-rows=8 -->
           <object class="GtkGrid" id="grid1">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
@@ -315,6 +315,9 @@
                 <property name="can-focus">False</property>
                 <property name="label" translatable="yes" context="wordcount|lbComments">Comments</property>
                 <property name="xalign">1</property>
+                <accessibility>
+                  <relation type="label-for" target="docComments"/>
+                </accessibility>
               </object>
               <packing>
                 <property name="left-attach">0</property>
@@ -329,6 +332,9 @@
                 <property name="hexpand">True</property>
                 <property name="label">            0</property>
                 <property name="xalign">1</property>
+                <accessibility>
+                  <relation type="labelled-by" target="lbComments"/>
+                </accessibility>
               </object>
               <packing>
                 <property name="left-attach">2</property>
@@ -340,6 +346,43 @@
             </child>
             <child>
               <placeholder/>
+            </child>
+            <child>
+              <object class="GtkLabel" id="label_cursor">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes" context="wordcount|label_cursor">Words before/after cursor</property>
+                <property name="xalign">1</property>
+                <accessibility>
+                  <relation type="label-for" target="wordscursor"/>
+                </accessibility>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">7</property>
+              </packing>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <object class="GtkLabel" id="wordscursor">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="halign">end</property>
+                <property name="hexpand">True</property>
+                <property name="label">       0/0</property>
+                <property name="justify">right</property>
+                <property name="xalign">1</property>
+                <accessibility>
+                  <relation type="labelled-by" target="label_cursor"/>
+                </accessibility>
+              </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">7</property>
+                <property name="width">2</property>
+              </packing>
             </child>
           </object>
           <packing>

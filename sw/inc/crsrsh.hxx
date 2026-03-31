@@ -802,9 +802,9 @@ public:
     void ExpandToSentenceBorders();
 
     // get position from current cursor
-    bool IsStartWord( sal_Int16 nWordType = css::i18n::WordType::ANYWORD_IGNOREWHITESPACES )const;
-    bool IsEndWord( sal_Int16 nWordType = css::i18n::WordType::ANYWORD_IGNOREWHITESPACES ) const;
-    bool IsInWord( sal_Int16 nWordType = css::i18n::WordType::ANYWORD_IGNOREWHITESPACES ) const;
+    SW_DLLPUBLIC bool IsStartWord( sal_Int16 nWordType = css::i18n::WordType::ANYWORD_IGNOREWHITESPACES )const;
+    SW_DLLPUBLIC bool IsEndWord( sal_Int16 nWordType = css::i18n::WordType::ANYWORD_IGNOREWHITESPACES ) const;
+    SW_DLLPUBLIC bool IsInWord( sal_Int16 nWordType = css::i18n::WordType::ANYWORD_IGNOREWHITESPACES ) const;
     bool IsStartSentence() const;
     bool IsEndSentence() const;
     SW_DLLPUBLIC bool IsSttPara() const;

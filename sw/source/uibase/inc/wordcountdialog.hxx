@@ -19,13 +19,14 @@
 #ifndef INCLUDED_SW_SOURCE_UIBASE_INC_WORDCOUNTDIALOG_HXX
 #define INCLUDED_SW_SOURCE_UIBASE_INC_WORDCOUNTDIALOG_HXX
 #include <sfx2/basedlgs.hxx>
-struct SwDocStat;
+#include <docstat.hxx>
 #include <sfx2/childwin.hxx>
 #include <swabstdlg.hxx>
 
 class SwWordCountFloatDlg final : public SfxModelessDialogController
 {
     void SetValues(const SwDocStat& rCurrent, const SwDocStat& rDoc);
+    void SetCursorValues(const SwDocStat& rBefore, const SwDocStat& rAfter);
     void showCJK(bool bShowCJK);
     void showStandardizedPages(bool bShowStandardizedPages);
 
@@ -44,6 +45,12 @@ class SwWordCountFloatDlg final : public SfxModelessDialogController
     std::unique_ptr<weld::Label> m_xStandardizedPagesLabelFT;
     std::unique_ptr<weld::Label> m_xStandardizedPagesLabelFT2;
     std::unique_ptr<weld::Label> m_xDocComments;
+    std::unique_ptr<weld::Label> m_xWordsCursorFT;
+
+    // Cached before/after cursor word counts — only updated at word boundaries
+    SwDocStat m_aCachedBefore;
+    SwDocStat m_aCachedAfter;
+    bool m_bCursorValuesInitialized = false;
 
 public:
     SwWordCountFloatDlg(SfxBindings* pBindings,

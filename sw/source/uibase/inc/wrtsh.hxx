@@ -542,6 +542,8 @@ typedef bool (SwWrtShell::*FNSimpleMove)();
 
     void SortChapters(const SwOutlineNodes::size_type nOutlineNodePos = SwOutlineNodes::npos);
 
+    SW_DLLPUBLIC void CountWordsBeforeAfterCursor(SwDocStat& rBefore, SwDocStat& rAfter);
+
 private:
 
     void  OpenMark();

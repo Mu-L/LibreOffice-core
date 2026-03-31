@@ -65,6 +65,7 @@
 #include <sortedobjs.hxx>
 #include <rootfrm.hxx>
 #include <txtfrm.hxx>
+#include <docstat.hxx>
 
 namespace
 {
@@ -2196,6 +2197,57 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest, testTdf168272)
 
     // This should now match "Landscape"
     CPPUNIT_ASSERT_EQUAL(u"Landscape"_ustr, sActualStyle);
+}
+
+CPPUNIT_TEST_FIXTURE(SwUiWriterTest, testTdf123083WordCountBeforeAfterCursor)
+{
+    createSwDoc();
+    SwWrtShell* pWrtShell = getSwDocShell()->GetWrtShell();
+    CPPUNIT_ASSERT(pWrtShell);
+
+    // "word1 word2 word3 word4" = 4 words
+    pWrtShell->Insert(u"word1 word2 word3 word4"_ustr);
+
+    // Test 1: cursor at start — all words after
+    pWrtShell->SttPara();
+    SwDocStat aBefore, aAfter;
+    pWrtShell->CountWordsBeforeAfterCursor(aBefore, aAfter);
+    CPPUNIT_ASSERT_EQUAL(sal_uInt32(0), aBefore.nWord);
+    CPPUNIT_ASSERT_EQUAL(sal_uInt32(4), aAfter.nWord);
+
+    // Test 2: cursor mid-word (pos 2, inside "word1") — snaps to start, word1 stays in "after"
+    pWrtShell->Right(SwCursorSkipMode::Chars, false, 2, false);
+    aBefore = SwDocStat();
+    aAfter = SwDocStat();
+    pWrtShell->CountWordsBeforeAfterCursor(aBefore, aAfter);
+    CPPUNIT_ASSERT_EQUAL(sal_uInt32(0), aBefore.nWord);
+    CPPUNIT_ASSERT_EQUAL(sal_uInt32(4), aAfter.nWord);
+
+    // Test 3: cursor at space after "word1" (pos 5) — word1 counted in "before"
+    pWrtShell->SttPara();
+    pWrtShell->Right(SwCursorSkipMode::Chars, false, 5, false);
+    aBefore = SwDocStat();
+    aAfter = SwDocStat();
+    pWrtShell->CountWordsBeforeAfterCursor(aBefore, aAfter);
+    CPPUNIT_ASSERT_EQUAL(sal_uInt32(1), aBefore.nWord);
+    CPPUNIT_ASSERT_EQUAL(sal_uInt32(3), aAfter.nWord);
+
+    // Test 4: cursor at end — all words before
+    pWrtShell->EndPara();
+    aBefore = SwDocStat();
+    aAfter = SwDocStat();
+    pWrtShell->CountWordsBeforeAfterCursor(aBefore, aAfter);
+    CPPUNIT_ASSERT_EQUAL(sal_uInt32(4), aBefore.nWord);
+    CPPUNIT_ASSERT_EQUAL(sal_uInt32(0), aAfter.nWord);
+
+    // Test 5: cursor inside last word (pos 20) — snaps to start, word4 in "after"
+    pWrtShell->SttPara();
+    pWrtShell->Right(SwCursorSkipMode::Chars, false, 20, false);
+    aBefore = SwDocStat();
+    aAfter = SwDocStat();
+    pWrtShell->CountWordsBeforeAfterCursor(aBefore, aAfter);
+    CPPUNIT_ASSERT_EQUAL(sal_uInt32(3), aBefore.nWord);
+    CPPUNIT_ASSERT_EQUAL(sal_uInt32(1), aAfter.nWord);
 }
 
 CPPUNIT_PLUGIN_IMPLEMENT();

@@ -33,6 +33,7 @@
 #include <vcl/weld/Builder.hxx>
 #include <vcl/weld/Dialog.hxx>
 #include <comphelper/lok.hxx>
+#include <com/sun/star/i18n/WordType.hpp>
 #include <PostItMgr.hxx>
 
 static bool isLOKMobilePhone()
@@ -132,6 +133,7 @@ SwWordCountFloatDlg::SwWordCountFloatDlg(SfxBindings* _pBindings,
     , m_xStandardizedPagesLabelFT(m_xBuilder->weld_label(u"standardizedpages"_ustr))
     , m_xStandardizedPagesLabelFT2(m_xBuilder->weld_label(u"standardizedpages2"_ustr))
     , m_xDocComments(m_xBuilder->weld_label(u"docComments"_ustr))
+    , m_xWordsCursorFT(m_xBuilder->weld_label(u"wordscursor"_ustr))
 {
     showCJK(SvtCJKOptions::IsAnyEnabled());
     showStandardizedPages(officecfg::Office::Writer::WordCount::ShowStandardizedPageCount::get());
@@ -158,12 +160,40 @@ void SwWordCountFloatDlg::UpdateCounts()
         SwPostItMgr* pPostItMgr = rSh.GetPostItMgr();
         aCurrCnt.nComments = pPostItMgr->end() - pPostItMgr->begin();
         SetValues(aCurrCnt, aDocStat);
+
+        if (!isLOKMobilePhone())
+        {
+            // Only recalculate at word boundaries — keeps count frozen
+            // while cursor is inside a word, regardless of direction.
+            const sal_Int16 nWordType = css::i18n::WordType::WORD_COUNT;
+            bool bAtBoundary = rSh.IsStartWord(nWordType)
+                            || rSh.IsEndWord(nWordType)
+                            || !rSh.IsInWord(nWordType);
+
+            if (bAtBoundary || !m_bCursorValuesInitialized)
+            {
+                m_aCachedBefore = SwDocStat();
+                m_aCachedAfter = SwDocStat();
+                rSh.CountWordsBeforeAfterCursor(m_aCachedBefore, m_aCachedAfter);
+                m_bCursorValuesInitialized = true;
+            }
+            SetCursorValues(m_aCachedBefore, m_aCachedAfter);
+        }
     }
 }
 
 void SwWordCountFloatDlg::SetCounts(const SwDocStat &rCurrCnt, const SwDocStat &rDocStat)
 {
     SetValues(rCurrCnt, rDocStat);
+}
+
+void SwWordCountFloatDlg::SetCursorValues(const SwDocStat& rBefore, const SwDocStat& rAfter)
+{
+    if (!m_xWordsCursorFT)
+        return;
+    const LocaleDataWrapper& rLocaleData = Application::GetSettings().GetUILocaleDataWrapper();
+    OUString sCursorWords = rLocaleData.getNum(rBefore.nWord, 0) + "/" + rLocaleData.getNum(rAfter.nWord, 0);
+    m_xWordsCursorFT->set_label(sCursorWords);
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

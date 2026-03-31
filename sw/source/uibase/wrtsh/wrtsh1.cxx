@@ -72,6 +72,7 @@
 #include <viscrs.hxx>
 #include <swdtflvr.hxx>
 #include <doc.hxx>
+#include <docstat.hxx>
 #include <IDocumentSettingAccess.hxx>
 #include <SwCapObjType.hxx>
 #include <SwStyleNameMapper.hxx>
@@ -95,6 +96,7 @@
 #include <osl/diagnose.h>
 #include <o3tl/unit_conversion.hxx>
 #include <officecfg/Office/Common.hxx>
+#include <com/sun/star/i18n/WordType.hpp>
 
 #include <PostItMgr.hxx>
 #include <FrameControlsManager.hxx>
@@ -2898,6 +2900,46 @@ bool SwWrtShell::WarnSwitchToDesignModeDialog() const
     xQuery->set_secondary_text(SwResId(STR_A11Y_DESIGN_MODE_SECONDARY));
 
     return (RET_YES == xQuery->run());
+}
+
+void SwWrtShell::CountWordsBeforeAfterCursor(SwDocStat& rBefore, SwDocStat& rAfter)
+{
+    SwNodes& rNodes = GetDoc()->GetNodes();
+
+    SwNodeIndex nNode(rNodes.GetEndOfAutotext());
+    SwContentNode* pStart = SwNodes::GoNext(&nNode);
+
+    nNode = rNodes.GetEndOfContent();
+    SwContentNode* pEnd = SwNodes::GoPrevious(&nNode);
+
+    if (!pStart || !pEnd)
+        return;
+
+    SwPosition aDocStart(*pStart, sal_Int32(0));
+    SwPosition aDocEnd(*pEnd, pEnd->Len());
+
+    // Use WORD_COUNT word type — same as SwDoc::CountWords — so that
+    // word boundary detection is consistent with how words are counted.
+    // When cursor is mid-word, snap to the start of the current word
+    // so the word is fully counted in the "after" part.
+    // This ensures before + after = total words at all times.
+    const sal_Int16 nWordType = css::i18n::WordType::WORD_COUNT;
+
+    SwPosition aSplitPos = *GetCursor()->GetPoint();
+
+    if (IsInWord(nWordType) && !IsStartWord(nWordType) && !IsEndWord(nWordType))
+    {
+        Push();
+        GetCursor()->GoStartWordWT(nWordType);
+        aSplitPos = *GetCursor()->GetPoint();
+        Pop(SwCursorShell::PopMode::DeleteCurrent);
+    }
+
+    SwPaM aBefore(aDocStart, aSplitPos);
+    SwPaM aAfter(aSplitPos, aDocEnd);
+
+    SwDoc::CountWords(aBefore, rBefore);
+    SwDoc::CountWords(aAfter, rAfter);
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
