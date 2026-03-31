@@ -2027,6 +2027,13 @@ TextFrameIndex SwTextFormatInfo::ScanPortionEnd(TextFrameIndex const nStart,
         case CH_BREAK:
         case CHAR_ZWSP :
         case CHAR_WJ :
+        case CHAR_LRM:
+        case CHAR_RLM:
+        case CHAR_LRE:
+        case CHAR_RLE:
+        case CHAR_PDF:
+        case CHAR_LRO:
+        case CHAR_RLO:
             SetHookChar( cPos );
             return i;
 

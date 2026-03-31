@@ -53,6 +53,10 @@ public:
     void testHintAsian();
     void testHintComplex();
     void testHintMultipleRuns();
+    void testBidiMarkRemovesZeroLengthRun();
+    void testBidiMarkPartOfPreviousRun();
+    void testBidiEmbeddingPartOfPreviousRun();
+    void testBidiOverridePartOfPreviousRun();
 
     CPPUNIT_TEST_SUITE(ScriptChangeScannerTest);
     CPPUNIT_TEST(testEmpty);
@@ -85,6 +89,10 @@ public:
     CPPUNIT_TEST(testHintAsian);
     CPPUNIT_TEST(testHintComplex);
     CPPUNIT_TEST(testHintMultipleRuns);
+    CPPUNIT_TEST(testBidiMarkRemovesZeroLengthRun);
+    CPPUNIT_TEST(testBidiMarkPartOfPreviousRun);
+    CPPUNIT_TEST(testBidiEmbeddingPartOfPreviousRun);
+    CPPUNIT_TEST(testBidiOverridePartOfPreviousRun);
     CPPUNIT_TEST_SUITE_END();
 };
 
@@ -659,14 +667,14 @@ void ScriptChangeScannerTest::testRtlRunOverrideCJKAsian()
     CPPUNIT_ASSERT(!pDirScanner->AtEnd());
     CPPUNIT_ASSERT_EQUAL(sal_uInt8(0), pDirScanner->Peek().m_nLevel);
     CPPUNIT_ASSERT_EQUAL(sal_Int32(0), pDirScanner->Peek().m_nStartIndex);
-    CPPUNIT_ASSERT_EQUAL(sal_Int32(2), pDirScanner->Peek().m_nEndIndex);
+    CPPUNIT_ASSERT_EQUAL(sal_Int32(3), pDirScanner->Peek().m_nEndIndex);
     CPPUNIT_ASSERT(!pDirScanner->Peek().m_bHasEmbeddedStrongLTR);
 
     pDirScanner->Advance();
 
     CPPUNIT_ASSERT(!pDirScanner->AtEnd());
     CPPUNIT_ASSERT_EQUAL(sal_uInt8(1), pDirScanner->Peek().m_nLevel);
-    CPPUNIT_ASSERT_EQUAL(sal_Int32(2), pDirScanner->Peek().m_nStartIndex);
+    CPPUNIT_ASSERT_EQUAL(sal_Int32(3), pDirScanner->Peek().m_nStartIndex);
     CPPUNIT_ASSERT_EQUAL(sal_Int32(6), pDirScanner->Peek().m_nEndIndex);
     CPPUNIT_ASSERT(!pDirScanner->Peek().m_bHasEmbeddedStrongLTR);
 
@@ -1058,6 +1066,122 @@ void ScriptChangeScannerTest::testHintMultipleRuns()
     pScanner->Advance();
 
     CPPUNIT_ASSERT(pScanner->AtEnd());
+}
+
+void ScriptChangeScannerTest::testBidiMarkRemovesZeroLengthRun()
+{
+    auto aText = u"Before\u200FAfter"_ustr;
+    ScriptHintProvider stHints;
+    auto pDirScanner = MakeDirectionChangeScanner(aText, 0);
+
+    CPPUNIT_ASSERT(!pDirScanner->AtEnd());
+    CPPUNIT_ASSERT_EQUAL(sal_uInt8(0), pDirScanner->Peek().m_nLevel);
+    CPPUNIT_ASSERT_EQUAL(sal_Int32(0), pDirScanner->Peek().m_nStartIndex);
+    CPPUNIT_ASSERT_EQUAL(sal_Int32(7), pDirScanner->Peek().m_nEndIndex);
+    CPPUNIT_ASSERT(!pDirScanner->Peek().m_bHasEmbeddedStrongLTR);
+
+    pDirScanner->Advance();
+
+    CPPUNIT_ASSERT(!pDirScanner->AtEnd());
+    CPPUNIT_ASSERT_EQUAL(sal_uInt8(0), pDirScanner->Peek().m_nLevel);
+    CPPUNIT_ASSERT_EQUAL(sal_Int32(7), pDirScanner->Peek().m_nStartIndex);
+    CPPUNIT_ASSERT_EQUAL(sal_Int32(12), pDirScanner->Peek().m_nEndIndex);
+    CPPUNIT_ASSERT(!pDirScanner->Peek().m_bHasEmbeddedStrongLTR);
+
+    pDirScanner->Advance();
+
+    CPPUNIT_ASSERT(pDirScanner->AtEnd());
+}
+
+void ScriptChangeScannerTest::testBidiMarkPartOfPreviousRun()
+{
+    auto aText = u"Before..شز..\u200FAfter"_ustr;
+    ScriptHintProvider stHints;
+    auto pDirScanner = MakeDirectionChangeScanner(aText, 0);
+
+    CPPUNIT_ASSERT(!pDirScanner->AtEnd());
+    CPPUNIT_ASSERT_EQUAL(sal_uInt8(0), pDirScanner->Peek().m_nLevel);
+    CPPUNIT_ASSERT_EQUAL(sal_Int32(0), pDirScanner->Peek().m_nStartIndex);
+    CPPUNIT_ASSERT_EQUAL(sal_Int32(8), pDirScanner->Peek().m_nEndIndex);
+    CPPUNIT_ASSERT(!pDirScanner->Peek().m_bHasEmbeddedStrongLTR);
+
+    pDirScanner->Advance();
+
+    CPPUNIT_ASSERT(!pDirScanner->AtEnd());
+    CPPUNIT_ASSERT_EQUAL(sal_uInt8(1), pDirScanner->Peek().m_nLevel);
+    CPPUNIT_ASSERT_EQUAL(sal_Int32(8), pDirScanner->Peek().m_nStartIndex);
+    CPPUNIT_ASSERT_EQUAL(sal_Int32(13), pDirScanner->Peek().m_nEndIndex);
+    CPPUNIT_ASSERT(!pDirScanner->Peek().m_bHasEmbeddedStrongLTR);
+
+    pDirScanner->Advance();
+
+    CPPUNIT_ASSERT(!pDirScanner->AtEnd());
+    CPPUNIT_ASSERT_EQUAL(sal_uInt8(0), pDirScanner->Peek().m_nLevel);
+    CPPUNIT_ASSERT_EQUAL(sal_Int32(13), pDirScanner->Peek().m_nStartIndex);
+    CPPUNIT_ASSERT_EQUAL(sal_Int32(18), pDirScanner->Peek().m_nEndIndex);
+    CPPUNIT_ASSERT(!pDirScanner->Peek().m_bHasEmbeddedStrongLTR);
+
+    pDirScanner->Advance();
+
+    CPPUNIT_ASSERT(pDirScanner->AtEnd());
+}
+
+void ScriptChangeScannerTest::testBidiEmbeddingPartOfPreviousRun()
+{
+    auto aText = u"Before\u202B..ش..\u202CAfter"_ustr;
+    ScriptHintProvider stHints;
+    auto pDirScanner = MakeDirectionChangeScanner(aText, 0);
+
+    CPPUNIT_ASSERT(!pDirScanner->AtEnd());
+    CPPUNIT_ASSERT_EQUAL(sal_uInt8(0), pDirScanner->Peek().m_nLevel);
+    CPPUNIT_ASSERT_EQUAL(sal_Int32(0), pDirScanner->Peek().m_nStartIndex);
+    CPPUNIT_ASSERT_EQUAL(sal_Int32(7), pDirScanner->Peek().m_nEndIndex);
+    CPPUNIT_ASSERT(!pDirScanner->Peek().m_bHasEmbeddedStrongLTR);
+
+    pDirScanner->Advance();
+
+    CPPUNIT_ASSERT(!pDirScanner->AtEnd());
+    CPPUNIT_ASSERT_EQUAL(sal_uInt8(1), pDirScanner->Peek().m_nLevel);
+    CPPUNIT_ASSERT_EQUAL(sal_Int32(7), pDirScanner->Peek().m_nStartIndex);
+    CPPUNIT_ASSERT_EQUAL(sal_Int32(12), pDirScanner->Peek().m_nEndIndex);
+    CPPUNIT_ASSERT(!pDirScanner->Peek().m_bHasEmbeddedStrongLTR);
+
+    pDirScanner->Advance();
+
+    CPPUNIT_ASSERT(!pDirScanner->AtEnd());
+    CPPUNIT_ASSERT_EQUAL(sal_uInt8(0), pDirScanner->Peek().m_nLevel);
+    CPPUNIT_ASSERT_EQUAL(sal_Int32(12), pDirScanner->Peek().m_nStartIndex);
+    CPPUNIT_ASSERT_EQUAL(sal_Int32(18), pDirScanner->Peek().m_nEndIndex);
+    CPPUNIT_ASSERT(!pDirScanner->Peek().m_bHasEmbeddedStrongLTR);
+
+    pDirScanner->Advance();
+
+    CPPUNIT_ASSERT(pDirScanner->AtEnd());
+}
+
+void ScriptChangeScannerTest::testBidiOverridePartOfPreviousRun()
+{
+    auto aText = u"Before\u202EAfter"_ustr;
+    ScriptHintProvider stHints;
+    auto pDirScanner = MakeDirectionChangeScanner(aText, 0);
+
+    CPPUNIT_ASSERT(!pDirScanner->AtEnd());
+    CPPUNIT_ASSERT_EQUAL(sal_uInt8(0), pDirScanner->Peek().m_nLevel);
+    CPPUNIT_ASSERT_EQUAL(sal_Int32(0), pDirScanner->Peek().m_nStartIndex);
+    CPPUNIT_ASSERT_EQUAL(sal_Int32(7), pDirScanner->Peek().m_nEndIndex);
+    CPPUNIT_ASSERT(!pDirScanner->Peek().m_bHasEmbeddedStrongLTR);
+
+    pDirScanner->Advance();
+
+    CPPUNIT_ASSERT(!pDirScanner->AtEnd());
+    CPPUNIT_ASSERT_EQUAL(sal_uInt8(1), pDirScanner->Peek().m_nLevel);
+    CPPUNIT_ASSERT_EQUAL(sal_Int32(7), pDirScanner->Peek().m_nStartIndex);
+    CPPUNIT_ASSERT_EQUAL(sal_Int32(12), pDirScanner->Peek().m_nEndIndex);
+    CPPUNIT_ASSERT(!pDirScanner->Peek().m_bHasEmbeddedStrongLTR);
+
+    pDirScanner->Advance();
+
+    CPPUNIT_ASSERT(pDirScanner->AtEnd());
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION(ScriptChangeScannerTest);

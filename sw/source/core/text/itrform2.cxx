@@ -1878,6 +1878,13 @@ SwLinePortion *SwTextFormatter::NewPortion(SwTextFormatInfo &rInf,
 
             case CHAR_ZWSP:                     // zero width space
             case CHAR_WJ :                      // word joiner
+            case CHAR_LRM:                      // left-to-right mark
+            case CHAR_RLM:                      // right-to-left mark
+            case CHAR_LRE:                      // left-to-right-embedding
+            case CHAR_RLE:                      // right-to-left embedding
+            case CHAR_PDF:                      // pop directional formatting
+            case CHAR_LRO:                      // left-to-right override
+            case CHAR_RLO:                      // right-to-left override
                 pPor = new SwControlCharPortion( cChar ); break;
 
             case CH_TXTATR_BREAKWORD:

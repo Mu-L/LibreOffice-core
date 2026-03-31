@@ -626,11 +626,21 @@ bool SwControlCharPortion::DoPaint(SwTextPaintInfo const& rTextPaintInfo,
     switch (mcChar)
     {
         case CHAR_ZWSP:
-            rOutString = "/"; break;
-//      case CHAR_LRM :
-//          rText = sal_Unicode(0x2514); break;
-//      case CHAR_RLM :
-//          rText = sal_Unicode(0x2518); break;
+            rOutString = u"/"_ustr;
+            break;
+        case CHAR_LRM:
+        case CHAR_LRE:
+        case CHAR_LRO:
+            rOutString = u"\u21B1"_ustr;
+            break;
+        case CHAR_RLM:
+        case CHAR_RLE:
+        case CHAR_RLO:
+            rOutString = u"\u21B0"_ustr;
+            break;
+        case CHAR_PDF:
+            rOutString = u"\u21A5"_ustr;
+            break;
         default:
             assert(false);
             break;

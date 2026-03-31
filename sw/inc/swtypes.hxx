@@ -178,8 +178,13 @@ constexpr bool SW_ISPRINTABLE(sal_Unicode c) { return c >= ' ' && 127 != c; }
 #define CHAR_HARDBLANK      u'\x00A0'
 #define CHAR_HARDHYPHEN     u'\x2011'
 #define CHAR_SOFTHYPHEN     u'\x00AD'
-#define CHAR_RLM            u'\x200F'
-#define CHAR_LRM            u'\x200E'
+#define CHAR_LRM            u'\x200E' // LEFT-TO-RIGHT MARK
+#define CHAR_RLM            u'\x200F' // RIGHT-TO-LEFT MARK
+#define CHAR_LRE            u'\x202A' // LEFT-TO-RIGHT EMBEDDING
+#define CHAR_RLE            u'\x202B' // RIGHT-TO-LEFT EMBEDDING
+#define CHAR_PDF            u'\x202C' // POP DIRECTIONAL FORMATTING
+#define CHAR_LRO            u'\x202D' // LEFT-TO-RIGHT OVERRIDE
+#define CHAR_RLO            u'\x202E' // RIGHT-TO-LEFT OVERRIDE
 #define CHAR_ZWSP           u'\x200B'
 #define CHAR_WJ             u'\x2060'
 #define CHAR_NNBSP          u'\x202F' //NARROW NO-BREAK SPACE

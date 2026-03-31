@@ -61,6 +61,8 @@ i18nutil::ScriptHintType ScriptHintProvider::Peek() const { return m_eCurrHint; 
 
 namespace
 {
+constexpr sal_uInt32 CHAR_LRM = 0x200e;
+constexpr sal_uInt32 CHAR_RLM = 0x200f;
 constexpr sal_uInt32 CHAR_NNBSP = 0x202f;
 
 class IcuDirectionChangeScanner : public DirectionChangeScanner
@@ -100,6 +102,42 @@ private:
         if ((nCurrLevel % 2) == UBIDI_LTR && nCurrLevel > UBIDI_RTL)
         {
             bHasEmbeddedStrongLTR = RangeHasStrongLTR(m_nCurrIndex, nEndIndex);
+        }
+
+        // UBA treats certain bidi control characters as strongly-directional, but
+        // LO assumes portion-terminal control characters are always at the end of
+        // the terminated portion. Advance the end of the range to include them.
+        if (nEndIndex < m_rText.getLength())
+        {
+            auto nCh = m_rText[nEndIndex];
+            bool bAdvanceOne = (nCh == CHAR_LRM || nCh == CHAR_RLM);
+            switch (u_charDirection(nCh))
+            {
+                case U_LEFT_TO_RIGHT_EMBEDDING:
+                case U_RIGHT_TO_LEFT_EMBEDDING:
+                case U_LEFT_TO_RIGHT_OVERRIDE:
+                case U_RIGHT_TO_LEFT_OVERRIDE:
+                    bAdvanceOne = true;
+                    break;
+
+                default:
+                    break;
+            }
+
+            if (bAdvanceOne)
+            {
+                // LRM/RLM can sometimes form a 1-character run. If this happens, the
+                // next run needs to be skipped entirely.
+                int32_t nControlEndIndex = 0;
+                UBiDiLevel nControlCurrLevel = 0;
+                ubidi_getLogicalRun(m_pBidi, nEndIndex, &nControlEndIndex, &nControlCurrLevel);
+
+                ++nEndIndex;
+                if (nEndIndex == nControlEndIndex)
+                {
+                    ++m_nCurr;
+                }
+            }
         }
 
         m_stCurr = { m_nCurrIndex, nEndIndex, nCurrLevel, bHasEmbeddedStrongLTR };
