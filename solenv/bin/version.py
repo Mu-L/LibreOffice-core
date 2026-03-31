@@ -38,7 +38,7 @@ def replace_in_file(filename, src_pattern):
   except IOError as err:
     print('error updating %s: %s' % (filename, err), file=sys.stderr)
 
-src_pattern = re.compile(r'^(\s*<version>)([-.@\w]+)(</version>\s*)$',
+src_pattern = re.compile(r'^(\s*<version>)(@version@)(</version>\s*)$',
                          re.MULTILINE)
 
 for a in ['juh', 'jurt',  'libreoffice', 'officebean', 'ridl', 'unoil', 'unoloader']:

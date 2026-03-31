@@ -1,12 +1,12 @@
 include_defs('//solenv/maven/VERSION')
 include_defs('//solenv/maven/package.defs')
 
-URL = 'https://oss.sonatype.org/content/repositories/snapshots' \
+URL = 'https://ossrh-staging-api.central.sonatype.com/content/repositories/snapshots' \
     if LIBREOFFICE_VERSION.endswith('-SNAPSHOT') else \
-        'https://oss.sonatype.org/service/local/staging/deploy/maven2'
+        'https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2'
 
 maven_package(
-  repository = 'sonatype-nexus-staging',
+  repository = 'ossrh-staging-api',
   url = URL,
   version = LIBREOFFICE_VERSION,
   jar = {
