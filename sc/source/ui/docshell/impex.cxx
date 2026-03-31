@@ -59,6 +59,7 @@
 #include <scresid.hxx>
 #include <o3tl/safeint.hxx>
 #include <tools/svlibrary.h>
+#include <md4c-html.h>
 #include <comphelper/configuration.hxx>
 #include <vcl/svapp.hxx>
 #include <vcl/weld/MessageDialog.hxx>
@@ -223,7 +224,8 @@ bool ScImportExport::IsFormatSupported( SotClipboardFormatId nFormat )
               || nFormat == SotClipboardFormatId::LINK
               || nFormat == SotClipboardFormatId::HTML
               || nFormat == SotClipboardFormatId::HTML_SIMPLE
-              || nFormat == SotClipboardFormatId::DIF;
+              || nFormat == SotClipboardFormatId::DIF
+              || nFormat == SotClipboardFormatId::MARKDOWN;
 }
 
 // Prepare for Undo
@@ -419,6 +421,34 @@ bool ScImportExport::ImportStream( SvStream& rStrm, const OUString& rBaseURL, So
         MSE40HTMLClipFormatObj aMSE40ClpObj;                // needed to skip the header data
         SvStream* pHTML = aMSE40ClpObj.IsValid( rStrm );
         if ( pHTML && HTML2Doc( *pHTML, rBaseURL ) )
+            return true;
+    }
+    if( nFmt == SotClipboardFormatId::MARKDOWN ) {
+        sal_uInt64 nSize = rStrm.remainingSize();
+        if (nSize == 0)
+            return false;
+
+        std::vector<char> aBuf(nSize);
+        rStrm.ReadBytes(aBuf.data(), nSize);
+        OString aMdContent(aBuf.data(), nSize);
+
+        auto outputCallback = [](const MD_CHAR* pText, MD_SIZE nLen, void* pUserData) {
+            static_cast<OStringBuffer*>(pUserData)->append(std::string_view(pText, nLen));
+        };
+
+        OStringBuffer aHtml("<html><body>");
+        int nRet = md_html(aMdContent.getStr(), aMdContent.getLength(),
+                           outputCallback, &aHtml,
+                           MD_DIALECT_GITHUB, 0);
+        if (nRet != 0)
+            return false;
+        aHtml.append("</body></html>");
+
+        OString aHtmlStr = aHtml.makeStringAndClear();
+        SvMemoryStream aHtmlStream(
+            const_cast<char*>(aHtmlStr.getStr()), aHtmlStr.getLength(),
+            StreamMode::READ);
+        if (HTML2Doc(aHtmlStream, rBaseURL))
             return true;
     }
 
