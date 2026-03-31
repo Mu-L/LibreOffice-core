@@ -229,6 +229,17 @@ PathFormat()
     fi
 }
 
+PathFormatUnix()
+{
+    # Like PathFormat, but also sets $formatted_path_unix to a Unix path in case of Cygwin,
+    # instead of setting it to the same as $formatted_path (which is a Windows path).
+
+    PathFormat "$1"
+    if test "$build_os" = "cygwin"; then
+        formatted_path_unix=$(cygpath -u ${formatted_path_unix})
+    fi
+}
+
 AbsolutePath()
 {
     # There appears to be no simple and portable method to get an absolute and
@@ -14106,11 +14117,17 @@ then
         qt6_libdirs="$qt6_libdirs /usr/lib64/qt6 /usr/lib64/qt /usr/lib64"
     fi
 
+    if test "$_os" = "WINNT"; then
+        qt6_executable_suffix=".exe"
+    fi
+
     dnl Check for qmake6
     if test -n "$QT6DIR"; then
-        AC_PATH_PROG(QMAKE6, [qmake], no, [$QT6DIR/bin])
+        PathFormatUnix "$QT6DIR"
+        QT6DIR="${formatted_path_unix}"
+        AC_PATH_PROG(QMAKE6, [qmake${qt6_executable_suffix}], no, [$QT6DIR/bin])
     else
-        AC_PATH_PROGS(QMAKE6, [qmake-qt6 qmake6 qmake], no)
+        AC_PATH_PROGS(QMAKE6, [qmake-qt6${qt6_executable_suffix} qmake6${qt6_executable_suffix} qmake${qt6_executable_suffix}], no)
     fi
     if test "$QMAKE6" = "no"; then
         AC_MSG_ERROR([Qmake not found.  Please specify the root of your Qt6 installation by exporting QT6DIR before running "configure".])
@@ -14131,7 +14148,8 @@ then
     AC_MSG_CHECKING([for Qt6 headers])
     qt6_incdir="no"
     for inc_dir in $qt6_incdirs; do
-        if test -r "$inc_dir/$qt6_test_include"; then
+        PathFormatUnix "$inc_dir"
+        if test -r "${formatted_path_unix}/${qt6_test_include}"; then
             qt6_incdir="$inc_dir"
             break
         fi
@@ -14167,7 +14185,8 @@ then
     qt6_libdir="no"
     for lib_dir in $qt6_libdirs; do
         for suffix in $qt6_library_suffixes; do
-            if test -r "$lib_dir/${qt6_library_prefix}${qt6_test_library}${suffix}"; then
+            PathFormatUnix "$lib_dir"
+            if test -r ${formatted_path_unix}/${qt6_library_prefix}${qt6_test_library}${suffix}; then
                 qt6_libdir="$lib_dir"
                 qt6_library_suffix="$suffix"
                 break
@@ -14190,7 +14209,7 @@ then
 
     QT6_CFLAGS="-I$qt6_incdir -DQT_NO_VERSION_TAGGING"
     QT6_CFLAGS=$(printf '%s' "$QT6_CFLAGS" | sed -e "s/-I/${ISYSTEM?}/g")
-    if test "$build_os" = "cygwin"; then
+    if test "$_os" = "WINNT"; then
         QT6_LIBS="-LIBPATH:${qt6_libdir} Qt6Core${qt6_library_suffix} Qt6Gui${qt6_library_suffix} Qt6Widgets${qt6_library_suffix}"
     else
         QT6_LIBS="-L$qt6_libdir -lQt6Core -lQt6Gui -lQt6Widgets"
@@ -14200,12 +14219,13 @@ then
         QT6_LIBS="$QT6_LIBS -lQt6BundledPcre2 -lQt6BundledZLIB -L${qt6_platformsdir} -lqwasm -sGL_ENABLE_GET_PROC_ADDRESS"
     else
         if ! test "$enable_qt6_multimedia" = "no"; then
-            if ! test -r "$qt6_incdir/QtMultimediaWidgets/QVideoWidget"; then
+            PathFormatUnix "${qt6_incdir}"
+            if ! test -r "${formatted_path_unix}/QtMultimediaWidgets/QVideoWidget"; then
                 AC_MSG_ERROR([Qt 6 QMultimedia not found.])
                 break
             fi
             ENABLE_QT6_MULTIMEDIA=TRUE
-            if test "$build_os" = "cygwin"; then
+            if test "$_os" = "WINNT"; then
                 QT6_LIBS="$QT6_LIBS Qt6Multimedia${qt6_library_suffix} Qt6MultimediaWidgets${qt6_library_suffix}"
             else
                 QT6_LIBS="$QT6_LIBS -lQt6Multimedia -lQt6MultimediaWidgets"
@@ -14235,7 +14255,7 @@ then
     if test -n "${QT6DIR}"; then
         moc6_search_path=${QT6DIR}/libexec:${QT6DIR}/bin:${moc6_search_path}
     fi
-    AC_PATH_PROGS( MOC6, [moc-qt6 moc], no, [${moc6_search_path}])
+    AC_PATH_PROGS(MOC6, [moc-qt6${qt6_executable_suffix} moc${qt6_executable_suffix}], no, [${moc6_search_path}])
     if test "$MOC6" = "no"; then
         AC_MSG_ERROR([Qt Meta Object Compiler not found.  Please specify
 the root of your Qt installation by exporting QT6DIR before running "configure".])
