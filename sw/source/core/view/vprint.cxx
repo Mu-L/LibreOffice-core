@@ -459,7 +459,9 @@ bool SwViewShell::PrintOrPDFExport(
 
 
     const bool bHasPostItsToPrintInMargins(::sw::IsShrinkPageForPostIts(*this, rPrintData));
-    ::std::optional<tools::Long> oOrigHeight;
+    std::optional<tools::Long> oOrigHeight;
+    std::optional<tools::Long> oOrigWidth;
+    auto eSidebarPos = sw::sidebarwindows::SidebarPosition::RIGHT;
 
     // Print/PDF export for (multi-)selection has already generated a
     // temporary document with the selected text.
@@ -524,7 +526,9 @@ bool SwViewShell::PrintOrPDFExport(
             pPostItManager->CalcRects();
             pPostItManager->LayoutPostIts();
             pPostItManager->DrawNotesForPage(pOutDev, nPage-1);
-            oOrigHeight.emplace(pStPage->getFrameArea().Height());
+            oOrigHeight = pStPage->getFrameArea().Height();
+            oOrigWidth = pStPage->getFrameArea().Width();
+            eSidebarPos = pStPage->SidebarPosition();
             pPostItManager->SetForceShowForPrintOrPdf(false);
             if (pPostItManager->ShowNotes())
             {
@@ -549,12 +553,21 @@ bool SwViewShell::PrintOrPDFExport(
         double fScale = 0.75;
         tools::Long nNewHeight = *oOrigHeight*fScale;
         tools::Long nShiftY = (*oOrigHeight-nNewHeight)/2;
+        tools::Long nShiftX = 0;
+        if (eSidebarPos == sw::sidebarwindows::SidebarPosition::LEFT)
+        {
+            // tdf#111880: Shift the page right to make room for a left sidebar
+            tools::Long nNewWidth = oOrigWidth.value() * fScale;
+            nShiftX = oOrigWidth.value() - nNewWidth;
+        }
+
         GDIMetaFile *const pMetaFile = pOutDev->GetConnectMetaFile();
         pMetaFile->ScaleActions(fScale, fScale);
         //Move the scaled page down to center it
         //the other variant of Move does not map pixels
         //back to the logical units correctly
-        pMetaFile->Move(0, convertTwipToMm100(nShiftY), pOutDev->GetDPIX(), pOutDev->GetDPIY());
+        pMetaFile->Move(convertTwipToMm100(nShiftX), convertTwipToMm100(nShiftY),
+                        pOutDev->GetDPIX(), pOutDev->GetDPIY());
     }
 
     return true;
