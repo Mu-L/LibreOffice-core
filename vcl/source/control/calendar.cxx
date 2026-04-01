@@ -1005,7 +1005,7 @@ void Calendar::ImplShowMenu(const Point& rPos, const Date& rDate)
     }
 
     mbMenuDown = true;
-    nCurItemId = aPopupMenu->Execute( this, rPos );
+    nCurItemId = aPopupMenu->Execute(*this, rPos);
     mbMenuDown = false;
 
     if ( !nCurItemId )

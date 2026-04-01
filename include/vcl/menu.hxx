@@ -524,7 +524,7 @@ public:
         aTitleText = rTitle;
     }
 
-    sal_uInt16 Execute( vcl::Window* pWindow, const Point& rPopupPos );
+    sal_uInt16 Execute(vcl::Window& rWindow, const Point& rPopupPos);
     sal_uInt16 Execute( vcl::Window* pWindow, const tools::Rectangle& rRect, PopupMenuFlags nFlags = PopupMenuFlags::NONE );
 
     // for the TestTool

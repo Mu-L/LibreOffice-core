@@ -222,7 +222,7 @@ SwReadOnlyPopup::SwReadOnlyPopup(const Point &rDPos, SwView &rV)
 
 void SwReadOnlyPopup::Execute(vcl::Window& rWin, const Point& rPixPos)
 {
-    sal_uInt16 nId = m_xMenu->Execute(&rWin, rPixPos);
+    sal_uInt16 nId = m_xMenu->Execute(rWin, rPixPos);
     Execute(rWin, nId);
 }
 

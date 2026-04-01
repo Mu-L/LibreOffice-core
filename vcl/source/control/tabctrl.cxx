@@ -1489,7 +1489,7 @@ void TabControl::Command( const CommandEvent& rCEvt )
                 aMenu->SetHelpId(item.id(), {});
             }
 
-            sal_uInt16 nId = aMenu->Execute( this, aMenuPos );
+            sal_uInt16 nId = aMenu->Execute(*this, aMenuPos);
             if ( nId && (nId != mnCurPageId) )
                 SelectTabPage( nId );
             return;

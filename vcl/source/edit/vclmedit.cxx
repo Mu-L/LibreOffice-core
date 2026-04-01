@@ -806,7 +806,7 @@ void TextWindow::Command( const CommandEvent& rCEvt )
             Size aSize = GetOutputSizePixel();
             aPos = Point( aSize.Width()/2, aSize.Height()/2 );
         }
-        sal_uInt16 n = pPopup->Execute( this, aPos );
+        sal_uInt16 n = pPopup->Execute(*this, aPos);
         OUString sCommand = pPopup->GetItemIdent(n);
         if (sCommand == "undo")
         {
