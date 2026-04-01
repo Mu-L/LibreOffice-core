@@ -5842,10 +5842,10 @@ void SwEditWin::Command( const CommandEvent& rCEvt )
                                 sal_uInt16 nExecId = xMenu->execute(xParent, css::awt::Rectangle(aPixPos.X(), aPixPos.Y(), 1, 1),
                                                                     css::awt::PopupMenuDirection::EXECUTE_DOWN);
                                 if (!::ExecuteMenuCommand(xMenu, m_rView.GetViewFrame(), nExecId))
-                                    aROPopup.Execute(this, nExecId);
+                                    aROPopup.Execute(*this, nExecId);
                             }
                             else
-                                aROPopup.Execute(this, aPixPos);
+                                aROPopup.Execute(*this, aPixPos);
                         }
                     }
                     else if (!m_rView.ExecSpellPopup(aDocPos, rCEvt.IsMouseEvent()))

@@ -73,8 +73,8 @@ public:
     rtl::Reference<VCLXPopupMenu> CreateMenuInterface() { return new VCLXPopupMenu(m_xMenu); }
     ~SwReadOnlyPopup();
 
-    void Execute( vcl::Window* pWin, const Point &rPPos );
-    void Execute( vcl::Window* pWin, sal_uInt16 nId );
+    void Execute(vcl::Window& rWin, const Point& rPPos);
+    void Execute(vcl::Window& rWin, sal_uInt16 nId);
 };
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

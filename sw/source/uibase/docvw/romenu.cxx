@@ -220,14 +220,14 @@ SwReadOnlyPopup::SwReadOnlyPopup(const Point &rDPos, SwView &rV)
     m_xMenu->RemoveDisabledEntries( true );
 }
 
-void SwReadOnlyPopup::Execute( vcl::Window* pWin, const Point &rPixPos )
+void SwReadOnlyPopup::Execute(vcl::Window& rWin, const Point& rPixPos)
 {
-    sal_uInt16 nId = m_xMenu->Execute(pWin, rPixPos);
-    Execute(pWin, nId);
+    sal_uInt16 nId = m_xMenu->Execute(&rWin, rPixPos);
+    Execute(rWin, nId);
 }
 
 // execute the resulting ID only - necessary to support XContextMenuInterception
-void SwReadOnlyPopup::Execute( vcl::Window* pWin, sal_uInt16 nId )
+void SwReadOnlyPopup::Execute(vcl::Window& rWin, sal_uInt16 nId)
 {
     SwWrtShell &rSh = m_rView.GetWrtShell();
     SfxDispatcher &rDis = *m_rView.GetViewFrame().GetDispatcher();
@@ -319,7 +319,7 @@ void SwReadOnlyPopup::Execute( vcl::Window* pWin, sal_uInt16 nId )
 
     if( pClipCntnr && pClipCntnr->HasAnyData() )
     {
-        pClipCntnr->CopyToClipboard( pWin );
+        pClipCntnr->CopyToClipboard(&rWin);
     }
 }
 
