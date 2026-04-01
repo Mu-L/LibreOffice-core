@@ -313,12 +313,8 @@ void SwView::CreateScrollbar( bool bHori )
         ppScrollbar->ExtendedShow();
 }
 
-void SwView::MoveNavigation(void* p)
+void SwView::MoveNavigation(bool bNext)
 {
-    bool* pbNext = static_cast<bool*>(p);
-    if ( !pbNext )
-        return;
-    const bool bNext = *pbNext;
     SwWrtShell& rSh = GetWrtShell();
     if ( NID_SRCH_REP != s_nMoveType)
     {
@@ -648,7 +644,6 @@ void SwView::MoveNavigation(void* p)
     }
     if (NID_POSTIT != s_nMoveType)
         m_pEditWin->GrabFocus();
-    delete pbNext;
 }
 
 void SwView::CreateTab()

@@ -387,7 +387,7 @@ protected:
     const SwFrameFormat* GetLastTableFrameFormat() const {return m_pLastTableFormat;}
     void            SetLastTableFrameFormat(const SwFrameFormat* pSet) {m_pLastTableFormat = pSet;}
 
-    void MoveNavigation(void*);
+    void MoveNavigation(bool bNext);
 
     // form letter execution
     void    GenerateFormLetter(bool bUseCurrentDocument);

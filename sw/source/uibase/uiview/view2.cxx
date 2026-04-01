@@ -1506,10 +1506,10 @@ void SwView::Execute(SfxRequest &rReq)
         case FN_SCROLL_PREV:
         case FN_SCROLL_NEXT:
         {
-            bool *pbNext = new bool(true);
+            bool bNext = true;
             if (nSlot == FN_SCROLL_PREV)
-                *pbNext = false;
-            MoveNavigation(pbNext);
+                bNext = false;
+            MoveNavigation(bNext);
         }
         break;
         case SID_JUMPTOMARK:
