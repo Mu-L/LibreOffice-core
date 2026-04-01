@@ -75,6 +75,9 @@ class SFX2_DLLPUBLIC SfxViewFrame final : public SfxShell, public SfxListener
     DECL_DLLPRIVATE_LINK(HyphenationMissingHandler, weld::Button&, void);
     DECL_DLLPRIVATE_LINK(RefreshMasterPasswordHdl, weld::Button&, void);
     DECL_DLLPRIVATE_STATIC_LINK(SfxViewFrame, HelpMasterPasswordHdl, weld::Button&, void);
+    DECL_DLLPRIVATE_LINK(DontShowAgainHdl, weld::Button&, void);
+    DECL_DLLPRIVATE_LINK(ChangeOptionsHdl, weld::Button&, void);
+
     SAL_DLLPRIVATE void KillDispatcher_Impl();
 
     SAL_DLLPRIVATE virtual  ~SfxViewFrame() override;
@@ -177,6 +180,7 @@ public:
                                     InfobarType eType);
     bool              HasInfoBarWithID(std::u16string_view sId);
     void AppendReadOnlyInfobar();
+    void AppendAutoCorrLeadTrailInfobar();
     SAL_DLLPRIVATE void HandleSecurityInfobar(const OUString& sSecondaryMessage);
 
     SAL_DLLPRIVATE void GetDocNumber_Impl();

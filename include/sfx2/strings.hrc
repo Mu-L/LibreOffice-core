@@ -391,6 +391,10 @@
 #define STR_QUERY_CLR_UNAVAILABLE_DOCS_TEXT     NC_("STR_QUERY_CLR_UNAVAILABLE_DOCS_TEXT", "This action is irreversible.")
 #define STR_QUERY_CLR_UNAVAILABLE_DOCS_QUESTION NC_("STR_QUERY_CLR_UNAVAILABLE_DOCS_QUESTION", "Do you want to clear all unavailable Documents?")
 
+#define STR_AUTOCORR_LEADTRAIL                  NC_("STR_AUTOCORR_LEADTRAIL", "Autocorrection has removed a leading or trailing character.")
+#define STR_NOSHOWAGAIN                         NC_("STR_NOSHOWAGAIN", "Don't show again")
+#define STR_CHANGEOPTIONS                       NC_("STR_CHANGEOPTIONS", "Change options")
+
 #endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

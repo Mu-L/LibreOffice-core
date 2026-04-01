@@ -482,6 +482,8 @@ bool SfxInfoBarContainerWindow::isInfobarEnabled(std::u16string_view sId)
                || officecfg::Office::Common::Security::Scripting::WarnPrintDoc::get()
                || officecfg::Office::Common::Security::Scripting::WarnCreatePDF::get();
     }
+    if (sId == u"autocorr_leadtrail")
+        return officecfg::Office::UI::Infobar::Enabled::AutoCorrLeadTrail::get();
 
     return true;
 }

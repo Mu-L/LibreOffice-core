@@ -63,6 +63,9 @@
 #include <numrule.hxx>
 #include <itabenum.hxx>
 
+#include <docsh.hxx>
+#include <sfx2/viewfrm.hxx>
+
 #include <memory>
 #include <utility>
 
@@ -1107,6 +1110,14 @@ void SwAutoFormat::DeleteLeadingTrailingBlanks(bool bStart, bool bEnd)
         *m_aDelPam.GetPoint() = m_pCurTextFrame->MapViewToModelPos(nPos);
         DeleteSel( m_aDelPam );
         m_aDelPam.DeleteMark();
+    }
+
+    SwDocShell* pShell = m_pDoc->GetDocShell();
+    if (pShell)
+    {
+        SfxViewFrame* pViewFrame = SfxViewFrame::GetFirst(pShell);
+        if (pViewFrame)
+            pViewFrame->AppendAutoCorrLeadTrailInfobar();
     }
 }
 

@@ -66,6 +66,12 @@
         </info>
         <value>true</value>
       </prop>
+      <prop oor:name="AutoCorrLeadTrail" oor:type="xs:boolean" oor:nillable="false">
+        <info>
+          <desc>Whether an Infobar is shown when auto correction DeleteLeadingTrailingBlanks() has happened.</desc>
+        </info>
+        <value>true</value>
+      </prop>
     </group>
   </component>
 </oor:component-schema>

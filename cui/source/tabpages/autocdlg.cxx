@@ -71,6 +71,7 @@ OfaAutoCorrDlg::OfaAutoCorrDlg(weld::Window* pParent, const SfxItemSet* _pSet )
 {
     bool bShowSWOptions = false;
     bool bOpenSmartTagOptions = false;
+    bool bActivateOptions = false;
 
     if ( _pSet )
     {
@@ -81,6 +82,10 @@ OfaAutoCorrDlg::OfaAutoCorrDlg(weld::Window* pParent, const SfxItemSet* _pSet )
         const SfxBoolItem* pItem2 = _pSet->GetItem<SfxBoolItem>(SID_OPEN_SMARTTAGOPTIONS, false);
         if ( pItem2 && pItem2->GetValue() )
             bOpenSmartTagOptions = true;
+
+        const SfxBoolItem* pItem3 = _pSet->GetItem<SfxBoolItem>(SID_OPEN_AUTOCORROPTIONS, false);
+        if ( pItem3 && pItem3->GetValue() )
+            bActivateOptions = true;
     }
 
     AddTabPage(u"replace"_ustr, TabResId(RID_TAB_OFA_REPLACE.aLabel), OfaAutocorrReplacePage::Create,
@@ -145,6 +150,8 @@ OfaAutoCorrDlg::OfaAutoCorrDlg(weld::Window* pParent, const SfxItemSet* _pSet )
 
     if ( bOpenSmartTagOptions )
         SetCurPageId(u"smarttags"_ustr);
+    else if ( bActivateOptions )
+        SetCurPageId(u"applypage"_ustr);
 }
 
 OfaAutoCorrDlg::~OfaAutoCorrDlg()

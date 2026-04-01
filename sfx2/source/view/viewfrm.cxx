@@ -42,6 +42,7 @@
 #include <com/sun/star/task/PasswordRequestMode.hpp>
 #include <com/sun/star/security/DocumentDigitalSignatures.hpp>
 #include <officecfg/Office/Common.hxx>
+#include <officecfg/Office/UI/Infobar.hxx>
 #include <officecfg/Setup.hxx>
 #include <toolkit/helper/vclunohelper.hxx>
 #include <vcl/wrkwin.hxx>
@@ -1333,6 +1334,23 @@ void SfxViewFrame::AppendReadOnlyInfobar()
     }
 }
 
+void SfxViewFrame::AppendAutoCorrLeadTrailInfobar()
+{
+    auto pInfoBar = AppendInfoBar(u"autocorr_leadtrail"_ustr, "",
+                                  SfxResId(STR_AUTOCORR_LEADTRAIL),
+                                  InfobarType::INFO);
+    if (pInfoBar)
+    {
+        weld::Button& rDontShowAgain = pInfoBar->addButton();
+        rDontShowAgain.set_label(SfxResId(STR_NOSHOWAGAIN));
+        rDontShowAgain.connect_clicked(LINK(this, SfxViewFrame, DontShowAgainHdl));
+
+        weld::Button& rChangeOptions = pInfoBar->addButton();
+        rChangeOptions.set_label(SfxResId(STR_CHANGEOPTIONS));
+        rChangeOptions.connect_clicked(LINK(this, SfxViewFrame, ChangeOptionsHdl));
+    }
+}
+
 void SfxViewFrame::HandleSecurityInfobar(const OUString& sSecondaryMessage)
 {
     if (!HasInfoBarWithID(u"securitywarn"))
@@ -2017,6 +2035,37 @@ IMPL_STATIC_LINK_NOARG(SfxViewFrame, HelpMasterPasswordHdl, weld::Button&, void)
 {
     if (Help* pHelp = Application::GetHelp())
         pHelp->Start(u"cui/ui/optsecuritypage/savepassword"_ustr);
+}
+
+IMPL_LINK_NOARG(SfxViewFrame, DontShowAgainHdl, weld::Button&, void)
+{
+    std::shared_ptr<comphelper::ConfigurationChanges> batch(
+        comphelper::ConfigurationChanges::create());
+    officecfg::Office::UI::Infobar::Enabled::AutoCorrLeadTrail::set(false, batch);
+    batch->commit();
+
+    RemoveInfoBar(u"autocorr_leadtrail");
+}
+
+IMPL_LINK_NOARG(SfxViewFrame, ChangeOptionsHdl, weld::Button&, void)
+{
+    SfxApplication* pApp = SfxGetpApp();
+    SfxItemSetFixed<SID_AUTO_CORRECT_DLG, SID_OPEN_AUTOCORROPTIONS>
+        aSet(pApp->GetPool());
+    // show dialog with same tabs as opened via SID_AUTO_CORRECT_DLG
+    SfxBoolItem aDlg(SID_AUTO_CORRECT_DLG, true);
+    aSet.Put(aDlg);
+    // set active tab to option
+    SfxBoolItem aOptions(SID_OPEN_AUTOCORROPTIONS, true);
+    aSet.Put(aOptions);
+
+    SfxAbstractDialogFactory* pFact = SfxAbstractDialogFactory::Create();
+    VclPtr<SfxAbstractTabDialog> pDlg
+        = pFact->CreateAutoCorrTabDialog(GetFrame().GetCurrentViewFrame()->GetFrameWeld(), &aSet);
+    pDlg->Execute();
+    pDlg.disposeAndClear();
+
+    RemoveInfoBar(u"autocorr_leadtrail");
 }
 
 void SfxViewFrame::Construct_Impl( SfxObjectShell *pObjSh )
