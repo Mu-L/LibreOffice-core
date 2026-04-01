@@ -71,7 +71,7 @@ public:
     {
     }
 
-    void testTdf99396();
+    void testTdf99396_UndoCellVerticalAlignment();
     void testTableObjectUndoTest();
     void testFillColor();
     void testFillGradient();
@@ -90,7 +90,7 @@ public:
     void testTdf130988();
     void testTdf131033();
     void testTdf129898LayerDrawnInSlideshow();
-    void testTdf136956();
+    void testTdf136956_UndoMergeCell();
     void testTdf39519();
     void testTdf164284();
     void testEncodedTableStyles();
@@ -100,7 +100,7 @@ public:
     void testDuplicateAndMove();
 
     CPPUNIT_TEST_SUITE(SdMiscTest);
-    CPPUNIT_TEST(testTdf99396);
+    CPPUNIT_TEST(testTdf99396_UndoCellVerticalAlignment);
     CPPUNIT_TEST(testTableObjectUndoTest);
     CPPUNIT_TEST(testFillColor);
     CPPUNIT_TEST(testFillGradient);
@@ -119,7 +119,7 @@ public:
     CPPUNIT_TEST(testTdf130988);
     CPPUNIT_TEST(testTdf131033);
     CPPUNIT_TEST(testTdf129898LayerDrawnInSlideshow);
-    CPPUNIT_TEST(testTdf136956);
+    CPPUNIT_TEST(testTdf136956_UndoMergeCell);
     CPPUNIT_TEST(testTdf39519);
     CPPUNIT_TEST(testTdf164284);
     CPPUNIT_TEST(testEncodedTableStyles);
@@ -130,7 +130,7 @@ public:
     CPPUNIT_TEST_SUITE_END();
 };
 
-void SdMiscTest::testTdf99396()
+void SdMiscTest::testTdf99396_UndoCellVerticalAlignment()
 {
     // Load the document and select the table.
     createSdImpressDoc("tdf99396.odp");
@@ -925,7 +925,7 @@ void SdMiscTest::testTdf129898LayerDrawnInSlideshow()
     CPPUNIT_ASSERT(pPageView->IsLayerPrintable(sName));
 }
 
-void SdMiscTest::testTdf136956()
+void SdMiscTest::testTdf136956_UndoMergeCell()
 {
     createSdImpressDoc("odp/cellspan.odp");
     SdXImpressDocument* pXImpressDocument = dynamic_cast<SdXImpressDocument*>(mxComponent.get());
