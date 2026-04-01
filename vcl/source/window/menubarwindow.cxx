@@ -1018,7 +1018,7 @@ void MenuBarWindow::LayoutChanged()
     ApplySettings(*GetOutDev());
 
     // if the font was changed.
-    tools::Long nHeight = m_pMenu->ImplCalcSize(this).Height();
+    tools::Long nHeight = m_pMenu->ImplCalcSize(*this).Height();
 
     // depending on the native implementation or the displayable flag
     // the menubar windows is suppressed (ie, height=0)

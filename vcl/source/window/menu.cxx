@@ -427,7 +427,7 @@ void Menu::InsertItem(sal_uInt16 nItemId, const OUString& rStr, MenuItemBits nIt
     mpLayoutData.reset();
     if ( pWin )
     {
-        ImplCalcSize( pWin );
+        ImplCalcSize(*pWin);
         if ( pWin->IsVisible() )
             pWin->Invalidate();
     }
@@ -490,7 +490,7 @@ void Menu::RemoveItem( sal_uInt16 nPos )
     vcl::Window* pWin = GetWindow();
     if ( pWin )
     {
-        ImplCalcSize( pWin );
+        ImplCalcSize(*pWin);
         if ( pWin->IsVisible() )
             pWin->Invalidate();
     }
@@ -997,7 +997,7 @@ void Menu::SetItemText( sal_uInt16 nItemId, const OUString& rStr )
     mpLayoutData.reset();
     if (pWin && IsMenuBar())
     {
-        ImplCalcSize( pWin );
+        ImplCalcSize(*pWin);
         if ( pWin->IsVisible() )
             pWin->Invalidate();
     }
@@ -1430,23 +1430,23 @@ void Menu::ImplRemoveDel( ImplMenuDelData& rDel )
     }
 }
 
-Size Menu::ImplCalcSize( vcl::Window* pWin )
+Size Menu::ImplCalcSize(vcl::Window& rWin)
 {
     // | Check/Radio/Image| Text| Accel/Popup|
 
     // for symbols: nFontHeight x nFontHeight
-    tools::Long nFontHeight = pWin->GetTextHeight();
+    tools::Long nFontHeight = rWin.GetTextHeight();
     tools::Long nExtra = nFontHeight/4;
 
     tools::Long nMinMenuItemHeight = nFontHeight;
     tools::Long nCheckHeight = 0, nRadioHeight = 0;
-    Size aMarkSize = ImplGetNativeCheckAndRadioSize(*pWin->GetOutDev(), nCheckHeight, nRadioHeight);
+    Size aMarkSize = ImplGetNativeCheckAndRadioSize(*rWin.GetOutDev(), nCheckHeight, nRadioHeight);
     if( aMarkSize.Height() > nMinMenuItemHeight )
         nMinMenuItemHeight = aMarkSize.Height();
 
     tools::Long aMaxImgWidth = 0;
 
-    const StyleSettings& rSettings = pWin->GetSettings().GetStyleSettings();
+    const StyleSettings& rSettings = rWin.GetSettings().GetStyleSettings();
     if ( rSettings.GetUseImagesInMenus() )
     {
         if ( 16 > nMinMenuItemHeight )
@@ -1515,9 +1515,9 @@ Size Menu::ImplCalcSize( vcl::Window* pWin )
             // Text:
             if ( (pData->eType == MenuItemType::STRING) || (pData->eType == MenuItemType::STRINGIMAGE) )
             {
-                const SalLayoutGlyphs* pGlyphs = pData->GetTextGlyphs(pWin->GetOutDev());
-                tools::Long nTextWidth = pWin->GetOutDev()->GetCtrlTextWidth(pData->aText, pGlyphs);
-                tools::Long nTextHeight = pWin->GetTextHeight() + EXTRAITEMHEIGHT;
+                const SalLayoutGlyphs* pGlyphs = pData->GetTextGlyphs(rWin.GetOutDev());
+                tools::Long nTextWidth = rWin.GetOutDev()->GetCtrlTextWidth(pData->aText, pGlyphs);
+                tools::Long nTextHeight = rWin.GetTextHeight() + EXTRAITEMHEIGHT;
 
                 if (IsMenuBar())
                 {
@@ -1537,7 +1537,7 @@ Size Menu::ImplCalcSize( vcl::Window* pWin )
             if (!IsMenuBar()&& pData->aAccelKey.GetCode() && !officecfg::VCL::VCLSettings::Menu::SuppressAccelerators::get())
             {
                 OUString aName = pData->aAccelKey.GetName();
-                tools::Long nAccWidth = pWin->GetTextWidth( aName );
+                tools::Long nAccWidth = rWin.GetTextWidth(aName);
                 nAccWidth += nExtra;
                 nWidth += nAccWidth;
             }
@@ -1564,14 +1564,14 @@ Size Menu::ImplCalcSize( vcl::Window* pWin )
     nTitleHeight = 0;
     if (!IsMenuBar() && aTitleText.getLength() > 0) {
         // Set expected font
-        auto popIt = pWin->GetOutDev()->ScopedPush(PushFlags::FONT);
-        vcl::Font aFont = pWin->GetFont();
+        auto popIt = rWin.GetOutDev()->ScopedPush(PushFlags::FONT);
+        vcl::Font aFont = rWin.GetFont();
         aFont.SetWeight(WEIGHT_BOLD);
-        pWin->SetFont(aFont);
+        rWin.SetFont(aFont);
 
         // Compute text bounding box
         tools::Rectangle aTextBoundRect;
-        pWin->GetOutDev()->GetTextBoundRect(aTextBoundRect, aTitleText);
+        rWin.GetOutDev()->GetTextBoundRect(aTextBoundRect, aTitleText);
 
         // Vertically, one height of char + extra space for decoration
         nTitleHeight =  aTextBoundRect.GetSize().Height() + 4 * SPACE_AROUND_TITLE ;
@@ -1588,7 +1588,8 @@ Size Menu::ImplCalcSize( vcl::Window* pWin )
         // except on rather small screens
         // TODO: move GetScreenNumber from SystemWindow to Window ?
         // currently we rely on internal privileges
-        unsigned int nDisplayScreen = pWin->ImplGetWindowImpl()->mpFrame->GetUnmirroredGeometry().screen();
+        unsigned int nDisplayScreen
+            = rWin.ImplGetWindowImpl()->mpFrame->GetUnmirroredGeometry().screen();
         tools::Rectangle aDispRect( Application::GetScreenPosSizePixel( nDisplayScreen ) );
         tools::Long nScreenWidth = aDispRect.GetWidth() >= 800 ? aDispRect.GetWidth() : 800;
         if( nMaxWidth > nScreenWidth/2 )
@@ -2501,7 +2502,7 @@ VclPtr<MenuBarWindow> MenuBar::ImplCreate(vcl::Window* pParent, MenuBarWindow* p
     pStartedFrom = nullptr;
     m_pWindow = pMenuBarWindow;
     pMenuBarWindow->SetMenu(this);
-    tools::Long nHeight = ImplCalcSize(pMenuBarWindow).Height();
+    tools::Long nHeight = ImplCalcSize(*pMenuBarWindow).Height();
 
     // depending on the native implementation or the displayable flag
     // the menubar windows is suppressed (ie, height=0)
@@ -2955,7 +2956,7 @@ sal_uInt16 PopupMenu::ImplExecute(const VclPtr<vcl::Window>& pParentWin, const t
     m_pWindow.disposeAndClear();
     m_pWindow = pWin;
 
-    Size aSz = ImplCalcSize( pWin );
+    Size aSz = ImplCalcSize(*pWin);
 
     AbsoluteScreenPixelRectangle aDesktopRect(pWin->GetDesktopRectPixel());
     if( Application::GetScreenCount() > 1 )
