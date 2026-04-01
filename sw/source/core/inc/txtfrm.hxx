@@ -20,6 +20,7 @@
 #define INCLUDED_SW_SOURCE_CORE_INC_TXTFRM_HXX
 
 #include <com/sun/star/uno/Sequence.hxx>
+#include <editeng/adjustitem.hxx>
 #include <svl/ctloptions.hxx>
 #include "cntfrm.hxx"
 #include "TextFrameIndex.hxx"
@@ -266,6 +267,11 @@ class SW_DLLPUBLIC SwTextFrame final : public SwContentFrame
 
     // Format exactly one Line
     bool FormatLine( SwTextFormatter &rLine, const bool bPrev );
+
+    // Apply optional paragraph composer for the line, which sets a OnceMore run
+    // to balance word spacing within this line and the previous one, if needed
+    void ParagraphComposer( SwTextFormatter &rLine, SwTextFormatInfo &rInf,
+                  const SvxAdjustItem& rAdjust );
 
     // In order to safe stack space, we split this method:
     // Format_ calls Format_ with parameters

@@ -77,6 +77,7 @@
 #define MID_LETTER_SPACING_MAX  7
 #define MID_SCALE_WIDTH_MIN  8
 #define MID_SCALE_WIDTH_MAX  9
+#define MID_PARAGRAPH_COMPOSER 10
 
 //SvxFontItem
 // Don't use 0 as it used for the whole struct

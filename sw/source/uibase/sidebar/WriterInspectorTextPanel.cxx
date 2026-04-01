@@ -266,6 +266,7 @@ static OUString PropertyNametoRID(const OUString& rName)
         { "ParaBottomMargin", RID_PARA_BOTTOM_MARGIN },
         { "ParaBottomMarginRelative", RID_PARA_BOTTOM_MARGIN_RELATIVE },
         { "ParaChapterNumberingLevel", RID_PARA_CHAPTER_NUMBERING_LEVEL },
+        { "ParaComposer", RID_PARA_COMPOSER },
         { "ParaConditionalStyleName", RID_PARA_CONDITIONAL_STYLE_NAME },
         { "ParaContextMargin", RID_PARA_CONTEXT_MARGIN },
         { "ParaExpandSingleWord", RID_PARA_EXPAND_SINGLE_WORD },

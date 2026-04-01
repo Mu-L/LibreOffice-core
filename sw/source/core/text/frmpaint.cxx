@@ -409,7 +409,8 @@ void SwTextFrame::PaintExtraData( const SwRect &rRect ) const
                            >= TextFrameIndex(aLine.GetTextFrame()->GetText().getLength())))
             {
                 SwTwips nExtraSpaceSize = aLine.GetCurr()->GetFirstPortion()->ExtraSpaceSize();
-                if ( nExtraSpaceSize && bWordSpacingIndicator )
+                // draw word spacing indicator for enlarged spaces, if it is enabled
+                if ( nExtraSpaceSize > 0 && bWordSpacingIndicator )
                     aExtra.PaintRedline( aLine.Y(), aLine.GetLineHeight(), nExtraSpaceSize );
 
                 bool bRed = bRedLine && aLine.GetCurr()->HasRedline();

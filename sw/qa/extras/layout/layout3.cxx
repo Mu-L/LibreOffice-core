@@ -882,6 +882,134 @@ CPPUNIT_TEST_FIXTURE(SwLayoutWriter3, testTdf171161)
     }
 }
 
+CPPUNIT_TEST_FIXTURE(SwLayoutWriter3, testTdf38159)
+{
+    createSwDoc("tdf38159.fodt");
+    // Ensure that all text portions are calculated before testing.
+    SwViewShell* pViewShell = getSwDoc()->getIDocumentLayoutAccess().GetCurrentViewShell();
+    CPPUNIT_ASSERT(pViewShell);
+    pViewShell->Reformat();
+
+    xmlDocUniquePtr pXmlDoc = parseLayoutDump();
+
+    // Test paragraph composer without limiting maximum word spacing
+    // (Desired and Maximum word spacing are not different)
+    //
+    //     BEFORE                      AFTER
+    //
+    //     Lorem ipsum dolor sit  ->   Lorem   ipsum   dolor
+    //     amet,     consectetur       sit amet, consectetur
+    //
+    assertXPath(pXmlDoc, "/root/page/body/txt/SwParaPortion/SwLineLayout[1]", "portion",
+                u"Lorem ipsum dolor ");
+    assertXPath(pXmlDoc, "/root/page/body/txt/SwParaPortion/SwLineLayout[2]", "portion",
+                u"sit amet, consectetur ");
+
+    //     BEFORE                            AFTER
+    //
+    //     semper. Proin luctus orci ac  ->  semper. Proin luctus orci
+    //     neque     venenatis,    quis      ac neque venenatis,  quis
+    //
+    assertXPath(pXmlDoc, "/root/page/body/txt/SwParaPortion/SwLineLayout[5]", "portion",
+                u"semper. Proin luctus orci ");
+    assertXPath(pXmlDoc, "/root/page/body/txt/SwParaPortion/SwLineLayout[6]", "portion",
+                u"ac neque venenatis, quis ");
+
+    //     BEFORE                            AFTER
+    //
+    //     cursus mauris vitae ligula  ->    cursus   mauris    vitae
+    //     pellentesque,          non        ligula pellentesque, non
+    assertXPath(pXmlDoc, "/root/page/body/txt/SwParaPortion/SwLineLayout[14]", "portion",
+                u"cursus mauris vitae ");
+    assertXPath(pXmlDoc, "/root/page/body/txt/SwParaPortion/SwLineLayout[15]", "portion",
+                u"ligula pellentesque, non ");
+}
+
+CPPUNIT_TEST_FIXTURE(SwLayoutWriter3, testTdf38159_disabled)
+{
+    createSwDoc("tdf38159_disabled.fodt");
+    // Ensure that all text portions are calculated before testing.
+    SwViewShell* pViewShell = getSwDoc()->getIDocumentLayoutAccess().GetCurrentViewShell();
+    CPPUNIT_ASSERT(pViewShell);
+    pViewShell->Reformat();
+
+    xmlDocUniquePtr pXmlDoc = parseLayoutDump();
+
+    // Test disabled paragraph composer
+    //
+    //     DISABLED                    ENABLED
+    //
+    //     Lorem ipsum dolor sit  ->   Lorem   ipsum   dolor
+    //     amet,     consectetur       sit amet, consectetur
+    //
+    assertXPath(pXmlDoc, "/root/page/body/txt/SwParaPortion/SwLineLayout[1]", "portion",
+                u"Lorem ipsum dolor sit ");
+    assertXPath(pXmlDoc, "/root/page/body/txt/SwParaPortion/SwLineLayout[2]", "portion",
+                u"amet, consectetur ");
+
+    //     DISABLED                          ENABLED
+    //
+    //     semper. Proin luctus orci ac  ->  semper. Proin luctus orci
+    //     neque     venenatis,    quis      ac neque venenatis,  quis
+    //
+    assertXPath(pXmlDoc, "/root/page/body/txt/SwParaPortion/SwLineLayout[5]", "portion",
+                u"semper. Proin luctus orci ac ");
+    assertXPath(pXmlDoc, "/root/page/body/txt/SwParaPortion/SwLineLayout[6]", "portion",
+                u"neque venenatis, quis ");
+
+    //     DISABLED                          ENABLED
+    //
+    //     cursus mauris vitae ligula  ->    cursus   mauris    vitae
+    //     pellentesque,          non        ligula pellentesque, non
+    assertXPath(pXmlDoc, "/root/page/body/txt/SwParaPortion/SwLineLayout[14]", "portion",
+                u"cursus mauris vitae ligula ");
+    assertXPath(pXmlDoc, "/root/page/body/txt/SwParaPortion/SwLineLayout[15]", "portion",
+                u"pellentesque, non ");
+}
+
+CPPUNIT_TEST_FIXTURE(SwLayoutWriter3, testTdf38159_limited)
+{
+    createSwDoc("tdf38159_limited.fodt");
+    // Ensure that all text portions are calculated before testing.
+    SwViewShell* pViewShell = getSwDoc()->getIDocumentLayoutAccess().GetCurrentViewShell();
+    CPPUNIT_ASSERT(pViewShell);
+    pViewShell->Reformat();
+
+    xmlDocUniquePtr pXmlDoc = parseLayoutDump();
+
+    // Test paragraph composer limited by maximum word spacing
+    // (Maximum word spacing is greater than the desired word spacing)
+    //
+    //     LIMITED BY MAXIMUM WORD SPACING=300%
+    //
+    //     Lorem ipsum dolor sit  <-   Lorem   ipsum   dolor
+    //     amet,     consectetur       sit amet, consectetur
+    //
+    assertXPath(pXmlDoc, "/root/page/body/txt/SwParaPortion/SwLineLayout[1]", "portion",
+                u"Lorem ipsum dolor sit ");
+    assertXPath(pXmlDoc, "/root/page/body/txt/SwParaPortion/SwLineLayout[2]", "portion",
+                u"amet, consectetur ");
+
+    //                                       NOT LIMITED BY MAXIMUM WORD SPACING=300%
+    //
+    //     semper. Proin luctus orci ac  ->  semper. Proin luctus orci
+    //     neque     venenatis,    quis      ac neque venenatis,  quis
+    //
+    assertXPath(pXmlDoc, "/root/page/body/txt/SwParaPortion/SwLineLayout[5]", "portion",
+                u"semper. Proin luctus orci ");
+    assertXPath(pXmlDoc, "/root/page/body/txt/SwParaPortion/SwLineLayout[6]", "portion",
+                u"ac neque venenatis, quis ");
+
+    //     LIMITED BY MAXIMUM WORD SPACING=300%
+    //
+    //     cursus mauris vitae ligula  <-    cursus   mauris    vitae
+    //     pellentesque,          non        ligula pellentesque, non
+    assertXPath(pXmlDoc, "/root/page/body/txt/SwParaPortion/SwLineLayout[14]", "portion",
+                u"cursus mauris vitae ligula ");
+    assertXPath(pXmlDoc, "/root/page/body/txt/SwParaPortion/SwLineLayout[15]", "portion",
+                u"pellentesque, non ");
+}
+
 CPPUNIT_TEST_FIXTURE(SwLayoutWriter3, testTdf169168_scaling)
 {
     createSwDoc("tdf169168_scaling.fodt");

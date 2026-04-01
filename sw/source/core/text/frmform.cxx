@@ -1594,6 +1594,95 @@ bool SwTextFrame::FormatLine( SwTextFormatter &rLine, const bool bPrev )
     return 0 != pPara->GetDelta();
 }
 
+void SwTextFrame::ParagraphComposer( SwTextFormatter &rLine, SwTextFormatInfo &rInf,
+        const SvxAdjustItem& rAdjust )
+{
+    const SwLineLayout *pCurr = rLine.GetCurr();
+    const OUString & rString = GetText();
+
+    // remove paragraph composer setting after formatting the line
+    if ( pCurr->GetParaComposerBreak() > 0 )
+        const_cast<SwLineLayout*>(pCurr)->SetParaComposerBreak(0);
+
+    // Apply paragraph composer only if there are two or more spaces in the previous line.
+    // Do not apply it, if the previous line will be filled by the paragraph composer
+    // already (marked by the special value 1), or if its word spacing is greater or
+    // equal than the word spacing of the actual line.
+    // TODO handle single word in the line?
+    const SwLineLayout *pPrevLine = rLine.GetPrev();
+    if ( pPrevLine && pPrevLine->GetSpaceCount() >= 2 && pPrevLine->GetParaComposerBreak() != 1 &&
+         pPrevLine->GetFirstPortion()->ExtraSpaceSize() <
+                                               pCurr->GetFirstPortion()->ExtraSpaceSize() )
+    {
+        sal_Int32 nWidthOf10Spaces = rInf.GetTextSize("          ").Width();
+        // maximum allowed single space size after shifting the last word in the previous line
+        // (except if maximum word spacing is not different from the desired word spacing)
+        float fSpaceSizeMax = nWidthOf10Spaces / 10.0 * rAdjust.GetPropWordSpacingMaximum() / 100.0;
+
+        // size of a single expanded space in the actual line
+        float fActualSingleSpaceSize = pCurr->GetFirstPortion()->ExtraSpaceSize() + fSpaceSizeMax;
+
+        // size of all the available space in the previous line
+        float fPreviousAllSpaceSize = pPrevLine->GetSpaceCount() *
+                    ( pPrevLine->GetFirstPortion()->ExtraSpaceSize() + fSpaceSizeMax );
+
+        // new break position in the previous line (space before the last word)
+        // TODO allow to break inside the last word
+        sal_Int32 nNewBreakPos = rString.lastIndexOf(CH_BLANK, sal_Int32(rLine.GetStart()) - 1);
+        if ( nNewBreakPos <= 0 )
+                return;
+
+        // calculate the size of the shifted word (plus a space if it the word is not hyphenated)
+        OUString sLastWord = rString.copy(nNewBreakPos + 1,
+                        sal_Int32(rLine.GetStart()) - nNewBreakPos - 1);
+        sal_Int32 nLastWordSize = rInf.GetTextSize(sLastWord).Width();
+
+        // the word is hyphenated?
+        bool bHyphenated = rString[sal_Int32(rLine.GetStart()) - 1] != CH_BLANK;
+
+        // all the new available space size in the previous line after shifting its last word
+        // (calculate with the size of the hyphen in the case of hyphenation,
+        // otherwise with the extra space of sLastWord)
+        float fNewPreviousAllSpaceSize = fPreviousAllSpaceSize + nLastWordSize + ( bHyphenated
+                                ? rInf.GetTextSize("-").Width()
+                                : -nWidthOf10Spaces/10.0 );
+
+        // new single space size in the previous line after shifting its last word,
+        // calculate also with the less spaces
+        float fNewPreviousSingleSpaceSize = fNewPreviousAllSpaceSize /
+                                                ( pPrevLine->GetSpaceCount() - 1 );
+
+        // the new space size in the previous line is still smaller,
+        // than in the actual line before its filling
+        if ( fNewPreviousSingleSpaceSize < fActualSingleSpaceSize &&
+            // and spacing maximum is not limited (i.e. desired and maximum word spacing values
+            // are not different) or spacing maximum is not exceeded with the new line break
+            // in the previous line
+            ( rAdjust.GetPropWordSpacing() == rAdjust.GetPropWordSpacingMaximum() ||
+                             fNewPreviousSingleSpaceSize <= fSpaceSizeMax ) )
+        {
+            // set new break in the previous line: SetParaComposerBreak() sets
+            // a value, which will decrease the line width to get a line break
+            // before the last word
+            float fSpaceSizeDesired = nWidthOf10Spaces/10.0 * rAdjust.GetPropWordSpacing()/100.0;
+            sal_Int32 nNewBreak =
+                    // extra space over the desired word spacing
+                    fPreviousAllSpaceSize - fSpaceSizeDesired * pPrevLine->GetSpaceCount() +
+                    // plus the size of the last word minus a space size
+                    // to avoid of breaking to much
+                    nLastWordSize - nWidthOf10Spaces/10.0;
+
+            const_cast<SwLineLayout*>(pPrevLine)->SetParaComposerBreak( nNewBreak );
+
+            // set special value for the actual line to avoid of filling from the filled line
+            const_cast<SwLineLayout*>(pCurr)->SetParaComposerBreak(1);
+
+            // set new run for the paragraph lines to apply the new line break(s)
+            rLine.SetOnceMore(true);
+        }
+    }
+}
+
 void SwTextFrame::Format_( SwTextFormatter &rLine, SwTextFormatInfo &rInf,
                         const bool bAdjust )
 {
@@ -1771,6 +1860,10 @@ void SwTextFrame::Format_( SwTextFormatter &rLine, SwTextFormatInfo &rInf,
      * the lines, because it could happen that one line can overflow
      * from the Follow to the Master.
      */
+
+    SvxAdjustItem aAdjustItem = GetTextNodeForParaProps()->GetSwAttrSet().GetAdjust();
+    bool bParagraphComposer = aAdjustItem.GetParagraphComposer();
+
     do
     {
         if( bFirst )
@@ -1833,6 +1926,13 @@ void SwTextFrame::Format_( SwTextFormatter &rLine, SwTextFormatInfo &rInf,
             const bool bOldEndHyph = rLine.GetCurr()->IsEndHyph();
             const bool bOldMidHyph = rLine.GetCurr()->IsMidHyph();
             bFormat = FormatLine( rLine, bPrev );
+
+            // prepare OnceMore run with optimized line break,
+            // if it's possible to balance word spacing better
+            // in the actual and the previous lines
+            if ( bParagraphComposer )
+                ParagraphComposer( rLine, rInf, aAdjustItem );
+
             // There can only be one bPrev ... (???)
             bPrev = false;
             if ( bMaxHyph )

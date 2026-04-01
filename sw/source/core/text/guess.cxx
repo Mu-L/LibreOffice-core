@@ -183,6 +183,14 @@ bool SwTextGuess::Guess( const SwTextPortion& rPor, SwTextFormatInfo &rInf,
     SwTwips nLineWidth = rInf.GetLineWidth();
     TextFrameIndex nMaxLen = TextFrameIndex(rInf.GetText().getLength()) - rInf.GetIdx();
 
+    // paragraph composer: break before the optimal line break
+    // to remove the huge word spacing in the next line
+    // Note: special value 1 means filled lines, i.e.
+    // the lines filled from the previous lines
+    SwLineLayout *pLay = rInf.GetRoot();
+    if ( pLay && pLay->GetParaComposerBreak() > 1 )
+        nLineWidth -= pLay->GetParaComposerBreak();
+
     SvxAdjustItem aAdjustItem = rInf.GetTextFrame()->GetTextNodeForParaProps()->GetSwAttrSet().GetAdjust();
     const SvxAdjust aAdjust = aAdjustItem.GetAdjust();
     // Maximum word spacing allows bigger spaces to limit hyphenation,

@@ -1295,6 +1295,7 @@ SvxParaAlignTabPage::SvxParaAlignTabPage(weld::Container* pPage, weld::DialogCon
     , m_xWordSpacing(m_xBuilder->weld_metric_spin_button(u"spin_WORD_SPACING"_ustr, FieldUnit::PERCENT))
     , m_xWordSpacingMinimum(m_xBuilder->weld_metric_spin_button(u"spin_WORD_SPACING_MIN"_ustr, FieldUnit::PERCENT))
     , m_xWordSpacingMaximum(m_xBuilder->weld_metric_spin_button(u"spin_WORD_SPACING_MAX"_ustr, FieldUnit::PERCENT))
+    , m_xParagraphComposer(m_xBuilder->weld_check_button(u"checkParaComposer"_ustr))
     , m_xLabelLetterSpacing(m_xBuilder->weld_label(u"labelLetterSpacing"_ustr))
     , m_xLetterSpacingMinimum(m_xBuilder->weld_metric_spin_button(u"spin_LETTER_SPACING_MIN"_ustr, FieldUnit::PERCENT))
     , m_xLetterSpacingMaximum(m_xBuilder->weld_metric_spin_button(u"spin_LETTER_SPACING_MAX"_ustr, FieldUnit::PERCENT))
@@ -1405,6 +1406,7 @@ bool SvxParaAlignTabPage::FillItemSet( SfxItemSet* rOutSet )
             m_xWordSpacing->get_value_changed_from_saved() ||
             m_xWordSpacingMinimum->get_value_changed_from_saved() ||
             m_xWordSpacingMaximum->get_value_changed_from_saved() ||
+            m_xParagraphComposer->get_state_changed_from_saved() ||
             m_xLetterSpacingMinimum->get_value_changed_from_saved() ||
             m_xLetterSpacingMaximum->get_value_changed_from_saved() ||
             m_xGlyphScalingMinimum->get_value_changed_from_saved() ||
@@ -1431,6 +1433,7 @@ bool SvxParaAlignTabPage::FillItemSet( SfxItemSet* rOutSet )
         aAdj.SetPropWordSpacing( m_xWordSpacing->get_value(FieldUnit::PERCENT) );
         aAdj.SetPropWordSpacingMinimum( m_xWordSpacingMinimum->get_value(FieldUnit::PERCENT) );
         aAdj.SetPropWordSpacingMaximum( m_xWordSpacingMaximum->get_value(FieldUnit::PERCENT) );
+        aAdj.SetParagraphComposer( m_xParagraphComposer->get_active() );
         aAdj.SetPropLetterSpacingMinimum( m_xLetterSpacingMinimum->get_value(FieldUnit::PERCENT) );
         aAdj.SetPropLetterSpacingMaximum( m_xLetterSpacingMaximum->get_value(FieldUnit::PERCENT) );
         aAdj.SetPropScaleWidthMinimum( m_xGlyphScalingMinimum->get_value(FieldUnit::PERCENT) );
@@ -1532,6 +1535,8 @@ void SvxParaAlignTabPage::Reset( const SfxItemSet* rSet )
             m_xWordSpacing->set_value(rAdj.GetPropWordSpacing(), FieldUnit::PERCENT);
             m_xWordSpacingMinimum->set_value(rAdj.GetPropWordSpacingMinimum(), FieldUnit::PERCENT);
             m_xWordSpacingMaximum->set_value(rAdj.GetPropWordSpacingMaximum(), FieldUnit::PERCENT);
+            m_xParagraphComposer->set_sensitive(true);
+            m_xParagraphComposer->set_active(rAdj.GetParagraphComposer());
             m_xLabelLetterSpacing->set_sensitive(true);
             // TODO add LetterSpacing (CharKern) and LetterSpacingMinimum
             m_xLetterSpacingMaximum->set_sensitive(true);
@@ -1553,6 +1558,8 @@ void SvxParaAlignTabPage::Reset( const SfxItemSet* rSet )
             m_xWordSpacing->set_sensitive(false);
             m_xWordSpacingMinimum->set_sensitive(false);
             m_xWordSpacingMaximum->set_sensitive(false);
+            m_xParagraphComposer->set_sensitive(false);
+            m_xParagraphComposer->set_sensitive(false);
             m_xLabelLetterSpacing->set_sensitive(false);
             m_xLetterSpacingMinimum->set_sensitive(false);
             m_xLetterSpacingMaximum->set_sensitive(false);
@@ -1654,6 +1661,7 @@ void SvxParaAlignTabPage::Reset( const SfxItemSet* rSet )
     m_xWordSpacing->save_value();
     m_xWordSpacingMinimum->save_value();
     m_xWordSpacingMaximum->save_value();
+    m_xParagraphComposer->save_state();
     m_xLetterSpacingMinimum->save_value();
     m_xLetterSpacingMaximum->save_value();
     m_xGlyphScalingMinimum->save_value();
@@ -1679,6 +1687,7 @@ void SvxParaAlignTabPage::ChangesApplied()
     m_xWordSpacing->save_value();
     m_xWordSpacingMinimum->save_value();
     m_xWordSpacingMaximum->save_value();
+    m_xParagraphComposer->save_state();
     m_xLetterSpacingMinimum->save_value();
     m_xLetterSpacingMaximum->save_value();
     m_xGlyphScalingMinimum->save_value();
@@ -1697,7 +1706,8 @@ IMPL_LINK_NOARG(SvxParaAlignTabPage, AlignHdl_Impl, weld::Toggleable&, void)
     m_xWordSpacing->set_sensitive(bJustify);
     m_xWordSpacingMinimum->set_sensitive(bJustify);
     m_xWordSpacingMaximum->set_sensitive(bJustify);
-    m_xLabelLetterSpacing->set_sensitive(bJustify);
+    m_xWordSpacingMaximum->set_sensitive(bJustify);
+    m_xParagraphComposer->set_sensitive(bJustify);
     // TODO visualize CharKerning with percentage
     m_xLetterSpacingMinimum->set_sensitive(bJustify);
     m_xLetterSpacingMaximum->set_sensitive(bJustify);

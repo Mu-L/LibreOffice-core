@@ -1432,6 +1432,7 @@ page-width
 pages
 paper-tray-number
 paragraph
+paragraph-composer
 paragraph-content
 paragraph-count
 paragraph-end-margin

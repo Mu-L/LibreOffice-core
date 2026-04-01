@@ -672,6 +672,26 @@
                   </packing>
                 </child>
                 <child>
+                  <object class="GtkCheckButton" id="checkParaComposer">
+                    <property name="label" translatable="yes" context="paralignpage|checkParaComposer">Paragraph Composer</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="use-underline">True</property>
+                    <property name="inconsistent">True</property>
+                    <property name="draw-indicator">True</property>
+                    <child internal-child="accessible">
+                      <object class="AtkObject" id="checkParaComposer-atkobject">
+                        <property name="AtkObject::accessible-description" translatable="yes" context="textflowpage|extended_tip|checkParaComposer">Select this check box, if you want to get evenly spaced words in the consecutive lines.</property>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="left-attach">4</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+                <child>
                   <object class="GtkLabel" id="labelLetterSpacing">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>

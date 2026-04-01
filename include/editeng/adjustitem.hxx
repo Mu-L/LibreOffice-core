@@ -60,6 +60,9 @@ class EDITENG_DLLPUBLIC SvxAdjustItem final : public SfxPoolItem
     sal_Int16 nPropScaleWidthMinimum;
     sal_Int16 nPropScaleWidthMaximum;
 
+    // paragraph composer
+    bool    bParagraphComposer : 1;
+
 protected:
     virtual ItemInstanceManager* getItemInstanceManager() const override;
 
@@ -144,6 +147,17 @@ public:
         else if ( bEnd )
             eRet = SvxAdjust::ParaEnd;
         return eRet;
+    }
+
+    bool GetParagraphComposer() const
+    {
+        return bParagraphComposer;
+    }
+
+    void SetParagraphComposer( const bool bValue )
+    {
+        ASSERT_CHANGE_REFCOUNTED_ITEM;
+        bParagraphComposer = bValue;
     }
 
     sal_uInt16 GetPropWordSpacing() const

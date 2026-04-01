@@ -405,9 +405,8 @@ void SwTextPortion::SetSpacing( SwTextFormatInfo &rInf, SwTextGuess const &rGues
                    ( nStartWidth + nBreakWidth - nSpaces * nWidthOf10Spaces/10.0 ) ) / nSpaces;
 
     // the part to be removed: the previous width minus the maximum allowed space width
-    float fExpansionOverMax =
-        fSpaceNormal - nWidthOf10Spaces / 10.0 * aAdjustItem.GetPropWordSpacingMaximum() / 100.0;
-    ExtraSpaceSize( fExpansionOverMax > 0 ? fExpansionOverMax : 0 );
+    ExtraSpaceSize( fSpaceNormal -
+                    nWidthOf10Spaces / 10.0 * aAdjustItem.GetPropWordSpacingMaximum() / 100.0 );
 
     sal_Int32 nLetterCount = sal_Int32(rGuess.BreakPos()) -
             sal_Int32(rInf.GetLineStart()) - nZeroWidthCharCount;
@@ -550,7 +549,8 @@ bool SwTextPortion::Format_( SwTextFormatInfo &rInf )
                     aAdjustItem.GetPropScaleWidthMinimum() == 100 &&
                     aAdjustItem.GetPropScaleWidthMaximum() == 100 &&
                     aAdjustItem.GetPropLetterSpacingMinimum() == 0 &&
-                    aAdjustItem.GetPropLetterSpacingMaximum() == 0;
+                    aAdjustItem.GetPropLetterSpacingMaximum() == 0 &&
+                    !aAdjustItem.GetParagraphComposer();
     // support old ODT documents, where only JustifyLinesWithShrinking was set
     const bool bOldInterop = bInteropSmartJustify && bNoWordSpacing;
     const bool bWordSpacing = bFullJustified && (!bNoWordSpacing || bOldInterop);

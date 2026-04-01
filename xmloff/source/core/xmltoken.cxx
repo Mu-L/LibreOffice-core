@@ -1532,6 +1532,7 @@ namespace xmloff::token {
         TOKEN( "pages",                           XML_PAGES ),
         TOKEN( "paper-tray-number",               XML_PAPER_TRAY_NUMBER ),
         TOKEN( "paragraph",                       XML_PARAGRAPH ),
+        TOKEN( "paragraph-composer",              XML_PARAGRAPH_COMPOSER ),
         TOKEN( "paragraph-content",               XML_PARAGRAPH_CONTENT ),
         TOKEN( "paragraph-count",                 XML_PARAGRAPH_COUNT ),
         TOKEN( "paragraph-end-margin",            XML_PARAGRAPH_END_MARGIN ),

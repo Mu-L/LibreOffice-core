@@ -321,7 +321,8 @@ SvxAdjustItem::SvxAdjustItem(const SvxAdjust eAdjst, const sal_uInt16 nId )
     nPropLetterSpacingMinimum(0),
     nPropLetterSpacingMaximum(0),
     nPropScaleWidthMinimum(100),
-    nPropScaleWidthMaximum(100)
+    nPropScaleWidthMaximum(100),
+    bParagraphComposer(false)
 {
     SetAdjust( eAdjst );
 }
@@ -338,6 +339,7 @@ bool SvxAdjustItem::operator==( const SfxPoolItem& rAttr ) const
            nPropWordSpacingMinimum == rItem.nPropWordSpacingMinimum &&
            nPropWordSpacingMaximum == rItem.nPropWordSpacingMaximum &&
            nPropWordSpacing == rItem.nPropWordSpacing &&
+           bParagraphComposer == rItem.bParagraphComposer &&
            nPropLetterSpacingMinimum == rItem.nPropLetterSpacingMinimum &&
            nPropLetterSpacingMaximum == rItem.nPropLetterSpacingMaximum &&
            nPropScaleWidthMinimum == rItem.nPropScaleWidthMinimum &&
@@ -354,6 +356,7 @@ size_t SvxAdjustItem::hashCode() const
     o3tl::hash_combine(seed, nPropWordSpacing);
     o3tl::hash_combine(seed, nPropWordSpacingMinimum);
     o3tl::hash_combine(seed, nPropWordSpacingMaximum);
+    o3tl::hash_combine(seed, bParagraphComposer);
     o3tl::hash_combine(seed, nPropLetterSpacingMinimum);
     o3tl::hash_combine(seed, nPropLetterSpacingMaximum);
     o3tl::hash_combine(seed, nPropScaleWidthMinimum);
@@ -378,6 +381,11 @@ bool SvxAdjustItem::QueryValue( uno::Any& rVal, sal_uInt8 nMemberId ) const
         case MID_EXPAND_SINGLE    :
         {
             rVal <<= bOneBlock;
+            break;
+        }
+        case MID_PARAGRAPH_COMPOSER :
+        {
+            rVal <<= bParagraphComposer;
             break;
         }
         default: ;//prevent warning
@@ -455,6 +463,12 @@ bool SvxAdjustItem::PutValue( const uno::Any& rVal, sal_uInt8 nMemberId )
             sal_Int16 nVal = -1;
             rVal >>= nVal;
             SetPropScaleWidthMaximum(nVal);
+        }
+        break;
+        case MID_PARAGRAPH_COMPOSER :
+        {
+            ASSERT_CHANGE_REFCOUNTED_ITEM;
+            bParagraphComposer = Any2Bool(rVal);
         }
         break;
         case MID_EXPAND_SINGLE :

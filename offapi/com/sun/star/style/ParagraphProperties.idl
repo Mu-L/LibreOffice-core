@@ -616,6 +616,20 @@ published service ParagraphProperties
             @since LibreOffice 26.8
          */
         [optional, property] short ParaHyphenationCompoundMinTrailingChars;
+
+        /** This value is `TRUE` if the paragraph composer is set, optimizing
+            the 1-line level greedy line breaking, now only by balancing word
+            spacing better in the consecutive lines. ParaWordSpacingMaximum
+            can limit this only if it is enabled, i.e. it is greater than
+            ParaWordSpacing.
+
+            @see ParaWordSpacing
+
+            @see ParaWordSpacingMaximum
+
+            @since LibreOffice 26.8
+         */
+        [optional, property] boolean ParaComposer;
 };
 
 

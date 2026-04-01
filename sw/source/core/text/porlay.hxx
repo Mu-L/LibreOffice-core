@@ -90,6 +90,9 @@ private:
     SwTwips m_nLetterSpacing = 0;      // custom letter spacing
     SwTwips m_nScaleWidth = 100;       // glyph scaling (grain resolution to limit font generation)
     float m_fScaleWidthSpacing = 0.0;  // extra space filled by glyph scaling
+    // OnceMore run of the paragraph composer: to minimize huge word spacing of the next line,
+    // adjust this new break (which was calculated during the first run)
+    sal_Int32 m_nParaComposerBreak = 0; // new break point to fill the next line better
 
     bool m_bFormatAdj : 1;
     bool m_bDummy     : 1;
@@ -195,6 +198,9 @@ public:
 
     void SetScaleWidthSpacing(SwTwips nNew) { m_fScaleWidthSpacing = nNew; }
     float GetScaleWidthSpacing() const { return m_fScaleWidthSpacing; }
+
+    void SetParaComposerBreak(sal_Int32 nNew) { m_nParaComposerBreak = nNew; }
+    sal_Int32 GetParaComposerBreak() const { return m_nParaComposerBreak; }
 
     // Creates the glue chain for short lines
     SwMarginPortion *CalcLeftMargin();

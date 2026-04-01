@@ -164,6 +164,9 @@ class SvxParaAlignTabPage : public SfxTabPage
     std::unique_ptr<weld::MetricSpinButton> m_xWordSpacingMinimum;
     std::unique_ptr<weld::MetricSpinButton> m_xWordSpacingMaximum;
 
+    /// paragraph composer
+    std::unique_ptr<weld::CheckButton> m_xParagraphComposer;
+
     /// letter spacing
     std::unique_ptr<weld::Label> m_xLabelLetterSpacing;
     std::unique_ptr<weld::MetricSpinButton> m_xLetterSpacingMinimum;

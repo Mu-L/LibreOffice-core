@@ -1519,6 +1519,7 @@ namespace xmloff::token {
         XML_PAGES,
         XML_PAPER_TRAY_NUMBER,
         XML_PARAGRAPH,
+        XML_PARAGRAPH_COMPOSER,
         XML_PARAGRAPH_CONTENT,
         XML_PARAGRAPH_COUNT,
         XML_PARAGRAPH_END_MARGIN,
