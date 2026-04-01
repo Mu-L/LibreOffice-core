@@ -51,7 +51,6 @@ class tdf168478(UITestCase):
             # Select more than one cell, remove filter and verify restored range includes all cells
             xGridWindow.executeAction("SELECT", mkPropertyValues({"RANGE": "A2:A4"}))
             self.xUITest.executeCommand(".uno:DataFilterRemoveFilter")
-            gridWinState = get_state_as_dict(xGridWindow)
 
             # Without the fix in place, this test would have failed with
             # AssertionError: 'true' != 'false'
