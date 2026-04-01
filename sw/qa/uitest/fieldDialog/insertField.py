@@ -16,7 +16,7 @@ class InsertField(UITestCase):
 
     def test_inputListField(self):
 
-        with self.ui_test.create_doc_in_start_center("writer") as writer_doc:
+        with self.ui_test.create_doc_in_start_center("writer"):
 
             with self.ui_test.execute_modeless_dialog_through_command(".uno:InsertField", close_button="cancel") as xDialog:
                 xTab = xDialog.getChild("tabcontrol")

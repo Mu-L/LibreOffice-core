@@ -54,12 +54,12 @@ class tdf157482(UITestCase):
                 controller.removeInfobar("securitywarn")
                 self.assertFalse(controller.hasInfobar("securitywarn"))
 
-                with self.ui_test.execute_dialog_through_command('.uno:ExportToPDF', close_button="cancel") as xDialog:
+                with self.ui_test.execute_dialog_through_command('.uno:ExportToPDF', close_button="cancel"):
                     self.assertTrue(controller.hasInfobar("securitywarn"))
                     controller.removeInfobar("securitywarn")
                     self.assertFalse(controller.hasInfobar("securitywarn"))
 
-                with self.ui_test.execute_dialog_through_command('.uno:Print', close_button="cancel") as xDialog:
+                with self.ui_test.execute_dialog_through_command('.uno:Print', close_button="cancel"):
                     self.assertTrue(controller.hasInfobar("securitywarn"))
                     controller.removeInfobar("securitywarn")
                     self.assertFalse(controller.hasInfobar("securitywarn"))
