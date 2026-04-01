@@ -1509,7 +1509,7 @@ void SwView::Execute(SfxRequest &rReq)
             bool *pbNext = new bool(true);
             if (nSlot == FN_SCROLL_PREV)
                 *pbNext = false;
-            MoveNavigationHdl(pbNext);
+            MoveNavigation(pbNext);
         }
         break;
         case SID_JUMPTOMARK:

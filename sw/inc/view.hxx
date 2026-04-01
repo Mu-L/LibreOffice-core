@@ -387,6 +387,8 @@ protected:
     const SwFrameFormat* GetLastTableFrameFormat() const {return m_pLastTableFormat;}
     void            SetLastTableFrameFormat(const SwFrameFormat* pSet) {m_pLastTableFormat = pSet;}
 
+    void MoveNavigation(void*);
+
     // form letter execution
     void    GenerateFormLetter(bool bUseCurrentDocument);
 
@@ -482,7 +484,6 @@ public:
 
     static sal_uInt16   GetMoveType();
     static void     SetMoveType(sal_uInt16 nSet);
-    DECL_DLLPRIVATE_LINK( MoveNavigationHdl, void*, void );
     static void     SetActMark(sal_Int32 nSet);
 
     bool            HandleWheelCommands( const CommandEvent& );

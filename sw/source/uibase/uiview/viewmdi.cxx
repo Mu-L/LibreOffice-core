@@ -313,7 +313,7 @@ void SwView::CreateScrollbar( bool bHori )
         ppScrollbar->ExtendedShow();
 }
 
-IMPL_LINK( SwView, MoveNavigationHdl, void*, p, void )
+void SwView::MoveNavigation(void* p)
 {
     bool* pbNext = static_cast<bool*>(p);
     if ( !pbNext )
