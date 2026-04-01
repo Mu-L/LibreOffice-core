@@ -25,6 +25,7 @@ $(GNUTAR) \
 	-C $(UNPACKED_DIR) \
 	$(STRIP_COMPONENTS)=$(UNPACKED_STRIP_COMPONENTS) \
 	--no-same-owner \
+	$(if $(EXCLUDE_PATTERN),--exclude=$(EXCLUDE_PATTERN)) \
 	-f $(call gb_Helper_cyg_path,$(UNPACKED_TARBALL))
 endef
 
@@ -267,6 +268,14 @@ $(call gb_UnpackedTarball_set_tarball_internal,$(1),$(2),$(3),$(4),)
 ,
 $(call gb_UnpackedTarball_set_tarball_internal,$(1),$(2),$(3),$(4),)
 )
+
+endef
+
+# Set file name pattern for files to exclude when extracting the tarball.
+#
+# gb_UnpackedTarball_set_exclude_pattern unpacked exclude-pattern
+define gb_UnpackedTarball_set_exclude_pattern
+$(call gb_UnpackedTarball_get_target,$(1)) : EXCLUDE_PATTERN := $(2)
 
 endef
 
