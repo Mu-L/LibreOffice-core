@@ -11,6 +11,9 @@ $(eval $(call gb_UnpackedTarball_UnpackedTarball,pixman))
 
 $(eval $(call gb_UnpackedTarball_set_tarball,pixman,$(PIXMAN_TARBALL),,cairo))
 
+# Exclude .gitlab-ci.d subdirectory containing symlinks that tar in the wsl-as-helper build cannot handle
+$(eval $(call gb_UnpackedTarball_set_exclude_pattern,pixman,*/.gitlab-ci.d))
+
 $(eval $(call gb_UnpackedTarball_set_patchlevel,pixman,2))
 
 ifeq ($(OS)-$(ENABLE_HEADLESS),WNT-TRUE)
