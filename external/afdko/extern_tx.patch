@@ -57,28 +57,7 @@
  /* Main program. */
  int CTL_CDECL main(int argc, char *argv[]) {
      txCtx h;
-@@ -1564,19 +1582,11 @@
-     --argc;
-     ++argv;
- 
--    /* Allocate program context */
--    h = malloc(sizeof(struct txCtx_));
-+    h = txNew(progname);
-     if (h == NULL) {
-         fprintf(stderr, "%s: out of memory\n", progname);
-         return EXIT_FAILURE;
-     }
--    memset(h, 0, sizeof(struct txCtx_));
--
--    h->app = APP_TX;
--    h->appSpecificInfo = NULL; /* unused in tx.c, used in rotateFont.c & mergeFonts.c */
--    h->appSpecificFree = txFree;
--
--    txNew(h, progname);
- 
-     if (argc > 1 && getOptionIndex(argv[argc - 2]) == opt_s) {
-         /* Option list ends with script option */
-@@ -1602,3 +1612,4 @@
+@@ -1602,3 +1620,4 @@
  
      return 0;
  }
