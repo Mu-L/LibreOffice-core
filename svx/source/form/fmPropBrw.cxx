@@ -536,7 +536,7 @@ void FmPropBrw::StateChangedAtToolBoxControl(sal_uInt16 nSID, SfxItemState eStat
             FmFormShell* pShell = dynamic_cast<FmFormShell*>( static_cast<const SfxObjectItem*>(pState)->GetShell() );
             InterfaceBag aSelection;
             if ( pShell )
-                pShell->GetImpl()->getCurrentSelection_Lock(aSelection);
+                aSelection = pShell->GetImpl()->getCurrentSelection_Lock();
 
             impl_ensurePropertyBrowser_nothrow( pShell );
 

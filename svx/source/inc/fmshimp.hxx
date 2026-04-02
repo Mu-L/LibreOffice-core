@@ -365,7 +365,7 @@ public:
 
     /** retrieves the current selection
     */
-    void    getCurrentSelection_Lock(InterfaceBag& /* [out] */ _rSelection) const;
+    InterfaceBag getCurrentSelection_Lock() const;
 
     /** sets a new current selection as indicated by a mark list
         @return

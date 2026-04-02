@@ -1894,9 +1894,9 @@ void FmXFormShell::setActiveController_Lock(const Reference<runtime::XFormContro
     InvalidateSlot_Lock(SID_FM_FILTER_NAVIGATOR_CONTROL, true);
 }
 
-void FmXFormShell::getCurrentSelection_Lock(InterfaceBag& /* [out] */ _rSelection) const
+InterfaceBag FmXFormShell::getCurrentSelection_Lock() const
 {
-    _rSelection = m_aCurrentSelection;
+    return m_aCurrentSelection;
 }
 
 bool FmXFormShell::setCurrentSelectionFromMark_Lock(const SdrMarkList& _rMarkList)
