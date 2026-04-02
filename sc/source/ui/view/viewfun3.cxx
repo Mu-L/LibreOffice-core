@@ -181,7 +181,7 @@ void lcl_NarrowClipRangesForNonOrigin(ScDocument* pClipDoc,
     // use the temp doc fallback (clear matrix intersections, bSkipEmpty).
     ScClipParam& rStoredParam = pClipDoc->GetClipParam();
     if (aSubRanges.size() == 1)
-        rStoredParam.maRanges = aSubRanges;
+        rStoredParam.maRanges = std::move(aSubRanges);
 }
 
 }
