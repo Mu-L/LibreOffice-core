@@ -1615,6 +1615,30 @@ CPPUNIT_TEST_FIXTURE(Test, testOpticalSizing2)
     uno::Reference<beans::XPropertySet> xCursor(getRun(getParagraph(1), 1), uno::UNO_QUERY);
     CPPUNIT_ASSERT_EQUAL(false, getProperty<bool>(xCursor, u"CharOpticalSizing"_ustr));
 }
+
+CPPUNIT_TEST_FIXTURE(Test, testFontVariationSettings)
+{
+    createSwDoc();
+
+    // Set font-variation-settings via UNO
+    uno::Reference<beans::XPropertySet> xCursor(getRun(getParagraph(1), 1), uno::UNO_QUERY);
+    xCursor->setPropertyValue(u"CharFontVariations"_ustr, uno::Any(u"\"wght\" 700, \"wdth\" 75"_ustr));
+
+    // Save and check the ODF export
+    save(TestFilter::ODT);
+    xmlDocUniquePtr pXmlDoc = parseExport(u"content.xml"_ustr);
+    assertXPath(pXmlDoc,
+                "//style:style/style:text-properties[@loext:font-variation-settings='\"wght\" 700, "
+                "\"wdth\" 75']",
+                1);
+
+    // Round-trip: reload and verify
+    saveAndReload(TestFilter::ODT);
+    uno::Reference<beans::XPropertySet> xRun(getRun(getParagraph(1), 1), uno::UNO_QUERY);
+    CPPUNIT_ASSERT_EQUAL(u"\"wght\" 700, \"wdth\" 75"_ustr,
+                         getProperty<OUString>(xRun, u"CharFontVariations"_ustr));
+}
+
 } // end of anonymous namespace
 CPPUNIT_PLUGIN_IMPLEMENT();
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

@@ -3318,6 +3318,7 @@ const SwAttrFnTab aHTMLAttrFnTab = {
 /* RES_CHRATR_UNUSED3 */            nullptr,
 /* RES_CHRATR_SCRIPT_HINT */        nullptr,
 /* RES_CHRATR_OPTICAL_SIZING */     OutHTML_CSS1Attr,
+/* RES_CHRATR_FONT_VARIATIONS */    OutHTML_CSS1Attr,
 
 /* RES_TXTATR_REFMARK */            nullptr,
 /* RES_TXTATR_TOXMARK */            nullptr,

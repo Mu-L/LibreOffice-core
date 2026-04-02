@@ -104,6 +104,7 @@ class SwSubFont final : public SvxFont
     inline void SetEmphasisMark( const FontEmphasisMark eValue );
     inline void SetRelief( const FontRelief eNew );
     inline void SetOpticalSizing( bool bOpticalSizing );
+    inline void SetVariations( const std::vector<vcl::FontVariation>& rVariations );
 
     // methods for sub-/superscript
     inline void SetEscapement( const short nNewEsc );
@@ -237,6 +238,7 @@ public:
     inline void SetCaseMap( const SvxCaseMap eNew );
     inline void SetEmphasisMark( const FontEmphasisMark eValue );
     inline void SetOpticalSizing( bool bOpticalSizing );
+    inline void SetVariations( const std::vector<vcl::FontVariation>& rVariations );
 
     // methods for sub-/superscript
     inline void SetEscapement( const short nNewEsc );
@@ -721,6 +723,20 @@ inline void SwFont::SetOpticalSizing( bool bOpticalSizing )
     m_aSub[SwFontScript::Latin].SetOpticalSizing( bOpticalSizing );
     m_aSub[SwFontScript::CJK].SetOpticalSizing( bOpticalSizing );
     m_aSub[SwFontScript::CTL].SetOpticalSizing( bOpticalSizing );
+}
+
+inline void SwSubFont::SetVariations( const std::vector<vcl::FontVariation>& rVariations )
+{
+    m_nFontCacheId = nullptr;
+    Font::SetVariations( rVariations );
+}
+
+inline void SwFont::SetVariations( const std::vector<vcl::FontVariation>& rVariations )
+{
+    m_bFontChg = true;
+    m_aSub[SwFontScript::Latin].SetVariations( rVariations );
+    m_aSub[SwFontScript::CJK].SetVariations( rVariations );
+    m_aSub[SwFontScript::CTL].SetVariations( rVariations );
 }
 
 inline void SwFont::SetPropWidth( const sal_uInt16 nNew )

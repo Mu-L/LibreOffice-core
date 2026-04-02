@@ -44,6 +44,7 @@
 #include <editeng/escapementitem.hxx>
 #include <editeng/fontitem.hxx>
 #include <editeng/fhgtitem.hxx>
+#include <editeng/fontvariationsitem.hxx>
 #include <editeng/forbiddenruleitem.hxx>
 #include <editeng/frmdiritem.hxx>
 #include <editeng/hngpnctitem.hxx>
@@ -334,6 +335,7 @@ std::unique_ptr<ItemInfoPackage> createItemInfoPackageSwAttributes()
             { RES_CHRATR_UNUSED3, new SfxVoidItem( RES_CHRATR_UNUSED3 ), 0, SFX_ITEMINFOFLAG_NONE },
             { RES_CHRATR_SCRIPT_HINT, new SvxScriptHintItem( RES_CHRATR_SCRIPT_HINT ), SID_ATTR_CHAR_SCRIPT_HINT, SFX_ITEMINFOFLAG_NONE },
             { RES_CHRATR_OPTICAL_SIZING, new SvxOpticalSizingItem( false, RES_CHRATR_OPTICAL_SIZING ), SID_ATTR_CHAR_OPTICAL_SIZING, SFX_ITEMINFOFLAG_NONE },
+            { RES_CHRATR_FONT_VARIATIONS, new SvxFontVariationsItem( RES_CHRATR_FONT_VARIATIONS ), SID_ATTR_CHAR_FONT_VARIATIONS, SFX_ITEMINFOFLAG_NONE },
 
             { RES_TXTATR_REFMARK, new SwFormatRefMark( SwMarkName() ),  0, SFX_ITEMINFOFLAG_NONE },
             { RES_TXTATR_TOXMARK, createSwTOXMarkForItemInfoPackage(),  0, SFX_ITEMINFOFLAG_NONE },

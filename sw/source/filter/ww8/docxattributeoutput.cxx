@@ -64,6 +64,7 @@
 #include <editeng/widwitem.hxx>
 #include <editeng/shaditem.hxx>
 #include <editeng/brushitem.hxx>
+#include <editeng/fontvariationsitem.hxx>
 #include <editeng/postitem.hxx>
 #include <editeng/wghtitem.hxx>
 #include <editeng/kernitem.hxx>
@@ -5309,6 +5310,9 @@ void DocxAttributeOutput::OutputDefaultItem(const SfxPoolItem& rHt)
         case RES_CHRATR_OPTICAL_SIZING:
             bMustWrite = rHt.StaticWhichCast(RES_CHRATR_OPTICAL_SIZING).GetValue();
             break;
+        case RES_CHRATR_FONT_VARIATIONS:
+            bMustWrite = !rHt.StaticWhichCast(RES_CHRATR_FONT_VARIATIONS).GetVariations().empty();
+            break;
         case RES_CHRATR_BLINK:
             bMustWrite = rHt.StaticWhichCast(RES_CHRATR_BLINK).GetValue();
             break;
@@ -8477,6 +8481,11 @@ void DocxAttributeOutput::CharAutoKern( const SvxAutoKernItem& rAutoKern )
 void DocxAttributeOutput::CharOpticalSizing( const SvxOpticalSizingItem& )
 {
     // MSOffice has no equivalent for optical sizing, so nothing is exported.
+}
+
+void DocxAttributeOutput::CharFontVariations( const SvxFontVariationsItem& )
+{
+    // MSOffice has no equivalent for font variation settings, so nothing is exported.
 }
 
 void DocxAttributeOutput::CharAnimatedText( const SvxBlinkItem& rBlink )

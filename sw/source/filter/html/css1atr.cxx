@@ -3477,6 +3477,7 @@ SwAttrFnTab const aCSS1AttrFnTab = {
 /* RES_CHRATR_UNUSED3 */            nullptr,
 /* RES_CHRATR_SCRIPT_HINT */        nullptr,
 /* RES_CHRATR_OPTICAL_SIZING */     OutCSS1_SvxOpticalSizing,
+/* RES_CHRATR_FONT_VARIATIONS */    nullptr,
 
 /* RES_TXTATR_REFMARK */            nullptr,
 /* RES_TXTATR_TOXMARK */            nullptr,

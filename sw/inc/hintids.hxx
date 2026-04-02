@@ -64,6 +64,7 @@ class SvxEmphasisMarkItem;
 class SvxEscapementItem;
 class SvxFontHeightItem;
 class SvxFontItem;
+class SvxFontVariationsItem;
 class SvxForbiddenRuleItem;
 class SvxFormatBreakItem;
 class SvxFormatKeepItem;
@@ -247,7 +248,9 @@ inline constexpr TypedWhichId<SfxInt16Item> RES_CHRATR_UNUSED3(RES_CHRATR_BEGIN 
 inline constexpr TypedWhichId<SvxScriptHintItem> RES_CHRATR_SCRIPT_HINT(RES_CHRATR_BEGIN + 45);
 inline constexpr TypedWhichId<SvxOpticalSizingItem> RES_CHRATR_OPTICAL_SIZING(RES_CHRATR_BEGIN
                                                                               + 46);
-inline constexpr sal_uInt16 RES_CHRATR_END(RES_CHRATR_BEGIN + 47);
+inline constexpr TypedWhichId<SvxFontVariationsItem> RES_CHRATR_FONT_VARIATIONS(RES_CHRATR_BEGIN
+                                                                                + 47);
+inline constexpr sal_uInt16 RES_CHRATR_END(RES_CHRATR_BEGIN + 48);
 
 // this Attribute used only in a TextNodes SwpAttr-Array
 inline constexpr sal_uInt16 RES_TXTATR_BEGIN(RES_CHRATR_END);

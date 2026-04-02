@@ -304,6 +304,9 @@ protected:
     /// Sfx item RES_CHRATR_OPTICAL_SIZING
     void CharOpticalSizing(const SvxOpticalSizingItem& rOpticalSizing) override;
 
+    /// Sfx item RES_CHRATR_FONT_VARIATIONS
+    void CharFontVariations(const SvxFontVariationsItem& rFontVariations) override;
+
     /// Sfx item RES_CHRATR_BLINK
     void CharAnimatedText(const SvxBlinkItem& rBlink) override;
 

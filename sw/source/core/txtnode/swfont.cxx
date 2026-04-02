@@ -32,6 +32,7 @@
 #include <editeng/charreliefitem.hxx>
 #include <editeng/contouritem.hxx>
 #include <editeng/colritem.hxx>
+#include <editeng/fontvariationsitem.hxx>
 #include <editeng/crossedoutitem.hxx>
 #include <editeng/udlnitem.hxx>
 #include <editeng/wghtitem.hxx>
@@ -667,6 +668,8 @@ void SwFont::SetDiffFnt( const SfxItemSet *pAttrSet,
             SetVertical( 0_deg10 );
         if( const SvxOpticalSizingItem* pItem = pAttrSet->GetItemIfSet( RES_CHRATR_OPTICAL_SIZING ) )
             SetOpticalSizing( pItem->GetValue() );
+        if( const SvxFontVariationsItem* pItem = pAttrSet->GetItemIfSet( RES_CHRATR_FONT_VARIATIONS ) )
+            SetVariations( pItem->GetVariations() );
     }
     else
     {

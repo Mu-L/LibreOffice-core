@@ -526,6 +526,9 @@ void RtfAttributeOutput::OutputFormattingItem(const SfxPoolItem& item, OStringBu
         case RES_CHRATR_OPTICAL_SIZING:
             OutputCharOpticalSizing(item.StaticWhichCast(RES_CHRATR_OPTICAL_SIZING), buf);
             break;
+        case RES_CHRATR_FONT_VARIATIONS:
+            // MSOffice has no equivalent, nothing to output.
+            break;
         case RES_CHRATR_BLINK:
             OutputCharAnimatedText(item.StaticWhichCast(RES_CHRATR_BLINK), buf);
             break;
@@ -3237,6 +3240,11 @@ void RtfAttributeOutput::CharAutoKern(const SvxAutoKernItem& rAutoKern)
 void RtfAttributeOutput::CharOpticalSizing(const SvxOpticalSizingItem& rOpticalSizing)
 {
     m_aCharFormatting.Put(rOpticalSizing);
+}
+
+void RtfAttributeOutput::CharFontVariations(const SvxFontVariationsItem&)
+{
+    // MSOffice has no equivalent for font variation settings, so nothing is exported.
 }
 
 void RtfAttributeOutput::OutputCharAutoKern(const SvxAutoKernItem& rAutoKern, OStringBuffer& buf)
