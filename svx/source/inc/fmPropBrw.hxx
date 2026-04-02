@@ -20,6 +20,7 @@
 #define INCLUDED_SVX_SOURCE_INC_FMPROPBRW_HXX
 
 #include <com/sun/star/frame/XFrame2.hpp>
+#include <com/sun/star/inspection/XObjectInspector.hpp>
 #include <com/sun/star/inspection/XObjectInspectorModel.hpp>
 #include <com/sun/star/uno/XComponentContext.hpp>
 
@@ -56,8 +57,7 @@ class FmPropBrw final : public SfxModelessDialogController, public SfxController
                     m_xLastKnownDocument;
     css::uno::Reference< css::inspection::XObjectInspectorModel >
                     m_xInspectorModel;
-    css::uno::Reference< css::frame::XController >
-                    m_xBrowserController;
+    css::uno::Reference<css::inspection::XObjectInspector> m_xBrowserController;
 
     virtual void StateChangedAtToolBoxControl(sal_uInt16 nSID, SfxItemState eState, const SfxPoolItem* pState) override;
     virtual void FillInfo( SfxChildWinInfo& rInfo ) const override;

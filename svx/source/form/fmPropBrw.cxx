@@ -340,10 +340,8 @@ void FmPropBrw::implSetNewSelection( const InterfaceBag& _rSelection )
 
     try
     {
-        Reference< XObjectInspector > xInspector( m_xBrowserController, UNO_QUERY_THROW );
-
         // tell it the objects to inspect
-        xInspector->inspect( comphelper::containerToSequence(_rSelection) );
+        m_xBrowserController->inspect(comphelper::containerToSequence(_rSelection));
     }
     catch( const VetoException& )
     {
@@ -488,8 +486,7 @@ void FmPropBrw::impl_createPropertyBrowser_throw( FmFormShell* _pFormShell )
 
     if ( bEnableHelpSection )
     {
-        Reference< XObjectInspector > xInspector( m_xBrowserController, UNO_QUERY_THROW );
-        Reference< XObjectInspectorUI > xInspectorUI( xInspector->getInspectorUI() );
+        Reference<XObjectInspectorUI> xInspectorUI = m_xBrowserController->getInspectorUI();
         DefaultHelpProvider::create( m_xInspectorContext, xInspectorUI );
     }
 }
