@@ -688,8 +688,9 @@ public:
     void DisposePage(const SwPageFrame *pPageFrame );
 };
 
-SwAccPreviewData::SwAccPreviewData() :
-    mpSelPage( nullptr )
+SwAccPreviewData::SwAccPreviewData()
+    : mfScale(0.0)
+    , mpSelPage( nullptr )
 {
 }
 
