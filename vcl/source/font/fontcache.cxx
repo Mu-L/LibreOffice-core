@@ -86,6 +86,12 @@ bool ImplFontCache::IFSD_Equal::operator()(const vcl::font::FontSelectPattern& r
     if (rA.maItalicMatrix != rB.maItalicMatrix)
         return false;
 
+    if (rA.mbOpticalSizing != rB.mbOpticalSizing)
+        return false;
+
+    if (rA.maVariations != rB.maVariations)
+        return false;
+
     return true;
 }
 

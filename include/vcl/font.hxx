@@ -23,6 +23,7 @@
 #include <rtl/ustring.hxx>
 #include <sal/types.h>
 #include <vcl/dllapi.h>
+#include <vcl/FontVariation.hxx>
 #include <tools/fontenum.hxx>
 #include <tools/long.hxx>
 #include <tools/degree.hxx>
@@ -139,6 +140,9 @@ public:
 
     void                SetOpticalSizing( bool bOpticalSizing );
     bool                GetOpticalSizing() const;
+
+    void                SetVariations( const std::vector<vcl::FontVariation>& rVariations );
+    const std::vector<vcl::FontVariation>& GetVariations() const;
 
     void                SetOutline( bool bOutline );
     bool                IsOutline() const;

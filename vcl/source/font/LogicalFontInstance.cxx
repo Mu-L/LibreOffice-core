@@ -43,6 +43,9 @@ LogicalFontInstance::LogicalFontInstance(const vcl::font::PhysicalFontFace& rFon
     , m_pFontFace(&const_cast<vcl::font::PhysicalFontFace&>(rFontFace))
     , m_bOpticalSizing(rFontSelData.mbOpticalSizing)
 {
+    m_aVariations.reserve(rFontSelData.maVariations.size());
+    for (const auto& rVar : rFontSelData.maVariations)
+        m_aVariations.push_back({ rVar.nTag, rVar.fValue });
 }
 
 LogicalFontInstance::~LogicalFontInstance()

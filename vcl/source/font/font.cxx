@@ -254,6 +254,17 @@ bool Font::GetOpticalSizing() const
     return mpImplFont->mbOpticalSizing;
 }
 
+void Font::SetVariations( const std::vector<vcl::FontVariation>& rVariations )
+{
+    if (GetVariations() != rVariations)
+        mpImplFont->maVariations = rVariations;
+}
+
+const std::vector<vcl::FontVariation>& Font::GetVariations() const
+{
+    return mpImplFont->maVariations;
+}
+
 void Font::SetWidthType( FontWidth eWidth )
 {
     if (std::as_const(mpImplFont)->GetWidthTypeNoAsk() != eWidth)
@@ -416,6 +427,8 @@ void Font::Merge( const vcl::Font& rFont )
     SetOutline( rFont.IsOutline() );
     SetShadow( rFont.IsShadow() );
     SetOpticalSizing( rFont.GetOpticalSizing() );
+    if ( !rFont.GetVariations().empty() )
+        SetVariations( rFont.GetVariations() );
     SetRelief( rFont.GetRelief() );
 }
 
@@ -1022,6 +1035,7 @@ ImplFont::ImplFont( const ImplFont& rImplFont ) :
     mbVertical( rImplFont.mbVertical ),
     mbTransparent( rImplFont.mbTransparent ),
     mbOpticalSizing( rImplFont.mbOpticalSizing ),
+    maVariations( rImplFont.maVariations ),
     maColor( rImplFont.maColor ),
     maFillColor( rImplFont.maFillColor ),
     mbWordLine( rImplFont.mbWordLine ),
@@ -1077,7 +1091,8 @@ bool ImplFont::EqualIgnoreColor( const ImplFont& rOther ) const
     ||  (meKerning      != rOther.meKerning)
     ||  (mnSpacing      != rOther.mnSpacing)
     ||  (mbTransparent  != rOther.mbTransparent)
-    ||  (mbOpticalSizing!= rOther.mbOpticalSizing) )
+    ||  (mbOpticalSizing!= rOther.mbOpticalSizing)
+    ||  (maVariations   != rOther.maVariations) )
         return false;
 
     return true;
@@ -1124,6 +1139,12 @@ size_t ImplFont::GetHashValueIgnoreColor() const
     o3tl::hash_combine( hash, mnSpacing );
     o3tl::hash_combine( hash, mbTransparent );
     o3tl::hash_combine( hash, mbOpticalSizing );
+
+    for (const auto& rVar : maVariations)
+    {
+        o3tl::hash_combine( hash, rVar.nTag );
+        o3tl::hash_combine( hash, rVar.fValue );
+    }
 
     return hash;
 }
