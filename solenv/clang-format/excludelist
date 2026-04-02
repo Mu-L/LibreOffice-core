@@ -3536,8 +3536,6 @@ extensions/source/propctrlr/propertycontrolextender.cxx
 extensions/source/propctrlr/propertycontrolextender.hxx
 extensions/source/propctrlr/propertyeditor.cxx
 extensions/source/propctrlr/propertyeditor.hxx
-extensions/source/propctrlr/propertyhandler.cxx
-extensions/source/propctrlr/propertyhandler.hxx
 extensions/source/propctrlr/propertyinfo.hxx
 extensions/source/propctrlr/propeventtranslation.cxx
 extensions/source/propctrlr/propeventtranslation.hxx
