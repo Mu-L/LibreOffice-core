@@ -354,8 +354,8 @@ public:
     virtual css::uno::Reference<css::datatransfer::dnd::XDropTarget> get_drop_target() = 0;
     virtual css::uno::Reference<css::datatransfer::clipboard::XClipboard> get_clipboard() const = 0;
 
-    virtual void connect_get_property_tree(const Link<tools::JsonWriter&, void>& rLink) = 0;
-    virtual void get_property_tree(tools::JsonWriter& rJsonWriter) = 0;
+    virtual void connect_get_property_tree(const Link<tools::JsonWriter&, void>& rLink);
+    virtual void get_property_tree(tools::JsonWriter& rJsonWriter);
 
     // render the widget to an output device
     virtual void draw(OutputDevice& rOutput, const Point& rPos, const Size& rSizePixel) = 0;

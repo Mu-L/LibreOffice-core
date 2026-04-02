@@ -789,16 +789,6 @@ QtInstanceWidget::get_clipboard() const
     return GetSystemClipboard();
 }
 
-void QtInstanceWidget::connect_get_property_tree(const Link<tools::JsonWriter&, void>&)
-{
-    // not implemented for the Qt variant
-}
-
-void QtInstanceWidget::get_property_tree(tools::JsonWriter&)
-{
-    // not implemented for the Qt variant
-}
-
 void QtInstanceWidget::call_attention_to() { assert(false && "Not implemented yet"); }
 
 void QtInstanceWidget::set_stack_background()

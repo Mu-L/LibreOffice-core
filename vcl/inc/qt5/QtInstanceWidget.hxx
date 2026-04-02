@@ -159,10 +159,6 @@ public:
     virtual css::uno::Reference<css::datatransfer::clipboard::XClipboard>
     get_clipboard() const override;
 
-    virtual void connect_get_property_tree(const Link<tools::JsonWriter&, void>&) override;
-
-    virtual void get_property_tree(tools::JsonWriter&) override;
-
     virtual void call_attention_to() override;
 
     virtual void set_stack_background() override;
