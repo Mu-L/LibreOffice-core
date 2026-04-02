@@ -946,7 +946,7 @@ namespace pcr
 
 
         LineDescriptor aDescriptor;
-        aDescriptor.HelpURL = HelpIdUrl::getHelpURL( m_pInfoService->getPropertyHelpId( nPropId ) );
+        aDescriptor.HelpURL = HelpIdUrl::getHelpURL(OPropertyInfoService::getPropertyHelpId(nPropId));
         aDescriptor.DisplayName = sDisplayName;
 
         // for the moment, assume a text field
@@ -2446,7 +2446,7 @@ namespace pcr
             // Set the UI data
             _out_rProperty.DisplayName = OPropertyInfoService::getPropertyTranslation(PROPERTY_ID_COMMAND);
 
-            _out_rProperty.HelpURL = HelpIdUrl::getHelpURL( m_pInfoService->getPropertyHelpId( PROPERTY_ID_COMMAND ) );
+            _out_rProperty.HelpURL = HelpIdUrl::getHelpURL(OPropertyInfoService::getPropertyHelpId(PROPERTY_ID_COMMAND));
             _out_rProperty.PrimaryButtonId = UID_PROP_DLG_SQLCOMMAND;
 
 
@@ -2553,7 +2553,7 @@ namespace pcr
         ListSourceType eListSourceType = static_cast<ListSourceType>(nListSourceType);
 
         _out_rDescriptor.DisplayName = OPropertyInfoService::getPropertyTranslation(PROPERTY_ID_LISTSOURCE);
-        _out_rDescriptor.HelpURL = HelpIdUrl::getHelpURL( m_pInfoService->getPropertyHelpId( PROPERTY_ID_LISTSOURCE ) );
+        _out_rDescriptor.HelpURL = HelpIdUrl::getHelpURL(OPropertyInfoService::getPropertyHelpId(PROPERTY_ID_LISTSOURCE));
 
 
         // set enums

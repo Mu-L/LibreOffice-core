@@ -198,7 +198,7 @@ LineDescriptor SAL_CALL PropertyHandler::describePropertyLine(
     else
         PropertyHandlerHelper::describePropertyLine(rProperty, aDescriptor, _rxControlFactory);
 
-    aDescriptor.HelpURL = HelpIdUrl::getHelpURL(m_pInfoService->getPropertyHelpId(nPropId));
+    aDescriptor.HelpURL = HelpIdUrl::getHelpURL(OPropertyInfoService::getPropertyHelpId(nPropId));
     aDescriptor.DisplayName = OPropertyInfoService::getPropertyTranslation(nPropId);
 
     if ((m_pInfoService->getPropertyUIFlags(nPropId) & PROP_FLAG_DATA_PROPERTY) != 0)

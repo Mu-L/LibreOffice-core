@@ -295,7 +295,7 @@ namespace pcr
         aDescriptor.Control = PropertyHandlerHelper::createListBoxControl( _rxControlFactory, std::move(aListEntries), false, true );
         aDescriptor.DisplayName = OPropertyInfoService::getPropertyTranslation(nPropId);
         aDescriptor.Category = "General";
-        aDescriptor.HelpURL = HelpIdUrl::getHelpURL( m_pInfoService->getPropertyHelpId( nPropId ) );
+        aDescriptor.HelpURL = HelpIdUrl::getHelpURL(OPropertyInfoService::getPropertyHelpId(nPropId));
         return aDescriptor;
     }
 
