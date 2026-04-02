@@ -135,19 +135,6 @@ private:
     typedef StringPair WidgetAdjustmentMap;
     typedef StringPair ButtonMenuMap;
 
-    struct ComboBoxModelMap
-    {
-        OUString m_sID;
-        OUString m_sValue;
-        sal_Int32 m_nActiveId;
-        ComboBoxModelMap(OUString sId, OUString sValue, sal_Int32 nActiveId)
-            : m_sID(std::move(sId))
-            , m_sValue(std::move(sValue))
-            , m_nActiveId(nActiveId)
-        {
-        }
-    };
-
     void insertComboBoxOrListBoxItems(vcl::Window* pWindow, stringmap& rMap,
                                       const std::vector<ComboBoxTextItem>& rItems) override;
 
