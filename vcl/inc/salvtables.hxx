@@ -760,10 +760,7 @@ public:
         return nRet;
     }
 
-    const OUString* getEntryData(int index) const
-    {
-        return static_cast<const OUString*>(m_xComboBox->GetEntryData(index));
-    }
+    const OUString* getEntryData(int index) const { return m_xComboBox->GetEntryData(index); }
 
     // ComboBoxes are comprised of multiple subwidgets, consider the lot as
     // one thing for focus

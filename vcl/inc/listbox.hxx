@@ -52,7 +52,7 @@ struct ImplEntryType
     OUString    maStr;
     SalLayoutGlyphs maStrGlyphs;
     Image       maImage;
-    void*       mpUserData;
+    OUString* mpUserData;
     bool        mbIsSelected;
     ListBoxEntryFlags mnFlags;
     tools::Long        mnHeight;
@@ -133,8 +133,8 @@ public:
     bool            HasEntryImage( sal_Int32  nPos ) const;
     Image           GetEntryImage( sal_Int32  nPos ) const;
 
-    void            SetEntryData( sal_Int32  nPos, void* pNewData );
-    void*           GetEntryData( sal_Int32  nPos ) const;
+    void SetEntryData(sal_Int32 nPos, OUString* pNewData);
+    OUString* GetEntryData(sal_Int32 nPos) const;
 
     void              SetEntryFlags( sal_Int32  nPos, ListBoxEntryFlags nFlags );
 
@@ -420,7 +420,10 @@ public:
     sal_Int32       InsertEntry( sal_Int32  nPos, const OUString& rStr );
     sal_Int32       InsertEntry( sal_Int32  nPos, const OUString& rStr, const Image& rImage );
     void            RemoveEntry( sal_Int32  nPos );
-    void            SetEntryData( sal_Int32  nPos, void* pNewData ) { maLBWindow->GetEntryList().SetEntryData( nPos, pNewData ); }
+    void SetEntryData(sal_Int32 nPos, OUString* pNewData)
+    {
+        maLBWindow->GetEntryList().SetEntryData(nPos, pNewData);
+    }
     void            Clear();
 
     void            SetEntryFlags( sal_Int32  nPos, ListBoxEntryFlags nFlags );

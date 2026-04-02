@@ -163,8 +163,8 @@ public:
     SAL_DLLPRIVATE std::vector<OUString> GetMRUEntries() const;
     SAL_DLLPRIVATE void     SetMaxMRUCount( sal_Int32  n );
     SAL_DLLPRIVATE sal_Int32 GetMaxMRUCount() const;
-    SAL_DLLPRIVATE void  SetEntryData( sal_Int32  nPos, void* pNewData );
-    SAL_DLLPRIVATE void* GetEntryData( sal_Int32  nPos ) const;
+    SAL_DLLPRIVATE void SetEntryData(sal_Int32 nPos, OUString* pNewData);
+    SAL_DLLPRIVATE OUString* GetEntryData(sal_Int32 nPos) const;
 
     sal_Int32       GetTopEntry() const;
 

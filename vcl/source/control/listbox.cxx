@@ -1099,12 +1099,12 @@ void ListBox::SelectEntriesPos( const std::vector<sal_Int32>& rPositions, bool b
     }
 }
 
-void ListBox::SetEntryData( sal_Int32 nPos, void* pNewData )
+void ListBox::SetEntryData(sal_Int32 nPos, OUString* pNewData)
 {
     mpImplLB->SetEntryData( nPos + mpImplLB->GetEntryList().GetMRUCount(), pNewData );
 }
 
-void* ListBox::GetEntryData( sal_Int32 nPos ) const
+OUString* ListBox::GetEntryData(sal_Int32 nPos) const
 {
     return mpImplLB->GetEntryList().GetEntryData( nPos + mpImplLB->GetEntryList().GetMRUCount() );
 }

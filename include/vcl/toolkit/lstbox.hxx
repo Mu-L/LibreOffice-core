@@ -173,8 +173,8 @@ public:
     bool                IsEntryPosSelected( sal_Int32  nPos ) const;
     void                SetNoSelection();
 
-    SAL_DLLPRIVATE void  SetEntryData( sal_Int32  nPos, void* pNewData );
-    SAL_DLLPRIVATE void* GetEntryData( sal_Int32  nPos ) const;
+    SAL_DLLPRIVATE void SetEntryData(sal_Int32 nPos, OUString* pNewData);
+    SAL_DLLPRIVATE OUString* GetEntryData(sal_Int32 nPos) const;
 
     /** this methods stores a combination of flags from the
         ListBoxEntryFlags::* defines at the given entry.

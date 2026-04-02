@@ -1311,12 +1311,12 @@ sal_uInt16 ComboBox::GetDisplayLineCount() const
     return m_pImplLB ? m_pImplLB->GetDisplayLineCount() : 0;
 }
 
-void ComboBox::SetEntryData( sal_Int32 nPos, void* pNewData )
+void ComboBox::SetEntryData(sal_Int32 nPos, OUString* pNewData)
 {
     m_pImplLB->SetEntryData( nPos + m_pImplLB->GetEntryList().GetMRUCount(), pNewData );
 }
 
-void* ComboBox::GetEntryData( sal_Int32 nPos ) const
+OUString* ComboBox::GetEntryData(sal_Int32 nPos) const
 {
     return m_pImplLB->GetEntryList().GetEntryData(
             nPos + m_pImplLB->GetEntryList().GetMRUCount() );

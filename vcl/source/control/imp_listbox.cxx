@@ -347,14 +347,14 @@ Image ImplEntryList::GetEntryImage( sal_Int32 nPos ) const
     return aImage;
 }
 
-void ImplEntryList::SetEntryData( sal_Int32 nPos, void* pNewData )
+void ImplEntryList::SetEntryData(sal_Int32 nPos, OUString* pNewData)
 {
     ImplEntryType* pImplEntry = GetEntry( nPos );
     if ( pImplEntry )
         pImplEntry->mpUserData = pNewData;
 }
 
-void* ImplEntryList::GetEntryData( sal_Int32 nPos ) const
+OUString* ImplEntryList::GetEntryData(sal_Int32 nPos) const
 {
     ImplEntryType* pImplEntry = GetEntry( nPos );
     return pImplEntry ? pImplEntry->mpUserData : nullptr;

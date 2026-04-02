@@ -437,7 +437,7 @@ void ImplUpdateSeparators( std::u16string_view rOldDecSep, std::u16string_view r
         for ( sal_Int32 i=0; i < nEntryCount; i++ )
         {
             aText = pCombo->GetEntry( i );
-            void* pEntryData = pCombo->GetEntryData( i );
+            OUString* pEntryData = pCombo->GetEntryData(i);
             ImplUpdateSeparatorString( aText, rOldDecSep, rNewDecSep, rOldThSep, rNewThSep );
             pCombo->RemoveEntryAt(i);
             pCombo->InsertEntry( aText, i );
