@@ -2211,10 +2211,6 @@ VclPtr<vcl::Window> VclBuilder::insertObject(vcl::Window* pParent, const OUStrin
         m_pVclParserState->m_aAtkInfo[pCurrentChild] = rAtk;
     }
 
-    rProps.clear();
-    rPango.clear();
-    rAtk.clear();
-
     if (!pCurrentChild)
     {
         bool bToolbarParent = (pParent && pParent->GetType() == WindowType::TOOLBOX);

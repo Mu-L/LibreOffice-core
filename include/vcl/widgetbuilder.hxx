@@ -232,6 +232,9 @@ protected:
                     {
                         pCurrentChild = insertObject(pParent, sClass, sType, sID, aProperties,
                                                      aPangoAttributes, aAtkAttributes);
+                        aProperties.clear();
+                        aPangoAttributes.clear();
+                        aAtkAttributes.clear();
                     }
                     handleChild(pCurrentChild, nullptr, reader, isToolbarItemClass(sClass));
                 }

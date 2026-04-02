@@ -120,11 +120,7 @@ void QtBuilder::insertComboBoxOrListBoxItems(QObject* pObject,
 QObject* QtBuilder::insertObject(QObject* pParent, const OUString& rClass, std::string_view sType,
                                  const OUString& rId, stringmap& rProps, stringmap&, stringmap&)
 {
-    QObject* pCurrentChild = makeObject(pParent, rClass, sType, rId, rProps);
-
-    rProps.clear();
-
-    return pCurrentChild;
+    return makeObject(pParent, rClass, sType, rId, rProps);
 }
 
 QObject* QtBuilder::makeObject(QObject* pParent, std::u16string_view sName, std::string_view sType,
