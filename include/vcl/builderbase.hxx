@@ -58,12 +58,6 @@ protected:
     BuilderBase(std::u16string_view sUIDir, const OUString& rUIFile, bool bLegacy);
     virtual ~BuilderBase() = default;
 
-    struct ListStore
-    {
-        typedef std::vector<OUString> row;
-        std::vector<row> m_aEntries;
-    };
-
     struct SizeGroup
     {
         std::vector<OUString> m_aWidgets;
@@ -139,8 +133,6 @@ protected:
     void addTextBuffer(const OUString& sID, TextBuffer&& rTextBuffer);
     const TextBuffer* get_buffer_by_name(const OUString& sID) const;
 
-    const ListStore* get_model_by_name(const OUString& sID) const;
-
     virtual void set_response(const OUString& rId, int nResponse) = 0;
 
     void handleSizeGroup(xmlreader::XmlReader& reader);
@@ -154,7 +146,6 @@ private:
     {
         std::locale m_aResLocale;
 
-        std::map<OUString, ListStore> m_aModels;
         std::vector<SizeGroup> m_aSizeGroups;
 
         std::map<OUString, Adjustment> m_aAdjustments;

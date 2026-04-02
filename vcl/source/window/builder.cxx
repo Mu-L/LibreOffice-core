@@ -3514,14 +3514,6 @@ void VclBuilder::set_window_packing_position(const vcl::Window *pWindow, sal_Int
     }
 }
 
-const BuilderBase::ListStore* BuilderBase::get_model_by_name(const OUString& sID) const
-{
-    const auto aI = m_pParserState->m_aModels.find(sID);
-    if (aI != m_pParserState->m_aModels.end())
-        return &(aI->second);
-    return nullptr;
-}
-
 void BuilderBase::addTextBuffer(const OUString& sID, TextBuffer&& rTextBuffer)
 {
     m_pParserState->m_aTextBuffers[sID] = std::move(rTextBuffer);
