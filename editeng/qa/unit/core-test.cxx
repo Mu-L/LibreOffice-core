@@ -34,7 +34,9 @@
 #include <svl/voiditem.hxx>
 #include <tools/stream.hxx>
 #include <editeng/fontitem.hxx>
+#include <editeng/fontvariationsitem.hxx>
 #include <editeng/fhgtitem.hxx>
+#include <vcl/font/Feature.hxx>
 #include <vcl/salgtype.hxx>
 #include <vcl/outdev.hxx>
 #include <vcl/virdev.hxx>
@@ -136,6 +138,7 @@ public:
     void testTdf151748StaleKashidaArray();
     void testTdf162803StaleKashidaArray();
     void testTdf157037PasteTextAutoDirection();
+    void testFontVariationsItem();
 
     DECL_STATIC_LINK(Test, CalcFieldValueHdl, EditFieldInfo*, void);
 
@@ -171,6 +174,7 @@ public:
     CPPUNIT_TEST(testTdf151748StaleKashidaArray);
     CPPUNIT_TEST(testTdf162803StaleKashidaArray);
     CPPUNIT_TEST(testTdf157037PasteTextAutoDirection);
+    CPPUNIT_TEST(testFontVariationsItem);
     CPPUNIT_TEST_SUITE_END();
 
 private:
@@ -2456,6 +2460,45 @@ void Test::testTdf157037PasteTextAutoDirection()
     CPPUNIT_ASSERT(!aEditEngine.IsRightToLeft(2));
     CPPUNIT_ASSERT(aEditEngine.IsRightToLeft(3));
     CPPUNIT_ASSERT(!aEditEngine.IsRightToLeft(4));
+}
+
+void Test::testFontVariationsItem()
+{
+    // Test default construction (empty variations)
+    SvxFontVariationsItem aItem1(EE_CHAR_FONTVARIATIONS);
+    CPPUNIT_ASSERT(aItem1.GetVariations().empty());
+
+    // Test construction with variations
+    uint32_t nWght = vcl::font::featureCode("wght");
+    uint32_t nWdth = vcl::font::featureCode("wdth");
+    std::vector<vcl::FontVariation> aVars = { { nWght, 700.0f }, { nWdth, 75.0f } };
+    SvxFontVariationsItem aItem2(aVars, EE_CHAR_FONTVARIATIONS);
+    CPPUNIT_ASSERT_EQUAL(size_t(2), aItem2.GetVariations().size());
+
+    // Test equality
+    SvxFontVariationsItem aItem3(aVars, EE_CHAR_FONTVARIATIONS);
+    CPPUNIT_ASSERT(aItem2.operator==(aItem3));
+    CPPUNIT_ASSERT(!aItem1.operator==(aItem2));
+
+    // Test hash differs
+    CPPUNIT_ASSERT(aItem1.hashCode() != aItem2.hashCode());
+
+    // Test Clone
+    std::unique_ptr<SvxFontVariationsItem> pClone(aItem2.Clone());
+    CPPUNIT_ASSERT(pClone->operator==(aItem2));
+    CPPUNIT_ASSERT_EQUAL(size_t(2), pClone->GetVariations().size());
+
+    // Test QueryValue/PutValue round-trip (UNO string serialization)
+    css::uno::Any aAny;
+    CPPUNIT_ASSERT(aItem2.QueryValue(aAny));
+    OUString aStr;
+    CPPUNIT_ASSERT(aAny >>= aStr);
+    CPPUNIT_ASSERT_EQUAL(u"\"wght\" 700, \"wdth\" 75"_ustr, aStr);
+
+    SvxFontVariationsItem aItem4(EE_CHAR_FONTVARIATIONS);
+    CPPUNIT_ASSERT(aItem4.PutValue(aAny, 0));
+    CPPUNIT_ASSERT(aItem4.operator==(aItem2));
+
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION(Test);

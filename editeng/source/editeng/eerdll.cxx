@@ -67,6 +67,7 @@
 #include <editeng/xmlcnitm.hxx>
 #include <editeng/forbiddencharacterstable.hxx>
 #include <editeng/justifyitem.hxx>
+#include <editeng/fontvariationsitem.hxx>
 #include <editeng/opticalsizingitem.hxx>
 #include <tools/mapunit.hxx>
 #include <tools/lazydelete.hxx>
@@ -162,6 +163,7 @@ ItemInfoPackage& getItemInfoPackageEditEngine()
             { EE_CHAR_RUBY, new SvxRubyItem( EE_CHAR_RUBY ), SID_ATTR_CHAR_RUBY, SFX_ITEMINFOFLAG_NONE },
             { EE_CHAR_SCRIPT_HINT, new SvxScriptHintItem( EE_CHAR_SCRIPT_HINT ), SID_ATTR_CHAR_SCRIPT_HINT, SFX_ITEMINFOFLAG_NONE },
             { EE_CHAR_OPTICALSIZING, new SvxOpticalSizingItem( false, EE_CHAR_OPTICALSIZING ), SID_ATTR_CHAR_OPTICAL_SIZING, SFX_ITEMINFOFLAG_NONE },
+            { EE_CHAR_FONTVARIATIONS, new SvxFontVariationsItem( EE_CHAR_FONTVARIATIONS ), SID_ATTR_CHAR_FONT_VARIATIONS, SFX_ITEMINFOFLAG_NONE },
             { EE_FEATURE_TAB, new SfxVoidItem( EE_FEATURE_TAB ), 0, SFX_ITEMINFOFLAG_NONE  },
             { EE_FEATURE_LINEBR, new SfxVoidItem( EE_FEATURE_LINEBR ), 0, SFX_ITEMINFOFLAG_NONE  },
             { EE_FEATURE_NOTCONV, new SvxColorItem( COL_RED, EE_FEATURE_NOTCONV ), SID_ATTR_CHAR_CHARSETCOLOR, SFX_ITEMINFOFLAG_NONE  },

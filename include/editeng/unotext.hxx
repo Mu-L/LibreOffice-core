@@ -138,7 +138,8 @@ struct SfxItemPropertyMapEntry;
     { UNO_NAME_EDIT_CHAR_RUBY_ADJUST,         EE_CHAR_RUBY,           ::cppu::UnoType<sal_Int16>::get(), 0, MID_RUBY_ADJUST }, \
     { UNO_NAME_EDIT_CHAR_RUBY_POSITION,       EE_CHAR_RUBY,           ::cppu::UnoType<sal_Int16>::get(), 0, MID_RUBY_POSITION }, \
     { UNO_NAME_EDIT_CHAR_SCRIPT_HINT,         EE_CHAR_SCRIPT_HINT,    ::cppu::UnoType<sal_Int16>::get(), 0, MID_SCRIPTHINT }, \
-    { UNO_NAME_EDIT_CHAR_OPTICALSIZING,       EE_CHAR_OPTICALSIZING,  ::cppu::UnoType<bool>::get(), 0, 0 }
+    { UNO_NAME_EDIT_CHAR_OPTICALSIZING,       EE_CHAR_OPTICALSIZING,  ::cppu::UnoType<bool>::get(), 0, 0 }, \
+    { UNO_NAME_EDIT_CHAR_FONTVARIATIONS,      EE_CHAR_FONTVARIATIONS, ::cppu::UnoType<OUString>::get(), 0, 0 }
 
 
 #define SVX_UNOEDIT_FONT_PROPERTIES \

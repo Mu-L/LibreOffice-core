@@ -82,6 +82,7 @@
 #include <editeng/itemtype.hxx>
 #include <editeng/scripthintitem.hxx>
 #include <editeng/eerdll.hxx>
+#include <editeng/fontvariationsitem.hxx>
 #include <editeng/opticalsizingitem.hxx>
 #include <docmodel/color/ComplexColorJSON.hxx>
 #include <docmodel/uno/UnoComplexColor.hxx>
@@ -112,6 +113,7 @@ SfxPoolItem* SvxCharRotateItem::CreateDefault() {return new SvxCharRotateItem(0_
 SfxPoolItem* SvxCharScaleWidthItem::CreateDefault() {return new SvxCharScaleWidthItem(100, TypedWhichId<SvxCharScaleWidthItem>(0));}
 SfxPoolItem* SvxCharReliefItem::CreateDefault() {return new SvxCharReliefItem(FontRelief::NONE, 0);}
 SfxPoolItem* SvxOpticalSizingItem::CreateDefault() {return new SvxOpticalSizingItem(false, 0);}
+SfxPoolItem* SvxFontVariationsItem::CreateDefault() {return new SvxFontVariationsItem(0);}
 
 // class SvxFontListItem -------------------------------------------------
 
@@ -3023,6 +3025,67 @@ void SvxRsidItem::dumpAsXml(xmlTextWriterPtr pWriter) const
     (void)xmlTextWriterWriteFormatAttribute(pWriter, BAD_CAST("whichId"), "%d", Which());
     (void)xmlTextWriterWriteFormatAttribute(pWriter, BAD_CAST("value"), "%" SAL_PRIuUINT32, GetValue());
     (void)xmlTextWriterEndElement(pWriter);
+}
+
+// class SvxFontVariationsItem -------------------------------------------
+
+SvxFontVariationsItem::SvxFontVariationsItem(sal_uInt16 nId)
+    : SfxPoolItem(nId)
+{
+}
+
+SvxFontVariationsItem::SvxFontVariationsItem(std::vector<vcl::FontVariation> aVariations,
+                                             sal_uInt16 nId)
+    : SfxPoolItem(nId)
+    , maVariations(std::move(aVariations))
+{
+}
+
+bool SvxFontVariationsItem::operator==(const SfxPoolItem& rItem) const
+{
+    assert(SfxPoolItem::operator==(rItem));
+    return maVariations == static_cast<const SvxFontVariationsItem&>(rItem).maVariations;
+}
+
+size_t SvxFontVariationsItem::hashCode() const
+{
+    size_t hash = 0;
+    for (const auto& rVar : maVariations)
+    {
+        o3tl::hash_combine(hash, rVar.nTag);
+        o3tl::hash_combine(hash, rVar.fValue);
+    }
+    return hash;
+}
+
+SvxFontVariationsItem* SvxFontVariationsItem::Clone(SfxItemPool*) const
+{
+    return new SvxFontVariationsItem(*this);
+}
+
+bool SvxFontVariationsItem::GetPresentation(SfxItemPresentation /*ePres*/, MapUnit /*eCoreUnit*/,
+                                            MapUnit /*ePresUnit*/, OUString& rText,
+                                            const IntlWrapper& /*rIntl*/) const
+{
+    rText = vcl::FontVariationsToString(maVariations);
+    return true;
+}
+
+bool SvxFontVariationsItem::QueryValue(css::uno::Any& rVal, sal_uInt8 /*nMemberId*/) const
+{
+    rVal <<= vcl::FontVariationsToString(maVariations);
+    return true;
+}
+
+bool SvxFontVariationsItem::PutValue(const css::uno::Any& rVal, sal_uInt8 /*nMemberId*/)
+{
+    OUString aStr;
+    if (rVal >>= aStr)
+    {
+        maVariations = vcl::FontVariationsFromString(aStr);
+        return true;
+    }
+    return false;
 }
 
 // class SvxOpticalSizingItem --------------------------------------------

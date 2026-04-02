@@ -190,6 +190,7 @@ class SvxOpticalSizingItem;
 #define SID_ATTR_PARA_ADJUST_START                      ( SID_EDIT_START + 79 )
 #define SID_ATTR_PARA_ADJUST_END                        ( SID_EDIT_START + 80 )
 #define SID_ATTR_CHAR_OPTICAL_SIZING                    TypedWhichId<SvxOpticalSizingItem>( SID_EDIT_START + 81 )
+#define SID_ATTR_CHAR_FONT_VARIATIONS                   TypedWhichId<SvxFontVariationsItem>( SID_EDIT_START + 82 )
 
 
 #if 95 > (SID_EDIT_END-SID_EDIT_START)

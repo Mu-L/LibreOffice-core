@@ -39,6 +39,7 @@
 #include <editeng/emphasismarkitem.hxx>
 #include <editeng/charreliefitem.hxx>
 #include <editeng/cmapitem.hxx>
+#include <editeng/fontvariationsitem.hxx>
 #include <editeng/opticalsizingitem.hxx>
 
 #include <editattr.hxx>
@@ -478,6 +479,17 @@ void EditCharAttribOpticalSizing::SetFont( SvxFont& rFont, OutputDevice* )
     rFont.SetOpticalSizing( static_cast<const SvxOpticalSizingItem*>(GetItem())->GetValue() );
 }
 
+
+EditCharAttribFontVariations::EditCharAttribFontVariations(SfxItemPool& rPool, const SfxPoolItem& rItem, sal_Int32 _nStart, sal_Int32 _nEnd)
+: EditCharAttrib(rPool, rItem, _nStart, _nEnd)
+{
+    assert(rItem.Which() == EE_CHAR_FONTVARIATIONS);
+}
+
+void EditCharAttribFontVariations::SetFont( SvxFont& rFont, OutputDevice* )
+{
+    rFont.SetVariations( static_cast<const SvxFontVariationsItem*>(GetItem())->GetVariations() );
+}
 
 EditCharAttribGrabBag::EditCharAttribGrabBag(SfxItemPool& rPool, const SfxPoolItem& rItem, sal_Int32 _nStart, sal_Int32 _nEnd)
 : EditCharAttrib(rPool, rItem, _nStart, _nEnd)

@@ -63,6 +63,7 @@ class SvxJustifyMethodItem;
 class SvxVerJustifyItem;
 class SvxRubyItem;
 class SvxScriptHintItem;
+class SvxFontVariationsItem;
 class SvxOpticalSizingItem;
 
 /*
@@ -135,8 +136,9 @@ inline constexpr TypedWhichId<SvxColorItem>           EE_CHAR_BKGCOLOR       (EE
 inline constexpr TypedWhichId<SvxRubyItem>            EE_CHAR_RUBY           (EE_CHAR_START+32);
 inline constexpr TypedWhichId<SvxScriptHintItem>      EE_CHAR_SCRIPT_HINT    (EE_CHAR_START+33);
 inline constexpr TypedWhichId<SvxOpticalSizingItem>   EE_CHAR_OPTICALSIZING  (EE_CHAR_START+34);
+inline constexpr TypedWhichId<SvxFontVariationsItem>  EE_CHAR_FONTVARIATIONS (EE_CHAR_START+35);
 
-inline constexpr sal_uInt16                           EE_CHAR_END            (EE_CHAR_START + 34);
+inline constexpr sal_uInt16                           EE_CHAR_END            (EE_CHAR_START + 35);
 
 inline constexpr sal_uInt16 EE_FEATURE_START   (EE_CHAR_END + 1);
 inline constexpr sal_uInt16 EE_FEATURE_TAB     (EE_FEATURE_START + 0);
