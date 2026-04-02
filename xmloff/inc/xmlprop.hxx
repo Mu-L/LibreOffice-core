@@ -86,6 +86,7 @@ inline constexpr OUString PROP_CharFontPitchComplex = u"CharFontPitchComplex"_us
 inline constexpr OUString PROP_CharFontStyleName = u"CharFontStyleName"_ustr;
 inline constexpr OUString PROP_CharFontStyleNameAsian = u"CharFontStyleNameAsian"_ustr;
 inline constexpr OUString PROP_CharFontStyleNameComplex = u"CharFontStyleNameComplex"_ustr;
+inline constexpr OUString PROP_CharFontVariations = u"CharFontVariations"_ustr;
 inline constexpr OUString PROP_CharHeight = u"CharHeight"_ustr;
 inline constexpr OUString PROP_CharHeightAsian = u"CharHeightAsian"_ustr;
 inline constexpr OUString PROP_CharHeightComplex = u"CharHeightComplex"_ustr;
