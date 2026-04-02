@@ -163,7 +163,7 @@ namespace pcr
                 return 1000;
             return 0;
         }
-        return m_pInfoService->getPropertyPos( nPropertyId );
+        return OPropertyInfoService::getPropertyPos(nPropertyId);
     }
 
 

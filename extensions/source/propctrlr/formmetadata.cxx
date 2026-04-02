@@ -499,7 +499,7 @@ OUString OPropertyInfoService::getPropertyHelpId(sal_Int32 _nId)
     return pInfo ? pInfo->sHelpId : OUString();
 }
 
-sal_Int16 OPropertyInfoService::getPropertyPos(sal_Int32 _nId) const
+sal_Int16 OPropertyInfoService::getPropertyPos(sal_Int32 _nId)
 {
     const OPropertyInfoImpl* pInfo = getPropertyInfo(_nId);
     return pInfo ? pInfo->nPos : 0xFFFF;

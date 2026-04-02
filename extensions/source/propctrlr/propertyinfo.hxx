@@ -33,7 +33,6 @@ namespace pcr
     class SAL_NO_VTABLE IPropertyInfoService
     {
     public:
-        virtual sal_Int16                      getPropertyPos(sal_Int32 _nId) const = 0;
         virtual sal_uInt32                     getPropertyUIFlags(sal_Int32 _nId) const = 0;
         virtual std::vector< OUString >      getPropertyEnumRepresentations(sal_Int32 _nId) const = 0;
 
