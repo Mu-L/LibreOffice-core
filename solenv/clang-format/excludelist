@@ -3478,8 +3478,6 @@ extensions/source/propctrlr/browserview.cxx
 extensions/source/propctrlr/browserview.hxx
 extensions/source/propctrlr/buttonnavigationhandler.cxx
 extensions/source/propctrlr/buttonnavigationhandler.hxx
-extensions/source/propctrlr/cellbindinghandler.cxx
-extensions/source/propctrlr/cellbindinghandler.hxx
 extensions/source/propctrlr/cellbindinghelper.cxx
 extensions/source/propctrlr/cellbindinghelper.hxx
 extensions/source/propctrlr/composeduiupdate.cxx

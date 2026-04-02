@@ -25,48 +25,51 @@
 
 #include <memory>
 
-
 namespace pcr
 {
+class CellBindingHelper;
+class IPropertyEnumRepresentation;
 
+class CellBindingPropertyHandler : public PropertyHandlerComponent
+{
+private:
+    std::unique_ptr<CellBindingHelper> m_pHelper;
+    ::rtl::Reference<IPropertyEnumRepresentation> m_pCellExchangeConverter;
 
-    class CellBindingHelper;
-    class IPropertyEnumRepresentation;
+public:
+    explicit CellBindingPropertyHandler(
+        const css::uno::Reference<css::uno::XComponentContext>& _rxContext);
 
-    class CellBindingPropertyHandler : public PropertyHandlerComponent
-    {
-    private:
-        std::unique_ptr< CellBindingHelper >          m_pHelper;
-        ::rtl::Reference< IPropertyEnumRepresentation > m_pCellExchangeConverter;
+protected:
+    virtual ~CellBindingPropertyHandler() override;
 
-    public:
-        explicit CellBindingPropertyHandler(
-            const css::uno::Reference< css::uno::XComponentContext >& _rxContext
-        );
+protected:
+    // XServiceInfo
+    virtual OUString SAL_CALL getImplementationName() override;
+    virtual css::uno::Sequence<OUString> SAL_CALL getSupportedServiceNames() override;
 
-    protected:
-        virtual ~CellBindingPropertyHandler() override;
+    // XPropertyHandler overriables
+    virtual css::uno::Any SAL_CALL getPropertyValue(const OUString& _rPropertyName) override;
+    virtual void SAL_CALL setPropertyValue(const OUString& _rPropertyName,
+                                           const css::uno::Any& _rValue) override;
+    virtual css::uno::Any SAL_CALL convertToPropertyValue(
+        const OUString& _rPropertyName, const css::uno::Any& _rControlValue) override;
+    virtual css::uno::Any SAL_CALL
+    convertToControlValue(const OUString& _rPropertyName, const css::uno::Any& _rPropertyValue,
+                          const css::uno::Type& _rControlValueType) override;
+    virtual css::uno::Sequence<OUString> SAL_CALL getActuatingProperties() override;
+    virtual void SAL_CALL actuatingPropertyChanged(
+        const OUString& _rActuatingPropertyName, const css::uno::Any& _rNewValue,
+        const css::uno::Any& _rOldValue,
+        const css::uno::Reference<css::inspection::XObjectInspectorUI>& _rxInspectorUI,
+        sal_Bool _bFirstTimeInit) override;
 
-    protected:
-        // XServiceInfo
-        virtual OUString SAL_CALL getImplementationName() override;
-        virtual css::uno::Sequence< OUString > SAL_CALL getSupportedServiceNames () override;
+    // PropertyHandler overridables
+    virtual css::uno::Sequence<css::beans::Property> doDescribeSupportedProperties() const override;
+    virtual void onNewComponent() override;
 
-        // XPropertyHandler overriables
-        virtual css::uno::Any                   SAL_CALL getPropertyValue( const OUString& _rPropertyName ) override;
-        virtual void                            SAL_CALL setPropertyValue( const OUString& _rPropertyName, const css::uno::Any& _rValue ) override;
-        virtual css::uno::Any                   SAL_CALL convertToPropertyValue( const OUString& _rPropertyName, const css::uno::Any& _rControlValue ) override;
-        virtual css::uno::Any                   SAL_CALL convertToControlValue( const OUString& _rPropertyName, const css::uno::Any& _rPropertyValue, const css::uno::Type& _rControlValueType ) override;
-        virtual css::uno::Sequence< OUString >  SAL_CALL getActuatingProperties( ) override;
-        virtual void                            SAL_CALL actuatingPropertyChanged( const OUString& _rActuatingPropertyName, const css::uno::Any& _rNewValue, const css::uno::Any& _rOldValue, const css::uno::Reference< css::inspection::XObjectInspectorUI >& _rxInspectorUI, sal_Bool _bFirstTimeInit ) override;
-
-        // PropertyHandler overridables
-        virtual css::uno::Sequence< css::beans::Property >
-                                                doDescribeSupportedProperties() const override;
-        virtual void onNewComponent() override;
-
-    private:
-        /** updates a property (UI) whose state depends on more than one other property
+private:
+    /** updates a property (UI) whose state depends on more than one other property
 
             ->actuatingPropertyChanged is called for certain properties in whose changes
             we expressed interes (->getActuatingProperty). Now such a property change can
@@ -82,11 +85,11 @@ namespace pcr
             @param _rxInspectorUI
                 provides access to the property browser UI. Must not be <NULL/>.
         */
-        void impl_updateDependentProperty_nothrow( PropertyId _nPropId, const css::uno::Reference< css::inspection::XObjectInspectorUI >& _rxInspectorUI ) const;
-    };
-
+    void impl_updateDependentProperty_nothrow(
+        PropertyId _nPropId,
+        const css::uno::Reference<css::inspection::XObjectInspectorUI>& _rxInspectorUI) const;
+};
 
 } // namespace pcr
-
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
