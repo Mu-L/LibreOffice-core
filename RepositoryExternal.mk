@@ -3363,6 +3363,19 @@ endef
 endif # ENABLE_QT6
 
 
+# QuickJS
+define gb_LinkTarget__use_quickjs
+$(call gb_LinkTarget_use_external_project,$(1),quickjs,full)
+$(call gb_LinkTarget_set_include,$(1),\
+       -I$(gb_UnpackedTarball_workdir)/quickjs \
+       $$(INCLUDE) \
+)
+$(call gb_LinkTarget_use_static_libraries,$(1),\
+       quickjs \
+)
+endef
+
+
 # PYTHON
 # extra python_headers external because pyuno wrapper must not link python
 ifneq ($(SYSTEM_PYTHON),)

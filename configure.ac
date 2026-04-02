@@ -1870,6 +1870,9 @@ AC_ARG_ENABLE(python,
          'internal' (default) or 'fully-internal'. Otherwise the default is 'auto'.
          ]))
 
+AC_ARG_ENABLE(quickjs,
+    AS_HELP_STRING([--enable-quickjs], [Enables experimental support for scripting with QuickJS.]))
+
 libo_FUZZ_ARG_ENABLE(gtk3,
     AS_HELP_STRING([--disable-gtk3],
         [Determines whether to use Gtk+ 3.0 vclplug on platforms where Gtk+ 3.0 is available.]),
@@ -10825,6 +10828,18 @@ AC_SUBST(PYTHON_LIBS)
 AC_SUBST(PYTHON_VERSION)
 AC_SUBST(PYTHON_VERSION_MAJOR)
 AC_SUBST(PYTHON_VERSION_MINOR)
+
+AC_MSG_CHECKING([whether to build QuickJS])
+if test "${enable_quickjs}" = "yes"; then
+    AC_MSG_RESULT([yes])
+    BUILD_TYPE="${BUILD_TYPE} QUICKJS"
+    AC_DEFINE([ENABLE_QUICKJS],1)
+    ENABLE_QUICKJS="TRUE"
+else
+    AC_MSG_RESULT([no])
+    ENABLE_QUICKJS=""
+fi
+AC_SUBST(ENABLE_QUICKJS)
 
 AC_MSG_CHECKING([whether to build LibreLogo])
 case "$enable_python" in
