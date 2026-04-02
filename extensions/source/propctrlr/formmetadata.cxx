@@ -481,7 +481,7 @@ const OPropertyInfoImpl* OPropertyInfoService::getPropertyInfo()
     return s_pPropertyInfos;
 }
 
-sal_Int32 OPropertyInfoService::getPropertyId(const OUString& _rName) const
+sal_Int32 OPropertyInfoService::getPropertyId(const OUString& _rName)
 {
     const OPropertyInfoImpl* pInfo = getPropertyInfo(_rName);
     return pInfo ? pInfo->nId : -1;

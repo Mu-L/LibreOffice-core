@@ -341,7 +341,7 @@ namespace pcr
         OUString sControlValue;
         OSL_VERIFY( _rControlValue >>= sControlValue );
 
-        PropertyId nPropId( m_pInfoService->getPropertyId( _rPropertyName ) );
+        PropertyId nPropId(OPropertyInfoService::getPropertyId(_rPropertyName));
         switch ( nPropId )
         {
         case PROPERTY_ID_SUBMISSION_ID:
@@ -382,7 +382,7 @@ namespace pcr
         OSL_ENSURE( _rControlValueType.getTypeClass() == TypeClass_STRING,
             "SubmissionPropertyHandler::convertToControlValue: all our controls should use strings for value exchange!" );
 
-        PropertyId nPropId( m_pInfoService->getPropertyId( _rPropertyName ) );
+        PropertyId nPropId(OPropertyInfoService::getPropertyId(_rPropertyName));
         switch ( nPropId )
         {
         case PROPERTY_ID_SUBMISSION_ID:

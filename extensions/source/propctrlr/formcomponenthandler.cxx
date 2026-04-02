@@ -615,7 +615,7 @@ namespace pcr
     Any SAL_CALL FormComponentPropertyHandler::convertToControlValue( const OUString& _rPropertyName, const Any& _rPropertyValue, const Type& _rControlValueType )
     {
         ::osl::MutexGuard aGuard( m_aMutex );
-        sal_Int32 nPropId = m_pInfoService->getPropertyId( _rPropertyName );
+        sal_Int32 nPropId = OPropertyInfoService::getPropertyId(_rPropertyName);
         DBG_ASSERT( nPropId != -1, "FormComponentPropertyHandler::convertToPropertyValue: not one of my properties!!" );
 
         impl_getPropertyFromId_throw( nPropId );
@@ -826,7 +826,7 @@ namespace pcr
 
         for ( Property & rProperty : asNonConstRange(aAllProperties) )
         {
-            nPropId = m_pInfoService->getPropertyId( rProperty.Name );
+            nPropId = OPropertyInfoService::getPropertyId(rProperty.Name);
             if ( nPropId == -1 )
                 continue;
             rProperty.Handle = nPropId;
@@ -2210,7 +2210,7 @@ namespace pcr
 
     bool FormComponentPropertyHandler::impl_shouldExcludeProperty_nothrow( const Property& _rProperty ) const
     {
-        OSL_ENSURE( _rProperty.Handle == m_pInfoService->getPropertyId( _rProperty.Name ),
+        OSL_ENSURE(_rProperty.Handle == OPropertyInfoService::getPropertyId(_rProperty.Name),
             "FormComponentPropertyHandler::impl_shouldExcludeProperty_nothrow: inconsistency in the property!" );
 
         if ( _rProperty.Handle == PROPERTY_ID_CONTROLLABEL )
@@ -2592,7 +2592,7 @@ namespace pcr
         OSL_PRECOND(m_pInfoService, "FormComponentPropertyHandler::impl_dialogListSelection_"
                                     "nothrow: no property meta data!");
 
-        OUString sPropertyUIName( m_pInfoService->getPropertyTranslation( m_pInfoService->getPropertyId( _rProperty ) ) );
+        OUString sPropertyUIName(m_pInfoService->getPropertyTranslation(OPropertyInfoService::getPropertyId(_rProperty)));
         ListSelectionDialog aDialog(impl_getDefaultDialogFrame_nothrow(), m_xComponent, _rProperty, sPropertyUIName);
         _rClearBeforeDialog.clear();
         return ( RET_OK == aDialog.run() );

@@ -35,8 +35,8 @@ class OPropertyInfoService final : public IPropertyInfoService
     // TODO: a real structure which allows quick access by name as well as by id
 
 public:
+    static sal_Int32 getPropertyId(const OUString& _rName);
     // IPropertyInfoService
-    virtual sal_Int32 getPropertyId(const OUString& _rName) const override;
     virtual OUString getPropertyTranslation(sal_Int32 _nId) const override;
     virtual OUString getPropertyHelpId(sal_Int32 _nId) const override;
     virtual sal_Int16 getPropertyPos(sal_Int32 _nId) const override;

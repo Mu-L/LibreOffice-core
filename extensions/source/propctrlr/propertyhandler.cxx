@@ -129,7 +129,7 @@ namespace pcr
     Any SAL_CALL PropertyHandler::convertToPropertyValue( const OUString& _rPropertyName, const Any& _rControlValue )
     {
         ::osl::MutexGuard aGuard( m_aMutex );
-        PropertyId nPropId = m_pInfoService->getPropertyId( _rPropertyName );
+        PropertyId nPropId = OPropertyInfoService::getPropertyId(_rPropertyName);
         Property aProperty( impl_getPropertyFromName_throw( _rPropertyName ) );
 
         Any aPropertyValue;
@@ -155,7 +155,7 @@ namespace pcr
     Any SAL_CALL PropertyHandler::convertToControlValue( const OUString& _rPropertyName, const Any& _rPropertyValue, const Type& _rControlValueType )
     {
         ::osl::MutexGuard aGuard( m_aMutex );
-        PropertyId nPropId = m_pInfoService->getPropertyId( _rPropertyName );
+        PropertyId nPropId = OPropertyInfoService::getPropertyId(_rPropertyName);
 
         if ( ( m_pInfoService->getPropertyUIFlags( nPropId ) & PROP_FLAG_ENUM ) != 0 )
         {
@@ -310,11 +310,11 @@ namespace pcr
         return *pFound;
     }
 
-    void PropertyHandler::implAddPropertyDescription( std::vector< Property >& _rProperties, const OUString& _rPropertyName, const Type& _rType, sal_Int16 _nAttribs ) const
+    void PropertyHandler::implAddPropertyDescription( std::vector< Property >& _rProperties, const OUString& _rPropertyName, const Type& _rType, sal_Int16 _nAttribs )
     {
         _rProperties.push_back( Property(
             _rPropertyName,
-            m_pInfoService->getPropertyId( _rPropertyName ),
+            OPropertyInfoService::getPropertyId(_rPropertyName),
             _rType,
             _nAttribs
         ) );
@@ -325,25 +325,25 @@ namespace pcr
         return PropertyHandlerHelper::getDialogParentFrame(m_xContext);
     }
 
-    PropertyId PropertyHandler::impl_getPropertyId_throwUnknownProperty( const OUString& _rPropertyName ) const
+    PropertyId PropertyHandler::impl_getPropertyId_throwUnknownProperty(const OUString& _rPropertyName)
     {
-        PropertyId nPropId = m_pInfoService->getPropertyId( _rPropertyName );
+        PropertyId nPropId = OPropertyInfoService::getPropertyId(_rPropertyName);
         if ( nPropId == -1 )
             throw UnknownPropertyException(_rPropertyName);
         return nPropId;
     }
 
-    PropertyId PropertyHandler::impl_getPropertyId_throwRuntime( const OUString& _rPropertyName ) const
+    PropertyId PropertyHandler::impl_getPropertyId_throwRuntime(const OUString& _rPropertyName)
     {
-        PropertyId nPropId = m_pInfoService->getPropertyId( _rPropertyName );
+        PropertyId nPropId = OPropertyInfoService::getPropertyId(_rPropertyName);
         if ( nPropId == -1 )
             throw RuntimeException();
         return nPropId;
     }
 
-    PropertyId PropertyHandler::impl_getPropertyId_nothrow( const OUString& _rPropertyName ) const
+    PropertyId PropertyHandler::impl_getPropertyId_nothrow(const OUString& _rPropertyName)
     {
-        return m_pInfoService->getPropertyId( _rPropertyName );
+        return OPropertyInfoService::getPropertyId(_rPropertyName);
     }
 
     void PropertyHandler::impl_setContextDocumentModified_nothrow() const

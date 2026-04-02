@@ -346,7 +346,7 @@ Any SAL_CALL CellBindingPropertyHandler::convertToPropertyValue(const OUString& 
     if (!m_pHelper)
         return aPropertyValue;
 
-    PropertyId nPropId(m_pInfoService->getPropertyId(_rPropertyName));
+    PropertyId nPropId(OPropertyInfoService::getPropertyId(_rPropertyName));
 
     OUString sControlValue;
     OSL_VERIFY(_rControlValue >>= sControlValue);
@@ -398,7 +398,7 @@ Any SAL_CALL CellBindingPropertyHandler::convertToControlValue(const OUString& _
     if (!m_pHelper)
         return aControlValue;
 
-    PropertyId nPropId(m_pInfoService->getPropertyId(_rPropertyName));
+    PropertyId nPropId(OPropertyInfoService::getPropertyId(_rPropertyName));
 
     switch (nPropId)
     {

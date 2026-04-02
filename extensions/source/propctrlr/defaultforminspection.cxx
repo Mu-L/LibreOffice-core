@@ -153,7 +153,7 @@ namespace pcr
 
     ::sal_Int32 SAL_CALL DefaultFormComponentInspectorModel::getPropertyOrderIndex( const OUString& _rPropertyName )
     {
-        sal_Int32 nPropertyId( m_pInfoService->getPropertyId( _rPropertyName ) );
+        sal_Int32 nPropertyId(OPropertyInfoService::getPropertyId(_rPropertyName));
         if ( nPropertyId == -1 )
         {
             if ( _rPropertyName.indexOf( ';' ) != -1 )
