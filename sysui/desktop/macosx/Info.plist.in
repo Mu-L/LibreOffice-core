@@ -107,6 +107,7 @@
             <array>
                 <string>public.data</string>
                 <string>public.content</string>
+                <string>public.spreadsheet</string>
             </array>
             <key>UTTypeTagSpecification</key>
             <dict>
@@ -131,6 +132,7 @@
             <array>
                 <string>public.data</string>
                 <string>public.content</string>
+                <string>public.spreadsheet</string>
             </array>
             <key>UTTypeTagSpecification</key>
             <dict>
@@ -155,6 +157,7 @@
             <array>
                 <string>public.data</string>
                 <string>public.content</string>
+                <string>public.spreadsheet</string>
             </array>
             <key>UTTypeTagSpecification</key>
             <dict>
@@ -529,6 +532,7 @@
             <array>
                 <string>public.data</string>
                 <string>public.content</string>
+                <string>public.spreadsheet</string>
             </array>
             <key>UTTypeTagSpecification</key>
             <dict>
@@ -553,6 +557,7 @@
             <array>
                 <string>public.data</string>
                 <string>public.content</string>
+                <string>public.spreadsheet</string>
             </array>
             <key>UTTypeTagSpecification</key>
             <dict>
@@ -854,6 +859,7 @@
             <array>
                 <string>org.openxmlformats.openxml</string>
                 <string>public.composite-content</string>
+                <string>public.spreadsheet</string>
             </array>
             <key>UTTypeDescription</key>
             <string>Office Open XML spreadsheet template</string>
@@ -903,6 +909,7 @@
             <array>
                 <string>org.openxmlformats.openxml</string>
                 <string>public.composite-content</string>
+                <string>public.spreadsheet</string>
             </array>
             <key>UTTypeDescription</key>
             <string>Office Open XML spreadsheet</string>
