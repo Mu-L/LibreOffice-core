@@ -42,7 +42,8 @@ struct MathMLAttributeLengthValue
     double fNumber;
     MathMLLengthUnit eUnit;
     MathMLAttributeLengthValue()
-        : eUnit(MathMLLengthUnit::None)
+        : fNumber(0.0)
+        , eUnit(MathMLLengthUnit::None)
     {
     }
 };
