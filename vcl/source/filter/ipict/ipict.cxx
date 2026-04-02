@@ -259,6 +259,8 @@ public:
         , IsVersion2(false)
         , eActROP(RasterOp::OverPaint)
         , eActMethod(PictDrawingMethod::UNDEFINED)
+        , mfHRes(1.0)
+        , mfVRes(1.0)
     {
         aActFont.SetCharSet(GetTextEncoding());
     }
@@ -1948,8 +1950,6 @@ void PictReader::ReadPict( SvStream & rStreamPict, GDIMetaFile & rGDIMetaFile )
     aActFont.SetFamily(FAMILY_SWISS);
     aActFont.SetFontSize(Size(0,12));
     aActFont.SetAlignment(ALIGN_BASELINE);
-
-    mfHRes = mfVRes = 1.0;
 
     pVirDev = VclPtr<VirtualDevice>::Create();
     pVirDev->EnableOutput(false);
