@@ -1299,7 +1299,7 @@ FcPattern *FontConfigFontOptions::GetPattern() const
 #define FC_FONT_VARIATIONS "fontvariations"
 #endif
 
-void FontConfigFontOptions::SyncPattern(const OString& rFileName, sal_uInt32 nIndex, sal_uInt32 nVariation, bool bEmbolden, const std::vector<hb_variation_t>& rVariations)
+void FontConfigFontOptions::SyncPattern(const OString& rFileName, sal_uInt32 nIndex, sal_uInt32 nVariation, bool bEmbolden, const std::vector<vcl::FontVariation>& rVariations)
 {
     FcPatternDel(mpPattern, FC_FILE);
     FcPatternAddString(mpPattern, FC_FILE, reinterpret_cast<FcChar8 const *>(rFileName.getStr()));
@@ -1318,7 +1318,8 @@ void FontConfigFontOptions::SyncPattern(const OString& rFileName, sal_uInt32 nIn
         {
             if (!aVariationsString.isEmpty())
                 aVariationsString.append(',');
-            hb_variation_to_string(const_cast<hb_variation_t*>(&rVariation), buf, sizeof(buf));
+            hb_variation_t aHbVar = { rVariation.nTag, rVariation.fValue };
+            hb_variation_to_string(&aHbVar, buf, sizeof(buf));
             aVariationsString.append(buf);
         }
         FcPatternAddString(mpPattern, FC_FONT_VARIATIONS, reinterpret_cast<const FcChar8*>(aVariationsString.getStr()));

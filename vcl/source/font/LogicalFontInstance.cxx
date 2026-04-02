@@ -22,6 +22,7 @@
 #include <hb-ot.h>
 #include <hb-graphite2.h>
 
+#include <vcl/font/Feature.hxx>
 #include <font/PhysicalFontFace.hxx>
 #include <font/LogicalFontInstance.hxx>
 #include <impfontcache.hxx>
@@ -41,11 +42,9 @@ LogicalFontInstance::LogicalFontInstance(const vcl::font::PhysicalFontFace& rFon
     , m_pHbFont(nullptr)
     , m_nAveWidthFactor(1.0f)
     , m_pFontFace(&const_cast<vcl::font::PhysicalFontFace&>(rFontFace))
+    , m_aVariations(rFontSelData.maVariations)
     , m_bOpticalSizing(rFontSelData.mbOpticalSizing)
 {
-    m_aVariations.reserve(rFontSelData.maVariations.size());
-    for (const auto& rVar : rFontSelData.maVariations)
-        m_aVariations.push_back({ rVar.nTag, rVar.fValue });
 }
 
 LogicalFontInstance::~LogicalFontInstance()
@@ -64,7 +63,7 @@ LogicalFontInstance::~LogicalFontInstance()
         hb_draw_funcs_destroy(m_pHbDrawFuncs);
 }
 
-const std::vector<hb_variation_t>& LogicalFontInstance::GetVariations() const
+const std::vector<vcl::FontVariation>& LogicalFontInstance::GetVariations() const
 {
     if (!mxVariations)
     {
@@ -72,20 +71,20 @@ const std::vector<hb_variation_t>& LogicalFontInstance::GetVariations() const
         hb_face_t* pHbFace = GetFontFace()->GetHbFace();
         auto aVariations = m_aVariations;
         if (m_bOpticalSizing && m_fPointSize > 0)
-            aVariations.push_back({ HB_TAG('o', 'p', 's', 'z'), m_fPointSize });
+            aVariations.push_back({ vcl::font::featureCode("opsz"), m_fPointSize });
 
         for (auto& rVariation : aVariations)
         {
             hb_ot_var_axis_info_t info;
-            if (hb_ot_var_find_axis_info(pHbFace, rVariation.tag, &info))
-                rVariation.value = std::clamp(rVariation.value, info.min_value, info.max_value);
+            if (hb_ot_var_find_axis_info(pHbFace, rVariation.nTag, &info))
+                rVariation.fValue = std::clamp(rVariation.fValue, info.min_value, info.max_value);
 
             auto it = std::find_if(mxVariations->begin(), mxVariations->end(),
-                                   [&rVariation](const hb_variation_t& rOther) {
-                                       return rOther.tag == rVariation.tag;
+                                   [&rVariation](const vcl::FontVariation& rOther) {
+                                       return rOther.nTag == rVariation.nTag;
                                    });
             if (it != mxVariations->end())
-                it->value = rVariation.value;
+                it->fValue = rVariation.fValue;
             else
                 mxVariations->push_back(rVariation);
         }
@@ -106,7 +105,12 @@ hb_font_t* LogicalFontInstance::InitHbFont()
 
     const auto& rVariations = GetVariations();
     if (!rVariations.empty())
-        hb_font_set_variations(pHbFont, rVariations.data(), rVariations.size());
+    {
+        std::vector<hb_variation_t> aHbVariations(rVariations.size());
+        for (size_t i = 0; i < rVariations.size(); ++i)
+            aHbVariations[i] = { rVariations[i].nTag, rVariations[i].fValue };
+        hb_font_set_variations(pHbFont, aHbVariations.data(), aHbVariations.size());
+    }
 
     // If we are applying artificial italic, instruct HarfBuzz to do the same
     // so that mark positioning is also transformed.

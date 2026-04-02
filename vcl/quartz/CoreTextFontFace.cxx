@@ -44,7 +44,8 @@ sal_IntPtr CoreTextFontFace::GetFontId() const
     return reinterpret_cast<sal_IntPtr>(mxFontDescriptor);
 }
 
-const std::vector<hb_variation_t>& CoreTextFontFace::GetVariations(const LogicalFontInstance&) const
+const std::vector<vcl::FontVariation>&
+CoreTextFontFace::GetVariations(const LogicalFontInstance&) const
 {
     if (!mxVariations)
     {
@@ -64,7 +65,7 @@ const std::vector<hb_variation_t>& CoreTextFontFace::GetVariations(const Logical
                         auto pAxis = static_cast<CFDictionaryRef>(CFArrayGetValueAtIndex(pAxes, i));
                         if (pAxis)
                         {
-                            hb_tag_t nTag;
+                            uint32_t nTag;
                             auto pTag = static_cast<CFNumberRef>(
                                 CFDictionaryGetValue(pAxis, kCTFontVariationAxisIdentifierKey));
                             if (!pTag)

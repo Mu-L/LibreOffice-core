@@ -921,7 +921,7 @@ sk_sp<SkTypeface> applyVariations(const sk_sp<SkTypeface>& skTypeface,
     std::vector<SkFontArguments::VariationPosition::Coordinate> skCoords;
     skCoords.reserve(variations.size());
     for (const auto& var : variations)
-        skCoords.push_back({ var.tag, var.value });
+        skCoords.push_back({ var.nTag, var.fValue });
 
     SkFontArguments fontArgs;
     SkFontArguments::VariationPosition varPosition

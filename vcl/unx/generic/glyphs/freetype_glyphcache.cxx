@@ -375,7 +375,7 @@ hb_blob_t* FreetypeFontFace::GetHbTable(hb_tag_t nTag) const
     return hb_face_reference_table(mpHbFace, nTag);
 }
 
-const std::vector<hb_variation_t>& FreetypeFontFace::GetVariations(const LogicalFontInstance&) const
+const std::vector<vcl::FontVariation>& FreetypeFontFace::GetVariations(const LogicalFontInstance&) const
 {
     if (!mxVariations)
     {
@@ -395,8 +395,8 @@ const std::vector<hb_variation_t>& FreetypeFontFace::GetVariations(const Logical
             mxVariations->resize(pFtMMVar->num_axis);
             for (FT_UInt i = 0; i < pFtMMVar->num_axis; ++i)
             {
-                (*mxVariations)[i].tag = pFtMMVar->axis[i].tag;
-                (*mxVariations)[i].value = instance->coords[i] / 65536.0;
+                (*mxVariations)[i].nTag = pFtMMVar->axis[i].tag;
+                (*mxVariations)[i].fValue = instance->coords[i] / 65536.0;
             }
         }
         dlFT_Done_MM_Var(aLibFT, pFtMMVar);

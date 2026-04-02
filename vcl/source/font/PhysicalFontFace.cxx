@@ -299,8 +299,8 @@ bool PhysicalFontFace::GetFontCapabilities(vcl::FontCapabilities& rFontCapabilit
 
 namespace
 {
-std::optional<unsigned int> GetNamedInstanceIndex(hb_face_t* pHbFace,
-                                                  const std::vector<hb_variation_t>& rVariations)
+std::optional<unsigned int>
+GetNamedInstanceIndex(hb_face_t* pHbFace, const std::vector<vcl::FontVariation>& rVariations)
 {
     unsigned int nAxes = hb_ot_var_get_axis_count(pHbFace);
     std::vector<hb_ot_var_axis_info_t> aAxisInfos(nAxes);
@@ -315,8 +315,8 @@ std::optional<unsigned int> GetNamedInstanceIndex(hb_face_t* pHbFace,
     hb_ot_var_axis_info_t info;
     for (const auto& rVariation : rVariations)
     {
-        if (hb_ot_var_find_axis_info(pHbFace, rVariation.tag, &info))
-            aCurrentCoords[info.axis_index] = rVariation.value;
+        if (hb_ot_var_find_axis_info(pHbFace, rVariation.nTag, &info))
+            aCurrentCoords[info.axis_index] = rVariation.fValue;
     }
 
     // Find a named instance that matches the current coordinates and return its index
@@ -337,7 +337,7 @@ std::optional<unsigned int> GetNamedInstanceIndex(hb_face_t* pHbFace,
 }
 
 OUString GetNamedInstancePSName(const PhysicalFontFace& rFontFace,
-                                const std::vector<hb_variation_t>& rVariations)
+                                const std::vector<vcl::FontVariation>& rVariations)
 {
     hb_face_t* pHbFace = rFontFace.GetHbFace();
     auto nIndex = GetNamedInstanceIndex(pHbFace, rVariations);
@@ -355,7 +355,7 @@ OUString GetNamedInstancePSName(const PhysicalFontFace& rFontFace,
 // Using OpenType Font Variations”
 // https://adobe-type-tools.github.io/font-tech-notes/pdfs/5902.AdobePSNameGeneration.pdf
 OUString GenerateVariableFontPSName(const PhysicalFontFace& rFace,
-                                    const std::vector<hb_variation_t>& rVariations)
+                                    const std::vector<vcl::FontVariation>& rVariations)
 {
     hb_face_t* pHbFace = rFace.GetHbFace();
     OUString aPrefix = rFace.GetName(NAME_ID_VARIATIONS_PS_PREFIX);
@@ -394,13 +394,13 @@ OUString GenerateVariableFontPSName(const PhysicalFontFace& rFace,
         for (const auto& rVariation : rVariations)
         {
             hb_ot_var_axis_info_t info;
-            if (hb_ot_var_find_axis_info(pHbFace, rVariation.tag, &info))
+            if (hb_ot_var_find_axis_info(pHbFace, rVariation.nTag, &info))
             {
-                if (rVariation.value == info.default_value)
+                if (rVariation.fValue == info.default_value)
                     continue;
                 char aTag[5];
-                hb_tag_to_string(rVariation.tag, aTag);
-                aName.append("_" + OUString::number(rVariation.value)
+                hb_tag_to_string(rVariation.nTag, aTag);
+                aName.append("_" + OUString::number(rVariation.fValue)
                              + o3tl::trim(OUString::createFromAscii(aTag)));
             }
         }
@@ -429,7 +429,7 @@ constexpr auto DESCENT_HHEA = static_cast<hb_ot_metrics_tag_t>(HB_TAG('H', 'd', 
 bool PhysicalFontFace::CreateFontSubset(std::vector<sal_uInt8>& rOutBuffer,
                                         const sal_GlyphId* pGlyphIds, const sal_uInt8* pEncoding,
                                         const int nGlyphCount, FontSubsetInfo& rInfo,
-                                        const std::vector<hb_variation_t>& rVariations) const
+                                        const std::vector<vcl::FontVariation>& rVariations) const
 {
     // Create subset input
     hb_subset_input_t* pInput = hb_subset_input_create_or_fail();
@@ -489,7 +489,7 @@ bool PhysicalFontFace::CreateFontSubset(std::vector<sal_uInt8>& rOutBuffer,
         // values.
         hb_subset_input_pin_all_axes_to_default(pInput, pHbFace);
         for (const auto& rVariation : rVariations)
-            hb_subset_input_pin_axis_location(pInput, pHbFace, rVariation.tag, rVariation.value);
+            hb_subset_input_pin_axis_location(pInput, pHbFace, rVariation.nTag, rVariation.fValue);
     }
 
     // Perform the subsetting
@@ -764,7 +764,8 @@ OUString PhysicalFontFace::GetName(NameID aNameID, const LanguageTag& rLanguageT
     return sName;
 }
 
-const std::vector<hb_variation_t>& PhysicalFontFace::GetVariations(const LogicalFontInstance&) const
+const std::vector<vcl::FontVariation>&
+PhysicalFontFace::GetVariations(const LogicalFontInstance&) const
 {
     if (!mxVariations)
     {

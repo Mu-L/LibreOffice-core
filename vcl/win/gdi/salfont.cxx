@@ -536,7 +536,7 @@ rtl::Reference<LogicalFontInstance> WinFontFace::CreateFontInstance(const vcl::f
     return new SkiaWinFontInstance(*this, rFSD);
 }
 
-const std::vector<hb_variation_t>&
+const std::vector<vcl::FontVariation>&
 WinFontFace::GetVariations(const LogicalFontInstance& rFont) const
 {
     if (!mxVariations)

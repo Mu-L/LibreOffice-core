@@ -101,12 +101,12 @@ public: // TODO: make data members private
     double GetAverageWidthFactor() const { return m_nAveWidthFactor; }
     const vcl::font::FontSelectPattern& GetFontSelectPattern() const { return m_aFontSelData; }
 
-    void SetVariations(const std::vector<hb_variation_t>& rVariations)
+    void SetVariations(const std::vector<vcl::FontVariation>& rVariations)
     {
         m_aVariations = rVariations;
         mxVariations.reset();
     }
-    const std::vector<hb_variation_t>& GetVariations() const;
+    const std::vector<vcl::FontVariation>& GetVariations() const;
 
     void SetOpticalSizing(bool bOpticalSizing)
     {
@@ -169,8 +169,8 @@ private:
     double m_nAveWidthFactor;
     rtl::Reference<vcl::font::PhysicalFontFace> m_pFontFace;
     std::optional<bool> m_xbIsGraphiteFont;
-    std::vector<hb_variation_t> m_aVariations;
-    mutable std::optional<std::vector<hb_variation_t>> mxVariations;
+    std::vector<vcl::FontVariation> m_aVariations;
+    mutable std::optional<std::vector<vcl::FontVariation>> mxVariations;
     bool m_bOpticalSizing = false;
     float m_fPointSize = 0;
 

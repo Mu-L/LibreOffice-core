@@ -392,9 +392,9 @@ void AquaGraphicsBackend::drawTextLayout(const GenericSalLayout& rLayout)
                                                                      &kCFTypeDictionaryValueCallBacks);
         for (const auto& rVariation : rVariations)
         {
-            hb_tag_t nTag = rVariation.tag;
+            uint32_t nTag = rVariation.nTag;
             CFNumberRef pTag = CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &nTag);
-            double fValue = rVariation.value;
+            double fValue = rVariation.fValue;
             CFNumberRef pValue = CFNumberCreate(kCFAllocatorDefault, kCFNumberDoubleType, &fValue);
             CFDictionaryAddValue(pVarDict, pTag, pValue);
             CFRelease(pTag);
