@@ -174,7 +174,7 @@ protected:
 
         if (sClass == "GtkListStore" || sClass == "GtkTreeStore")
         {
-            handleListStore(reader, sID, sClass);
+            handleListStore(reader);
             return nullptr;
         }
         else if (sClass == "GtkMenu")

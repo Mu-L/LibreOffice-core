@@ -2536,11 +2536,9 @@ void BuilderBase::collectAtkRoleAttribute(xmlreader::XmlReader& reader, stringma
         rMap[u"role"_ustr] = sProperty;
 }
 
-void BuilderBase::handleRow(xmlreader::XmlReader& reader, const OUString& rID)
+void BuilderBase::handleListStore(xmlreader::XmlReader& reader)
 {
     int nLevel = 1;
-
-    ListStore::row aRow;
 
     while(true)
     {
@@ -2555,89 +2553,8 @@ void BuilderBase::handleRow(xmlreader::XmlReader& reader, const OUString& rID)
 
         if (res == xmlreader::XmlReader::Result::Begin)
         {
+            assert(name != "row" && "Defining model data in UI files is not supported");
             ++nLevel;
-            if (name == "col")
-            {
-                bool bTranslated = false;
-                sal_uInt32 nId = 0;
-                OString sContext;
-
-                while (reader.nextAttribute(&nsId, &name))
-                {
-                    if (name == "id")
-                    {
-                        name = reader.getAttributeValue(false);
-                        nId = o3tl::toUInt32(std::string_view(name.begin, name.length));
-                    }
-                    else if (nId == 0 && name == "translatable" && reader.getAttributeValue(false) == "yes")
-                    {
-                        bTranslated = true;
-                    }
-                    else if (name == "context")
-                    {
-                        name = reader.getAttributeValue(false);
-                        sContext = OString(name.begin, name.length);
-                    }
-                }
-
-                (void)reader.nextItem(
-                    xmlreader::XmlReader::Text::Raw, &name, &nsId);
-
-                OString sValue(name.begin, name.length);
-                OUString sFinalValue;
-                if (bTranslated)
-                {
-                    sFinalValue = Translate::get(TranslateId{ sContext.getStr(), sValue.getStr() },
-                                                 getResLocale());
-                }
-                else
-                    sFinalValue = OUString::fromUtf8(sValue);
-
-
-                if (aRow.size() < nId+1)
-                    aRow.resize(nId+1);
-                aRow[nId] = sFinalValue;
-            }
-        }
-
-        if (res == xmlreader::XmlReader::Result::End)
-        {
-            --nLevel;
-        }
-
-        if (!nLevel)
-            break;
-    }
-
-    m_pParserState->m_aModels[rID].m_aEntries.push_back(std::move(aRow));
-}
-
-void BuilderBase::handleListStore(xmlreader::XmlReader& reader, const OUString& rID, std::u16string_view rClass)
-{
-    int nLevel = 1;
-
-    while(true)
-    {
-        xmlreader::Span name;
-        int nsId;
-
-        xmlreader::XmlReader::Result res = reader.nextItem(
-            xmlreader::XmlReader::Text::NONE, &name, &nsId);
-
-        if (res == xmlreader::XmlReader::Result::Done)
-            break;
-
-        if (res == xmlreader::XmlReader::Result::Begin)
-        {
-            if (name == "row")
-            {
-                bool bNotTreeStore = rClass != u"GtkTreeStore";
-                if (bNotTreeStore)
-                    handleRow(reader, rID);
-                assert(bNotTreeStore && "gtk, as the time of writing, doesn't support data in GtkTreeStore serialization");
-            }
-            else
-                ++nLevel;
         }
 
         if (res == xmlreader::XmlReader::Result::End)

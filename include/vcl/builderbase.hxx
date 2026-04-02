@@ -130,8 +130,7 @@ protected:
 
     stringmap handleAtkObject(xmlreader::XmlReader& reader) const;
     std::vector<ComboBoxTextItem> handleItems(xmlreader::XmlReader& reader) const;
-    void handleListStore(xmlreader::XmlReader& reader, const OUString& rID,
-                         std::u16string_view rClass);
+    static void handleListStore(xmlreader::XmlReader& reader);
     void handleRow(xmlreader::XmlReader& reader, const OUString& rID);
 
     void addAdjustment(const OUString& sID, Adjustment&& rAdjustment);
