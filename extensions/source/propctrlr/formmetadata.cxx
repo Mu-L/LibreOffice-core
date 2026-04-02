@@ -708,7 +708,7 @@ const OPropertyInfoImpl* OPropertyInfoService::getPropertyInfo(sal_Int32 _nId)
 
 //= DefaultEnumRepresentation
 
-DefaultEnumRepresentation::DefaultEnumRepresentation(const IPropertyInfoService& _rInfo,
+DefaultEnumRepresentation::DefaultEnumRepresentation(const OPropertyInfoService& _rInfo,
                                                      const Type& _rType, sal_Int32 _nPropertyId)
     : m_rMetaData(_rInfo)
     , m_aType(_rType)

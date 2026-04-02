@@ -61,7 +61,7 @@ private:
 class DefaultEnumRepresentation : public IPropertyEnumRepresentation
 {
 private:
-    const IPropertyInfoService& m_rMetaData;
+    const OPropertyInfoService& m_rMetaData;
     css::uno::Type m_aType;
     const sal_Int32 m_nPropertyId;
 
@@ -72,7 +72,7 @@ public:
                 An instance implementing IPropertyInfoService. Must live at least as
                 long as the DefaultEnumRepresentation should live.
         */
-    DefaultEnumRepresentation(const IPropertyInfoService& _rInfo, const css::uno::Type& _rType,
+    DefaultEnumRepresentation(const OPropertyInfoService& _rInfo, const css::uno::Type& _rType,
                               sal_Int32 _nPropertyId);
 
 protected:
