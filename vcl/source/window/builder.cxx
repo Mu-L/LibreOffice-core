@@ -447,28 +447,6 @@ VclBuilder::VclBuilder(vcl::Window* pParent, std::u16string_view sUIDir, const O
         }
     }
 
-#ifndef NDEBUG
-    o3tl::sorted_vector<OUString> models;
-#endif
-    //Set ComboBox models when everything has been imported
-    for (auto const& elem : m_pVclParserState->m_aModelMaps)
-    {
-        assert(models.insert(elem.m_sValue).second && "a liststore or treestore is used in duplicate widgets");
-        vcl::Window* pTarget = get(elem.m_sID);
-        ListBox *pListBoxTarget = dynamic_cast<ListBox*>(pTarget);
-        ComboBox *pComboBoxTarget = dynamic_cast<ComboBox*>(pTarget);
-        SvTabListBox *pTreeBoxTarget = dynamic_cast<SvTabListBox*>(pTarget);
-        // pStore may be empty
-        const ListStore *pStore = get_model_by_name(elem.m_sValue);
-        SAL_WARN_IF(!pListBoxTarget && !pComboBoxTarget && !pTreeBoxTarget && !dynamic_cast<IconView*>(pTarget), "vcl", "missing elements of combobox");
-        if (pListBoxTarget && pStore)
-            mungeModel(*pListBoxTarget, *pStore, elem.m_nActiveId);
-        else if (pComboBoxTarget && pStore)
-            mungeModel(*pComboBoxTarget, *pStore, elem.m_nActiveId);
-        else if (pTreeBoxTarget && pStore)
-            mungeModel(*pTreeBoxTarget, *pStore, elem.m_nActiveId);
-    }
-
     //Set TextView buffers when everything has been imported
     for (auto const& elem : m_pVclParserState->m_aTextBufferMaps)
     {
@@ -1021,17 +999,6 @@ namespace
     }
 }
 
-void VclBuilder::extractModel(const OUString &id, stringmap &rMap)
-{
-    VclBuilder::stringmap::iterator aFind = rMap.find(u"model"_ustr);
-    if (aFind != rMap.end())
-    {
-        m_pVclParserState->m_aModelMaps.emplace_back(id, aFind->second,
-            extractActive(rMap));
-        rMap.erase(aFind);
-    }
-}
-
 void VclBuilder::extractBuffer(const OUString &id, stringmap &rMap)
 {
     VclBuilder::stringmap::iterator aFind = rMap.find(u"buffer"_ustr);
@@ -1499,8 +1466,6 @@ VclPtr<vcl::Window> VclBuilder::makeObject(vcl::Window *pParent, const OUString 
         xWindow = VclPtr<FixedHyperlink>::Create(pParent, WB_CENTER|WB_VCENTER|WB_3DLOOK|WB_NOLABEL);
     else if (name == "GtkComboBox" || name == "GtkComboBoxText")
     {
-        extractModel(id, rMap);
-
         WinBits nBits = WB_CLIPCHILDREN|WB_LEFT|WB_VCENTER|WB_3DLOOK;
 
         bool bDropdown = BuilderUtils::extractDropdown(rMap);
@@ -1562,7 +1527,6 @@ VclPtr<vcl::Window> VclBuilder::makeObject(vcl::Window *pParent, const OUString 
 
         //window we want to apply the packing props for this GtkIconView to
         VclPtr<vcl::Window> xWindowForPackingProps;
-        extractModel(id, rMap);
         WinBits nWinStyle = WB_CLIPCHILDREN|WB_LEFT|WB_VCENTER|WB_3DLOOK;
         //IconView manages its own scrolling,
         vcl::Window *pRealParent = prepareWidgetOwnScrolling(pParent, nWinStyle);
@@ -1600,7 +1564,6 @@ VclPtr<vcl::Window> VclBuilder::makeObject(vcl::Window *pParent, const OUString 
         //a) make SvHeaderTabListBox/SvTabListBox the default target for GtkTreeView
         //b) remove the non-drop down mode of ListBox and convert
         //   everything over to SvHeaderTabListBox/SvTabListBox
-        extractModel(id, rMap);
         WinBits nWinStyle = WB_CLIPCHILDREN|WB_LEFT|WB_VCENTER|WB_3DLOOK;
         if (isLegacy())
         {
@@ -3588,90 +3551,6 @@ const BuilderBase::Adjustment* BuilderBase::get_adjustment_by_name(const OUStrin
     if (aI != m_pParserState->m_aAdjustments.end())
         return &(aI->second);
     return nullptr;
-}
-
-void VclBuilder::mungeModel(ComboBox &rTarget, const ListStore &rStore, sal_uInt16 nActiveId)
-{
-    for (auto const& entry : rStore.m_aEntries)
-    {
-        const ListStore::row &rRow = entry;
-        sal_uInt16 nEntry = rTarget.InsertEntry(rRow[0]);
-        if (rRow.size() > 1)
-        {
-            if (isLegacy())
-            {
-                sal_IntPtr nValue = rRow[1].toInt32();
-                rTarget.SetEntryData(nEntry, reinterpret_cast<void*>(nValue));
-            }
-            else
-            {
-                if (!rRow[1].isEmpty())
-                {
-                    m_aUserData.emplace_back(std::make_unique<OUString>(rRow[1]));
-                    rTarget.SetEntryData(nEntry, m_aUserData.back().get());
-                }
-            }
-        }
-    }
-    if (nActiveId < rStore.m_aEntries.size())
-        rTarget.SelectEntryPos(nActiveId);
-}
-
-void VclBuilder::mungeModel(ListBox &rTarget, const ListStore &rStore, sal_uInt16 nActiveId)
-{
-    for (auto const& entry : rStore.m_aEntries)
-    {
-        const ListStore::row &rRow = entry;
-        sal_uInt16 nEntry = rTarget.InsertEntry(rRow[0]);
-        if (rRow.size() > 1)
-        {
-            if (isLegacy())
-            {
-                sal_IntPtr nValue = rRow[1].toInt32();
-                rTarget.SetEntryData(nEntry, reinterpret_cast<void*>(nValue));
-            }
-            else
-            {
-                if (!rRow[1].isEmpty())
-                {
-                    m_aUserData.emplace_back(std::make_unique<OUString>(rRow[1]));
-                    rTarget.SetEntryData(nEntry, m_aUserData.back().get());
-                }
-            }
-        }
-    }
-    if (nActiveId < rStore.m_aEntries.size())
-        rTarget.SelectEntryPos(nActiveId);
-}
-
-void VclBuilder::mungeModel(SvTabListBox& rTarget, const ListStore &rStore, sal_uInt16 nActiveId)
-{
-    for (auto const& entry : rStore.m_aEntries)
-    {
-        const ListStore::row &rRow = entry;
-        auto pEntry = rTarget.InsertEntry(rRow[0]);
-        if (rRow.size() > 1)
-        {
-            if (isLegacy())
-            {
-                sal_IntPtr nValue = rRow[1].toInt32();
-                pEntry->SetUserData(reinterpret_cast<void*>(nValue));
-            }
-            else
-            {
-                if (!rRow[1].isEmpty())
-                {
-                    m_aUserData.emplace_back(std::make_unique<OUString>(rRow[1]));
-                    pEntry->SetUserData(m_aUserData.back().get());
-                }
-            }
-        }
-    }
-    if (nActiveId < rStore.m_aEntries.size())
-    {
-        SvTreeListEntry* pEntry = rTarget.GetEntry(nullptr, nActiveId);
-        rTarget.Select(pEntry);
-    }
 }
 
 void VclBuilder::insertComboBoxOrListBoxItems(vcl::Window *pWindow, VclBuilder::stringmap &rMap,

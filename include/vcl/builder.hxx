@@ -148,10 +148,6 @@ private:
         }
     };
 
-    void     mungeModel(ListBox &rTarget, const ListStore &rStore, sal_uInt16 nActiveId);
-    void     mungeModel(ComboBox &rTarget, const ListStore &rStore, sal_uInt16 nActiveId);
-    void     mungeModel(SvTabListBox &rTarget, const ListStore &rStore, sal_uInt16 nActiveId);
-
     void insertComboBoxOrListBoxItems(vcl::Window* pWindow, stringmap& rMap,
                                       const std::vector<ComboBoxTextItem>& rItems) override;
 
@@ -168,8 +164,6 @@ private:
 
     struct VclParserState
     {
-        std::vector<ComboBoxModelMap> m_aModelMaps;
-
         std::vector<TextBufferMap> m_aTextBufferMaps;
 
         std::vector<WidgetAdjustmentMap> m_aNumericFormatterAdjustmentMaps;
@@ -259,7 +253,6 @@ private:
 
     static int  getImageSize(const stringmap &rMap);
 
-    void        extractModel(const OUString &id, stringmap &rVec);
     void        extractBuffer(const OUString &id, stringmap &rVec);
     static bool extractAdjustmentToMap(const OUString &id, stringmap &rVec, std::vector<WidgetAdjustmentMap>& rAdjustmentMap);
     void        extractButtonImage(const OUString &id, stringmap &rMap, bool bRadio);
