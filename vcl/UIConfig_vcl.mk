@@ -31,8 +31,4 @@ $(eval $(call gb_UIConfig_add_uifiles,vcl,\
 	vcl/uiconfig/ui/openlockedquerybox \
 ))
 
-$(eval $(call gb_UIConfig_add_a11yerrors_uifiles,vcl,\
-	vcl/qa/cppunit/builder/demo \
-))
-
 # vim: set noet sw=4 ts=4:
