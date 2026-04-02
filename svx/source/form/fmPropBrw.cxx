@@ -481,7 +481,7 @@ void FmPropBrw::impl_createPropertyBrowser_throw( FmFormShell* _pFormShell )
     }
     else
     {
-        m_xBrowserController->attachFrame( Reference<XFrame>(m_xMeAsFrame,UNO_QUERY_THROW) );
+        m_xBrowserController->attachFrame(m_xMeAsFrame);
     }
 
     if ( bEnableHelpSection )
