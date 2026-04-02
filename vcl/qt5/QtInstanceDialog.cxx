@@ -138,10 +138,6 @@ void QtInstanceDialog::undo_collapse()
     });
 }
 
-void QtInstanceDialog::SetInstallLOKNotifierHdl(const Link<void*, vcl::ILibreOfficeKitNotifier*>&)
-{
-}
-
 int QtInstanceDialog::run()
 {
     SolarMutexGuard g;

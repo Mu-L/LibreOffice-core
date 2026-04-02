@@ -49,9 +49,6 @@ public:
 
     virtual void undo_collapse() override;
 
-    virtual void
-    SetInstallLOKNotifierHdl(const Link<void*, vcl::ILibreOfficeKitNotifier*>&) override;
-
     virtual int run() override;
 
     virtual void response(int nResponse) override;

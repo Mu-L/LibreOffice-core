@@ -7257,11 +7257,6 @@ public:
 
     void close(bool bCloseSignal);
 
-    virtual void SetInstallLOKNotifierHdl(const Link<void*, vcl::ILibreOfficeKitNotifier*>&) override
-    {
-        //not implemented for the gtk variant
-    }
-
     virtual ~GtkInstanceDialog() override
     {
         if (!m_aHiddenWidgets.empty())

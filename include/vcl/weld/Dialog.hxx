@@ -66,8 +66,7 @@ public:
     // undo previous dialog collapse
     virtual void undo_collapse() = 0;
 
-    virtual void SetInstallLOKNotifierHdl(const Link<void*, vcl::ILibreOfficeKitNotifier*>& rLink)
-        = 0;
+    virtual void SetInstallLOKNotifierHdl(const Link<void*, vcl::ILibreOfficeKitNotifier*>& rLink);
 };
 }
 

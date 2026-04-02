@@ -57,6 +57,8 @@ void Dialog::set_default_response(int nResponse)
     std::unique_ptr<weld::Button> pButton = weld_button_for_response(nResponse);
     change_default_button(nullptr, pButton.get());
 }
+
+void Dialog::SetInstallLOKNotifierHdl(const Link<void*, vcl::ILibreOfficeKitNotifier*>&) {}
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab cinoptions=b1,g0,N-s cinkeys+=0=break: */
