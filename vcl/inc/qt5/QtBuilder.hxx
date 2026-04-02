@@ -48,9 +48,6 @@ public:
     template <typename T = QWidget> T* get(const OUString& rId);
     OUString getDialogId();
 
-    QObject* makeObject(QObject* pParent, std::u16string_view sName, std::string_view sType,
-                        const OUString& rId, stringmap& rMap);
-
     virtual void applyAtkProperties(QObject* pObject, const stringmap& rProperties,
                                     bool bToolbarItem) override;
     virtual void applyPackingProperties(QObject* pCurrentChild, QObject* pParent,

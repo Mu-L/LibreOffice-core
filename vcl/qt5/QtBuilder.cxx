@@ -120,18 +120,12 @@ void QtBuilder::insertComboBoxOrListBoxItems(QObject* pObject,
 QObject* QtBuilder::insertObject(QObject* pParent, const OUString& rClass, std::string_view sType,
                                  const OUString& rId, stringmap& rProps, stringmap&, stringmap&)
 {
-    return makeObject(pParent, rClass, sType, rId, rProps);
-}
-
-QObject* QtBuilder::makeObject(QObject* pParent, std::u16string_view sName, std::string_view sType,
-                               const OUString& rId, stringmap& rMap)
-{
     // ignore placeholders
-    if (sName.empty())
+    if (rClass.isEmpty())
         return nullptr;
 
     // nothing to do for this one
-    if (sName == u"GtkTreeSelection")
+    if (rClass == u"GtkTreeSelection")
         return nullptr;
 
     QWidget* pParentWidget = qobject_cast<QWidget*>(pParent);
@@ -142,17 +136,17 @@ QObject* QtBuilder::makeObject(QObject* pParent, std::u16string_view sName, std:
     // will also be created because that is needed for QtInstanceContainer
     QWidget* pLayoutParentWidget = nullptr;
 
-    if (sName == u"GtkMessageDialog")
+    if (rClass == u"GtkMessageDialog")
     {
         QMessageBox* pMessageBox = new QMessageBox(pParentWidget);
-        setMessageDialogProperties(*pMessageBox, rMap);
+        setMessageDialogProperties(*pMessageBox, rProps);
         pObject = pMessageBox;
     }
-    else if (sName == u"GtkAssistant")
+    else if (rClass == u"GtkAssistant")
     {
         pObject = new QWizard(pParentWidget);
     }
-    else if (sName == u"GtkBox")
+    else if (rClass == u"GtkBox")
     {
         // for a QMessageBox, return the existing layout instead of creating a new one
         if (QMessageBox* pMessageBox = qobject_cast<QMessageBox*>(pParent))
@@ -171,14 +165,14 @@ QObject* QtBuilder::makeObject(QObject* pParent, std::u16string_view sName, std:
                 pBoxParentWidget = pLayoutParentWidget;
             }
 
-            const bool bVertical = hasOrientationVertical(rMap);
+            const bool bVertical = hasOrientationVertical(rProps);
             if (bVertical)
                 pObject = new QVBoxLayout(pBoxParentWidget);
             else
                 pObject = new QHBoxLayout(pBoxParentWidget);
         }
     }
-    else if (sName == u"GtkButtonBox")
+    else if (rClass == u"GtkButtonBox")
     {
         QWidget* pTopLevel = windowForObject(pParent);
         if (QMessageBox* pMessageBox = qobject_cast<QMessageBox*>(pTopLevel))
@@ -194,232 +188,232 @@ QObject* QtBuilder::makeObject(QObject* pParent, std::u16string_view sName, std:
         else
         {
             QDialogButtonBox* pButtonBox = new QDialogButtonBox(pParentWidget);
-            if (hasOrientationVertical(rMap))
+            if (hasOrientationVertical(rProps))
                 pButtonBox->setOrientation(Qt::Vertical);
             pObject = pButtonBox;
         }
     }
-    else if (sName == u"GtkButton")
+    else if (rClass == u"GtkButton")
     {
         QPushButton* pButton = new QPushButton(pParentWidget);
-        setButtonProperties(*pButton, rMap, pParentWidget);
+        setButtonProperties(*pButton, rProps, pParentWidget);
         pObject = pButton;
     }
-    else if (sName == u"GtkCalendar")
+    else if (rClass == u"GtkCalendar")
     {
         pObject = new QCalendarWidget(pParentWidget);
     }
-    else if (sName == u"GtkCellRendererPixbuf")
+    else if (rClass == u"GtkCellRendererPixbuf")
     {
         return enableTreeViewColumnDataRole(pParentWidget, Qt::DecorationRole);
     }
-    else if (sName == u"GtkCellRendererText")
+    else if (rClass == u"GtkCellRendererText")
     {
         return enableTreeViewColumnDataRole(pParentWidget, Qt::DisplayRole);
     }
-    else if (sName == u"GtkCellRendererToggle")
+    else if (rClass == u"GtkCellRendererToggle")
     {
         return enableTreeViewColumnDataRole(pParentWidget, Qt::CheckStateRole);
     }
-    else if (sName == u"GtkCheckButton")
+    else if (rClass == u"GtkCheckButton")
     {
         QCheckBox* pCheckBox = new QCheckBox(pParentWidget);
-        setCheckButtonProperties(*pCheckBox, rMap, pParentWidget);
+        setCheckButtonProperties(*pCheckBox, rProps, pParentWidget);
         pObject = pCheckBox;
     }
-    else if (sName == u"GtkComboBox" || sName == u"GtkComboBoxText")
+    else if (rClass == u"GtkComboBox" || rClass == u"GtkComboBoxText")
     {
         QComboBox* pComboBox = new QComboBox(pParentWidget);
-        pComboBox->setEditable(extractEntry(rMap));
+        pComboBox->setEditable(extractEntry(rProps));
         pObject = pComboBox;
     }
-    else if (sName == u"GtkDialog")
+    else if (rClass == u"GtkDialog")
     {
         QDialog* pDialog = new QDialog(pParentWidget);
-        setDialogProperties(*pDialog, rMap);
+        setDialogProperties(*pDialog, rProps);
         pObject = pDialog;
     }
-    else if (sName == u"GtkDrawingArea")
+    else if (rClass == u"GtkDrawingArea")
     {
         pObject = new QLabel(pParentWidget);
     }
-    else if (sName == u"GtkEntry")
+    else if (rClass == u"GtkEntry")
     {
         QLineEdit* pLineEdit = new QLineEdit(pParentWidget);
-        setEntryProperties(*pLineEdit, rMap);
+        setEntryProperties(*pLineEdit, rProps);
         pObject = pLineEdit;
     }
-    else if (sName == u"GtkExpander")
+    else if (rClass == u"GtkExpander")
     {
         pObject = new QtExpander(pParentWidget);
     }
-    else if (sName == u"GtkFrame")
+    else if (rClass == u"GtkFrame")
     {
         pObject = new QGroupBox(pParentWidget);
     }
-    else if (sName == u"GtkGrid")
+    else if (rClass == u"GtkGrid")
     {
         pLayoutParentWidget = new QWidget(pParentWidget);
         pObject = new QGridLayout(pLayoutParentWidget);
     }
-    else if (sName == u"GtkIconView")
+    else if (rClass == u"GtkIconView")
     {
         QListView* pListView = new QListView(pParentWidget);
         pListView->setModel(new QStandardItemModel(pListView));
         pListView->setViewMode(QListView::IconMode);
         pListView->setMovement(QListView::Static);
-        setItemViewProperties(*pListView, rMap);
+        setItemViewProperties(*pListView, rProps);
         pObject = pListView;
     }
-    else if (sName == u"GtkImage")
+    else if (rClass == u"GtkImage")
     {
         QLabel* pLabel = new QLabel(pParentWidget);
-        const OUString sIconName = extractIconName(rMap);
+        const OUString sIconName = extractIconName(rProps);
         if (!sIconName.isEmpty())
             pLabel->setPixmap(loadQPixmapIcon(sIconName));
         pObject = pLabel;
     }
-    else if (sName == u"GtkLabel")
+    else if (rClass == u"GtkLabel")
     {
         QLabel* pLabel = new QLabel(pParentWidget);
         pLabel->setTextFormat(Qt::TextFormat::PlainText);
-        setLabelProperties(*pLabel, rMap);
-        extractMnemonicWidget(rId, rMap);
+        setLabelProperties(*pLabel, rProps);
+        extractMnemonicWidget(rId, rProps);
         pObject = pLabel;
     }
-    else if (sName == u"GtkLevelBar" || sName == u"GtkProgressBar")
+    else if (rClass == u"GtkLevelBar" || rClass == u"GtkProgressBar")
     {
         QProgressBar* pProgressBar = new QProgressBar(pParentWidget);
         // don't show text (progress in percent) by default
         pProgressBar->setTextVisible(false);
         pObject = pProgressBar;
     }
-    else if (sName == u"GtkLinkButton")
+    else if (rClass == u"GtkLinkButton")
     {
         QtHyperlinkLabel* pLabel = new QtHyperlinkLabel(pParentWidget);
-        if (rMap.contains(u"label"_ustr))
-            pLabel->setDisplayText(toQString(rMap[u"label"_ustr]));
-        if (rMap.contains(u"uri"_ustr))
-            pLabel->setUri(toQString(rMap[u"uri"_ustr]));
+        if (rProps.contains(u"label"_ustr))
+            pLabel->setDisplayText(toQString(rProps[u"label"_ustr]));
+        if (rProps.contains(u"uri"_ustr))
+            pLabel->setUri(toQString(rProps[u"uri"_ustr]));
 
         pObject = pLabel;
     }
-    else if (sName == u"GtkMenuButton")
+    else if (rClass == u"GtkMenuButton")
     {
         QToolButton* pMenuButton = new QToolButton(pParentWidget);
-        setMenuButtonProperties(*pMenuButton, rMap, pParentWidget);
+        setMenuButtonProperties(*pMenuButton, rProps, pParentWidget);
         pObject = pMenuButton;
     }
-    else if (sName == u"GtkNotebook")
+    else if (rClass == u"GtkNotebook")
     {
         pObject = new QTabWidget(pParentWidget);
     }
-    else if (sName == u"GtkPaned")
+    else if (rClass == u"GtkPaned")
     {
         pObject = new QSplitter(pParentWidget);
     }
-    else if (sName == u"GtkPopover")
+    else if (rClass == u"GtkPopover")
     {
         QWidget* pWidget = new QWidget(pParentWidget, Qt::Popup);
         pWidget->setLayout(new QVBoxLayout);
         pObject = pWidget;
     }
-    else if (sName == u"GtkRadioButton")
+    else if (rClass == u"GtkRadioButton")
     {
         QRadioButton* pRadioButton = new QRadioButton(pParentWidget);
         // apply GtkCheckButton properties because GtkRadioButton subclasses GtkCheckButton in GTK 3
-        setCheckButtonProperties(*pRadioButton, rMap, pParentWidget);
-        extractRadioButtonGroup(rId, rMap);
+        setCheckButtonProperties(*pRadioButton, rProps, pParentWidget);
+        extractRadioButtonGroup(rId, rProps);
         pObject = pRadioButton;
     }
-    else if (sName == u"GtkScale")
+    else if (rClass == u"GtkScale")
     {
         QSlider* pSlider = new QSlider(pParentWidget);
-        setScaleProperties(*pSlider, rMap);
+        setScaleProperties(*pSlider, rProps);
         pObject = pSlider;
     }
-    else if (sName == u"GtkScrollbar")
+    else if (rClass == u"GtkScrollbar")
     {
         pObject = new QScrollBar(pParentWidget);
     }
-    else if (sName == u"GtkScrolledWindow")
+    else if (rClass == u"GtkScrolledWindow")
     {
         QScrollArea* pScrollArea = new QScrollArea(pParentWidget);
         pScrollArea->setWidgetResizable(true);
         pObject = pScrollArea;
     }
-    else if (sName == u"GtkSeparator")
+    else if (rClass == u"GtkSeparator")
     {
-        const bool bVertical = hasOrientationVertical(rMap);
+        const bool bVertical = hasOrientationVertical(rProps);
         QFrame* pFrame = new QFrame(pParentWidget);
         pFrame->setFrameShape(bVertical ? QFrame::VLine : QFrame::HLine);
         pObject = pFrame;
     }
-    else if (sName == u"GtkSeparatorToolItem")
+    else if (rClass == u"GtkSeparatorToolItem")
     {
         QToolBar* pToolBar = qobject_cast<QToolBar*>(pParentWidget);
         assert(pToolBar && "GtkSeparatorToolItem doesn't have a toolbar parent");
         pToolBar->addSeparator();
     }
-    else if (sName == u"GtkSpinButton")
+    else if (rClass == u"GtkSpinButton")
     {
         QtDoubleSpinBox* pSpinBox = new QtDoubleSpinBox(pParentWidget);
-        setSpinButtonProperties(*pSpinBox, rMap);
+        setSpinButtonProperties(*pSpinBox, rProps);
         pObject = pSpinBox;
     }
-    else if (sName == u"GtkSpinner")
+    else if (rClass == u"GtkSpinner")
     {
         // use a QProgressBar in undetermined state (i.e. with range [0, 0])
         QProgressBar* pProgressBar = new QProgressBar(pParentWidget);
         pProgressBar->setRange(0, 0);
         pObject = pProgressBar;
     }
-    else if (sName == u"GtkTextView")
+    else if (rClass == u"GtkTextView")
     {
         QPlainTextEdit* pTextEdit = new QPlainTextEdit(pParentWidget);
-        setTextViewProperties(*pTextEdit, rMap);
+        setTextViewProperties(*pTextEdit, rProps);
         pObject = pTextEdit;
     }
-    else if (sName == u"GtkToggleButton")
+    else if (rClass == u"GtkToggleButton")
     {
         QToolButton* pButton = new QToolButton(pParentWidget);
-        setButtonProperties(*pButton, rMap, pParentWidget);
+        setButtonProperties(*pButton, rProps, pParentWidget);
         pObject = pButton;
     }
-    else if (sName == u"GtkToolbar")
+    else if (rClass == u"GtkToolbar")
     {
         pObject = new QToolBar(pParentWidget);
     }
-    else if (sName == u"GtkMenuToolButton" || sName == u"GtkRadioToolButton"
-             || sName == u"GtkToggleToolButton" || sName == u"GtkToolButton")
+    else if (rClass == u"GtkMenuToolButton" || rClass == u"GtkRadioToolButton"
+             || rClass == u"GtkToggleToolButton" || rClass == u"GtkToolButton")
     {
         QToolButton* pToolButton = new QToolButton(pParentWidget);
-        const OUString sIconName = extractIconName(rMap);
+        const OUString sIconName = extractIconName(rProps);
         if (!sIconName.isEmpty())
             pToolButton->setIcon(loadQPixmapIcon(sIconName));
-        pToolButton->setText(toQString(extractLabel(rMap)));
-        pToolButton->setCheckable(sName == u"GtkRadioToolButton"
-                                  || sName == u"GtkToggleToolButton");
+        pToolButton->setText(toQString(extractLabel(rProps)));
+        pToolButton->setCheckable(rClass == u"GtkRadioToolButton"
+                                  || rClass == u"GtkToggleToolButton");
 
-        if (sName == u"GtkMenuToolButton")
+        if (rClass == u"GtkMenuToolButton")
             pToolButton->setPopupMode(QToolButton::MenuButtonPopup);
 
-        if (sName == u"GtkRadioToolButton")
-            extractRadioButtonGroup(rId, rMap);
+        if (rClass == u"GtkRadioToolButton")
+            extractRadioButtonGroup(rId, rProps);
 
         pObject = pToolButton;
     }
-    else if (sName == u"GtkTreeView")
+    else if (rClass == u"GtkTreeView")
     {
         QTreeView* pTreeView = new QTreeView(pParentWidget);
         QtTreeViewModel* pTreeViewModel = new QtTreeViewModel(pTreeView);
         pTreeView->setModel(pTreeViewModel);
-        pTreeView->setHeaderHidden(!extractHeadersVisible(rMap));
-        pTreeView->setRootIsDecorated(extractShowExpanders(rMap));
-        setItemViewProperties(*pTreeView, rMap);
+        pTreeView->setHeaderHidden(!extractHeadersVisible(rProps));
+        pTreeView->setRootIsDecorated(extractShowExpanders(rProps));
+        setItemViewProperties(*pTreeView, rProps);
         pObject = pTreeView;
     }
-    else if (sName == u"GtkTreeViewColumn")
+    else if (rClass == u"GtkTreeViewColumn")
     {
         QTreeView* pTreeView = qobject_cast<QTreeView*>(pParentWidget);
         assert(pTreeView && "Tree view column doesn't have a tree view parent");
@@ -427,7 +421,7 @@ QObject* QtBuilder::makeObject(QObject* pParent, std::u16string_view sName, std:
         assert(pModel && "Tree view doesn't have model set");
         const int nCol = pModel->columnCount();
         pModel->insertColumn(nCol);
-        pModel->setHeaderData(nCol, Qt::Horizontal, toQString(extractTitle(rMap)));
+        pModel->setHeaderData(nCol, Qt::Horizontal, toQString(extractTitle(rProps)));
 
         // add initially empty list of supported roles for the new column that will
         // be extended based on the GtkCellRenderer children of the column
@@ -438,7 +432,7 @@ QObject* QtBuilder::makeObject(QObject* pParent, std::u16string_view sName, std:
         // nothing else to do, return tree view parent for the widget
         return pTreeView;
     }
-    else if (sName == u"GtkViewport")
+    else if (rClass == u"GtkViewport")
     {
         // GtkViewport is an adaptor to make GtkWidgets scrollable
         // inside a GtkScrolledWindow; no equivalent needed for widgets
@@ -448,13 +442,13 @@ QObject* QtBuilder::makeObject(QObject* pParent, std::u16string_view sName, std:
     else
     {
         SAL_WARN("vcl.qt", "Widget type not supported yet: "
-                               << OUStringToOString(sName, RTL_TEXTENCODING_UTF8));
+                               << OUStringToOString(rClass, RTL_TEXTENCODING_UTF8));
         assert(false && "Widget type not supported yet");
     }
 
     QWidget* pWidget = qobject_cast<QWidget*>(pObject);
     if (pWidget)
-        setWidgetProperties(*pWidget, rMap);
+        setWidgetProperties(*pWidget, rProps);
     else
         pWidget = pLayoutParentWidget;
 
@@ -488,7 +482,7 @@ QObject* QtBuilder::makeObject(QObject* pParent, std::u16string_view sName, std:
         {
             pExpander->setContentWidget(pWidget);
             // erase "visible" property, QtExpander shows/hides the widget as needed
-            rMap.erase("visible");
+            rProps.erase("visible");
         }
     }
 
@@ -508,8 +502,8 @@ QObject* QtBuilder::makeObject(QObject* pParent, std::u16string_view sName, std:
 
         QtInstanceWidget::setHelpId(*pWidget, getHelpRoot() + rId);
 
-        pWidget->setToolTip(toRichTextTooltip(extractTooltipText(rMap)));
-        pWidget->setVisible(extractVisible(rMap));
+        pWidget->setToolTip(toRichTextTooltip(extractTooltipText(rProps)));
+        pWidget->setVisible(extractVisible(rProps));
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
         // Set GtkBuilder ID as accessible ID
