@@ -831,7 +831,7 @@ namespace pcr
                 continue;
             rProperty.Handle = nPropId;
 
-            sDisplayName = m_pInfoService->getPropertyTranslation( nPropId );
+            sDisplayName = OPropertyInfoService::getPropertyTranslation(nPropId);
             if ( sDisplayName.isEmpty() )
                 continue;
 
@@ -937,7 +937,7 @@ namespace pcr
                 nPropId = PROPERTY_ID_WORDBREAK;
         }
 
-        OUString sDisplayName = m_pInfoService->getPropertyTranslation( nPropId );
+        OUString sDisplayName = OPropertyInfoService::getPropertyTranslation(nPropId);
         if ( sDisplayName.isEmpty() )
         {
             OSL_FAIL( "FormComponentPropertyHandler::describePropertyLine: did getSupportedProperties not work properly?" );
@@ -2444,7 +2444,7 @@ namespace pcr
 
 
             // Set the UI data
-            _out_rProperty.DisplayName = m_pInfoService->getPropertyTranslation( PROPERTY_ID_COMMAND );
+            _out_rProperty.DisplayName = OPropertyInfoService::getPropertyTranslation(PROPERTY_ID_COMMAND);
 
             _out_rProperty.HelpURL = HelpIdUrl::getHelpURL( m_pInfoService->getPropertyHelpId( PROPERTY_ID_COMMAND ) );
             _out_rProperty.PrimaryButtonId = UID_PROP_DLG_SQLCOMMAND;
@@ -2552,7 +2552,7 @@ namespace pcr
         ::cppu::enum2int( nListSourceType, aListSourceType );
         ListSourceType eListSourceType = static_cast<ListSourceType>(nListSourceType);
 
-        _out_rDescriptor.DisplayName = m_pInfoService->getPropertyTranslation( PROPERTY_ID_LISTSOURCE );
+        _out_rDescriptor.DisplayName = OPropertyInfoService::getPropertyTranslation(PROPERTY_ID_LISTSOURCE);
         _out_rDescriptor.HelpURL = HelpIdUrl::getHelpURL( m_pInfoService->getPropertyHelpId( PROPERTY_ID_LISTSOURCE ) );
 
 
@@ -2592,7 +2592,7 @@ namespace pcr
         OSL_PRECOND(m_pInfoService, "FormComponentPropertyHandler::impl_dialogListSelection_"
                                     "nothrow: no property meta data!");
 
-        OUString sPropertyUIName(m_pInfoService->getPropertyTranslation(OPropertyInfoService::getPropertyId(_rProperty)));
+        OUString sPropertyUIName(OPropertyInfoService::getPropertyTranslation(OPropertyInfoService::getPropertyId(_rProperty)));
         ListSelectionDialog aDialog(impl_getDefaultDialogFrame_nothrow(), m_xComponent, _rProperty, sPropertyUIName);
         _rClearBeforeDialog.clear();
         return ( RET_OK == aDialog.run() );
@@ -2617,7 +2617,7 @@ namespace pcr
             if ( !xComposer.is() )
                 return false;
 
-            OUString sPropertyUIName( m_pInfoService->getPropertyTranslation( _bFilter ? PROPERTY_ID_FILTER : PROPERTY_ID_SORT ) );
+            OUString sPropertyUIName(OPropertyInfoService::getPropertyTranslation(_bFilter ? PROPERTY_ID_FILTER : PROPERTY_ID_SORT));
 
             // create the dialog
             Reference< XExecutableDialog > xDialog;
@@ -2742,7 +2742,7 @@ namespace pcr
     bool FormComponentPropertyHandler::impl_browseForImage_nothrow( Any& _out_rNewValue, ::osl::ClearableMutexGuard& _rClearBeforeDialog ) const
     {
         bool bIsLink = true;// reflect the legacy behavior
-        OUString aStrTrans = m_pInfoService->getPropertyTranslation( PROPERTY_ID_IMAGE_URL );
+        OUString aStrTrans = OPropertyInfoService::getPropertyTranslation(PROPERTY_ID_IMAGE_URL);
 
         weld::Window* pWin = impl_getDefaultDialogFrame_nothrow();
         ::sfx2::FileDialogHelper aFileDlg(

@@ -487,7 +487,7 @@ sal_Int32 OPropertyInfoService::getPropertyId(const OUString& _rName)
     return pInfo ? pInfo->nId : -1;
 }
 
-OUString OPropertyInfoService::getPropertyTranslation(sal_Int32 _nId) const
+OUString OPropertyInfoService::getPropertyTranslation(sal_Int32 _nId)
 {
     const OPropertyInfoImpl* pInfo = getPropertyInfo(_nId);
     return pInfo ? pInfo->sTranslation : OUString();

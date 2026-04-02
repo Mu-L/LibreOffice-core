@@ -402,7 +402,7 @@ namespace pcr
         }
 
         aDescriptor.Category = "Data";
-        aDescriptor.DisplayName = m_pInfoService->getPropertyTranslation( nPropId );
+        aDescriptor.DisplayName = OPropertyInfoService::getPropertyTranslation(nPropId);
         aDescriptor.HelpURL = HelpIdUrl::getHelpURL( m_pInfoService->getPropertyHelpId( nPropId ) );
 
         return aDescriptor;

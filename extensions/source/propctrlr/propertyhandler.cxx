@@ -199,7 +199,7 @@ LineDescriptor SAL_CALL PropertyHandler::describePropertyLine(
         PropertyHandlerHelper::describePropertyLine(rProperty, aDescriptor, _rxControlFactory);
 
     aDescriptor.HelpURL = HelpIdUrl::getHelpURL(m_pInfoService->getPropertyHelpId(nPropId));
-    aDescriptor.DisplayName = m_pInfoService->getPropertyTranslation(nPropId);
+    aDescriptor.DisplayName = OPropertyInfoService::getPropertyTranslation(nPropId);
 
     if ((m_pInfoService->getPropertyUIFlags(nPropId) & PROP_FLAG_DATA_PROPERTY) != 0)
         aDescriptor.Category = "Data";
