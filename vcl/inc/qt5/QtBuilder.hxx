@@ -59,8 +59,9 @@ public:
                                          std::vector<vcl::EnumContext::Context>& rContext,
                                          stringmap& rProperties,
                                          stringmap& rAtkProperties) override;
-    virtual void insertComboBoxOrListBoxItems(QObject* pObject, stringmap& rMap,
-                                              const std::vector<ComboBoxTextItem>& rItems) override;
+    virtual void insertComboBoxOrListBoxItems(QObject* pObject,
+                                              const std::vector<ComboBoxTextItem>& rItems,
+                                              sal_Int32 nActiveIndex) override;
 
     virtual QObject* insertObject(QObject* pParent, const OUString& rClass, std::string_view sType,
                                   const OUString& rId, stringmap& rProps,

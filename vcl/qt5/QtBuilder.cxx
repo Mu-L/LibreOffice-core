@@ -95,8 +95,9 @@ OUString QtBuilder::getDialogId()
     return OUString();
 }
 
-void QtBuilder::insertComboBoxOrListBoxItems(QObject* pObject, stringmap& rMap,
-                                             const std::vector<ComboBoxTextItem>& rItems)
+void QtBuilder::insertComboBoxOrListBoxItems(QObject* pObject,
+                                             const std::vector<ComboBoxTextItem>& rItems,
+                                             sal_Int32 nActiveIndex)
 {
     if (QComboBox* pComboBox = qobject_cast<QComboBox*>(pObject))
     {
@@ -109,8 +110,7 @@ void QtBuilder::insertComboBoxOrListBoxItems(QObject* pObject, stringmap& rMap,
             pComboBox->addItem(toQString(rItem.m_sItem), aUserData);
         }
 
-        const int nActiveId = BuilderBase::extractActive(rMap);
-        pComboBox->setCurrentIndex(nActiveId);
+        pComboBox->setCurrentIndex(nActiveIndex);
         return;
     }
 

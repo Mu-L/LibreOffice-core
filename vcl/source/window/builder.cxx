@@ -2893,15 +2893,14 @@ void VclBuilder::insertMenuObject(PopupMenu* pParent, PopupMenu* pSubMenu, const
 
 /// Insert items to a ComboBox or a ListBox.
 /// They have no common ancestor that would have 'InsertEntry()', so use a template.
-template<typename T> static bool insertItems(vcl::Window *pWindow, VclBuilder::stringmap &rMap,
-                                             std::vector<std::unique_ptr<OUString>>& rUserData,
-                                             const std::vector<ComboBoxTextItem> &rItems)
+template <typename T>
+static bool insertItems(vcl::Window* pWindow, std::vector<std::unique_ptr<OUString>>& rUserData,
+                        const std::vector<ComboBoxTextItem>& rItems, sal_Int32 nActiveIndex)
 {
     T *pContainer = dynamic_cast<T*>(pWindow);
     if (!pContainer)
         return false;
 
-    sal_uInt16 nActiveId = BuilderBase::extractActive(rMap);
     for (auto const& item : rItems)
     {
         sal_Int32 nPos = pContainer->InsertEntry(item.m_sItem);
@@ -2911,8 +2910,8 @@ template<typename T> static bool insertItems(vcl::Window *pWindow, VclBuilder::s
             pContainer->SetEntryData(nPos, rUserData.back().get());
         }
     }
-    if (nActiveId < rItems.size())
-        pContainer->SelectEntryPos(nActiveId);
+    if (o3tl::make_unsigned(nActiveIndex) < rItems.size())
+        pContainer->SelectEntryPos(nActiveIndex);
 
     return true;
 }
@@ -3553,12 +3552,13 @@ const BuilderBase::Adjustment* BuilderBase::get_adjustment_by_name(const OUStrin
     return nullptr;
 }
 
-void VclBuilder::insertComboBoxOrListBoxItems(vcl::Window *pWindow, VclBuilder::stringmap &rMap,
-                                  const std::vector<ComboBoxTextItem>& rItems)
+void VclBuilder::insertComboBoxOrListBoxItems(vcl::Window* pWindow,
+                                              const std::vector<ComboBoxTextItem>& rItems,
+                                              sal_Int32 nActiveIndex)
 {
     // try to fill-in the items
-    if (!insertItems<ComboBox>(pWindow, rMap, m_aUserData, rItems))
-        insertItems<ListBox>(pWindow, rMap, m_aUserData, rItems);
+    if (!insertItems<ComboBox>(pWindow, m_aUserData, rItems, nActiveIndex))
+        insertItems<ListBox>(pWindow, m_aUserData, rItems, nActiveIndex);
 }
 
 void VclBuilder::mungeAdjustment(NumericFormatter &rTarget, const Adjustment &rAdjustment)

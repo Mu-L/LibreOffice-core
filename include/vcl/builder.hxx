@@ -135,8 +135,9 @@ private:
     typedef StringPair WidgetAdjustmentMap;
     typedef StringPair ButtonMenuMap;
 
-    void insertComboBoxOrListBoxItems(vcl::Window* pWindow, stringmap& rMap,
-                                      const std::vector<ComboBoxTextItem>& rItems) override;
+    void insertComboBoxOrListBoxItems(vcl::Window* pWindow,
+                                      const std::vector<ComboBoxTextItem>& rItems,
+                                      sal_Int32 nActiveIndex) override;
 
     static void     mungeTextBuffer(VclMultiLineEdit &rTarget, const TextBuffer &rTextBuffer);
 
