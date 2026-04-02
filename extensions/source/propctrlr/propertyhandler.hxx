@@ -75,8 +75,6 @@ protected:
     css::uno::Reference<css::beans::XPropertySetInfo> m_xComponentPropertyInfo;
     /// type converter, needed on various occasions
     css::uno::Reference<css::script::XTypeConverter> m_xTypeConverter;
-    /// access to property meta data
-    std::unique_ptr<OPropertyInfoService> m_pInfoService;
 
 protected:
     explicit PropertyHandler(const css::uno::Reference<css::uno::XComponentContext>& _rxContext);

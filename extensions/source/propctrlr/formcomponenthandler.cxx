@@ -1242,7 +1242,7 @@ namespace pcr
         bool bIsEnumProperty = ( nPropertyUIFlags & PROP_FLAG_ENUM ) != 0;
         if ( bIsEnumProperty || ( PROPERTY_ID_TARGET_FRAME == nPropId ) )
         {
-            std::vector< OUString > aEnumValues = m_pInfoService->getPropertyEnumRepresentations( nPropId );
+            std::vector<OUString> aEnumValues = OPropertyInfoService::getPropertyEnumRepresentations(nPropId);
             std::vector< OUString >::const_iterator pStart = aEnumValues.begin();
             std::vector< OUString >::const_iterator pEnd = aEnumValues.end();
 
@@ -2589,9 +2589,6 @@ namespace pcr
 
     bool FormComponentPropertyHandler::impl_dialogListSelection_nothrow( const OUString& _rProperty, ::osl::ClearableMutexGuard& _rClearBeforeDialog ) const
     {
-        OSL_PRECOND(m_pInfoService, "FormComponentPropertyHandler::impl_dialogListSelection_"
-                                    "nothrow: no property meta data!");
-
         OUString sPropertyUIName(OPropertyInfoService::getPropertyTranslation(OPropertyInfoService::getPropertyId(_rProperty)));
         ListSelectionDialog aDialog(impl_getDefaultDialogFrame_nothrow(), m_xComponent, _rProperty, sPropertyUIName);
         _rClearBeforeDialog.clear();

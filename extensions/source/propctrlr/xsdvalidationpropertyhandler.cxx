@@ -312,7 +312,7 @@ namespace pcr
         case PROPERTY_ID_XSD_WHITESPACES:
         {
             nControlType = PropertyControlType::ListBox;
-            aListEntries = m_pInfoService->getPropertyEnumRepresentations( PROPERTY_ID_XSD_WHITESPACES );
+            aListEntries = OPropertyInfoService::getPropertyEnumRepresentations(PROPERTY_ID_XSD_WHITESPACES);
         }
         break;
 

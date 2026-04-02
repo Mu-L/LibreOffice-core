@@ -511,7 +511,7 @@ sal_uInt32 OPropertyInfoService::getPropertyUIFlags(sal_Int32 _nId)
     return pInfo ? pInfo->nUIFlags : 0;
 }
 
-std::vector<OUString> OPropertyInfoService::getPropertyEnumRepresentations(sal_Int32 _nId) const
+std::vector<OUString> OPropertyInfoService::getPropertyEnumRepresentations(sal_Int32 _nId)
 {
     OSL_ENSURE(((getPropertyUIFlags(_nId) & PROP_FLAG_ENUM) != 0)
                    || (_nId == PROPERTY_ID_TARGET_FRAME),
@@ -708,10 +708,8 @@ const OPropertyInfoImpl* OPropertyInfoService::getPropertyInfo(sal_Int32 _nId)
 
 //= DefaultEnumRepresentation
 
-DefaultEnumRepresentation::DefaultEnumRepresentation(const OPropertyInfoService& _rInfo,
-                                                     const Type& _rType, sal_Int32 _nPropertyId)
-    : m_rMetaData(_rInfo)
-    , m_aType(_rType)
+DefaultEnumRepresentation::DefaultEnumRepresentation(const Type& _rType, sal_Int32 _nPropertyId)
+    : m_aType(_rType)
     , m_nPropertyId(_nPropertyId)
 {
 }
@@ -720,14 +718,15 @@ DefaultEnumRepresentation::~DefaultEnumRepresentation() {}
 
 std::vector<OUString> DefaultEnumRepresentation::getDescriptions() const
 {
-    return m_rMetaData.getPropertyEnumRepresentations(m_nPropertyId);
+    return OPropertyInfoService::getPropertyEnumRepresentations(m_nPropertyId);
 }
 
 void DefaultEnumRepresentation::getValueFromDescription(const OUString& _rDescription,
                                                         Any& _out_rValue) const
 {
     sal_uInt32 nPropertyUIFlags = OPropertyInfoService::getPropertyUIFlags(m_nPropertyId);
-    std::vector<OUString> aEnumStrings = m_rMetaData.getPropertyEnumRepresentations(m_nPropertyId);
+    std::vector<OUString> aEnumStrings
+        = OPropertyInfoService::getPropertyEnumRepresentations(m_nPropertyId);
     std::vector<OUString>::const_iterator pos
         = std::find(aEnumStrings.begin(), aEnumStrings.end(), _rDescription);
     if (pos != aEnumStrings.end())
@@ -779,7 +778,8 @@ OUString DefaultEnumRepresentation::getDescriptionForValue(const Any& _rEnumValu
         // enum value starting with 1
         --nIntValue;
 
-    std::vector<OUString> aEnumStrings = m_rMetaData.getPropertyEnumRepresentations(m_nPropertyId);
+    std::vector<OUString> aEnumStrings
+        = OPropertyInfoService::getPropertyEnumRepresentations(m_nPropertyId);
     if ((nIntValue >= 0) && (o3tl::make_unsigned(nIntValue) < aEnumStrings.size()))
     {
         sReturn = aEnumStrings[nIntValue];

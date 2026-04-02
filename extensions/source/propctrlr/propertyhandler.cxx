@@ -55,7 +55,6 @@ PropertyHandler::PropertyHandler(const Reference<XComponentContext>& _rxContext)
     , m_bSupportedPropertiesAreKnown(false)
     , m_aPropertyListeners(m_aMutex)
     , m_xContext(_rxContext)
-    , m_pInfoService(new OPropertyInfoService)
 {
     m_xTypeConverter = Converter::create(_rxContext);
 }
@@ -141,7 +140,7 @@ Any SAL_CALL PropertyHandler::convertToPropertyValue(const OUString& _rPropertyN
         OUString sControlValue;
         OSL_VERIFY(_rControlValue >>= sControlValue);
         ::rtl::Reference<IPropertyEnumRepresentation> aEnumConversion(
-            new DefaultEnumRepresentation(*m_pInfoService, aProperty.Type, nPropId));
+            new DefaultEnumRepresentation(aProperty.Type, nPropId));
         // TODO/UNOize: cache those converters?
         aEnumConversion->getValueFromDescription(sControlValue, aPropertyValue);
     }
@@ -163,8 +162,8 @@ Any SAL_CALL PropertyHandler::convertToControlValue(const OUString& _rPropertyNa
         DBG_ASSERT(_rControlValueType.getTypeClass() == TypeClass_STRING,
                    "PropertyHandler::convertToControlValue: ENUM, but not STRING?");
 
-        ::rtl::Reference<IPropertyEnumRepresentation> aEnumConversion(new DefaultEnumRepresentation(
-            *m_pInfoService, _rPropertyValue.getValueType(), nPropId));
+        ::rtl::Reference<IPropertyEnumRepresentation> aEnumConversion(
+            new DefaultEnumRepresentation(_rPropertyValue.getValueType(), nPropId));
         // TODO/UNOize: cache those converters?
         return Any(aEnumConversion->getDescriptionForValue(_rPropertyValue));
     }
@@ -192,7 +191,7 @@ LineDescriptor SAL_CALL PropertyHandler::describePropertyLine(
     if ((OPropertyInfoService::getPropertyUIFlags(nPropId) & PROP_FLAG_ENUM) != 0)
     {
         aDescriptor.Control = PropertyHandlerHelper::createListBoxControl(
-            _rxControlFactory, m_pInfoService->getPropertyEnumRepresentations(nPropId),
+            _rxControlFactory, OPropertyInfoService::getPropertyEnumRepresentations(nPropId),
             PropertyHandlerHelper::requiresReadOnlyControl(rProperty.Attributes), false);
     }
     else

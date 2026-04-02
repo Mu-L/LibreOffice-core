@@ -281,7 +281,7 @@ namespace pcr
         {
             // available options are nearly the same as for the "normal" button type, but only the
             // first two options
-            aListEntries = m_pInfoService->getPropertyEnumRepresentations( PROPERTY_ID_BUTTONTYPE );
+            aListEntries = OPropertyInfoService::getPropertyEnumRepresentations( PROPERTY_ID_BUTTONTYPE );
             aListEntries.resize( 2 );
         }
         break;
@@ -354,7 +354,7 @@ namespace pcr
         case PROPERTY_ID_XFORMS_BUTTONTYPE:
         {
             ::rtl::Reference< IPropertyEnumRepresentation > aEnumConversion(
-                new DefaultEnumRepresentation( *m_pInfoService, ::cppu::UnoType<FormButtonType>::get(), PROPERTY_ID_BUTTONTYPE ) );
+                new DefaultEnumRepresentation(::cppu::UnoType<FormButtonType>::get(), PROPERTY_ID_BUTTONTYPE ) );
             // TODO/UNOize: make aEnumConversion a member?
             aEnumConversion->getValueFromDescription( sControlValue, aPropertyValue );
         }
@@ -396,7 +396,7 @@ namespace pcr
         case PROPERTY_ID_XFORMS_BUTTONTYPE:
         {
             ::rtl::Reference< IPropertyEnumRepresentation > aEnumConversion(
-                new DefaultEnumRepresentation( *m_pInfoService, _rPropertyValue.getValueType(), PROPERTY_ID_BUTTONTYPE ) );
+                new DefaultEnumRepresentation(_rPropertyValue.getValueType(), PROPERTY_ID_BUTTONTYPE ) );
             // TODO/UNOize: make aEnumConversion a member?
             aControlValue <<= aEnumConversion->getDescriptionForValue( _rPropertyValue );
         }

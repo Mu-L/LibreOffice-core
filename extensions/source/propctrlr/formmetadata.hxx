@@ -19,7 +19,6 @@
 
 #pragma once
 
-#include "propertyinfo.hxx"
 #include "enumrepresentation.hxx"
 
 namespace pcr
@@ -28,7 +27,7 @@ struct OPropertyInfoImpl;
 
 //= OPropertyInfoService
 
-class OPropertyInfoService final : public IPropertyInfoService
+class OPropertyInfoService final
 {
     static std::size_t s_nCount;
     static OPropertyInfoImpl* s_pPropertyInfos;
@@ -40,8 +39,7 @@ public:
     static OUString getPropertyHelpId(sal_Int32 _nId);
     static sal_Int16 getPropertyPos(sal_Int32 _nId);
     static sal_uInt32 getPropertyUIFlags(sal_Int32 _nId);
-    // IPropertyInfoService
-    virtual std::vector<OUString> getPropertyEnumRepresentations(sal_Int32 _nId) const override;
+    static std::vector<OUString> getPropertyEnumRepresentations(sal_Int32 _nId);
 
     static bool isComposeable(const OUString& _rPropertyName);
 
@@ -61,19 +59,11 @@ private:
 class DefaultEnumRepresentation : public IPropertyEnumRepresentation
 {
 private:
-    const OPropertyInfoService& m_rMetaData;
     css::uno::Type m_aType;
     const sal_Int32 m_nPropertyId;
 
 public:
-    /** constructs an instance
-
-            @param _rInfo
-                An instance implementing IPropertyInfoService. Must live at least as
-                long as the DefaultEnumRepresentation should live.
-        */
-    DefaultEnumRepresentation(const OPropertyInfoService& _rInfo, const css::uno::Type& _rType,
-                              sal_Int32 _nPropertyId);
+    DefaultEnumRepresentation(const css::uno::Type& _rType, sal_Int32 _nPropertyId);
 
 protected:
     virtual ~DefaultEnumRepresentation() override;

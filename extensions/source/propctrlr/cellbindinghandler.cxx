@@ -43,8 +43,8 @@ using namespace ::comphelper;
 CellBindingPropertyHandler::CellBindingPropertyHandler(
     const Reference<XComponentContext>& _rxContext)
     : PropertyHandlerComponent(_rxContext)
-    , m_pCellExchangeConverter(new DefaultEnumRepresentation(
-          *m_pInfoService, ::cppu::UnoType<sal_Int16>::get(), PROPERTY_ID_CELL_EXCHANGE_TYPE))
+    , m_pCellExchangeConverter(new DefaultEnumRepresentation(::cppu::UnoType<sal_Int16>::get(),
+                                                             PROPERTY_ID_CELL_EXCHANGE_TYPE))
 {
 }
 
