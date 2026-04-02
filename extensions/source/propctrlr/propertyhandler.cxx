@@ -136,7 +136,7 @@ Any SAL_CALL PropertyHandler::convertToPropertyValue(const OUString& _rPropertyN
         // NULL is converted to NULL
         return aPropertyValue;
 
-    if ((m_pInfoService->getPropertyUIFlags(nPropId) & PROP_FLAG_ENUM) != 0)
+    if ((OPropertyInfoService::getPropertyUIFlags(nPropId) & PROP_FLAG_ENUM) != 0)
     {
         OUString sControlValue;
         OSL_VERIFY(_rControlValue >>= sControlValue);
@@ -158,7 +158,7 @@ Any SAL_CALL PropertyHandler::convertToControlValue(const OUString& _rPropertyNa
     ::osl::MutexGuard aGuard(m_aMutex);
     PropertyId nPropId = OPropertyInfoService::getPropertyId(_rPropertyName);
 
-    if ((m_pInfoService->getPropertyUIFlags(nPropId) & PROP_FLAG_ENUM) != 0)
+    if ((OPropertyInfoService::getPropertyUIFlags(nPropId) & PROP_FLAG_ENUM) != 0)
     {
         DBG_ASSERT(_rControlValueType.getTypeClass() == TypeClass_STRING,
                    "PropertyHandler::convertToControlValue: ENUM, but not STRING?");
@@ -189,7 +189,7 @@ LineDescriptor SAL_CALL PropertyHandler::describePropertyLine(
     const Property& rProperty(impl_getPropertyFromId_throw(nPropId));
 
     LineDescriptor aDescriptor;
-    if ((m_pInfoService->getPropertyUIFlags(nPropId) & PROP_FLAG_ENUM) != 0)
+    if ((OPropertyInfoService::getPropertyUIFlags(nPropId) & PROP_FLAG_ENUM) != 0)
     {
         aDescriptor.Control = PropertyHandlerHelper::createListBoxControl(
             _rxControlFactory, m_pInfoService->getPropertyEnumRepresentations(nPropId),
@@ -201,7 +201,7 @@ LineDescriptor SAL_CALL PropertyHandler::describePropertyLine(
     aDescriptor.HelpURL = HelpIdUrl::getHelpURL(OPropertyInfoService::getPropertyHelpId(nPropId));
     aDescriptor.DisplayName = OPropertyInfoService::getPropertyTranslation(nPropId);
 
-    if ((m_pInfoService->getPropertyUIFlags(nPropId) & PROP_FLAG_DATA_PROPERTY) != 0)
+    if ((OPropertyInfoService::getPropertyUIFlags(nPropId) & PROP_FLAG_DATA_PROPERTY) != 0)
         aDescriptor.Category = "Data";
     else
         aDescriptor.Category = "General";
@@ -211,7 +211,7 @@ LineDescriptor SAL_CALL PropertyHandler::describePropertyLine(
 sal_Bool SAL_CALL PropertyHandler::isComposable(const OUString& _rPropertyName)
 {
     ::osl::MutexGuard aGuard(m_aMutex);
-    return m_pInfoService->isComposeable(_rPropertyName);
+    return OPropertyInfoService::isComposeable(_rPropertyName);
 }
 
 InteractiveSelectionResult SAL_CALL PropertyHandler::onInteractivePropertySelection(

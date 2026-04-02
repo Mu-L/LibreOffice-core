@@ -835,7 +835,7 @@ namespace pcr
             if ( sDisplayName.isEmpty() )
                 continue;
 
-            sal_uInt32  nPropertyUIFlags = m_pInfoService->getPropertyUIFlags( nPropId );
+            sal_uInt32 nPropertyUIFlags = OPropertyInfoService::getPropertyUIFlags(nPropId);
             bool bIsVisibleForForms   = ( nPropertyUIFlags & PROP_FLAG_FORM_VISIBLE   ) != 0;
             bool bIsVisibleForDialogs = ( nPropertyUIFlags & PROP_FLAG_DIALOG_VISIBLE ) != 0;
 
@@ -1238,7 +1238,7 @@ namespace pcr
 
 
         // enum properties
-        sal_uInt32 nPropertyUIFlags = m_pInfoService->getPropertyUIFlags( nPropId );
+        sal_uInt32 nPropertyUIFlags = OPropertyInfoService::getPropertyUIFlags(nPropId);
         bool bIsEnumProperty = ( nPropertyUIFlags & PROP_FLAG_ENUM ) != 0;
         if ( bIsEnumProperty || ( PROPERTY_ID_TARGET_FRAME == nPropId ) )
         {
@@ -2281,7 +2281,7 @@ namespace pcr
             break;
         }
 
-        sal_uInt32 nPropertyUIFlags = m_pInfoService->getPropertyUIFlags( _rProperty.Handle );
+        sal_uInt32 nPropertyUIFlags = OPropertyInfoService::getPropertyUIFlags(_rProperty.Handle);
 
         // don't show experimental properties unless allowed to do so
         if ( ( nPropertyUIFlags & PROP_FLAG_EXPERIMENTAL ) != 0 )

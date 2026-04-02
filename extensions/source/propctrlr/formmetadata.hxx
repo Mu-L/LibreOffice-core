@@ -39,11 +39,11 @@ public:
     static OUString getPropertyTranslation(sal_Int32 _nId);
     static OUString getPropertyHelpId(sal_Int32 _nId);
     static sal_Int16 getPropertyPos(sal_Int32 _nId);
+    static sal_uInt32 getPropertyUIFlags(sal_Int32 _nId);
     // IPropertyInfoService
-    virtual sal_uInt32 getPropertyUIFlags(sal_Int32 _nId) const override;
     virtual std::vector<OUString> getPropertyEnumRepresentations(sal_Int32 _nId) const override;
 
-    bool isComposeable(const OUString& _rPropertyName) const;
+    static bool isComposeable(const OUString& _rPropertyName);
 
 private:
     static const OPropertyInfoImpl* getPropertyInfo();

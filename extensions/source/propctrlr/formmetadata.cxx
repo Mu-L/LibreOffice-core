@@ -505,7 +505,7 @@ sal_Int16 OPropertyInfoService::getPropertyPos(sal_Int32 _nId)
     return pInfo ? pInfo->nPos : 0xFFFF;
 }
 
-sal_uInt32 OPropertyInfoService::getPropertyUIFlags(sal_Int32 _nId) const
+sal_uInt32 OPropertyInfoService::getPropertyUIFlags(sal_Int32 _nId)
 {
     const OPropertyInfoImpl* pInfo = getPropertyInfo(_nId);
     return pInfo ? pInfo->nUIFlags : 0;
@@ -660,7 +660,7 @@ std::vector<OUString> OPropertyInfoService::getPropertyEnumRepresentations(sal_I
     return aReturn;
 }
 
-bool OPropertyInfoService::isComposeable(const OUString& _rPropertyName) const
+bool OPropertyInfoService::isComposeable(const OUString& _rPropertyName)
 {
     sal_Int32 nId = getPropertyId(_rPropertyName);
     if (nId == -1)
@@ -726,7 +726,7 @@ std::vector<OUString> DefaultEnumRepresentation::getDescriptions() const
 void DefaultEnumRepresentation::getValueFromDescription(const OUString& _rDescription,
                                                         Any& _out_rValue) const
 {
-    sal_uInt32 nPropertyUIFlags = m_rMetaData.getPropertyUIFlags(m_nPropertyId);
+    sal_uInt32 nPropertyUIFlags = OPropertyInfoService::getPropertyUIFlags(m_nPropertyId);
     std::vector<OUString> aEnumStrings = m_rMetaData.getPropertyEnumRepresentations(m_nPropertyId);
     std::vector<OUString>::const_iterator pos
         = std::find(aEnumStrings.begin(), aEnumStrings.end(), _rDescription);
@@ -774,7 +774,7 @@ OUString DefaultEnumRepresentation::getDescriptionForValue(const Any& _rEnumValu
     sal_Int32 nIntValue = -1;
     OSL_VERIFY(::cppu::enum2int(nIntValue, _rEnumValue));
 
-    sal_uInt32 nUIFlags = m_rMetaData.getPropertyUIFlags(m_nPropertyId);
+    sal_uInt32 nUIFlags = OPropertyInfoService::getPropertyUIFlags(m_nPropertyId);
     if ((nUIFlags & PROP_FLAG_ENUM_ONE) == PROP_FLAG_ENUM_ONE)
         // enum value starting with 1
         --nIntValue;
