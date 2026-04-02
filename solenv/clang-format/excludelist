@@ -3511,8 +3511,6 @@ extensions/source/propctrlr/formcontroller.hxx
 extensions/source/propctrlr/formgeometryhandler.cxx
 extensions/source/propctrlr/formlinkdialog.cxx
 extensions/source/propctrlr/formlinkdialog.hxx
-extensions/source/propctrlr/formmetadata.cxx
-extensions/source/propctrlr/formmetadata.hxx
 extensions/source/propctrlr/formstrings.hxx
 extensions/source/propctrlr/genericpropertyhandler.cxx
 extensions/source/propctrlr/genericpropertyhandler.hxx
