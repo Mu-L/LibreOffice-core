@@ -1678,6 +1678,23 @@ CPPUNIT_TEST_FIXTURE(HtmlExportTest, testOpticalSizing)
     uno::Reference<beans::XPropertySet> xRetCursor2(getRun(getParagraph(1), 1), uno::UNO_QUERY);
     CPPUNIT_ASSERT_EQUAL(true, getProperty<bool>(xRetCursor2, u"CharOpticalSizing"_ustr));
 }
+
+CPPUNIT_TEST_FIXTURE(HtmlExportTest, testFontVariationSettings)
+{
+    createSwDoc();
+    uno::Reference<text::XTextRange> xRun = getRun(getParagraph(1), 1);
+    xRun->setString(u"text"_ustr);
+    uno::Reference<beans::XPropertySet> xCursor(xRun, uno::UNO_QUERY);
+
+    xCursor->setPropertyValue(u"CharFontVariations"_ustr,
+                              uno::Any(u"\"wght\" 700, \"wdth\" 75"_ustr));
+    saveAndReload(TestFilter::HTML_WRITER);
+
+    uno::Reference<beans::XPropertySet> xRetCursor(getRun(getParagraph(1), 1), uno::UNO_QUERY);
+    CPPUNIT_ASSERT_EQUAL(u"\"wght\" 700, \"wdth\" 75"_ustr,
+                         getProperty<OUString>(xRetCursor, u"CharFontVariations"_ustr));
+}
+
 } // end of anonymous namespace
 CPPUNIT_PLUGIN_IMPLEMENT();
 

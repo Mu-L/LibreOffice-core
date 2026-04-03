@@ -32,6 +32,8 @@
 #include <editeng/udlnitem.hxx>
 #include <editeng/adjustitem.hxx>
 #include <editeng/blinkitem.hxx>
+#include <editeng/fontvariationsitem.hxx>
+#include <vcl/font/Feature.hxx>
 #include <editeng/crossedoutitem.hxx>
 #include <editeng/kernitem.hxx>
 #include <editeng/lspcitem.hxx>
@@ -285,6 +287,7 @@ struct SvxCSS1ItemIds
     sal_uInt16 nCaseMap;
     sal_uInt16 nBlink;
     sal_uInt16 nOpticalSizing;
+    sal_uInt16 nFontVariations;
 
     sal_uInt16 nLineSpacing;
     sal_uInt16 nAdjust;
@@ -741,6 +744,7 @@ SvxCSS1Parser::SvxCSS1Parser( SfxItemPool& rPool, OUString aBaseURL,
     aItemIds.nCaseMap = initTrueWhich( SID_ATTR_CHAR_CASEMAP );
     aItemIds.nBlink = initTrueWhich( SID_ATTR_FLASH );
     aItemIds.nOpticalSizing = initTrueWhich( SID_ATTR_CHAR_OPTICAL_SIZING );
+    aItemIds.nFontVariations = initTrueWhich( SID_ATTR_CHAR_FONT_VARIATIONS );
 
     aItemIds.nLineSpacing = initTrueWhich( SID_ATTR_PARA_LINESPACE );
     aItemIds.nAdjust = initTrueWhich( SID_ATTR_PARA_ADJUST );
@@ -1270,6 +1274,30 @@ static void ParseCSS1_font_optical_sizing( const CSS1Expression *pExpr,
     default:
         break;
     }
+}
+
+static void ParseCSS1_font_variation_settings( const CSS1Expression *pExpr,
+                                    SfxItemSet &rItemSet,
+                                    SvxCSS1PropertyInfo& /*rPropInfo*/,
+                                    const SvxCSS1Parser& /*rParser*/ )
+{
+    assert(pExpr && "no expression");
+
+    std::vector<vcl::FontVariation> aVariations;
+    while( pExpr && pExpr->GetType() == CSS1_STRING )
+    {
+        OUString aTag = pExpr->GetString();
+        pExpr = pExpr->GetNext();
+        if( !pExpr || pExpr->GetType() != CSS1_NUMBER )
+            break;
+        if( aTag.getLength() == 4 )
+            aVariations.push_back({ vcl::font::featureCode(OUStringToOString(aTag,
+                RTL_TEXTENCODING_ASCII_US).getStr()), static_cast<float>(pExpr->GetNumber()) });
+        pExpr = pExpr->GetNext();
+    }
+
+    if( !aVariations.empty() )
+        rItemSet.Put( SvxFontVariationsItem( std::move(aVariations), aItemIds.nFontVariations ) );
 }
 
 static void ParseCSS1_text_transform( const CSS1Expression *pExpr,
@@ -3128,6 +3156,7 @@ CSS1PropEntry constexpr aCSS1PropFnTab[] =
     { sCSS1_P_font_size, ParseCSS1_font_size },
     { sCSS1_P_font_style, ParseCSS1_font_style },
     { sCSS1_P_font_variant, ParseCSS1_font_variant },
+    { sCSS1_P_font_variation_settings, ParseCSS1_font_variation_settings },
     { sCSS1_P_font_weight, ParseCSS1_font_weight },
     { sCSS1_P_height, ParseCSS1_height },
     { sCSS1_P_left, ParseCSS1_left },

@@ -34,6 +34,7 @@
 #include <editeng/cmapitem.hxx>
 #include <editeng/colritem.hxx>
 #include <editeng/fontitem.hxx>
+#include <editeng/fontvariationsitem.hxx>
 #include <editeng/fhgtitem.hxx>
 #include <editeng/postitem.hxx>
 #include <editeng/kernitem.hxx>
@@ -2560,6 +2561,17 @@ static SwHTMLWriter& OutCSS1_SvxOpticalSizing( SwHTMLWriter& rWrt, const SfxPool
     return rWrt;
 }
 
+static SwHTMLWriter& OutCSS1_SvxFontVariations( SwHTMLWriter& rWrt, const SfxPoolItem& rHt )
+{
+    const auto& rVariations = static_cast<const SvxFontVariationsItem&>(rHt).GetVariations();
+    if( !rVariations.empty() )
+    {
+        OUString aStr = vcl::FontVariationsToString(rVariations);
+        rWrt.OutCSS1_Property( sCSS1_P_font_variation_settings, aStr );
+    }
+    return rWrt;
+}
+
 static SwHTMLWriter& OutCSS1_SvxFontWeight( SwHTMLWriter& rWrt, const SfxPoolItem& rHt )
 {
     sal_uInt16 nScript = CSS1_OUTMODE_WESTERN;
@@ -3477,7 +3489,7 @@ SwAttrFnTab const aCSS1AttrFnTab = {
 /* RES_CHRATR_UNUSED3 */            nullptr,
 /* RES_CHRATR_SCRIPT_HINT */        nullptr,
 /* RES_CHRATR_OPTICAL_SIZING */     OutCSS1_SvxOpticalSizing,
-/* RES_CHRATR_FONT_VARIATIONS */    nullptr,
+/* RES_CHRATR_FONT_VARIATIONS */    OutCSS1_SvxFontVariations,
 
 /* RES_TXTATR_REFMARK */            nullptr,
 /* RES_TXTATR_TOXMARK */            nullptr,
