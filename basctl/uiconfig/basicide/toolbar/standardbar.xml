@@ -18,9 +18,9 @@
  *   the License at http://www.apache.org/licenses/LICENSE-2.0 .
  -->
 <toolbar:toolbar xmlns:toolbar="http://openoffice.org/2001/toolbar" xmlns:xlink="http://www.w3.org/1999/xlink">
- <toolbar:toolbaritem xlink:href=".uno:OpenUrl" toolbar:visible="false"/>
- <toolbar:toolbaritem xlink:href=".uno:AddDirect"/>
- <toolbar:toolbaritem xlink:href=".uno:Open"/>
+ <toolbar:toolbaritem xlink:href=".uno:ChooseMacro"/>
+ <toolbar:toolbaritem xlink:href=".uno:ModuleDialog"/>
+ <toolbar:toolbarseparator/>
  <toolbar:toolbaritem xlink:href=".uno:Save"/>
  <toolbar:toolbaritem xlink:href=".uno:SaveAs" toolbar:visible="false"/>
  <toolbar:toolbarseparator/>
@@ -37,9 +37,6 @@
  <toolbar:toolbaritem xlink:href=".uno:ObjectCatalog"/>
  <toolbar:toolbaritem xlink:href=".uno:WatchWindow"/>
  <toolbar:toolbaritem xlink:href=".uno:StackWindow"/>
- <toolbar:toolbarseparator/>
- <toolbar:toolbaritem xlink:href=".uno:ChooseMacro"/>
- <toolbar:toolbaritem xlink:href=".uno:ModuleDialog"/>
  <toolbar:toolbarseparator/>
  <toolbar:toolbaritem xlink:href=".uno:HelpIndex"/>
  <toolbar:toolbaritem xlink:href=".uno:ExtendedHelp" toolbar:visible="false"/>
