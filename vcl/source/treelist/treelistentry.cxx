@@ -190,11 +190,7 @@ size_t SvTreeListEntry::GetPos( const SvLBoxItem* pItem ) const
     return it == m_Items.end() ? ITEM_NOT_FOUND : std::distance(m_Items.begin(), it);
 }
 
-
-void SvTreeListEntry::SetUserData( void* pPtr )
-{
-    pUserData = pPtr;
-}
+void SvTreeListEntry::SetUserData(OUString* pPtr) { pUserData = pPtr; }
 
 bool SvTreeListEntry::HasChildrenOnDemand() const
 {

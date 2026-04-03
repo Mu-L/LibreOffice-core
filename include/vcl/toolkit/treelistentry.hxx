@@ -66,7 +66,7 @@ class UNLESS_MERGELIBS_MORE(VCL_DLLPUBLIC) SvTreeListEntry
     sal_uInt32          nListPos;
     sal_uInt32          mnExtraIndent;
     ItemsType           m_Items;
-    void*               pUserData;
+    OUString* pUserData;
     SvTLEntryFlags      nEntryFlags;
     std::optional<Color> mxTextColor;
     OUString m_sAccessibleName;
@@ -106,8 +106,8 @@ public:
     const SvLBoxItem* GetFirstItem(SvLBoxItemType eType) const;
     SvLBoxItem* GetFirstItem(SvLBoxItemType eType);
     size_t GetPos( const SvLBoxItem* pItem ) const;
-    void*       GetUserData() const { return pUserData;}
-    void        SetUserData( void* pPtr );
+    OUString* GetUserData() const { return pUserData; }
+    void SetUserData(OUString* pPtr);
     void        EnableChildrenOnDemand( bool bEnable=true );
     bool        HasChildrenOnDemand() const;
     void        SetSeparator();

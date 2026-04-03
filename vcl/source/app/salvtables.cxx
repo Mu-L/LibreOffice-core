@@ -3483,13 +3483,13 @@ std::unique_ptr<weld::TreeIter> SalInstanceItemView::get_iterator(int nPos) cons
 const OUString* SalInstanceItemView::getEntryData(int index) const
 {
     SvTreeListEntry* pEntry = m_pTreeListBox->GetEntry(nullptr, index);
-    return pEntry ? static_cast<const OUString*>(pEntry->GetUserData()) : nullptr;
+    return pEntry ? pEntry->GetUserData() : nullptr;
 }
 
 OUString SalInstanceItemView::get_id(const weld::TreeIter& rIter) const
 {
     const SalInstanceTreeIter& rVclIter = static_cast<const SalInstanceTreeIter&>(rIter);
-    const OUString* pStr = static_cast<const OUString*>(rVclIter.iter->GetUserData());
+    const OUString* pStr = rVclIter.iter->GetUserData();
     if (pStr)
         return *pStr;
     return OUString();
@@ -3507,7 +3507,7 @@ OUString SalInstanceItemView::get_selected_id() const
     assert(m_pTreeListBox->IsUpdateMode() && "don't request selection when frozen");
     if (SvTreeListEntry* pEntry = m_pTreeListBox->FirstSelected())
     {
-        if (const OUString* pStr = static_cast<const OUString*>(pEntry->GetUserData()))
+        if (const OUString* pStr = pEntry->GetUserData())
             return *pStr;
     }
     return OUString();
@@ -3659,7 +3659,7 @@ void SalInstanceTreeView::do_insert(const weld::TreeIter* pParent, int pos, cons
     const SalInstanceTreeIter* pVclIter = static_cast<const SalInstanceTreeIter*>(pParent);
     SvTreeListEntry* iter = pVclIter ? pVclIter->iter : nullptr;
     auto nInsertPos = pos == -1 ? TREELIST_APPEND : pos;
-    void* pUserData;
+    OUString* pUserData;
     if (pId)
     {
         m_aUserData.emplace_back(std::make_unique<OUString>(*pId));
@@ -4129,7 +4129,7 @@ int SalInstanceTreeView::find_id(const OUString& rId) const
 {
     for (SvTreeListEntry* pEntry = m_xTreeView->First(); pEntry; pEntry = m_xTreeView->Next(pEntry))
     {
-        const OUString* pId = static_cast<const OUString*>(pEntry->GetUserData());
+        const OUString* pId = pEntry->GetUserData();
         if (!pId)
             continue;
         if (rId == *pId)
@@ -4891,7 +4891,7 @@ IMPL_LINK(SalInstanceTreeView, CustomRenderHdl, svtree_render_args, payload, voi
     vcl::RenderContext& rRenderDevice = std::get<0>(payload);
     const tools::Rectangle& rRect = std::get<1>(payload);
     const SvTreeListEntry& rEntry = std::get<2>(payload);
-    const OUString* pId = static_cast<const OUString*>(rEntry.GetUserData());
+    const OUString* pId = rEntry.GetUserData();
     if (!pId)
         return;
     signal_custom_render(rRenderDevice, rRect, m_xTreeView->IsSelected(&rEntry), *pId);
@@ -4901,7 +4901,7 @@ IMPL_LINK(SalInstanceTreeView, CustomMeasureHdl, svtree_measure_args, payload, S
 {
     vcl::RenderContext& rRenderDevice = payload.first;
     const SvTreeListEntry& rEntry = payload.second;
-    const OUString* pId = static_cast<const OUString*>(rEntry.GetUserData());
+    const OUString* pId = rEntry.GetUserData();
     if (!pId)
         return Size();
     return signal_custom_get_size(rRenderDevice, *pId);
@@ -5132,7 +5132,7 @@ void SalInstanceIconView::do_insert(int pos, const OUString* pStr, const OUStrin
                                     const Image& rImage, weld::TreeIter* pRet)
 {
     auto nInsertPos = pos == -1 ? TREELIST_APPEND : pos;
-    void* pUserData;
+    OUString* pUserData;
     if (pId)
     {
         m_aUserData.emplace_back(std::make_unique<OUString>(*pId));

@@ -1791,7 +1791,7 @@ StringMap IconViewUIObject::get_state()
 
     SvTreeListEntry* pEntry = mxTreeList->FirstSelected();
 
-    OUString* pId = static_cast<OUString*>(pEntry->GetUserData());
+    OUString* pId = pEntry->GetUserData();
     if (pId)
         aMap[u"SelectedItemId"_ustr] = *pId;
 
