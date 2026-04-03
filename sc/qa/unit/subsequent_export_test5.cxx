@@ -71,22 +71,6 @@ CPPUNIT_TEST_FIXTURE(ScExportTest5, testTdf142929_filterLessThanXLSX)
     assertXPath(pDoc, "//x:customFilters/x:customFilter", "operator", u"lessThan");
 }
 
-CPPUNIT_TEST_FIXTURE(ScExportTest5, testInvalidNamedRange)
-{
-    // Given a document which has a named range (myname) that refers to the "1" external link, but
-    // the link's type is xlPathMissing, when importing that document:
-    createScDoc("xlsx/invalid-named-range.xlsx");
-
-    // Then make sure that named range is ignored, as "1" can't be resolved, and exporting it back
-    // to XLSX (without the xlPathMissing link) would corrupt the document:
-    uno::Reference<beans::XPropertySet> xDocProps(mxComponent, uno::UNO_QUERY);
-    uno::Reference<container::XNameAccess> xNamedRanges(
-        xDocProps->getPropertyValue(u"NamedRanges"_ustr), uno::UNO_QUERY);
-    // Without the fix in place, this test would have failed, we didn't ignore the problematic named
-    // range on import.
-    CPPUNIT_ASSERT(!xNamedRanges->hasByName(u"myname"_ustr));
-}
-
 CPPUNIT_TEST_FIXTURE(ScExportTest5, testQueryTableHeaders)
 {
     createScDoc("xlsx/TableEmptyHeaders.xlsx");
@@ -1511,6 +1495,21 @@ CPPUNIT_TEST_FIXTURE(ScExportTest5, testErrorExternalsInDataValidation)
 
     xmlDocUniquePtr pDocXml = parseExport(u"xl/externalLinks/externalLink2.xml"_ustr);
     CPPUNIT_ASSERT(pDocXml);
+}
+
+CPPUNIT_TEST_FIXTURE(ScExportTest5, testMissingPathExternal)
+{
+    createScDoc("xlsx/MissingPathExternal.xlsx");
+    save(TestFilter::XLSX);
+
+    xmlDocUniquePtr pExternalRel
+        = parseExport(u"xl/externalLinks/_rels/externalLink1.xml.rels"_ustr);
+    CPPUNIT_ASSERT(pExternalRel);
+
+    assertXPath(
+        pExternalRel, "/rels:Relationships/rels:Relationship", "Type",
+        u"http://schemas.microsoft.com/office/2006/relationships/xlExternalLinkPath/xlPathMissing");
+    assertXPath(pExternalRel, "/rels:Relationships/rels:Relationship", "Target", u"Tabelle1");
 }
 
 CPPUNIT_PLUGIN_IMPLEMENT();
