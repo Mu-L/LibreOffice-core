@@ -91,14 +91,7 @@ void SidebarToolBox::dispose()
     SvtMiscOptions().RemoveListenerLink(LINK(this, SidebarToolBox, ChangedIconHandler));
     SetDataChangedHdl(Link<const DataChangedEvent*, void>());
 
-    ControllerContainer aControllers;
-    aControllers.swap(maControllers);
-    for (auto const& controller : aControllers)
-    {
-        Reference<lang::XComponent> xComponent(controller.second, UNO_QUERY);
-        if (xComponent.is())
-            xComponent->dispose();
-    }
+    ClearControllers();
 
     if (mxImageController)
         mxImageController->dispose();
@@ -115,6 +108,18 @@ void SidebarToolBox::dispose()
     }
 
     ToolBox::dispose();
+}
+
+void SidebarToolBox::ClearControllers()
+{
+    ControllerContainer aControllers;
+    aControllers.swap(maControllers);
+    for (auto const& controller : aControllers)
+    {
+        Reference<lang::XComponent> xComponent(controller.second, UNO_QUERY);
+        if (xComponent.is())
+            xComponent->dispose();
+    }
 }
 
 ToolBoxButtonSize SidebarToolBox::GetDefaultButtonSize() const
@@ -137,6 +142,11 @@ void SidebarToolBox::InsertItem(const OUString& rCommand,
 
     CreateController(GetItemId(aCommand), rFrame, std::max(rRequestedSize.Width(), ::tools::Long(0)), mbSideBar);
     RegisterHandlers();
+}
+
+void SidebarToolBox::Clear() {
+    ClearControllers();
+    ToolBox::Clear();
 }
 
 bool SidebarToolBox::EventNotify (NotifyEvent& rEvent)
@@ -165,6 +175,16 @@ void SidebarToolBox::CreateController (
     const css::uno::Reference<css::frame::XFrame>& rxFrame,
     const sal_Int32 nItemWidth, bool bSideBar)
 {
+    auto aController = maControllers.find(nItemId);
+    if (aController != maControllers.end())
+    {
+        Reference<lang::XComponent> xComponent(aController->second, UNO_QUERY);
+        if (xComponent.is())
+            xComponent->dispose();
+
+        maControllers.erase(aController);
+    }
+
     const OUString sCommandName (GetItemCommand(nItemId));
 
     uno::Reference<frame::XToolbarController> xController(sfx2::sidebar::ControllerFactory::CreateToolBoxController(
@@ -172,7 +192,7 @@ void SidebarToolBox::CreateController (
             VCLUnoHelper::GetInterface(this), nItemWidth, bSideBar));
 
     if (xController.is())
-        maControllers.insert(std::make_pair(nItemId, xController));
+        maControllers.emplace(nItemId, xController);
 }
 
 Reference<frame::XToolbarController> SidebarToolBox::GetControllerForItemId (const ToolBoxItemId nItemId) const

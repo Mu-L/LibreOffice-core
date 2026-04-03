@@ -320,7 +320,7 @@ public:
     void                InsertBreak( ImplToolItems::size_type nPos = APPEND );
     void                RemoveItem( ImplToolItems::size_type nPos );
     SAL_DLLPRIVATE void CopyItem( const ToolBox& rToolBox, ToolBoxItemId nItemId );
-    void                Clear();
+    virtual void        Clear();
 
     void                SetButtonType( ButtonType eNewType );
     ButtonType          GetButtonType() const { return meButtonType; }

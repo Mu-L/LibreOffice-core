@@ -49,6 +49,8 @@ public:
             const Size& rRequestedSize,
             ImplToolItems::size_type nPos = APPEND) override;
 
+    virtual void Clear() override;
+
     virtual bool EventNotify(NotifyEvent& rEvent) override;
     virtual void KeyInput( const KeyEvent& rKEvt ) override;
 
@@ -74,6 +76,9 @@ protected:
     void CreateController(const ToolBoxItemId nItemId,
                           const css::uno::Reference<css::frame::XFrame>& rxFrame,
                           const sal_Int32 nItemWidth, bool bSideBar);
+
+    void ClearControllers();
+
     void RegisterHandlers();
 };
 
