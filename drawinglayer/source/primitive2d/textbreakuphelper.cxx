@@ -149,6 +149,7 @@ namespace drawinglayer::primitive2d
                         mrSource.getTextFillColor(),
                         mrSource.getLetterSpacing(),
                         mrSource.getOpticalSizing(),
+                        mrSource.getFontVariations(),
                         mrSource.getProportionalFontSize(),
                         mrSource.getEscapement(),
 
@@ -185,6 +186,7 @@ namespace drawinglayer::primitive2d
                         COL_TRANSPARENT,
                         mrSource.getLetterSpacing(),
                         mrSource.getOpticalSizing(),
+                        mrSource.getFontVariations(),
                         mrSource.getProportionalFontSize(),
                         mrSource.getEscapement()));
             }

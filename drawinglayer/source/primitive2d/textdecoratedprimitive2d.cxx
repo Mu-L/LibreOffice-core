@@ -466,6 +466,7 @@ namespace drawinglayer::primitive2d
             const Color& rFillColor,
             short nLetterSpacing,
             bool bOpticalSizing,
+            const std::vector<vcl::FontVariation>& rFontVariations,
             sal_uInt8 nProportionalFontSize,
             short nEscapement,
 
@@ -495,6 +496,7 @@ namespace drawinglayer::primitive2d
                 rFillColor,
                 nLetterSpacing,
                 bOpticalSizing,
+                rFontVariations,
                 nProportionalFontSize,
                 nEscapement),
             maBufferedBrokenUpText(),

@@ -445,6 +445,7 @@ void VclProcessor2D::RenderTextSimpleOrDecoratedPortionPrimitive2D(
             aFont.SetFixKerning(rTextCandidate.getLetterSpacing());
 
             aFont.SetOpticalSizing(rTextCandidate.getOpticalSizing());
+            aFont.SetVariations(rTextCandidate.getFontVariations());
 
             // tdf#152990 set the font after the MapMode is (potentially) set so canvas uses the desired
             // font size

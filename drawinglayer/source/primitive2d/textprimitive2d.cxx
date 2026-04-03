@@ -206,7 +206,8 @@ TextSimplePortionPrimitive2D::TextSimplePortionPrimitive2D(
     sal_Int32 nTextLength, std::vector<double>&& rDXArray, std::vector<sal_Bool>&& rKashidaArray,
     attribute::FontAttribute aFontAttribute, css::lang::Locale aLocale,
     const basegfx::BColor& rFontColor, const Color& rTextFillColor, short nLetterSpacing,
-    bool bOpticalSizing, sal_uInt8 nProportionalFontSize, short nEscapement)
+    bool bOpticalSizing, const std::vector<vcl::FontVariation>& rFontVariations,
+    sal_uInt8 nProportionalFontSize, short nEscapement)
     : maTextTransform(std::move(rNewTransform))
     , maText(std::move(rText))
     , mnTextPosition(nTextPosition)
@@ -219,6 +220,7 @@ TextSimplePortionPrimitive2D::TextSimplePortionPrimitive2D(
     , maTextFillColor(rTextFillColor)
     , mnLetterSpacing(nLetterSpacing)
     , mbOpticalSizing(bOpticalSizing)
+    , maFontVariations(rFontVariations)
     , mnProportionalFontSize(nProportionalFontSize)
     , mnEscapement(nEscapement)
 {

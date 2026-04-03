@@ -1129,6 +1129,7 @@ namespace wmfemfhelper
                     aFillColor,
                     rFont.GetFixKerning(),
                     rFont.GetOpticalSizing(),
+                    rFont.GetVariations(),
                     100, 0,
 
                     // attributes for TextDecoratedPortionPrimitive2D
@@ -1160,7 +1161,8 @@ namespace wmfemfhelper
                     aFontColor,
                     COL_TRANSPARENT,
                     rFont.GetFixKerning(),
-                    rFont.GetOpticalSizing());
+                    rFont.GetOpticalSizing(),
+                    rFont.GetVariations());
             }
         }
 
