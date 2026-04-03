@@ -37,6 +37,7 @@ $(eval $(call gb_Module_add_targets,scripting,\
 		Package_ScriptsPython \
 		Pyuno_mailmerge \
 	) \
+	$(if $(ENABLE_QUICKJS),Library_jsprov) \
 	Library_basprov \
 	Library_dlgprov \
 	Library_protocolhandler \

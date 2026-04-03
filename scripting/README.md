@@ -41,6 +41,10 @@ C++ implementation of the `LanguageScriptProvider` UNO service for Basic
 C++ implementation of the `DialogProvider` UNO service used for loading
 UNO dialogs from various languages
 
+- `source/jsprov`
+
+C++ implementation of the `LanguageScriptProvider` UNO service for JavaScript using QuickJS.
+
 - `source/pyprov`
 
 `LanguageScriptProvider` for Python
