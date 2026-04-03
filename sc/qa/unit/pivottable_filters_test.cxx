@@ -2931,6 +2931,20 @@ CPPUNIT_TEST_FIXTURE(ScPivotTableFiltersTest, testCalcFields1XLSB)
     verifyCalcFields(pDoc, /*bBIFF12=*/true);
 }
 
+CPPUNIT_TEST_FIXTURE(ScPivotTableFiltersTest, testDatesDiscreteGrouping)
+{
+    createScDoc("xls/pivottable_dates_grouping.xls");
+    save(TestFilter::XLSX);
+
+    xmlDocUniquePtr pCacheDef = parseExport(u"xl/pivotCache/pivotCacheDefinition1.xml"_ustr);
+    CPPUNIT_ASSERT(pCacheDef);
+
+    assertXPath(pCacheDef,
+                "/x:pivotCacheDefinition/x:cacheFields/x:cacheField[last()]/"
+                "x:fieldGroup/x:groupItems",
+                "count", u"2");
+}
+
 CPPUNIT_TEST_FIXTURE(ScPivotTableFiltersTest, testCalcFieldSingleDataDimXLSX)
 {
     // Pivot table with a single calculated field as the only data dimension.
