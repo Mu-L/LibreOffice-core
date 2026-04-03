@@ -40,6 +40,7 @@ $(eval $(call gb_Module_add_targets,scripting,\
 	Library_basprov \
 	Library_dlgprov \
 	Library_protocolhandler \
+	Library_singleprov \
 	Library_scriptframe \
 	Library_stringresource \
 	Library_vbaevents \

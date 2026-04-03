@@ -27,6 +27,11 @@ browsing and executing scripts.
 C++ for a `ProtocolHandler` implementation that handles `vnd.sun.star.script`
 URIs and dispatches them for execution to the Scripting Framework.
 
+- `source/singleprov`
+
+A base helper class for C++ implementations of LanguageScriptProviders
+that store a single macro in a source file.
+
 - `source/basprov`
 
 C++ implementation of the `LanguageScriptProvider` UNO service for Basic
