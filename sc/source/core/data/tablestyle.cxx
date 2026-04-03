@@ -924,7 +924,7 @@ void updatePatternThemedColors(ScPatternAttr& rPattern, const model::ColorSet& r
         const model::ComplexColor& rCC = pBrush->getComplexColor();
         if (rCC.getThemeColorType() != model::ThemeColorType::Unknown)
         {
-            Color aNewColor = rColorSet.resolveColor(rCC);
+            Color aNewColor = rColorSet.resolveOOXMLColor(rCC);
             SvxBrushItem aNewBrush(aNewColor, ATTR_BACKGROUND);
             aNewBrush.setComplexColor(rCC);
             rItemSet.Put(aNewBrush);
@@ -937,7 +937,7 @@ void updatePatternThemedColors(ScPatternAttr& rPattern, const model::ColorSet& r
         const model::ComplexColor& rCC = pColorItem->getComplexColor();
         if (rCC.getThemeColorType() != model::ThemeColorType::Unknown)
         {
-            Color aNewColor = rColorSet.resolveColor(rCC);
+            Color aNewColor = rColorSet.resolveOOXMLColor(rCC);
             SvxColorItem aNewColorItem(aNewColor, rCC, ATTR_FONT_COLOR);
             rItemSet.Put(aNewColorItem);
         }
@@ -956,7 +956,7 @@ void updatePatternThemedColors(ScPatternAttr& rPattern, const model::ColorSet& r
                 const model::ComplexColor& rCC = pLine->getComplexColor();
                 if (rCC.getThemeColorType() != model::ThemeColorType::Unknown)
                 {
-                    Color aNewColor = rColorSet.resolveColor(rCC);
+                    Color aNewColor = rColorSet.resolveOOXMLColor(rCC);
                     editeng::SvxBorderLine aNewLine(*pLine);
                     aNewLine.SetColor(aNewColor);
                     aNewBox.SetLine(&aNewLine, eLine);
@@ -978,7 +978,7 @@ void updatePatternThemedColors(ScPatternAttr& rPattern, const model::ColorSet& r
             const model::ComplexColor& rCC = pLine->getComplexColor();
             if (rCC.getThemeColorType() != model::ThemeColorType::Unknown)
             {
-                Color aNewColor = rColorSet.resolveColor(rCC);
+                Color aNewColor = rColorSet.resolveOOXMLColor(rCC);
                 editeng::SvxBorderLine aNewLine(*pLine);
                 aNewLine.SetColor(aNewColor);
                 aNewBoxInfo.SetLine(&aNewLine, SvxBoxInfoItemLine::VERT);
@@ -990,7 +990,7 @@ void updatePatternThemedColors(ScPatternAttr& rPattern, const model::ColorSet& r
             const model::ComplexColor& rCC = pLine->getComplexColor();
             if (rCC.getThemeColorType() != model::ThemeColorType::Unknown)
             {
-                Color aNewColor = rColorSet.resolveColor(rCC);
+                Color aNewColor = rColorSet.resolveOOXMLColor(rCC);
                 editeng::SvxBorderLine aNewLine(*pLine);
                 aNewLine.SetColor(aNewColor);
                 aNewBoxInfo.SetLine(&aNewLine, SvxBoxInfoItemLine::HORI);
