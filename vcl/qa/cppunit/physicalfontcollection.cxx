@@ -57,7 +57,6 @@ public:
     void testShouldFindOtherStyleFamily();
     void testShouldNotFindOtherStyleFamily();
     void testShouldFindSchoolbookFamily();
-    void testFontFamilyAliases();
 
     CPPUNIT_TEST_SUITE(VclPhysicalFontCollectionTest);
     CPPUNIT_TEST(testShouldCreateAndAddFontFamilyToCollection);
@@ -89,7 +88,6 @@ public:
     CPPUNIT_TEST(testShouldFindOtherStyleFamily);
     CPPUNIT_TEST(testShouldNotFindOtherStyleFamily);
     CPPUNIT_TEST(testShouldFindSchoolbookFamily);
-    CPPUNIT_TEST(testFontFamilyAliases);
     CPPUNIT_TEST_SUITE_END();
 };
 
@@ -552,31 +550,6 @@ void VclPhysicalFontCollectionTest::testShouldFindSchoolbookFamily()
     CPPUNIT_ASSERT_MESSAGE("Did not find font name", aFontCollection.FindFontFamilyByAttributes(
                                                          ImplFontAttrs::Schoolbook, WEIGHT_NORMAL,
                                                          WIDTH_NORMAL, ITALIC_NORMAL, u""));
-}
-
-void VclPhysicalFontCollectionTest::testFontFamilyAliases()
-{
-    vcl::font::PhysicalFontCollection aFontCollection;
-    vcl::font::PhysicalFontFamily* pFontFamily
-        = aFontCollection.FindOrCreateFontFamily(u"testfont"_ustr);
-    AddNormalFontFace(pFontFamily, u"testfont"_ustr);
-
-    aFontCollection.AddFontFamilyAlias(u"Some Alias"_ustr, u"Test Font"_ustr);
-
-    CPPUNIT_ASSERT_MESSAGE("Did not find with real name",
-                           aFontCollection.FindFontFamily(u"Test Font"));
-    CPPUNIT_ASSERT_MESSAGE("Did not find with alias",
-                           aFontCollection.FindFontFamily(u"Some Alias"));
-    CPPUNIT_ASSERT_MESSAGE("Did not find with normalized alias",
-                           aFontCollection.FindFontFamily(u"somealias"));
-
-    const auto& rAliases = aFontCollection.GetFontFamilyNameAliases();
-    CPPUNIT_ASSERT_EQUAL(size_t(1), rAliases.size());
-    for (const auto& rEm : rAliases)
-    {
-        CPPUNIT_ASSERT_EQUAL(u"Some Alias"_ustr, rEm.first);
-        CPPUNIT_ASSERT_EQUAL(u"Test Font"_ustr, rEm.second);
-    }
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION(VclPhysicalFontCollectionTest);

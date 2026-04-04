@@ -764,45 +764,6 @@ OUString PhysicalFontFace::GetName(NameID aNameID, const LanguageTag& rLanguageT
     return sName;
 }
 
-std::vector<OUString> PhysicalFontFace::GetAliases() const
-{
-    std::vector<OUString> aNames;
-
-    auto* pHbFace = GetHbFace();
-
-    unsigned int nEntries = 0;
-    const hb_ot_name_entry_t* aEntries = hb_ot_name_list_names(pHbFace, &nEntries);
-
-    std::vector<char16_t> aBuf;
-    for (unsigned int i = 0; i < nEntries; ++i)
-    {
-        if (aEntries[i].name_id != HB_OT_NAME_ID_FONT_FAMILY)
-        {
-            continue;
-        }
-
-        auto nName = hb_ot_name_get_utf16(pHbFace, aEntries[i].name_id, aEntries[i].language,
-                                          nullptr, nullptr);
-        if (nName)
-        {
-            ++nName;
-
-            aBuf.clear();
-            aBuf.resize(nName, 0);
-            hb_ot_name_get_utf16(pHbFace, aEntries[i].name_id, aEntries[i].language, &nName,
-                                 reinterpret_cast<uint16_t*>(aBuf.data()));
-
-            OUString sName{ aBuf.data(), static_cast<sal_Int32>(nName) };
-            if (GetFamilyName() != sName)
-            {
-                aNames.push_back(std::move(sName));
-            }
-        }
-    }
-
-    return aNames;
-}
-
 const std::vector<hb_variation_t>& PhysicalFontFace::GetVariations(const LogicalFontInstance&) const
 {
     if (!mxVariations)

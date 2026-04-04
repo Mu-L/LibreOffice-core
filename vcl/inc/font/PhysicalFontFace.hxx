@@ -181,8 +181,6 @@ public:
     OUString GetName(NameID, const LanguageTag&) const;
     OUString GetName(NameID aNameID) const { return GetName(aNameID, LanguageTag(LANGUAGE_NONE)); }
 
-    std::vector<OUString> GetAliases() const;
-
     virtual hb_face_t* GetHbFace() const;
     virtual hb_blob_t* GetHbTable(hb_tag_t) const
     {

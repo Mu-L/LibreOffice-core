@@ -243,17 +243,7 @@ ImplFontListNameInfo* FontList::ImplFind(std::u16string_view rSearchName, sal_uI
 ImplFontListNameInfo* FontList::ImplFindByName(std::u16string_view rStr) const
 {
     OUString aSearchName = ImplMakeSearchStringFromName(rStr);
-    if (auto* pFont = ImplFind(aSearchName, nullptr); pFont != nullptr)
-    {
-        return pFont;
-    }
-
-    if (auto it = maAliases.find(aSearchName); it != maAliases.end())
-    {
-        return ImplFind(it->second, nullptr);
-    }
-
-    return nullptr;
+    return ImplFind( aSearchName, nullptr );
 }
 
 void FontList::ImplInsertFonts(OutputDevice* pDevice, bool bInsertData)
@@ -354,16 +344,6 @@ void FontList::ImplInsertFonts(OutputDevice* pDevice, bool bInsertData)
 
         if ( pData )
             pData->mnType |= nType;
-    }
-
-    if (bInsertData)
-    {
-        const auto& rAliases = pDevice->GetFontFamilyAliases();
-        for (const auto& rAlias : rAliases)
-        {
-            maAliases.insert_or_assign(ImplMakeSearchString(rAlias.first),
-                                       ImplMakeSearchString(rAlias.second));
-        }
     }
 }
 
