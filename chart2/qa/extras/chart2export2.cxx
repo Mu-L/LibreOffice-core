@@ -946,7 +946,7 @@ CPPUNIT_TEST_FIXTURE(Chart2ExportTest2, testTdf119029)
                 u"-5400000");
 }
 
-CPPUNIT_TEST_FIXTURE(Chart2ExportTest2, testTdf108022)
+CPPUNIT_TEST_FIXTURE(Chart2ExportTest2, testTdf108022_export_multiple_charts_from_odt_to_docx)
 {
     loadFromFile(u"odt/tdf108022.odt");
     saveAndReload(TestFilter::DOCX);
