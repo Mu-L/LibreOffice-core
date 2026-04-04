@@ -1136,11 +1136,8 @@ SvtScriptType ScViewFunc::GetSelectionScriptType()
 
 static void ShrinkToDataArea(ScMarkData& rFuncMark, const ScDocument& rDoc);
 
-const ScPatternAttr* ScViewFunc::GetSelectionPattern()
+const ScPatternAttr* ScViewFunc::GetSelectionPattern(bool bExcludeFiltered)
 {
-    // Don't use UnmarkFiltered in slot state functions, for performance reasons.
-    // The displayed state is always that of the whole selection including filtered rows.
-
     ScMarkData aMark = GetViewData().GetMarkData();
     ScDocument& rDoc = GetViewData().GetDocument();
 
@@ -1148,6 +1145,10 @@ const ScPatternAttr* ScViewFunc::GetSelectionPattern()
     // we will not return a consistent result
     // (consistent compared to what happens in ScViewFunc::ApplySelectionPattern)
     ShrinkToDataArea( aMark, rDoc );
+    // tdf#71324 - exclude filtered cells from selection before applying formatting
+    // (consistent compared to what happens in ScViewFunc::ApplySelectionPattern)
+    if (bExcludeFiltered)
+        ScViewUtil::UnmarkFiltered(aMark, rDoc);
 
     if ( aMark.IsMarked() || aMark.IsMultiMarked() )
     {

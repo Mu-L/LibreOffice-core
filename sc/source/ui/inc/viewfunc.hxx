@@ -90,7 +90,8 @@ public:
                     ScViewFunc( vcl::Window* pParent, ScDocShell& rDocSh, ScTabViewShell* pViewShell );
                     ~ScViewFunc();
 
-    SC_DLLPUBLIC const ScPatternAttr* GetSelectionPattern();
+    // tdf#71324 - exclude filtered cells from selection before applying formatting
+    SC_DLLPUBLIC const ScPatternAttr* GetSelectionPattern(bool bExcludeFiltered = false);
     SC_DLLPUBLIC OUString GetCurrentString(SCCOL nCol, SCROW nRow);
 
     void GetSelectionFrame(

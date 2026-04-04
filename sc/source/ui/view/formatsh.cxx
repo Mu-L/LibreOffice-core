@@ -1518,7 +1518,9 @@ void ScFormatShell::GetAttrState( SfxItemSet& rSet )
 void ScFormatShell::GetTextAttrState( SfxItemSet& rSet )
 {
     ScTabViewShell* pTabViewShell   = GetViewData().GetViewShell();
-    const SfxItemSet& rAttrSet  = pTabViewShell->GetSelectionPattern()->GetItemSet();
+    // tdf#71324 - exclude filtered cells from selection before applying formatting
+    const SfxItemSet& rAttrSet
+        = pTabViewShell->GetSelectionPattern(/*bExcludeFiltered=*/true)->GetItemSet();
     rSet.Put( rAttrSet, false ); // Include ItemStates in copy
 
     //  choose font info according to selection script type

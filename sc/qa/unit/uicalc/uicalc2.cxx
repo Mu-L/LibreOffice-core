@@ -41,6 +41,8 @@
 #include <tabvwsh.hxx>
 #include <undomanager.hxx>
 #include <viewdata.hxx>
+#include <queryparam.hxx>
+#include <svl/sharedstringpool.hxx>
 
 using namespace ::com::sun::star;
 
@@ -1636,6 +1638,82 @@ CPPUNIT_TEST_FIXTURE(ScUiCalcTest2, testTdf154044)
         OString msg = "i=" + OString::number(i);
         CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.getStr(), COL_AUTO, getBackColor(i));
     }
+}
+
+CPPUNIT_TEST_FIXTURE(ScUiCalcTest2, testTdf71324_FormatToggleWithAutofilter)
+{
+    createScDoc();
+    ScDocument* pDoc = getScDoc();
+
+    // Insert test data
+    insertStringToCell(u"A1"_ustr, u"Fruits");
+    insertStringToCell(u"A2"_ustr, u"Apple");
+    insertStringToCell(u"A3"_ustr, u"Banana");
+    insertStringToCell(u"A4"_ustr, u"Apple");
+
+    // Create anonymouse database range for autofilter
+    ScDBData* pDBData = new ScDBData(u"NONAME"_ustr, 0, 0, 0, 0, 3);
+    pDoc->SetAnonymousDBData(0, std::unique_ptr<ScDBData>(pDBData));
+    pDBData->SetAutoFilter(true);
+
+    // Create autofilter for range including header row
+    ScRange aRange;
+    pDBData->GetArea(aRange);
+    pDoc->ApplyFlagsTab(aRange.aStart.Col(), aRange.aStart.Row(), aRange.aEnd.Col(),
+                        aRange.aStart.Row(), aRange.aStart.Tab(), ScMF::Auto);
+
+    // Create autofilter criterias searching for a specific string hiding one row
+    ScQueryParam aParam;
+    pDBData->GetQueryParam(aParam);
+    ScQueryEntry& rEntry = aParam.GetEntry(0);
+    rEntry.bDoQuery = true;
+    rEntry.nField = 0;
+    rEntry.eOp = SC_EQUAL;
+    rEntry.GetQueryItem().maString = pDoc->GetSharedStringPool().intern(u"Apple"_ustr);
+    rEntry.GetQueryItem().meType = ScQueryEntry::QueryType::ByString;
+    pDBData->SetQueryParam(aParam);
+    pDoc->Query(0, aParam, true);
+
+    // Check filter result
+    CPPUNIT_ASSERT(!pDoc->RowHidden(0, 0));
+    CPPUNIT_ASSERT(!pDoc->RowHidden(1, 0));
+    CPPUNIT_ASSERT(pDoc->RowHidden(2, 0));
+    CPPUNIT_ASSERT(!pDoc->RowHidden(3, 0));
+
+    // Helper to check font weight of a specific row
+    auto checkFontWeight = [&](SCROW nRow, FontWeight eFontWeight) {
+        vcl::Font aFont;
+        pDoc->GetPattern(0, nRow, 0)->fillFontOnly(aFont);
+        CPPUNIT_ASSERT_EQUAL(eFontWeight, aFont.GetWeightMaybeAskConfig());
+    };
+
+    // Helper to check font weight of all involved rows at once
+    auto checkFontWeightState
+        = [&](FontWeight eFontWeightRow1, FontWeight eFontWeightRow2, FontWeight eFontWeightRow3) {
+              checkFontWeight(1, eFontWeightRow1);
+              checkFontWeight(2, eFontWeightRow2);
+              checkFontWeight(3, eFontWeightRow3);
+          };
+
+    // Select the filtered range and check font weight
+    goToCell(u"A2:A4"_ustr);
+    // Toggle 1: Apply bold
+    dispatchCommand(mxComponent, u".uno:Bold"_ustr, {});
+    // Only visible rows should be bold
+    checkFontWeightState(WEIGHT_BOLD, WEIGHT_NORMAL, WEIGHT_BOLD);
+
+    // Toggle 2: Remove Bold
+    dispatchCommand(mxComponent, u".uno:Bold"_ustr, {});
+    // Without the fix in place, this test would have failed with
+    // - Expected: WEIGHT_NORMAL
+    // - Actual  : WEIGHT_BOLD
+    // i.e. visible rows remain bold
+    checkFontWeightState(WEIGHT_NORMAL, WEIGHT_NORMAL, WEIGHT_NORMAL);
+
+    // Toggle 3: Re-apply bold
+    dispatchCommand(mxComponent, u".uno:Bold"_ustr, {});
+    // Visible rows become bold again
+    checkFontWeightState(WEIGHT_BOLD, WEIGHT_NORMAL, WEIGHT_BOLD);
 }
 
 CPPUNIT_TEST_FIXTURE(ScUiCalcTest2, testTdf140027)
