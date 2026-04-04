@@ -1156,9 +1156,6 @@ void SchXMLExportHelper_Impl::parseDocument( Reference< chart::XChartDocument > 
 
     mxExpPropMapper->setChartDoc(xNewDoc);
 
-    awt::Size aPageSize( getPageSize( xNewDoc ));
-    if( bExportContent )
-        addSize( aPageSize );
     Reference< chart::XDiagram > xDiagram = rChartDoc->getDiagram();
     Reference< chart2::XDiagram > xNewDiagram;
     if( xNewDoc.is())
@@ -1216,6 +1213,7 @@ void SchXMLExportHelper_Impl::parseDocument( Reference< chart::XChartDocument > 
 
     if ( bIncludeTable && (aNullDate.Day != 30 || aNullDate.Month != 12 || aNullDate.Year != 1899 ) )
     {
+        assert(!mrExport.GetAttrList().getLength()); //must be empty before XML_CALCULATION_SETTINGS
         SvXMLElementExport aSet( mrExport, XML_NAMESPACE_TABLE, XML_CALCULATION_SETTINGS, true, true );
         {
             OUStringBuffer sBuffer;
@@ -1224,6 +1222,10 @@ void SchXMLExportHelper_Impl::parseDocument( Reference< chart::XChartDocument > 
             SvXMLElementExport aNull( mrExport, XML_NAMESPACE_TABLE, XML_NULL_DATE, true, true );
         }
     }
+
+    awt::Size aPageSize( getPageSize( xNewDoc ));
+    if( bExportContent )
+        addSize( aPageSize );
 
     // chart element
     std::unique_ptr<SvXMLElementExport> xElChart;
