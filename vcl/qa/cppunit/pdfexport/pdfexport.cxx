@@ -3969,6 +3969,82 @@ CPPUNIT_TEST_FIXTURE(PdfExportTest, testTdf167659)
     CPPUNIT_ASSERT_EQUAL(u"normal text"_ustr, aActualText);
 }
 
+// Test that font-variation-settings produce distinct font subsets in PDF export,
+// each with a PostScript name encoding the variation axis values.
+CPPUNIT_TEST_FIXTURE(PdfExportTest, testFontVariationSettingsODT)
+{
+// Variable font instances only work on macOS and Windows
+#if defined MACOSX || defined _WIN32
+    loadFromFile(u"testFontVariationSettings.odt");
+    save(TestFilter::PDF_WRITER);
+
+    vcl::filter::PDFDocument aDocument;
+    SvFileStream aStream(maTempFile.GetURL(), StreamMode::READ);
+    CPPUNIT_ASSERT(aDocument.Read(aStream));
+
+    std::set<OString> aFontNames;
+    for (const auto& aElement : aDocument.GetElements())
+    {
+        auto pObject = dynamic_cast<vcl::filter::PDFObjectElement*>(aElement.get());
+        if (!pObject)
+            continue;
+        auto pType = dynamic_cast<vcl::filter::PDFNameElement*>(pObject->Lookup("Type"_ostr));
+        if (pType && pType->GetValue() == "Font")
+        {
+            auto pName
+                = dynamic_cast<vcl::filter::PDFNameElement*>(pObject->Lookup("BaseFont"_ostr));
+            if (pName)
+                aFontNames.insert(pName->GetValue().copy(7)); // skip the subset id
+        }
+    }
+
+    std::set<OString> aExpected{
+        "AmstelvarRoman"_ostr,
+        "AmstelvarRoman_623wght"_ostr,
+        "AmstelvarRoman_623wght_87wdth"_ostr,
+        "AmstelvarRoman_87wdth"_ostr,
+    };
+    CPPUNIT_ASSERT_EQUAL(aExpected, aFontNames);
+#endif
+}
+
+CPPUNIT_TEST_FIXTURE(PdfExportTest, testFontVariationSettingsODP)
+{
+#if defined MACOSX || defined _WIN32
+    loadFromFile(u"testFontVariationSettings.odp");
+    save(TestFilter::PDF_WRITER);
+
+    vcl::filter::PDFDocument aDocument;
+    SvFileStream aStream(maTempFile.GetURL(), StreamMode::READ);
+    CPPUNIT_ASSERT(aDocument.Read(aStream));
+
+    std::set<OString> aFontNames;
+    for (const auto& aElement : aDocument.GetElements())
+    {
+        auto pObject = dynamic_cast<vcl::filter::PDFObjectElement*>(aElement.get());
+        if (!pObject)
+            continue;
+        auto pType = dynamic_cast<vcl::filter::PDFNameElement*>(pObject->Lookup("Type"_ostr));
+        if (pType && pType->GetValue() == "Font")
+        {
+            auto pName
+                = dynamic_cast<vcl::filter::PDFNameElement*>(pObject->Lookup("BaseFont"_ostr));
+            if (pName)
+                aFontNames.insert(pName->GetValue().copy(7));
+        }
+    }
+
+    std::set<OString> aExpected{
+        "AmstelvarRoman"_ostr,
+        "AmstelvarRoman_623wght"_ostr,
+        "AmstelvarRoman_623wght_87wdth"_ostr,
+        "AmstelvarRoman_87wdth"_ostr,
+        "LiberationSerif"_ostr,
+    };
+    CPPUNIT_ASSERT_EQUAL(aExpected, aFontNames);
+#endif
+}
+
 } // end anonymous namespace
 
 CPPUNIT_PLUGIN_IMPLEMENT();
