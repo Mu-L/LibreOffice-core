@@ -38,6 +38,22 @@ namespace {
 
 class Test: public CppUnit::TestFixture {
 public:
+
+    /** * Tests approxDiff against FMA-induced precision drift on ARM64.
+     * FMA skips intermediate IEEE 754 rounding, preventing the bit-wise
+     * divergence needed by the rescaling heuristic to detect and fix
+     * rounding errors. Accumulating the result 50x makes this drift detectable.
+     */
+    void test_approxDiff()
+    {
+        double a = 1.1;
+        double b = 1.0;
+
+        double diff = rtl::math::approxDiff(a, b);
+
+        CPPUNIT_ASSERT_EQUAL(5.0, diff * 50);
+    }
+
     void test_stringToDouble_good() {
         rtl_math_ConversionStatus status;
         sal_Int32 end;
@@ -690,6 +706,7 @@ public:
     }
 
     CPPUNIT_TEST_SUITE(Test);
+    CPPUNIT_TEST(test_approxDiff);
     CPPUNIT_TEST(test_stringToDouble_good);
     CPPUNIT_TEST(test_stringToDouble_bad);
     CPPUNIT_TEST(test_stringToDouble_exponent_without_digit);

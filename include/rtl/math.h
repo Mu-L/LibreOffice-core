@@ -426,6 +426,12 @@ SAL_DLLPUBLIC double SAL_CALL rtl_math_pow10Exp(double fValue, int nExp) SAL_THR
   */
 SAL_DLLPUBLIC double SAL_CALL rtl_math_approxValue(double fValue) SAL_THROW_EXTERN_C();
 
+
+/** Calculate a-b trying to diminish precision errors such as for 0.11-0.12
+    not return -0.009999999999999995 but -0.01 instead.
+ */
+SAL_DLLPUBLIC double SAL_CALL rtl_math_approxDiff(double a, double b) SAL_THROW_EXTERN_C();
+
 /** Test equality of two values with an accuracy of the magnitude of the
     given values scaled by 2^-48 (4 bits roundoff stripped).
 

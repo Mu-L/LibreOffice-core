@@ -601,6 +601,48 @@ double SAL_CALL rtl_math_approxValue(double fValue) noexcept
     return bSign ? -fValue : fValue;
 }
 
+/* FMA is disabled to force standard IEEE 754 rounding after each multiplication.
+    On ARM64, FMA's higher precision prevents the bit-level divergence between
+    'd' and 'c' that this heuristic relies on. Without this "noise", the logic
+    fails to detect and fix subtle rounding artifacts, leading to cumulative
+    errors in Calc series.
+*/
+#if defined(__clang__)
+#pragma clang fp contract(off)
+#elif defined(__GNUC__)
+#pragma GCC optimize("fp-contract=off")
+#endif
+double SAL_CALL rtl_math_approxDiff(double a, double b) noexcept
+{
+    if (a == b)
+        return 0.0;
+    if (a == 0.0)
+        return -b;
+    if (b == 0.0)
+        return a;
+    const double c = a - b;
+    const double aa = fabs(a);
+    const double ab = fabs(b);
+    if (aa < 1e-16 || aa > 1e+16 || ab < 1e-16 || ab > 1e+16)
+        // This is going nowhere, live with the result.
+        return c;
+
+    const double q = aa < ab ? b / a : a / b;
+    const double d = (a * q - b * q) / q;
+    if (d == c)
+        // No differing error, live with the result.
+        return c;
+
+    // We now have two subtractions with a similar but not equal error. Obtain
+    // the exponent of the error magnitude and round accordingly.
+    const double e = fabs(d - c);
+    const int nExp = static_cast<int>(floor(log10(e))) + 1;
+    // tdf#129606: Limit precision to the 16th significant digit of the least precise argument.
+    // Cf. mnMaxGeneralPrecision in sc/source/core/data/column3.cxx.
+    const int nExpArg = static_cast<int>(floor(log10(std::max(aa, ab)))) - 15;
+    return rtl::math::round(c, -std::max(nExp, nExpArg));
+}
+
 bool SAL_CALL rtl_math_approxEqual(double a, double b) noexcept
 {
     // threshold is last four bits of mantissa:

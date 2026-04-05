@@ -269,6 +269,11 @@ inline double approxValue(double fValue)
     return rtl_math_approxValue(fValue);
 }
 
+inline double approxDiff(double a, double b)
+{
+    return rtl_math_approxDiff(a, b);
+}
+
 /** A wrapper around rtl_math_expm1.
  */
 inline double expm1(double fValue)
