@@ -123,6 +123,8 @@ void HWPStyle::Read(HWPFile& hwpf)
     ParaShape pshape;
 
     hwpf.Read2b(&nstyles, 1);
+    if (nstyles <= 0)
+        return;
     style = new (std::nothrow) hwpfilter::StyleData[nstyles];
     if (!style)
         return;
