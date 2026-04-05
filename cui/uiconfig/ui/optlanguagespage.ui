@@ -357,16 +357,18 @@
             <property name="margin-top">6</property>
             <property name="row-spacing">6</property>
             <child>
-              <object class="GtkCheckButton" id="ignorelanguagechange">
-                <property name="label" translatable="yes" context="optlanguagespage|ignorelanguagechange">Ignore s_ystem input language</property>
+              <object class="GtkCheckButton" id="useinputlanguage">
+                <property name="label" translatable="yes" context="optlanguagespage|useinputlanguage">Apply s_ystem input language to new text</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">False</property>
                 <property name="use-underline">True</property>
                 <property name="draw-indicator">True</property>
                 <child internal-child="accessible">
-                  <object class="AtkObject" id="ignorelanguagechange-atkobject">
-                    <property name="AtkObject::accessible-description" translatable="yes" context="extended_tip|ignorelanguagechange">Indicates whether changes to the system input language/keyboard will be ignored. If ignored, when new text is typed that text will follow the language of the document or current paragraph, not the current system language.</property>
+                  <object class="AtkObject" id="useinputlanguage-atkobject">
+                    <property name="AtkObject::accessible-description" translatable="yes" context="extended_tip|useinputlanguage">
+                    Indicates whether the system input language is applied to newly typed text; when disabled, the document or paragraph language is used instead.
+                    </property>
                   </object>
                 </child>
               </object>
@@ -376,7 +378,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkImage" id="lockignorelanguagechange">
+              <object class="GtkImage" id="lockuseinputlanguage">
                 <property name="can-focus">False</property>
                 <property name="no-show-all">True</property>
                 <property name="halign">center</property>

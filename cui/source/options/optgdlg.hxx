@@ -171,8 +171,8 @@ class OfaLanguagesTabPage : public SfxTabPage
     std::unique_ptr<weld::Label> m_xComplexLanguageFT;
     std::unique_ptr<weld::Widget> m_xComplexLanguageImg;
     std::unique_ptr<weld::CheckButton> m_xCurrentDocCB;
-    std::unique_ptr<weld::CheckButton> m_xIgnoreLanguageChangeCB;
-    std::unique_ptr<weld::Widget> m_xIgnoreLanguageChangeImg;
+    std::unique_ptr<weld::CheckButton> m_xUseInputLanguageCB;
+    std::unique_ptr<weld::Widget> m_xUseInputLanguageImg;
 
     DECL_LINK(LocaleSettingHdl, weld::ComboBox&, void);
     DECL_LINK(DatePatternsHdl, weld::Entry&, void);
