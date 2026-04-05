@@ -20,7 +20,7 @@
     <property name="visible">True</property>
     <property name="can-focus">False</property>
   </object>
-  <object class="GtkTreeStore" id="tree_store">
+  <object class="GtkListStore" id="list_store">
     <columns>
       <!-- column-name default_img -->
       <column type="GdkPixbuf"/>
@@ -328,7 +328,7 @@
                             <property name="has-tooltip">True</property>
                             <property name="hexpand">True</property>
                             <property name="vexpand">True</property>
-                            <property name="model">tree_store</property>
+                            <property name="model">list_store</property>
                             <property name="enable-search">False</property>
                             <property name="search-column">0</property>
                             <property name="show-expanders">False</property>
