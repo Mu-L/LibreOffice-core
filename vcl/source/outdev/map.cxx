@@ -238,7 +238,6 @@ tools::Polygon OutputDevice::ImplLogicToDevicePixel( const tools::Polygon& rLogi
     if ( !mbMap && !mnOutOffX && !mnOutOffY )
         return rLogicPoly;
 
-    sal_uInt16  i;
     sal_uInt16  nPoints = rLogicPoly.GetSize();
     tools::Polygon aPoly( rLogicPoly );
 
@@ -247,7 +246,7 @@ tools::Polygon OutputDevice::ImplLogicToDevicePixel( const tools::Polygon& rLogi
 
     if ( mbMap )
     {
-        for ( i = 0; i < nPoints; i++ )
+        for (sal_uInt16 i = 0; i < nPoints; i++)
         {
             const Point& rPt = pPointAry[i];
             Point aPt(lcl_logicToPixel( rPt.X()+maMapRes.mnMapOfsX, mnDPIX,
@@ -259,7 +258,7 @@ tools::Polygon OutputDevice::ImplLogicToDevicePixel( const tools::Polygon& rLogi
     }
     else
     {
-        for ( i = 0; i < nPoints; i++ )
+        for (sal_uInt16 i = 0; i < nPoints; i++)
         {
             Point aPt = pPointAry[i];
             aPt.AdjustX(mnOutOffX );
@@ -748,14 +747,13 @@ tools::Polygon OutputDevice::LogicToPixel( const tools::Polygon& rLogicPoly ) co
     if ( !mbMap )
         return rLogicPoly;
 
-    sal_uInt16  i;
     sal_uInt16  nPoints = rLogicPoly.GetSize();
     tools::Polygon aPoly( rLogicPoly );
 
     // get pointer to Point-array (copy data)
     const Point* pPointAry = aPoly.GetConstPointAry();
 
-    for ( i = 0; i < nPoints; i++ )
+    for (sal_uInt16 i = 0; i < nPoints; i++)
     {
         const Point* pPt = &(pPointAry[i]);
         Point aPt;
@@ -898,14 +896,13 @@ tools::Polygon OutputDevice::LogicToPixel( const tools::Polygon& rLogicPoly,
     ImplMapRes          aMapRes;
     aMapRes.CalcMapResolution(rMapMode, mnDPIX, mnDPIY);
 
-    sal_uInt16  i;
     sal_uInt16  nPoints = rLogicPoly.GetSize();
     tools::Polygon aPoly( rLogicPoly );
 
     // get pointer to Point-array (copy data)
     const Point* pPointAry = aPoly.GetConstPointAry();
 
-    for ( i = 0; i < nPoints; i++ )
+    for (sal_uInt16 i = 0; i < nPoints; i++)
     {
         const Point* pPt = &(pPointAry[i]);
         Point aPt;
@@ -993,14 +990,13 @@ tools::Polygon OutputDevice::PixelToLogic( const tools::Polygon& rDevicePoly ) c
     if ( !mbMap )
         return rDevicePoly;
 
-    sal_uInt16  i;
     sal_uInt16  nPoints = rDevicePoly.GetSize();
     tools::Polygon aPoly( rDevicePoly );
 
     // get pointer to Point-array (copy data)
     const Point* pPointAry = aPoly.GetConstPointAry();
 
-    for ( i = 0; i < nPoints; i++ )
+    for (sal_uInt16 i = 0; i < nPoints; i++)
     {
         const Point* pPt = &(pPointAry[i]);
         Point aPt;
@@ -1155,14 +1151,13 @@ tools::Polygon OutputDevice::PixelToLogic( const tools::Polygon& rDevicePoly,
     ImplMapRes          aMapRes;
     aMapRes.CalcMapResolution(rMapMode, mnDPIX, mnDPIY);
 
-    sal_uInt16  i;
     sal_uInt16  nPoints = rDevicePoly.GetSize();
     tools::Polygon aPoly( rDevicePoly );
 
     // get pointer to Point-array (copy data)
     const Point* pPointAry = aPoly.GetConstPointAry();
 
-    for ( i = 0; i < nPoints; i++ )
+    for (sal_uInt16 i = 0; i < nPoints; i++)
     {
         const Point* pPt = &(pPointAry[i]);
         Point aPt;
