@@ -238,7 +238,7 @@ tools::Polygon OutputDevice::ImplLogicToDevicePixel( const tools::Polygon& rLogi
     if ( !mbMap && !mnOutOffX && !mnOutOffY )
         return rLogicPoly;
 
-    sal_uInt16  nPoints = rLogicPoly.GetSize();
+    const sal_uInt16 nPoints = rLogicPoly.GetSize();
     tools::Polygon aPoly( rLogicPoly );
 
     // get pointer to Point-array (copy data)
@@ -275,7 +275,7 @@ basegfx::B2DPolygon OutputDevice::ImplLogicToDevicePixel(const basegfx::B2DPolyg
     if (!mbMap && !mnOutOffX && !mnOutOffY)
         return rLogicPoly;
 
-    sal_uInt32 nPoints = rLogicPoly.count();
+    const sal_uInt32 nPoints = rLogicPoly.count();
     basegfx::B2DPolygon aPoly(rLogicPoly);
 
     basegfx::B2DPoint aC1;
@@ -747,7 +747,7 @@ tools::Polygon OutputDevice::LogicToPixel( const tools::Polygon& rLogicPoly ) co
     if ( !mbMap )
         return rLogicPoly;
 
-    sal_uInt16  nPoints = rLogicPoly.GetSize();
+    const sal_uInt16 nPoints = rLogicPoly.GetSize();
     tools::Polygon aPoly( rLogicPoly );
 
     // get pointer to Point-array (copy data)
@@ -896,7 +896,7 @@ tools::Polygon OutputDevice::LogicToPixel( const tools::Polygon& rLogicPoly,
     ImplMapRes          aMapRes;
     aMapRes.CalcMapResolution(rMapMode, mnDPIX, mnDPIY);
 
-    sal_uInt16  nPoints = rLogicPoly.GetSize();
+    const sal_uInt16 nPoints = rLogicPoly.GetSize();
     tools::Polygon aPoly( rLogicPoly );
 
     // get pointer to Point-array (copy data)
@@ -990,7 +990,7 @@ tools::Polygon OutputDevice::PixelToLogic( const tools::Polygon& rDevicePoly ) c
     if ( !mbMap )
         return rDevicePoly;
 
-    sal_uInt16  nPoints = rDevicePoly.GetSize();
+    const sal_uInt16 nPoints = rDevicePoly.GetSize();
     tools::Polygon aPoly( rDevicePoly );
 
     // get pointer to Point-array (copy data)
@@ -1151,7 +1151,7 @@ tools::Polygon OutputDevice::PixelToLogic( const tools::Polygon& rDevicePoly,
     ImplMapRes          aMapRes;
     aMapRes.CalcMapResolution(rMapMode, mnDPIX, mnDPIY);
 
-    sal_uInt16  nPoints = rDevicePoly.GetSize();
+    const sal_uInt16 nPoints = rDevicePoly.GetSize();
     tools::Polygon aPoly( rDevicePoly );
 
     // get pointer to Point-array (copy data)
