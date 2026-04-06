@@ -1219,9 +1219,7 @@ static void lcl_verifyUnitSourceDest( MapUnit eUnitSource, MapUnit eUnitDest )
                 "Destination MapUnit is not permitted" );
 }
 
-namespace
-{
-auto getCorrectedUnit(MapUnit eMapSrc, MapUnit eMapDst)
+static auto lcl_getCorrectedUnit(MapUnit eMapSrc, MapUnit eMapDst)
 {
     o3tl::Length eSrc = o3tl::Length::invalid;
     o3tl::Length eDst = o3tl::Length::invalid;
@@ -1238,13 +1236,12 @@ auto getCorrectedUnit(MapUnit eMapSrc, MapUnit eMapDst)
     return std::make_pair(eSrc, eDst);
 }
 
-std::pair<ImplMapRes, ImplMapRes> lcl_calcConversionMapRes(const MapMode& rMMSource, const MapMode& rMMDest)
+static std::pair<ImplMapRes, ImplMapRes> lcl_calcConversionMapRes(const MapMode& rMMSource, const MapMode& rMMDest)
 {
     std::pair<ImplMapRes, ImplMapRes> result;
     result.first.CalcMapResolution(rMMSource, 72, 72);
     result.second.CalcMapResolution(rMMDest, 72, 72);
     return result;
-}
 }
 
 static tools::Long lcl_scaleLogicValue( const tools::Long n1,
@@ -1367,7 +1364,7 @@ Point OutputDevice::LogicToLogic( const Point& rPtSource,
 
     if (rMapModeSource.IsSimple() && rMapModeDest.IsSimple())
     {
-        const auto [eFrom, eTo] = getCorrectedUnit(eUnitSource, eUnitDest);
+        const auto [eFrom, eTo] = lcl_getCorrectedUnit(eUnitSource, eUnitDest);
         return Point(lcl_convertLogicValue(rPtSource.X(), eFrom, eTo), lcl_convertLogicValue(rPtSource.Y(), eFrom, eTo));
     }
 
@@ -1394,7 +1391,7 @@ Size OutputDevice::LogicToLogic( const Size& rSzSource,
 
     if (rMapModeSource.IsSimple() && rMapModeDest.IsSimple())
     {
-        const auto [eFrom, eTo] = getCorrectedUnit(eUnitSource, eUnitDest);
+        const auto [eFrom, eTo] = lcl_getCorrectedUnit(eUnitSource, eUnitDest);
         return Size(lcl_convertLogicValue(rSzSource.Width(), eFrom, eTo), lcl_convertLogicValue(rSzSource.Height(), eFrom, eTo));
     }
 
@@ -1437,7 +1434,7 @@ basegfx::B2DHomMatrix OutputDevice::LogicToLogic(const MapMode& rMapModeSource, 
 
     if (rMapModeSource.IsSimple() && rMapModeDest.IsSimple())
     {
-        const auto [eFrom, eTo] = getCorrectedUnit(eUnitSource, eUnitDest);
+        const auto [eFrom, eTo] = lcl_getCorrectedUnit(eUnitSource, eUnitDest);
         const double fScaleFactor(eFrom == o3tl::Length::invalid || eTo == o3tl::Length::invalid
                                       ? std::numeric_limits<double>::quiet_NaN()
                                       : o3tl::convert(1.0, eFrom, eTo));
@@ -1477,7 +1474,7 @@ tools::Rectangle OutputDevice::LogicToLogic( const tools::Rectangle& rRectSource
 
     if (rMapModeSource.IsSimple() && rMapModeDest.IsSimple())
     {
-        const auto [eFrom, eTo] = getCorrectedUnit(eUnitSource, eUnitDest);
+        const auto [eFrom, eTo] = lcl_getCorrectedUnit(eUnitSource, eUnitDest);
 
         auto left = lcl_convertLogicValue(rRectSource.Left(), eFrom, eTo);
         auto top = lcl_convertLogicValue(rRectSource.Top(), eFrom, eTo);
@@ -1526,7 +1523,7 @@ tools::Long OutputDevice::LogicToLogic( tools::Long nLongSource,
         return nLongSource;
 
     lcl_verifyUnitSourceDest( eUnitSource, eUnitDest );
-    const auto [eFrom, eTo] = getCorrectedUnit(eUnitSource, eUnitDest);
+    const auto [eFrom, eTo] = lcl_getCorrectedUnit(eUnitSource, eUnitDest);
     return lcl_convertLogicValue(nLongSource, eFrom, eTo);
 }
 
