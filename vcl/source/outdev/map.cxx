@@ -364,7 +364,8 @@ tools::PolyPolygon OutputDevice::ImplLogicToDevicePixel( const tools::PolyPolygo
         return rLogicPolyPoly;
 
     tools::PolyPolygon aPolyPoly( rLogicPolyPoly );
-    sal_uInt16      nPoly = aPolyPoly.Count();
+    const sal_uInt16 nPoly = aPolyPoly.Count();
+
     for( sal_uInt16 i = 0; i < nPoly; i++ )
     {
         tools::Polygon& rPoly = aPolyPoly[i];
@@ -774,7 +775,8 @@ tools::PolyPolygon OutputDevice::LogicToPixel( const tools::PolyPolygon& rLogicP
         return rLogicPolyPoly;
 
     tools::PolyPolygon aPolyPoly( rLogicPolyPoly );
-    sal_uInt16      nPoly = aPolyPoly.Count();
+    const sal_uInt16 nPoly = aPolyPoly.Count();
+
     for( sal_uInt16 i = 0; i < nPoly; i++ )
     {
         tools::Polygon& rPoly = aPolyPoly[i];
@@ -1017,7 +1019,8 @@ tools::PolyPolygon OutputDevice::PixelToLogic( const tools::PolyPolygon& rDevice
         return rDevicePolyPoly;
 
     tools::PolyPolygon aPolyPoly( rDevicePolyPoly );
-    sal_uInt16      nPoly = aPolyPoly.Count();
+    const sal_uInt16 nPoly = aPolyPoly.Count();
+
     for( sal_uInt16 i = 0; i < nPoly; i++ )
     {
         tools::Polygon& rPoly = aPolyPoly[i];
