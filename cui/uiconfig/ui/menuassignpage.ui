@@ -66,7 +66,7 @@
       <column type="gchararray"/>
     </columns>
   </object>
-  <object class="GtkTreeStore" id="liststore2">
+  <object class="GtkListStore" id="liststore2">
     <columns>
       <!-- column-name check1 -->
       <column type="gboolean"/>
@@ -82,7 +82,7 @@
       <column type="gboolean"/>
     </columns>
   </object>
-  <object class="GtkTreeStore" id="liststore3">
+  <object class="GtkListStore" id="liststore3">
     <columns>
       <!-- column-name expander -->
       <column type="GdkPixbuf"/>

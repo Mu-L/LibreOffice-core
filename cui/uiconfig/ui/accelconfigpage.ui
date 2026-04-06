@@ -10,7 +10,7 @@
       <column type="gchararray"/>
     </columns>
   </object>
-  <object class="GtkTreeStore" id="liststore2">
+  <object class="GtkListStore" id="liststore2">
     <columns>
       <!-- column-name text -->
       <column type="gchararray"/>
@@ -18,7 +18,7 @@
       <column type="gchararray"/>
     </columns>
   </object>
-  <object class="GtkTreeStore" id="liststore3">
+  <object class="GtkListStore" id="liststore3">
     <columns>
       <!-- column-name text -->
       <column type="gchararray"/>
@@ -36,7 +36,7 @@
       <column type="gboolean"/>
     </columns>
   </object>
-  <object class="GtkTreeStore" id="liststore4">
+  <object class="GtkListStore" id="liststore4">
     <columns>
       <!-- column-name text -->
       <column type="gchararray"/>
