@@ -1873,6 +1873,11 @@ AC_ARG_ENABLE(python,
 AC_ARG_ENABLE(quickjs,
     AS_HELP_STRING([--enable-quickjs], [Enables experimental support for scripting with QuickJS.]))
 
+AC_ARG_WITH(system-quickjs,
+    AS_HELP_STRING([--with-system-quickjs],
+        [Use QuickJS already on system.]),,
+    [with_system_quickjs="$with_system_libs"])
+
 libo_FUZZ_ARG_ENABLE(gtk3,
     AS_HELP_STRING([--disable-gtk3],
         [Determines whether to use Gtk+ 3.0 vclplug on platforms where Gtk+ 3.0 is available.]),
@@ -10829,10 +10834,20 @@ AC_SUBST(PYTHON_VERSION)
 AC_SUBST(PYTHON_VERSION_MAJOR)
 AC_SUBST(PYTHON_VERSION_MINOR)
 
-AC_MSG_CHECKING([whether to build QuickJS])
+AC_MSG_CHECKING([whether to enable QuickJS])
 if test "${enable_quickjs}" = "yes"; then
     AC_MSG_RESULT([yes])
-    BUILD_TYPE="${BUILD_TYPE} QUICKJS"
+    AC_MSG_CHECKING([which QuickJS to use])
+    if test "$with_system_quickjs" != "yes"; then
+        AC_MSG_RESULT([internal])
+        BUILD_TYPE="${BUILD_TYPE} QUICKJS"
+    else
+        AC_MSG_RESULT([external])
+        PKG_CHECK_MODULES([QUICKJS], [quickjs-ng], [], [
+            PKG_CHECK_MODULES([QUICKJS], [qjs], [])
+        ])
+        SYSTEM_QUICKJS=TRUE
+    fi
     AC_DEFINE([ENABLE_QUICKJS],1)
     ENABLE_QUICKJS="TRUE"
 else
@@ -10840,6 +10855,9 @@ else
     ENABLE_QUICKJS=""
 fi
 AC_SUBST(ENABLE_QUICKJS)
+AC_SUBST(SYSTEM_QUICKJS)
+AC_SUBST(QUICKJS_CFLAGS)
+AC_SUBST(QUICKJS_LIBS)
 
 AC_MSG_CHECKING([whether to build LibreLogo])
 case "$enable_python" in
