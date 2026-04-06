@@ -254,13 +254,13 @@ bool Font::GetOpticalSizing() const
     return mpImplFont->mbOpticalSizing;
 }
 
-void Font::SetVariations( const std::vector<vcl::FontVariation>& rVariations )
+void Font::SetVariations( const std::vector<vcl::font::Variation>& rVariations )
 {
     if (GetVariations() != rVariations)
         mpImplFont->maVariations = rVariations;
 }
 
-const std::vector<vcl::FontVariation>& Font::GetVariations() const
+const std::vector<vcl::font::Variation>& Font::GetVariations() const
 {
     return mpImplFont->maVariations;
 }

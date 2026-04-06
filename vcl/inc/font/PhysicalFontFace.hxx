@@ -26,7 +26,7 @@
 #include <salhelper/simplereferenceobject.hxx>
 #include <tools/color.hxx>
 #include <vcl/dllapi.h>
-#include <vcl/FontVariation.hxx>
+#include <vcl/font/Variation.hxx>
 #include <vcl/fontcapabilities.hxx>
 #include <vcl/fontcharmap.hxx>
 
@@ -163,7 +163,7 @@ public:
     // as "undefined character"
     SAL_DLLPRIVATE bool CreateFontSubset(std::vector<sal_uInt8>&, const sal_GlyphId*,
                                          const sal_uInt8*, const int, FontSubsetInfo&,
-                                         const std::vector<vcl::FontVariation>& rVariations
+                                         const std::vector<vcl::font::Variation>& rVariations
                                          = {}) const;
 
     bool IsColorFont() const { return HasColorLayers() || HasColorBitmaps(); }
@@ -190,7 +190,8 @@ public:
         return nullptr;
     }
 
-    virtual const std::vector<vcl::FontVariation>& GetVariations(const LogicalFontInstance&) const;
+    virtual const std::vector<vcl::font::Variation>&
+    GetVariations(const LogicalFontInstance&) const;
 
 protected:
     mutable hb_face_t* mpHbFace;
@@ -198,7 +199,7 @@ protected:
     mutable FontCharMapRef mxCharMap;
     mutable std::optional<vcl::FontCapabilities> mxFontCapabilities;
     mutable std::optional<std::vector<ColorPalette>> mxColorPalettes;
-    mutable std::optional<std::vector<vcl::FontVariation>> mxVariations;
+    mutable std::optional<std::vector<vcl::font::Variation>> mxVariations;
 
     explicit PhysicalFontFace(const FontAttributes&);
 

@@ -375,7 +375,7 @@ hb_blob_t* FreetypeFontFace::GetHbTable(hb_tag_t nTag) const
     return hb_face_reference_table(mpHbFace, nTag);
 }
 
-const std::vector<vcl::FontVariation>& FreetypeFontFace::GetVariations(const LogicalFontInstance&) const
+const std::vector<vcl::font::Variation>& FreetypeFontFace::GetVariations(const LogicalFontInstance&) const
 {
     if (!mxVariations)
     {

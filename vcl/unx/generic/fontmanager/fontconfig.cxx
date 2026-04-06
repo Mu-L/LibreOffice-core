@@ -1299,7 +1299,7 @@ FcPattern *FontConfigFontOptions::GetPattern() const
 #define FC_FONT_VARIATIONS "fontvariations"
 #endif
 
-void FontConfigFontOptions::SyncPattern(const OString& rFileName, sal_uInt32 nIndex, sal_uInt32 nVariation, bool bEmbolden, const std::vector<vcl::FontVariation>& rVariations)
+void FontConfigFontOptions::SyncPattern(const OString& rFileName, sal_uInt32 nIndex, sal_uInt32 nVariation, bool bEmbolden, const std::vector<vcl::font::Variation>& rVariations)
 {
     FcPatternDel(mpPattern, FC_FILE);
     FcPatternAddString(mpPattern, FC_FILE, reinterpret_cast<FcChar8 const *>(rFileName.getStr()));

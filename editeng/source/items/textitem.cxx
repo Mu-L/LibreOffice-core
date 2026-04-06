@@ -3034,7 +3034,7 @@ SvxFontVariationsItem::SvxFontVariationsItem(sal_uInt16 nId)
 {
 }
 
-SvxFontVariationsItem::SvxFontVariationsItem(std::vector<vcl::FontVariation> aVariations,
+SvxFontVariationsItem::SvxFontVariationsItem(std::vector<vcl::font::Variation> aVariations,
                                              sal_uInt16 nId)
     : SfxPoolItem(nId)
     , maVariations(std::move(aVariations))
@@ -3067,13 +3067,13 @@ bool SvxFontVariationsItem::GetPresentation(SfxItemPresentation /*ePres*/, MapUn
                                             MapUnit /*ePresUnit*/, OUString& rText,
                                             const IntlWrapper& /*rIntl*/) const
 {
-    rText = vcl::FontVariationsToString(maVariations);
+    rText = vcl::font::VariationsToString(maVariations);
     return true;
 }
 
 bool SvxFontVariationsItem::QueryValue(css::uno::Any& rVal, sal_uInt8 /*nMemberId*/) const
 {
-    rVal <<= vcl::FontVariationsToString(maVariations);
+    rVal <<= vcl::font::VariationsToString(maVariations);
     return true;
 }
 
@@ -3082,7 +3082,7 @@ bool SvxFontVariationsItem::PutValue(const css::uno::Any& rVal, sal_uInt8 /*nMem
     OUString aStr;
     if (rVal >>= aStr)
     {
-        maVariations = vcl::FontVariationsFromString(aStr);
+        maVariations = vcl::font::VariationsFromString(aStr);
         return true;
     }
     return false;

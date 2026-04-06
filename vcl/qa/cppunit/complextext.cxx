@@ -22,7 +22,7 @@ static std::ostream& operator<<(std::ostream& rStream, const std::vector<double>
 #include <test/bootstrapfixture.hxx>
 
 #include <vcl/virdev.hxx>
-#include <vcl/FontVariation.hxx>
+#include <vcl/font/Variation.hxx>
 #include <vcl/font/Feature.hxx>
 // workaround MSVC2015 issue with std::unique_ptr
 #include <sallayout.hxx>
@@ -921,7 +921,7 @@ CPPUNIT_TEST_FIXTURE(VclComplexTextTest, testOpticalSizing)
 CPPUNIT_TEST_FIXTURE(VclComplexTextTest, testFontVariationParsing)
 {
     // Test basic parsing
-    auto aVars = vcl::FontVariationsFromString(u"\"wght\" 700, \"wdth\" 75");
+    auto aVars = vcl::font::VariationsFromString(u"\"wght\" 700, \"wdth\" 75");
     CPPUNIT_ASSERT_EQUAL(size_t(2), aVars.size());
 
     uint32_t nWght = vcl::font::featureCode("wght");
@@ -932,11 +932,11 @@ CPPUNIT_TEST_FIXTURE(VclComplexTextTest, testFontVariationParsing)
     CPPUNIT_ASSERT_EQUAL(75.0f, aVars[1].fValue);
 
     // Test serialization format: integer values should not have decimal points
-    OUString aStr = vcl::FontVariationsToString(aVars);
+    OUString aStr = vcl::font::VariationsToString(aVars);
     CPPUNIT_ASSERT_EQUAL(u"\"wght\" 700, \"wdth\" 75"_ustr, aStr);
 
     // Test round-trip
-    auto aVars2 = vcl::FontVariationsFromString(aStr);
+    auto aVars2 = vcl::font::VariationsFromString(aStr);
     CPPUNIT_ASSERT_EQUAL(aVars.size(), aVars2.size());
     for (size_t i = 0; i < aVars.size(); ++i)
     {
@@ -945,17 +945,17 @@ CPPUNIT_TEST_FIXTURE(VclComplexTextTest, testFontVariationParsing)
     }
 
     // Test empty string
-    auto aEmpty = vcl::FontVariationsFromString(u"");
+    auto aEmpty = vcl::font::VariationsFromString(u"");
     CPPUNIT_ASSERT_EQUAL(size_t(0), aEmpty.size());
 
     // Test single quotes
-    auto aVars3 = vcl::FontVariationsFromString(u"'wght' 400");
+    auto aVars3 = vcl::font::VariationsFromString(u"'wght' 400");
     CPPUNIT_ASSERT_EQUAL(size_t(1), aVars3.size());
     CPPUNIT_ASSERT_EQUAL(nWght, aVars3[0].nTag);
     CPPUNIT_ASSERT_EQUAL(400.0f, aVars3[0].fValue);
 
     // Test negative values
-    auto aVars4 = vcl::FontVariationsFromString(u"\"slnt\" -12");
+    auto aVars4 = vcl::font::VariationsFromString(u"\"slnt\" -12");
     CPPUNIT_ASSERT_EQUAL(size_t(1), aVars4.size());
     CPPUNIT_ASSERT_EQUAL(-12.0f, aVars4[0].fValue);
 }
@@ -968,14 +968,14 @@ CPPUNIT_TEST_FIXTURE(VclComplexTextTest, testFontVariationEquality)
     CPPUNIT_ASSERT_EQUAL(true, aFont1 == aFont2);
 
     uint32_t nWght = vcl::font::featureCode("wght");
-    aFont1.SetVariations({ vcl::FontVariation{ nWght, 700.0f } });
+    aFont1.SetVariations({ vcl::font::Variation{ nWght, 700.0f } });
     CPPUNIT_ASSERT(!(aFont1 == aFont2));
 
-    aFont2.SetVariations({ vcl::FontVariation{ nWght, 700.0f } });
+    aFont2.SetVariations({ vcl::font::Variation{ nWght, 700.0f } });
     CPPUNIT_ASSERT_EQUAL(true, aFont1 == aFont2);
 
     // Different value should be unequal
-    aFont2.SetVariations({ vcl::FontVariation{ nWght, 400.0f } });
+    aFont2.SetVariations({ vcl::font::Variation{ nWght, 400.0f } });
     CPPUNIT_ASSERT(!(aFont1 == aFont2));
 }
 
@@ -995,7 +995,7 @@ CPPUNIT_TEST_FIXTURE(VclComplexTextTest, testFontVariationSettings)
     // Test with explicit wght=900 via font-variation-settings
     uint32_t nWght = vcl::font::featureCode("wght");
     vcl::Font aFont2{ u"Reem Kufi"_ustr, u"Regular"_ustr, Size{ 0, 20 } };
-    aFont2.SetVariations({ vcl::FontVariation{ nWght, 900.0f } });
+    aFont2.SetVariations({ vcl::font::Variation{ nWght, 900.0f } });
     pOutDev->SetFont(aFont2);
     auto nWidth2 = pOutDev->GetTextWidth(aText);
 

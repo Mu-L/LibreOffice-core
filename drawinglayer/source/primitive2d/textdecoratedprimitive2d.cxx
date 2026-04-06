@@ -466,7 +466,7 @@ namespace drawinglayer::primitive2d
             const Color& rFillColor,
             short nLetterSpacing,
             bool bOpticalSizing,
-            const std::vector<vcl::FontVariation>& rFontVariations,
+            const std::vector<vcl::font::Variation>& rFontVariations,
             sal_uInt8 nProportionalFontSize,
             short nEscapement,
 

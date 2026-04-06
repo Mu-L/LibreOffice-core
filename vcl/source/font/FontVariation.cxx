@@ -8,16 +8,16 @@
  */
 
 #include <rtl/character.hxx>
-#include <vcl/FontVariation.hxx>
+#include <vcl/font/Variation.hxx>
 #include <vcl/font/Feature.hxx>
 #include <rtl/ustrbuf.hxx>
 #include <o3tl/string_view.hxx>
 
-namespace vcl
+namespace vcl::font
 {
-std::vector<FontVariation> FontVariationsFromString(std::u16string_view rString)
+std::vector<Variation> VariationsFromString(std::u16string_view rString)
 {
-    std::vector<FontVariation> aVariations;
+    std::vector<Variation> aVariations;
 
     // Tokenize on commas: "wght" 700, "wdth" 75
     std::size_t nTokenPos = 0;
@@ -51,7 +51,7 @@ std::vector<FontVariation> FontVariationsFromString(std::u16string_view rString)
 
         const char aTag[] = { static_cast<char>(aToken[1]), static_cast<char>(aToken[2]),
                               static_cast<char>(aToken[3]), static_cast<char>(aToken[4]) };
-        uint32_t nTag = vcl::font::featureCode(aTag);
+        uint32_t nTag = featureCode(aTag);
 
         // Parse the value after the closing quote
         std::u16string_view aValue = o3tl::trim(aToken.substr(6));
@@ -65,7 +65,7 @@ std::vector<FontVariation> FontVariationsFromString(std::u16string_view rString)
     return aVariations;
 }
 
-OUString FontVariationsToString(const std::vector<FontVariation>& rVariations)
+OUString VariationsToString(const std::vector<Variation>& rVariations)
 {
     OUStringBuffer aBuf;
     for (size_t i = 0; i < rVariations.size(); ++i)
@@ -73,13 +73,13 @@ OUString FontVariationsToString(const std::vector<FontVariation>& rVariations)
         if (i > 0)
             aBuf.append(", ");
 
-        const FontVariation& rVar = rVariations[i];
-        aBuf.append("\"" + vcl::font::featureCodeAsString(rVar.nTag) + "\" ");
+        const Variation& rVar = rVariations[i];
+        aBuf.append("\"" + featureCodeAsString(rVar.nTag) + "\" ");
         aBuf.append(rVar.fValue);
     }
     return aBuf.makeStringAndClear();
 }
 
-} // namespace vcl
+} // namespace vcl::font
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab cinoptions=b1,g0,N-s cinkeys+=0=break: */

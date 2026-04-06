@@ -1283,7 +1283,7 @@ static void ParseCSS1_font_variation_settings( const CSS1Expression *pExpr,
 {
     assert(pExpr && "no expression");
 
-    std::vector<vcl::FontVariation> aVariations;
+    std::vector<vcl::font::Variation> aVariations;
     while( pExpr && pExpr->GetType() == CSS1_STRING )
     {
         OUString aTag = pExpr->GetString();

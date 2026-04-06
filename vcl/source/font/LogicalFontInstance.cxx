@@ -63,7 +63,7 @@ LogicalFontInstance::~LogicalFontInstance()
         hb_draw_funcs_destroy(m_pHbDrawFuncs);
 }
 
-const std::vector<vcl::FontVariation>& LogicalFontInstance::GetVariations() const
+const std::vector<vcl::font::Variation>& LogicalFontInstance::GetVariations() const
 {
     if (!mxVariations)
     {
@@ -80,7 +80,7 @@ const std::vector<vcl::FontVariation>& LogicalFontInstance::GetVariations() cons
                 rVariation.fValue = std::clamp(rVariation.fValue, info.min_value, info.max_value);
 
             auto it = std::find_if(mxVariations->begin(), mxVariations->end(),
-                                   [&rVariation](const vcl::FontVariation& rOther) {
+                                   [&rVariation](const vcl::font::Variation& rOther) {
                                        return rOther.nTag == rVariation.nTag;
                                    });
             if (it != mxVariations->end())

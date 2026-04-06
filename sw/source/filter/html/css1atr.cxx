@@ -2566,7 +2566,7 @@ static SwHTMLWriter& OutCSS1_SvxFontVariations( SwHTMLWriter& rWrt, const SfxPoo
     const auto& rVariations = static_cast<const SvxFontVariationsItem&>(rHt).GetVariations();
     if( !rVariations.empty() )
     {
-        OUString aStr = vcl::FontVariationsToString(rVariations);
+        OUString aStr = vcl::font::VariationsToString(rVariations);
         rWrt.OutCSS1_Property( sCSS1_P_font_variation_settings, aStr );
     }
     return rWrt;

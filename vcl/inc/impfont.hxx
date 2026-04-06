@@ -28,7 +28,7 @@
 #include <i18nlangtag/languagetag.hxx>
 #include <vcl/fntstyle.hxx>
 #include <vcl/font.hxx>
-#include <vcl/FontVariation.hxx>
+#include <vcl/font/Variation.hxx>
 
 /* The following class is extraordinarily similar to FontAttributes. */
 
@@ -132,7 +132,7 @@ private:
                         mbTransparent:1,    // compatibility, now on output device
                         mbOpticalSizing:1;
 
-    std::vector<vcl::FontVariation> maVariations;
+    std::vector<vcl::font::Variation> maVariations;
 
     // deprecated variables - device independent
     Color               maColor;            // compatibility, now on output device

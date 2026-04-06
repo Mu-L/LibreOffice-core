@@ -351,7 +351,7 @@ struct FontSubset
 struct FontSubsetKey
 {
     const vcl::font::PhysicalFontFace* m_pFace;
-    const std::vector<vcl::FontVariation>& m_rVariations;
+    const std::vector<vcl::font::Variation>& m_rVariations;
     size_t m_nHash;
 
     FontSubsetKey(const vcl::font::PhysicalFontFace* pFace, const LogicalFontInstance* pFont)

@@ -23,7 +23,7 @@
 #include <tools/degree.hxx>
 
 #include <vcl/vclenum.hxx>
-#include <vcl/FontVariation.hxx>
+#include <vcl/font/Variation.hxx>
 
 #include <fontattributes.hxx>
 
@@ -70,7 +70,7 @@ public:
     bool            mbVertical;                 // vertical mode of requested font
     bool            mbNonAntialiased;           // true if antialiasing is disabled
     bool            mbOpticalSizing;            // true if optical sizing is enabled
-    std::vector<vcl::FontVariation> maVariations;    // font variation settings
+    std::vector<vcl::font::Variation> maVariations;    // font variation settings
 
     bool            mbEmbolden;                 // Force emboldening
     ItalicMatrix    maItalicMatrix;             // Force matrix for slant

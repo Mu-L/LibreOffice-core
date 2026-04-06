@@ -1246,7 +1246,7 @@ void YrsInsertAttribImplImpl(YrsWrite const& yw, SfxPoolItem const& rItm,
         case EE_CHAR_FONTVARIATIONS:
         {
             SvxFontVariationsItem const& rItem{static_cast<SvxFontVariationsItem const&>(rItm)};
-            OUString aStr = vcl::FontVariationsToString(rItem.GetVariations());
+            OUString aStr = vcl::font::VariationsToString(rItem.GetVariations());
             attr = yinput_str(OUStringToOString(aStr, RTL_TEXTENCODING_UTF8));
             attrName = "EE_CHAR_FONTVARIATIONS";
             break;
@@ -2505,7 +2505,7 @@ void YrsImplInsertAttr(SfxItemSet & rSet, ::std::vector<sal_uInt16> *const pRemo
             OUString aStr = OStringToOUString(
                 std::string_view(rValue.value.str.buf, rValue.value.str.len),
                 RTL_TEXTENCODING_UTF8);
-            SvxFontVariationsItem const item(vcl::FontVariationsFromString(aStr), nWhich);
+            SvxFontVariationsItem const item(vcl::font::VariationsFromString(aStr), nWhich);
             rSet.Put(item);
             break;
         }

@@ -11,20 +11,20 @@
 
 #include <svl/poolitem.hxx>
 #include <editeng/editengdllapi.h>
-#include <vcl/FontVariation.hxx>
+#include <vcl/font/Variation.hxx>
 
 class EDITENG_DLLPUBLIC SvxFontVariationsItem final : public SfxPoolItem
 {
-    std::vector<vcl::FontVariation> maVariations;
+    std::vector<vcl::font::Variation> maVariations;
 
 public:
     static SfxPoolItem* CreateDefault();
     DECLARE_ITEM_TYPE_FUNCTION(SvxFontVariationsItem)
 
     SvxFontVariationsItem(sal_uInt16 nId);
-    SvxFontVariationsItem(std::vector<vcl::FontVariation> aVariations, sal_uInt16 nId);
+    SvxFontVariationsItem(std::vector<vcl::font::Variation> aVariations, sal_uInt16 nId);
 
-    const std::vector<vcl::FontVariation>& GetVariations() const { return maVariations; }
+    const std::vector<vcl::font::Variation>& GetVariations() const { return maVariations; }
 
     virtual bool operator==(const SfxPoolItem& rItem) const override;
     virtual bool supportsHashCode() const override { return true; }

@@ -44,7 +44,7 @@ sal_IntPtr CoreTextFontFace::GetFontId() const
     return reinterpret_cast<sal_IntPtr>(mxFontDescriptor);
 }
 
-const std::vector<vcl::FontVariation>&
+const std::vector<vcl::font::Variation>&
 CoreTextFontFace::GetVariations(const LogicalFontInstance&) const
 {
     if (!mxVariations)

@@ -2471,7 +2471,7 @@ void Test::testFontVariationsItem()
     // Test construction with variations
     uint32_t nWght = vcl::font::featureCode("wght");
     uint32_t nWdth = vcl::font::featureCode("wdth");
-    std::vector<vcl::FontVariation> aVars = { { nWght, 700.0f }, { nWdth, 75.0f } };
+    std::vector<vcl::font::Variation> aVars = { { nWght, 700.0f }, { nWdth, 75.0f } };
     SvxFontVariationsItem aItem2(aVars, EE_CHAR_FONTVARIATIONS);
     CPPUNIT_ASSERT_EQUAL(size_t(2), aItem2.GetVariations().size());
 

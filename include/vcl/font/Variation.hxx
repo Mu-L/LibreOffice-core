@@ -14,22 +14,22 @@
 #include <vcl/dllapi.h>
 #include <vector>
 
-namespace vcl
+namespace vcl::font
 {
-struct VCL_DLLPUBLIC FontVariation
+struct VCL_DLLPUBLIC Variation
 {
     uint32_t nTag = 0;
     float fValue = 0;
 
-    bool operator==(const FontVariation& rOther) const
+    bool operator==(const Variation& rOther) const
     {
         return nTag == rOther.nTag && fValue == rOther.fValue;
     }
 };
 
-VCL_DLLPUBLIC std::vector<FontVariation> FontVariationsFromString(std::u16string_view rString);
-VCL_DLLPUBLIC OUString FontVariationsToString(const std::vector<FontVariation>& rVariations);
+VCL_DLLPUBLIC std::vector<Variation> VariationsFromString(std::u16string_view rString);
+VCL_DLLPUBLIC OUString VariationsToString(const std::vector<Variation>& rVariations);
 
-} // namespace vcl
+} // namespace vcl::font
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab cinoptions=b1,g0,N-s cinkeys+=0=break: */
