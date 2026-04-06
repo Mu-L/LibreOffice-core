@@ -257,6 +257,37 @@ CPPUNIT_TEST_FIXTURE(CppUnit::TestFixture, testComplexFractions)
     CPPUNIT_ASSERT_EQUAL(tools::Long(700), aResult.X());
 }
 
+CPPUNIT_TEST_FIXTURE(CppUnit::TestFixture, testNullptrMapMode)
+{
+    // Ensure that passing nullptr to the LogicToLogic pointer overload correctly
+    // falls back to the OutputDevice's MapMode without dereferencing a null pointer.
+
+    ScopedVclPtrInstance<VirtualDevice> pDev;
+    pDev->SetMapMode(MapMode(MapUnit::MapMM));
+
+    Point aPt(10, 20);
+    MapMode aDestMode(MapUnit::Map100thMM);
+
+    // Source is nullptr (falls back to device MapMM) -> Dest is Map100thMM
+    // 10mm -> 1000 100thMM, 20mm -> 2000 100thMM
+    Point aResult1 = pDev->LogicToLogic(aPt, nullptr, &aDestMode);
+    CPPUNIT_ASSERT_EQUAL(tools::Long(1000), aResult1.X());
+    CPPUNIT_ASSERT_EQUAL(tools::Long(2000), aResult1.Y());
+
+    // Source is Map100thMM -> Dest is nullptr (falls back to device MapMM)
+    // 1500 100thMM -> 15mm, 2500 100thMM -> 25mm
+    Point aPt2(1500, 2500);
+    Point aResult2 = pDev->LogicToLogic(aPt2, &aDestMode, nullptr);
+    CPPUNIT_ASSERT_EQUAL(tools::Long(15), aResult2.X());
+    CPPUNIT_ASSERT_EQUAL(tools::Long(25), aResult2.Y());
+
+    // Both are nullptr (falls back to device MapMM for both)
+    // Should return the exact same coordinates
+    Point aResult3 = pDev->LogicToLogic(aPt, nullptr, nullptr);
+    CPPUNIT_ASSERT_EQUAL(tools::Long(10), aResult3.X());
+    CPPUNIT_ASSERT_EQUAL(tools::Long(20), aResult3.Y());
+}
+
 } // end anonymous namespace
 
 CPPUNIT_PLUGIN_IMPLEMENT();
