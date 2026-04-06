@@ -1514,7 +1514,7 @@ void Window::ImplScroll( const tools::Rectangle& rRect,
         return;
 
     nHorzScroll = GetOutDev()->LogicWidthToDevicePixel(nHorzScroll);
-    nVertScroll = GetOutDev()->ImplLogicHeightToDevicePixel(nVertScroll);
+    nVertScroll = GetOutDev()->LogicHeightToDevicePixel(nVertScroll);
 
     if ( !nHorzScroll && !nVertScroll )
         return;

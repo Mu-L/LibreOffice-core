@@ -101,7 +101,7 @@ void OutputDevice::DrawRect( const tools::Rectangle& rRect,
         return;
 
     nHorzRound = LogicWidthToDevicePixel(nHorzRound);
-    nVertRound = ImplLogicHeightToDevicePixel( nVertRound );
+    nVertRound = LogicHeightToDevicePixel(nVertRound);
 
     // we need a graphics
     if ( !mpGraphics && !AcquireGraphics() )

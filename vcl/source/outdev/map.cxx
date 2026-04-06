@@ -223,7 +223,7 @@ tools::Long OutputDevice::LogicWidthToDevicePixel(tools::Long nWidth) const
     return lcl_logicToPixel(nWidth, mnDPIX, maMapRes.mfMapScX);
 }
 
-tools::Long OutputDevice::ImplLogicHeightToDevicePixel( tools::Long nHeight ) const
+tools::Long OutputDevice::LogicHeightToDevicePixel( tools::Long nHeight ) const
 {
     if ( !mbMap )
         return nHeight;
@@ -231,7 +231,7 @@ tools::Long OutputDevice::ImplLogicHeightToDevicePixel( tools::Long nHeight ) co
     return lcl_logicToPixel(nHeight, mnDPIY, maMapRes.mfMapScY);
 }
 
-tools::Long OutputDevice::ImplDevicePixelToLogicWidth( tools::Long nWidth ) const
+tools::Long OutputDevice::DevicePixelToLogicWidth( tools::Long nWidth ) const
 {
     if ( !mbMap )
         return nWidth;
@@ -247,7 +247,7 @@ SAL_DLLPRIVATE double OutputDevice::ImplDevicePixelToLogicWidthDouble(double nWi
     return lcl_pixelToLogicDouble(nWidth, mnDPIX, maMapRes.mfMapScX);
 }
 
-tools::Long OutputDevice::ImplDevicePixelToLogicHeight( tools::Long nHeight ) const
+tools::Long OutputDevice::DevicePixelToLogicHeight( tools::Long nHeight ) const
 {
     if ( !mbMap )
         return nHeight;
@@ -1659,7 +1659,7 @@ double OutputDevice::LogicWidthToDeviceSubPixel(tools::Long nWidth) const
                                maMapRes.mfMapScX);
 }
 
-double OutputDevice::ImplLogicHeightToDeviceSubPixel(tools::Long nHeight) const
+double OutputDevice::LogicHeightToDeviceSubPixel(tools::Long nHeight) const
 {
     if (!mbMap)
         return nHeight;

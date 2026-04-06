@@ -1735,10 +1735,10 @@ protected:
 
      @returns Height in units of device pixels.
      */
-    tools::Long                        ImplLogicHeightToDevicePixel( tools::Long nHeight ) const;
-    SAL_DLLPRIVATE double              ImplLogicHeightToDeviceSubPixel(tools::Long nHeight) const;
+    tools::Long LogicHeightToDevicePixel(tools::Long nHeight) const;
+    SAL_DLLPRIVATE double LogicHeightToDeviceSubPixel(tools::Long nHeight) const;
 
-    SAL_DLLPRIVATE Point               SubPixelToLogic(const basegfx::B2DPoint& rDevicePt) const;
+    SAL_DLLPRIVATE Point SubPixelToLogic(const basegfx::B2DPoint& rDevicePt) const;
 
     /** Convert device pixels to a width in logical units.
 
@@ -1749,7 +1749,7 @@ protected:
 
      @returns Width in logical units.
      */
-    SAL_DLLPRIVATE tools::Long         ImplDevicePixelToLogicWidth( tools::Long nWidth ) const;
+    SAL_DLLPRIVATE tools::Long DevicePixelToLogicWidth(tools::Long nWidth) const;
 
     /** Convert device pixels to a height in logical units.
 
@@ -1760,7 +1760,7 @@ protected:
 
      @returns Height in logical units.
      */
-    SAL_DLLPRIVATE tools::Long         ImplDevicePixelToLogicHeight( tools::Long nHeight ) const;
+    SAL_DLLPRIVATE tools::Long DevicePixelToLogicHeight(tools::Long nHeight) const;
 
 private:
     /** Convert a logical size to the size on the physical device.

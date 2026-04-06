@@ -644,7 +644,7 @@ tools::Long OutputDevice::GetTextHeight() const
     tools::Long nHeight = mpFontInstance->mnLineHeight + mnEmphasisAscent + mnEmphasisDescent;
 
     if ( mbMap )
-        nHeight = ImplDevicePixelToLogicHeight( nHeight );
+        nHeight = DevicePixelToLogicHeight(nHeight);
 
     return nHeight;
 }

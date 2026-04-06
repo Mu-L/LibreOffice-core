@@ -173,8 +173,8 @@ void OutputDevice::DrawHatch( const tools::PolyPolygon& rPolyPoly, const Hatch& 
     }
 
     tools::Rectangle   aRect( rPolyPoly.GetBoundRect() );
-    const tools::Long  nLogPixelWidth = ImplDevicePixelToLogicWidth( 1 );
-    const tools::Long nWidth = ImplDevicePixelToLogicWidth(std::max(LogicWidthToDevicePixel(rHatch.GetDistance()), tools::Long(3)));
+    const tools::Long  nLogPixelWidth = DevicePixelToLogicWidth(1);
+    const tools::Long nWidth = DevicePixelToLogicWidth(std::max(LogicWidthToDevicePixel(rHatch.GetDistance()), tools::Long(3)));
     std::unique_ptr<Point[]> pPtBuffer(new Point[ HATCH_MAXPOINTS ]);
     Point       aPt1, aPt2, aEndPt1;
     Size        aInc;
