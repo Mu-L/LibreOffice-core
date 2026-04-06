@@ -3,7 +3,7 @@
 <!-- Created with Cambalache 0.96.3 -->
 <interface domain="cui">
   <requires lib="gtk+" version="3.24"/>
-  <object class="GtkTreeStore" id="modelToolbarList">
+  <object class="GtkListStore" id="modelToolbarList">
     <columns>
       <!-- column-name Name -->
       <column type="gchararray"/>
