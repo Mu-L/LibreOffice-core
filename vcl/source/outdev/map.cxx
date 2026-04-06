@@ -420,38 +420,38 @@ basegfx::B2DPolygon OutputDevice::ImplLogicToDevicePixel(const basegfx::B2DPolyg
             if (bC2)
                 aPoly.setNextControlPoint(i, aC2);
         }
+
+        return aPoly;
     }
-    else
+
+    for (sal_uInt32 i = 0; i < nPoints; ++i)
     {
-        for (sal_uInt32 i = 0; i < nPoints; ++i)
+        const basegfx::B2DPoint& rPt = aPoly.getB2DPoint(i);
+        basegfx::B2DPoint aPt(rPt.getX() + mnOutOffX, rPt.getY() + mnOutOffY);
+
+        const bool bC1 = aPoly.isPrevControlPointUsed(i);
+        if (bC1)
         {
-            const basegfx::B2DPoint& rPt = aPoly.getB2DPoint(i);
-            basegfx::B2DPoint aPt(rPt.getX() + mnOutOffX, rPt.getY() + mnOutOffY);
+            const basegfx::B2DPoint aB2DC1(aPoly.getPrevControlPoint(i));
 
-            const bool bC1 = aPoly.isPrevControlPointUsed(i);
-            if (bC1)
-            {
-                const basegfx::B2DPoint aB2DC1(aPoly.getPrevControlPoint(i));
-
-                aC1 = basegfx::B2DPoint(aB2DC1.getX() + mnOutOffX, aB2DC1.getY() + mnOutOffY);
-            }
-
-            const bool bC2 = aPoly.isNextControlPointUsed(i);
-            if (bC2)
-            {
-                const basegfx::B2DPoint aB2DC2(aPoly.getNextControlPoint(i));
-
-                aC2 = basegfx::B2DPoint(aB2DC2.getX() + mnOutOffX, aB2DC2.getY() + mnOutOffY);
-            }
-
-            aPoly.setB2DPoint(i, aPt);
-
-            if (bC1)
-                aPoly.setPrevControlPoint(i, aC1);
-
-            if (bC2)
-                aPoly.setNextControlPoint(i, aC2);
+            aC1 = basegfx::B2DPoint(aB2DC1.getX() + mnOutOffX, aB2DC1.getY() + mnOutOffY);
         }
+
+        const bool bC2 = aPoly.isNextControlPointUsed(i);
+        if (bC2)
+        {
+            const basegfx::B2DPoint aB2DC2(aPoly.getNextControlPoint(i));
+
+            aC2 = basegfx::B2DPoint(aB2DC2.getX() + mnOutOffX, aB2DC2.getY() + mnOutOffY);
+        }
+
+        aPoly.setB2DPoint(i, aPt);
+
+        if (bC1)
+            aPoly.setPrevControlPoint(i, aC1);
+
+        if (bC2)
+            aPoly.setNextControlPoint(i, aC2);
     }
 
     return aPoly;
@@ -550,23 +550,23 @@ void OutputDevice::SetMapMode()
     if ( mpMetaFile )
         mpMetaFile->AddAction( new MetaMapModeAction( MapMode() ) );
 
-    if ( mbMap || !maMapMode.IsDefault() )
-    {
-        mbMap       = false;
-        maMapMode   = MapMode();
+    if (!mbMap && maMapMode.IsDefault())
+        return;
 
-        // create new objects (clip region are not re-scaled)
-        mbNewFont   = true;
-        mbInitFont  = true;
-        ImplInitMapModeObjects();
+    mbMap       = false;
+    maMapMode   = MapMode();
 
-        // #106426# Adapt logical offset when changing mapmode
-        mnOutOffLogicX = mnOutOffOrigX; // no mapping -> equal offsets
-        mnOutOffLogicY = mnOutOffOrigY;
+    // create new objects (clip region are not re-scaled)
+    mbNewFont   = true;
+    mbInitFont  = true;
+    ImplInitMapModeObjects();
 
-        // #i75163#
-        ImplInvalidateViewTransform();
-    }
+    // #106426# Adapt logical offset when changing mapmode
+    mnOutOffLogicX = mnOutOffOrigX; // no mapping -> equal offsets
+    mnOutOffLogicY = mnOutOffOrigY;
+
+    // #i75163#
+    ImplInvalidateViewTransform();
 }
 
 void OutputDevice::SetMapMode( const MapMode& rNewMapMode )
@@ -719,49 +719,41 @@ void OutputDevice::SetRelativeMapMode( const MapMode& rNewMapMode )
 // #i75163#
 basegfx::B2DHomMatrix OutputDevice::GetViewTransformation() const
 {
-    if(mbMap && mpOutDevData)
-    {
-        if(!mpOutDevData->mpViewTransform)
-        {
-            mpOutDevData->mpViewTransform = new basegfx::B2DHomMatrix;
-
-            const double fScaleFactorX(static_cast<double>(mnDPIX) * maMapRes.mfMapScX);
-            const double fScaleFactorY(static_cast<double>(mnDPIY) * maMapRes.mfMapScY);
-            const double fZeroPointX((static_cast<double>(maMapRes.mnMapOfsX) * fScaleFactorX) + static_cast<double>(mnOutOffOrigX));
-            const double fZeroPointY((static_cast<double>(maMapRes.mnMapOfsY) * fScaleFactorY) + static_cast<double>(mnOutOffOrigY));
-
-            mpOutDevData->mpViewTransform->set(0, 0, fScaleFactorX);
-            mpOutDevData->mpViewTransform->set(1, 1, fScaleFactorY);
-            mpOutDevData->mpViewTransform->set(0, 2, fZeroPointX);
-            mpOutDevData->mpViewTransform->set(1, 2, fZeroPointY);
-        }
-
-        return *mpOutDevData->mpViewTransform;
-    }
-    else
-    {
+    if (!mbMap || !mpOutDevData)
         return basegfx::B2DHomMatrix();
+
+    if(!mpOutDevData->mpViewTransform)
+    {
+        mpOutDevData->mpViewTransform = new basegfx::B2DHomMatrix;
+
+        const double fScaleFactorX(static_cast<double>(mnDPIX) * maMapRes.mfMapScX);
+        const double fScaleFactorY(static_cast<double>(mnDPIY) * maMapRes.mfMapScY);
+        const double fZeroPointX((static_cast<double>(maMapRes.mnMapOfsX) * fScaleFactorX) + static_cast<double>(mnOutOffOrigX));
+        const double fZeroPointY((static_cast<double>(maMapRes.mnMapOfsY) * fScaleFactorY) + static_cast<double>(mnOutOffOrigY));
+
+        mpOutDevData->mpViewTransform->set(0, 0, fScaleFactorX);
+        mpOutDevData->mpViewTransform->set(1, 1, fScaleFactorY);
+        mpOutDevData->mpViewTransform->set(0, 2, fZeroPointX);
+        mpOutDevData->mpViewTransform->set(1, 2, fZeroPointY);
     }
+
+    return *mpOutDevData->mpViewTransform;
 }
 
 // #i75163#
 basegfx::B2DHomMatrix OutputDevice::GetInverseViewTransformation() const
 {
-    if(mbMap && mpOutDevData)
-    {
-        if(!mpOutDevData->mpInverseViewTransform)
-        {
-            GetViewTransformation();
-            mpOutDevData->mpInverseViewTransform = new basegfx::B2DHomMatrix(*mpOutDevData->mpViewTransform);
-            mpOutDevData->mpInverseViewTransform->invert();
-        }
-
-        return *mpOutDevData->mpInverseViewTransform;
-    }
-    else
-    {
+    if (!mbMap || !mpOutDevData)
         return basegfx::B2DHomMatrix();
+
+    if(!mpOutDevData->mpInverseViewTransform)
+    {
+        GetViewTransformation();
+        mpOutDevData->mpInverseViewTransform = new basegfx::B2DHomMatrix(*mpOutDevData->mpViewTransform);
+        mpOutDevData->mpInverseViewTransform->invert();
     }
+
+    return *mpOutDevData->mpInverseViewTransform;
 }
 
 // #i75163#
@@ -1371,6 +1363,7 @@ static tools::Long lcl_convertLogicValue(const tools::Long n1, const o3tl::Lengt
 {
     if (n1 == 0 || eFrom == o3tl::Length::invalid || eTo == o3tl::Length::invalid)
         return 0;
+
     bool bOverflow;
     const auto nResult = o3tl::convert(n1, eFrom, eTo, bOverflow);
     if (bOverflow)
@@ -1378,17 +1371,23 @@ static tools::Long lcl_convertLogicValue(const tools::Long n1, const o3tl::Lengt
         const auto [n2, n3] = o3tl::getConversionMulDiv(eFrom, eTo);
         BigInt a4 = n1;
         a4 *= n2;
+    }
 
-        if ( a4.IsNeg() )
-            a4 -= n3 / 2;
-        else
-            a4 += n3 / 2;
-
-        a4 /= n3;
-        return static_cast<tools::Long>(a4);
-    } // of if
-    else
+    if (!bOverflow)
         return nResult;
+
+    const auto [n2, n3] = o3tl::getConversionMulDiv(eFrom, eTo);
+    BigInt a4 = n1;
+    a4 *= n2;
+
+    if ( a4.IsNeg() )
+        a4 -= n3 / 2;
+    else
+        a4 += n3 / 2;
+
+    a4 /= n3;
+
+    return static_cast<tools::Long>(a4);
 }
 
 Point OutputDevice::LogicToLogic( const Point& rPtSource,
@@ -1474,17 +1473,15 @@ Point OutputDevice::LogicToLogic( const Point& rPtSource,
         const auto [eFrom, eTo] = getCorrectedUnit(eUnitSource, eUnitDest);
         return Point(lcl_convertLogicValue(rPtSource.X(), eFrom, eTo), lcl_convertLogicValue(rPtSource.Y(), eFrom, eTo));
     }
-    else
-    {
-        const auto [aMapResSource, aMapResDest] = lcl_calcConversionMapRes( rMapModeSource, rMapModeDest );
 
-        return Point( lcl_scaleLogicValue( rPtSource.X() + aMapResSource.mnMapOfsX,
-                           aMapResSource.mfMapScX, aMapResDest.mfMapScX ) -
-                      aMapResDest.mnMapOfsX,
-                      lcl_scaleLogicValue( rPtSource.Y() + aMapResSource.mnMapOfsY,
-                           aMapResSource.mfMapScY, aMapResDest.mfMapScY ) -
-                      aMapResDest.mnMapOfsY );
-    }
+    const auto [aMapResSource, aMapResDest] = lcl_calcConversionMapRes( rMapModeSource, rMapModeDest );
+
+    return Point( lcl_scaleLogicValue( rPtSource.X() + aMapResSource.mnMapOfsX,
+                       aMapResSource.mfMapScX, aMapResDest.mfMapScX ) -
+                  aMapResDest.mnMapOfsX,
+                  lcl_scaleLogicValue( rPtSource.Y() + aMapResSource.mnMapOfsY,
+                       aMapResSource.mfMapScY, aMapResDest.mfMapScY ) -
+                  aMapResDest.mnMapOfsY );
 }
 
 Size OutputDevice::LogicToLogic( const Size& rSzSource,
@@ -1503,15 +1500,13 @@ Size OutputDevice::LogicToLogic( const Size& rSzSource,
         const auto [eFrom, eTo] = getCorrectedUnit(eUnitSource, eUnitDest);
         return Size(lcl_convertLogicValue(rSzSource.Width(), eFrom, eTo), lcl_convertLogicValue(rSzSource.Height(), eFrom, eTo));
     }
-    else
-    {
-        const auto [aMapResSource, aMapResDest] = lcl_calcConversionMapRes( rMapModeSource, rMapModeDest );
 
-        return Size( lcl_scaleLogicValue( rSzSource.Width(),
-                          aMapResSource.mfMapScX, aMapResDest.mfMapScX ),
-                     lcl_scaleLogicValue( rSzSource.Height(),
-                          aMapResSource.mfMapScY, aMapResDest.mfMapScY ) );
-    }
+    const auto [aMapResSource, aMapResDest] = lcl_calcConversionMapRes( rMapModeSource, rMapModeDest );
+
+    return Size( lcl_scaleLogicValue( rSzSource.Width(),
+                      aMapResSource.mfMapScX, aMapResDest.mfMapScX ),
+                 lcl_scaleLogicValue( rSzSource.Height(),
+                      aMapResSource.mfMapScY, aMapResDest.mfMapScY ) );
 }
 
 basegfx::B2DPolygon OutputDevice::LogicToLogic( const basegfx::B2DPolygon& rPolySource,
@@ -1551,21 +1546,21 @@ basegfx::B2DHomMatrix OutputDevice::LogicToLogic(const MapMode& rMapModeSource, 
                                       : o3tl::convert(1.0, eFrom, eTo));
         aTransform.set(0, 0, fScaleFactor);
         aTransform.set(1, 1, fScaleFactor);
-    }
-    else
-    {
-        const auto [aMapResSource, aMapResDest] = lcl_calcConversionMapRes(rMapModeSource, rMapModeDest);
 
-        const double fScaleFactorX(aMapResSource.mfMapScX / aMapResDest.mfMapScX);
-        const double fScaleFactorY(aMapResSource.mfMapScY / aMapResDest.mfMapScY);
-        const double fZeroPointX(double(aMapResSource.mnMapOfsX) * fScaleFactorX - double(aMapResDest.mnMapOfsX));
-        const double fZeroPointY(double(aMapResSource.mnMapOfsY) * fScaleFactorY - double(aMapResDest.mnMapOfsY));
-
-        aTransform.set(0, 0, fScaleFactorX);
-        aTransform.set(1, 1, fScaleFactorY);
-        aTransform.set(0, 2, fZeroPointX);
-        aTransform.set(1, 2, fZeroPointY);
+        return aTransform;
     }
+
+    const auto [aMapResSource, aMapResDest] = lcl_calcConversionMapRes(rMapModeSource, rMapModeDest);
+
+    const double fScaleFactorX(aMapResSource.mfMapScX / aMapResDest.mfMapScX);
+    const double fScaleFactorY(aMapResSource.mfMapScY / aMapResDest.mfMapScY);
+    const double fZeroPointX(double(aMapResSource.mnMapOfsX) * fScaleFactorX - double(aMapResDest.mnMapOfsX));
+    const double fZeroPointY(double(aMapResSource.mnMapOfsY) * fScaleFactorY - double(aMapResDest.mnMapOfsY));
+
+    aTransform.set(0, 0, fScaleFactorX);
+    aTransform.set(1, 1, fScaleFactorY);
+    aTransform.set(0, 2, fZeroPointX);
+    aTransform.set(1, 2, fZeroPointY);
 
     return aTransform;
 }

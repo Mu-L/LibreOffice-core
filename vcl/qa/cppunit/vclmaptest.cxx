@@ -437,6 +437,41 @@ CPPUNIT_TEST_FIXTURE(CppUnit::TestFixture, testViewTransformation)
     CPPUNIT_ASSERT_DOUBLES_EQUAL(double(aPix.X()), aPt.getX(), 1.0);
 }
 
+CPPUNIT_TEST_FIXTURE(CppUnit::TestFixture, testMapRelativeScaling)
+{
+    // Setup Mapper with a known state (e.g., 100thMM)
+    // We use a dummy OutputDevice/VirtualDevice to get a mapper instance
+    ScopedVclPtrInstance<VirtualDevice> pVDev;
+    pVDev->SetMapMode(MapMode(MapUnit::Map100thMM));
+
+    // Create a Relative MapMode that specifies a 200% zoom (2/1 scale)
+    // and a translation offset of 100 units.
+    MapMode aRelativeMode(MapUnit::MapRelative);
+    aRelativeMode.SetScaleX(2.0);
+    aRelativeMode.SetScaleY(2.0);
+    aRelativeMode.SetOrigin(Point(100, 100));
+
+    // Test conversion from a Point in 'Relative' space to the 'Base' space.
+    // LogicToLogic(Point, pSourceMode, pDestMode)
+    // Passing nullptr for a mode pointer defaults to the Device's current MapMode.
+    Point aPt(50, 50);
+
+    // The ResolveMapRes logic inside the mapper is triggered here:
+    Point aResult = pVDev->LogicToLogic(aPt, &aRelativeMode, nullptr);
+
+    // EXPECTED CALCULATION:
+    // VCL MapMode math applies the Origin translation BEFORE the Scale factor!
+    // Result.X = (Point.X + RelativeOrigin.X) * RelativeScale.X
+    // Result.X = (50 + 100) * 2 = 150 * 2 = 300
+    //
+    // IF THE BUG IS PRESENT (Early Return):
+    // The mapper returns the default resolution immediately, ignoring the scale/origin.
+    // Result.X = 50
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Relative scaling was ignored!", tools::Long(300), aResult.X());
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Relative origin was ignored!", tools::Long(300), aResult.Y());
+}
+
 } // end anonymous namespace
 
 CPPUNIT_PLUGIN_IMPLEMENT();
