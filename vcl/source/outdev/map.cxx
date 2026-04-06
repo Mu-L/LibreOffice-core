@@ -1318,7 +1318,7 @@ static ImplMapRes lcl_resolveMapRes(const MapMode* pMode, const MapMode& rDefaul
     return aRes;
 }
 
-static void verifyUnitSourceDest( MapUnit eUnitSource, MapUnit eUnitDest )
+static void lcl_verifyUnitSourceDest( MapUnit eUnitSource, MapUnit eUnitDest )
 {
     DBG_ASSERT( eUnitSource != MapUnit::MapSysFont
                 && eUnitSource != MapUnit::MapAppFont
@@ -1467,7 +1467,7 @@ Point OutputDevice::LogicToLogic( const Point& rPtSource,
 
     MapUnit eUnitSource = rMapModeSource.GetMapUnit();
     MapUnit eUnitDest   = rMapModeDest.GetMapUnit();
-    verifyUnitSourceDest( eUnitSource, eUnitDest );
+    lcl_verifyUnitSourceDest( eUnitSource, eUnitDest );
 
     if (rMapModeSource.IsSimple() && rMapModeDest.IsSimple())
     {
@@ -1496,7 +1496,7 @@ Size OutputDevice::LogicToLogic( const Size& rSzSource,
 
     MapUnit eUnitSource = rMapModeSource.GetMapUnit();
     MapUnit eUnitDest   = rMapModeDest.GetMapUnit();
-    verifyUnitSourceDest( eUnitSource, eUnitDest );
+    lcl_verifyUnitSourceDest( eUnitSource, eUnitDest );
 
     if (rMapModeSource.IsSimple() && rMapModeDest.IsSimple())
     {
@@ -1541,7 +1541,7 @@ basegfx::B2DHomMatrix OutputDevice::LogicToLogic(const MapMode& rMapModeSource, 
 
     MapUnit eUnitSource = rMapModeSource.GetMapUnit();
     MapUnit eUnitDest   = rMapModeDest.GetMapUnit();
-    verifyUnitSourceDest(eUnitSource, eUnitDest);
+    lcl_verifyUnitSourceDest(eUnitSource, eUnitDest);
 
     if (rMapModeSource.IsSimple() && rMapModeDest.IsSimple())
     {
@@ -1579,7 +1579,7 @@ tools::Rectangle OutputDevice::LogicToLogic( const tools::Rectangle& rRectSource
 
     MapUnit eUnitSource = rMapModeSource.GetMapUnit();
     MapUnit eUnitDest   = rMapModeDest.GetMapUnit();
-    verifyUnitSourceDest( eUnitSource, eUnitDest );
+    lcl_verifyUnitSourceDest( eUnitSource, eUnitDest );
 
     tools::Rectangle aRetval;
 
@@ -1633,7 +1633,7 @@ tools::Long OutputDevice::LogicToLogic( tools::Long nLongSource,
     if ( eUnitSource == eUnitDest )
         return nLongSource;
 
-    verifyUnitSourceDest( eUnitSource, eUnitDest );
+    lcl_verifyUnitSourceDest( eUnitSource, eUnitDest );
     const auto [eFrom, eTo] = getCorrectedUnit(eUnitSource, eUnitDest);
     return lcl_convertLogicValue(nLongSource, eFrom, eTo);
 }
