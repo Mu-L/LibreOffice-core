@@ -24,7 +24,7 @@
       <column type="gchararray"/>
     </columns>
   </object>
-  <object class="GtkTreeStore" id="liststore2">
+  <object class="GtkListStore" id="liststore2">
     <columns>
       <!-- column-name image -->
       <column type="GdkPixbuf"/>
