@@ -38,104 +38,6 @@
 #include <basegfx/matrix/b2dhommatrix.hxx>
 #include <tools/UnitConversion.hxx>
 
-static auto lcl_setMapRes(ImplMapRes& rMapRes, const o3tl::Length eUnit)
-{
-    const auto [nNum, nDen] = o3tl::getConversionMulDiv(eUnit, o3tl::Length::in);
-    rMapRes.mfMapScX = rMapRes.mfMapScY = double(nNum) / nDen;
-};
-
-static void lcl_calcMapResolution( const MapMode& rMapMode,
-                                   tools::Long nDPIX, tools::Long nDPIY, ImplMapRes& rMapRes )
-{
-    switch ( rMapMode.GetMapUnit() )
-    {
-        case MapUnit::MapRelative:
-            break;
-        case MapUnit::Map100thMM:
-            lcl_setMapRes(rMapRes, o3tl::Length::mm100);
-            break;
-        case MapUnit::Map10thMM:
-            lcl_setMapRes(rMapRes, o3tl::Length::mm10);
-            break;
-        case MapUnit::MapMM:
-            lcl_setMapRes(rMapRes, o3tl::Length::mm);
-            break;
-        case MapUnit::MapCM:
-            lcl_setMapRes(rMapRes, o3tl::Length::cm);
-            break;
-        case MapUnit::Map1000thInch:
-            lcl_setMapRes(rMapRes, o3tl::Length::in1000);
-            break;
-        case MapUnit::Map100thInch:
-            lcl_setMapRes(rMapRes, o3tl::Length::in100);
-            break;
-        case MapUnit::Map10thInch:
-            lcl_setMapRes(rMapRes, o3tl::Length::in10);
-            break;
-        case MapUnit::MapInch:
-            lcl_setMapRes(rMapRes, o3tl::Length::in);
-            break;
-        case MapUnit::MapPoint:
-            lcl_setMapRes(rMapRes, o3tl::Length::pt);
-            break;
-        case MapUnit::MapTwip:
-            lcl_setMapRes(rMapRes, o3tl::Length::twip);
-            break;
-        case MapUnit::MapPixel:
-            rMapRes.mfMapScX   = 1.0 / nDPIX;
-            rMapRes.mfMapScY   = 1.0 / nDPIY;
-            break;
-        case MapUnit::MapSysFont:
-        case MapUnit::MapAppFont:
-            {
-            ImplSVData* pSVData = ImplGetSVData();
-            if ( !pSVData->maGDIData.mnAppFontX )
-            {
-                if (pSVData->maFrameData.mpFirstFrame)
-                    vcl::Window::ImplInitAppFontData(pSVData->maFrameData.mpFirstFrame);
-                else
-                {
-                    ScopedVclPtrInstance<WorkWindow> pWin( nullptr, 0 );
-                    vcl::Window::ImplInitAppFontData( pWin );
-                }
-            }
-            rMapRes.mfMapScX   = double(pSVData->maGDIData.mnAppFontX) / (nDPIX * 40);
-            rMapRes.mfMapScY   = double(pSVData->maGDIData.mnAppFontY) / (nDPIY * 80);
-            }
-            break;
-        default:
-            OSL_FAIL( "unhandled MapUnit" );
-            break;
-    }
-
-    double fScaleX = rMapMode.GetScaleX();
-    double fScaleY = rMapMode.GetScaleY();
-
-    // set offset according to MapMode
-    Point aOrigin = rMapMode.GetOrigin();
-    if ( rMapMode.GetMapUnit() != MapUnit::MapRelative )
-    {
-        rMapRes.mnMapOfsX = aOrigin.X();
-        rMapRes.mnMapOfsY = aOrigin.Y();
-    }
-    else
-    {
-        auto funcCalcOffset = [](double fScale, tools::Long& rnMapOffset, tools::Long nOrigin)
-        {
-            assert(fScale != 0);
-            rnMapOffset = std::llround(double( rnMapOffset ) / fScale) + nOrigin;
-        };
-
-        funcCalcOffset(fScaleX, rMapRes.mnMapOfsX, aOrigin.X());
-        funcCalcOffset(fScaleY, rMapRes.mnMapOfsY, aOrigin.Y());
-    }
-
-    // calculate scaling factor according to MapMode
-    // aTemp? = rMapRes.mnMapSc? * aScale?
-    rMapRes.mfMapScX = fScaleX * rMapRes.mfMapScX;
-    rMapRes.mfMapScY = fScaleY * rMapRes.mfMapScY;
-}
-
 // #i75163#
 void OutputDevice::ImplInvalidateViewTransform()
 {
@@ -614,7 +516,7 @@ void OutputDevice::SetMapMode( const MapMode& rNewMapMode )
         }
 
         // calculate new MapMode-resolution
-        lcl_calcMapResolution(rNewMapMode, mnDPIX, mnDPIY, maMapRes);
+        maMapRes.CalcMapResolution(rNewMapMode, mnDPIX, mnDPIY);
     }
 
     // set new MapMode
@@ -761,7 +663,7 @@ basegfx::B2DHomMatrix OutputDevice::GetViewTransformation( const MapMode& rMapMo
 {
     // #i82615#
     ImplMapRes          aMapRes;
-    lcl_calcMapResolution(rMapMode, mnDPIX, mnDPIY, aMapRes);
+    aMapRes.CalcMapResolution(rMapMode, mnDPIX, mnDPIY);
 
     basegfx::B2DHomMatrix aTransform;
 
@@ -934,7 +836,7 @@ Point OutputDevice::LogicToPixel( const Point& rLogicPt,
 
     // convert MapMode resolution and convert
     ImplMapRes          aMapRes;
-    lcl_calcMapResolution(rMapMode, mnDPIX, mnDPIY, aMapRes);
+    aMapRes.CalcMapResolution(rMapMode, mnDPIX, mnDPIY);
 
     return Point( lcl_logicToPixel( rLogicPt.X() + aMapRes.mnMapOfsX, mnDPIX,
                                     aMapRes.mfMapScX )+mnOutOffOrigX,
@@ -951,7 +853,7 @@ Size OutputDevice::LogicToPixel( const Size& rLogicSize,
 
     // convert MapMode resolution and convert
     ImplMapRes          aMapRes;
-    lcl_calcMapResolution(rMapMode, mnDPIX, mnDPIY, aMapRes);
+    aMapRes.CalcMapResolution(rMapMode, mnDPIX, mnDPIY);
 
     return Size( lcl_logicToPixel( rLogicSize.Width(), mnDPIX,
                                    aMapRes.mfMapScX ),
@@ -968,7 +870,7 @@ tools::Rectangle OutputDevice::LogicToPixel( const tools::Rectangle& rLogicRect,
 
     // convert MapMode resolution and convert
     ImplMapRes          aMapRes;
-    lcl_calcMapResolution(rMapMode, mnDPIX, mnDPIY, aMapRes);
+    aMapRes.CalcMapResolution(rMapMode, mnDPIX, mnDPIY);
 
     tools::Rectangle aRetval(
         lcl_logicToPixel( rLogicRect.Left() + aMapRes.mnMapOfsX, mnDPIX, aMapRes.mfMapScX )+mnOutOffOrigX,
@@ -994,7 +896,7 @@ tools::Polygon OutputDevice::LogicToPixel( const tools::Polygon& rLogicPoly,
 
     // convert MapMode resolution and convert
     ImplMapRes          aMapRes;
-    lcl_calcMapResolution(rMapMode, mnDPIX, mnDPIY, aMapRes);
+    aMapRes.CalcMapResolution(rMapMode, mnDPIX, mnDPIY);
 
     sal_uInt16  i;
     sal_uInt16  nPoints = rLogicPoly.GetSize();
@@ -1188,7 +1090,7 @@ Point OutputDevice::PixelToLogic( const Point& rDevicePt,
 
     // calculate MapMode-resolution and convert
     ImplMapRes          aMapRes;
-    lcl_calcMapResolution(rMapMode, mnDPIX, mnDPIY, aMapRes);
+    aMapRes.CalcMapResolution(rMapMode, mnDPIX, mnDPIY);
 
     return Point( lcl_pixelToLogic( rDevicePt.X(), mnDPIX,
                                     aMapRes.mfMapScX ) - aMapRes.mnMapOfsX - mnOutOffLogicX,
@@ -1206,7 +1108,7 @@ Size OutputDevice::PixelToLogic( const Size& rDeviceSize,
 
     // calculate MapMode-resolution and convert
     ImplMapRes          aMapRes;
-    lcl_calcMapResolution(rMapMode, mnDPIX, mnDPIY, aMapRes);
+    aMapRes.CalcMapResolution(rMapMode, mnDPIX, mnDPIY);
 
     return Size( lcl_pixelToLogic( rDeviceSize.Width(), mnDPIX,
                                    aMapRes.mfMapScX ),
@@ -1224,7 +1126,7 @@ tools::Rectangle OutputDevice::PixelToLogic( const tools::Rectangle& rDeviceRect
 
     // calculate MapMode-resolution and convert
     ImplMapRes          aMapRes;
-    lcl_calcMapResolution(rMapMode, mnDPIX, mnDPIY, aMapRes);
+    aMapRes.CalcMapResolution(rMapMode, mnDPIX, mnDPIY);
 
     tools::Rectangle aRetval(
         lcl_pixelToLogic( rDeviceRect.Left(), mnDPIX, aMapRes.mfMapScX ) - aMapRes.mnMapOfsX - mnOutOffLogicX,
@@ -1251,7 +1153,7 @@ tools::Polygon OutputDevice::PixelToLogic( const tools::Polygon& rDevicePoly,
 
     // calculate MapMode-resolution and convert
     ImplMapRes          aMapRes;
-    lcl_calcMapResolution(rMapMode, mnDPIX, mnDPIY, aMapRes);
+    aMapRes.CalcMapResolution(rMapMode, mnDPIX, mnDPIY);
 
     sal_uInt16  i;
     sal_uInt16  nPoints = rDevicePoly.GetSize();
@@ -1305,7 +1207,7 @@ static ImplMapRes lcl_resolveMapRes(const MapMode* pMode, const MapMode& rDefaul
     if (pEffectiveMode->GetMapUnit() == MapUnit::MapRelative)
         aRes = rDefaultMapRes; // Pre-fill, do NOT return early
 
-    lcl_calcMapResolution(*pEffectiveMode, nDPIX, nDPIY, aRes);
+    aRes.CalcMapResolution(*pEffectiveMode, nDPIX, nDPIY);
 
     return aRes;
 }
@@ -1344,8 +1246,8 @@ auto getCorrectedUnit(MapUnit eMapSrc, MapUnit eMapDst)
 std::pair<ImplMapRes, ImplMapRes> lcl_calcConversionMapRes(const MapMode& rMMSource, const MapMode& rMMDest)
 {
     std::pair<ImplMapRes, ImplMapRes> result;
-    lcl_calcMapResolution(rMMSource, 72, 72, result.first);
-    lcl_calcMapResolution(rMMDest, 72, 72, result.second);
+    result.first.CalcMapResolution(rMMSource, 72, 72);
+    result.second.CalcMapResolution(rMMDest, 72, 72);
     return result;
 }
 }
