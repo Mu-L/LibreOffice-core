@@ -119,6 +119,12 @@ int OutputDevice::GetFontFaceCollectionCount() const
     return mpFontFaceCollection->Count();
 }
 
+const std::unordered_map<OUString, OUString>& OutputDevice::GetFontFamilyAliases() const
+{
+    ImplInitFontList();
+    return mxFontCollection->GetFontFamilyNameAliases();
+}
+
 bool OutputDevice::IsFontAvailable( std::u16string_view rFontName ) const
 {
     ImplInitFontList();

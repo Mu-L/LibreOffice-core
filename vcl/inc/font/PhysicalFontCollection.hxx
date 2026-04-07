@@ -47,6 +47,8 @@ namespace vcl::font
 class VCL_PLUGIN_PUBLIC PhysicalFontCollection final
 {
 public:
+    typedef std::unordered_map<OUString, OUString> FontFamilyAliases;
+
     explicit                PhysicalFontCollection();
                             ~PhysicalFontCollection();
 
@@ -57,11 +59,13 @@ public:
 
     // find the device font family
     vcl::font::PhysicalFontFamily* FindFontFamily( std::u16string_view rFontName ) const;
-    vcl::font::PhysicalFontFamily* FindOrCreateFontFamily( const OUString &rFamilyName );
+    std::tuple<vcl::font::PhysicalFontFamily*, bool> FindOrCreateFontFamily( const OUString &rFamilyName );
     SAL_DLLPRIVATE vcl::font::PhysicalFontFamily* FindFontFamily( vcl::font::FontSelectPattern& ) const;
     vcl::font::PhysicalFontFamily* FindFontFamilyByTokenNames(std::u16string_view rTokenStr) const;
     vcl::font::PhysicalFontFamily* FindFontFamilyByAttributes(ImplFontAttrs nSearchType, FontWeight, FontWidth,
                                              FontItalic, std::u16string_view rSearchFamily) const;
+    void AddFontFamilyAlias(const OUString& rAlias, const OUString& rFamilyName);
+    const FontFamilyAliases& GetFontFamilyNameAliases() const;
 
     // suggest fonts for glyph fallback
     SAL_DLLPRIVATE vcl::font::PhysicalFontFamily* GetGlyphFallbackFont( vcl::font::FontSelectPattern&,
@@ -81,6 +85,9 @@ private:
 
     typedef std::unordered_map<OUString, std::unique_ptr<vcl::font::PhysicalFontFamily>> PhysicalFontFamilies;
     PhysicalFontFamilies    maPhysicalFontFamilies;
+
+    FontFamilyAliases maFontLookupAliases; // maps normalized localized names
+    FontFamilyAliases maFontFamilyNameAliases; // maps verbatim localized names
 
     vcl::font::PreMatchFontSubstitution* mpPreMatchHook;       // device specific prematch substitution
     vcl::font::GlyphFallbackFontSubstitution* mpFallbackHook;  // device specific glyph fallback substitution

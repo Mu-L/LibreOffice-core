@@ -253,14 +253,14 @@ void PhysicalFontFamily::UpdateCloneFontList(vcl::font::PhysicalFontCollection& 
 
     for (auto const& font : maFontFaces)
     {
-        PhysicalFontFace *pFoundFontFace = font.get();
+        PhysicalFontFace* pFoundFontFace = font.get();
 
         if (!pFamily)
-        {   // tdf#98989 lazy create as family without faces won't work
-            pFamily = rFontCollection.FindOrCreateFontFamily(aFamilyName);
+        { // tdf#98989 lazy create as family without faces won't work
+            pFamily = std::get<0>(rFontCollection.FindOrCreateFontFamily(aFamilyName));
         }
         assert(pFamily);
-        pFamily->AddFontFace( pFoundFontFace );
+        pFamily->AddFontFace(pFoundFontFace);
     }
 }
 }

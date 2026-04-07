@@ -149,6 +149,7 @@ private:
     VclPtr<OutputDevice>    mpDev;
     VclPtr<OutputDevice>    mpDev2;
     std::vector<std::unique_ptr<ImplFontListNameInfo>> m_Entries;
+    std::unordered_map<OUString, OUString> maAliases;
 
     SVT_DLLPRIVATE ImplFontListNameInfo*    ImplFind( std::u16string_view rSearchName, sal_uInt32* pIndex ) const;
     SVT_DLLPRIVATE ImplFontListNameInfo*    ImplFindByName( std::u16string_view rStr ) const;
