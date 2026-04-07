@@ -39,7 +39,7 @@ css::uno::Any SAL_CALL ScriptBrowser::getPropertyValue(const OUString& sProperty
 {
     css::uno::Any xRet;
 
-    if (sPropertyName == "Editable")
+    if (sPropertyName == "Editable" || sPropertyName == "Creatable")
         xRet <<= false;
     else
     {
@@ -72,8 +72,9 @@ void SAL_CALL ScriptBrowser::removeVetoableChangeListener(
 
 css::uno::Sequence<css::beans::Property> SAL_CALL ScriptBrowser::getProperties()
 {
-    css::uno::Sequence<css::beans::Property> aProperties(1);
+    css::uno::Sequence<css::beans::Property> aProperties(2);
     aProperties.getArray()[0] = getEditableProperty();
+    aProperties.getArray()[1] = getCreatableProperty();
     return aProperties;
 }
 
@@ -81,18 +82,25 @@ css::beans::Property SAL_CALL ScriptBrowser::getPropertyByName(const OUString& s
 {
     if (sName == "Editable")
         return getEditableProperty();
+    else if (sName == "Creatable")
+        return getCreatableProperty();
     else
         throw css::beans::UnknownPropertyException("Tried to retrieve unknown property " + sName);
 }
 
 sal_Bool SAL_CALL ScriptBrowser::hasPropertyByName(const OUString& sName)
 {
-    return sName == "Editable";
+    return sName == "Editable" || sName == "Creatable";
 }
 
 css::beans::Property ScriptBrowser::getEditableProperty()
 {
     return css::beans::Property("Editable", 0, cppu::UnoType<sal_Bool>::get(), 0);
+}
+
+css::beans::Property ScriptBrowser::getCreatableProperty()
+{
+    return css::beans::Property("Creatable", 0, cppu::UnoType<sal_Bool>::get(), 0);
 }
 
 css::uno::Reference<css::beans::XIntrospectionAccess> SAL_CALL ScriptBrowser::getIntrospection()

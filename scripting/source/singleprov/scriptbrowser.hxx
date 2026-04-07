@@ -67,6 +67,7 @@ protected:
                   const OUString& sBaseUri);
 
     static css::beans::Property getEditableProperty();
+    static css::beans::Property getCreatableProperty();
 
     std::shared_ptr<ProviderContext> m_pProviderContext;
 

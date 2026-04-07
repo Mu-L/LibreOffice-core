@@ -89,6 +89,18 @@ sal_Bool SAL_CALL ScriptDir::hasChildNodes() { return true; }
 
 sal_Int16 SAL_CALL ScriptDir::getType() { return css::script::browse::BrowseNodeTypes::CONTAINER; }
 
+css::uno::Any SAL_CALL ScriptDir::getPropertyValue(const OUString& sPropertyName)
+{
+    css::uno::Any xRet;
+
+    if (sPropertyName == "Creatable")
+        xRet <<= true;
+    else
+        xRet = ScriptBrowser::getPropertyValue(sPropertyName);
+
+    return xRet;
+}
+
 OUString ScriptDir::nameFromUrl(const OUString& sUrl)
 {
     sal_Int32 nSlashPos = sUrl.lastIndexOf('/');
@@ -103,6 +115,57 @@ OUString ScriptDir::nameFromUrl(const OUString& sUrl)
 
     return rtl::Uri::decode(sUrl.copy(nStart, nCount), rtl_UriDecodeWithCharset,
                             RTL_TEXTENCODING_UTF8);
+}
+
+css::uno::Any SAL_CALL ScriptDir::invoke(const OUString& sFunctionName,
+                                         const css::uno::Sequence<css::uno::Any>& aParams,
+                                         css::uno::Sequence<sal_Int16>& aOutParamIndex,
+                                         css::uno::Sequence<css::uno::Any>& aOutParam)
+{
+    css::uno::Any xRet;
+
+    if (sFunctionName == "Creatable")
+    {
+        OUString sMacroName;
+
+        if (aParams.getLength() > 0 && (aParams[0] >>= sMacroName))
+            xRet <<= createMacro(sMacroName);
+    }
+    else
+        xRet = ScriptBrowser::invoke(sFunctionName, aParams, aOutParamIndex, aOutParam);
+
+    return xRet;
+}
+
+sal_Bool SAL_CALL ScriptDir::hasMethod(const OUString& sFunctionName)
+{
+    if (sFunctionName == "Creatable")
+        return true;
+    else
+        return ScriptBrowser::hasMethod(sFunctionName);
+}
+
+css::uno::Reference<css::script::browse::XBrowseNode>
+ScriptDir::createMacro(const OUString& sMacroName)
+{
+    OUString sEncodedFilename = rtl::Uri::encode(sMacroName, rtl_UriCharClassPchar,
+                                                 rtl_UriEncodeIgnoreEscapes, RTL_TEXTENCODING_UTF8);
+    OUString sUrl = m_sBaseUri + OUStringChar(u'/') + sEncodedFilename
+                    + m_pProviderContext->m_pSingleScriptFactory->getExtension();
+
+    css::uno::Reference<css::io::XOutputStream> xOutput
+        = m_pProviderContext->m_xFileAccess->openFileWrite(sUrl);
+
+    OUString sSourceCode = m_pProviderContext->m_pSingleScriptFactory->getExampleMacro();
+    OString sSourceCodeUtf8 = OUStringToOString(sSourceCode, RTL_TEXTENCODING_UTF8);
+    css::uno::Sequence<sal_Int8> sSourceCodeSequence(
+        reinterpret_cast<const sal_Int8*>(sSourceCodeUtf8.getStr()), sSourceCodeUtf8.getLength());
+
+    xOutput->writeBytes(sSourceCodeSequence);
+
+    xOutput->closeOutput();
+
+    return new ScriptFile(m_pProviderContext, sMacroName, sUrl);
 }
 }
 

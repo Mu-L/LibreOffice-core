@@ -41,6 +41,9 @@ public:
     // for the given language. This is used on Windows to try to avoid invoking a default app that
     // is actually just going to run the script instead of editing it.
     virtual bool appMightExecute(const OUString& sAppName) const;
+    // Get a string that will be inserted into a new source file as an example when the create
+    // button is pressed.
+    virtual OUString getExampleMacro() const { return OUString(); }
 
     virtual ~SingleScriptFactory() = default;
 };
