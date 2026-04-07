@@ -35,6 +35,13 @@ public:
     css::beans::Property SAL_CALL getPropertyByName(const OUString& sName) override;
     sal_Bool SAL_CALL hasPropertyByName(const OUString& sName) override;
 
+    // XInvocation
+    css::uno::Any SAL_CALL invoke(const OUString& sFunctionName,
+                                  const css::uno::Sequence<css::uno::Any>& aParams,
+                                  css::uno::Sequence<sal_Int16>& aOutParamIndex,
+                                  css::uno::Sequence<css::uno::Any>& aOutParam) override;
+    sal_Bool SAL_CALL hasMethod(const OUString& sFunctionName) override;
+
 private:
     static css::beans::Property getUriProperty();
 };

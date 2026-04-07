@@ -13,6 +13,7 @@
 #include <com/sun/star/script/provider/XScriptURIHelper.hpp>
 #include <singleprov/singlescriptfactory.hxx>
 
+#include "externaledit.hxx"
 #include "provcontext.hxx"
 
 namespace singleprovider
@@ -35,16 +36,16 @@ sal_Int16 SAL_CALL ScriptMacro::getType() { return css::script::browse::BrowseNo
 
 css::uno::Any SAL_CALL ScriptMacro::getPropertyValue(const OUString& sPropertyName)
 {
+    css::uno::Any xRet;
+
     if (sPropertyName == "URI")
-    {
-        css::uno::Any xRet;
-
         xRet <<= m_pProviderContext->m_xUriHelper->getScriptURI(m_sBaseUri);
-
-        return xRet;
-    }
+    else if (sPropertyName == "Editable")
+        xRet <<= isEditable(m_pProviderContext, m_sBaseUri);
     else
-        return ScriptBrowser::getPropertyValue(sPropertyName);
+        xRet = ScriptBrowser::getPropertyValue(sPropertyName);
+
+    return xRet;
 }
 
 css::uno::Sequence<css::beans::Property> SAL_CALL ScriptMacro::getProperties()
@@ -79,6 +80,28 @@ sal_Bool SAL_CALL ScriptMacro::hasPropertyByName(const OUString& sName)
 css::beans::Property ScriptMacro::getUriProperty()
 {
     return css::beans::Property("URI", 0, cppu::UnoType<OUString>::get(), 0);
+}
+
+css::uno::Any SAL_CALL ScriptMacro::invoke(const OUString& sFunctionName,
+                                           const css::uno::Sequence<css::uno::Any>& aParams,
+                                           css::uno::Sequence<sal_Int16>& aOutParamIndex,
+                                           css::uno::Sequence<css::uno::Any>& aOutParam)
+{
+    if (sFunctionName == "Editable")
+    {
+        externalEdit(m_pProviderContext, m_sBaseUri);
+        return css::uno::Any();
+    }
+    else
+        return ScriptBrowser::invoke(sFunctionName, aParams, aOutParamIndex, aOutParam);
+}
+
+sal_Bool SAL_CALL ScriptMacro::hasMethod(const OUString& sFunctionName)
+{
+    if (sFunctionName == "Editable")
+        return true;
+    else
+        return ScriptBrowser::hasMethod(sFunctionName);
 }
 }
 

@@ -66,6 +66,8 @@ protected:
     ScriptBrowser(const std::shared_ptr<ProviderContext>& pProviderContext, const OUString& sName,
                   const OUString& sBaseUri);
 
+    static css::beans::Property getEditableProperty();
+
     std::shared_ptr<ProviderContext> m_pProviderContext;
 
     OUString m_sName;

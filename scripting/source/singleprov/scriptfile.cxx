@@ -14,6 +14,7 @@
 
 #include <singleprov/singlescriptfactory.hxx>
 
+#include "externaledit.hxx"
 #include "provcontext.hxx"
 #include "scriptmacro.hxx"
 
@@ -39,6 +40,40 @@ css::uno::Sequence<css::uno::Reference<css::script::browse::XBrowseNode>>
 sal_Bool SAL_CALL ScriptFile::hasChildNodes() { return true; }
 
 sal_Int16 SAL_CALL ScriptFile::getType() { return css::script::browse::BrowseNodeTypes::CONTAINER; }
+
+css::uno::Any SAL_CALL ScriptFile::getPropertyValue(const OUString& sPropertyName)
+{
+    css::uno::Any xRet;
+
+    if (sPropertyName == "Editable")
+        xRet <<= isEditable(m_pProviderContext, m_sBaseUri);
+    else
+        xRet = ScriptBrowser::getPropertyValue(sPropertyName);
+
+    return xRet;
+}
+
+css::uno::Any SAL_CALL ScriptFile::invoke(const OUString& sFunctionName,
+                                          const css::uno::Sequence<css::uno::Any>& aParams,
+                                          css::uno::Sequence<sal_Int16>& aOutParamIndex,
+                                          css::uno::Sequence<css::uno::Any>& aOutParam)
+{
+    if (sFunctionName == "Editable")
+    {
+        externalEdit(m_pProviderContext, m_sBaseUri);
+        return css::uno::Any();
+    }
+    else
+        return ScriptBrowser::invoke(sFunctionName, aParams, aOutParamIndex, aOutParam);
+}
+
+sal_Bool SAL_CALL ScriptFile::hasMethod(const OUString& sFunctionName)
+{
+    if (sFunctionName == "Editable")
+        return true;
+    else
+        return ScriptBrowser::hasMethod(sFunctionName);
+}
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab cinoptions=b1,g0,N-s cinkeys+=0=break: */

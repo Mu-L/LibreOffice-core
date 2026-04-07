@@ -37,7 +37,13 @@ public:
     virtual css::uno::Reference<css::script::provider::XScript>
     getScript(css::uno::Reference<css::uno::XComponentContext> xContext, const OUString& sName,
               std::string_view sSource) const = 0;
+    // Given the basename of an executable, returns whether it looks like it might be an interpreter
+    // for the given language. This is used on Windows to try to avoid invoking a default app that
+    // is actually just going to run the script instead of editing it.
+    virtual bool appMightExecute(const OUString& sAppName) const;
 
     virtual ~SingleScriptFactory() = default;
 };
+
+inline bool SingleScriptFactory::appMightExecute(const OUString&) const { return false; }
 }

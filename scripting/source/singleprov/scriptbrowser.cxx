@@ -13,6 +13,7 @@
 
 #include <singleprov/singlescriptfactory.hxx>
 
+#include "externaledit.hxx"
 #include "provcontext.hxx"
 
 namespace singleprovider
@@ -36,7 +37,17 @@ void SAL_CALL ScriptBrowser::setPropertyValue(const OUString&, const css::uno::A
 
 css::uno::Any SAL_CALL ScriptBrowser::getPropertyValue(const OUString& sPropertyName)
 {
-    throw css::beans::UnknownPropertyException("Tried to get unknown property " + sPropertyName);
+    css::uno::Any xRet;
+
+    if (sPropertyName == "Editable")
+        xRet <<= false;
+    else
+    {
+        throw css::beans::UnknownPropertyException("Tried to get unknown property "
+                                                   + sPropertyName);
+    }
+
+    return xRet;
 }
 
 void SAL_CALL ScriptBrowser::addPropertyChangeListener(
@@ -61,15 +72,28 @@ void SAL_CALL ScriptBrowser::removeVetoableChangeListener(
 
 css::uno::Sequence<css::beans::Property> SAL_CALL ScriptBrowser::getProperties()
 {
-    return css::uno::Sequence<css::beans::Property>();
+    css::uno::Sequence<css::beans::Property> aProperties(1);
+    aProperties.getArray()[0] = getEditableProperty();
+    return aProperties;
 }
 
 css::beans::Property SAL_CALL ScriptBrowser::getPropertyByName(const OUString& sName)
 {
-    throw css::beans::UnknownPropertyException("Tried to retrieve unknown property " + sName);
+    if (sName == "Editable")
+        return getEditableProperty();
+    else
+        throw css::beans::UnknownPropertyException("Tried to retrieve unknown property " + sName);
 }
 
-sal_Bool SAL_CALL ScriptBrowser::hasPropertyByName(const OUString&) { return false; }
+sal_Bool SAL_CALL ScriptBrowser::hasPropertyByName(const OUString& sName)
+{
+    return sName == "Editable";
+}
+
+css::beans::Property ScriptBrowser::getEditableProperty()
+{
+    return css::beans::Property("Editable", 0, cppu::UnoType<sal_Bool>::get(), 0);
+}
 
 css::uno::Reference<css::beans::XIntrospectionAccess> SAL_CALL ScriptBrowser::getIntrospection()
 {
