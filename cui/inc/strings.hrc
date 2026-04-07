@@ -266,6 +266,7 @@
 #define RID_CUISTR_OPT_GRAMMAR_BY                   NC_("RID_SVXSTR_OPT_GRAMMAR_BY", "~Grammar By")
 #define STR_MODIFY                                  NC_("STR_MODIFY", "~Replace")
 #define RID_CUISTR_CONFIRM_SET_LANGUAGE             NC_("RID_SVXSTR_CONFIRM_SET_LANGUAGE", "Do you want to change the '%1' dictionary language?")
+#define RID_CUISTR_OPT_DICT_SEARCH_PLACEHOLDER      NC_("RID_SVXSTR_OPT_DICT_SEARCH_PLACEHOLDER", "Type to search...")
 
 #define RID_CUISTR_COLOR_CONFIG_DELETE              NC_("RID_SVXSTR_COLOR_CONFIG_DELETE", "Do you really want to delete the color scheme?")
 #define RID_CUISTR_COLOR_CONFIG_DELETE_TITLE        NC_("RID_SVXSTR_COLOR_CONFIG_DELETE_TITLE", "Color Scheme Deletion")

@@ -270,6 +270,7 @@ SvxEditDictionaryDialog::SvxEditDictionaryDialog(weld::Window* pParent, std::u16
     m_xReplaceED->connect_changed(LINK(this, SvxEditDictionaryDialog, ModifyHdl));
     m_xWordED->connect_activate(LINK(this, SvxEditDictionaryDialog, NewDelActionHdl));
     m_xReplaceED->connect_activate(LINK(this, SvxEditDictionaryDialog, NewDelActionHdl));
+    m_xWordED->set_placeholder_text(CuiResId(RID_CUISTR_OPT_DICT_SEARCH_PLACEHOLDER));
 
     // fill listbox with all available WB's
     OUString aLookUpEntry;
@@ -452,6 +453,38 @@ IMPL_LINK_NOARG(SvxEditDictionaryDialog, SelectLangHdl_Impl, weld::ComboBox&, vo
         SetLanguage_Impl( nOldLang );
 }
 
+void SvxEditDictionaryDialog::RebuildSortedDicEntries()
+{
+    int nPos = m_xAllDictsLB->get_active();
+    if (nPos == -1)
+        return;
+
+    Reference<XDictionary> xDic = aDics[nPos];
+    Sequence< Reference< XDictionaryEntry >  > aEntries( xDic->getEntries() );
+
+    m_aSortedDicEntries.clear();
+    m_aSortedDicEntries.reserve(aEntries.getLength());
+    for (auto& xDictionaryEntry : aEntries)
+    {
+        OUString aStr = xDictionaryEntry->getDictionaryWord();
+        if (!xDictionaryEntry->getReplacementText().isEmpty())
+        {
+            aStr += "\t" + xDictionaryEntry->getReplacementText();
+        }
+        m_aSortedDicEntries.push_back(aStr);
+    }
+
+    IntlWrapper aIntlWrapper(SvtSysLocale().GetUILanguageTag());
+    const CollatorWrapper* pCollator = aIntlWrapper.getCollator();
+    std::sort(m_aSortedDicEntries.begin(), m_aSortedDicEntries.end(),
+        [&] (OUString const & lhs, OUString const & rhs)
+        {
+            sal_Int32 nCmpRes = pCollator->
+                compareString( getNormDicEntry_Impl(lhs), getNormDicEntry_Impl( rhs ) );
+            return nCmpRes < 0;
+        });
+}
+
 void SvxEditDictionaryDialog::ShowWords_Impl( sal_uInt16 nId )
 {
     Reference<XDictionary> xDic = aDics[nId];
@@ -503,31 +536,10 @@ void SvxEditDictionaryDialog::ShowWords_Impl( sal_uInt16 nId )
 
     m_pWordsLB->clear();
 
-    Sequence< Reference< XDictionaryEntry >  > aEntries( xDic->getEntries() );
-    std::vector<OUString> aSortedDicEntries;
-    aSortedDicEntries.reserve(aEntries.getLength());
-    for (auto& xDictionaryEntry : aEntries)
-    {
-        OUString aStr = xDictionaryEntry->getDictionaryWord();
-        if (!xDictionaryEntry->getReplacementText().isEmpty())
-        {
-            aStr += "\t" + xDictionaryEntry->getReplacementText();
-        }
-        aSortedDicEntries.push_back(aStr);
-    }
-
-    IntlWrapper aIntlWrapper(SvtSysLocale().GetUILanguageTag());
-    const CollatorWrapper* pCollator = aIntlWrapper.getCollator();
-    std::sort(aSortedDicEntries.begin(), aSortedDicEntries.end(),
-        [&] (OUString const & lhs, OUString const & rhs)
-        {
-            sal_Int32 nCmpRes = pCollator->
-                compareString( getNormDicEntry_Impl(lhs), getNormDicEntry_Impl( rhs ) );
-            return nCmpRes < 0;
-        });
+    RebuildSortedDicEntries();
 
     m_pWordsLB->freeze(); // speed up insert
-    for (OUString const & rStr : aSortedDicEntries)
+    for (OUString const & rStr : m_aSortedDicEntries)
     {
         sal_Int32 index = 0;
         m_pWordsLB->append_text(rStr.getToken(0, '\t', index));
@@ -597,6 +609,7 @@ bool SvxEditDictionaryDialog::NewDelHdl(const weld::Widget* pBtn)
 
         int nEntry = m_pWordsLB->get_selected_index();
         RemoveDictEntry(nEntry);    // remove entry from dic and list-box
+        RebuildSortedDicEntries();
     }
     if (pBtn == m_xNewReplacePB.get() || m_xNewReplacePB->get_sensitive())
     {
@@ -655,6 +668,8 @@ bool SvxEditDictionaryDialog::NewDelHdl(const weld::Widget* pBtn)
             m_pWordsLB->thaw();
             m_pWordsLB->scroll_to_row(nEntry);
 
+            RebuildSortedDicEntries();
+
             // if the request came from the ReplaceEdit, give focus to the ShortEdit
             if (m_xReplaceED->has_focus())
                 m_xWordED->grab_focus();
@@ -683,6 +698,29 @@ IMPL_LINK(SvxEditDictionaryDialog, ModifyHdl, weld::Entry&, rEdt, void)
 
     if (&rEdt == m_xWordED.get())
     {
+        bDoNothing = true;
+        m_pWordsLB->freeze();
+        m_pWordsLB->clear();
+        OUString aSearchStr = getNormDicEntry_Impl(rEntry);
+
+        // Filter the cached dictionary entries by prefix match
+        for (const OUString& rStr : m_aSortedDicEntries)
+        {
+            sal_Int32 index = 0;
+            OUString aWord = rStr.getToken(0, '\t', index);
+            if (aSearchStr.isEmpty() || getNormDicEntry_Impl(aWord).startsWith(aSearchStr))
+            {
+                m_pWordsLB->append_text(aWord);
+                if (index != -1 && m_pWordsLB == m_xDoubleColumnLB.get())
+                {
+                    OUString sReplace = rStr.getToken(0, '\t', index);
+                    m_pWordsLB->set_text(m_pWordsLB->n_children() - 1, sReplace, 1);
+                }
+            }
+        }
+        m_pWordsLB->thaw();
+        bDoNothing = false;
+
         if(nWordLen>0)
         {
             bool bFound = false;

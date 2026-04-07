@@ -18,6 +18,7 @@
  */
 #pragma once
 
+#include <vector>
 #include <vcl/weld/DialogController.hxx>
 #include <vcl/weld/Entry.hxx>
 #include <vcl/weld/TreeView.hxx>
@@ -72,6 +73,8 @@ private:
     bool            bDoNothing;
     bool            bDicIsReadonly;
 
+    std::vector<OUString> m_aSortedDicEntries;
+
     weld::TreeView* m_pWordsLB;
     std::unique_ptr<weld::ComboBox> m_xAllDictsLB;
     std::unique_ptr<weld::Label> m_xLangFT;
@@ -101,6 +104,7 @@ private:
 
     void            RemoveDictEntry(int nEntry);
     int             GetLBInsertPos(std::u16string_view rDicWord);
+    void            RebuildSortedDicEntries();
 
 public:
     SvxEditDictionaryDialog(weld::Window* pParent, std::u16string_view rName);
