@@ -20,7 +20,7 @@ class XColorList;
 class SVXCORE_DLLPUBLIC IColorSet
 {
 public:
-    virtual void insert(int nId, const Color& rColor, const OUString& rColorName) = 0;
+    virtual void insert(int nIndex, const Color& rColor, const OUString& rColorName) = 0;
     virtual int getItemCount() const = 0;
     virtual void clear() = 0;
 

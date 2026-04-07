@@ -43,11 +43,11 @@ PaletteASE::PaletteASE( OUString aFPath, OUString aFName ) :
 void PaletteASE::LoadColorSet(IColorSet& rColorSet)
 {
     rColorSet.clear();
-    int nIx = 1;
+    int nIndex = 0;
     for (const auto& rColor : maColors)
     {
-        rColorSet.insert(nIx, rColor.m_aColor, rColor.m_aName);
-        ++nIx;
+        rColorSet.insert(nIndex, rColor.m_aColor, rColor.m_aName);
+        ++nIndex;
     }
 }
 
@@ -299,11 +299,11 @@ void PaletteGPL::LoadColorSet(IColorSet& rColorSet)
     LoadPalette();
 
     rColorSet.clear();
-    int nIx = 1;
+    int nIndex = 0;
     for (const auto& rColor : maColors)
     {
-        rColorSet.insert(nIx, rColor.m_aColor, rColor.m_aName);
-        ++nIx;
+        rColorSet.insert(nIndex, rColor.m_aColor, rColor.m_aName);
+        ++nIndex;
     }
 }
 

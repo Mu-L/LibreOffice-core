@@ -42,9 +42,9 @@ public:
 
     virtual FactoryFunction GetUITestFactory() const override;
 
-    virtual void insert(int nId, const Color& rColor, const OUString& rColorName) override
+    virtual void insert(int nIndex, const Color& rColor, const OUString& rColorName) override
     {
-        InsertItem(nId, rColor, rColorName);
+        InsertItem(nIndex + 1, rColor, rColorName);
     }
     virtual int getItemCount() const override { return GetItemCount(); };
     virtual void clear() override { Clear(); }

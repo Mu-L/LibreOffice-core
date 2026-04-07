@@ -17,15 +17,13 @@ void IColorSet::addEntriesForXColorList(const XColorList& rXColorList)
 {
     const sal_uInt32 nColorCount(rXColorList.Count());
 
-    sal_uInt32 nId = 1;
     for (sal_uInt32 nIndex = 0; nIndex < nColorCount; nIndex++)
     {
         const XColorEntry* pEntry = rXColorList.GetColor(nIndex);
 
         if (pEntry)
         {
-            insert(nId, pEntry->GetColor(), pEntry->GetName());
-            nId++;
+            insert(nIndex, pEntry->GetColor(), pEntry->GetName());
         }
         else
         {

@@ -190,12 +190,10 @@ void PaletteManager::ReloadColorSet(IColorSet& rColorSet)
         rColorSet.clear();
         css::uno::Sequence< sal_Int32 > CustomColorList( officecfg::Office::Common::UserColors::CustomColor::get() );
         css::uno::Sequence< OUString > CustomColorNameList( officecfg::Office::Common::UserColors::CustomColorName::get() );
-        int nIx = 1;
         for (int i = 0; i < CustomColorList.getLength(); ++i)
         {
             Color aColor(ColorTransparency, CustomColorList[i]);
-            rColorSet.insert(nIx, aColor, CustomColorNameList[i]);
-            ++nIx;
+            rColorSet.insert(i, aColor, CustomColorNameList[i]);
         }
     }
     else if (IsThemePaletteSelected())
@@ -206,7 +204,6 @@ void PaletteManager::ReloadColorSet(IColorSet& rColorSet)
             auto pColorSet = pObjectShell->GetThemeColors();
             mnColorCount = 12;
             rColorSet.clear();
-            sal_uInt16 nItemId = 1;
 
             if (!pColorSet)
                 return;
@@ -214,6 +211,7 @@ void PaletteManager::ReloadColorSet(IColorSet& rColorSet)
             svx::ThemeColorPaletteManager aThemeColorManager(pColorSet);
             moThemePaletteCollection = aThemeColorManager.generate();
 
+            int nItemIndex = 0;
             // Each row is one effect type (no effect + each type).
             for (size_t nEffect : {0, 1, 2, 3, 4, 5})
             {
@@ -221,7 +219,7 @@ void PaletteManager::ReloadColorSet(IColorSet& rColorSet)
                 for (auto const& rColorData : moThemePaletteCollection->maColors)
                 {
                     auto const& rEffect = rColorData.maEffects[nEffect];
-                    rColorSet.insert(nItemId++, rEffect.maColor, rEffect.maColorName);
+                    rColorSet.insert(nItemIndex++, rEffect.maColor, rEffect.maColorName);
                 }
             }
         }
@@ -236,7 +234,7 @@ void PaletteManager::ReloadColorSet(IColorSet& rColorSet)
             mnColorCount = aColors.size();
             rColorSet.clear();
             const OUString sNamePrefix = SvxResId(RID_SVXSTR_DOC_COLOR_PREFIX) + u" ";
-            sal_uInt32 nIndex = 1;
+            int nIndex = 0;
             for(const auto& rColor : aColors)
             {
                 rColorSet.insert(nIndex, rColor, sNamePrefix + OUString::number(nIndex));
@@ -257,15 +255,13 @@ void PaletteManager::ReloadRecentColorSet(IColorSet& rColorSet)
     rColorSet.clear();
     css::uno::Sequence< sal_Int32 > Colorlist(officecfg::Office::Common::UserColors::RecentColor::get());
     css::uno::Sequence< OUString > ColorNamelist(officecfg::Office::Common::UserColors::RecentColorName::get());
-    int nIx = 1;
     const bool bHasColorNames = Colorlist.getLength() == ColorNamelist.getLength();
     for (int i = 0; i < Colorlist.getLength(); ++i)
     {
         Color aColor(ColorTransparency, Colorlist[i]);
         OUString sColorName = bHasColorNames ? ColorNamelist[i] : ("#" + aColor.AsRGBHexString().toAsciiUpperCase());
         maRecentColors.emplace_back(aColor, sColorName);
-        rColorSet.insert(nIx, aColor, sColorName);
-        ++nIx;
+        rColorSet.insert(i, aColor, sColorName);
     }
 }
 
