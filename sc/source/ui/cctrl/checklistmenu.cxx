@@ -2004,7 +2004,8 @@ IMPL_LINK(ScListSubMenuControl, MenuKeyInputHdl, const KeyEvent&, rKEvt, bool)
             weld::TreeView& rMenu = !mbColorMenu ? *mxMenu :
                                     (mxBackColorMenu->has_focus() ? *mxBackColorMenu : *mxTextColorMenu);
             // don't toggle checkbutton, go straight to activating entry
-            bConsumed = RowActivatedHdl(rMenu);
+            executeMenuItem(rMenu);
+            bConsumed = true;
             break;
         }
         case KEY_DOWN:
@@ -2054,12 +2055,15 @@ IMPL_LINK(ScListSubMenuControl, ColorSelChangedHdl, weld::TreeView&, rMenu, void
 
 IMPL_LINK(ScListSubMenuControl, RowActivatedHdl, weld::TreeView&, rMenu, bool)
 {
-    executeMenuItem(weld::fromId<ScCheckListMenuControl::Action*>(rMenu.get_selected_id()));
+    executeMenuItem(rMenu);
     return true;
 }
 
-void ScListSubMenuControl::executeMenuItem(ScCheckListMenuControl::Action* pAction)
+void ScListSubMenuControl::executeMenuItem(const weld::ItemView& rMenu)
 {
+    ScCheckListMenuControl::Action* pAction
+        = weld::fromId<ScCheckListMenuControl::Action*>(rMenu.get_selected_id());
+
     // if no action is defined.
     if (!pAction)
         return;

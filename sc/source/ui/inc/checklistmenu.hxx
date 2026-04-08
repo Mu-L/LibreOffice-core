@@ -424,7 +424,7 @@ private:
 
     void SetupMenu(weld::TreeView& rMenu);
 
-    void executeMenuItem(ScCheckListMenuControl::Action* pAction);
+    void executeMenuItem(const weld::ItemView& rMenu);
     void addItem(ScCheckListMenuControl::Action* pAction);
 };
 
