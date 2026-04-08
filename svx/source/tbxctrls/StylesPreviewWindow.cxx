@@ -462,9 +462,9 @@ IMPL_LINK(StylesPreviewWindow_Base, Selected, weld::IconView&, rIconView, void)
     SfxToolBoxControl::Dispatch(xProvider, u".uno:StyleApply"_ustr, aArgs);
 }
 
-IMPL_LINK(StylesPreviewWindow_Base, DoubleClick, weld::IconView&, rIconView, bool)
+IMPL_LINK_NOARG(StylesPreviewWindow_Base, DoubleClick, weld::IconView&, bool)
 {
-    OUString sStyleName = rIconView.get_selected_text();
+    OUString sStyleName = m_xStylesView->get_selected_text();
 
     css::uno::Sequence<css::beans::PropertyValue> aArgs{
         comphelper::makePropertyValue(u"Param"_ustr, sStyleName),
