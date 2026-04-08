@@ -20,20 +20,36 @@
 
 #include <sal/config.h>
 
+#include "cfgutil.hxx"
+#include "headertablistbox.hxx"
+
 #include <sfx2/basedlgs.hxx>
 #include <sfx2/tabdlg.hxx>
 #include <svl/macitem.hxx>
+#include <vcl/idle.hxx>
 #include <vcl/weld/TreeView.hxx>
 #include <vcl/weld/weld.hxx>
 #include <com/sun/star/frame/XFrame.hpp>
 #include <memory>
 
-class SfxMacroTabPage_Impl;
 class Timer;
 
 class SfxMacroTabPage final : public SfxTabPage
 {
     SvxMacroTableDtor           aTbl;
+
+    OUString m_aStaticMacroLBLabel;
+    std::unique_ptr<weld::Button> m_xAssignPB;
+    std::unique_ptr<weld::Button> m_xDeletePB;
+    std::unique_ptr<MacroEventListBox> m_xEventLB;
+    std::unique_ptr<weld::Widget> m_xGroupFrame;
+    std::unique_ptr<CuiConfigGroupListBox> m_xGroupLB;
+    std::unique_ptr<weld::Frame> m_xMacroFrame;
+    std::unique_ptr<CuiConfigFunctionListBox> m_xMacroLB;
+
+    Idle m_aFillGroupIdle{ "cui SfxMacroTabPage m_aFillGroupIdle" };
+    bool m_bGotEvents;
+
     DECL_LINK(SelectEvent_Impl, weld::TreeView&, void);
     DECL_LINK(SelectGroup_Impl, weld::TreeView&, void);
     DECL_LINK(SelectMacro_Impl, weld::TreeView&, void);
@@ -42,8 +58,6 @@ class SfxMacroTabPage final : public SfxTabPage
     DECL_LINK(AssignDeleteClickHdl_Impl, weld::Button&, void);
     void AssignDeleteHdl(const weld::Widget*);
     DECL_LINK( TimeOut_Impl, Timer*, void );
-
-    std::unique_ptr<SfxMacroTabPage_Impl>       mpImpl;
 
     void                        FillEvents();
     void                        EnableButtons();

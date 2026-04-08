@@ -26,37 +26,11 @@
 #include <sfx2/sfxsids.hrc>
 #include <svl/macitem.hxx>
 #include <tools/debug.hxx>
-#include <vcl/idle.hxx>
 #include <vcl/weld/Builder.hxx>
-#include <cfgutil.hxx>
 #include <sfx2/evntconf.hxx>
-#include <headertablistbox.hxx>
 
 using ::com::sun::star::uno::Reference;
 using ::com::sun::star::frame::XFrame;
-
-class SfxMacroTabPage_Impl
-{
-public:
-    SfxMacroTabPage_Impl();
-
-    OUString                               m_aStaticMacroLBLabel;
-    std::unique_ptr<weld::Button>          m_xAssignPB;
-    std::unique_ptr<weld::Button>          m_xDeletePB;
-    std::unique_ptr<MacroEventListBox>     m_xEventLB;
-    std::unique_ptr<weld::Widget>          m_xGroupFrame;
-    std::unique_ptr<CuiConfigGroupListBox> m_xGroupLB;
-    std::unique_ptr<weld::Frame>           m_xMacroFrame;
-    std::unique_ptr<CuiConfigFunctionListBox> m_xMacroLB;
-
-    Idle                            m_aFillGroupIdle { "cui SfxMacroTabPage m_aFillGroupIdle" };
-    bool                            m_bGotEvents;
-};
-
-SfxMacroTabPage_Impl::SfxMacroTabPage_Impl()
-    : m_bGotEvents(false)
-{
-}
 
 const sal_uInt16 aPageRg[] = {
     SID_ATTR_MACROITEM, SID_ATTR_MACROITEM,
@@ -83,75 +57,71 @@ static OUString ConvertToUIName_Impl( SvxMacro const *pMacro )
 void SfxMacroTabPage::EnableButtons()
 {
     // don't do anything as long as the eventbox is empty
-    weld::TreeView& rTreeView = mpImpl->m_xEventLB->GetListBox();
+    weld::TreeView& rTreeView = m_xEventLB->GetListBox();
     int nSelected = rTreeView.get_selected_index();
     if (nSelected != -1)
     {
         // get bound macro
         const SvxMacro* pM = aTbl.Get(static_cast<SvMacroItemId>(rTreeView.get_selected_id().toInt32()));
-        mpImpl->m_xDeletePB->set_sensitive(nullptr != pM);
+        m_xDeletePB->set_sensitive(nullptr != pM);
 
         OUString sEventMacro = rTreeView.get_text(nSelected, 1);
 
-        OUString sScriptURI = mpImpl->m_xMacroLB->GetSelectedScriptURI();
-        mpImpl->m_xAssignPB->set_sensitive(!sScriptURI.equalsIgnoreAsciiCase(sEventMacro));
+        OUString sScriptURI = m_xMacroLB->GetSelectedScriptURI();
+        m_xAssignPB->set_sensitive(!sScriptURI.equalsIgnoreAsciiCase(sEventMacro));
     }
     else
-        mpImpl->m_xAssignPB->set_sensitive(false);
+        m_xAssignPB->set_sensitive(false);
 }
 
 SfxMacroTabPage::SfxMacroTabPage(weld::Container* pPage, weld::DialogController* pController, const Reference< XFrame >& rxDocumentFrame, const SfxItemSet& rAttrSet )
     : SfxTabPage(pPage, pController, u"cui/ui/eventassignpage.ui"_ustr, u"EventAssignPage"_ustr, &rAttrSet)
+    , m_bGotEvents(false)
 {
-    mpImpl.reset(new SfxMacroTabPage_Impl);
+    m_aFillGroupIdle.SetInvokeHandler(LINK(this, SfxMacroTabPage, TimeOut_Impl));
+    m_aFillGroupIdle.SetPriority(TaskPriority::HIGHEST);
 
-    mpImpl->m_aFillGroupIdle.SetInvokeHandler( LINK( this, SfxMacroTabPage, TimeOut_Impl ) );
-    mpImpl->m_aFillGroupIdle.SetPriority( TaskPriority::HIGHEST );
-
-    mpImpl->m_xEventLB.reset(new MacroEventListBox(m_xBuilder->weld_tree_view(u"assignments"_ustr)));
-    mpImpl->m_xAssignPB = m_xBuilder->weld_button(u"assign"_ustr);
-    mpImpl->m_xDeletePB = m_xBuilder->weld_button(u"delete"_ustr);
-    mpImpl->m_xGroupFrame = m_xBuilder->weld_widget(u"groupframe"_ustr);
-    mpImpl->m_xGroupLB.reset(new CuiConfigGroupListBox(m_xBuilder->weld_tree_view(u"libraries"_ustr)));
-    mpImpl->m_xMacroFrame = m_xBuilder->weld_frame(u"macroframe"_ustr);
-    mpImpl->m_aStaticMacroLBLabel = mpImpl->m_xMacroFrame->get_label();
-    mpImpl->m_xMacroLB.reset(new CuiConfigFunctionListBox(m_xBuilder->weld_tree_view(u"macros"_ustr)));
+    m_xEventLB.reset(new MacroEventListBox(m_xBuilder->weld_tree_view(u"assignments"_ustr)));
+    m_xAssignPB = m_xBuilder->weld_button(u"assign"_ustr);
+    m_xDeletePB = m_xBuilder->weld_button(u"delete"_ustr);
+    m_xGroupFrame = m_xBuilder->weld_widget(u"groupframe"_ustr);
+    m_xGroupLB.reset(new CuiConfigGroupListBox(m_xBuilder->weld_tree_view(u"libraries"_ustr)));
+    m_xMacroFrame = m_xBuilder->weld_frame(u"macroframe"_ustr);
+    m_aStaticMacroLBLabel = m_xMacroFrame->get_label();
+    m_xMacroLB.reset(new CuiConfigFunctionListBox(m_xBuilder->weld_tree_view(u"macros"_ustr)));
 
     SetFrame( rxDocumentFrame );
 
-    weld::TreeView& rListBox = mpImpl->m_xEventLB->GetListBox();
+    weld::TreeView& rListBox = m_xEventLB->GetListBox();
     Link<weld::TreeView&, bool> aLnk(LINK(this, SfxMacroTabPage, AssignDeleteHdl_Impl));
-    mpImpl->m_xMacroLB->connect_row_activated(aLnk);
-    mpImpl->m_xDeletePB->connect_clicked(LINK(this, SfxMacroTabPage, AssignDeleteClickHdl_Impl));
-    mpImpl->m_xAssignPB->connect_clicked(LINK(this, SfxMacroTabPage, AssignDeleteClickHdl_Impl));
+    m_xMacroLB->connect_row_activated(aLnk);
+    m_xDeletePB->connect_clicked(LINK(this, SfxMacroTabPage, AssignDeleteClickHdl_Impl));
+    m_xAssignPB->connect_clicked(LINK(this, SfxMacroTabPage, AssignDeleteClickHdl_Impl));
     rListBox.connect_row_activated(aLnk);
 
     rListBox.connect_selection_changed(LINK(this, SfxMacroTabPage, SelectEvent_Impl));
-    mpImpl->m_xGroupLB->connect_changed(LINK(this, SfxMacroTabPage, SelectGroup_Impl));
-    mpImpl->m_xMacroLB->connect_changed(LINK(this, SfxMacroTabPage, SelectMacro_Impl));
+    m_xGroupLB->connect_changed(LINK(this, SfxMacroTabPage, SelectGroup_Impl));
+    m_xMacroLB->connect_changed(LINK(this, SfxMacroTabPage, SelectMacro_Impl));
 
     std::vector<int> aWidths{ o3tl::narrowing<int>(rListBox.get_approximate_digit_width() * 35) };
     rListBox.set_column_fixed_widths(aWidths);
 
-    mpImpl->m_xEventLB->show();
+    m_xEventLB->show();
 
-    mpImpl->m_xEventLB->set_sensitive(true);
-    mpImpl->m_xGroupLB->set_sensitive(true);
-    mpImpl->m_xMacroLB->set_sensitive(true);
+    m_xEventLB->set_sensitive(true);
+    m_xGroupLB->set_sensitive(true);
+    m_xMacroLB->set_sensitive(true);
 
-    mpImpl->m_xGroupLB->SetFunctionListBox(mpImpl->m_xMacroLB.get());
+    m_xGroupLB->SetFunctionListBox(m_xMacroLB.get());
 
     ScriptChanged();
 }
 
-SfxMacroTabPage::~SfxMacroTabPage()
-{
-    mpImpl.reset();
-}
+SfxMacroTabPage::~SfxMacroTabPage() {}
 
 void SfxMacroTabPage::AddEvent(const OUString& rEventName, SvMacroItemId nEventId)
 {
-    weld::TreeView& rTreeView = mpImpl->m_xEventLB->GetListBox();
+    weld::TreeView& rTreeView = m_xEventLB->GetListBox();
     rTreeView.append(OUString::number(static_cast<sal_Int32>(nEventId)), rEventName);
 
     // if the table is valid already
@@ -166,8 +136,8 @@ void SfxMacroTabPage::AddEvent(const OUString& rEventName, SvMacroItemId nEventI
 void SfxMacroTabPage::ScriptChanged()
 {
     // get new areas and their functions
-    mpImpl->m_xGroupFrame->show();
-    mpImpl->m_xMacroFrame->show();
+    m_xGroupFrame->show();
+    m_xMacroFrame->show();
 
     EnableButtons();
 }
@@ -194,8 +164,8 @@ bool SfxMacroTabPage::FillItemSet( SfxItemSet* rSet )
 
 void SfxMacroTabPage::LaunchFillGroup()
 {
-    if (! mpImpl->m_aFillGroupIdle.IsActive() )
-        mpImpl->m_aFillGroupIdle.Start();
+    if (!m_aFillGroupIdle.IsActive())
+        m_aFillGroupIdle.Start();
 }
 
 void SfxMacroTabPage::ActivatePage( const SfxItemSet& )
@@ -205,11 +175,11 @@ void SfxMacroTabPage::ActivatePage( const SfxItemSet& )
 
 void SfxMacroTabPage::PageCreated(const SfxAllItemSet& aSet)
 {
-    if( mpImpl->m_bGotEvents )
+    if (m_bGotEvents)
         return;
     if( const SfxEventNamesItem* pEventsItem = aSet.GetItemIfSet( SID_EVENTCONFIG ) )
     {
-        mpImpl->m_bGotEvents = true;
+        m_bGotEvents = true;
         const SfxEventNamesList& rList = pEventsItem->GetEvents();
         for ( size_t nNo = 0, nCnt = rList.size(); nNo < nCnt; ++nNo )
         {
@@ -226,9 +196,9 @@ void SfxMacroTabPage::Reset( const SfxItemSet* rSet )
         aTbl = static_cast<const SvxMacroItem*>(pItem)->GetMacroTable();
 
     const SfxEventNamesItem* pEventsItem;
-    if( !mpImpl->m_bGotEvents && (pEventsItem = rSet->GetItemIfSet( SID_EVENTCONFIG ) ) )
+    if (!m_bGotEvents && (pEventsItem = rSet->GetItemIfSet(SID_EVENTCONFIG)))
     {
-        mpImpl->m_bGotEvents = true;
+        m_bGotEvents = true;
         const SfxEventNamesList& rList = pEventsItem->GetEvents();
         for ( size_t nNo = 0, nCnt = rList.size(); nNo < nCnt; ++nNo )
         {
@@ -239,7 +209,7 @@ void SfxMacroTabPage::Reset( const SfxItemSet* rSet )
 
     FillEvents();
 
-    weld::TreeView& rListBox = mpImpl->m_xEventLB->GetListBox();
+    weld::TreeView& rListBox = m_xEventLB->GetListBox();
     std::unique_ptr<weld::TreeIter> xIter(rListBox.make_iterator());
     if (rListBox.get_iter_first(*xIter))
     {
@@ -255,7 +225,7 @@ bool SfxMacroTabPage::IsReadOnly() const
 
 IMPL_LINK_NOARG(SfxMacroTabPage, SelectEvent_Impl, weld::TreeView&, void)
 {
-    weld::TreeView& rListBox = mpImpl->m_xEventLB->GetListBox();
+    weld::TreeView& rListBox = m_xEventLB->GetListBox();
     int nSelected = rListBox.get_selected_index();
     if (nSelected == -1)
     {
@@ -269,12 +239,12 @@ IMPL_LINK_NOARG(SfxMacroTabPage, SelectEvent_Impl, weld::TreeView&, void)
 
 IMPL_LINK_NOARG(SfxMacroTabPage, SelectGroup_Impl, weld::TreeView&, void)
 {
-    mpImpl->m_xGroupLB->GroupSelected();
-    const OUString sScriptURI = mpImpl->m_xMacroLB->GetSelectedScriptURI();
+    m_xGroupLB->GroupSelected();
+    const OUString sScriptURI = m_xMacroLB->GetSelectedScriptURI();
     OUString       aLabelText;
     if( !sScriptURI.isEmpty() )
-        aLabelText = mpImpl->m_aStaticMacroLBLabel;
-    mpImpl->m_xMacroFrame->set_label( aLabelText );
+        aLabelText = m_aStaticMacroLBLabel;
+    m_xMacroFrame->set_label(aLabelText);
 
     EnableButtons();
 }
@@ -297,7 +267,7 @@ IMPL_LINK(SfxMacroTabPage, AssignDeleteHdl_Impl, weld::TreeView&, rBtn, bool)
 
 void SfxMacroTabPage::AssignDeleteHdl(const weld::Widget* pBtn)
 {
-    weld::TreeView& rListBox = mpImpl->m_xEventLB->GetListBox();
+    weld::TreeView& rListBox = m_xEventLB->GetListBox();
     int nSelected = rListBox.get_selected_index();
     if (nSelected == -1)
     {
@@ -305,7 +275,7 @@ void SfxMacroTabPage::AssignDeleteHdl(const weld::Widget* pBtn)
         return;
     }
 
-    const bool bAssEnabled = pBtn != mpImpl->m_xDeletePB.get() && mpImpl->m_xAssignPB->get_sensitive();
+    const bool bAssEnabled = pBtn != m_xDeletePB.get() && m_xAssignPB->get_sensitive();
 
     // remove from the table
     SvMacroItemId nEvent = static_cast<SvMacroItemId>(rListBox.get_selected_id().toInt32());
@@ -314,7 +284,7 @@ void SfxMacroTabPage::AssignDeleteHdl(const weld::Widget* pBtn)
     OUString sScriptURI;
     if( bAssEnabled )
     {
-        sScriptURI = mpImpl->m_xMacroLB->GetSelectedScriptURI();
+        sScriptURI = m_xMacroLB->GetSelectedScriptURI();
         if( sScriptURI.startsWith( "vnd.sun.star.script:" ) )
         {
             aTbl.Insert(
@@ -340,13 +310,12 @@ IMPL_LINK( SfxMacroTabPage, TimeOut_Impl, Timer*,, void )
     // perhaps the tabpage is part of a SingleTabDialog then pDialog == nullptr
     std::unique_ptr<weld::WaitObject> xWait(pDialog ? new weld::WaitObject(pDialog) : nullptr);
     // fill macro list
-    mpImpl->m_xGroupLB->Init(comphelper::getProcessComponentContext(), GetFrame(),
-                             OUString(), false);
+    m_xGroupLB->Init(comphelper::getProcessComponentContext(), GetFrame(), OUString(), false);
 }
 
 void SfxMacroTabPage::FillEvents()
 {
-    weld::TreeView& rListBox = mpImpl->m_xEventLB->GetListBox();
+    weld::TreeView& rListBox = m_xEventLB->GetListBox();
 
     int nEntryCnt = rListBox.n_children();
 
