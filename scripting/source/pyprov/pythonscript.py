@@ -788,7 +788,8 @@ class DirBrowseNode(unohelper.Base, XBrowseNode, XPropertySet, XInvocation):
             for i in contents:
                 if i.endswith(".py"):
                     log.debug("adding filenode " + i)
-                    browseNodeList.append(FileBrowseNode(self.provCtx, i, i[i.rfind("/") + 1 : len(i) - 3]))
+                    name = urllib.parse.unquote(i[i.rfind("/") + 1 : len(i) - 3])
+                    browseNodeList.append(FileBrowseNode(self.provCtx, i, name))
                 elif self.provCtx.sfa.isFolder(i) and not (i.endswith("/pythonpath") or i.endswith("/__pycache__")):
                     log.debug("adding DirBrowseNode " + i)
                     browseNodeList.append(DirBrowseNode(self.provCtx, i[i.rfind("/") + 1 : len(i)], i))
