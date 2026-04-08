@@ -21,7 +21,7 @@ QtInstanceItemView::QtInstanceItemView(QAbstractItemView* pItemView, QAbstractIt
 std::unique_ptr<weld::TreeIter> QtInstanceItemView::make_iterator(const weld::TreeIter* pOrig) const
 {
     const QModelIndex aIndex = pOrig ? modelIndex(*pOrig) : QModelIndex();
-    return std::make_unique<QtInstanceTreeIter>(aIndex);
+    return std::make_unique<QtInstanceTreeIter>(*this, aIndex);
 }
 
 bool QtInstanceItemView::get_iter_first(weld::TreeIter& rIter) const
@@ -64,7 +64,7 @@ std::unique_ptr<weld::TreeIter> QtInstanceItemView::get_iterator(int nPos) const
 {
     const QModelIndex aIndex = modelIndex(nPos);
     if (aIndex.isValid())
-        return std::make_unique<QtInstanceTreeIter>(aIndex);
+        return std::make_unique<QtInstanceTreeIter>(*this, aIndex);
 
     return {};
 }
@@ -133,7 +133,7 @@ std::unique_ptr<weld::TreeIter> QtInstanceItemView::get_selected() const
     GetQtInstance().RunInMainThread([&] {
         const QModelIndexList aSelectedIndexes = getSelectionModel().selectedIndexes();
         if (!aSelectedIndexes.empty())
-            pSelectedItem = std::make_unique<QtInstanceTreeIter>(aSelectedIndexes.first());
+            pSelectedItem = std::make_unique<QtInstanceTreeIter>(*this, aSelectedIndexes.first());
     });
 
     return pSelectedItem;
@@ -147,7 +147,7 @@ std::unique_ptr<weld::TreeIter> QtInstanceItemView::get_cursor() const
     GetQtInstance().RunInMainThread([&] {
         const QModelIndex aCurrentIndex = getItemView().currentIndex();
         if (aCurrentIndex.isValid())
-            pCursor = std::make_unique<QtInstanceTreeIter>(aCurrentIndex);
+            pCursor = std::make_unique<QtInstanceTreeIter>(*this, aCurrentIndex);
     });
 
     return pCursor;
@@ -243,9 +243,9 @@ QtInstanceTreeIter QtInstanceItemView::treeIter(int nRow, const QModelIndex& rPa
     return treeIter(m_rModel.index(nRow, 0, rParentIndex));
 }
 
-QtInstanceTreeIter QtInstanceItemView::treeIter(const QModelIndex& rIndex)
+QtInstanceTreeIter QtInstanceItemView::treeIter(const QModelIndex& rIndex) const
 {
-    return QtInstanceTreeIter(rIndex);
+    return QtInstanceTreeIter(*this, rIndex);
 }
 
 QAbstractItemView& QtInstanceItemView::getItemView() const

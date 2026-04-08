@@ -3441,7 +3441,7 @@ std::unique_ptr<weld::TreeIter>
 SalInstanceItemView::make_iterator(const weld::TreeIter* pOrig) const
 {
     return std::unique_ptr<weld::TreeIter>(
-        new SalInstanceTreeIter(static_cast<const SalInstanceTreeIter*>(pOrig)));
+        new SalInstanceTreeIter(*this, static_cast<const SalInstanceTreeIter*>(pOrig)));
 }
 
 bool SalInstanceItemView::get_iter_first(weld::TreeIter& rIter) const
@@ -3475,7 +3475,7 @@ int SalInstanceItemView::get_iter_index_in_parent(const weld::TreeIter& rIter) c
 std::unique_ptr<weld::TreeIter> SalInstanceItemView::get_iterator(int nPos) const
 {
     if (SvTreeListEntry* pEntry = m_pTreeListBox->GetEntry(nPos))
-        return std::make_unique<SalInstanceTreeIter>(pEntry);
+        return std::make_unique<SalInstanceTreeIter>(*this, pEntry);
 
     return {};
 }
@@ -3525,7 +3525,7 @@ std::unique_ptr<weld::TreeIter> SalInstanceItemView::get_selected() const
 {
     SvTreeListEntry* pEntry = m_pTreeListBox->FirstSelected();
     if (pEntry)
-        return std::make_unique<SalInstanceTreeIter>(pEntry);
+        return std::make_unique<SalInstanceTreeIter>(*this, pEntry);
 
     return {};
 }
@@ -3534,7 +3534,7 @@ std::unique_ptr<weld::TreeIter> SalInstanceItemView::get_cursor() const
 {
     SvTreeListEntry* pEntry = m_pTreeListBox->GetCurEntry();
     if (pEntry)
-        return std::make_unique<SalInstanceTreeIter>(pEntry);
+        return std::make_unique<SalInstanceTreeIter>(*this, pEntry);
 
     return {};
 }
@@ -4069,7 +4069,7 @@ void SalInstanceTreeView::bulk_insert_for_each(
         while (SvTreeListEntry* pChild = m_xTreeView->FirstChild(pVclParent))
             m_xTreeView->RemoveEntry(pChild);
     }
-    SalInstanceTreeIter aVclIter(static_cast<SvTreeListEntry*>(nullptr));
+    SalInstanceTreeIter aVclIter(*this, static_cast<SvTreeListEntry*>(nullptr));
 
     m_xTreeView->m_nTreeFlags |= SvTreeFlags::MANINS;
 
@@ -4590,7 +4590,7 @@ void SalInstanceTreeView::all_foreach(const std::function<bool(weld::TreeIter&)>
 {
     UpdateGuardIfHidden aGuard(*m_xTreeView);
 
-    SalInstanceTreeIter aVclIter(m_xTreeView->First());
+    SalInstanceTreeIter aVclIter(*this, m_xTreeView->First());
     bool bContinue = aVclIter.iter;
     while (bContinue)
     {
@@ -4604,7 +4604,7 @@ void SalInstanceTreeView::selected_foreach(const std::function<bool(weld::TreeIt
 {
     UpdateGuardIfHidden aGuard(*m_xTreeView);
 
-    SalInstanceTreeIter aVclIter(m_xTreeView->FirstSelected());
+    SalInstanceTreeIter aVclIter(*this, m_xTreeView->FirstSelected());
     while (aVclIter.iter)
     {
         if (func(aVclIter))
@@ -4617,7 +4617,7 @@ void SalInstanceTreeView::visible_foreach(const std::function<bool(weld::TreeIte
 {
     UpdateGuardIfHidden aGuard(*m_xTreeView);
 
-    SalInstanceTreeIter aVclIter(m_xTreeView->GetFirstEntryInView());
+    SalInstanceTreeIter aVclIter(*this, m_xTreeView->GetFirstEntryInView());
     while (aVclIter.iter)
     {
         if (func(aVclIter))
@@ -4789,7 +4789,7 @@ SalInstanceTreeView::get_dest_row_at_pos(const Point& rPos, bool bDnDMode, bool 
                                          : m_xTreeView->GetDropTarget(rPos);
 
     if (pTarget)
-        return std::make_unique<SalInstanceTreeIter>(pTarget);
+        return std::make_unique<SalInstanceTreeIter>(*this, pTarget);
 
     return {};
 }
@@ -4881,7 +4881,7 @@ SalInstanceTreeView::~SalInstanceTreeView()
 IMPL_LINK(SalInstanceTreeView, TooltipHdl, SvTreeListEntry*, pEntry, OUString)
 {
     if (pEntry)
-        return signal_query_tooltip(SalInstanceTreeIter(pEntry));
+        return signal_query_tooltip(SalInstanceTreeIter(*this, pEntry));
 
     return {};
 }
@@ -4914,8 +4914,8 @@ IMPL_LINK(SalInstanceTreeView, CompareHdl, const SvSortData&, rSortData, sal_Int
     assert(pLHS && pRHS);
 
     if (m_aCustomSort)
-        return m_aCustomSort(SalInstanceTreeIter(const_cast<SvTreeListEntry*>(pLHS)),
-                             SalInstanceTreeIter(const_cast<SvTreeListEntry*>(pRHS)));
+        return m_aCustomSort(SalInstanceTreeIter(*this, const_cast<SvTreeListEntry*>(pLHS)),
+                             SalInstanceTreeIter(*this, const_cast<SvTreeListEntry*>(pRHS)));
 
     const SvLBoxString* pLeftTextItem;
     const SvLBoxString* pRightTextItem;
@@ -4998,7 +4998,7 @@ IMPL_LINK(SalInstanceTreeView, ToggleHdl, SvLBoxButtonData*, pData, void)
         if (&rItem == pBox)
         {
             int nCol = to_external_model(i);
-            signal_toggled(iter_col(SalInstanceTreeIter(pEntry), nCol));
+            signal_toggled(iter_col(SalInstanceTreeIter(*this, pEntry), nCol));
             break;
         }
     }
@@ -5042,7 +5042,7 @@ IMPL_LINK(SalInstanceTreeView, HeaderBarClickedHdl, HeaderBar*, pHeaderBar, void
 IMPL_LINK_NOARG(SalInstanceTreeView, ExpandingHdl, SvTreeListBox*, bool)
 {
     SvTreeListEntry* pEntry = m_xTreeView->GetHdlEntry();
-    SalInstanceTreeIter aIter(pEntry);
+    SalInstanceTreeIter aIter(*this, pEntry);
 
     if (m_xTreeView->IsExpanded(pEntry))
     {
@@ -5085,13 +5085,13 @@ bool SalInstanceTreeView::ExpandRow(const SalInstanceTreeIter& rIter)
 
 IMPL_LINK(SalInstanceTreeView, EditingEntryHdl, SvTreeListEntry*, pEntry, bool)
 {
-    return signal_editing_started(SalInstanceTreeIter(pEntry));
+    return signal_editing_started(SalInstanceTreeIter(*this, pEntry));
 }
 
 IMPL_LINK(SalInstanceTreeView, EditedEntryHdl, const IterString&, rIterString, bool)
 {
     return signal_editing_done(
-        iter_string(SalInstanceTreeIter(rIterString.first), rIterString.second));
+        iter_string(SalInstanceTreeIter(*this, rIterString.first), rIterString.second));
 }
 
 SalInstanceIconView::SalInstanceIconView(::IconView* pIconView, SalInstanceBuilder* pBuilder,
@@ -5190,7 +5190,7 @@ void SalInstanceIconView::insert_separator(int pos, const OUString* /* pId */)
 IMPL_LINK(SalInstanceIconView, TooltipHdl, SvTreeListEntry*, pEntry, OUString)
 {
     if (pEntry)
-        return signal_query_tooltip(SalInstanceTreeIter(pEntry));
+        return signal_query_tooltip(SalInstanceTreeIter(*this, pEntry));
 
     return {};
 }
@@ -5205,7 +5205,7 @@ IMPL_LINK(SalInstanceIconView, DumpImageHdl, const ::IconView::encoded_image_que
 {
     SvTreeListEntry* pEntry = std::get<1>(rQuery);
     return m_aGetPropertyTreeElemHdl.Call(
-        weld::encoded_image_query(std::get<0>(rQuery), SalInstanceTreeIter(pEntry)));
+        weld::encoded_image_query(std::get<0>(rQuery), SalInstanceTreeIter(*this, pEntry)));
 }
 
 void SalInstanceIconView::connect_get_image(
@@ -5228,7 +5228,7 @@ void SalInstanceIconView::do_scroll_to_item(const weld::TreeIter& rIter)
 
 void SalInstanceIconView::selected_foreach(const std::function<bool(weld::TreeIter&)>& func)
 {
-    SalInstanceTreeIter aVclIter(m_xIconView->FirstSelected());
+    SalInstanceTreeIter aVclIter(*this, m_xIconView->FirstSelected());
     while (aVclIter.iter)
     {
         if (func(aVclIter))

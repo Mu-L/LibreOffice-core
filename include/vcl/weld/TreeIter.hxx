@@ -15,16 +15,26 @@
 
 namespace weld
 {
+class ItemView;
+
 class VCL_DLLPUBLIC TreeIter
 {
 private:
+    const ItemView& m_rItemView;
+
     TreeIter(const TreeIter&) = delete;
     TreeIter& operator=(const TreeIter&) = delete;
 
 public:
-    TreeIter() {}
-    virtual bool equal(const TreeIter& rOther) const = 0;
+    TreeIter(const ItemView& rItemView)
+        : m_rItemView(rItemView)
+    {
+    }
+
     virtual ~TreeIter() {}
+
+    virtual bool equal(const TreeIter& rOther) const = 0;
+    const weld::ItemView& getItemView() const { return m_rItemView; }
 };
 }
 

@@ -814,7 +814,7 @@ std::unique_ptr<weld::TreeIter> QtInstanceTreeView::get_dest_row_at_pos(const Po
     GetQtInstance().RunInMainThread([&] {
         const QModelIndex aIndex = m_pTreeView->indexAt(toQPoint(rPos));
         if (aIndex.isValid())
-            pIter = std::make_unique<QtInstanceTreeIter>(aIndex);
+            pIter = std::make_unique<QtInstanceTreeIter>(*this, aIndex);
     });
 
     return pIter;
@@ -1000,7 +1000,7 @@ void QtInstanceTreeView::handleDataChanged(const QModelIndex& rTopLeft,
         // use special index of -1 for the "expander toggle"
         nColIndex = -1;
 
-    signal_toggled(iter_col(treeIter(rTopLeft), nColIndex));
+    signal_toggled(iter_col(QtInstanceTreeIter(*this, rTopLeft), nColIndex));
 }
 
 void QtInstanceTreeView::handleSelectionChanged()

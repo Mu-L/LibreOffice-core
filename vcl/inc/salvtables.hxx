@@ -1471,12 +1471,14 @@ public:
 
 struct SalInstanceTreeIter final : public weld::TreeIter
 {
-    SalInstanceTreeIter(const SalInstanceTreeIter* pOrig)
-        : iter(pOrig ? pOrig->iter : nullptr)
+    SalInstanceTreeIter(const weld::ItemView& rItemView, const SalInstanceTreeIter* pOrig)
+        : weld::TreeIter(rItemView)
+        , iter(pOrig ? pOrig->iter : nullptr)
     {
     }
-    SalInstanceTreeIter(SvTreeListEntry* pIter)
-        : iter(pIter)
+    SalInstanceTreeIter(const weld::ItemView& rItemView, SvTreeListEntry* pIter)
+        : weld::TreeIter(rItemView)
+        , iter(pIter)
     {
     }
     virtual bool equal(const TreeIter& rOther) const override

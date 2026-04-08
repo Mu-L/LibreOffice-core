@@ -20,7 +20,7 @@ class QtInstanceTreeIter final : public weld::TreeIter
     QModelIndex m_aModelIndex;
 
 public:
-    explicit QtInstanceTreeIter(QModelIndex aModelIndex);
+    explicit QtInstanceTreeIter(const weld::ItemView& rItemView, QModelIndex aModelIndex);
     virtual bool equal(const TreeIter& rOther) const override;
 
     const QModelIndex& modelIndex() const { return m_aModelIndex; }
