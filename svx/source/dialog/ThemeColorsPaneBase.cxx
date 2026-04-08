@@ -121,7 +121,7 @@ IMPL_LINK_NOARG(ThemeColorsPaneBase, SelectionChangedHdl, weld::IconView&, void)
     mpCurrentColorSet = std::make_shared<model::ColorSet>(maColorSets[nIndex]);
 }
 
-IMPL_LINK(ThemeColorsPaneBase, ItemActivatedHdl, weld::IconView&, /*rIconView*/, bool)
+IMPL_LINK_NOARG(ThemeColorsPaneBase, ItemActivatedHdl, weld::IconView&, bool)
 {
     SelectionChangedHdl(*mxIconViewThemeColors);
     onColorSetActivated();
