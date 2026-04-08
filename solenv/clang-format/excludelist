@@ -3432,8 +3432,6 @@ extensions/source/dbpilots/gridwizard.cxx
 extensions/source/dbpilots/gridwizard.hxx
 extensions/source/dbpilots/groupboxwiz.cxx
 extensions/source/dbpilots/groupboxwiz.hxx
-extensions/source/dbpilots/listcombowizard.cxx
-extensions/source/dbpilots/listcombowizard.hxx
 extensions/source/dbpilots/optiongrouplayouter.cxx
 extensions/source/dbpilots/optiongrouplayouter.hxx
 extensions/source/dbpilots/unoautopilot.hxx
