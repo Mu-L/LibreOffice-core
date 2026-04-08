@@ -517,10 +517,10 @@ IMPL_LINK(SwGlossaryDlg, NameModify, weld::Entry&, rEdit, void)
     }
 }
 
-IMPL_LINK( SwGlossaryDlg, NameDoubleClick, weld::TreeView&, rBox, bool )
+IMPL_LINK_NOARG(SwGlossaryDlg, NameDoubleClick, weld::TreeView&, bool)
 {
-    std::unique_ptr<weld::TreeIter> xEntry = rBox.get_selected();
-    if (xEntry && rBox.get_iter_depth(*xEntry) && !m_bIsDocReadOnly)
+    std::unique_ptr<weld::TreeIter> xEntry = m_xCategoryBox->get_selected();
+    if (xEntry && m_xCategoryBox->get_iter_depth(*xEntry) && !m_bIsDocReadOnly)
         m_xDialog->response(RET_OK);
     return true;
 }
