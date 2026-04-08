@@ -45,7 +45,6 @@ class SfxMacroTabPage final : public SfxTabPage
 
     std::unique_ptr<SfxMacroTabPage_Impl>       mpImpl;
 
-    void                        InitAndSetHandler();
     void                        FillEvents();
     void                        EnableButtons();
 

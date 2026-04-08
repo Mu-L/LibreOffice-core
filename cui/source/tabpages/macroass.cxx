@@ -119,7 +119,27 @@ SfxMacroTabPage::SfxMacroTabPage(weld::Container* pPage, weld::DialogController*
 
     SetFrame( rxDocumentFrame );
 
-    InitAndSetHandler();
+    weld::TreeView& rListBox = mpImpl->m_xEventLB->GetListBox();
+    Link<weld::TreeView&, bool> aLnk(LINK(this, SfxMacroTabPage, AssignDeleteHdl_Impl));
+    mpImpl->m_xMacroLB->connect_row_activated(aLnk);
+    mpImpl->m_xDeletePB->connect_clicked(LINK(this, SfxMacroTabPage, AssignDeleteClickHdl_Impl));
+    mpImpl->m_xAssignPB->connect_clicked(LINK(this, SfxMacroTabPage, AssignDeleteClickHdl_Impl));
+    rListBox.connect_row_activated(aLnk);
+
+    rListBox.connect_selection_changed(LINK(this, SfxMacroTabPage, SelectEvent_Impl));
+    mpImpl->m_xGroupLB->connect_changed(LINK(this, SfxMacroTabPage, SelectGroup_Impl));
+    mpImpl->m_xMacroLB->connect_changed(LINK(this, SfxMacroTabPage, SelectMacro_Impl));
+
+    std::vector<int> aWidths{ o3tl::narrowing<int>(rListBox.get_approximate_digit_width() * 35) };
+    rListBox.set_column_fixed_widths(aWidths);
+
+    mpImpl->m_xEventLB->show();
+
+    mpImpl->m_xEventLB->set_sensitive(true);
+    mpImpl->m_xGroupLB->set_sensitive(true);
+    mpImpl->m_xMacroLB->set_sensitive(true);
+
+    mpImpl->m_xGroupLB->SetFunctionListBox(mpImpl->m_xMacroLB.get());
 
     ScriptChanged();
 }
@@ -322,34 +342,6 @@ IMPL_LINK( SfxMacroTabPage, TimeOut_Impl, Timer*,, void )
     // fill macro list
     mpImpl->m_xGroupLB->Init(comphelper::getProcessComponentContext(), GetFrame(),
                              OUString(), false);
-}
-
-void SfxMacroTabPage::InitAndSetHandler()
-{
-    weld::TreeView& rListBox = mpImpl->m_xEventLB->GetListBox();
-    Link<weld::TreeView&,bool> aLnk(LINK(this, SfxMacroTabPage, AssignDeleteHdl_Impl));
-    mpImpl->m_xMacroLB->connect_row_activated( aLnk);
-    mpImpl->m_xDeletePB->connect_clicked(LINK(this, SfxMacroTabPage, AssignDeleteClickHdl_Impl));
-    mpImpl->m_xAssignPB->connect_clicked(LINK(this, SfxMacroTabPage, AssignDeleteClickHdl_Impl));
-    rListBox.connect_row_activated(aLnk);
-
-    rListBox.connect_selection_changed(LINK(this, SfxMacroTabPage, SelectEvent_Impl));
-    mpImpl->m_xGroupLB->connect_changed(LINK(this, SfxMacroTabPage, SelectGroup_Impl));
-    mpImpl->m_xMacroLB->connect_changed(LINK(this, SfxMacroTabPage, SelectMacro_Impl));
-
-    std::vector<int> aWidths
-    {
-        o3tl::narrowing<int>(rListBox.get_approximate_digit_width() * 35)
-    };
-    rListBox.set_column_fixed_widths(aWidths);
-
-    mpImpl->m_xEventLB->show();
-
-    mpImpl->m_xEventLB->set_sensitive(true);
-    mpImpl->m_xGroupLB->set_sensitive(true);
-    mpImpl->m_xMacroLB->set_sensitive(true);
-
-    mpImpl->m_xGroupLB->SetFunctionListBox(mpImpl->m_xMacroLB.get());
 }
 
 void SfxMacroTabPage::FillEvents()
