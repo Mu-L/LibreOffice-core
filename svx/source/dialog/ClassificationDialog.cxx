@@ -607,9 +607,9 @@ IMPL_LINK(ClassificationDialog, SelectClassificationHdl, weld::ComboBox&, rBox, 
     m_nCurrentSelectedCategory = nSelected;
 }
 
-IMPL_LINK(ClassificationDialog, SelectMarkingHdl, weld::TreeView&, rBox, bool)
+IMPL_LINK_NOARG(ClassificationDialog, SelectMarkingHdl, weld::TreeView&, bool)
 {
-    sal_Int32 nSelected = rBox.get_selected_index();
+    sal_Int32 nSelected = m_xMarkingListBox->get_selected_index();
     if (nSelected >= 0)
     {
         const OUString aString = maHelper.GetMarkings()[nSelected];
@@ -618,9 +618,9 @@ IMPL_LINK(ClassificationDialog, SelectMarkingHdl, weld::TreeView&, rBox, bool)
     return true;
 }
 
-IMPL_LINK(ClassificationDialog, SelectIPPartNumbersHdl, weld::TreeView&, rBox, bool)
+IMPL_LINK_NOARG(ClassificationDialog, SelectIPPartNumbersHdl, weld::TreeView&, bool)
 {
-    sal_Int32 nSelected = rBox.get_selected_index();
+    sal_Int32 nSelected = m_xIntellectualPropertyPartNumberListBox->get_selected_index();
     if (nSelected >= 0)
     {
         OUString sString = maHelper.GetIntellectualPropertyPartNumbers()[nSelected];
@@ -640,9 +640,9 @@ IMPL_LINK(ClassificationDialog, SelectRecentlyUsedHdl, weld::ComboBox&, rBox, vo
     }
 }
 
-IMPL_LINK(ClassificationDialog, SelectIPPartHdl, weld::TreeView&, rBox, bool)
+IMPL_LINK_NOARG(ClassificationDialog, SelectIPPartHdl, weld::TreeView&, bool)
 {
-    const sal_Int32 nSelected = rBox.get_selected_index();
+    const sal_Int32 nSelected = m_xIntellectualPropertyPartListBox->get_selected_index();
     if (nSelected >= 0)
     {
         const OUString sString = maHelper.GetIntellectualPropertyParts()[nSelected];
