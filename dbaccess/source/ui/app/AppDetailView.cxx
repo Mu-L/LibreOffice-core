@@ -64,13 +64,14 @@ void OTasksWindow::updateHelpText()
     setHelpText(pHelpTextId);
 }
 
-IMPL_LINK(OTasksWindow, onSelected, weld::TreeView&, rTreeView, bool)
+IMPL_LINK_NOARG(OTasksWindow, onSelected, weld::TreeView&, bool)
 {
-    m_nCursorIndex = rTreeView.get_cursor_index();
+    m_nCursorIndex = m_xTreeView->get_cursor_index();
     if (m_nCursorIndex != -1)
     {
         URL aCommand;
-        aCommand.Complete = weld::fromId<TaskEntry*>(rTreeView.get_id(m_nCursorIndex))->sUNOCommand;
+        aCommand.Complete
+            = weld::fromId<TaskEntry*>(m_xTreeView->get_id(m_nCursorIndex))->sUNOCommand;
         getDetailView()->getBorderWin().getView()->getAppController().executeChecked( aCommand, Sequence< PropertyValue >() );
     }
     return true;
