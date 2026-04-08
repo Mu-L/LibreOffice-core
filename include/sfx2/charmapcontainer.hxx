@@ -63,7 +63,8 @@ class SFX2_DLLPUBLIC SfxCharmapContainer
     Link<void*, void> m_aUpdateRecentHdl;
 
     DECL_DLLPRIVATE_LINK(IconViewSelectionChangedHdl, weld::IconView&, void);
-    DECL_DLLPRIVATE_LINK(ItemActivatedHdl, weld::IconView&, bool);
+    DECL_DLLPRIVATE_LINK(RecentItemActivatedHdl, weld::IconView&, bool);
+    DECL_DLLPRIVATE_LINK(FavItemActivatedHdl, weld::IconView&, bool);
     DECL_DLLPRIVATE_LINK(ItemViewFocusInHdl, weld::Widget&, void);
     DECL_DLLPRIVATE_STATIC_LINK(SfxCharmapContainer, ItemViewFocusOutHdl, weld::Widget&, void);
 
