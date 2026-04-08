@@ -53,6 +53,7 @@ class SvxPopupWindowListBox final : public WeldToolbarPopup
     int m_nVisRows;
 
     void UpdateRow(int nRow);
+    void Activate();
 
     DECL_LINK(KeyInputHdl, const KeyEvent&, bool);
     DECL_LINK(ActivateHdl, weld::TreeView&, bool);
@@ -141,7 +142,7 @@ IMPL_LINK(SvxPopupWindowListBox, MousePressHdl, const MouseEvent&, rMEvt, bool)
         = m_xListBox->get_dest_row_at_pos(rMEvt.GetPosPixel(), false))
     {
         UpdateRow(m_xListBox->get_iter_index_in_parent(*pIter));
-        ActivateHdl(*m_xListBox);
+        Activate();
     }
     return true;
 }
@@ -205,9 +206,14 @@ IMPL_LINK(SvxPopupWindowListBox, KeyInputHdl, const KeyEvent&, rKEvt, bool)
 
 IMPL_LINK_NOARG(SvxPopupWindowListBox, ActivateHdl, weld::TreeView&, bool)
 {
+    Activate();
+    return true;
+}
+
+void SvxPopupWindowListBox::Activate()
+{
     m_xControl->Do(m_nSelectedRows);
     m_xControl->EndPopupMode();
-    return true;
 }
 
 void SvxUndoRedoControl::Do(sal_Int16 nCount)
