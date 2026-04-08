@@ -432,8 +432,6 @@ void PowerPointExport::writeDocumentProperties()
         }
         exportDocumentProperties(xDocProps, bSecurityOptOpenReadOnly);
     }
-
-    exportCustomFragments();
 }
 
 bool PowerPointExport::importDocument() noexcept
@@ -483,6 +481,8 @@ bool PowerPointExport::exportDocument()
     }
 
     mPresentationFS = openFragmentStreamWithSerializer(u"ppt/presentation.xml"_ustr, aMediaType);
+
+    exportCustomFragments(mPresentationFS);
 
     addRelation(mPresentationFS->getOutputStream(),
                 oox::getRelationship(Relationship::THEME),
