@@ -48,6 +48,7 @@
 #include <sal/log.hxx>
 
 #include <numeric>
+#include <algorithm>
 #include <utility>
 #include <vector>
 #include <set>
@@ -228,19 +229,10 @@ sal_Bool SAL_CALL SpellChecker::hasLocale(const Locale& rLocale)
 {
     MutexGuard  aGuard( GetLinguMutex() );
 
-    bool bRes = false;
     if (!m_aSuppLocales.hasElements())
         getLocales();
 
-    for (auto const& suppLocale : m_aSuppLocales)
-    {
-        if (rLocale == suppLocale)
-        {
-            bRes = true;
-            break;
-        }
-    }
-    return bRes;
+    return (std::ranges::find(m_aSuppLocales, rLocale) != m_aSuppLocales.end());
 }
 
 #define SPELL_NON_ASCII_APOSTROPHE 1 << 10
