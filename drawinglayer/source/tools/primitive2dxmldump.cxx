@@ -9,6 +9,7 @@
 
 #include <drawinglayer/tools/primitive2dxmldump.hxx>
 
+#include <vcl/font/Variation.hxx>
 #include <rtl/string.hxx>
 #include <rtl/ustrbuf.hxx>
 #include <tools/stream.hxx>
@@ -988,6 +989,13 @@ void Primitive2dXmlDump::decomposeAndWrite(
                         OString sName = "dx" + OString::number(iDx);
                         rWriter.attribute(sName.getStr(), aDx[iDx]);
                     }
+                }
+
+                const auto& rFontVariations = rTextSimplePortionPrimitive2D.getFontVariations();
+                if (!rFontVariations.empty())
+                {
+                    rWriter.attribute("font-variation-settings",
+                                      vcl::font::VariationsToString(rFontVariations));
                 }
                 rWriter.endElement();
             }

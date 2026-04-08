@@ -23,6 +23,7 @@
 #include "svgnode.hxx"
 #include "svgtools.hxx"
 #include <tools/fontenum.hxx>
+#include <vcl/font/Variation.hxx>
 #include <basegfx/polygon/b2dpolypolygontools.hxx>
 #include <drawinglayer/primitive2d/Primitive2DContainer.hxx>
 
@@ -223,6 +224,7 @@ namespace svgio::svgreader
             FontStretch                 maFontStretch;
             FontStyle                   maFontStyle;
             FontWeight                  maFontWeight;
+            std::vector<vcl::font::Variation> maFontVariations;
             FontDirection               maFontDirection;
             UnicodeBidi                 maUnicodeBidi;
             TextAlign                   maTextAlign;
@@ -431,6 +433,10 @@ namespace svgio::svgreader
             /// FontWeight content
             FontWeight getFontWeight() const;
             void setFontWeight(const FontWeight aFontWeight) { maFontWeight = aFontWeight; }
+
+            /// FontVariations content
+            const std::vector<vcl::font::Variation>& getFontVariations() const { return maFontVariations; }
+            void setFontVariations(std::vector<vcl::font::Variation>&& rFontVariations) { maFontVariations = std::move(rFontVariations); }
 
             /// FontDirection content
             FontDirection getFontDirection() const;

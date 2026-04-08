@@ -421,7 +421,7 @@ namespace svgio::svgreader
                     COL_TRANSPARENT,
                     0,
                     false,
-                    {},
+                    rSvgStyleAttributes.getFontVariations(),
                     100, 0,
 
                     // extra props for decorated
@@ -450,7 +450,11 @@ namespace svgio::svgreader
                     {},
                     aFontAttribute,
                     std::move(aLocale),
-                    aFill);
+                    aFill,
+                    COL_TRANSPARENT,
+                    0,
+                    false,
+                    rSvgStyleAttributes.getFontVariations());
             }
 
             if (fFillOpacity != 1.0)

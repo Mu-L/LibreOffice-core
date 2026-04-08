@@ -59,6 +59,7 @@ constexpr auto aSVGTokenMap = frozen::make_unordered_map<std::u16string_view, SV
     { u"font-style", SVGToken::FontStyle },
     { u"font-variant", SVGToken::FontVariant },
     { u"font-weight", SVGToken::FontWeight },
+    { u"font-variation-settings", SVGToken::FontVariationSettings },
     { u"direction", SVGToken::Direction },
     { u"letter-spacing", SVGToken::LetterSpacing },
     { u"text-decoration", SVGToken::TextDecoration },

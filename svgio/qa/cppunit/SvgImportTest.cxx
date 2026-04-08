@@ -2261,6 +2261,22 @@ CPPUNIT_TEST_FIXTURE(Test, testExs)
     CPPUNIT_ASSERT_LESS(sal_Int32(20 + 3 * nSize), nYPos);
 }
 
+CPPUNIT_TEST_FIXTURE(Test, testFontVariationSettings)
+{
+    // tdf#118792 given an SVG file with font-variation-settings:
+    xmlDocUniquePtr pDocument = dumpAndParseSvg(u"/svgio/qa/cppunit/data/font-variation-settings.svg");
+
+    // Then make sure that the font variation settings are parsed and passed to the text primitives:
+    assertXPath(pDocument, "//textsimpleportion", 7);
+    assertXPath(pDocument, "//textsimpleportion[1]", "font-variation-settings", u"\"wght\" 400");
+    assertXPath(pDocument, "//textsimpleportion[2]", "font-variation-settings", u"\"wght\" 450");
+    assertXPath(pDocument, "//textsimpleportion[3]", "font-variation-settings", u"\"wght\" 500");
+    assertXPath(pDocument, "//textsimpleportion[4]", "font-variation-settings", u"\"wght\" 550");
+    assertXPath(pDocument, "//textsimpleportion[5]", "font-variation-settings", u"\"wght\" 600");
+    assertXPath(pDocument, "//textsimpleportion[6]", "font-variation-settings", u"\"wght\" 650");
+    assertXPath(pDocument, "//textsimpleportion[7]", "font-variation-settings", u"\"wght\" 700");
+}
+
 CPPUNIT_PLUGIN_IMPLEMENT();
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

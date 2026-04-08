@@ -1789,6 +1789,14 @@ namespace svgio::svgreader
                 {
                     break;
                 }
+                case SVGToken::FontVariationSettings:
+                {
+                    if(!aContent.isEmpty())
+                    {
+                        setFontVariations(vcl::font::VariationsFromString(aContent));
+                    }
+                    break;
+                }
                 case SVGToken::FontWeight:
                 {
                     if(!aContent.isEmpty())

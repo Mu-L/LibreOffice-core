@@ -60,6 +60,7 @@ namespace svgio::svgreader
             FontStyle,
             FontVariant,
             FontWeight,
+            FontVariationSettings,
             Direction,
             LetterSpacing,
             TextDecoration,
