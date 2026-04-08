@@ -201,6 +201,7 @@ class SwContentTree final : public SfxListener
     std::unique_ptr<weld::TreeIter> GetEntryAtAbsPos(size_t nAbsPos) const;
 
     void Expand(const weld::TreeIter& rParent, std::vector<std::unique_ptr<weld::TreeIter>>* pNodesToExpand);
+    bool ActivateContentEntry();
 
     void MoveOutline(SwOutlineNodes::size_type nTargetPos);
 

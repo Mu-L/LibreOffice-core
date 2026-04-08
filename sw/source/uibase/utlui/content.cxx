@@ -3484,8 +3484,7 @@ IMPL_LINK(SwContentTree, CollapseHdl, const weld::TreeIter&, rParent, bool)
     return true;
 }
 
-// Also on double click will be initially opened only.
-IMPL_LINK_NOARG(SwContentTree, ContentDoubleClickHdl, weld::TreeView&, bool)
+bool SwContentTree::ActivateContentEntry()
 {
     if (m_nRowActivateEventId)
         Application::RemoveUserEvent(m_nRowActivateEventId);
@@ -3509,6 +3508,12 @@ IMPL_LINK_NOARG(SwContentTree, ContentDoubleClickHdl, weld::TreeView&, bool)
     }
 
     return bConsumed; // false/true == allow/disallow more to be done, i.e. expand/collapse children
+}
+
+// Also on double click will be initially opened only.
+IMPL_LINK_NOARG(SwContentTree, ContentDoubleClickHdl, weld::TreeView&, bool)
+{
+    return ActivateContentEntry();
 }
 
 IMPL_LINK_NOARG(SwContentTree, AsyncContentDoubleClickHdl, void*, void)
@@ -5941,11 +5946,11 @@ IMPL_LINK(SwContentTree, KeyInputHdl, const KeyEvent&, rEvent, bool)
                                                                : m_xTreeView->expand_row(*xEntry);
                     }
                     else
-                        ContentDoubleClickHdl(*m_xTreeView);
+                        ActivateContentEntry();
                 break;
                 case KEY_SHIFT:
                     m_bSelectTo = true;
-                    ContentDoubleClickHdl(*m_xTreeView);
+                    ActivateContentEntry();
                 break;
             }
         }
@@ -6771,7 +6776,7 @@ IMPL_LINK_NOARG(SwContentTree, SelectHdl, weld::TreeView&, void)
 {
     if (m_pConfig->IsNavigateOnSelect())
     {
-        ContentDoubleClickHdl(*m_xTreeView);
+        ActivateContentEntry();
         grab_focus();
     }
     UpdateContentFunctionsToolbar();
