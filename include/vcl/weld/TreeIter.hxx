@@ -25,12 +25,13 @@ private:
     TreeIter(const TreeIter&) = delete;
     TreeIter& operator=(const TreeIter&) = delete;
 
-public:
-    TreeIter(const ItemView& rItemView)
+protected:
+    explicit TreeIter(const ItemView& rItemView)
         : m_rItemView(rItemView)
     {
     }
 
+public:
     virtual ~TreeIter() {}
 
     virtual bool equal(const TreeIter& rOther) const = 0;
