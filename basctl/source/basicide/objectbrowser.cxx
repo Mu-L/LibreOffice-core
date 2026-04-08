@@ -1243,7 +1243,7 @@ IMPL_LINK(ObjectBrowser, OnRightNodeExpand, const weld::TreeIter&, rParentIter, 
     return true;
 }
 
-IMPL_LINK(ObjectBrowser, OnRightTreeDoubleClick, weld::TreeView&, rTree, bool)
+IMPL_LINK_NOARG(ObjectBrowser, OnRightTreeDoubleClick, weld::TreeView&, bool)
 {
     SAL_INFO("basctl", "OnRightTreeDoubleClick: Handler entered.");
 
@@ -1253,14 +1253,14 @@ IMPL_LINK(ObjectBrowser, OnRightTreeDoubleClick, weld::TreeView&, rTree, bool)
         return false;
     }
 
-    std::unique_ptr<weld::TreeIter> xSelectedIter = rTree.get_selected();
+    std::unique_ptr<weld::TreeIter> xSelectedIter = m_xRightMembersView->get_selected();
     if (!xSelectedIter)
     {
         SAL_INFO("basctl", "OnRightTreeDoubleClick: No item selected.");
         return false;
     }
 
-    auto pSymbol = GetSymbolForIter(*xSelectedIter, rTree, m_aRightTreeSymbolIndex);
+    auto pSymbol = GetSymbolForIter(*xSelectedIter, *m_xRightMembersView, m_aRightTreeSymbolIndex);
     if (!pSymbol || pSymbol->eKind == IdeSymbolKind::PLACEHOLDER)
     {
         SAL_INFO("basctl",
@@ -1293,10 +1293,11 @@ IMPL_LINK(ObjectBrowser, OnRightTreeDoubleClick, weld::TreeView&, rTree, bool)
     }
 
     // Find documentable parent in RIGHT tree first
-    auto xParentIter = rTree.make_iterator(xSelectedIter.get());
-    while (rTree.iter_parent(*xParentIter))
+    auto xParentIter = m_xRightMembersView->make_iterator(xSelectedIter.get());
+    while (m_xRightMembersView->iter_parent(*xParentIter))
     {
-        auto pParentSymbol = GetSymbolForIter(*xParentIter, rTree, m_aRightTreeSymbolIndex);
+        auto pParentSymbol
+            = GetSymbolForIter(*xParentIter, *m_xRightMembersView, m_aRightTreeSymbolIndex);
         if (pParentSymbol && pParentSymbol->eKind != IdeSymbolKind::PLACEHOLDER)
         {
             // If this parent has a qualified name it's documentable
