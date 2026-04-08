@@ -1083,13 +1083,12 @@ void SvxNumberFormatTabPage::UpdateDecimalsDenominatorEditBox()
 #*  Class:      SvxNumberFormatTabPage
 #*  Function:   On a double click in the format listbox the
 #*              value is adopted and the OK button pushed.
-#*  Input:      Pointer on the Listbox
 #*  Output:     ---
 #*
 #************************************************************************/
-IMPL_LINK(SvxNumberFormatTabPage, DoubleClickHdl_Impl, weld::TreeView&, rLb, bool)
+IMPL_LINK_NOARG(SvxNumberFormatTabPage, DoubleClickHdl_Impl, weld::TreeView&, bool)
 {
-    SelFormatHdl_Impl(&rLb);
+    SelFormatHdl_Impl(m_xLbFormat.get());
 
     SfxOkDialogController* pController = GetDialogController();
     assert(pController);
