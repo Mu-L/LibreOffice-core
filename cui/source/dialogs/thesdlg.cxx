@@ -197,18 +197,18 @@ IMPL_LINK( SvxThesaurusDialog, AlternativesSelectHdl_Impl, weld::TreeView&, rBox
     }
 }
 
-IMPL_LINK( SvxThesaurusDialog, AlternativesDoubleClickHdl_Impl, weld::TreeView&, rBox, bool )
+IMPL_LINK_NOARG(SvxThesaurusDialog, AlternativesDoubleClickHdl_Impl, weld::TreeView&, bool)
 {
-    int nEntry = rBox.get_selected_index();
+    int nEntry = m_xAlternativesCT->get_selected_index();
     if (nEntry != -1)
     {
-        bool bIsHeader = rBox.get_text_emphasis(nEntry, 0);
+        bool bIsHeader = m_xAlternativesCT->get_text_emphasis(nEntry, 0);
         if (bIsHeader)
         {
             ++nEntry;
-            rBox.select(nEntry);
+            m_xAlternativesCT->select(nEntry);
         }
-        OUString aStr = linguistic::GetThesaurusReplaceText(rBox.get_text(nEntry));
+        OUString aStr = linguistic::GetThesaurusReplaceText(m_xAlternativesCT->get_text(nEntry));
         m_xWordCB->set_entry_text(aStr);
         if (!aStr.isEmpty())
             LookUp_Impl();
