@@ -16370,11 +16370,15 @@ private:
         pThis->launch_signal_selection_changed();
     }
 
-    static void signalItemActivated(GtkIconView*, GtkTreePath*, gpointer widget)
+    static void signalItemActivated(GtkIconView*, GtkTreePath* pTreePath, gpointer widget)
     {
         GtkInstanceIconView* pThis = static_cast<GtkInstanceIconView*>(widget);
+
         SolarMutexGuard aGuard;
-        pThis->signal_item_activated();
+
+        GtkTreeIter aIter;
+        gtk_tree_model_get_iter(pThis->m_pTreeModel, &aIter, pTreePath);
+        pThis->signal_item_activated(GtkInstanceTreeIter(*pThis, pThis->m_pTreeModel, aIter));
     }
 
     static gboolean signalQueryTooltip(GtkWidget* /*pGtkWidget*/, gint x, gint y,

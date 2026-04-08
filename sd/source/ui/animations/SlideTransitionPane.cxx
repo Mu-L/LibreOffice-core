@@ -1049,7 +1049,7 @@ IMPL_LINK_NOARG(SlideTransitionPane, PlayButtonClicked, weld::Button&, void)
     playCurrentEffect();
 }
 
-IMPL_LINK_NOARG(SlideTransitionPane, TransitionSelected, weld::IconView&, bool)
+IMPL_LINK_NOARG(SlideTransitionPane, TransitionSelected, const weld::TreeIter&, bool)
 {
     OUString sSelectedId = mxTransitionsIconView->get_selected_id();
     auto* pTransitionEntry = weld::fromId<TransitionEntry*>(sSelectedId);

@@ -38,7 +38,7 @@ public:
 
     sal_uInt16 GetSelectedItemId();
     sal_uInt16 GetHighlightedItemId();
-    void SetSelectHdl(const Link<weld::IconView&, bool>& rLink);
+    void SetSelectHdl(const Link<const weld::TreeIter&, bool>& rLink);
     void SetNoSelection();
     void SelectItem(sal_uInt16 nItemId);
     bool IsNoSelection();

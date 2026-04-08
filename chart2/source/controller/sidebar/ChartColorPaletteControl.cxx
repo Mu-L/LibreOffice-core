@@ -316,7 +316,7 @@ void ChartColorPalettePopup::GrabFocus()
         mxMonoPalettes->GrabFocus();
 }
 
-IMPL_LINK_NOARG(ChartColorPalettePopup, SelectColorfulPaletteHdl, weld::IconView&, bool)
+IMPL_LINK_NOARG(ChartColorPalettePopup, SelectColorfulPaletteHdl, const weld::TreeIter&, bool)
 {
     sal_uInt32 nIndex = SelectPaletteHdl(mxColorfulPalettes);
     if (nIndex != static_cast<sal_uInt32>(-1))
@@ -329,7 +329,7 @@ IMPL_LINK_NOARG(ChartColorPalettePopup, SelectColorfulPaletteHdl, weld::IconView
     return true;
 }
 
-IMPL_LINK_NOARG(ChartColorPalettePopup, SelectMonoPaletteHdl, weld::IconView&, bool)
+IMPL_LINK_NOARG(ChartColorPalettePopup, SelectMonoPaletteHdl, const weld::TreeIter&, bool)
 {
     sal_uInt32 nIndex = SelectPaletteHdl(mxMonoPalettes);
     if (nIndex != static_cast<sal_uInt32>(-1))

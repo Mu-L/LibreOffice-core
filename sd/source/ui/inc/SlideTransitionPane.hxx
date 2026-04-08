@@ -95,7 +95,7 @@ private:
     DECL_LINK( PlayButtonClicked, weld::Button&, void );
     DECL_LINK( AutoPreviewClicked, weld::Toggleable&, void );
 
-    DECL_LINK( TransitionSelected, weld::IconView&, bool );
+    DECL_LINK(TransitionSelected, const weld::TreeIter&, bool);
     DECL_LINK( AdvanceSlideRadioButtonToggled, weld::Toggleable&, void );
     DECL_LINK( RepeatAfterRadioButtonToggled, weld::Toggleable&, void );
     DECL_LINK( AdvanceTimeModified, weld::MetricSpinButton&, void );

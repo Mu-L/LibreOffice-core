@@ -181,7 +181,7 @@ private:
         last seen.  This value is used heuristically to speed up the lookup
         of an index for a token.
     */
-    DECL_LINK(MasterPageSelected, weld::IconView&, bool);
+    DECL_LINK(MasterPageSelected, const weld::TreeIter&, bool);
     DECL_LINK(CommandHdl, const CommandEvent&, bool);
     DECL_LINK(ContainerChangeListener, MasterPageContainerChangeEvent&, void);
     DECL_LINK(QueryTooltipHdl, const weld::TreeIter&, OUString);

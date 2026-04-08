@@ -5327,7 +5327,10 @@ IMPL_LINK_NOARG(SalInstanceIconView, DeSelectHdl, SvTreeListBox*, void)
 
 IMPL_LINK_NOARG(SalInstanceIconView, DoubleClickHdl, SvTreeListBox*, bool)
 {
-    return !signal_item_activated();
+    if (SvTreeListEntry* pCurEntry = m_xIconView->GetCurEntry())
+        return !signal_item_activated(SalInstanceTreeIter(*this, pCurEntry));
+
+    return false;
 }
 
 SalInstanceSpinButton::SalInstanceSpinButton(FormattedField* pButton, SalInstanceBuilder* pBuilder,

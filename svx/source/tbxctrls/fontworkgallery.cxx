@@ -280,7 +280,7 @@ IMPL_LINK_NOARG(FontWorkGalleryDialog, ClickOKHdl, weld::Button&, void)
     m_xDialog->response(RET_OK);
 }
 
-IMPL_LINK_NOARG(FontWorkGalleryDialog, DoubleClickFavoriteHdl, weld::IconView&, bool)
+IMPL_LINK_NOARG(FontWorkGalleryDialog, DoubleClickFavoriteHdl, const weld::TreeIter&, bool)
 {
     insertSelectedFontwork();
     m_xDialog->response(RET_OK);

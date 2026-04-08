@@ -209,10 +209,10 @@ bool QtInstanceIconView::handleToolTipEvent(const QHelpEvent& rHelpEvent)
     return true;
 }
 
-void QtInstanceIconView::handleActivated()
+void QtInstanceIconView::handleActivated(const QModelIndex& rIndex)
 {
     SolarMutexGuard g;
-    signal_item_activated();
+    signal_item_activated(treeIter(rIndex));
 }
 
 void QtInstanceIconView::handleSelectionChanged()

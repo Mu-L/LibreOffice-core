@@ -84,8 +84,8 @@ class ChartColorPalettePopup final : public WeldToolbarPopup
     sal_uInt16 mnHighlightedItemId;
     bool mbItemSelected;
 
-    DECL_LINK(SelectColorfulPaletteHdl, weld::IconView&, bool);
-    DECL_LINK(SelectMonoPaletteHdl, weld::IconView&, bool);
+    DECL_LINK(SelectColorfulPaletteHdl, const weld::TreeIter&, bool);
+    DECL_LINK(SelectMonoPaletteHdl, const weld::TreeIter&, bool);
     sal_uInt32 SelectPaletteHdl(const std::unique_ptr<ChartColorPalettes>& xPalettes);
 
     DECL_LINK(ColorfulMouseMoveHdl, const MouseEvent&, bool);

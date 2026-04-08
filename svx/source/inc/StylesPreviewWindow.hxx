@@ -120,7 +120,7 @@ protected:
     OUString m_sSelectedStyle;
 
     DECL_LINK(Selected, weld::IconView&, void);
-    DECL_LINK(DoubleClick, weld::IconView&, bool);
+    DECL_LINK(DoubleClick, const weld::TreeIter&, bool);
     DECL_LINK(DoCommand, const CommandEvent&, bool);
     DECL_LINK(GetPreviewImage, const weld::encoded_image_query&, bool);
 

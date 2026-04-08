@@ -55,8 +55,8 @@ private:
     std::unique_ptr<ChartColorPalettes> mxColorfulPalettes;
     std::unique_ptr<ChartColorPalettes> mxMonoPalettes;
 
-    DECL_LINK(SelectColorfulPaletteHdl, weld::IconView&, bool);
-    DECL_LINK(SelectMonoPaletteHdl, weld::IconView&, bool);
+    DECL_LINK(SelectColorfulPaletteHdl, const weld::TreeIter&, bool);
+    DECL_LINK(SelectMonoPaletteHdl, const weld::TreeIter&, bool);
     static sal_uInt32 SelectPaletteHdl(const std::unique_ptr<ChartColorPalettes>& xValueSet);
 };
 } //namespace chart

@@ -83,7 +83,8 @@ public:
 
     static void trigger_item_activated(weld::IconView& rIconView)
     {
-        rIconView.signal_item_activated();
+        if (std::unique_ptr<weld::TreeIter> pSelected = rIconView.get_selected())
+            rIconView.signal_item_activated(*pSelected);
     }
 
     static void trigger_clicked(weld::Toolbar& rToolbar, const OUString& rIdent)

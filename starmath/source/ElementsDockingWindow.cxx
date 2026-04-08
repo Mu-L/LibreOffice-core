@@ -779,7 +779,7 @@ IMPL_LINK(SmElementsControl, QueryTooltipHandler, const weld::TreeIter&, iter, O
     return {};
 }
 
-IMPL_LINK_NOARG(SmElementsControl, ElementActivatedHandler, weld::IconView&, bool)
+IMPL_LINK_NOARG(SmElementsControl, ElementActivatedHandler, const weld::TreeIter&, bool)
 {
     if (const OUString id = mpIconView->get_selected_id(); !id.isEmpty())
         maSelectHdlLink.Call(GetElementSource(id));

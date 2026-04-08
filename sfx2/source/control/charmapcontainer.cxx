@@ -398,7 +398,7 @@ IMPL_STATIC_LINK(SfxCharmapContainer, ItemViewFocusOutHdl,  weld::Widget&, rWidg
     rIconView.unselect_all();
 }
 
-IMPL_LINK_NOARG(SfxCharmapContainer, RecentItemActivatedHdl, weld::IconView&, bool)
+IMPL_LINK_NOARG(SfxCharmapContainer, RecentItemActivatedHdl, const weld::TreeIter&, bool)
 {
     std::unique_ptr<weld::TreeIter> pIter = m_xRecentIconView->get_selected();
     if (!pIter)
@@ -410,7 +410,7 @@ IMPL_LINK_NOARG(SfxCharmapContainer, RecentItemActivatedHdl, weld::IconView&, bo
     return true;
 }
 
-IMPL_LINK_NOARG(SfxCharmapContainer, FavItemActivatedHdl, weld::IconView&, bool)
+IMPL_LINK_NOARG(SfxCharmapContainer, FavItemActivatedHdl, const weld::TreeIter&, bool)
 {
     std::unique_ptr<weld::TreeIter> pIter = m_xFavIconView->get_selected();
     if (!pIter)

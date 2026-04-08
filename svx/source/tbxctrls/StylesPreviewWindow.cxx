@@ -462,7 +462,7 @@ IMPL_LINK(StylesPreviewWindow_Base, Selected, weld::IconView&, rIconView, void)
     SfxToolBoxControl::Dispatch(xProvider, u".uno:StyleApply"_ustr, aArgs);
 }
 
-IMPL_LINK_NOARG(StylesPreviewWindow_Base, DoubleClick, weld::IconView&, bool)
+IMPL_LINK_NOARG(StylesPreviewWindow_Base, DoubleClick, const weld::TreeIter&, bool)
 {
     OUString sStyleName = m_xStylesView->get_selected_text();
 

@@ -41,7 +41,7 @@ private:
     std::unique_ptr<weld::Button> mxApplyButton;
 
     DECL_LINK(ClickHdl, weld::Button&, void);
-    DECL_LINK(ItemActivatedHdl, weld::IconView&, bool);
+    DECL_LINK(ItemActivatedHdl, const weld::TreeIter&, bool);
     void DoubleClickHdl();
     ScopedVclPtr<VirtualDevice> CreateImage(const model::ColorSet& rColorSet);
 };

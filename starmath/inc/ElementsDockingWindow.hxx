@@ -57,7 +57,7 @@ class SmElementsControl
     void build();
 
     DECL_LINK(QueryTooltipHandler, const weld::TreeIter&, OUString);
-    DECL_LINK(ElementActivatedHandler, weld::IconView&, bool);
+    DECL_LINK(ElementActivatedHandler, const weld::TreeIter&, bool);
     DECL_LINK(MousePressHdl, const MouseEvent&, bool);
 
     static OUString GetElementSource(const OUString& itemId);

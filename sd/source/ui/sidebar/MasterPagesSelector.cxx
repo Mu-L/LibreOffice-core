@@ -154,7 +154,7 @@ OUString MasterPagesSelector::GetContextMenuUIFile() const
     return u"modules/simpress/ui/mastermenu.ui"_ustr;
 }
 
-IMPL_LINK_NOARG(MasterPagesSelector, MasterPageSelected, weld::IconView&, bool)
+IMPL_LINK_NOARG(MasterPagesSelector, MasterPageSelected, const weld::TreeIter&, bool)
 {
     ExecuteCommand(gsDefaultClickAction);
     return true;

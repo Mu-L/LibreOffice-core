@@ -68,7 +68,7 @@ IMPL_LINK_NOARG(ThemePanel, ClickHdl, weld::Button&, void)
     DoubleClickHdl();
 }
 
-IMPL_LINK_NOARG(ThemePanel, ItemActivatedHdl, weld::IconView&, bool)
+IMPL_LINK_NOARG(ThemePanel, ItemActivatedHdl, const weld::TreeIter&, bool)
 {
     DoubleClickHdl();
     return true;

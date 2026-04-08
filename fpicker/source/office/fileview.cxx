@@ -363,7 +363,7 @@ protected:
     DECL_LINK(ChangedHdl, weld::TreeView&, void);
     DECL_LINK(SelectionChangedHdl, weld::IconView&, void);
     DECL_LINK(RowActivatedHdl, weld::TreeView&, bool);
-    DECL_LINK(ItemActivatedHdl, weld::IconView&, bool);
+    DECL_LINK(ItemActivatedHdl, const weld::TreeIter&, bool);
 
     // IEnumerationResultHandler overridables
     virtual void        enumerationDone( ::svt::EnumerationResult eResult ) override;
@@ -1339,7 +1339,7 @@ IMPL_LINK_NOARG(SvtFileView_Impl, RowActivatedHdl, weld::TreeView&, bool)
     return maDoubleClickHandler.Call(m_pAntiImpl);
 }
 
-IMPL_LINK_NOARG(SvtFileView_Impl, ItemActivatedHdl, weld::IconView&, bool)
+IMPL_LINK_NOARG(SvtFileView_Impl, ItemActivatedHdl, const weld::TreeIter&, bool)
 {
     return maDoubleClickHandler.Call(m_pAntiImpl);
 }

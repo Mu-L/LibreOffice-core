@@ -136,7 +136,7 @@ DeactivateRC ChartColorPaletteTabPage::DeactivatePage(SfxItemSet* pItemSet)
     return DeactivateRC::LeavePage;
 }
 
-IMPL_LINK_NOARG(ChartColorPaletteTabPage, SelectColorfulPaletteHdl, weld::IconView&, bool)
+IMPL_LINK_NOARG(ChartColorPaletteTabPage, SelectColorfulPaletteHdl, const weld::TreeIter&, bool)
 {
     sal_uInt32 nIndex = SelectPaletteHdl(mxColorfulPalettes);
     if (nIndex != static_cast<sal_uInt32>(-1))
@@ -146,7 +146,7 @@ IMPL_LINK_NOARG(ChartColorPaletteTabPage, SelectColorfulPaletteHdl, weld::IconVi
     return true;
 }
 
-IMPL_LINK_NOARG(ChartColorPaletteTabPage, SelectMonoPaletteHdl, weld::IconView&, bool)
+IMPL_LINK_NOARG(ChartColorPaletteTabPage, SelectMonoPaletteHdl, const weld::TreeIter&, bool)
 {
     sal_uInt32 nIndex = SelectPaletteHdl(mxMonoPalettes);
     if (nIndex != static_cast<sal_uInt32>(-1))

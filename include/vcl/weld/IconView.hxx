@@ -22,7 +22,7 @@ class VCL_DLLPUBLIC IconView : virtual public ItemView
 
 protected:
     Link<IconView&, void> m_aSelectionChangeHdl;
-    Link<IconView&, bool> m_aItemActivatedHdl;
+    Link<const TreeIter&, bool> m_aItemActivatedHdl;
     Link<const TreeIter&, OUString> m_aQueryTooltipHdl;
     Link<const encoded_image_query&, bool> m_aGetPropertyTreeElemHdl;
 
@@ -33,11 +33,11 @@ protected:
         m_aSelectionChangeHdl.Call(*this);
     }
 
-    bool signal_item_activated()
+    bool signal_item_activated(const TreeIter& rIter)
     {
         if (notify_events_disabled())
             return true;
-        return m_aItemActivatedHdl.Call(*this);
+        return m_aItemActivatedHdl.Call(rIter);
     }
 
     OUString signal_query_tooltip(const TreeIter& rIter) const
@@ -100,7 +100,10 @@ public:
        a return of "true" means the activation has been handled, a "false" propagates
        the activation to the default handler which expands/collapses the row, if possible.
     */
-    void connect_item_activated(const Link<IconView&, bool>& rLink) { m_aItemActivatedHdl = rLink; }
+    void connect_item_activated(const Link<const TreeIter&, bool>& rLink)
+    {
+        m_aItemActivatedHdl = rLink;
+    }
 
     virtual void connect_query_tooltip(const Link<const TreeIter&, OUString>& rLink)
     {

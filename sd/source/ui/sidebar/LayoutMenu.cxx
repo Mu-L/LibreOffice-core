@@ -271,8 +271,7 @@ void LayoutMenu::InvalidateContent()
     UpdateSelection();
 }
 
-
-IMPL_LINK_NOARG(LayoutMenu, LayoutSelected, weld::IconView&, bool)
+IMPL_LINK_NOARG(LayoutMenu, LayoutSelected, const weld::TreeIter&, bool)
 {
     AssignLayoutToSelectedSlides( GetSelectedAutoLayout() );
     return true;

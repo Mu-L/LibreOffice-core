@@ -27,7 +27,7 @@ ChartColorPalettes::ChartColorPalettes(weld::Builder& rBuilder, const OUString& 
     mxIconView->connect_query_tooltip(LINK(this, ChartColorPalettes, OnQueryTooltip));
 }
 
-void ChartColorPalettes::SetSelectHdl(const Link<weld::IconView&, bool>& rLink)
+void ChartColorPalettes::SetSelectHdl(const Link<const weld::TreeIter&, bool>& rLink)
 {
     mxIconView->connect_item_activated(rLink);
 }

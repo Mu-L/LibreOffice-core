@@ -61,7 +61,7 @@ private:
                    weld::TreeIter* pRet);
 
 private Q_SLOTS:
-    void handleActivated();
+    void handleActivated(const QModelIndex& rIndex);
     void handleSelectionChanged();
 };
 
