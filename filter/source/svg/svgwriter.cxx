@@ -21,6 +21,7 @@
 #include "svgfontexport.hxx"
 #include "svgwriter.hxx"
 
+#include <vcl/font/Variation.hxx>
 #include <comphelper/base64.hxx>
 #include <cppuhelper/supportsservice.hxx>
 #include <sal/log.hxx>
@@ -86,6 +87,7 @@ constexpr OUString aXMLAttrFontFamily = u"font-family"_ustr;
 constexpr OUString aXMLAttrFontSize = u"font-size"_ustr;
 constexpr OUString aXMLAttrFontStyle = u"font-style"_ustr;
 constexpr OUString aXMLAttrFontWeight = u"font-weight"_ustr;
+constexpr OUString aXMLAttrFontVariationSettings = u"font-variation-settings"_ustr;
 constexpr OUString aXMLAttrTextDecoration = u"text-decoration"_ustr;
 constexpr OUString aXMLAttrXLinkHRef = u"xlink:href"_ustr;
 constexpr OUString aXMLAttrGradientUnits = u"gradientUnits"_ustr;
@@ -391,6 +393,14 @@ void SVGAttributeWriter::SetFontAttr( const vcl::Font& rFont )
     }
 
     mrExport.AddAttribute(aXMLAttrFontWeight, OUString::number(nFontWeight));
+
+    // Font Variation Settings
+    const auto& rVariations = rFont.GetVariations();
+    if (!rVariations.empty())
+    {
+        mrExport.AddAttribute(aXMLAttrFontVariationSettings,
+                              vcl::font::VariationsToString(rVariations));
+    }
 
     if( mrExport.IsUseNativeTextDecoration() )
     {
@@ -907,6 +917,16 @@ void SVGTextWriter::addFontAttributes( bool bIsTextContainer )
         mrExport.AddAttribute(aXMLAttrFontWeight, OUString::number(nFontWeight));
     }
 
+    // Font Variation Settings
+    if (maCurrentFont.GetVariations() != maParentFont.GetVariations())
+    {
+        const auto& rVariations = maCurrentFont.GetVariations();
+        if (!rVariations.empty())
+        {
+            mrExport.AddAttribute(aXMLAttrFontVariationSettings,
+                                  vcl::font::VariationsToString(rVariations));
+        }
+    }
 
     if( mrExport.IsUseNativeTextDecoration() )
     {

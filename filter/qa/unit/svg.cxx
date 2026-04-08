@@ -505,6 +505,34 @@ CPPUNIT_TEST_FIXTURE(SvgFilterTest, testTdf168135)
                 "height", u"776");
 }
 
+CPPUNIT_TEST_FIXTURE(SvgFilterTest, testFontVariationSettings)
+{
+    // Given a presentation with text that has font-variation-settings:
+    loadFromURL(u"private:factory/simpress"_ustr);
+    uno::Reference<lang::XMultiServiceFactory> xFactory(mxComponent, uno::UNO_QUERY);
+    uno::Reference<drawing::XShape> xShape(
+        xFactory->createInstance(u"com.sun.star.drawing.TextShape"_ustr), uno::UNO_QUERY);
+    uno::Reference<drawing::XDrawPagesSupplier> xDrawPagesSupplier(mxComponent, uno::UNO_QUERY);
+    uno::Reference<drawing::XShapes> xDrawPage(xDrawPagesSupplier->getDrawPages()->getByIndex(0),
+                                               uno::UNO_QUERY);
+    xDrawPage->add(xShape);
+    xShape->setSize(awt::Size(10000, 10000));
+    uno::Reference<text::XTextRange> xShapeText(xShape, uno::UNO_QUERY);
+    xShapeText->setString(u"Hello"_ustr);
+    uno::Reference<beans::XPropertySet> xShapeProps(xShape, uno::UNO_QUERY);
+    xShapeProps->setPropertyValue(u"CharFontVariations"_ustr,
+                                  uno::Any(u"\"wght\" 700, \"wdth\" 75"_ustr));
+
+    // When exporting to SVG:
+    save(TestFilter::SVG_IMPRESS);
+
+    // Then make sure that the font-variation-settings attribute is written:
+    xmlDocUniquePtr pXmlDoc = parseExportedFile();
+    assertXPath(pXmlDoc, "//svg:g[@class='TextShape']//svg:tspan[@font-variation-settings]", 1);
+    assertXPath(pXmlDoc, "//svg:g[@class='TextShape']//svg:tspan[@font-variation-settings]",
+                "font-variation-settings", u"\"wght\" 700, \"wdth\" 75");
+}
+
 CPPUNIT_PLUGIN_IMPLEMENT();
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
