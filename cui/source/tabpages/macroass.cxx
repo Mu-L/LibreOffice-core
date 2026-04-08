@@ -93,11 +93,10 @@ SfxMacroTabPage::SfxMacroTabPage(weld::Container* pPage, weld::DialogController*
     SetFrame( rxDocumentFrame );
 
     weld::TreeView& rListBox = m_xEventLB->GetListBox();
-    Link<weld::TreeView&, bool> aLnk(LINK(this, SfxMacroTabPage, AssignDeleteHdl_Impl));
-    m_xMacroLB->connect_row_activated(aLnk);
+    m_xMacroLB->connect_row_activated(LINK(this, SfxMacroTabPage, MacroTreeViewActivatedHdl));
     m_xDeletePB->connect_clicked(LINK(this, SfxMacroTabPage, AssignDeleteClickHdl_Impl));
     m_xAssignPB->connect_clicked(LINK(this, SfxMacroTabPage, AssignDeleteClickHdl_Impl));
-    rListBox.connect_row_activated(aLnk);
+    rListBox.connect_row_activated(LINK(this, SfxMacroTabPage, AssignmentsTreeViewActivatedHdl));
 
     rListBox.connect_selection_changed(LINK(this, SfxMacroTabPage, SelectEvent_Impl));
     m_xGroupLB->connect_changed(LINK(this, SfxMacroTabPage, SelectGroup_Impl));
@@ -259,9 +258,15 @@ IMPL_LINK(SfxMacroTabPage, AssignDeleteClickHdl_Impl, weld::Button&, rBtn, void)
     AssignDeleteHdl(&rBtn);
 }
 
-IMPL_LINK(SfxMacroTabPage, AssignDeleteHdl_Impl, weld::TreeView&, rBtn, bool)
+IMPL_LINK_NOARG(SfxMacroTabPage, MacroTreeViewActivatedHdl, weld::TreeView&, bool)
 {
-    AssignDeleteHdl(&rBtn);
+    AssignDeleteHdl(&m_xMacroLB->get_widget());
+    return true;
+}
+
+IMPL_LINK_NOARG(SfxMacroTabPage, AssignmentsTreeViewActivatedHdl, weld::TreeView&, bool)
+{
+    AssignDeleteHdl(&m_xEventLB->GetListBox());
     return true;
 }
 
