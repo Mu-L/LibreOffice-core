@@ -398,25 +398,17 @@ IMPL_STATIC_LINK(SfxCharmapContainer, ItemViewFocusOutHdl,  weld::Widget&, rWidg
     rIconView.unselect_all();
 }
 
-IMPL_LINK_NOARG(SfxCharmapContainer, RecentItemActivatedHdl, const weld::TreeIter&, bool)
+IMPL_LINK(SfxCharmapContainer, RecentItemActivatedHdl, const weld::TreeIter&, rIter, bool)
 {
-    std::unique_ptr<weld::TreeIter> pIter = m_xRecentIconView->get_selected();
-    if (!pIter)
-        return false;
-
-    const int nIndex = m_xRecentIconView->get_iter_index_in_parent(*pIter);
+    const int nIndex = m_xRecentIconView->get_iter_index_in_parent(rIter);
     m_aCharActivateHdl.Call(m_aRecentChars.at(nIndex));
 
     return true;
 }
 
-IMPL_LINK_NOARG(SfxCharmapContainer, FavItemActivatedHdl, const weld::TreeIter&, bool)
+IMPL_LINK(SfxCharmapContainer, FavItemActivatedHdl, const weld::TreeIter&, rIter, bool)
 {
-    std::unique_ptr<weld::TreeIter> pIter = m_xFavIconView->get_selected();
-    if (!pIter)
-        return false;
-
-    const int nIndex = m_xFavIconView->get_iter_index_in_parent(*pIter);
+    const int nIndex = m_xFavIconView->get_iter_index_in_parent(rIter);
     m_aCharActivateHdl.Call(m_aFavChars.at(nIndex));
 
     return true;
