@@ -1651,7 +1651,7 @@ CPPUNIT_TEST_FIXTURE(ScUiCalcTest2, testTdf71324_FormatToggleWithAutofilter)
     insertStringToCell(u"A3"_ustr, u"Banana");
     insertStringToCell(u"A4"_ustr, u"Apple");
 
-    // Create anonymouse database range for autofilter
+    // Create anonymous database range for autofilter
     ScDBData* pDBData = new ScDBData(u"NONAME"_ustr, 0, 0, 0, 0, 3);
     pDoc->SetAnonymousDBData(0, std::unique_ptr<ScDBData>(pDBData));
     pDBData->SetAutoFilter(true);
@@ -1662,7 +1662,7 @@ CPPUNIT_TEST_FIXTURE(ScUiCalcTest2, testTdf71324_FormatToggleWithAutofilter)
     pDoc->ApplyFlagsTab(aRange.aStart.Col(), aRange.aStart.Row(), aRange.aEnd.Col(),
                         aRange.aStart.Row(), aRange.aStart.Tab(), ScMF::Auto);
 
-    // Create autofilter criterias searching for a specific string hiding one row
+    // Create autofilter criteria searching for a specific string hiding one row
     ScQueryParam aParam;
     pDBData->GetQueryParam(aParam);
     ScQueryEntry& rEntry = aParam.GetEntry(0);
