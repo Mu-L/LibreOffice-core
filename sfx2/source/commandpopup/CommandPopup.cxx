@@ -221,7 +221,7 @@ IMPL_LINK_NOARG(CommandListBox, QueryTooltip, const weld::TreeIter&, OUString)
     return OUString();
 }
 
-IMPL_LINK_NOARG(CommandListBox, RowActivated, weld::TreeView&, bool)
+void CommandListBox::DispatchSelectedCommand()
 {
     OUString aCommandURL;
     int nSelected = mpCommandTreeView->get_selected_index();
@@ -231,6 +231,11 @@ IMPL_LINK_NOARG(CommandListBox, RowActivated, weld::TreeView&, bool)
         aCommandURL = rCurrent.m_aCommandURL;
     }
     dispatchCommandAndClose(aCommandURL);
+}
+
+IMPL_LINK_NOARG(CommandListBox, RowActivated, weld::TreeView&, bool)
+{
+    DispatchSelectedCommand();
     return true;
 }
 
@@ -247,7 +252,7 @@ IMPL_LINK(CommandListBox, TreeViewKeyPress, const KeyEvent&, rKeyEvent, bool)
     }
     else if (rKeyEvent.GetKeyCode().GetCode() == KEY_RETURN)
     {
-        RowActivated(*mpCommandTreeView);
+        DispatchSelectedCommand();
         return true;
     }
 

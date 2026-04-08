@@ -96,6 +96,7 @@ private:
     DECL_LINK(ModifyHdl, weld::Entry&, void);
     DECL_LINK(TreeViewKeyPress, const KeyEvent&, bool);
 
+    void DispatchSelectedCommand();
     void dispatchCommandAndClose(OUString const& rCommand);
 
 public:
