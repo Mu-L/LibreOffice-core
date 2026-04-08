@@ -297,9 +297,9 @@ IMPL_LINK_NOARG(OContentTableSelection, OnTableSelected, weld::TreeView&, void)
     updateDialogTravelUI();
 }
 
-IMPL_LINK(OContentTableSelection, OnTableDoubleClicked, weld::TreeView&, _rListBox, bool)
+IMPL_LINK_NOARG(OContentTableSelection, OnTableDoubleClicked, weld::TreeView&, bool)
 {
-    if (_rListBox.count_selected_rows())
+    if (m_xSelectTable->count_selected_rows())
         getDialog()->travelNext();
     return true;
 }
