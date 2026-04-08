@@ -324,7 +324,7 @@ IMPL_LINK(OAddFieldWindow, OnSortAction, const OUString&, rCurItem, void)
 {
     if (rCurItem == "insert")
     {
-        OnDoubleClickHdl(*m_xListBox);
+        m_aCreateLink.Call(*this);
         return;
     }
 
