@@ -65,16 +65,16 @@ void DropDownFormFieldButton::InitDropdown()
     m_xTreeView->set_size_request(lbSize.Width(), lbSize.Height());
 }
 
-IMPL_LINK(DropDownFormFieldButton, MyListBoxHandler, weld::TreeView&, rBox, bool)
+IMPL_LINK_NOARG(DropDownFormFieldButton, MyListBoxHandler, weld::TreeView&, bool)
 {
-    OUString sSelection = rBox.get_selected_text();
+    OUString sSelection = m_xTreeView->get_selected_text();
     if (sSelection == SwResId(STR_DROP_DOWN_EMPTY_LIST))
     {
         m_xFieldPopup->popdown();
         return true;
     }
 
-    sal_Int32 nSelection = rBox.get_selected_index();
+    sal_Int32 nSelection = m_xTreeView->get_selected_index();
     if (nSelection >= 0)
     {
         (*m_rFieldmark.GetParameters())[ODF_FORMDROPDOWN_RESULT] <<= nSelection;
