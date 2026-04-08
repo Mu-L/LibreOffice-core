@@ -93,7 +93,7 @@ void QtInstanceTreeView::do_insert(const weld::TreeIter* pParent, int nPos, cons
         {
             // avoid triggering signal_toggled via QtInstanceTreeView::handleDataChanged for new item
             QSignalBlocker aSignalBlocker(m_pModel);
-            itemFromIndex(toggleButtonModelIndex(QtInstanceTreeIter(aIndex)))->setCheckable(true);
+            itemFromIndex(toggleButtonModelIndex(treeIter(aIndex)))->setCheckable(true);
         }
 
         if (bChildrenOnDemand)
@@ -468,7 +468,7 @@ void QtInstanceTreeView::move_subtree(weld::TreeIter&, const weld::TreeIter*, in
 
 void QtInstanceTreeView::all_foreach(const std::function<bool(weld::TreeIter&)>& func)
 {
-    QtInstanceTreeIter aIter({});
+    QtInstanceTreeIter aIter = treeIter(QModelIndex());
     if (get_iter_first(aIter))
     {
         do
@@ -773,8 +773,7 @@ void QtInstanceTreeView::do_remove_selection()
         QModelIndexList aSelectedIndexes = m_pSelectionModel->selectedRows();
         std::sort(aSelectedIndexes.begin(), aSelectedIndexes.end(),
                   [this](const QModelIndex& rFirst, const QModelIndex& rSecond) {
-                      return iter_compare(QtInstanceTreeIter(rFirst), QtInstanceTreeIter(rSecond))
-                             == -1;
+                      return iter_compare(treeIter(rFirst), treeIter(rSecond)) == -1;
                   });
 
         for (auto aIt = aSelectedIndexes.rbegin(); aIt != aSelectedIndexes.rend(); aIt++)
@@ -880,14 +879,14 @@ bool QtInstanceTreeView::signalEditingStarted(const QModelIndex& rIndex)
 {
     SolarMutexGuard g;
 
-    return signal_editing_started(QtInstanceTreeIter(rIndex));
+    return signal_editing_started(treeIter(rIndex));
 }
 
 bool QtInstanceTreeView::signalEditingDone(const QModelIndex& rIndex, const QString& rNewText)
 {
     SolarMutexGuard g;
 
-    return signal_editing_done({ QtInstanceTreeIter(rIndex), toOUString(rNewText) });
+    return signal_editing_done({ treeIter(rIndex), toOUString(rNewText) });
 }
 
 QList<QList<Qt::ItemDataRole>> QtInstanceTreeView::columnRoles(const QTreeView& rTreeView)
@@ -967,7 +966,7 @@ bool QtInstanceTreeView::handleViewPortToolTipEvent(const QHelpEvent& rHelpEvent
         return false;
 
     SolarMutexGuard g;
-    const QtInstanceTreeIter aIter(aIndex);
+    const QtInstanceTreeIter aIter = treeIter(aIndex);
     const OUString sToolTip = signal_query_tooltip(aIter);
     if (sToolTip.isEmpty())
         return false;
@@ -1001,7 +1000,7 @@ void QtInstanceTreeView::handleDataChanged(const QModelIndex& rTopLeft,
         // use special index of -1 for the "expander toggle"
         nColIndex = -1;
 
-    signal_toggled(iter_col(QtInstanceTreeIter(rTopLeft), nColIndex));
+    signal_toggled(iter_col(treeIter(rTopLeft), nColIndex));
 }
 
 void QtInstanceTreeView::handleSelectionChanged()
@@ -1014,14 +1013,14 @@ void QtInstanceTreeView::signalCollapsing(const QModelIndex& rIndex)
 {
     SolarMutexGuard g;
 
-    signal_collapsing(QtInstanceTreeIter(rIndex));
+    signal_collapsing(treeIter(rIndex));
 }
 
 void QtInstanceTreeView::signalExpanding(const QModelIndex& rIndex)
 {
     SolarMutexGuard g;
 
-    signal_expanding(QtInstanceTreeIter(rIndex));
+    signal_expanding(treeIter(rIndex));
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab cinoptions=b1,g0,N-s cinkeys+=0=break: */

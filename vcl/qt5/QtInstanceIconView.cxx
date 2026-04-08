@@ -199,7 +199,7 @@ bool QtInstanceIconView::handleToolTipEvent(const QHelpEvent& rHelpEvent)
         return QtInstanceWidget::handleToolTipEvent(rHelpEvent);
 
     SolarMutexGuard g;
-    const QtInstanceTreeIter aIter(aIndex);
+    const QtInstanceTreeIter aIter = treeIter(aIndex);
     const OUString sToolTip = signal_query_tooltip(aIter);
     if (sToolTip.isEmpty())
         return QtInstanceWidget::handleToolTipEvent(rHelpEvent);

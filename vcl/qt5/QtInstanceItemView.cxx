@@ -161,7 +161,7 @@ void QtInstanceItemView::selected_foreach(const std::function<bool(weld::TreeIte
         QModelIndexList aSelectionIndexes = getSelectionModel().selectedRows();
         for (QModelIndex& aIndex : aSelectionIndexes)
         {
-            QtInstanceTreeIter aIter(aIndex);
+            QtInstanceTreeIter aIter = treeIter(aIndex);
             if (func(aIter))
                 return;
         }
@@ -240,7 +240,12 @@ QModelIndex QtInstanceItemView::modelIndex(const weld::TreeIter& rIter, int nCol
 
 QtInstanceTreeIter QtInstanceItemView::treeIter(int nRow, const QModelIndex& rParentIndex) const
 {
-    return QtInstanceTreeIter(m_rModel.index(nRow, 0, rParentIndex));
+    return treeIter(m_rModel.index(nRow, 0, rParentIndex));
+}
+
+QtInstanceTreeIter QtInstanceItemView::treeIter(const QModelIndex& rIndex)
+{
+    return QtInstanceTreeIter(rIndex);
 }
 
 QAbstractItemView& QtInstanceItemView::getItemView() const
