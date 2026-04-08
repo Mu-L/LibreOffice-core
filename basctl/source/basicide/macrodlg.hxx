@@ -57,7 +57,7 @@ private:
     Mode                    nMode;
 
     DECL_LINK(MacroSelectHdl, weld::TreeView&, void);
-    DECL_LINK(MacroDoubleClickHdl, weld::TreeView&, bool);
+    DECL_LINK(MacroDoubleClickHdl, const weld::TreeIter&, bool);
     DECL_LINK(BasicSelectHdl, weld::TreeView&, void);
     DECL_LINK(EditModifyHdl, weld::Entry&, void);
     DECL_LINK(ContextMenuHdl, const CommandEvent&, bool);

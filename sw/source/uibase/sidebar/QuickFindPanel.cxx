@@ -490,7 +490,7 @@ IMPL_LINK_NOARG(QuickFindPanel, SearchFindsListSelectionChangedHandler, weld::Tr
     m_pWrtShell->GetView().BringToAttention(std::move(vRanges));
 }
 
-IMPL_LINK_NOARG(QuickFindPanel, SearchFindsListRowActivatedHandler, weld::TreeView&, bool)
+IMPL_LINK_NOARG(QuickFindPanel, SearchFindsListRowActivatedHandler, const weld::TreeIter&, bool)
 {
     std::unique_ptr<weld::TreeIter> xEntry = m_xSearchFindsList->get_cursor();
     if (!xEntry)

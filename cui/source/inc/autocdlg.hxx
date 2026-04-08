@@ -23,6 +23,7 @@
 #include <unotools/collatorwrapper.hxx>
 #include <vcl/weld/Entry.hxx>
 #include <vcl/weld/SpinButton.hxx>
+#include <vcl/weld/TreeIter.hxx>
 
 #include <map>
 #include <set>
@@ -119,7 +120,7 @@ class OfaSwAutoFmtOptionsPage : public SfxTabPage
 
     DECL_LINK(SelectHdl, weld::TreeView&, void);
     DECL_LINK(EditHdl, weld::Button&, void);
-    DECL_LINK(DoubleClickEditHdl, weld::TreeView&, bool);
+    DECL_LINK(DoubleClickEditHdl, const weld::TreeIter&, bool);
 
     void CreateEntry(const OUString& rTxt, sal_uInt16 nCol);
 

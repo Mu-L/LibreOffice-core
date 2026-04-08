@@ -73,7 +73,7 @@ IMPL_LINK_NOARG(ScCheckListMenuControl::SubMenuItemData, TimeoutHdl, Timer *, vo
     mpParent->handleMenuTimeout(this);
 }
 
-IMPL_LINK_NOARG(ScCheckListMenuControl, RowActivatedHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(ScCheckListMenuControl, RowActivatedHdl, const weld::TreeIter&, bool)
 {
     int nSelectedIndex = mxMenu->get_selected_index();
     assert(nSelectedIndex >= 0 && "nothing selected");
@@ -2053,9 +2053,9 @@ IMPL_LINK(ScListSubMenuControl, ColorSelChangedHdl, weld::TreeView&, rMenu, void
     rMenu.grab_focus();
 }
 
-IMPL_LINK(ScListSubMenuControl, RowActivatedHdl, weld::TreeView&, rMenu, bool)
+IMPL_LINK(ScListSubMenuControl, RowActivatedHdl, const weld::TreeIter&, rIter, bool)
 {
-    executeMenuItem(rMenu);
+    executeMenuItem(rIter.getItemView());
     return true;
 }
 

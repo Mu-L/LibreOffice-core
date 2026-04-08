@@ -56,7 +56,7 @@ class SwGlossDecideDlg : public weld::GenericDialogController
     std::unique_ptr<weld::Button> m_xOk;
     std::unique_ptr<weld::TreeView> m_xListLB;
 
-    DECL_LINK(DoubleClickHdl, weld::TreeView&, bool);
+    DECL_LINK(DoubleClickHdl, const weld::TreeIter&, bool);
     DECL_LINK(SelectHdl, weld::TreeView&, void);
 
 public:
@@ -78,7 +78,7 @@ SwGlossDecideDlg::SwGlossDecideDlg(weld::Window* pParent)
     m_xListLB->connect_selection_changed(LINK(this, SwGlossDecideDlg, SelectHdl));
 }
 
-IMPL_LINK_NOARG(SwGlossDecideDlg, DoubleClickHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(SwGlossDecideDlg, DoubleClickHdl, const weld::TreeIter&, bool)
 {
     m_xDialog->response(RET_OK);
     return true;

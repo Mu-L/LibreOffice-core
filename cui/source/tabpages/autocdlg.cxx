@@ -668,7 +668,7 @@ IMPL_LINK(OfaSwAutoFmtOptionsPage, SelectHdl, weld::TreeView&, rBox, void)
     m_xEditPB->set_sensitive(rBox.get_selected_id().toInt64() != 0);
 }
 
-IMPL_LINK_NOARG(OfaSwAutoFmtOptionsPage, DoubleClickEditHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(OfaSwAutoFmtOptionsPage, DoubleClickEditHdl, const weld::TreeIter&, bool)
 {
     EditHdl(*m_xEditPB);
     return true;

@@ -1086,7 +1086,7 @@ void SvxNumberFormatTabPage::UpdateDecimalsDenominatorEditBox()
 #*  Output:     ---
 #*
 #************************************************************************/
-IMPL_LINK_NOARG(SvxNumberFormatTabPage, DoubleClickHdl_Impl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(SvxNumberFormatTabPage, DoubleClickHdl_Impl, const weld::TreeIter&, bool)
 {
     SelFormatHdl_Impl(m_xLbFormat.get());
 

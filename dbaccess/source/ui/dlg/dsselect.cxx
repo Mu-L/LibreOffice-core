@@ -44,7 +44,7 @@ ODatasourceSelectDialog::~ODatasourceSelectDialog()
 {
 }
 
-IMPL_LINK_NOARG(ODatasourceSelectDialog, ListDblClickHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(ODatasourceSelectDialog, ListDblClickHdl, const weld::TreeIter&, bool)
 {
     if (m_xDatasource->n_children())
         m_xDialog->response(RET_OK);

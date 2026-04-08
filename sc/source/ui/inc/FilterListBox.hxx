@@ -52,7 +52,7 @@ private:
     ScFilterBoxMode eMode;
     ImplSVEvent* nAsyncSelectHdl;
 
-    DECL_LINK(SelectHdl, weld::TreeView&, bool);
+    DECL_LINK(SelectHdl, const weld::TreeIter&, bool);
     DECL_LINK(KeyInputHdl, const KeyEvent&, bool);
     DECL_LINK(AsyncSelectHdl, void*, void);
 

@@ -179,7 +179,7 @@ private:
     std::unique_ptr<weld::Button> m_xEditBtn;
 
     DECL_LINK(SelectHdl_Impl, weld::TreeView&, void);
-    DECL_LINK(DblClickHdl_Impl, weld::TreeView&, bool);
+    DECL_LINK(DblClickHdl_Impl, const weld::TreeIter&, bool);
     DECL_LINK(AddHdl_Impl, weld::Button&, void);
     DECL_LINK(RemoveHdl_Impl, weld::Button&, void);
     DECL_LINK(EditHdl_Impl, weld::Button&, void);

@@ -53,7 +53,7 @@ namespace dbaui
         std::unique_ptr<weld::TreeView> m_xTreeView;
         std::unique_ptr<TableWindowListBoxHelper> m_xDragDropTargetHelper;
 
-        DECL_LINK( OnDoubleClick, weld::TreeView&, bool );
+        DECL_LINK(OnDoubleClick, const weld::TreeIter&, bool);
         DECL_LINK(CommandHdl, const CommandEvent&, bool);
         DECL_LINK( DropHdl, void*, void );
         DECL_LINK( LookForUiHdl, void*, void );

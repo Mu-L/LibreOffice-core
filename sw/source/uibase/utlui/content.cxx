@@ -3511,7 +3511,7 @@ bool SwContentTree::ActivateContentEntry()
 }
 
 // Also on double click will be initially opened only.
-IMPL_LINK_NOARG(SwContentTree, ContentDoubleClickHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(SwContentTree, ContentDoubleClickHdl, const weld::TreeIter&, bool)
 {
     return ActivateContentEntry();
 }

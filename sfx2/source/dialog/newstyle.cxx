@@ -53,7 +53,7 @@ IMPL_LINK_NOARG(SfxNewStyleDlg, OKClickHdl, weld::Button&, void)
         m_xDialog->response(RET_OK);
 }
 
-IMPL_LINK_NOARG(SfxNewStyleDlg, OKHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(SfxNewStyleDlg, OKHdl, const weld::TreeIter&, bool)
 {
     OKClickHdl(*m_xOKBtn);
     return true;

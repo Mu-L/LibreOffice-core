@@ -1043,7 +1043,7 @@ void SwGlobalTree::OpenDoc(const SwGlblDocContent* pCont)
     }
 }
 
-IMPL_LINK_NOARG( SwGlobalTree, DoubleClickHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(SwGlobalTree, DoubleClickHdl, const weld::TreeIter&, bool)
 {
     int nEntry = m_xTreeView->get_cursor_index();
     SwGlblDocContent* pCont = weld::fromId<SwGlblDocContent*>(m_xTreeView->get_id(nEntry));

@@ -3935,7 +3935,7 @@ namespace
 
         std::vector<OUString> m_aFormatEntries;
         LanguageType          m_eFormatLanguage;
-        DECL_LINK(RowActivatedHdl, weld::TreeView&, bool);
+        DECL_LINK(RowActivatedHdl, const weld::TreeIter&, bool);
 
         virtual void GrabFocus() override;
 
@@ -4025,7 +4025,7 @@ namespace
         m_xCurrencyLb->grab_focus();
     }
 
-    IMPL_LINK_NOARG(SvxCurrencyList_Impl, RowActivatedHdl, weld::TreeView&, bool)
+    IMPL_LINK_NOARG(SvxCurrencyList_Impl, RowActivatedHdl, const weld::TreeIter&, bool)
     {
         if (!m_xControl.is())
             return true;

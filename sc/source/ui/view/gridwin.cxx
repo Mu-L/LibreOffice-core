@@ -254,7 +254,7 @@ IMPL_LINK(ScFilterListBox, KeyInputHdl, const KeyEvent&, rKeyEvent, bool)
     return bDone;
 }
 
-IMPL_LINK_NOARG(ScFilterListBox, SelectHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(ScFilterListBox, SelectHdl, const weld::TreeIter&, bool)
 {
     if (!bInit && !bCancelled && !nAsyncSelectHdl)
     {

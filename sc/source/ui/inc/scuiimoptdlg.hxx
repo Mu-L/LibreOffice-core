@@ -71,7 +71,7 @@ private:
     void FillFromDbTextEncodingMap(bool bExcludeImportSubsets, sal_uInt32 nExcludeInfoFlags = 0);
 
     DECL_LINK(FixedWidthHdl, weld::Toggleable&, void);
-    DECL_LINK(DoubleClickHdl, weld::TreeView&, bool);
+    DECL_LINK(DoubleClickHdl, const weld::TreeIter&, bool);
     DECL_STATIC_LINK(ScImportOptionsDlg, InstallLOKNotifierHdl, void*, vcl::ILibreOfficeKitNotifier*);
 };
 

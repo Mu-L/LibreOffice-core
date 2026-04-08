@@ -345,7 +345,7 @@ ContentTabPage_Impl::ContentTabPage_Impl(weld::Widget* pParent, SfxHelpIndexWind
     InitRoot();
 }
 
-IMPL_LINK_NOARG(ContentTabPage_Impl, DoubleClickHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(ContentTabPage_Impl, DoubleClickHdl, const weld::TreeIter&, bool)
 {
     aDoubleClickHdl.Call(nullptr);
     return false;
@@ -707,7 +707,7 @@ IMPL_LINK_NOARG(IndexTabPage_Impl, ActivateHdl, weld::Entry&, bool)
     return true;
 }
 
-IMPL_LINK_NOARG(IndexTabPage_Impl, DoubleClickHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(IndexTabPage_Impl, DoubleClickHdl, const weld::TreeIter&, bool)
 {
     aDoubleClickHdl.Call(nullptr);
     return true;
@@ -1041,7 +1041,7 @@ IMPL_LINK(SearchTabPage_Impl, ModifyHdl, weld::ComboBox&, rComboBox, void)
         Search();
 }
 
-IMPL_LINK_NOARG(SearchTabPage_Impl, DoubleClickHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(SearchTabPage_Impl, DoubleClickHdl, const weld::TreeIter&, bool)
 {
     aDoubleClickHdl.Call(nullptr);
     return true;
@@ -1187,7 +1187,7 @@ IMPL_LINK_NOARG(BookmarksTabPage_Impl, OpenHdl, weld::Button&, void)
     aDoubleClickHdl.Call(nullptr);
 }
 
-IMPL_LINK_NOARG(BookmarksTabPage_Impl, DoubleClickHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(BookmarksTabPage_Impl, DoubleClickHdl, const weld::TreeIter&, bool)
 {
     aDoubleClickHdl.Call(nullptr);
     return true;

@@ -28,7 +28,7 @@ class DropDownFormFieldButton final : public FormFieldButton
 private:
     std::unique_ptr<weld::TreeView> m_xTreeView;
 
-    DECL_LINK(MyListBoxHandler, weld::TreeView&, bool);
+    DECL_LINK(MyListBoxHandler, const weld::TreeIter&, bool);
 
     void InitDropdown();
 

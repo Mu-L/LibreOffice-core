@@ -132,7 +132,7 @@ private:
     DECL_LINK(OnLeftTreeSelect, weld::TreeView&, void);
     DECL_LINK(OnRightTreeSelect, weld::TreeView&, void);
     DECL_LINK(OnRightNodeExpand, const weld::TreeIter&, bool);
-    DECL_LINK(OnRightTreeDoubleClick, weld::TreeView&, bool);
+    DECL_LINK(OnRightTreeDoubleClick, const weld::TreeIter&, bool);
     DECL_LINK(OnNodeExpand, const weld::TreeIter&, bool);
     DECL_LINK(OnScopeChanged, weld::ComboBox&, void);
 };

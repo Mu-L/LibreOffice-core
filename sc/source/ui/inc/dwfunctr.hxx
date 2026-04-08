@@ -25,6 +25,7 @@
 #include <sfx2/bindings.hxx>
 #include <vcl/weld/Entry.hxx>
 #include <vcl/weld/TextView.hxx>
+#include <vcl/weld/TreeIter.hxx>
 
 class ScFuncDesc;
 namespace formula { class IFunctionDescription; }
@@ -77,7 +78,7 @@ private:
     SfxBindings&    GetBindings() const { return *m_pBindings; }
     weld::TreeIter* FillCategoriesMap(const OUString&, bool);
 
-                    DECL_LINK( SetRowActivatedHdl, weld::TreeView&, bool );
+                    DECL_LINK(SetRowActivatedHdl, const weld::TreeIter&, bool );
                     DECL_LINK( SetSelectionClickHdl, weld::Button&, void );
                     DECL_LINK( SetHelpClickHdl, weld::Button&, void );
                     DECL_LINK( SetSimilarityToggleHdl, weld::Toggleable&, void );

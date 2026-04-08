@@ -886,7 +886,7 @@ void SbTreeListBox::SetCurrentEntry (EntryDescriptor const & rDesc)
     m_xControl->set_cursor(*xCurIter);
 }
 
-IMPL_LINK_NOARG(SbTreeListBox, OpenCurrentHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(SbTreeListBox, OpenCurrentHdl, const weld::TreeIter&, bool)
 {
     std::unique_ptr<weld::TreeIter> pCursor = m_xControl->get_cursor();
     if (!pCursor)

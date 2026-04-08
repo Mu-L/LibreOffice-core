@@ -63,7 +63,7 @@ private:
 
     void updateSelection();
 
-    DECL_LINK(RowActivatedHdl, weld::TreeView&, bool);
+    DECL_LINK(RowActivatedHdl, const weld::TreeIter&, bool);
 
     DECL_LINK(ListViewChangedHdl, weld::TreeView&, void);
 

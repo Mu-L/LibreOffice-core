@@ -134,7 +134,7 @@ class SwInsertDBColAutoPilot final : public SfxDialogController, public utl::Con
     DECL_LINK( TableToFromHdl, weld::Button&, void );
     DECL_LINK( TVSelectHdl, weld::TreeView&, void );
     DECL_LINK( CBSelectHdl, weld::ComboBox&, void );
-    DECL_LINK( DblClickHdl, weld::TreeView&, bool );
+    DECL_LINK(DblClickHdl, const weld::TreeIter&, bool);
     DECL_LINK( HeaderHdl, weld::Toggleable&, void );
 
     bool SplitTextToColArr( const OUString& rText, DB_Columns& rColArr, bool bInsField );

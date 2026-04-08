@@ -208,7 +208,7 @@ IMPL_LINK_NOARG(SfxNewFileDialog, TemplateSelect, weld::TreeView&, void)
     m_aPrevIdle.Start();
 }
 
-IMPL_LINK_NOARG( SfxNewFileDialog, DoubleClick, weld::TreeView&, bool )
+IMPL_LINK_NOARG( SfxNewFileDialog, DoubleClick, const weld::TreeIter&, bool )
 {
     // Still loading
     if (!m_xDocShell.Is() || !m_xDocShell->GetProgress())

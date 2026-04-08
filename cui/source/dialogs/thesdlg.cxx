@@ -197,7 +197,7 @@ IMPL_LINK( SvxThesaurusDialog, AlternativesSelectHdl_Impl, weld::TreeView&, rBox
     }
 }
 
-IMPL_LINK_NOARG(SvxThesaurusDialog, AlternativesDoubleClickHdl_Impl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(SvxThesaurusDialog, AlternativesDoubleClickHdl_Impl, const weld::TreeIter&, bool)
 {
     int nEntry = m_xAlternativesCT->get_selected_index();
     if (nEntry != -1)

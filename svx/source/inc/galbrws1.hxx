@@ -165,7 +165,7 @@ private:
     DECL_LINK(SelectTbxHdl, weld::Toggleable&, void);
     DECL_LINK(PopupMenuHdl2, const CommandEvent&, bool);
     DECL_LINK(KeyInputHdl2, const KeyEvent&, bool);
-    DECL_LINK(RowActivatedHdl, weld::TreeView&, bool);
+    DECL_LINK(RowActivatedHdl, const weld::TreeIter&, bool);
     DECL_LINK(DragBeginHdl, bool&, bool);
     DECL_LINK(VisRowsScrolledHdl, weld::TreeView&, void);
     DECL_LINK(SizeAllocHdl, const Size&, void);

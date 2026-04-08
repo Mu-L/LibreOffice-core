@@ -60,7 +60,7 @@ private:
 
     DECL_LINK(QueryTooltip, const weld::TreeIter& rIter, OUString);
     DECL_LINK(StandardHdl_Impl, weld::Button&, void);
-    DECL_LINK(DoubleClickHdl_Impl, weld::TreeView&, bool);
+    DECL_LINK(DoubleClickHdl_Impl, const weld::TreeIter&, bool);
     DECL_LINK(ResetBtnHdl_Impl, weld::Button&, void);
     DECL_LINK(SearchHdl_Impl, weld::Button&, void);
     DECL_LINK(ModifiedHdl_Impl, weld::Toggleable&, void);

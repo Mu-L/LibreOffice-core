@@ -260,7 +260,7 @@ void OTableWindowListBox::GetFocus()
     InterimItemWindow::GetFocus();
 }
 
-IMPL_LINK_NOARG(OTableWindowListBox, OnDoubleClick, weld::TreeView&, bool)
+IMPL_LINK_NOARG(OTableWindowListBox, OnDoubleClick, const weld::TreeIter&, bool)
 {
     // tell my parent
     vcl::Window* pParent = Window::GetParent();

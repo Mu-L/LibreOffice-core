@@ -768,7 +768,7 @@ CuiAboutConfigTabPage::commaStringToSequence(std::u16string_view rCommaSepString
 
 IMPL_LINK_NOARG(CuiAboutConfigTabPage, ResetBtnHdl_Impl, weld::Button&, void) { Reset(); }
 
-IMPL_LINK_NOARG(CuiAboutConfigTabPage, DoubleClickHdl_Impl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(CuiAboutConfigTabPage, DoubleClickHdl_Impl, const weld::TreeIter&, bool)
 {
     StandardHdl_Impl(*m_xEditBtn);
     return true;

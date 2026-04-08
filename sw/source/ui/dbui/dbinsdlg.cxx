@@ -599,8 +599,9 @@ IMPL_LINK( SwInsertDBColAutoPilot, TableToFromHdl, weld::Button&, rButton, void 
     m_xPbTableFormat->set_sensitive( bEnableFrom );
 }
 
-IMPL_LINK(SwInsertDBColAutoPilot, DblClickHdl, weld::TreeView&, rBox, bool)
+IMPL_LINK(SwInsertDBColAutoPilot, DblClickHdl, const weld::TreeIter&, rIter, bool)
 {
+    const weld::ItemView& rBox = rIter.getItemView();
     weld::Button* pButton = nullptr;
     if( &rBox == m_xLbTextDbColumn.get() )
         pButton = m_xIbDbcolToEdit.get();

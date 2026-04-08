@@ -538,7 +538,7 @@ IMPL_LINK_NOARG(ScPivotCalcFieldDlg, DeleteClicked, weld::Button&, void)
     mxBtnDel->set_sensitive(false);
 }
 
-IMPL_LINK_NOARG(ScPivotCalcFieldDlg, DoubleClickHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(ScPivotCalcFieldDlg, DoubleClickHdl, const weld::TreeIter&, bool)
 {
     InsertSelectedField();
     return true;

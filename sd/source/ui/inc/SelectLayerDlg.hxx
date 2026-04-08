@@ -27,7 +27,7 @@ class SdSelectLayerDlg final : public weld::GenericDialogController
     std::unique_ptr<weld::Button> m_xOk;
     std::unique_ptr<weld::TreeView> m_xListLB;
 
-    DECL_LINK(DoubleClickHdl, weld::TreeView&, bool);
+    DECL_LINK(DoubleClickHdl, const weld::TreeIter&, bool);
     DECL_LINK(SelectHdl, weld::TreeView&, void);
 
 public:

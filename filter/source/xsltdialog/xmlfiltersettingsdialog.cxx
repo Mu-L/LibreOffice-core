@@ -156,7 +156,7 @@ IMPL_LINK_NOARG(XMLFilterSettingsDialog, SelectionChangedHdl_Impl, weld::TreeVie
     updateStates();
 }
 
-IMPL_LINK_NOARG(XMLFilterSettingsDialog, DoubleClickHdl_Impl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(XMLFilterSettingsDialog, DoubleClickHdl_Impl, const weld::TreeIter&, bool)
 {
     onEdit();
     return true;

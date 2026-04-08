@@ -35,7 +35,7 @@ SdSelectLayerDlg::SdSelectLayerDlg(weld::Window* pParent)
     m_xListLB->connect_selection_changed(LINK(this, SdSelectLayerDlg, SelectHdl));
 }
 
-IMPL_LINK_NOARG(SdSelectLayerDlg, DoubleClickHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(SdSelectLayerDlg, DoubleClickHdl, const weld::TreeIter&, bool)
 {
     m_xDialog->response(RET_OK);
     return true;

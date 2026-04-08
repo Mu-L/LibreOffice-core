@@ -139,7 +139,7 @@ public:
     {
         m_xControl->connect_selection_changed(rLink);
     }
-    void connect_row_activated(const Link<weld::TreeView&, bool>& rLink) { m_xControl->connect_row_activated(rLink); }
+    void connect_row_activated(const Link<const weld::TreeIter&, bool>& rLink) { m_xControl->connect_row_activated(rLink); }
     void grab_focus() { m_xControl->grab_focus(); }
     void show() { m_xControl->show(); }
     void hide() { m_xControl->hide(); }

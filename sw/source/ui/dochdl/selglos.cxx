@@ -36,7 +36,7 @@ SwSelGlossaryDlg::~SwSelGlossaryDlg()
 {
 }
 
-IMPL_LINK_NOARG(SwSelGlossaryDlg, DoubleClickHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(SwSelGlossaryDlg, DoubleClickHdl, const weld::TreeIter&, bool)
 {
     m_xDialog->response(RET_OK);
     return true;

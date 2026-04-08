@@ -297,7 +297,7 @@ IMPL_LINK_NOARG(OContentTableSelection, OnTableSelected, weld::TreeView&, void)
     updateDialogTravelUI();
 }
 
-IMPL_LINK_NOARG(OContentTableSelection, OnTableDoubleClicked, weld::TreeView&, bool)
+IMPL_LINK_NOARG(OContentTableSelection, OnTableDoubleClicked, const weld::TreeIter&, bool)
 {
     if (m_xSelectTable->count_selected_rows())
         getDialog()->travelNext();
@@ -376,7 +376,7 @@ bool OContentFieldSelection::canAdvance() const
     return 0 != m_xSelectTableField->count_selected_rows();
 }
 
-IMPL_LINK_NOARG(OContentFieldSelection, OnTableDoubleClicked, weld::TreeView&, bool)
+IMPL_LINK_NOARG(OContentFieldSelection, OnTableDoubleClicked, const weld::TreeIter&, bool)
 {
     if (m_xSelectTableField->count_selected_rows())
         getDialog()->travelNext();

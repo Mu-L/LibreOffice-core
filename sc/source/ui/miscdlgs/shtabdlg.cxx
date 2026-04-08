@@ -61,7 +61,7 @@ std::vector<sal_Int32> ScShowTabDlg::GetSelectedRows() const
 
 OUString ScShowTabDlg::GetEntry(sal_Int32 nIndex) const { return m_xLb->get_text(nIndex); }
 
-IMPL_LINK_NOARG(ScShowTabDlg, DblClkHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(ScShowTabDlg, DblClkHdl, const weld::TreeIter&, bool)
 {
     m_xDialog->response(RET_OK);
     return true;

@@ -306,7 +306,7 @@ IMPL_LINK_NOARG(FuncPage, SelTreeViewHdl, weld::TreeView&, void)
     aSelectionLink.Call(*this);
 }
 
-IMPL_LINK_NOARG(FuncPage, DblClkHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(FuncPage, DblClkHdl, const weld::TreeIter&, bool)
 {
     const OUString aString = m_xLbFunction->get_selected_text();
     if (mCategories.contains(aString))

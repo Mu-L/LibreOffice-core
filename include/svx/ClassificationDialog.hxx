@@ -69,10 +69,10 @@ private:
     DECL_DLLPRIVATE_LINK(OkHdl, weld::Button&, void);
     DECL_DLLPRIVATE_LINK(SelectToolboxHdl, weld::Toggleable&, void);
     DECL_DLLPRIVATE_LINK(SelectClassificationHdl, weld::ComboBox&, void);
-    DECL_DLLPRIVATE_LINK(SelectMarkingHdl, weld::TreeView&, bool);
-    DECL_DLLPRIVATE_LINK(SelectIPPartNumbersHdl, weld::TreeView&, bool);
+    DECL_DLLPRIVATE_LINK(SelectMarkingHdl, const weld::TreeIter&, bool);
+    DECL_DLLPRIVATE_LINK(SelectIPPartNumbersHdl, const weld::TreeIter&, bool);
     DECL_DLLPRIVATE_LINK(SelectRecentlyUsedHdl, weld::ComboBox&, void);
-    DECL_DLLPRIVATE_LINK(SelectIPPartHdl, weld::TreeView&, bool);
+    DECL_DLLPRIVATE_LINK(SelectIPPartHdl, const weld::TreeIter&, bool);
     DECL_DLLPRIVATE_LINK(EditWindowModifiedHdl, LinkParamNone*, void);
     DECL_DLLPRIVATE_STATIC_LINK(ClassificationDialog, ExpandedHdl, weld::Expander&, void);
     DECL_DLLPRIVATE_STATIC_LINK(ClassificationDialog, KeyInput, const KeyEvent&, bool);

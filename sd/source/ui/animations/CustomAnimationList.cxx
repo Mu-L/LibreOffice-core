@@ -1153,7 +1153,7 @@ EffectSequence CustomAnimationList::getSelection() const
     return aSelection;
 }
 
-IMPL_LINK_NOARG(CustomAnimationList, DoubleClickHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(CustomAnimationList, DoubleClickHdl, const weld::TreeIter&, bool)
 {
     mpController->onDoubleClick();
     return false;

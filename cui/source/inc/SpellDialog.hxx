@@ -192,7 +192,7 @@ private:
     std::shared_ptr<SfxSingleTabDialogController> m_xOptionsDlg;
 
     DECL_LINK(ChangeHdl, weld::Button&, void);
-    DECL_LINK(DoubleClickChangeHdl, weld::TreeView&, bool);
+    DECL_LINK(DoubleClickChangeHdl, const weld::TreeIter&, bool);
     DECL_LINK(ChangeAllHdl, weld::Button&, void);
     DECL_LINK(IgnoreAllHdl, weld::Button&, void);
     DECL_LINK(IgnoreHdl, weld::Button&, void);

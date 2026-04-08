@@ -46,7 +46,7 @@ public:
     virtual short run() override;
 
 private:
-    DECL_LINK(ListDblClickHdl, weld::TreeView&, bool);
+    DECL_LINK(ListDblClickHdl, const weld::TreeIter&, bool);
 #ifdef HAVE_ODBC_ADMINISTRATION
     DECL_LINK(ManageClickHdl, weld::Button&, void);
     DECL_LINK(ManageProcessFinished, void*, void);

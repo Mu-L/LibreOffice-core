@@ -45,7 +45,7 @@ class BreakPointDialog final : public weld::GenericDialogController
     DECL_LINK(EditModifyHdl, weld::ComboBox&, void);
     DECL_LINK(FieldModifyHdl, weld::SpinButton&, void);
     DECL_LINK(ButtonHdl, weld::Button&, void);
-    DECL_LINK(TreeModifyHdl, weld::TreeView&, bool);
+    DECL_LINK(TreeModifyHdl, const weld::TreeIter&, bool);
     void UpdateFields(BreakPoint const& rBrk);
     BreakPoint* GetSelectedBreakPoint();
 

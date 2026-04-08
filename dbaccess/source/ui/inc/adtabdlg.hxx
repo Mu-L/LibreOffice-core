@@ -70,7 +70,7 @@ namespace dbaui
 
         DECL_LINK( AddClickHdl, weld::Button&, void );
         DECL_LINK( CloseClickHdl, weld::Button&, void);
-        DECL_LINK( TableListDoubleClickHdl, weld::TreeView&, bool );
+        DECL_LINK(TableListDoubleClickHdl, const weld::TreeIter&, bool);
         DECL_LINK( TableListSelectHdl, weld::TreeView&, void );
         DECL_LINK( OnTypeSelected, weld::Toggleable&, void );
 

@@ -119,7 +119,7 @@ public:
 
     virtual vcl::Font get_entry_font() override { return m_xEntry->get_font(); }
 
-    void connect_row_activated(const Link<TreeView&, bool>& rLink)
+    void connect_row_activated(const Link<const weld::TreeIter&, bool>& rLink)
     {
         m_xTreeView->connect_row_activated(rLink);
     }

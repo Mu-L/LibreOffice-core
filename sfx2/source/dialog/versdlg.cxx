@@ -288,7 +288,7 @@ void SfxVersionDialog::Open_Impl()
     m_xDialog->response(RET_OK);
 }
 
-IMPL_LINK_NOARG(SfxVersionDialog, DClickHdl_Impl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(SfxVersionDialog, DClickHdl_Impl, const weld::TreeIter&, bool)
 {
     Open_Impl();
     return true;

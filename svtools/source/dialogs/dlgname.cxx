@@ -191,7 +191,7 @@ IMPL_LINK_NOARG(SvxListDialog, EditHdl_Impl, weld::Button&, void) { EditEntry();
 
 IMPL_LINK_NOARG(SvxListDialog, SelectHdl_Impl, weld::TreeView&, void) { SelectionChanged(); }
 
-IMPL_LINK_NOARG(SvxListDialog, DblClickHdl_Impl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(SvxListDialog, DblClickHdl_Impl, const weld::TreeIter&, bool)
 {
     EditEntry();
     return true;

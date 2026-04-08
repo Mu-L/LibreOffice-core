@@ -48,7 +48,7 @@ void ScPivotLayoutTreeList::Setup(ScPivotLayoutDialog* pParent, SvPivotTreeListT
     meType = eType;
 }
 
-IMPL_LINK_NOARG(ScPivotLayoutTreeList, DoubleClickHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(ScPivotLayoutTreeList, DoubleClickHdl, const weld::TreeIter&, bool)
 {
     int nEntry = mxControl->get_cursor_index();
     if (nEntry == -1)

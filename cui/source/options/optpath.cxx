@@ -468,7 +468,7 @@ void SvxPathTabPage::ChangeCurrentEntry( const OUString& _rFolder )
     }
 }
 
-IMPL_LINK_NOARG(SvxPathTabPage, DoubleClickPathHdl_Impl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(SvxPathTabPage, DoubleClickPathHdl_Impl, const weld::TreeIter&, bool)
 {
     PathHdl_Impl(*m_xPathBtn);
     return true;

@@ -51,8 +51,8 @@ protected:
     SwField*            GetCurField()               { return m_pCurField;}
     SwWrtShell*         GetWrtShell() { return m_pWrtShell;}
 
-    DECL_LINK( TreeViewInsertHdl, weld::TreeView&, bool );
-    DECL_LINK( NumFormatHdl, weld::TreeView&, bool );
+    DECL_LINK(TreeViewInsertHdl, const weld::TreeIter&, bool );
+    DECL_LINK(NumFormatHdl, const weld::TreeIter&, bool);
     void                InsertHdl(weld::Widget*);
 
     void                Init();

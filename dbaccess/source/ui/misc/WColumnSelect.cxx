@@ -217,10 +217,10 @@ IMPL_LINK(OWizColumnSelect, ButtonClickHdl, weld::Button&, rButton, void)
         m_xOrgColumnNames->select(0);
 }
 
-IMPL_LINK( OWizColumnSelect, ListDoubleClickHdl, weld::TreeView&, rListBox, bool )
+IMPL_LINK(OWizColumnSelect, ListDoubleClickHdl, const weld::TreeIter&, rIter, bool)
 {
     weld::TreeView *pLeft,*pRight;
-    if (&rListBox == m_xOrgColumnNames.get())
+    if (&rIter.getItemView() == m_xOrgColumnNames.get())
     {
         pLeft  = m_xOrgColumnNames.get();
         pRight = m_xNewColumnNames.get();

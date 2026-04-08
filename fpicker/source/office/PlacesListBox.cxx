@@ -112,7 +112,7 @@ IMPL_LINK_NOARG( PlacesListBox, Selection, weld::TreeView&, void )
     updateView();
 }
 
-IMPL_LINK_NOARG( PlacesListBox, DoubleClick, weld::TreeView&, bool )
+IMPL_LINK_NOARG(PlacesListBox, DoubleClick, const weld::TreeIter&, bool)
 {
     int nSelected = mxImpl->get_cursor_index();
     if (nSelected == -1)

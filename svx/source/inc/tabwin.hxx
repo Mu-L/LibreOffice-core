@@ -50,7 +50,7 @@ class FmFieldWin final : public SfxModelessDialogController
 
     void addToList(const css::uno::Reference<css::container::XNameAccess>& i_xColumns);
 
-    DECL_LINK(RowActivatedHdl, weld::TreeView&, bool);
+    DECL_LINK(RowActivatedHdl, const weld::TreeIter&, bool);
     DECL_LINK(DragBeginHdl, bool&, bool);
 public:
     FmFieldWin(SfxBindings *pBindings, SfxChildWindow *pMgr, weld::Window* pParent);

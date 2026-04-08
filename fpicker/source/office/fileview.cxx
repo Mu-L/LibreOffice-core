@@ -177,7 +177,7 @@ public:
 
     OUString get_id(const weld::TreeIter& rIter) { return mxTreeView->get_id(rIter); }
 
-    void connect_row_activated(const Link<weld::TreeView&, bool>& rLink) { mxTreeView->connect_row_activated(rLink); }
+    void connect_row_activated(const Link<const weld::TreeIter&, bool>& rLink) { mxTreeView->connect_row_activated(rLink); }
     void connect_changed(const Link<weld::TreeView&, void>& rLink)
     {
         mxTreeView->connect_selection_changed(rLink);
@@ -362,7 +362,7 @@ public:
 protected:
     DECL_LINK(ChangedHdl, weld::TreeView&, void);
     DECL_LINK(SelectionChangedHdl, weld::IconView&, void);
-    DECL_LINK(RowActivatedHdl, weld::TreeView&, bool);
+    DECL_LINK(RowActivatedHdl, const weld::TreeIter&, bool);
     DECL_LINK(ItemActivatedHdl, const weld::TreeIter&, bool);
 
     // IEnumerationResultHandler overridables
@@ -1334,7 +1334,7 @@ void SvtFileView_Impl::SetSelectHandler(const Link<SvtFileView*,void>& rHdl)
     mxIconView->connect_selection_changed(LINK(this, SvtFileView_Impl, SelectionChangedHdl));
 }
 
-IMPL_LINK_NOARG(SvtFileView_Impl, RowActivatedHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(SvtFileView_Impl, RowActivatedHdl, const weld::TreeIter&, bool)
 {
     return maDoubleClickHandler.Call(m_pAntiImpl);
 }

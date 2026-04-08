@@ -37,7 +37,7 @@ private:
     std::unique_ptr<weld::TreeView> mxCellLineStyleTreeView;
     std::unique_ptr<weld::Button> mxPushButtonMoreOptions;
 
-    DECL_LINK(StyleSelectHdl, weld::TreeView&, bool);
+    DECL_LINK(StyleSelectHdl, const weld::TreeIter&, bool);
     DECL_LINK(PBClickHdl, weld::Button&, void);
 
     ScopedVclPtr<VirtualDevice> CreateImage(int nIndex);

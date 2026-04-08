@@ -618,7 +618,7 @@ IMPL_LINK_NOARG(SvxTabulatorTabPage, GetDezCharHdl_Impl, weld::Widget&, void)
     }
 }
 
-IMPL_LINK_NOARG(SvxTabulatorTabPage, SelectHdl_Impl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(SvxTabulatorTabPage, SelectHdl_Impl, const weld::TreeIter&, bool)
 {
     const int nPos = FindCurrentTab();
     if (nPos != -1)

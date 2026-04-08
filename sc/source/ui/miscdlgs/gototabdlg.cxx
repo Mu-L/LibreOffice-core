@@ -53,7 +53,7 @@ void ScGoToTabDlg::Insert(const OUString& rString, bool bSelected)
 
 OUString ScGoToTabDlg::GetSelectedEntry() const { return m_xLb->get_selected_text(); }
 
-IMPL_LINK_NOARG(ScGoToTabDlg, DblClkHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(ScGoToTabDlg, DblClkHdl, const weld::TreeIter&, bool)
 {
     m_xDialog->response(RET_OK);
     return true;

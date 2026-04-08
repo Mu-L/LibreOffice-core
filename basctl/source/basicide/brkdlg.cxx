@@ -161,7 +161,7 @@ IMPL_LINK(BreakPointDialog, FieldModifyHdl, weld::SpinButton&, rEdit, void)
         pBrk->nStopAfter = rEdit.get_value();
 }
 
-IMPL_LINK_NOARG(BreakPointDialog, TreeModifyHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(BreakPointDialog, TreeModifyHdl, const weld::TreeIter&, bool)
 {
     if (m_xDelButton->get_sensitive())
         ButtonHdl(*m_xDelButton);

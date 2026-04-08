@@ -471,7 +471,7 @@ IMPL_LINK_NOARG(DigitalSignaturesDialog, OKButtonHdl, weld::Button&, void)
     m_xDialog->response(RET_OK);
 }
 
-IMPL_LINK_NOARG(DigitalSignaturesDialog, SignatureSelectHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(DigitalSignaturesDialog, SignatureSelectHdl, const weld::TreeIter&, bool)
 {
     ImplShowSignaturesDetails();
     return true;

@@ -453,7 +453,7 @@ IMPL_LINK(ScDPFunctionDlg, ButtonClicked, weld::Button&, rButton, void)
         response(RET_CANCEL);
 }
 
-IMPL_LINK_NOARG(ScDPFunctionDlg, DblClickHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(ScDPFunctionDlg, DblClickHdl, const weld::TreeIter&, bool)
 {
     m_xDialog->response(RET_OK);
     return true;
@@ -571,7 +571,7 @@ IMPL_LINK(ScDPSubtotalDlg, RadioClickHdl, weld::Toggleable&, rBtn, void)
     mxLbFunc->set_sensitive(mxRbUser->get_active());
 }
 
-IMPL_LINK_NOARG(ScDPSubtotalDlg, DblClickHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(ScDPSubtotalDlg, DblClickHdl, const weld::TreeIter&, bool)
 {
     m_xDialog->response(RET_OK);
     return true;
@@ -958,7 +958,7 @@ OUString ScDPShowDetailDlg::GetDimensionName() const
     return mrDPObj.GetDimName(nDim, bIsDataLayout);
 }
 
-IMPL_LINK_NOARG(ScDPShowDetailDlg, DblClickHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(ScDPShowDetailDlg, DblClickHdl, const weld::TreeIter&, bool)
 {
     m_xDialog->response(RET_OK);
     return true;

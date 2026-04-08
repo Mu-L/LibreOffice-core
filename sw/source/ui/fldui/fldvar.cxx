@@ -569,7 +569,7 @@ void SwFieldVarPage::SubTypeHdl(const weld::TreeView* pBox)
     ModifyHdl(*m_xNameED);    // apply/insert/delete status update
 }
 
-IMPL_LINK(SwFieldVarPage, SubTypeInsertHdl, weld::TreeView&, rBox, bool)
+IMPL_LINK(SwFieldVarPage, SubTypeInsertHdl, const weld::TreeIter&, rIter, bool)
 {
     if (!m_bInit)
     {
@@ -585,7 +585,7 @@ IMPL_LINK(SwFieldVarPage, SubTypeInsertHdl, weld::TreeView&, rBox, bool)
             }
         }
     }
-    TreeViewInsertHdl(rBox);
+    TreeViewInsertHdl(rIter);
     return true;
 }
 

@@ -146,7 +146,7 @@ namespace dbaui
         */
         std::unique_ptr<DBTreeViewBase> createSimpleTree(const OUString& rHelpId, ElementType eType);
 
-        DECL_LINK( OnEntryDoubleClick,    weld::TreeView&, bool );
+        DECL_LINK(OnEntryDoubleClick, const weld::TreeIter&, bool);
         DECL_LINK( OnEntrySelChange,      LinkParamNone*, void );
 
         DECL_LINK( OnCopyEntry,           LinkParamNone*, void );

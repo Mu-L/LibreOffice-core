@@ -186,7 +186,7 @@ private:
     bool handleViewPortToolTipEvent(const QHelpEvent& rEvent);
 
 private Q_SLOTS:
-    void handleActivated();
+    void handleActivated(const QModelIndex& rIndex);
     void handleDataChanged(const QModelIndex& rTopLeft, const QModelIndex& rBottomRight,
                            const QVector<int>& rRoles);
     void handleSelectionChanged();

@@ -59,7 +59,7 @@ class SvBaseLinksDlg : public weld::GenericDialogController
     ScopedVclPtr<VirtualDevice> m_xVirDev;
 
     DECL_LINK(LinksSelectHdl, weld::TreeView&, void);
-    DECL_LINK(LinksDoubleClickHdl, weld::TreeView&, bool);
+    DECL_LINK(LinksDoubleClickHdl, const weld::TreeIter&, bool);
     DECL_LINK(ToggleHdl, weld::Toggleable&, void);
     DECL_LINK(UpdateNowClickHdl, weld::Button&, void);
     DECL_LINK(ChangeSourceClickHdl, weld::Button&, void);

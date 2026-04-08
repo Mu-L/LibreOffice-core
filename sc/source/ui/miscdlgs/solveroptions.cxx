@@ -307,7 +307,7 @@ IMPL_LINK( ScSolverOptionsDialog, ButtonHdl, weld::Button&, rBtn, void )
         EditOption();
 }
 
-IMPL_LINK_NOARG(ScSolverOptionsDialog, SettingsDoubleClickHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(ScSolverOptionsDialog, SettingsDoubleClickHdl, const weld::TreeIter&, bool)
 {
     EditOption();
     return true;

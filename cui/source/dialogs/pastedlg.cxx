@@ -61,7 +61,7 @@ IMPL_LINK_NOARG(SvPasteObjectDialog, SelectHdl, weld::TreeView&, void)
         m_xOKButton->set_sensitive(true);
 }
 
-IMPL_LINK_NOARG(SvPasteObjectDialog, DoubleClickHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(SvPasteObjectDialog, DoubleClickHdl, const weld::TreeIter&, bool)
 {
     m_xDialog->response(RET_OK);
     return true;

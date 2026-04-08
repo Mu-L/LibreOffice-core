@@ -162,7 +162,7 @@ IMPL_LINK_NOARG(ScCondFormatManagerDlg, EditBtnClickHdl, weld::Button&, void)
     Edit();
 }
 
-IMPL_LINK_NOARG(ScCondFormatManagerDlg, EditBtnHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(ScCondFormatManagerDlg, EditBtnHdl, const weld::TreeIter&, bool)
 {
     Edit();
     return true;

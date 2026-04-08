@@ -38,7 +38,7 @@ public:
 
     DECL_LINK(ClickHdl_Impl, weld::Button&, void );
     DECL_LINK(SelectionChangedHdl_Impl, weld::TreeView&, void);
-    DECL_LINK(DoubleClickHdl_Impl, weld::TreeView&, bool);
+    DECL_LINK(DoubleClickHdl_Impl, const weld::TreeIter&, bool);
 
     void    UpdateWindow();
 

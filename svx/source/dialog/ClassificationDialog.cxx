@@ -607,7 +607,7 @@ IMPL_LINK(ClassificationDialog, SelectClassificationHdl, weld::ComboBox&, rBox, 
     m_nCurrentSelectedCategory = nSelected;
 }
 
-IMPL_LINK_NOARG(ClassificationDialog, SelectMarkingHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(ClassificationDialog, SelectMarkingHdl, const weld::TreeIter&, bool)
 {
     sal_Int32 nSelected = m_xMarkingListBox->get_selected_index();
     if (nSelected >= 0)
@@ -618,7 +618,7 @@ IMPL_LINK_NOARG(ClassificationDialog, SelectMarkingHdl, weld::TreeView&, bool)
     return true;
 }
 
-IMPL_LINK_NOARG(ClassificationDialog, SelectIPPartNumbersHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(ClassificationDialog, SelectIPPartNumbersHdl, const weld::TreeIter&, bool)
 {
     sal_Int32 nSelected = m_xIntellectualPropertyPartNumberListBox->get_selected_index();
     if (nSelected >= 0)
@@ -640,7 +640,7 @@ IMPL_LINK(ClassificationDialog, SelectRecentlyUsedHdl, weld::ComboBox&, rBox, vo
     }
 }
 
-IMPL_LINK_NOARG(ClassificationDialog, SelectIPPartHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(ClassificationDialog, SelectIPPartHdl, const weld::TreeIter&, bool)
 {
     const sal_Int32 nSelected = m_xIntellectualPropertyPartListBox->get_selected_index();
     if (nSelected >= 0)

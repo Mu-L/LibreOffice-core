@@ -397,7 +397,7 @@ IMPL_LINK_NOARG( OAddTableDlg, AddClickHdl, weld::Button&, void )
     Add();
 }
 
-IMPL_LINK_NOARG(OAddTableDlg, TableListDoubleClickHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(OAddTableDlg, TableListDoubleClickHdl, const weld::TreeIter&, bool)
 {
     Add();
     return true;

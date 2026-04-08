@@ -499,7 +499,7 @@ private:
     void SetMatchingEntries(); // sets the visible entries based on aFuncBuffer variable
     TextView* GetParentEditView();
 
-    DECL_LINK(ImplDoubleClickHdl, weld::TreeView&, bool);
+    DECL_LINK(ImplDoubleClickHdl, const weld::TreeIter&, bool);
     DECL_LINK(ImplSelectHdl, weld::TreeView&, void);
     DECL_LINK(KeyInputHdl, const KeyEvent&, bool);
 

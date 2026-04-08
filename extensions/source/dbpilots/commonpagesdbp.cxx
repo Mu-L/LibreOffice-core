@@ -206,7 +206,7 @@ IMPL_LINK_NOARG(OTableSelectionPage, OnSearchClicked, weld::Button&, void)
     }
 }
 
-IMPL_LINK_NOARG(OTableSelectionPage, OnListboxDoubleClicked, weld::TreeView&, bool)
+IMPL_LINK_NOARG(OTableSelectionPage, OnListboxDoubleClicked, const weld::TreeIter&, bool)
 {
     if (m_xTable->count_selected_rows())
         getDialog()->travelNext();

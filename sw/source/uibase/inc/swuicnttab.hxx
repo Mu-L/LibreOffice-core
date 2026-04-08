@@ -423,7 +423,7 @@ class SwTOXStylesTabPage final : public SfxTabPage
     DECL_LINK(EditStyleHdl, weld::Button&, void);
     DECL_LINK(StdHdl, weld::Button&, void);
     DECL_LINK(EnableSelectHdl, weld::TreeView&, void);
-    DECL_LINK(DoubleClickHdl, weld::TreeView&, bool);
+    DECL_LINK(DoubleClickHdl, const weld::TreeIter&, bool);
     DECL_LINK(AssignHdl, weld::Button&, void);
     void Modify();
 

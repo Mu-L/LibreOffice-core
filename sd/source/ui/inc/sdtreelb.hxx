@@ -138,7 +138,7 @@ private:
     DECL_LINK(RequestingChildrenHdl, const weld::TreeIter&, bool);
     DECL_LINK(SelectHdl, weld::TreeView&, void);
     DECL_LINK(AsyncSelectHdl, void*, void);
-    DECL_LINK(RowActivatedHdl, weld::TreeView&, bool);
+    DECL_LINK(RowActivatedHdl, const weld::TreeIter&, bool);
     DECL_LINK(AsyncRowActivatedHdl, void*, void);
     DECL_LINK(DragBeginHdl, bool&, bool);
     DECL_LINK(KeyInputHdl, const KeyEvent&, bool);

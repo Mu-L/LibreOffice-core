@@ -627,7 +627,7 @@ IMPL_LINK_NOARG(ScFunctionWin, SetSimilarityToggleHdl, weld::Toggleable&, void)
     SetDescription();
 }
 
-IMPL_LINK_NOARG( ScFunctionWin, SetRowActivatedHdl, weld::TreeView&, bool )
+IMPL_LINK_NOARG(ScFunctionWin, SetRowActivatedHdl, const weld::TreeIter&, bool)
 {
     DoEnter(true);      // saves the input
     return true;

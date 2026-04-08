@@ -135,7 +135,7 @@ private:
 
     DECL_LINK(SelectHdl, weld::TreeView&, void);
     DECL_LINK(CommandHdl, const CommandEvent&, bool);
-    DECL_LINK(DoubleClickHdl, weld::TreeView&, bool);
+    DECL_LINK(DoubleClickHdl, const weld::TreeIter&, bool);
     DECL_LINK(DragBeginHdl, bool&, bool);
     DECL_STATIC_LINK(CustomAnimationList, CustomRenderHdl, weld::TreeView::render_args, void);
     DECL_STATIC_LINK(CustomAnimationList, CustomGetSizeHdl, weld::TreeView::get_size_args, Size);

@@ -59,7 +59,7 @@ class SwFieldFuncPage : public SwFieldPage
 
     DECL_LINK( TypeHdl, weld::TreeView&, void );
     DECL_LINK( SelectHdl, weld::TreeView&, void );
-    DECL_LINK( InsertMacroHdl, weld::TreeView&, bool );
+    DECL_LINK(InsertMacroHdl, const weld::TreeIter&, bool );
     DECL_LINK( ModifyHdl, weld::Entry&, void );
     DECL_LINK( ListModifyReturnActionHdl, weld::Entry&, bool );
     DECL_LINK( ListModifyButtonHdl, weld::Button&, void );

@@ -60,7 +60,7 @@ public:
     {
         m_xControl->connect_selection_changed(rLink);
     }
-    void connect_row_activated(const Link<weld::TreeView&, bool>& rLink)
+    void connect_row_activated(const Link<const weld::TreeIter&, bool>& rLink)
     {
         m_xControl->connect_row_activated(rLink);
     }
@@ -116,7 +116,7 @@ class SwInsertBookmarkDlg final : public SfxDialogController
     DECL_LINK(RenameHdl, weld::Button&, void);
     DECL_LINK(GotoHdl, weld::Button&, void);
     DECL_LINK(SelectionChangedHdl, weld::TreeView&, void);
-    DECL_LINK(DoubleClickHdl, weld::TreeView&, bool);
+    DECL_LINK(DoubleClickHdl, const weld::TreeIter&, bool);
     DECL_LINK(HeaderBarClick, int, void);
     DECL_LINK(ChangeHideHdl, weld::Toggleable&, void);
     DECL_LINK(EditingHdl, weld::TreeIter const&, bool);

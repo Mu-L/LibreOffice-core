@@ -131,7 +131,7 @@ private:
     DECL_LINK(ActivateHdl_Impl, weld::Entry&, bool);
     DECL_LINK(AssignHdl_Impl, weld::Button&, void);
     DECL_LINK(SelectHdl_Impl, weld::TreeView&, void);
-    DECL_LINK(DblClickHdl_Impl, weld::TreeView&, bool);
+    DECL_LINK(DblClickHdl_Impl, const weld::TreeIter&, bool);
     DECL_LINK(RemoveHdl_Impl, weld::Button&, void);
     DECL_LINK(EditHdl_Impl, weld::Button&, void);
 

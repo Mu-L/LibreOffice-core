@@ -223,7 +223,7 @@ void SvBaseLinksDlg::LinksSelectHdl(weld::TreeView* pSvTabListBox)
     }
 }
 
-IMPL_LINK_NOARG( SvBaseLinksDlg, LinksDoubleClickHdl, weld::TreeView&, bool )
+IMPL_LINK_NOARG(SvBaseLinksDlg, LinksDoubleClickHdl, const weld::TreeIter&, bool)
 {
     ChangeSourceClickHdl(*m_xPbChangeSource);
     return true;

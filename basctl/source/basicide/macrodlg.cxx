@@ -456,7 +456,7 @@ void MacroChooser::CheckButtons()
     }
 }
 
-IMPL_LINK_NOARG(MacroChooser, MacroDoubleClickHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(MacroChooser, MacroDoubleClickHdl, const weld::TreeIter&, bool)
 {
     SbMethod* pMethod = GetMacro();
     SbModule* pModule = pMethod ? pMethod->GetModule() : nullptr;

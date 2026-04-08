@@ -2665,7 +2665,7 @@ void WatchWindow::UpdateWatches(bool bBasicStopped)
     setBasicWatchMode( false );
 }
 
-IMPL_LINK_NOARG(CodeCompleteWindow, ImplDoubleClickHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(CodeCompleteWindow, ImplDoubleClickHdl, const weld::TreeIter&, bool)
 {
     InsertSelectedEntry();
     return true;

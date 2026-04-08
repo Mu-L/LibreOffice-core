@@ -41,7 +41,7 @@ private:
     DECL_LINK(NewHdl, weld::Button&, void);
     DECL_LINK(EditHdl, weld::Button&, void);
     DECL_LINK(DeleteHdl, weld::Button&, void);
-    DECL_LINK(PathBoxDoubleClickHdl, weld::TreeView&, bool);
+    DECL_LINK(PathBoxDoubleClickHdl, const weld::TreeIter&, bool);
 
     DECL_LINK(PathSelect_Impl, weld::TreeView&, void);
 

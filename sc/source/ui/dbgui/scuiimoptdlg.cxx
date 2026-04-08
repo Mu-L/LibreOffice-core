@@ -330,7 +330,7 @@ IMPL_LINK_NOARG(ScImportOptionsDlg, FixedWidthHdl, weld::Toggleable&, void)
     m_xCbQuoteAll->set_sensitive( bEnable );
 }
 
-IMPL_LINK_NOARG(ScImportOptionsDlg, DoubleClickHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(ScImportOptionsDlg, DoubleClickHdl, const weld::TreeIter&, bool)
 {
     m_xDialog->response(RET_OK);
     return true;

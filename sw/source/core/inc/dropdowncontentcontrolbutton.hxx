@@ -25,7 +25,7 @@ class SwDropDownContentControlButton final : public SwContentControlButton
 private:
     std::unique_ptr<weld::TreeView> m_xTreeView;
 
-    DECL_LINK(ListBoxHandler, weld::TreeView&, bool);
+    DECL_LINK(ListBoxHandler, const weld::TreeIter&, bool);
 
     void InitDropdown();
 

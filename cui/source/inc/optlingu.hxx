@@ -124,7 +124,7 @@ private:
 
     DECL_LINK( SelectHdl_Impl, weld::TreeView&, void );
     DECL_LINK( ClickHdl_Impl, weld::Button&, void );
-    DECL_LINK( BoxDoubleClickHdl_Impl, weld::TreeView&, bool );
+    DECL_LINK(BoxDoubleClickHdl_Impl, const weld::TreeIter&, bool);
     DECL_LINK( ModulesBoxCheckButtonHdl_Impl, const weld::TreeView::iter_col&, void );
     DECL_LINK( DicsBoxCheckButtonHdl_Impl, const weld::TreeView::iter_col&, void );
     DECL_LINK( PostDblClickHdl_Impl, void *, void);

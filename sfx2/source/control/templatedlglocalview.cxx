@@ -338,7 +338,7 @@ void TemplateDlgLocalView::updateSelection()
         mpSelectedItem = pViewItem;
 }
 
-IMPL_LINK_NOARG(TemplateDlgLocalView, RowActivatedHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(TemplateDlgLocalView, RowActivatedHdl, const weld::TreeIter&, bool)
 {
     maOpenTemplateHdl.Call(mpSelectedItem->getPath());
     return true;

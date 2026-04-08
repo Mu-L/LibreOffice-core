@@ -838,9 +838,10 @@ void OAppDetailPageHelper::elementRemoved( ElementType _eType,const OUString& _r
         showPreview(nullptr);
 }
 
-IMPL_LINK(OAppDetailPageHelper, OnEntryDoubleClick, weld::TreeView&, rTreeView, bool)
+IMPL_LINK(OAppDetailPageHelper, OnEntryDoubleClick, const weld::TreeIter&, rIter, bool)
 {
-    return getBorderWin().getView()->getAppController().onEntryDoubleClick(rTreeView);
+    return getBorderWin().getView()->getAppController().onEntryDoubleClick(
+        dynamic_cast<const weld::TreeView&>(rIter.getItemView()));
 }
 
 IMPL_LINK_NOARG(OAppDetailPageHelper, OnEntrySelChange, LinkParamNone*, void)

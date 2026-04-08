@@ -64,7 +64,7 @@ void OTasksWindow::updateHelpText()
     setHelpText(pHelpTextId);
 }
 
-IMPL_LINK_NOARG(OTasksWindow, onSelected, weld::TreeView&, bool)
+IMPL_LINK_NOARG(OTasksWindow, onSelected, const weld::TreeIter&, bool)
 {
     m_nCursorIndex = m_xTreeView->get_cursor_index();
     if (m_nCursorIndex != -1)

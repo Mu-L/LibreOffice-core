@@ -196,7 +196,7 @@ private:
     DECL_LINK(QueryTooltipHdl, const weld::TreeIter&, OUString);
     DECL_LINK(CustomRenderHdl, weld::TreeView::render_args, void);
     DECL_LINK(FmtSelectHdl, weld::TreeView&, void);
-    DECL_LINK(TreeListApplyHdl, weld::TreeView&, bool);
+    DECL_LINK(TreeListApplyHdl, const weld::TreeIter&, bool);
     DECL_LINK(MousePressHdl, const MouseEvent&, bool);
     DECL_STATIC_LINK(StyleList, CustomGetSizeHdl, weld::TreeView::get_size_args, Size);
     DECL_LINK(PopupFlatMenuHdl, const CommandEvent&, bool);

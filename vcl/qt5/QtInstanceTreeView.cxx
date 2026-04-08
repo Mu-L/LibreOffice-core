@@ -976,10 +976,10 @@ bool QtInstanceTreeView::handleViewPortToolTipEvent(const QHelpEvent& rHelpEvent
     return true;
 }
 
-void QtInstanceTreeView::handleActivated()
+void QtInstanceTreeView::handleActivated(const QModelIndex& rIndex)
 {
     SolarMutexGuard g;
-    signal_row_activated();
+    signal_row_activated(treeIter(rIndex));
 }
 
 void QtInstanceTreeView::handleDataChanged(const QModelIndex& rTopLeft,

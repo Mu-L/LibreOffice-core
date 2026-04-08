@@ -185,7 +185,7 @@ private:
 
 protected:
     DECL_LINK(RequestingChildrenHdl, const weld::TreeIter&, bool);
-    DECL_LINK(OpenCurrentHdl, weld::TreeView&, bool);
+    DECL_LINK(OpenCurrentHdl, const weld::TreeIter&, bool);
     // Creates popup menu to select between alphabetic or unsorted view in Macro List Tree
     DECL_LINK(ContextMenuHdl, const CommandEvent&, bool);
     void                    ImpCreateLibEntries(const weld::TreeIter& rShellRootEntry, const ScriptDocument& rDocument, LibraryLocation eLocation);

@@ -68,7 +68,7 @@ namespace abp
         m_xTableList->select_text(rSettings.sSelectedTable);
     }
 
-    IMPL_LINK_NOARG( TableSelectionPage, OnTableDoubleClicked, weld::TreeView&, bool )
+    IMPL_LINK_NOARG(TableSelectionPage, OnTableDoubleClicked, const weld::TreeIter&, bool)
     {
         if (m_xTableList->count_selected_rows() == 1)
             getDialog()->travelNext();

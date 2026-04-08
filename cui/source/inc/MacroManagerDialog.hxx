@@ -80,7 +80,7 @@ public:
     {
         m_xTreeView->connect_command(rLink);
     }
-    void connect_row_activated(const Link<weld::TreeView&, bool>& rLink)
+    void connect_row_activated(const Link<const weld::TreeIter&, bool>& rLink)
     {
         m_xTreeView->connect_row_activated(rLink);
     }
@@ -202,7 +202,7 @@ class MacroManagerDialog : public weld::GenericDialogController, public SfxListe
 
     DECL_LINK(ClickHdl, weld::Button&, void);
     DECL_LINK(SelectHdl, weld::TreeView&, void);
-    DECL_LINK(FunctionDoubleClickHdl, weld::TreeView&, bool);
+    DECL_LINK(FunctionDoubleClickHdl, const weld::TreeIter&, bool);
     DECL_LINK(ContextMenuHdl, const CommandEvent&, bool);
     DECL_LINK(CheckPasswordHdl, SvxPasswordDialog*, bool);
 

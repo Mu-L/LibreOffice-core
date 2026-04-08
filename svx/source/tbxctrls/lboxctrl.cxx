@@ -56,7 +56,7 @@ class SvxPopupWindowListBox final : public WeldToolbarPopup
     void Activate();
 
     DECL_LINK(KeyInputHdl, const KeyEvent&, bool);
-    DECL_LINK(ActivateHdl, weld::TreeView&, bool);
+    DECL_LINK(ActivateHdl, const weld::TreeIter&, bool);
     DECL_LINK(MouseMoveHdl, const MouseEvent&, bool);
     DECL_LINK(MousePressHdl, const MouseEvent&, bool);
     DECL_LINK(MouseReleaseHdl, const MouseEvent&, bool);
@@ -204,7 +204,7 @@ IMPL_LINK(SvxPopupWindowListBox, KeyInputHdl, const KeyEvent&, rKEvt, bool)
     return false;
 }
 
-IMPL_LINK_NOARG(SvxPopupWindowListBox, ActivateHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(SvxPopupWindowListBox, ActivateHdl, const weld::TreeIter&, bool)
 {
     Activate();
     return true;

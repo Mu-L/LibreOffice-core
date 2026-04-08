@@ -3737,7 +3737,7 @@ IMPL_LINK_NOARG(SwTOXStylesTabPage, StdHdl, weld::Button&, void)
     }
 }
 
-IMPL_LINK_NOARG(SwTOXStylesTabPage, DoubleClickHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(SwTOXStylesTabPage, DoubleClickHdl, const weld::TreeIter&, bool)
 {
     const OUString aTmpName(m_xParaLayLB->get_selected_text());
     SwWrtShell& rSh = static_cast<SwMultiTOXTabDialog*>(GetDialogController())->GetWrtShell();

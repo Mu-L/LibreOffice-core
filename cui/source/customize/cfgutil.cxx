@@ -1217,7 +1217,7 @@ IMPL_LINK(SvxScriptSelectorDialog, SelectHdl, weld::TreeView&, rCtrl, void)
     UpdateUI();
 }
 
-IMPL_LINK_NOARG(SvxScriptSelectorDialog, FunctionDoubleClickHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(SvxScriptSelectorDialog, FunctionDoubleClickHdl, const weld::TreeIter&, bool)
 {
     if (m_xOKButton->get_sensitive())
         ClickHdl(*m_xOKButton);

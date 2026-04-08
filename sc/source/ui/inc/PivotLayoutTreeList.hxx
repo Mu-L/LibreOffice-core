@@ -24,7 +24,7 @@ private:
     std::shared_ptr<weld::MessageDialog> m_xInfoBox;
 
     DECL_LINK(KeyInputHdl, const KeyEvent&, bool);
-    DECL_LINK(DoubleClickHdl, weld::TreeView&, bool);
+    DECL_LINK(DoubleClickHdl, const weld::TreeIter&, bool);
 
 public:
     ScPivotLayoutTreeList(std::unique_ptr<weld::TreeView> xControl);

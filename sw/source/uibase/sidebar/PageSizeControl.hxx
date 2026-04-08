@@ -50,7 +50,7 @@ private:
 
     static void ExecuteSizeChange(const Paper ePaper);
 
-    DECL_LINK(ImplSizeHdl, weld::TreeView&, bool);
+    DECL_LINK(ImplSizeHdl, const weld::TreeIter&, bool);
     DECL_LINK(MoreButtonClickHdl_Impl, weld::Button&, void);
 };
 

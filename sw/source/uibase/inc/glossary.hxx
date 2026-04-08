@@ -84,7 +84,7 @@ class SwGlossaryDlg final : public SfxDialogController
     void ShowPreview();
 
     DECL_LINK( NameModify, weld::Entry&, void );
-    DECL_LINK( NameDoubleClick, weld::TreeView&, bool );
+    DECL_LINK(NameDoubleClick, const weld::TreeIter&, bool);
     DECL_LINK( GrpSelect, weld::TreeView&, void );
     DECL_LINK( MenuHdl, const OUString&, void );
     DECL_LINK( EnableHdl, weld::Toggleable&, void );

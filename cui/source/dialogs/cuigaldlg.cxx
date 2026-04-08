@@ -964,7 +964,7 @@ IMPL_LINK_NOARG(TPGalleryThemeProperties, SelectFoundHdl, weld::TreeView&, void)
         aPreviewTimer.Start();
 }
 
-IMPL_LINK_NOARG(TPGalleryThemeProperties, DClickFoundHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(TPGalleryThemeProperties, DClickFoundHdl, const weld::TreeIter&, bool)
 {
     if( bInputAllowed )
     {

@@ -1847,7 +1847,7 @@ IMPL_LINK(StyleList, FmtSelectHdl, weld::TreeView&, rListBox, void)
     m_pParentDialog->SelectStyle(rListBox.get_text(*xHdlEntry), true, *this);
 }
 
-IMPL_LINK_NOARG(StyleList, TreeListApplyHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(StyleList, TreeListApplyHdl, const weld::TreeIter&, bool)
 {
     // only if that region is allowed
     if (m_nActFamily != 0xffff && nullptr != m_pFamilyState[m_nActFamily - 1]

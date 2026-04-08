@@ -65,7 +65,7 @@ void DropDownFormFieldButton::InitDropdown()
     m_xTreeView->set_size_request(lbSize.Width(), lbSize.Height());
 }
 
-IMPL_LINK_NOARG(DropDownFormFieldButton, MyListBoxHandler, weld::TreeView&, bool)
+IMPL_LINK_NOARG(DropDownFormFieldButton, MyListBoxHandler, const weld::TreeIter&, bool)
 {
     OUString sSelection = m_xTreeView->get_selected_text();
     if (sSelection == SwResId(STR_DROP_DOWN_EMPTY_LIST))

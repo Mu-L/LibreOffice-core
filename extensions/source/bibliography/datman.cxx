@@ -415,7 +415,7 @@ class DBChangeDialog_Impl : public weld::GenericDialogController
 
     std::unique_ptr<weld::TreeView> m_xSelectionLB;
 
-    DECL_LINK(DoubleClickHdl, weld::TreeView&, bool);
+    DECL_LINK(DoubleClickHdl, const weld::TreeIter&, bool);
 public:
     DBChangeDialog_Impl(weld::Window* pParent, const BibDataManager* pMan);
 
@@ -445,7 +445,7 @@ DBChangeDialog_Impl::DBChangeDialog_Impl(weld::Window* pParent, const BibDataMan
     }
 }
 
-IMPL_LINK_NOARG(DBChangeDialog_Impl, DoubleClickHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(DBChangeDialog_Impl, DoubleClickHdl, const weld::TreeIter&, bool)
 {
     m_xDialog->response(RET_OK);
     return true;

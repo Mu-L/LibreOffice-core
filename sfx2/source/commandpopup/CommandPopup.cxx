@@ -233,7 +233,7 @@ void CommandListBox::DispatchSelectedCommand()
     dispatchCommandAndClose(aCommandURL);
 }
 
-IMPL_LINK_NOARG(CommandListBox, RowActivated, weld::TreeView&, bool)
+IMPL_LINK_NOARG(CommandListBox, RowActivated, const weld::TreeIter&, bool)
 {
     DispatchSelectedCommand();
     return true;

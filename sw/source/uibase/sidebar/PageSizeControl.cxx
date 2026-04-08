@@ -202,7 +202,7 @@ void PageSizeControl::ExecuteSizeChange( const Paper ePaper )
         SfxCallMode::RECORD, { &aPageSizeItem });
 }
 
-IMPL_LINK_NOARG(PageSizeControl, ImplSizeHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(PageSizeControl, ImplSizeHdl, const weld::TreeIter&, bool)
 {
     const int nIndex = mxPageSizeTreeView->get_selected_index();
     if (nIndex < 0)

@@ -48,7 +48,7 @@ OUString ScSelEntryDlg::GetSelectedEntry() const
     return m_xLb->get_selected_text();
 }
 
-IMPL_LINK_NOARG(ScSelEntryDlg, DblClkHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(ScSelEntryDlg, DblClkHdl, const weld::TreeIter&, bool)
 {
     m_xDialog->response(RET_OK);
     return true;

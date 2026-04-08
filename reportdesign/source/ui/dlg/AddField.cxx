@@ -314,7 +314,7 @@ IMPL_LINK_NOARG( OAddFieldWindow, OnSelectHdl, weld::TreeView&, void )
     m_xActions->set_item_sensitive(u"insert"_ustr, m_xListBox->get_selected_index() != -1);
 }
 
-IMPL_LINK_NOARG( OAddFieldWindow, OnDoubleClickHdl, weld::TreeView&, bool )
+IMPL_LINK_NOARG(OAddFieldWindow, OnDoubleClickHdl, const weld::TreeIter&, bool)
 {
     m_aCreateLink.Call(*this);
     return true;

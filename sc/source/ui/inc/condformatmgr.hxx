@@ -63,7 +63,7 @@ private:
     DECL_LINK(RemoveBtnHdl, weld::Button&, void);
     DECL_LINK(EditBtnClickHdl, weld::Button&, void);
     DECL_LINK(AddBtnHdl, weld::Button&, void);
-    DECL_LINK(EditBtnHdl, weld::TreeView&, bool);
+    DECL_LINK(EditBtnHdl, const weld::TreeIter&, bool);
 };
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

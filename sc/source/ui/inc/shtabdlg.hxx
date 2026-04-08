@@ -29,7 +29,7 @@ private:
     std::unique_ptr<weld::Frame> m_xFrame;
     std::unique_ptr<weld::TreeView> m_xLb;
 
-    DECL_LINK(DblClkHdl, weld::TreeView&, bool);
+    DECL_LINK(DblClkHdl, const weld::TreeIter&, bool);
 
 public:
     ScShowTabDlg(weld::Window* pParent);

@@ -78,7 +78,7 @@ ScPivotLayoutTreeListData::~ScPivotLayoutTreeListData()
     }
 }
 
-IMPL_LINK_NOARG(ScPivotLayoutTreeListData, DoubleClickHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(ScPivotLayoutTreeListData, DoubleClickHdl, const weld::TreeIter&, bool)
 {
     int nEntry = mxControl->get_cursor_index();
     if (nEntry == -1)

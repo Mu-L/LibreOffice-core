@@ -72,7 +72,7 @@ private:
 
     Link<LinkParamNone*, void> aDoubleClickHdl;
 
-    DECL_LINK(DoubleClickHdl, weld::TreeView&, bool);
+    DECL_LINK(DoubleClickHdl, const weld::TreeIter&, bool);
     DECL_LINK(ExpandingHdl, const weld::TreeIter&, bool);
     DECL_LINK(CollapsingHdl, const weld::TreeIter&, bool);
 
@@ -119,7 +119,7 @@ private:
     DECL_LINK(TreeChangeHdl, weld::TreeView&, void);
     DECL_LINK(EntryChangeHdl, weld::Entry&, void);
     DECL_LINK(ActivateHdl, weld::Entry&, bool);
-    DECL_LINK(DoubleClickHdl, weld::TreeView&, bool);
+    DECL_LINK(DoubleClickHdl, const weld::TreeIter&, bool);
     DECL_LINK(KeyInputHdl, const KeyEvent&, bool);
     DECL_LINK(CustomGetSizeHdl, weld::TreeView::get_size_args, Size);
     DECL_LINK(CustomRenderHdl, weld::TreeView::render_args, void);
@@ -173,7 +173,7 @@ private:
     DECL_LINK(ClickHdl, weld::Button&, void);
     DECL_LINK(OpenHdl, weld::Button&, void);
     DECL_LINK(ModifyHdl, weld::ComboBox&, void);
-    DECL_LINK(DoubleClickHdl, weld::TreeView&, bool);
+    DECL_LINK(DoubleClickHdl, const weld::TreeIter&, bool);
     DECL_LINK(ActivateHdl, weld::ComboBox&, bool);
 
 public:
@@ -200,7 +200,7 @@ private:
     Link<LinkParamNone*, void> aDoubleClickHdl;
 
     DECL_LINK(OpenHdl, weld::Button&, void);
-    DECL_LINK(DoubleClickHdl, weld::TreeView&, bool);
+    DECL_LINK(DoubleClickHdl, const weld::TreeIter&, bool);
     DECL_LINK(CommandHdl, const CommandEvent&, bool);
     DECL_LINK(KeyInputHdl, const KeyEvent&, bool);
 

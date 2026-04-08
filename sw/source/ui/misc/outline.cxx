@@ -66,7 +66,7 @@ class SwNumNamesDlg : public weld::GenericDialogController
 
     DECL_LINK( ModifyHdl, weld::Entry&, void );
     DECL_LINK( SelectHdl, weld::TreeView&, void );
-    DECL_LINK( DoubleClickHdl, weld::TreeView&, bool );
+    DECL_LINK(DoubleClickHdl, const weld::TreeIter&, bool);
 
 public:
     explicit SwNumNamesDlg(weld::Window *pParent);
@@ -112,7 +112,7 @@ IMPL_LINK( SwNumNamesDlg, ModifyHdl, weld::Entry&, rBox, void )
 }
 
 // DoubleClickHdl
-IMPL_LINK_NOARG(SwNumNamesDlg, DoubleClickHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(SwNumNamesDlg, DoubleClickHdl, const weld::TreeIter&, bool)
 {
     m_xDialog->response(RET_OK);
     return true;

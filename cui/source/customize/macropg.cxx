@@ -392,7 +392,7 @@ IMPL_LINK( SvxMacroTabPage_, AssignDeleteHdl_Impl, weld::Button&, rBtn, void )
     GenericHandler_Impl(&rBtn);
 }
 
-IMPL_LINK_NOARG( SvxMacroTabPage_, DoubleClickHdl_Impl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(SvxMacroTabPage_, DoubleClickHdl_Impl, const weld::TreeIter&, bool)
 {
     GenericHandler_Impl(nullptr);
     return true;

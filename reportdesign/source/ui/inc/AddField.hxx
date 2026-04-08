@@ -65,7 +65,7 @@ class  OAddFieldWindow : public weld::GenericDialogController
 
     std::vector<std::unique_ptr<ColumnInfo>> m_aListBoxData;
 
-    DECL_LINK( OnDoubleClickHdl, weld::TreeView&, bool );
+    DECL_LINK(OnDoubleClickHdl, const weld::TreeIter&, bool);
     DECL_LINK( OnSelectHdl, weld::TreeView&, void );
     DECL_LINK( DragBeginHdl, bool&, bool );
     DECL_LINK( OnSortAction, const OUString&, void );

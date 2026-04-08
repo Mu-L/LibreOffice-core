@@ -49,7 +49,7 @@ private:
     virtual bool commitPage(::vcl::WizardTypes::CommitPageReason _eReason) override;
 
     DECL_LINK(OnListboxSelection, weld::TreeView&, void);
-    DECL_LINK(OnListboxDoubleClicked, weld::TreeView&, bool);
+    DECL_LINK(OnListboxDoubleClicked, const weld::TreeIter&, bool);
     DECL_LINK(OnSearchClicked, weld::Button&, void);
 
     void implFillTables(const css::uno::Reference<css::sdbc::XConnection>& _rxConn

@@ -660,7 +660,7 @@ IMPL_LINK(GalleryBrowser, KeyInputHdl2, const KeyEvent&, rKEvt, bool)
     return KeyInput(rKEvt);
 }
 
-IMPL_LINK_NOARG(GalleryBrowser, RowActivatedHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(GalleryBrowser, RowActivatedHdl, const weld::TreeIter&, bool)
 {
     TogglePreview();
     return true;

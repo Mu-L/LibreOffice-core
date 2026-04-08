@@ -303,9 +303,9 @@ void SwFieldPage::RestorePos(weld::TreeView& rLst1)
 }
 
 // Insert new fields
-IMPL_LINK( SwFieldPage, TreeViewInsertHdl, weld::TreeView&, rBox, bool )
+IMPL_LINK(SwFieldPage, TreeViewInsertHdl, const weld::TreeIter&, rIter, bool)
 {
-    InsertHdl(&rBox);
+    InsertHdl(const_cast<weld::ItemView*>(&rIter.getItemView()));
     return true;
 }
 
@@ -349,7 +349,7 @@ void SwFieldPage::EnableInsert(bool bEnable, bool bIsCurrentPage)
     m_bInsert = bEnable;
 }
 
-IMPL_LINK_NOARG(SwFieldPage, NumFormatHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(SwFieldPage, NumFormatHdl, const weld::TreeIter&, bool)
 {
     InsertHdl(nullptr);
     return true;

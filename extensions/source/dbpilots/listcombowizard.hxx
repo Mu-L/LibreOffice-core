@@ -114,7 +114,7 @@ private:
     virtual bool commitPage(::vcl::WizardTypes::CommitPageReason _eReason) override;
     virtual bool canAdvance() const override;
 
-    DECL_LINK(OnTableDoubleClicked, weld::TreeView&, bool);
+    DECL_LINK(OnTableDoubleClicked, const weld::TreeIter&, bool);
     DECL_LINK(OnTableSelected, weld::TreeView&, void);
 };
 
@@ -130,7 +130,7 @@ public:
 
 private:
     DECL_LINK(OnFieldSelected, weld::TreeView&, void);
-    DECL_LINK(OnTableDoubleClicked, weld::TreeView&, bool);
+    DECL_LINK(OnTableDoubleClicked, const weld::TreeIter&, bool);
 
     // OWizardPage overridables
     virtual void initializePage() override;

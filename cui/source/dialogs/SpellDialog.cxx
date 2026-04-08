@@ -561,7 +561,7 @@ void SpellDialog::processDictionaryEvent(const DictionaryEvent& rDicEvt)
     }
 }
 
-IMPL_LINK_NOARG(SpellDialog, DoubleClickChangeHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(SpellDialog, DoubleClickChangeHdl, const weld::TreeIter&, bool)
 {
     ChangeHdl(*m_xChangePB);
     return true;

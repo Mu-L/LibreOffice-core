@@ -1243,7 +1243,7 @@ IMPL_LINK(ObjectBrowser, OnRightNodeExpand, const weld::TreeIter&, rParentIter, 
     return true;
 }
 
-IMPL_LINK_NOARG(ObjectBrowser, OnRightTreeDoubleClick, weld::TreeView&, bool)
+IMPL_LINK_NOARG(ObjectBrowser, OnRightTreeDoubleClick, const weld::TreeIter&, bool)
 {
     SAL_INFO("basctl", "OnRightTreeDoubleClick: Handler entered.");
 

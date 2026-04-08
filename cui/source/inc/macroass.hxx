@@ -54,8 +54,8 @@ class SfxMacroTabPage final : public SfxTabPage
     DECL_LINK(SelectGroup_Impl, weld::TreeView&, void);
     DECL_LINK(SelectMacro_Impl, weld::TreeView&, void);
 
-    DECL_LINK(MacroTreeViewActivatedHdl, weld::TreeView&, bool);
-    DECL_LINK(AssignmentsTreeViewActivatedHdl, weld::TreeView&, bool);
+    DECL_LINK(MacroTreeViewActivatedHdl, const weld::TreeIter&, bool);
+    DECL_LINK(AssignmentsTreeViewActivatedHdl, const weld::TreeIter&, bool);
     DECL_LINK(AssignDeleteClickHdl_Impl, weld::Button&, void);
     void AssignDeleteHdl(const weld::Widget*);
     DECL_LINK( TimeOut_Impl, Timer*, void );

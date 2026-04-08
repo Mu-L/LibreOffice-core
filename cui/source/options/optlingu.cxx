@@ -1295,16 +1295,16 @@ void SvxLinguTabPage::Reset( const SfxItemSet* rSet )
     }
 }
 
-IMPL_LINK(SvxLinguTabPage, BoxDoubleClickHdl_Impl, weld::TreeView&, rBox, bool)
+IMPL_LINK(SvxLinguTabPage, BoxDoubleClickHdl_Impl, const weld::TreeIter&, rIter, bool)
 {
-    if (&rBox == m_xLinguModulesCLB.get() && !m_nDlbClickEventId)
+    if (&rIter.getItemView() == m_xLinguModulesCLB.get() && !m_nDlbClickEventId)
     {
         //! in order to avoid a bug causing a GPF when double clicking
         //! on a module entry and exiting the "Edit Modules" dialog
         //! after that.
         m_nDlbClickEventId = Application::PostUserEvent(LINK(this, SvxLinguTabPage, PostDblClickHdl_Impl));
     }
-    else if (&rBox == m_xLinguOptionsCLB.get())
+    else if (&rIter.getItemView() == m_xLinguOptionsCLB.get())
     {
         ClickHdl_Impl(*m_xLinguOptionsEditPB);
     }

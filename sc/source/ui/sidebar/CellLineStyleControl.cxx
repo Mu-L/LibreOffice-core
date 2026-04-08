@@ -130,7 +130,7 @@ void CellLineStylePopup::GrabFocus()
     mxCellLineStyleTreeView->grab_focus();
 }
 
-IMPL_LINK_NOARG(CellLineStylePopup, StyleSelectHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(CellLineStylePopup, StyleSelectHdl, const weld::TreeIter&, bool)
 {
     const int nIndex = mxCellLineStyleTreeView->get_selected_index();
     if (nIndex < 0)

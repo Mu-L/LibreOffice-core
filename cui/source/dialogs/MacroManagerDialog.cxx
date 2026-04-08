@@ -858,7 +858,7 @@ IMPL_LINK(MacroManagerDialog, SelectHdl, weld::TreeView&, rTreeView, void)
 
 // IMPL_LINK_NOARG(SvxScriptSelectorDialog, FunctionDoubleClickHdl, weld::TreeView&, bool)
 // cui/source/customize/cfgutil.cxx
-IMPL_LINK_NOARG(MacroManagerDialog, FunctionDoubleClickHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(MacroManagerDialog, FunctionDoubleClickHdl, const weld::TreeIter&, bool)
 {
     if (m_xRunButton->get_sensitive())
         ClickHdl(*m_xRunButton);

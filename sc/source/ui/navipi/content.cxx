@@ -419,7 +419,7 @@ void ScContentTree::ActivateSelectedEntry()
 
 }
 
-IMPL_LINK_NOARG(ScContentTree, ContentDoubleClickHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(ScContentTree, ContentDoubleClickHdl, const weld::TreeIter&, bool)
 {
     ActivateSelectedEntry();
     return false;

@@ -13966,9 +13966,11 @@ private:
         pThis->launch_signal_selection_changed();
     }
 
-    void handle_row_activated()
+    void handle_row_activated(GtkTreePath* pTreePath)
     {
-        if (signal_row_activated())
+        GtkTreeIter aIter;
+        gtk_tree_model_get_iter(m_pTreeModel, &aIter, pTreePath);
+        if (signal_row_activated(GtkInstanceTreeIter(*this, m_pTreeModel, aIter)))
             return;
         std::unique_ptr<weld::TreeIter> pIter = get_cursor();
         if (!pIter)
@@ -13979,11 +13981,11 @@ private:
             get_row_expanded(*pIter) ? collapse_row(*pIter) : expand_row(*pIter);
     }
 
-    static void signalRowActivated(GtkTreeView*, GtkTreePath*, GtkTreeViewColumn*, gpointer widget)
+    static void signalRowActivated(GtkTreeView*, GtkTreePath* pTreePath, GtkTreeViewColumn*, gpointer widget)
     {
         GtkInstanceTreeView* pThis = static_cast<GtkInstanceTreeView*>(widget);
         SolarMutexGuard aGuard;
-        pThis->handle_row_activated();
+        pThis->handle_row_activated(pTreePath);
     }
 
     void insert_row(GtkTreeIter& iter, const GtkTreeIter* parent, int pos, const OUString* pId, const OUString* pText,

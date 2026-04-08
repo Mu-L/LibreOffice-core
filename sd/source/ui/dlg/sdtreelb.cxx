@@ -856,7 +856,7 @@ IMPL_LINK_NOARG(SdPageObjsTLV, SelectHdl, weld::TreeView&, void)
     m_nSelectEventId = Application::PostUserEvent(LINK(this, SdPageObjsTLV, AsyncSelectHdl));
 }
 
-IMPL_LINK_NOARG(SdPageObjsTLV, RowActivatedHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(SdPageObjsTLV, RowActivatedHdl, const weld::TreeIter&, bool)
 {
     if (m_nRowActivateEventId)
         Application::RemoveUserEvent(m_nRowActivateEventId);

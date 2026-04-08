@@ -148,7 +148,7 @@ FmFieldWin::~FmFieldWin()
     ::SfxControllerItem::dispose();
 }
 
-IMPL_LINK_NOARG(FmFieldWin, RowActivatedHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(FmFieldWin, RowActivatedHdl, const weld::TreeIter&, bool)
 {
     return createSelectionControls();
 }

@@ -136,7 +136,7 @@ IMPL_LINK_NOARG(SwInsertBookmarkDlg, DeleteHdl, weld::Button&, void)
 // callback to a goto button
 IMPL_LINK_NOARG(SwInsertBookmarkDlg, GotoHdl, weld::Button&, void) { GotoSelectedBookmark(); }
 
-IMPL_LINK_NOARG(SwInsertBookmarkDlg, DoubleClickHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(SwInsertBookmarkDlg, DoubleClickHdl, const weld::TreeIter&, bool)
 {
     GotoSelectedBookmark();
     return true;

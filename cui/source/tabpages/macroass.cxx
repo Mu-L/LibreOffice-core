@@ -258,13 +258,13 @@ IMPL_LINK(SfxMacroTabPage, AssignDeleteClickHdl_Impl, weld::Button&, rBtn, void)
     AssignDeleteHdl(&rBtn);
 }
 
-IMPL_LINK_NOARG(SfxMacroTabPage, MacroTreeViewActivatedHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(SfxMacroTabPage, MacroTreeViewActivatedHdl, const weld::TreeIter&, bool)
 {
     AssignDeleteHdl(&m_xMacroLB->get_widget());
     return true;
 }
 
-IMPL_LINK_NOARG(SfxMacroTabPage, AssignmentsTreeViewActivatedHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(SfxMacroTabPage, AssignmentsTreeViewActivatedHdl, const weld::TreeIter&, bool)
 {
     AssignDeleteHdl(&m_xEventLB->GetListBox());
     return true;

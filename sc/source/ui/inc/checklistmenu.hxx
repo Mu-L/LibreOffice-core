@@ -274,7 +274,7 @@ private:
     DECL_LINK(EdModifyHdl, weld::Entry&, void);
     DECL_LINK(EdActivateHdl, weld::Entry&, bool);
 
-    DECL_LINK(RowActivatedHdl, weld::TreeView& rMEvt, bool);
+    DECL_LINK(RowActivatedHdl, const weld::TreeIter&, bool);
     DECL_LINK(SelectHdl, weld::TreeView&, void);
     DECL_LINK(TreeSizeAllocHdl, const Size&, void);
     DECL_LINK(KeyInputHdl, const KeyEvent&, bool);
@@ -418,7 +418,7 @@ private:
     int mnTextColorMenuPrefHeight;
     bool mbColorMenu;
 
-    DECL_LINK(RowActivatedHdl, weld::TreeView& rMEvt, bool);
+    DECL_LINK(RowActivatedHdl, const weld::TreeIter&, bool);
     DECL_LINK(ColorSelChangedHdl, weld::TreeView&, void);
     DECL_LINK(MenuKeyInputHdl, const KeyEvent&, bool);
 

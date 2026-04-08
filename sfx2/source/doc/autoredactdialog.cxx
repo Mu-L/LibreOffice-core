@@ -365,7 +365,7 @@ IMPL_LINK_NOARG(SfxAutoRedactDialog, EditHdl, weld::Button&, void)
     // And sync the targets box row with the actual target data
     m_aTargetsBox.setRowData(nSelectedRow, pTarget);
 }
-IMPL_LINK_NOARG(SfxAutoRedactDialog, DoubleClickEditHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(SfxAutoRedactDialog, DoubleClickEditHdl, const weld::TreeIter&, bool)
 {
     if (m_xEditBtn->get_sensitive())
         m_xEditBtn->clicked();

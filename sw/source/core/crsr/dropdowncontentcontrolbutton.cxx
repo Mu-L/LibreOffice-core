@@ -45,7 +45,7 @@ void SwDropDownContentControlButton::InitDropdown()
     m_xTreeView->set_direction(m_bRTL);
 }
 
-IMPL_LINK_NOARG(SwDropDownContentControlButton, ListBoxHandler, weld::TreeView&, bool)
+IMPL_LINK_NOARG(SwDropDownContentControlButton, ListBoxHandler, const weld::TreeIter&, bool)
 {
     OUString sSelection = m_xTreeView->get_selected_text();
     if (sSelection == SwResId(STR_DROP_DOWN_EMPTY_LIST))

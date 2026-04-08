@@ -93,7 +93,7 @@ IMPL_LINK_NOARG(ScScenarioWindow, SelectHdl, weld::TreeView&, void)
         SetComment(pEntry->maComment);
 }
 
-IMPL_LINK_NOARG(ScScenarioWindow, DoubleClickHdl, weld::TreeView&, bool)
+IMPL_LINK_NOARG(ScScenarioWindow, DoubleClickHdl, const weld::TreeIter&, bool)
 {
     SelectScenario();
     return true;
