@@ -82,10 +82,16 @@ short SfxStyleDialogController::Ok()
 {
     SfxTabDialogController::Ok();
 
-    SfxItemSet& rStyleSet = m_rStyle.GetItemSet();
-    for (sal_uInt16 nWhich : m_aInvalidatedWhichIds)
+    // tdf#171281: Page and List (Pseudo) styles do not support inheritance
+    // via property chips, so applying chip-based resets would discard the
+    // user's modifications instead of restoring parent values.
+    const SfxStyleFamily nFamily = m_rStyle.GetFamily();
+    if (nFamily != SfxStyleFamily::Pseudo &&
+        nFamily != SfxStyleFamily::Page)
     {
-        rStyleSet.ClearItem(nWhich);
+        SfxItemSet& rStyleSet = m_rStyle.GetItemSet();
+        for (sal_uInt16 nWhich : m_aInvalidatedWhichIds)
+            rStyleSet.ClearItem(nWhich);
     }
 
     return RET_OK;
