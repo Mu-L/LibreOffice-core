@@ -394,10 +394,16 @@ void OAddTableDlg::Update()
 
 IMPL_LINK_NOARG( OAddTableDlg, AddClickHdl, weld::Button&, void )
 {
-    TableListDoubleClickHdl(m_xTableList->GetWidget());
+    Add();
 }
 
 IMPL_LINK_NOARG(OAddTableDlg, TableListDoubleClickHdl, weld::TreeView&, bool)
+{
+    Add();
+    return true;
+}
+
+void OAddTableDlg::Add()
 {
     if ( impl_isAddAllowed() )
     {
@@ -411,7 +417,6 @@ IMPL_LINK_NOARG(OAddTableDlg, TableListDoubleClickHdl, weld::TreeView&, bool)
         if ( !impl_isAddAllowed() )
             m_xDialog->response(RET_CLOSE);
     }
-    return true;
 }
 
 IMPL_LINK_NOARG( OAddTableDlg, TableListSelectHdl, weld::TreeView&, void )

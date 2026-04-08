@@ -87,6 +87,7 @@ namespace dbaui
 
     private:
         bool impl_isAddAllowed();
+        void Add();
 
         enum ObjectList
         {
