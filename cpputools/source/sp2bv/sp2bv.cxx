@@ -21,6 +21,7 @@
 #include <osl/thread.h>
 #include <osl/file.h>
 #include <rtl/ustrbuf.h>
+#include <algorithm>
 
 static bool hasOption(char const * szOption, int argc, char** argv);
 
@@ -105,16 +106,7 @@ int main(int argc, char **argv)
 
 static bool hasOption(char const * szOption, int argc, char** argv)
 {
-    bool retVal = false;
-    for(int i= 1; i < argc; i++)
-    {
-        if( ! strcmp(argv[i], szOption))
-        {
-            retVal = true;
-            break;
-        }
-    }
-    return retVal;
+    return std::any_of(argv + 1, argv + argc, [szOption](const char* s){ return !strcmp(s, szOption); });
 }
 
 
