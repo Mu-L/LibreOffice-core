@@ -3424,8 +3424,6 @@ extensions/source/bibliography/toolbar.hxx
 extensions/source/config/ldap/ldapaccess.cxx
 extensions/source/config/ldap/ldapuserprofilebe.cxx
 extensions/source/config/ldap/ldapuserprofilebe.hxx
-extensions/source/dbpilots/commonpagesdbp.cxx
-extensions/source/dbpilots/commonpagesdbp.hxx
 extensions/source/dbpilots/controlwizard.cxx
 extensions/source/dbpilots/controlwizard.hxx
 extensions/source/dbpilots/dbptools.cxx

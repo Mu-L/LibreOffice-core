@@ -27,94 +27,87 @@
 
 namespace dbp
 {
-    class OTableSelectionPage final : public OControlWizardPage
-    {
-        std::unique_ptr<weld::TreeView> m_xTable;
-        std::unique_ptr<weld::TreeView> m_xDatasource;
-        std::unique_ptr<weld::Button> m_xSearchDatabase;
-        std::unique_ptr<weld::Container> m_xSourceBox;
+class OTableSelectionPage final : public OControlWizardPage
+{
+    std::unique_ptr<weld::TreeView> m_xTable;
+    std::unique_ptr<weld::TreeView> m_xDatasource;
+    std::unique_ptr<weld::Button> m_xSearchDatabase;
+    std::unique_ptr<weld::Container> m_xSourceBox;
 
-        css::uno::Reference< css::sdb::XDatabaseContext >
-                                m_xDSContext;
+    css::uno::Reference<css::sdb::XDatabaseContext> m_xDSContext;
 
-    public:
-        explicit OTableSelectionPage(weld::Container* pPage, OControlWizard* pParent);
-        virtual ~OTableSelectionPage() override;
+public:
+    explicit OTableSelectionPage(weld::Container* pPage, OControlWizard* pParent);
+    virtual ~OTableSelectionPage() override;
 
-    private:
-        // BuilderPage overridables
-        void Activate() override;
+private:
+    // BuilderPage overridables
+    void Activate() override;
 
-        // OWizardPage overridables
-        virtual void        initializePage() override;
-        virtual bool        commitPage( ::vcl::WizardTypes::CommitPageReason _eReason ) override;
+    // OWizardPage overridables
+    virtual void initializePage() override;
+    virtual bool commitPage(::vcl::WizardTypes::CommitPageReason _eReason) override;
 
-        DECL_LINK( OnListboxSelection, weld::TreeView&, void );
-        DECL_LINK( OnListboxDoubleClicked, weld::TreeView&, bool );
-        DECL_LINK( OnSearchClicked, weld::Button&, void );
+    DECL_LINK(OnListboxSelection, weld::TreeView&, void);
+    DECL_LINK(OnListboxDoubleClicked, weld::TreeView&, bool);
+    DECL_LINK(OnSearchClicked, weld::Button&, void);
 
-        void implFillTables(const css::uno::Reference< css::sdbc::XConnection >&
-                        _rxConn = css::uno::Reference< css::sdbc::XConnection >());
+    void implFillTables(const css::uno::Reference<css::sdbc::XConnection>& _rxConn
+                        = css::uno::Reference<css::sdbc::XConnection>());
 
-        // OControlWizardPage overridables
-        virtual bool    canAdvance() const override;
-    };
+    // OControlWizardPage overridables
+    virtual bool canAdvance() const override;
+};
 
-    class OMaybeListSelectionPage : public OControlWizardPage
-    {
-        weld::RadioButton* m_pYes;
-        weld::RadioButton* m_pNo;
-        weld::ComboBox* m_pList;
+class OMaybeListSelectionPage : public OControlWizardPage
+{
+    weld::RadioButton* m_pYes;
+    weld::RadioButton* m_pNo;
+    weld::ComboBox* m_pList;
 
-    public:
-        OMaybeListSelectionPage(weld::Container* pPage, OControlWizard* pWizard, const OUString& rUIXMLDescription, const OUString& rID);
-        virtual ~OMaybeListSelectionPage() override;
+public:
+    OMaybeListSelectionPage(weld::Container* pPage, OControlWizard* pWizard,
+                            const OUString& rUIXMLDescription, const OUString& rID);
+    virtual ~OMaybeListSelectionPage() override;
 
-    protected:
-        DECL_LINK( OnRadioSelected, weld::Toggleable&, void );
+protected:
+    DECL_LINK(OnRadioSelected, weld::Toggleable&, void);
 
-        // BuilderPage overridables
-        void Activate() override;
+    // BuilderPage overridables
+    void Activate() override;
 
-        // own helper
-        void    announceControls(
-            weld::RadioButton& _rYesButton,
-            weld::RadioButton& _rNoButton,
-            weld::ComboBox& _rSelection);
+    // own helper
+    void announceControls(weld::RadioButton& _rYesButton, weld::RadioButton& _rNoButton,
+                          weld::ComboBox& _rSelection);
 
-        void implEnableWindows();
+    void implEnableWindows();
 
-        void implInitialize(const OUString& _rSelection);
-        void implCommit(OUString& _rSelection);
-    };
+    void implInitialize(const OUString& _rSelection);
+    void implCommit(OUString& _rSelection);
+};
 
-    class ODBFieldPage : public OMaybeListSelectionPage
-    {
-        std::unique_ptr<weld::Label> m_xDescription;
-        std::unique_ptr<weld::RadioButton> m_xStoreYes;
-        std::unique_ptr<weld::RadioButton> m_xStoreNo;
-        std::unique_ptr<weld::ComboBox> m_xStoreWhere;
+class ODBFieldPage : public OMaybeListSelectionPage
+{
+    std::unique_ptr<weld::Label> m_xDescription;
+    std::unique_ptr<weld::RadioButton> m_xStoreYes;
+    std::unique_ptr<weld::RadioButton> m_xStoreNo;
+    std::unique_ptr<weld::ComboBox> m_xStoreWhere;
 
-    public:
-        explicit ODBFieldPage(weld::Container* pPage, OControlWizard* pWizard);
-        virtual ~ODBFieldPage() override;
+public:
+    explicit ODBFieldPage(weld::Container* pPage, OControlWizard* pWizard);
+    virtual ~ODBFieldPage() override;
 
-    protected:
-        void setDescriptionText(const OUString& rDesc)
-        {
-            m_xDescription->set_label(rDesc);
-        }
+protected:
+    void setDescriptionText(const OUString& rDesc) { m_xDescription->set_label(rDesc); }
 
-        // OWizardPage overridables
-        virtual void initializePage() override;
-        virtual bool commitPage( ::vcl::WizardTypes::CommitPageReason _eReason ) override;
+    // OWizardPage overridables
+    virtual void initializePage() override;
+    virtual bool commitPage(::vcl::WizardTypes::CommitPageReason _eReason) override;
 
-        // own overridables
-        virtual OUString& getDBFieldSetting() = 0;
-    };
+    // own overridables
+    virtual OUString& getDBFieldSetting() = 0;
+};
 
-
-}   // namespace dbp
-
+} // namespace dbp
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
