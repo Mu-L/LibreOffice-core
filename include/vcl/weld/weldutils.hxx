@@ -53,6 +53,7 @@ class Builder;
 class Entry;
 class FormattedSpinButton;
 class TextWidget;
+class TreeIter;
 class TreeView;
 
 typedef comphelper::WeakComponentImplHelper<css::awt::XWindow> TransportAsXWindow_Base;

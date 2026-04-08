@@ -233,18 +233,6 @@ enum class EntryMessageType
     Error,
 };
 
-class VCL_DLLPUBLIC TreeIter
-{
-private:
-    TreeIter(const TreeIter&) = delete;
-    TreeIter& operator=(const TreeIter&) = delete;
-
-public:
-    TreeIter() {}
-    virtual bool equal(const TreeIter& rOther) const = 0;
-    virtual ~TreeIter() {}
-};
-
 class VCL_DLLPUBLIC Button : virtual public Widget
 {
     friend class ::LOKTrigger;

@@ -11,20 +11,21 @@
 
 #include <sal/config.h>
 
-#include <vcl/weld/TreeIter.hxx>
+#include <vcl/dllapi.h>
 
-#include <QtGui/QStandardItemModel>
-
-class QtInstanceTreeIter final : public weld::TreeIter
+namespace weld
 {
-    QModelIndex m_aModelIndex;
+class VCL_DLLPUBLIC TreeIter
+{
+private:
+    TreeIter(const TreeIter&) = delete;
+    TreeIter& operator=(const TreeIter&) = delete;
 
 public:
-    explicit QtInstanceTreeIter(QModelIndex aModelIndex);
-    virtual bool equal(const TreeIter& rOther) const override;
-
-    const QModelIndex& modelIndex() const { return m_aModelIndex; }
-    void setModelIndex(const QModelIndex& aIndex) { m_aModelIndex = aIndex; }
+    TreeIter() {}
+    virtual bool equal(const TreeIter& rOther) const = 0;
+    virtual ~TreeIter() {}
 };
+}
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab cinoptions=b1,g0,N-s cinkeys+=0=break: */

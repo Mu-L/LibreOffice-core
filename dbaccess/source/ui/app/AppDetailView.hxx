@@ -25,6 +25,7 @@
 #include <vcl/mnemonic.hxx>
 #include <vcl/weld/Paned.hxx>
 #include <vcl/weld/TextView.hxx>
+#include <vcl/weld/TreeIter.hxx>
 #include <IClipBoardTest.hxx>
 #include "AppTitleWindow.hxx"
 #include <AppElementType.hxx>
