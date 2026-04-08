@@ -110,6 +110,7 @@ class ScContentTree
     }
 
     void LaunchAsyncStoreNavigatorSettings();
+    void ActivateSelectedEntry();
 
     DECL_LINK(ContentDoubleClickHdl, weld::TreeView&, bool);
     DECL_LINK(MouseReleaseHdl, const MouseEvent&, bool);

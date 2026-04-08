@@ -332,7 +332,7 @@ static OUString lcl_GetDBAreaRange( const ScDocument* pDoc, const OUString& rDBN
     return aRet;
 }
 
-IMPL_LINK_NOARG(ScContentTree, ContentDoubleClickHdl, weld::TreeView&, bool)
+void ScContentTree::ActivateSelectedEntry()
 {
     ScContentId nType;
     sal_uLong nChild;
@@ -417,6 +417,11 @@ IMPL_LINK_NOARG(ScContentTree, ContentDoubleClickHdl, weld::TreeView&, bool)
         ScNavigatorDlg::ReleaseFocus();     // set focus into document
     }
 
+}
+
+IMPL_LINK_NOARG(ScContentTree, ContentDoubleClickHdl, weld::TreeView&, bool)
+{
+    ActivateSelectedEntry();
     return false;
 }
 
@@ -467,7 +472,10 @@ IMPL_LINK(ScContentTree, KeyInputHdl, const KeyEvent&, rKEvt, bool)
                             m_xTreeView->expand_row(*xEntry);
                     }
                     else
-                        ContentDoubleClickHdl(*m_xTreeView);      // select content as if double clicked
+                    {
+                        // activate entry as if double clicked
+                        ActivateSelectedEntry();
+                    }
                 }
 
                 bUsed = true;
