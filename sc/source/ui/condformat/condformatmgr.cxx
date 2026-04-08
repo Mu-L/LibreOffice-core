@@ -139,6 +139,17 @@ ScConditionalFormat* ScCondFormatManagerDlg::GetCondFormatSelected()
     return m_xCtrlManager->GetSelection();
 }
 
+void ScCondFormatManagerDlg::Edit()
+{
+    ScConditionalFormat* pFormat = m_xCtrlManager->GetSelection();
+
+    if (!pFormat)
+        return;
+
+    m_bModified = true;
+    m_xDialog->response( DLG_RET_EDIT );
+}
+
 IMPL_LINK_NOARG(ScCondFormatManagerDlg, RemoveBtnHdl, weld::Button&, void)
 {
     m_xCtrlManager->DeleteSelection();
@@ -148,19 +159,12 @@ IMPL_LINK_NOARG(ScCondFormatManagerDlg, RemoveBtnHdl, weld::Button&, void)
 
 IMPL_LINK_NOARG(ScCondFormatManagerDlg, EditBtnClickHdl, weld::Button&, void)
 {
-    EditBtnHdl(*m_xTreeView);
+    Edit();
 }
 
 IMPL_LINK_NOARG(ScCondFormatManagerDlg, EditBtnHdl, weld::TreeView&, bool)
 {
-    ScConditionalFormat* pFormat = m_xCtrlManager->GetSelection();
-
-    if (!pFormat)
-        return true;
-
-    m_bModified = true;
-    m_xDialog->response( DLG_RET_EDIT );
-
+    Edit();
     return true;
 }
 

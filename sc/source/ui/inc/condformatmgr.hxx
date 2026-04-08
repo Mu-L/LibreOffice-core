@@ -57,6 +57,7 @@ private:
     std::unique_ptr<weld::TreeView> m_xTreeView;
     std::unique_ptr<ScCondFormatManagerWindow> m_xCtrlManager;
 
+    void Edit();
     void UpdateButtonSensitivity();
 
     DECL_LINK(RemoveBtnHdl, weld::Button&, void);
