@@ -45,16 +45,16 @@ void SwDropDownContentControlButton::InitDropdown()
     m_xTreeView->set_direction(m_bRTL);
 }
 
-IMPL_LINK(SwDropDownContentControlButton, ListBoxHandler, weld::TreeView&, rBox, bool)
+IMPL_LINK_NOARG(SwDropDownContentControlButton, ListBoxHandler, weld::TreeView&, bool)
 {
-    OUString sSelection = rBox.get_selected_text();
+    OUString sSelection = m_xTreeView->get_selected_text();
     if (sSelection == SwResId(STR_DROP_DOWN_EMPTY_LIST))
     {
         m_xPopup->popdown();
         return true;
     }
 
-    sal_Int32 nSelection = rBox.get_selected_index();
+    sal_Int32 nSelection = m_xTreeView->get_selected_index();
     m_xPopup->popdown();
     if (nSelection >= 0)
     {
