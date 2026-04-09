@@ -1669,7 +1669,7 @@ void SwTextFrame::ParagraphComposer( SwTextFormatter &rLine, SwTextFormatInfo &r
                     // extra space over the desired word spacing
                     fPreviousAllSpaceSize - fSpaceSizeDesired * pPrevLine->GetSpaceCount() +
                     // plus the size of the last word minus a space size
-                    // to avoid of breaking to much
+                    // to avoid of breaking too much
                     nLastWordSize - nWidthOf10Spaces/10.0;
 
             const_cast<SwLineLayout*>(pPrevLine)->SetParaComposerBreak( nNewBreak );
