@@ -82,6 +82,7 @@ class SwGlossaryDlg final : public SfxDialogController
 
     void EnableShortName(bool bOn = true);
     void ShowPreview();
+    void SelectGroup();
 
     DECL_LINK( NameModify, weld::Entry&, void );
     DECL_LINK(NameDoubleClick, const weld::TreeIter&, bool);

@@ -387,22 +387,22 @@ OUString getCurrentGlossary()
 }
 
 // select new group
-IMPL_LINK(SwGlossaryDlg, GrpSelect, weld::TreeView&, rBox, void)
+void SwGlossaryDlg::SelectGroup()
 {
-    std::unique_ptr<weld::TreeIter> xEntry = rBox.get_selected();
+    std::unique_ptr<weld::TreeIter> xEntry = m_xCategoryBox->get_selected();
     if (!xEntry)
         return;
 
-    std::unique_ptr<weld::TreeIter> xParent = rBox.make_iterator(xEntry.get());
+    std::unique_ptr<weld::TreeIter> xParent = m_xCategoryBox->make_iterator(xEntry.get());
     weld::TreeIter* pParent;
-    if (rBox.get_iter_depth(*xParent))
+    if (m_xCategoryBox->get_iter_depth(*xParent))
     {
-        rBox.iter_parent(*xParent);
+        m_xCategoryBox->iter_parent(*xParent);
         pParent = xParent.get();
     }
     else
         pParent = xEntry.get();
-    GroupUserData* pGroupData = weld::fromId<GroupUserData*>(rBox.get_id(*pParent));
+    GroupUserData* pGroupData = weld::fromId<GroupUserData*>(m_xCategoryBox->get_id(*pParent));
     ::SetCurrGlosGroup(pGroupData->sGroupName
         + OUStringChar(GLOS_DELIM)
         + OUString::number(pGroupData->nPathIdx));
@@ -414,9 +414,9 @@ IMPL_LINK(SwGlossaryDlg, GrpSelect, weld::TreeView&, rBox, void)
     m_bIsOld = m_pGlossaryHdl->IsOld();
     if( pParent != xEntry.get())
     {
-        OUString aName(rBox.get_text(*xEntry));
+        OUString aName(m_xCategoryBox->get_text(*xEntry));
         m_xNameED->set_text(aName);
-        m_xShortNameEdit->set_text(rBox.get_id(*xEntry));
+        m_xShortNameEdit->set_text(m_xCategoryBox->get_id(*xEntry));
         m_xInsertBtn->set_sensitive( !m_bIsDocReadOnly);
         ShowAutoText(::GetCurrGlosGroup(), m_xShortNameEdit->get_text());
     }
@@ -430,6 +430,11 @@ IMPL_LINK(SwGlossaryDlg, GrpSelect, weld::TreeView&, rBox, void)
         aReq.AppendItem(SfxStringItem(FN_SET_ACT_GLOSSARY, getCurrentGlossary()));
         aReq.Done();
     }
+}
+
+IMPL_LINK_NOARG(SwGlossaryDlg, GrpSelect, weld::TreeView&, void)
+{
+    SelectGroup();
 }
 
 void SwGlossaryDlg::Apply()
@@ -632,7 +637,7 @@ IMPL_LINK(SwGlossaryDlg, MenuHdl, const OUString&, rItemIdent, void)
                 m_xCategoryBox->scroll_to_row(*xNewEntry);
             }
         }
-        GrpSelect(*m_xCategoryBox);
+        SelectGroup();
     }
     else if (rItemIdent == "delete")
     {
@@ -780,7 +785,7 @@ IMPL_LINK_NOARG(SwGlossaryDlg, BibHdl, weld::Button&, void)
                         {
                             m_xCategoryBox->select(*xEntry);
                             m_xCategoryBox->scroll_to_row(*xEntry);
-                            GrpSelect(*m_xCategoryBox);
+                            SelectGroup();
                             break;
                         }
                     }
@@ -894,7 +899,7 @@ void SwGlossaryDlg::Init()
         m_xCategoryBox->expand_row(*xSelEntry);
         m_xCategoryBox->select(*xSelEntry);
         m_xCategoryBox->scroll_to_row(*xSelEntry);
-        GrpSelect(*m_xCategoryBox);
+        SelectGroup();
     }
 
     const SvxAutoCorrCfg& rCfg = SvxAutoCorrCfg::Get();
