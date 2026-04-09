@@ -817,9 +817,10 @@ void MacroManagerDialog::Notify(SfxBroadcaster&, const SfxHint& rHint)
     }
 }
 
-IMPL_LINK(MacroManagerDialog, SelectHdl, weld::TreeView&, rTreeView, void)
+IMPL_LINK(MacroManagerDialog, SelectHdl, weld::TreeView&, rItemView, void)
 {
-    if (&rTreeView == &m_xScriptContainersListBox->get_widget())
+    weld::TreeView& rTreeView = m_xScriptContainersListBox->get_widget();
+    if (&rItemView == &rTreeView)
     {
         m_xScriptsListBoxLabel->set_label(m_aScriptsListBoxLabelBaseStr);
         m_xScriptsListBox->ClearAll();
