@@ -3435,6 +3435,12 @@ SalInstanceItemView::SalInstanceItemView(SvTreeListBox* pTreeListBox, SalInstanc
     : SalInstanceWidget(pTreeListBox, pBuilder, bTakeOwnership)
     , m_pTreeListBox(pTreeListBox)
 {
+    m_pTreeListBox->SetDoubleClickHdl(LINK(this, SalInstanceItemView, DoubleClickHdl));
+}
+
+SalInstanceItemView::~SalInstanceItemView()
+{
+    m_pTreeListBox->SetDoubleClickHdl(Link<SvTreeListBox*, bool>());
 }
 
 std::unique_ptr<weld::TreeIter>
@@ -3484,6 +3490,14 @@ const OUString* SalInstanceItemView::getEntryData(int index) const
 {
     SvTreeListEntry* pEntry = m_pTreeListBox->GetEntry(nullptr, index);
     return pEntry ? pEntry->GetUserData() : nullptr;
+}
+
+IMPL_LINK_NOARG(SalInstanceItemView, DoubleClickHdl, SvTreeListBox*, bool)
+{
+    if (SvTreeListEntry* pCurEntry = m_pTreeListBox->GetCurEntry())
+        return !signal_item_activated(SalInstanceTreeIter(*this, pCurEntry));
+
+    return false;
 }
 
 OUString SalInstanceItemView::get_id(const weld::TreeIter& rIter) const
@@ -3838,7 +3852,6 @@ SalInstanceTreeView::SalInstanceTreeView(SvTabListBox* pTreeView, SalInstanceBui
     m_xTreeView->SetForceMakeVisible(true);
     m_xTreeView->SetSelectHdl(LINK(this, SalInstanceTreeView, SelectHdl));
     m_xTreeView->SetDeselectHdl(LINK(this, SalInstanceTreeView, DeSelectHdl));
-    m_xTreeView->SetDoubleClickHdl(LINK(this, SalInstanceTreeView, DoubleClickHdl));
     m_xTreeView->SetExpandingHdl(LINK(this, SalInstanceTreeView, ExpandingHdl));
     m_xTreeView->SetCustomRenderHdl(LINK(this, SalInstanceTreeView, CustomRenderHdl));
     m_xTreeView->SetCustomMeasureHdl(LINK(this, SalInstanceTreeView, CustomMeasureHdl));
@@ -4869,7 +4882,6 @@ SalInstanceTreeView::~SalInstanceTreeView()
     if (g_DragSource == this)
         g_DragSource = nullptr;
     m_xTreeView->SetExpandingHdl(Link<SvTreeListBox*, bool>());
-    m_xTreeView->SetDoubleClickHdl(Link<SvTreeListBox*, bool>());
     m_xTreeView->SetSelectHdl(Link<SvTreeListBox*, void>());
     m_xTreeView->SetDeselectHdl(Link<SvTreeListBox*, void>());
     m_xTreeView->SetScrolledHdl(Link<SvTreeListBox*, void>());
@@ -5017,14 +5029,6 @@ IMPL_LINK_NOARG(SalInstanceTreeView, DeSelectHdl, SvTreeListBox*, void)
     signal_selection_changed();
 }
 
-IMPL_LINK_NOARG(SalInstanceTreeView, DoubleClickHdl, SvTreeListBox*, bool)
-{
-    if (SvTreeListEntry* pCurEntry = m_xTreeView->GetCurEntry())
-        return !signal_item_activated(SalInstanceTreeIter(*this, pCurEntry));
-
-    return false;
-}
-
 IMPL_LINK(SalInstanceTreeView, EndDragHdl, HeaderBar*, pHeaderBar, void)
 {
     std::vector<tools::Long> aTabPositions{ 0 };
@@ -5104,7 +5108,6 @@ SalInstanceIconView::SalInstanceIconView(::IconView* pIconView, SalInstanceBuild
 {
     m_xIconView->SetSelectHdl(LINK(this, SalInstanceIconView, SelectHdl));
     m_xIconView->SetDeselectHdl(LINK(this, SalInstanceIconView, DeSelectHdl));
-    m_xIconView->SetDoubleClickHdl(LINK(this, SalInstanceIconView, DoubleClickHdl));
 }
 
 int SalInstanceIconView::get_item_width() const { return m_xIconView->GetEntryWidth(); }
@@ -5311,7 +5314,6 @@ tools::Rectangle SalInstanceIconView::get_rect(const weld::TreeIter& rIter) cons
 
 SalInstanceIconView::~SalInstanceIconView()
 {
-    m_xIconView->SetDoubleClickHdl(Link<SvTreeListBox*, bool>());
     m_xIconView->SetSelectHdl(Link<SvTreeListBox*, void>());
     m_xIconView->SetDeselectHdl(Link<SvTreeListBox*, void>());
 }
@@ -5326,14 +5328,6 @@ IMPL_LINK_NOARG(SalInstanceIconView, DeSelectHdl, SvTreeListBox*, void)
     if (m_xIconView->GetSelectionMode() == SelectionMode::Single)
         return;
     signal_selection_changed();
-}
-
-IMPL_LINK_NOARG(SalInstanceIconView, DoubleClickHdl, SvTreeListBox*, bool)
-{
-    if (SvTreeListEntry* pCurEntry = m_xIconView->GetCurEntry())
-        return !signal_item_activated(SalInstanceTreeIter(*this, pCurEntry));
-
-    return false;
 }
 
 SalInstanceSpinButton::SalInstanceSpinButton(FormattedField* pButton, SalInstanceBuilder* pBuilder,

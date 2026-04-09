@@ -1512,6 +1512,8 @@ protected:
     virtual void do_clear() override;
 
 public:
+    virtual ~SalInstanceItemView();
+
     virtual std::unique_ptr<weld::TreeIter> make_iterator(const weld::TreeIter* pOrig
                                                           = nullptr) const override;
 
@@ -1538,6 +1540,8 @@ public:
 
 private:
     const OUString* getEntryData(int index) const;
+
+    DECL_LINK(DoubleClickHdl, SvTreeListBox*, bool);
 };
 
 class SalInstanceTreeView : public SalInstanceItemView, public virtual weld::TreeView
@@ -1556,7 +1560,6 @@ protected:
 
     DECL_LINK(SelectHdl, SvTreeListBox*, void);
     DECL_LINK(DeSelectHdl, SvTreeListBox*, void);
-    DECL_LINK(DoubleClickHdl, SvTreeListBox*, bool);
     DECL_LINK(ExpandingHdl, SvTreeListBox*, bool);
     DECL_LINK(EndDragHdl, HeaderBar*, void);
     DECL_LINK(HeaderBarClickedHdl, HeaderBar*, void);
@@ -1867,7 +1870,6 @@ private:
 
     DECL_LINK(SelectHdl, SvTreeListBox*, void);
     DECL_LINK(DeSelectHdl, SvTreeListBox*, void);
-    DECL_LINK(DoubleClickHdl, SvTreeListBox*, bool);
     DECL_LINK(TooltipHdl, SvTreeListEntry*, OUString);
     DECL_LINK(DumpImageHdl, const ::IconView::encoded_image_query&, bool);
 
