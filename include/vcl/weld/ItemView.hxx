@@ -57,6 +57,7 @@ public:
     virtual OUString get_selected_text() const = 0;
 
     virtual std::unique_ptr<weld::TreeIter> get_selected() const = 0;
+    int get_selected_index() const;
 
     int get_cursor_index() const;
     virtual std::unique_ptr<TreeIter> get_cursor() const = 0;

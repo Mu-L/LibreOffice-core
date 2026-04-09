@@ -210,8 +210,6 @@ public:
 
     virtual void set_clicks_to_toggle(int nToggleBehavior) = 0;
 
-    int get_selected_index() const;
-
     // col index -1 gets the first text column
     OUString get_text(int row, int col = -1) const;
     virtual OUString get_text(const TreeIter& rIter, int col = -1) const = 0;
