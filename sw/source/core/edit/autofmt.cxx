@@ -1089,9 +1089,13 @@ void SwAutoFormat::DeleteLeadingTrailingBlanks(bool bStart, bool bEnd)
         ? m_aFlags.bAFormatByInpDelSpacesAtSttEnd
         : m_aFlags.bAFormatDelSpacesAtSttEnd) )
         return;
-
+    bool bHasDeleted = false;
     // delete blanks at the end of the current and at the beginning of the next one
-    m_aDelPam.DeleteMark();
+    if (m_aDelPam.HasMark())
+    {
+        m_aDelPam.DeleteMark();
+        bHasDeleted = true;
+    }
     TextFrameIndex nPos(GetLeadingBlanks(m_pCurTextFrame->GetText()));
     if (bStart && TextFrameIndex(0) != nPos)
     {
@@ -1100,6 +1104,7 @@ void SwAutoFormat::DeleteLeadingTrailingBlanks(bool bStart, bool bEnd)
         *m_aDelPam.GetPoint() = m_pCurTextFrame->MapViewToModelPos(nPos);
         DeleteSel( m_aDelPam );
         m_aDelPam.DeleteMark();
+        bHasDeleted = true;
     }
     nPos = TextFrameIndex(GetTrailingBlanks(m_pCurTextFrame->GetText()));
     if (bEnd && TextFrameIndex(m_pCurTextFrame->GetText().getLength()) != nPos)
@@ -1110,14 +1115,19 @@ void SwAutoFormat::DeleteLeadingTrailingBlanks(bool bStart, bool bEnd)
         *m_aDelPam.GetPoint() = m_pCurTextFrame->MapViewToModelPos(nPos);
         DeleteSel( m_aDelPam );
         m_aDelPam.DeleteMark();
+        bHasDeleted = true;
     }
 
-    SwDocShell* pShell = m_pDoc->GetDocShell();
-    if (pShell)
+    // feedback via infobar
+    if (bHasDeleted)
     {
-        SfxViewFrame* pViewFrame = SfxViewFrame::GetFirst(pShell);
-        if (pViewFrame)
-            pViewFrame->AppendAutoCorrLeadTrailInfobar();
+        SwDocShell* pShell = m_pDoc->GetDocShell();
+        if (pShell)
+        {
+            SfxViewFrame* pViewFrame = SfxViewFrame::GetFirst(pShell);
+            if (pViewFrame)
+                pViewFrame->AppendAutoCorrLeadTrailInfobar();
+        }
     }
 }
 
