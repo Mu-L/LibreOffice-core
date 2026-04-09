@@ -761,13 +761,14 @@ namespace sax_fastparser {
         if ( bAppend )
         {
             // append the rMerge to the rTop
-            memcpy( rTop.getArray() + nTopLen, pMerge, nMergeLen );
+            std::copy_n(pMerge, nMergeLen, rTop.getArray() + nTopLen);
         }
         else
         {
             // prepend the rMerge to the rTop
-            memmove( rTop.getArray() + nMergeLen, rTop.getConstArray(), nTopLen );
-            memcpy( rTop.getArray(), pMerge, nMergeLen );
+            std::copy_backward(rTop.getConstArray(), rTop.getConstArray() + nTopLen,
+                rTop.getArray() + nMergeLen + nTopLen);
+            std::copy_n(pMerge, nMergeLen, rTop.getArray());
         }
     }
 
