@@ -415,7 +415,7 @@ SwEditRegionDlg::SwEditRegionDlg(weld::Window* pParent, SwWrtShell& rWrtSh)
         if (m_xTree->get_iter_first(*xIter))
         {
             m_xTree->select(*xIter);
-            GetFirstEntryHdl(*m_xTree);
+            UpdateFromSelection();
         }
     }
 
@@ -509,7 +509,7 @@ void SwEditRegionDlg::RecurseList(const SwSectionFormat* pFormat, const weld::Tr
                 {
                     m_xTree->select(*xIter);
                     m_xTree->scroll_to_row(*xIter);
-                    GetFirstEntryHdl(*m_xTree);
+                    UpdateFromSelection();
                 }
             }
         }
@@ -542,7 +542,7 @@ void SwEditRegionDlg::RecurseList(const SwSectionFormat* pFormat, const weld::Tr
                 {
                     m_xTree->select(*xIter);
                     m_xTree->scroll_to_row(*xIter);
-                    GetFirstEntryHdl(*m_xTree);
+                    UpdateFromSelection();
                 }
             }
         }
@@ -586,7 +586,7 @@ void SwEditRegionDlg::SelectSection(std::u16string_view rSectionName)
             m_xTree->unselect_all();
             m_xTree->select(*xIter);
             m_xTree->scroll_to_row(*xIter);
-            GetFirstEntryHdl(*m_xTree);
+            UpdateFromSelection();
             break;
         }
     } while (m_xTree->iter_next(*xIter));
@@ -594,10 +594,10 @@ void SwEditRegionDlg::SelectSection(std::u16string_view rSectionName)
 
 // selected entry in TreeListBox is showed in Edit window in case of
 // multiselection some controls are disabled
-IMPL_LINK(SwEditRegionDlg, GetFirstEntryHdl, weld::TreeView&, rBox, void)
+void SwEditRegionDlg::UpdateFromSelection()
 {
     m_bDontCheckPasswd = true;
-    std::unique_ptr<weld::TreeIter> xIter = rBox.get_selected();
+    std::unique_ptr<weld::TreeIter> xIter = m_xTree->get_selected();
     m_xHideCB->set_sensitive(true);
     // edit in readonly sections
     m_xEditInReadonlyCB->set_sensitive(true);
@@ -605,7 +605,7 @@ IMPL_LINK(SwEditRegionDlg, GetFirstEntryHdl, weld::TreeView&, rBox, void)
     m_xProtectCB->set_sensitive(true);
     m_xFileCB->set_sensitive(true);
     css::uno::Sequence <sal_Int8> aCurPasswd;
-    if (1 < rBox.count_selected_rows())
+    if (1 < m_xTree->count_selected_rows())
     {
         m_xHideCB->set_state(TRISTATE_INDET);
         m_xProtectCB->set_state(TRISTATE_INDET);
@@ -688,10 +688,10 @@ IMPL_LINK(SwEditRegionDlg, GetFirstEntryHdl, weld::TreeView&, rBox, void)
         m_xPasswdPB->set_sensitive(bPasswdEnabled);
         if(!bPasswdValid)
         {
-            xIter = rBox.get_selected();
-            rBox.unselect_all();
-            rBox.select(*xIter);
-            GetFirstEntryHdl(rBox);
+            xIter = m_xTree->get_selected();
+            m_xTree->unselect_all();
+            m_xTree->select(*xIter);
+            UpdateFromSelection();
             return;
         }
         else
@@ -713,7 +713,7 @@ IMPL_LINK(SwEditRegionDlg, GetFirstEntryHdl, weld::TreeView&, rBox, void)
 
         m_xOK->set_sensitive(true);
         m_xPasswdCB->set_sensitive(true);
-        m_xCurName->set_text(rBox.get_text(*xIter));
+        m_xCurName->set_text(m_xTree->get_text(*xIter));
         m_xCurName->set_sensitive(true);
         m_xDismiss->set_sensitive(true);
         const OUString aFile = pRepr->GetFile();
@@ -751,6 +751,12 @@ IMPL_LINK(SwEditRegionDlg, GetFirstEntryHdl, weld::TreeView&, rBox, void)
         m_xPasswdPB->set_sensitive(bPasswdEnabled);
     }
     m_bDontCheckPasswd = false;
+}
+
+
+IMPL_LINK_NOARG(SwEditRegionDlg, GetFirstEntryHdl, weld::TreeView&, void)
+{
+    UpdateFromSelection();
 }
 
 // in OkHdl the modified settings are being applied and reversed regions are deleted
