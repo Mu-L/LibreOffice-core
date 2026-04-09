@@ -754,9 +754,7 @@ IMPL_LINK_NOARG(SwInsertDBColAutoPilot, AutoFormatHdl, weld::Button&, void)
 
 IMPL_LINK(SwInsertDBColAutoPilot, TVSelectHdl, weld::TreeView&, rBox, void)
 {
-    weld::TreeView* pGetBox = &rBox;
-
-    SwInsDBColumn aSrch(pGetBox->get_selected_text());
+    SwInsDBColumn aSrch(rBox.get_selected_text());
     SwInsDBColumns::const_iterator it = m_aDBColumns.find( &aSrch );
 
     // set the selected FieldName at the FormatGroupBox, so that
