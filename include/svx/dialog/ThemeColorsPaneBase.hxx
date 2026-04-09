@@ -40,7 +40,7 @@ public:
     explicit ThemeColorsPaneBase(std::unique_ptr<weld::IconView> xIconView);
     virtual ~ThemeColorsPaneBase();
 
-    DECL_LINK(SelectionChangedHdl, weld::IconView&, void);
+    DECL_LINK(SelectionChangedHdl, weld::ItemView&, void);
     DECL_LINK(ItemActivatedHdl, const weld::TreeIter&, bool);
 
     std::shared_ptr<model::ColorSet> const& getCurrentColorSet() { return mpCurrentColorSet; }

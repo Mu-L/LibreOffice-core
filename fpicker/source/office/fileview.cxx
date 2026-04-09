@@ -364,7 +364,7 @@ public:
 
 protected:
     DECL_LINK(ChangedHdl, weld::ItemView&, void);
-    DECL_LINK(SelectionChangedHdl, weld::IconView&, void);
+    DECL_LINK(SelectionChangedHdl, weld::ItemView&, void);
     DECL_LINK(RowActivatedHdl, const weld::TreeIter&, bool);
     DECL_LINK(ItemActivatedHdl, const weld::TreeIter&, bool);
 
@@ -1323,7 +1323,7 @@ IMPL_LINK_NOARG(SvtFileView_Impl, ChangedHdl, weld::ItemView&, void)
         m_aSelectHandler.Call(m_pAntiImpl);
 }
 
-IMPL_LINK_NOARG(SvtFileView_Impl, SelectionChangedHdl, weld::IconView&, void)
+IMPL_LINK_NOARG(SvtFileView_Impl, SelectionChangedHdl, weld::ItemView&, void)
 {
     if (!mnSuspendSelectCallback)
         m_aSelectHandler.Call(m_pAntiImpl);

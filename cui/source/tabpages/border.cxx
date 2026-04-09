@@ -1156,7 +1156,7 @@ void SvxBorderTabPage::HideShadowControls()
 #define IID_PRE_TABLE_ALL       20
 #define IID_PRE_TABLE_OUTER2    21
 
-IMPL_LINK_NOARG(SvxBorderTabPage, SelPreHdl_Impl, weld::IconView&, void)
+IMPL_LINK_NOARG(SvxBorderTabPage, SelPreHdl_Impl, weld::ItemView&, void)
 {
     const svx::FrameBorderState SHOW = svx::FrameBorderState::Show;
     const svx::FrameBorderState HIDE = svx::FrameBorderState::Hide;
@@ -1231,7 +1231,7 @@ IMPL_LINK_NOARG(SvxBorderTabPage, FocusOutPresets_Impl, weld::Widget&, void)
     m_xWndPresets->unselect_all();
 }
 
-IMPL_LINK_NOARG(SvxBorderTabPage, SelSdwHdl_Impl, weld::IconView&, void)
+IMPL_LINK_NOARG(SvxBorderTabPage, SelSdwHdl_Impl, weld::ItemView&, void)
 {
     OUString sSelectedId = m_xWndShadows->get_selected_id();
     bool bEnable = !sSelectedId.isEmpty() && sSelectedId.toInt32() > 1;

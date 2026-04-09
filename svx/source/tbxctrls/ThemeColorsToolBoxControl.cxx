@@ -132,7 +132,7 @@ void ThemeColorsPaneWrapper::onColorSetActivated()
     comphelper::dispatchCommand(u".uno:ApplyTheme"_ustr, m_xFrame, aArgs);
 }
 
-IMPL_LINK_NOARG(ThemeColorsPaneWrapper, SelectionChangedHdl, weld::IconView&, void)
+IMPL_LINK_NOARG(ThemeColorsPaneWrapper, SelectionChangedHdl, weld::ItemView&, void)
 {
     // Call base class selection handler first to update mpCurrentColorSet
     svx::ThemeColorsPaneBase::SelectionChangedHdl(*mxIconViewThemeColors);

@@ -1266,7 +1266,7 @@ DeactivateRC SwColumnPage::DeactivatePage(SfxItemSet *_pSet)
     return DeactivateRC::LeavePage;
 }
 
-IMPL_LINK_NOARG(SwColumnPage, SetDefaultsHdl, weld::IconView&, void)
+IMPL_LINK_NOARG(SwColumnPage, SetDefaultsHdl, weld::ItemView&, void)
 {
     std::unique_ptr<weld::TreeIter> pSelected = m_xDefaultIconView->get_selected();
     if (!pSelected)

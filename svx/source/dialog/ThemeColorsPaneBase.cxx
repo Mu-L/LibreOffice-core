@@ -104,7 +104,7 @@ VclPtr<VirtualDevice> ThemeColorsPaneBase::CreateColorSetPreview(const model::Co
     return pVDev;
 }
 
-IMPL_LINK_NOARG(ThemeColorsPaneBase, SelectionChangedHdl, weld::IconView&, void)
+IMPL_LINK_NOARG(ThemeColorsPaneBase, SelectionChangedHdl, weld::ItemView&, void)
 {
     if (!mxIconViewThemeColors)
         return;

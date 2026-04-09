@@ -21,7 +21,7 @@ class VCL_DLLPUBLIC IconView : virtual public ItemView
     friend class ::LOKTrigger;
 
 protected:
-    Link<IconView&, void> m_aSelectionChangeHdl;
+    Link<ItemView&, void> m_aSelectionChangeHdl;
     Link<const TreeIter&, OUString> m_aQueryTooltipHdl;
     Link<const encoded_image_query&, bool> m_aGetPropertyTreeElemHdl;
 
@@ -81,7 +81,7 @@ public:
 
     void append_separator(const OUString& rId) { insert_separator(-1, &rId); }
 
-    void connect_selection_changed(const Link<IconView&, void>& rLink)
+    void connect_selection_changed(const Link<ItemView&, void>& rLink)
     {
         m_aSelectionChangeHdl = rLink;
     }

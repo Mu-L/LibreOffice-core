@@ -24,6 +24,7 @@
 #include <svx/colorbox.hxx>
 #include <svx/frmdirlbox.hxx>
 #include <vcl/weld/ComboBox.hxx>
+#include <vcl/weld/ItemView.hxx>
 #include <vcl/weld/MetricSpinButton.hxx>
 #include <vcl/weld/SpinButton.hxx>
 #include <map>
@@ -127,7 +128,7 @@ class SwColumnPage final : public SfxTabPage
     DECL_LINK(GapModify, weld::MetricSpinButton&, void);
     DECL_LINK(EdModify, weld::MetricSpinButton&, void);
     DECL_LINK(AutoWidthHdl, weld::Toggleable&, void );
-    DECL_LINK(SetDefaultsHdl, weld::IconView&, void);
+    DECL_LINK(SetDefaultsHdl, weld::ItemView&, void);
 
     DECL_LINK(Up, weld::Button&, void);
     DECL_LINK(Down, weld::Button&, void);

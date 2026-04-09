@@ -364,7 +364,7 @@ void SfxCharmapContainer::updateCharControl(weld::IconView& rIconView,
     }
 }
 
-IMPL_LINK(SfxCharmapContainer, IconViewSelectionChangedHdl, weld::IconView&, rIconView, void)
+IMPL_LINK(SfxCharmapContainer, IconViewSelectionChangedHdl, weld::ItemView&, rIconView, void)
 {
     std::unique_ptr<weld::TreeIter> pIter = rIconView.get_selected();
     if (!pIter)

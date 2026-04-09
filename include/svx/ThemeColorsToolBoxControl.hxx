@@ -33,7 +33,7 @@ public:
     void SetOptimalSize();
     void refreshThemeColors();
 
-    DECL_LINK(SelectionChangedHdl, weld::IconView&, void);
+    DECL_LINK(SelectionChangedHdl, weld::ItemView&, void);
 
 protected:
     void onColorSetActivated() override;

@@ -449,7 +449,7 @@ StylesPreviewWindow_Base::StylesPreviewWindow_Base(
     RequestStylesListUpdate();
 }
 
-IMPL_LINK(StylesPreviewWindow_Base, Selected, weld::IconView&, rIconView, void)
+IMPL_LINK(StylesPreviewWindow_Base, Selected, weld::ItemView&, rIconView, void)
 {
     OUString sStyleName = rIconView.get_selected_text();
 
