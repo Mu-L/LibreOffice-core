@@ -43,7 +43,7 @@
 class Tokens {
 public:
     /**
-       Generates the next token in a sequence and modfies an OUString token
+       Generates the next token in a sequence and modifies an OUString token
        with the generated value.
 
        @param[out] token Pointer to the OUString in which you plan to store the generated token
@@ -187,7 +187,7 @@ public:
     /**
        Generate a new unique token as an OUString
 
-       @param[out] token Pointer to OUString in which teh generated token is stored
+       @param[out] token Pointer to OUString in which the generated token is stored
        @return Boolean representing whether token generation was successful
     */
     bool next(OUString * token) override {
