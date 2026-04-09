@@ -33,8 +33,6 @@ class QtInstanceTreeView : public QtInstanceItemView, public virtual weld::TreeV
     /** The QStandardItemModel used as the source model for `m_pModel`. */
     QStandardItemModel* m_pSourceModel;
 
-    QItemSelectionModel* m_pSelectionModel;
-
     /** List containing a list of item data roles supported by each column. */
     QList<QList<Qt::ItemDataRole>> m_pColumnRoles;
 

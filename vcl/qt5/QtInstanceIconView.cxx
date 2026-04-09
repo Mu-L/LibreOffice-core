@@ -27,10 +27,7 @@ QtInstanceIconView::QtInstanceIconView(QListView* pListView)
     m_pModel = qobject_cast<QStandardItemModel*>(m_pListView->model());
     assert(m_pModel && "list view doesn't have expected item model set");
 
-    m_pSelectionModel = m_pListView->selectionModel();
-    assert(m_pSelectionModel);
-
-    connect(m_pSelectionModel, &QItemSelectionModel::selectionChanged, this,
+    connect(&getSelectionModel(), &QItemSelectionModel::selectionChanged, this,
             &QtInstanceIconView::handleSelectionChanged);
 }
 
@@ -103,7 +100,8 @@ int QtInstanceIconView::count_selected_items() const
     SolarMutexGuard g;
 
     int nSelected = 0;
-    GetQtInstance().RunInMainThread([&] { nSelected = m_pSelectionModel->selectedRows().count(); });
+    GetQtInstance().RunInMainThread(
+        [&] { nSelected = getSelectionModel().selectedRows().count(); });
 
     return nSelected;
 }

@@ -77,9 +77,10 @@ protected:
     QtInstanceTreeIter treeIter(int nRow, const QModelIndex& rParentIndex = QModelIndex()) const;
     QtInstanceTreeIter treeIter(const QModelIndex& rIndex) const;
 
+    QItemSelectionModel& getSelectionModel() const;
+
 private:
     QAbstractItemView& getItemView() const;
-    QItemSelectionModel& getSelectionModel() const;
 
 private Q_SLOTS:
     void handleActivated(const QModelIndex& rIndex);

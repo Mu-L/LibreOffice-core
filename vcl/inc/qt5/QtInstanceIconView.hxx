@@ -24,7 +24,6 @@ class QtInstanceIconView : public QtInstanceItemView, public virtual weld::IconV
 
     QListView* m_pListView;
     QStandardItemModel* m_pModel;
-    QItemSelectionModel* m_pSelectionModel;
 
 public:
     QtInstanceIconView(QListView* pListView);
