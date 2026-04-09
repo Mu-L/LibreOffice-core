@@ -553,17 +553,17 @@ IMPL_LINK_NOARG(SwNumPositionTabPage, EditModifyHdl, weld::ComboBox&, void)
     SetModified();
 }
 
-IMPL_LINK( SwNumPositionTabPage, LevelHdl, weld::TreeView&, rBox, void )
+IMPL_LINK_NOARG(SwNumPositionTabPage, LevelHdl, weld::TreeView&, void)
 {
     sal_uInt16 nSaveNumLvl = m_nActNumLvl;
     m_nActNumLvl = 0;
-    auto aRows = rBox.get_selected_rows();
+    auto aRows = m_xLevelLB->get_selected_rows();
     if ((std::find(aRows.begin(), aRows.end(), MAXLEVEL) != aRows.end()) &&
             (aRows.size() == 1 || nSaveNumLvl != 0xffff))
     {
         m_nActNumLvl = 0xFFFF;
         for (sal_uInt16 i = 0; i < MAXLEVEL; ++i)
-            rBox.unselect(i);
+            m_xLevelLB->unselect(i);
     }
     else if (!aRows.empty())
     {
@@ -574,7 +574,7 @@ IMPL_LINK( SwNumPositionTabPage, LevelHdl, weld::TreeView&, rBox, void )
                 m_nActNumLvl |= nMask;
             nMask <<= 1;
         }
-        rBox.unselect(MAXLEVEL);
+        m_xLevelLB->unselect(MAXLEVEL);
     }
     else
     {
@@ -584,7 +584,7 @@ IMPL_LINK( SwNumPositionTabPage, LevelHdl, weld::TreeView&, rBox, void )
         {
             if(m_nActNumLvl & nMask)
             {
-                rBox.select(i);
+                m_xLevelLB->select(i);
                 break;
             }
             nMask <<=1;
