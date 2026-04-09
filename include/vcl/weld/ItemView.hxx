@@ -21,9 +21,11 @@ class VCL_DLLPUBLIC ItemView : virtual public Widget
     OUString m_sSavedValue;
 
     Link<const TreeIter&, bool> m_aItemActivatedHdl;
+    Link<ItemView&, void> m_aSelectionChangeHdl;
 
 protected:
     bool signal_item_activated(const TreeIter& rIter);
+    void signal_selection_changed();
 
     virtual void do_set_cursor(const TreeIter& rIter) = 0;
 
@@ -97,6 +99,11 @@ public:
     void connect_item_activated(const Link<const TreeIter&, bool>& rLink)
     {
         m_aItemActivatedHdl = rLink;
+    }
+
+    void connect_selection_changed(const Link<ItemView&, void>& rLink)
+    {
+        m_aSelectionChangeHdl = rLink;
     }
 };
 }

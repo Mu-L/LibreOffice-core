@@ -18,6 +18,13 @@ bool ItemView::signal_item_activated(const TreeIter& rIter)
     return m_aItemActivatedHdl.Call(rIter);
 }
 
+void ItemView::signal_selection_changed()
+{
+    if (notify_events_disabled())
+        return;
+    m_aSelectionChangeHdl.Call(*this);
+}
+
 OUString ItemView::get_id(int pos) const
 {
     if (std::unique_ptr<weld::TreeIter> pIter = get_iterator(pos))

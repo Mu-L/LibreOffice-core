@@ -41,7 +41,6 @@ public:
         render_args;
 
 private:
-    Link<ItemView&, void> m_aSelectionChangedHdl;
     Link<int, void> m_aColumnClickedHdl;
     Link<const iter_col&, void> m_aRadioToggleHdl;
     Link<const TreeIter&, bool> m_aEditingStartedHdl;
@@ -60,13 +59,6 @@ protected:
     std::function<int(const weld::TreeIter&, const weld::TreeIter&)> m_aCustomSort;
 
 protected:
-    void signal_selection_changed()
-    {
-        if (notify_events_disabled())
-            return;
-        m_aSelectionChangedHdl.Call(*this);
-    }
-
     void signal_column_clicked(int nColumn) { m_aColumnClickedHdl.Call(nColumn); }
     bool signal_expanding(const TreeIter& rIter)
     {
@@ -191,11 +183,6 @@ public:
     }
 
     void append_separator(const OUString& rId) { insert_separator(-1, rId); }
-
-    void connect_selection_changed(const Link<ItemView&, void>& rLink)
-    {
-        m_aSelectionChangedHdl = rLink;
-    }
 
     // Argument is a pair of iter, col describing the toggled node
     void connect_toggled(const Link<const iter_col&, void>& rLink) { m_aRadioToggleHdl = rLink; }

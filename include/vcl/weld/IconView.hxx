@@ -21,16 +21,8 @@ class VCL_DLLPUBLIC IconView : virtual public ItemView
     friend class ::LOKTrigger;
 
 protected:
-    Link<ItemView&, void> m_aSelectionChangeHdl;
     Link<const TreeIter&, OUString> m_aQueryTooltipHdl;
     Link<const encoded_image_query&, bool> m_aGetPropertyTreeElemHdl;
-
-    void signal_selection_changed()
-    {
-        if (notify_events_disabled())
-            return;
-        m_aSelectionChangeHdl.Call(*this);
-    }
 
     OUString signal_query_tooltip(const TreeIter& rIter) const
     {
@@ -80,11 +72,6 @@ public:
     }
 
     void append_separator(const OUString& rId) { insert_separator(-1, &rId); }
-
-    void connect_selection_changed(const Link<ItemView&, void>& rLink)
-    {
-        m_aSelectionChangeHdl = rLink;
-    }
 
     virtual void connect_query_tooltip(const Link<const TreeIter&, OUString>& rLink)
     {
