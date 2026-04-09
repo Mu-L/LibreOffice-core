@@ -17,23 +17,27 @@
  *   the License at http://www.apache.org/licenses/LICENSE-2.0 .
  */
 
-#pragma once
+#include <basegfx/matrix/b2dhommatrix.hxx>
 
-#include <tools/long.hxx>
-#include <o3tl/unit_conversion.hxx>
+#include <vcl/rendercontext/ImplMapRes.hxx>
 
-class MapMode;
+#include <CoordinateMapper.hxx>
 
-struct ImplMapRes
+sal_Int32 CoordinateMapper::GetDPIX() const { return mnDPIX; }
+
+sal_Int32 CoordinateMapper::GetDPIY() const { return mnDPIY; }
+
+void CoordinateMapper::SetDPIX(sal_Int32 nDPIX) { mnDPIX = nDPIX; }
+
+void CoordinateMapper::SetDPIY(sal_Int32 nDPIY) { mnDPIY = nDPIY; }
+
+sal_Int32 CoordinateMapper::GetDPIScalePercentage() const { return mnDPIScalePercentage; }
+
+void CoordinateMapper::SetDPIScalePercentage(sal_Int32 nPercent)
 {
-    ImplMapRes() = default;
-    void SetMapRes(const o3tl::Length eUnit);
-    void CalcMapResolution(const MapMode& rMapMode, tools::Long nDPIX, tools::Long nDPIY);
+    mnDPIScalePercentage = nPercent;
+}
 
-    tools::Long mnMapOfsX = 0; ///< Offset in X direction
-    tools::Long mnMapOfsY = 0; ///< Offset in Y direction
-    double mfMapScX = 1; ///< Scaling factor in X direction
-    double mfMapScY = 1; ///< Scaling factor in Y direction
-};
+float CoordinateMapper::GetDPIScaleFactor() const { return mnDPIScalePercentage / 100.0f; }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab cinoptions=b1,g0,N-s cinkeys+=0=break: */

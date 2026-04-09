@@ -34,6 +34,7 @@
 #include <vcl/sysdata.hxx>
 #include <vcl/virdev.hxx>
 
+#include <CoordinateMapper.hxx>
 #include <ImplOutDevData.hxx>
 #include <font/PhysicalFontFaceCollection.hxx>
 #include <salgdi.hxx>
@@ -60,6 +61,7 @@ using namespace ::com::sun::star::uno;
 // Begin initializer and accessor public functions
 
 OutputDevice::OutputDevice(OutDevType eOutDevType) :
+    mpMapper(std::make_unique<CoordinateMapper>()),
     meOutDevType(eOutDevType),
     maRegion(true),
     maFillColor( COL_WHITE ),
@@ -79,9 +81,6 @@ OutputDevice::OutputDevice(OutDevType eOutDevType) :
     mnOutOffY                       = 0;
     mnOutWidth                      = 0;
     mnOutHeight                     = 0;
-    mnDPIX                          = 0;
-    mnDPIY                          = 0;
-    mnDPIScalePercentage            = 100;
     mnTextOffX                      = 0;
     mnTextOffY                      = 0;
     mnOutOffOrigX                   = 0;
@@ -183,6 +182,41 @@ void OutputDevice::dispose()
     mpPrevGraphics.reset();
     mpNextGraphics.reset();
     VclReferenceBase::dispose();
+}
+
+sal_Int32 OutputDevice::GetDPIX() const
+{
+    return mpMapper->GetDPIX();
+}
+
+sal_Int32 OutputDevice::GetDPIY() const
+{
+    return mpMapper->GetDPIY();
+}
+
+void OutputDevice::SetDPIX(sal_Int32 nDPIX)
+{
+    mpMapper->SetDPIX(nDPIX);
+}
+
+void OutputDevice::SetDPIY(sal_Int32 nDPIY)
+{
+    mpMapper->SetDPIY(nDPIY);
+}
+
+float OutputDevice::GetDPIScaleFactor() const
+{
+    return mpMapper->GetDPIScalePercentage() / 100.0f;
+}
+
+sal_Int32 OutputDevice::GetDPIScalePercentage() const
+{
+    return mpMapper->GetDPIScalePercentage();
+}
+
+void OutputDevice::SetDPIScalePercentage(float nPercent)
+{
+    mpMapper->SetDPIScalePercentage(nPercent);
 }
 
 bool OutputDevice::IsVirtual() const

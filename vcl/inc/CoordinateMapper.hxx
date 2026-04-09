@@ -19,21 +19,28 @@
 
 #pragma once
 
-#include <tools/long.hxx>
-#include <o3tl/unit_conversion.hxx>
+#include <sal/types.h>
 
-class MapMode;
+#include <vcl/dllapi.h>
 
-struct ImplMapRes
+class CoordinateMapper
 {
-    ImplMapRes() = default;
-    void SetMapRes(const o3tl::Length eUnit);
-    void CalcMapResolution(const MapMode& rMapMode, tools::Long nDPIX, tools::Long nDPIY);
+private:
+    sal_Int32 mnDPIX;
+    sal_Int32 mnDPIY;
+    sal_Int32 mnDPIScalePercentage = 100;
 
-    tools::Long mnMapOfsX = 0; ///< Offset in X direction
-    tools::Long mnMapOfsY = 0; ///< Offset in Y direction
-    double mfMapScX = 1; ///< Scaling factor in X direction
-    double mfMapScY = 1; ///< Scaling factor in Y direction
+public:
+    sal_Int32 GetDPIX() const;
+    sal_Int32 GetDPIY() const;
+
+    void SetDPIX(sal_Int32 nDPIX);
+    void SetDPIY(sal_Int32 nDPIY);
+
+    sal_Int32 GetDPIScalePercentage() const;
+    void SetDPIScalePercentage(sal_Int32 nPercentage);
+
+    float GetDPIScaleFactor() const;
 };
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab cinoptions=b1,g0,N-s cinkeys+=0=break: */
