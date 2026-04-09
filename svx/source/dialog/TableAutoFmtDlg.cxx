@@ -262,7 +262,7 @@ IMPL_LINK_NOARG(SvxTableAutoFmtDlg, RenameHdl, weld::Button&, void)
     }
 }
 
-IMPL_LINK_NOARG(SvxTableAutoFmtDlg, SelFormatHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SvxTableAutoFmtDlg, SelFormatHdl, weld::ItemView&, void)
 {
     mnIndex = mxLbFormat->get_selected_index();
     UpdateChecks();

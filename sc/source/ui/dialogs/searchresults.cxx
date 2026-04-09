@@ -206,7 +206,7 @@ IMPL_LINK(SearchResultsDlg, HeaderBarClick, int, nColumn, void)
     }
 }
 
-IMPL_LINK_NOARG( SearchResultsDlg, ListSelectHdl, weld::TreeView&, void )
+IMPL_LINK_NOARG(SearchResultsDlg, ListSelectHdl, weld::ItemView&, void)
 {
     if (!mpDoc)
         return;

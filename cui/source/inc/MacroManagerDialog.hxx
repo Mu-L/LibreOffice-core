@@ -72,7 +72,7 @@ public:
     static OUString GetDescriptionText(const OUString& rId);
     OUString GetSelectedScriptName();
 
-    void connect_changed(const Link<weld::TreeView&, void>& rLink)
+    void connect_changed(const Link<weld::ItemView&, void>& rLink)
     {
         m_xTreeView->connect_selection_changed(rLink);
     }
@@ -147,7 +147,7 @@ public:
                             MacroManagerDialog* pMacroManagerDialog);
     ~ScriptContainersListBox();
 
-    void connect_changed(const Link<weld::TreeView&, void>& rLink)
+    void connect_changed(const Link<weld::ItemView&, void>& rLink)
     {
         m_xTreeView->connect_selection_changed(rLink);
     }
@@ -201,7 +201,7 @@ class MacroManagerDialog : public weld::GenericDialogController, public SfxListe
     std::unique_ptr<weld::Button> m_xAssignButton;
 
     DECL_LINK(ClickHdl, weld::Button&, void);
-    DECL_LINK(SelectHdl, weld::TreeView&, void);
+    DECL_LINK(SelectHdl, weld::ItemView&, void);
     DECL_LINK(FunctionDoubleClickHdl, const weld::TreeIter&, bool);
     DECL_LINK(ContextMenuHdl, const CommandEvent&, bool);
     DECL_LINK(CheckPasswordHdl, SvxPasswordDialog*, bool);

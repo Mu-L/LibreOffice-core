@@ -35,7 +35,7 @@ private:
 
     DECL_LINK(AddHdl_Impl, weld::Button&, void);
     DECL_LINK(DelHdl_Impl, weld::Button&, void);
-    DECL_LINK(SelectHdl_Impl, weld::TreeView&, void);
+    DECL_LINK(SelectHdl_Impl, weld::ItemView&, void);
     DECL_LINK(CheckHdl_Impl, const weld::TreeView::iter_col&, void);
 
 public:
@@ -56,7 +56,7 @@ private:
 
     DECL_LINK(AddHdl_Impl, weld::Button&, void);
     DECL_LINK(DelHdl_Impl, weld::Button&, void);
-    DECL_LINK(SelectHdl_Impl, weld::TreeView&, void);
+    DECL_LINK(SelectHdl_Impl, weld::ItemView&, void);
 
 public:
     SvxPathSelectDialog(weld::Window* pParent);

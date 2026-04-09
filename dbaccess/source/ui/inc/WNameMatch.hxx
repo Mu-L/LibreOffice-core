@@ -44,8 +44,8 @@ namespace dbaui
         DECL_LINK( ButtonClickHdl, weld::Button&, void );
         DECL_LINK( RightButtonClickHdl, weld::Button&, void );
         DECL_LINK( AllNoneClickHdl, weld::Button&, void );
-        DECL_LINK( TableListClickHdl, weld::TreeView&, void );
-        DECL_LINK( TableListRightSelectHdl, weld::TreeView&, void );
+        DECL_LINK(TableListClickHdl, weld::ItemView&, void);
+        DECL_LINK(TableListRightSelectHdl, weld::ItemView&, void);
 
         static void FillListBox(weld::TreeView& rTreeView, const ODatabaseExport::TColumnVector& rList, bool bCheckButtons);
 

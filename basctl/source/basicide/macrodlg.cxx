@@ -483,13 +483,13 @@ IMPL_LINK_NOARG(MacroChooser, MacroDoubleClickHdl, const weld::TreeIter&, bool)
     return true;
 }
 
-IMPL_LINK_NOARG(MacroChooser, MacroSelectHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(MacroChooser, MacroSelectHdl, weld::ItemView&, void)
 {
     UpdateFields();
     CheckButtons();
 }
 
-IMPL_LINK_NOARG(MacroChooser, BasicSelectHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(MacroChooser, BasicSelectHdl, weld::ItemView&, void)
 {
     SbModule* pModule = nullptr;
     if (std::unique_ptr<weld::TreeIter> pCursor = m_xBasicBox->get_cursor())

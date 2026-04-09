@@ -69,7 +69,7 @@ private:
     weld::TreeIter* FillCategoriesMap(const OUString&, bool);
 
     DECL_LINK(SelComboBoxHdl, weld::ComboBox&, void);
-    DECL_LINK(SelTreeViewHdl, weld::TreeView&, void);
+    DECL_LINK(SelTreeViewHdl, weld::ItemView&, void);
     DECL_LINK(DblClkHdl, const weld::TreeIter&, bool);
     DECL_LINK(KeyInputHdl, const KeyEvent&, bool);
     DECL_LINK(ModifyHdl, weld::Entry&, void);

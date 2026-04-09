@@ -80,7 +80,7 @@ private:
 
     DECL_LINK(ReloadButtonHdl, weld::Button&, void);
     DECL_LINK(ViewButtonHdl, weld::Button&, void);
-    DECL_LINK(CertificateHighlightHdl, weld::TreeView&, void);
+    DECL_LINK(CertificateHighlightHdl, weld::ItemView&, void);
     DECL_LINK(CertificateSelectHdl, const weld::TreeIter&, bool);
     DECL_LINK(SearchModifyHdl, weld::Entry&, void);
 

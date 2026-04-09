@@ -112,7 +112,7 @@ private:
     DECL_LINK( DelayModifiedHdl, weld::MetricSpinButton&, void );
     DECL_LINK( DelayLoseFocusHdl, weld::Widget&, void );
     DECL_LINK( UpdateAnimationLB, weld::ComboBox&, void );
-    DECL_LINK( AnimationSelectHdl, weld::TreeView&, void );
+    DECL_LINK(AnimationSelectHdl, weld::ItemView&, void);
     DECL_LINK( SelectionHandler, Timer*, void );
     void implControlHdl(const weld::Widget* pControl);
 

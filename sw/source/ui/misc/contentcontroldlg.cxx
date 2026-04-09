@@ -444,7 +444,7 @@ IMPL_LINK_NOARG(SwContentControlDlg, MoveDownHdl, weld::Button&, void)
     m_xListItems->select(nRow);
 }
 
-IMPL_LINK_NOARG(SwContentControlDlg, SelectionChangedHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SwContentControlDlg, SelectionChangedHdl, weld::ItemView&, void)
 {
     int nRow = m_xListItems->get_selected_index();
     if (nRow < 0)

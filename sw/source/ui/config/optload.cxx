@@ -1332,7 +1332,7 @@ void SwCaptionOptPage::UpdateEntry(int nSelEntry)
     ModifyHdl();
 }
 
-IMPL_LINK_NOARG(SwCaptionOptPage, ShowEntryHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SwCaptionOptPage, ShowEntryHdl, weld::ItemView&, void)
 {
     if (m_nPrevSelectedEntry != -1)
         SaveEntry(m_nPrevSelectedEntry);

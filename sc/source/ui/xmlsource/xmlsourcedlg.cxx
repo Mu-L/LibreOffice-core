@@ -611,7 +611,7 @@ IMPL_LINK(ScXMLSourceDlg, BtnPressedHdl, weld::Button&, rBtn, void)
         CancelPressed();
 }
 
-IMPL_LINK_NOARG(ScXMLSourceDlg, TreeItemSelectHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(ScXMLSourceDlg, TreeItemSelectHdl, weld::ItemView&, void)
 {
     TreeItemSelected();
 }

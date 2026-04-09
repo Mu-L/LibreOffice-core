@@ -106,7 +106,7 @@ class SW_DLLPUBLIC SwNumFormatTreeView final : public SwNumFormatBase
 {
     std::unique_ptr<weld::TreeView> mxControl;
 
-    DECL_DLLPRIVATE_LINK( SelectHdl, weld::TreeView&, void );
+    DECL_DLLPRIVATE_LINK(SelectHdl, weld::ItemView&, void);
 
     virtual void Init() override;
 

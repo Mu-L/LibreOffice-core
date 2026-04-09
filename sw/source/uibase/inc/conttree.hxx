@@ -219,7 +219,7 @@ class SwContentTree final : public SfxListener
     DECL_LINK(CollapseHdl, const weld::TreeIter&, bool);
     DECL_LINK(ContentDoubleClickHdl, const weld::TreeIter&, bool);
     DECL_LINK(AsyncContentDoubleClickHdl, void*, void);
-    DECL_LINK(SelectHdl, weld::TreeView&, void);
+    DECL_LINK(SelectHdl, weld::ItemView&, void);
     DECL_LINK(FocusInHdl, weld::Widget&, void);
     DECL_LINK(KeyInputHdl, const KeyEvent&, bool);
     DECL_LINK(CommandHdl, const CommandEvent&, bool);
@@ -370,7 +370,7 @@ private:
 
     DECL_LINK(Timeout, Timer*, void);
     DECL_LINK(DoubleClickHdl, const weld::TreeIter&, bool);
-    DECL_LINK(SelectHdl, weld::TreeView&, void);
+    DECL_LINK(SelectHdl, weld::ItemView&, void);
     DECL_LINK(FocusInHdl, weld::Widget&, void);
     DECL_LINK(KeyInputHdl, const KeyEvent&, bool);
     DECL_LINK(CommandHdl, const CommandEvent&, bool);

@@ -340,7 +340,7 @@ sal_uInt16 ScTpSubTotalGroup::FuncToLbPos( ScSubTotalFunc eFunc )
 
 // Handler:
 
-IMPL_LINK(ScTpSubTotalGroup, SelectTreeListBoxHdl, weld::TreeView&, rLb, void)
+IMPL_LINK(ScTpSubTotalGroup, SelectTreeListBoxHdl, weld::ItemView&, rLb, void)
 {
     SelectHdl(&rLb);
 

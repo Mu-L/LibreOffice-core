@@ -663,7 +663,7 @@ void OfaSwAutoFmtOptionsPage::Reset( const SfxItemSet* )
     m_xCheckLB->thaw();
 }
 
-IMPL_LINK(OfaSwAutoFmtOptionsPage, SelectHdl, weld::TreeView&, rBox, void)
+IMPL_LINK(OfaSwAutoFmtOptionsPage, SelectHdl, weld::ItemView&, rBox, void)
 {
     m_xEditPB->set_sensitive(rBox.get_selected_id().toInt64() != 0);
 }
@@ -958,7 +958,7 @@ void OfaAutocorrReplacePage::SetLanguage(LanguageType eSet)
     }
 }
 
-IMPL_LINK_NOARG(OfaAutocorrReplacePage, SelectHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(OfaAutocorrReplacePage, SelectHdl, weld::ItemView&, void)
 {
     if(!bFirstSelect || !bHasSelectionText)
     {
@@ -1539,7 +1539,7 @@ bool OfaAutocorrExceptPage::NewDelHdl(const weld::Widget* pBtn)
     return true;
 }
 
-IMPL_LINK(OfaAutocorrExceptPage, SelectHdl, weld::TreeView&, rBox, void)
+IMPL_LINK(OfaAutocorrExceptPage, SelectHdl, weld::ItemView&, rBox, void)
 {
     if (&rBox == m_xAbbrevLB.get())
     {
@@ -2324,7 +2324,7 @@ IMPL_LINK_NOARG(OfaSmartTagOptionsTabPage, CheckHdl, weld::Toggleable&, void)
 
 /** Handler for the list box
 */
-IMPL_LINK_NOARG(OfaSmartTagOptionsTabPage, SelectHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(OfaSmartTagOptionsTabPage, SelectHdl, weld::ItemView&, void)
 {
     const int nPos = m_xSmartTagTypesLB->get_selected_index();
     if (nPos == -1)

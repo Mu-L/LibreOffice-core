@@ -116,7 +116,7 @@ private:
     DECL_LINK(IdleHdl, Timer*, void);
     DECL_LINK(AutoCompleteHdl, Timer*, void);
     DECL_LINK(TimeoutHdl, Timer*, void);
-    DECL_LINK(TreeChangeHdl, weld::TreeView&, void);
+    DECL_LINK(TreeChangeHdl, weld::ItemView&, void);
     DECL_LINK(EntryChangeHdl, weld::Entry&, void);
     DECL_LINK(ActivateHdl, weld::Entry&, bool);
     DECL_LINK(DoubleClickHdl, const weld::TreeIter&, bool);

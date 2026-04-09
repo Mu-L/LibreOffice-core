@@ -352,7 +352,7 @@ namespace svx
         SelectSuggestionHdl(false);
     }
 
-    IMPL_LINK_NOARG(SuggestionDisplay, SelectSuggestionListBoxHdl, weld::TreeView&, void)
+    IMPL_LINK_NOARG(SuggestionDisplay, SelectSuggestionListBoxHdl, weld::ItemView&, void)
     {
         SelectSuggestionHdl(true);
     }
@@ -801,7 +801,7 @@ namespace svx
         m_xDialog->response(RET_OK);
     }
 
-    IMPL_LINK_NOARG(HangulHanjaOptionsDialog, DictsLB_SelectHdl, weld::TreeView&, void)
+    IMPL_LINK_NOARG(HangulHanjaOptionsDialog, DictsLB_SelectHdl, weld::ItemView&, void)
     {
         bool bSel = m_xDictsLB->get_selected_index() != -1;
 

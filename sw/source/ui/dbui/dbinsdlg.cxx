@@ -752,7 +752,7 @@ IMPL_LINK_NOARG(SwInsertDBColAutoPilot, AutoFormatHdl, weld::Button&, void)
     }
 }
 
-IMPL_LINK(SwInsertDBColAutoPilot, TVSelectHdl, weld::TreeView&, rBox, void)
+IMPL_LINK(SwInsertDBColAutoPilot, TVSelectHdl, weld::ItemView&, rBox, void)
 {
     SwInsDBColumn aSrch(rBox.get_selected_text());
     SwInsDBColumns::const_iterator it = m_aDBColumns.find( &aSrch );

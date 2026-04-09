@@ -47,7 +47,7 @@ class SvxFontSubstTabPage : public SfxTabPage
     DECL_LINK(SelectComboBoxHdl, weld::ComboBox&, void);
     DECL_LINK(ToggleHdl, weld::Toggleable&, void);
     DECL_LINK(ClickHdl, weld::Button&, void);
-    DECL_LINK(TreeListBoxSelectHdl, weld::TreeView&, void);
+    DECL_LINK(TreeListBoxSelectHdl, weld::ItemView&, void);
     DECL_LINK(NonPropFontsHdl, weld::Toggleable&, void);
     DECL_LINK(HeaderBarClick, int, void);
     DECL_LINK(ResizeHdl, const Size&, void);

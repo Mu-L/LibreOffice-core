@@ -50,7 +50,7 @@ private:
 
     // Handler ------------------------
     DECL_LINK( SelectListBoxHdl, weld::ComboBox&, void );
-    DECL_LINK( SelectTreeListBoxHdl, weld::TreeView&, void );
+    DECL_LINK(SelectTreeListBoxHdl, weld::ItemView&, void);
     DECL_LINK(CheckHdl, const weld::TreeView::iter_col&, void);
     DECL_LINK(CheckBoxHdl, weld::Toggleable&, void);
     void SelectHdl(const weld::Widget*);

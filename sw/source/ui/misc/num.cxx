@@ -553,7 +553,7 @@ IMPL_LINK_NOARG(SwNumPositionTabPage, EditModifyHdl, weld::ComboBox&, void)
     SetModified();
 }
 
-IMPL_LINK_NOARG(SwNumPositionTabPage, LevelHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SwNumPositionTabPage, LevelHdl, weld::ItemView&, void)
 {
     sal_uInt16 nSaveNumLvl = m_nActNumLvl;
     m_nActNumLvl = 0;

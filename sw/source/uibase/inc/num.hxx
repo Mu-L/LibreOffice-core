@@ -78,7 +78,7 @@ class SwNumPositionTabPage final : public SfxTabPage
 
     void                InitControls();
 
-    DECL_LINK(LevelHdl, weld::TreeView&, void);
+    DECL_LINK(LevelHdl, weld::ItemView&, void);
     DECL_LINK(EditModifyHdl, weld::ComboBox&, void);
     DECL_LINK(DistanceHdl, weld::MetricSpinButton&, void);
     DECL_LINK(RelativeHdl, weld::Toggleable&, void);

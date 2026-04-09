@@ -235,7 +235,7 @@ sal_Int32 OSelectLabelDialog::InsertEntries(const Reference<XInterface>& _xConta
     return nChildren;
 }
 
-IMPL_LINK(OSelectLabelDialog, OnEntrySelected, weld::TreeView&, rLB, void)
+IMPL_LINK(OSelectLabelDialog, OnEntrySelected, weld::ItemView&, rLB, void)
 {
     DBG_ASSERT(&rLB == m_xControlTree.get(),
                "OSelectLabelDialog::OnEntrySelected : where did this come from ?");

@@ -573,7 +573,7 @@ IMPL_LINK_NOARG(SwCustomizeAddressBlockDialog, OKHdl_Impl, weld::Button&, void)
     m_xDialog->response(RET_OK);
 }
 
-IMPL_LINK(SwCustomizeAddressBlockDialog, ListBoxSelectHdl_Impl, weld::TreeView&, rBox, void)
+IMPL_LINK(SwCustomizeAddressBlockDialog, ListBoxSelectHdl_Impl, weld::ItemView&, rBox, void)
 {
     sal_Int32 nUserData = rBox.get_selected_id().toInt32();
     // Check if the selected entry is already in the address and then forbid inserting

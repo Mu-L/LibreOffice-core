@@ -67,7 +67,7 @@ namespace dbaui
 
         DECL_LINK(CommandHdl, const CommandEvent&, bool);
 
-        Link<weld::TreeView&, void> m_aChangeHdl;
+        Link<weld::ItemView&, void> m_aChangeHdl;
 
     public:
         OWizTypeSelectList(std::unique_ptr<weld::TreeView> xControl);
@@ -86,7 +86,7 @@ namespace dbaui
         void set_selection_mode(SelectionMode eMode) { m_xControl->set_selection_mode(eMode); }
         int count_selected_rows() const { return m_xControl->count_selected_rows(); }
         void select(int pos) { m_xControl->select(pos); }
-        void connect_changed(const Link<weld::TreeView&, void>& rLink)
+        void connect_changed(const Link<weld::ItemView&, void>& rLink)
         {
             m_aChangeHdl = rLink;
             m_xControl->connect_selection_changed(rLink);
@@ -101,7 +101,7 @@ namespace dbaui
         friend class OWizTypeSelectControl;
         friend class OWizTypeSelectList;
 
-        DECL_LINK( ColumnSelectHdl, weld::TreeView&, void );
+        DECL_LINK(ColumnSelectHdl, weld::ItemView&, void);
         DECL_LINK( ButtonClickHdl, weld::Button&, void );
     protected:
         std::unique_ptr<OWizTypeSelectList> m_xColumnNames;

@@ -1271,7 +1271,7 @@ IMPL_LINK_NOARG(SfxTemplateCategoryDialog, NewCategoryEditHdl, weld::Entry&, voi
     }
 }
 
-IMPL_LINK_NOARG(SfxTemplateCategoryDialog, SelectCategoryHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SfxTemplateCategoryDialog, SelectCategoryHdl, weld::ItemView&, void)
 {
     if (mxLBCategory->get_selected_index() == 0)
     {

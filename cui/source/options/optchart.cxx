@@ -94,7 +94,7 @@ void SvxDefaultColorOptPage::FillBoxChartColorLB()
     m_xLbChartColors->thaw();
 }
 
-IMPL_LINK_NOARG(SvxDefaultColorOptPage, LbChartColorsSelectionChangedHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SvxDefaultColorOptPage, LbChartColorsSelectionChangedHdl, weld::ItemView&, void)
 {
     auto nIndex = m_xLbChartColors->get_selected_index();
     if (nIndex == -1)

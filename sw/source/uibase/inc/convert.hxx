@@ -77,7 +77,7 @@ class SwConvertTableDlg final : public SfxDialogController
     DECL_LINK(CheckBoxHdl, weld::Toggleable&, void);
     DECL_LINK(RepeatHeaderCheckBoxHdl, weld::Toggleable&, void);
     DECL_LINK(CheckHdl, weld::Toggleable&, void);
-    DECL_LINK(SelFormatHdl, weld::TreeView&, void);
+    DECL_LINK(SelFormatHdl, weld::ItemView&, void);
 
 public:
     SwConvertTableDlg(SwView& rView, bool bToTable);

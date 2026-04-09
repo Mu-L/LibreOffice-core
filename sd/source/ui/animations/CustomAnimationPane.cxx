@@ -2092,7 +2092,7 @@ IMPL_LINK_NOARG(CustomAnimationPane, DelayLoseFocusHdl, weld::Widget&, void)
     mrBase.GetDocShell()->SetModified();
 }
 
-IMPL_LINK_NOARG(CustomAnimationPane, AnimationSelectHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(CustomAnimationPane, AnimationSelectHdl, weld::ItemView&, void)
 {
     maIdle.Start();
 }

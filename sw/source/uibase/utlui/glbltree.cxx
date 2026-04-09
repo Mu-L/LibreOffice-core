@@ -384,7 +384,7 @@ IMPL_LINK(SwGlobalTree, QueryTooltipHdl, const weld::TreeIter&, rIter, OUString)
     return sEntry;
 }
 
-IMPL_LINK_NOARG(SwGlobalTree, SelectHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SwGlobalTree, SelectHdl, weld::ItemView&, void)
 {
     Select();
 }

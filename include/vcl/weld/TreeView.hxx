@@ -41,7 +41,7 @@ public:
         render_args;
 
 private:
-    Link<TreeView&, void> m_aSelectionChangedHdl;
+    Link<ItemView&, void> m_aSelectionChangedHdl;
     Link<int, void> m_aColumnClickedHdl;
     Link<const iter_col&, void> m_aRadioToggleHdl;
     Link<const TreeIter&, bool> m_aEditingStartedHdl;
@@ -192,7 +192,7 @@ public:
 
     void append_separator(const OUString& rId) { insert_separator(-1, rId); }
 
-    void connect_selection_changed(const Link<TreeView&, void>& rLink)
+    void connect_selection_changed(const Link<ItemView&, void>& rLink)
     {
         m_aSelectionChangedHdl = rLink;
     }

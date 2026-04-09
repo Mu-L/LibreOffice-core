@@ -100,7 +100,7 @@ IMPL_LINK_NOARG(OTasksWindow, FocusOutHdl, weld::Widget&, void)
     m_xTreeView->unselect_all();
 }
 
-IMPL_LINK_NOARG(OTasksWindow, OnEntrySelectHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(OTasksWindow, OnEntrySelectHdl, weld::ItemView&, void)
 {
     m_nCursorIndex = m_xTreeView->get_cursor_index();
     updateHelpText();

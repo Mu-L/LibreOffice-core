@@ -65,7 +65,7 @@ private:
 
     DECL_LINK(RowActivatedHdl, const weld::TreeIter&, bool);
 
-    DECL_LINK(ListViewChangedHdl, weld::TreeView&, void);
+    DECL_LINK(ListViewChangedHdl, weld::ItemView&, void);
 
     DECL_LINK(PopupMenuHdl, const CommandEvent&, bool);
 

@@ -152,7 +152,7 @@ IMPL_LINK(XMLFilterSettingsDialog, ClickHdl_Impl, weld::Button&, rButton, void)
         m_xDialog->response(RET_CLOSE);
 }
 
-IMPL_LINK_NOARG(XMLFilterSettingsDialog, SelectionChangedHdl_Impl, weld::TreeView&, void)
+IMPL_LINK_NOARG(XMLFilterSettingsDialog, SelectionChangedHdl_Impl, weld::ItemView&, void)
 {
     updateStates();
 }

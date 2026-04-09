@@ -434,7 +434,7 @@ IMPL_LINK(QuickFindPanel, SearchFindsListRender, weld::TreeView::render_args, aP
     }
 }
 
-IMPL_LINK_NOARG(QuickFindPanel, SearchFindsListSelectionChangedHandler, weld::TreeView&, void)
+IMPL_LINK_NOARG(QuickFindPanel, SearchFindsListSelectionChangedHandler, weld::ItemView&, void)
 {
     std::unique_ptr<weld::TreeIter> xEntry = m_xSearchFindsList->get_cursor();
     if (!xEntry)

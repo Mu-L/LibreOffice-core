@@ -87,7 +87,7 @@ void ScScenarioWindow::UpdateEntries( const std::vector<OUString> &rNewEntryList
     }
 }
 
-IMPL_LINK_NOARG(ScScenarioWindow, SelectHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(ScScenarioWindow, SelectHdl, weld::ItemView&, void)
 {
     if (const ScenarioEntry* pEntry = GetSelectedScenarioEntry())
         SetComment(pEntry->maComment);

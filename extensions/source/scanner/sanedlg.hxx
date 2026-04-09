@@ -87,7 +87,7 @@ private:
     DECL_LINK( MetricValueModifyHdl, weld::MetricSpinButton&, void );
     DECL_LINK( ValueModifyHdl, weld::ComboBox&, void );
     DECL_LINK( ReloadSaneOptionsHdl, Sane&, void );
-    DECL_LINK( OptionsBoxSelectHdl, weld::TreeView&, void );
+    DECL_LINK(OptionsBoxSelectHdl, weld::ItemView&, void);
 
     void SaveState();
     bool LoadState();

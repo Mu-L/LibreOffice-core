@@ -43,7 +43,7 @@ namespace abp
         // OImportPage overridables
         virtual bool        canAdvance() const override;
 
-        DECL_LINK(OnTableSelected, weld::TreeView&, void);
+        DECL_LINK(OnTableSelected, weld::ItemView&, void);
         DECL_LINK(OnTableDoubleClicked, const weld::TreeIter&, bool);
     };
 

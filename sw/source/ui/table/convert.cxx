@@ -273,7 +273,7 @@ IMPL_LINK(SwConvertTableDlg, CheckHdl, weld::Toggleable&, rBtn, void)
     }
 }
 
-IMPL_LINK_NOARG(SwConvertTableDlg, SelFormatHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SwConvertTableDlg, SelFormatHdl, weld::ItemView&, void)
 {
     m_nIndex = m_xLbFormat->get_selected_index();
     if (m_nIndex == -1)

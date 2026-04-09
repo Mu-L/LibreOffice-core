@@ -59,7 +59,7 @@ public:
     DECL_LINK( LeftBtnHdl_Impl, weld::Button&, void );
     DECL_LINK( LanguageHdl_Impl, weld::ComboBox&, void );
     DECL_LINK( WordSelectHdl_Impl, weld::ComboBox&, void );
-    DECL_LINK( AlternativesSelectHdl_Impl, weld::TreeView&, void );
+    DECL_LINK(AlternativesSelectHdl_Impl, weld::ItemView&, void);
     DECL_LINK(AlternativesDoubleClickHdl_Impl, const weld::TreeIter&, bool);
     DECL_LINK( SelectFirstHdl_Impl, void*, void );
     DECL_LINK( ReplaceEditHdl_Impl, weld::Entry&, void );

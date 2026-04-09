@@ -63,7 +63,7 @@ private:
     DECL_LINK(EditHdl, weld::Button&, void);
     DECL_LINK(RemoveHdl, weld::Button&, void);
     DECL_LINK(RenameHdl, weld::Button&, void);
-    DECL_LINK(SelFormatHdl, weld::TreeView&, void);
+    DECL_LINK(SelFormatHdl, weld::ItemView&, void);
 
     OUString GenerateUniqueStyleName();
 

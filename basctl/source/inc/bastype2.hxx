@@ -240,7 +240,7 @@ public:
                   std::unique_ptr<Entry>&& rUserData,
                   weld::TreeIter* pRet = nullptr);
 
-    void connect_changed(const Link<weld::TreeView&, void>& rLink)
+    void connect_changed(const Link<weld::ItemView&, void>& rLink)
     {
         m_xControl->connect_selection_changed(rLink);
     }

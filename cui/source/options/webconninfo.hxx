@@ -37,7 +37,7 @@ namespace svx
         DECL_LINK( RemovePasswordHdl, weld::Button&, void );
         DECL_LINK( RemoveAllPasswordsHdl, weld::Button&, void );
         DECL_LINK( ChangePasswordHdl, weld::Button&, void );
-        DECL_LINK( EntrySelectedHdl, weld::TreeView&, void );
+        DECL_LINK(EntrySelectedHdl, weld::ItemView&, void);
 
         void FillPasswordList();
 

@@ -145,7 +145,7 @@ class ObjectPage final : public OrganizePage
     std::unique_ptr<weld::Button> m_xDelButton;
     std::unique_ptr<SbTreeListBoxDropTarget> m_xDropTarget;
 
-    DECL_LINK( BasicBoxHighlightHdl, weld::TreeView&, void );
+    DECL_LINK(BasicBoxHighlightHdl, weld::ItemView&, void);
     DECL_LINK( ButtonHdl, weld::Button&, void );
     DECL_LINK( EditingEntryHdl, const weld::TreeIter&, bool );
     typedef std::pair<const weld::TreeIter&, OUString> IterString;
@@ -181,7 +181,7 @@ class LibPage final : public OrganizePage
     ScriptDocument      m_aCurDocument;
     LibraryLocation     m_eCurLocation;
 
-    DECL_LINK( TreeListHighlightHdl, weld::TreeView&, void );
+    DECL_LINK(TreeListHighlightHdl, weld::ItemView&, void);
     DECL_LINK( BasicSelectHdl, weld::ComboBox&, void );
     DECL_LINK( ButtonHdl, weld::Button&, void );
     DECL_LINK( CheckPasswordHdl, SvxPasswordDialog *, bool );

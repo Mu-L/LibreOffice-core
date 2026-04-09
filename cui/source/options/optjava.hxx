@@ -84,7 +84,7 @@ private:
 
     DECL_LINK(EnableHdl_Impl, weld::Toggleable&, void);
     DECL_LINK(CheckHdl_Impl, const weld::TreeView::iter_col&, void);
-    DECL_LINK(SelectHdl_Impl, weld::TreeView&, void);
+    DECL_LINK(SelectHdl_Impl, weld::ItemView&, void);
     DECL_LINK(AddHdl_Impl, weld::Button&, void);
     DECL_LINK(ParameterHdl_Impl, weld::Button&, void);
     DECL_LINK(ClassPathHdl_Impl, weld::Button&, void);
@@ -130,7 +130,7 @@ private:
     DECL_LINK(ModifyHdl_Impl, weld::Entry&, void);
     DECL_LINK(ActivateHdl_Impl, weld::Entry&, bool);
     DECL_LINK(AssignHdl_Impl, weld::Button&, void);
-    DECL_LINK(SelectHdl_Impl, weld::TreeView&, void);
+    DECL_LINK(SelectHdl_Impl, weld::ItemView&, void);
     DECL_LINK(DblClickHdl_Impl, const weld::TreeIter&, bool);
     DECL_LINK(RemoveHdl_Impl, weld::Button&, void);
     DECL_LINK(EditHdl_Impl, weld::Button&, void);
@@ -187,7 +187,7 @@ private:
     DECL_LINK(AddArchiveHdl_Impl, weld::Button&, void);
     DECL_LINK(AddPathHdl_Impl, weld::Button&, void);
     DECL_LINK(RemoveHdl_Impl, weld::Button&, void);
-    DECL_LINK(SelectHdl_Impl, weld::TreeView&, void);
+    DECL_LINK(SelectHdl_Impl, weld::ItemView&, void);
 
     bool IsPathDuplicate(std::u16string_view _rPath);
     void EnableRemoveButton()

@@ -59,7 +59,7 @@ DevelopmentToolDockingWindow::DevelopmentToolDockingWindow(SfxBindings* pInputBi
     SetText(SfxResId(STR_OBJECT_INSPECTOR));
 }
 
-IMPL_LINK(DevelopmentToolDockingWindow, DocumentModelTreeViewSelectionHandler, weld::TreeView&,
+IMPL_LINK(DevelopmentToolDockingWindow, DocumentModelTreeViewSelectionHandler, weld::ItemView&,
           rView, void)
 {
     if (mpDomToolbar->get_item_active(u"dom_current_selection_toggle"_ustr))

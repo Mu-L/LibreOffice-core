@@ -268,7 +268,8 @@ void SvxNumberFormatTabPage::Init_Impl()
     m_xCbSourceFormat->set_sensitive(false);
     m_xCbSourceFormat->hide();
 
-    Link<weld::TreeView&,void> aLink2 = LINK(this, SvxNumberFormatTabPage, SelFormatTreeListBoxHdl_Impl);
+    Link<weld::ItemView&, void> aLink2
+        = LINK(this, SvxNumberFormatTabPage, SelFormatTreeListBoxHdl_Impl);
     Link<weld::ComboBox&,void> aLink3 = LINK(this, SvxNumberFormatTabPage, SelFormatListBoxHdl_Impl);
     m_xLbCategory->connect_selection_changed(aLink2);
     m_xLbCategory->connect_focus_in(LINK(this, SvxNumberFormatTabPage, LostFocusHdl_Impl));
@@ -1115,7 +1116,7 @@ IMPL_LINK(SvxNumberFormatTabPage, SelFormatClickHdl_Impl, weld::Toggleable&, rLb
     SelFormatHdl_Impl(&rLb);
 }
 
-IMPL_LINK(SvxNumberFormatTabPage, SelFormatTreeListBoxHdl_Impl, weld::TreeView&, rLb, void)
+IMPL_LINK(SvxNumberFormatTabPage, SelFormatTreeListBoxHdl_Impl, weld::ItemView&, rLb, void)
 {
     SelFormatHdl_Impl(&rLb);
 }

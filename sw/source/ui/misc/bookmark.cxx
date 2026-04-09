@@ -142,7 +142,7 @@ IMPL_LINK_NOARG(SwInsertBookmarkDlg, DoubleClickHdl, const weld::TreeIter&, bool
     return true;
 }
 
-IMPL_LINK_NOARG(SwInsertBookmarkDlg, SelectionChangedHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SwInsertBookmarkDlg, SelectionChangedHdl, weld::ItemView&, void)
 {
     if (!ValidateBookmarks())
         return;

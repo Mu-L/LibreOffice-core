@@ -86,7 +86,7 @@ private:
 
     DECL_LINK(SelectBookHdl_Impl, weld::ComboBox&, void);
     DECL_LINK(SelectLangHdl_Impl, weld::ComboBox&, void);
-    DECL_LINK(SelectHdl, weld::TreeView&, void);
+    DECL_LINK(SelectHdl, weld::ItemView&, void);
     DECL_LINK(NewDelButtonHdl, weld::Button&, void);
     DECL_LINK(NewDelActionHdl, weld::Entry&, bool);
     DECL_LINK(ModifyHdl, weld::Entry&, void);

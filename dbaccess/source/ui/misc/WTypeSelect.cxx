@@ -245,7 +245,7 @@ OUString OWizTypeSelect::GetTitle() const
     return DBA_RES(STR_WIZ_TYPE_SELECT_TITLE);
 }
 
-IMPL_LINK_NOARG(OWizTypeSelect, ColumnSelectHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(OWizTypeSelect, ColumnSelectHdl, weld::ItemView&, void)
 {
     OFieldDescription* pField = weld::fromId<OFieldDescription*>(m_xColumnNames->get_selected_id());
     if (pField)

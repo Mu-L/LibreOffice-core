@@ -329,7 +329,7 @@ IMPL_LINK_NOARG(ScSolverOptionsDialog, EngineSelectHdl, weld::ComboBox&, void)
     }
 }
 
-IMPL_LINK_NOARG(ScSolverOptionsDialog, SettingsSelHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(ScSolverOptionsDialog, SettingsSelHdl, weld::ItemView&, void)
 {
     bool bCheckbox = false;
 

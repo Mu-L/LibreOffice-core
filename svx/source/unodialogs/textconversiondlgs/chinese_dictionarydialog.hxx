@@ -72,7 +72,7 @@ public:
     void set_size_request(int nWidth, int nHeight) { m_xControl->set_size_request(nWidth, nHeight); }
     void hide() { m_xControl->hide(); }
     void show() { m_xControl->show(); }
-    void connect_changed(const Link<weld::TreeView&, void>& rLink)
+    void connect_changed(const Link<weld::ItemView&, void>& rLink)
     {
         m_xControl->connect_selection_changed(rLink);
     }
@@ -118,7 +118,7 @@ private:
     DECL_LINK( DirectionHdl, weld::Toggleable&, void );
     DECL_LINK( EditFieldsHdl, weld::Entry&, void );
     DECL_LINK( EditFieldsListBoxHdl, weld::ComboBox&, void );
-    DECL_LINK( MappingSelectHdl, weld::TreeView&, void );
+    DECL_LINK(MappingSelectHdl, weld::ItemView&, void);
     DECL_LINK( AddHdl, weld::Button&, void );
     DECL_LINK( ModifyHdl, weld::Button&, void );
     DECL_LINK( DeleteHdl, weld::Button&, void );

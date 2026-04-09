@@ -97,7 +97,7 @@ namespace dbp
         virtual bool        canAdvance() const override;
 
         DECL_LINK( OnMoveEntry, weld::Button&, void );
-        DECL_LINK( OnEntrySelected, weld::TreeView&, void );
+        DECL_LINK(OnEntrySelected, weld::ItemView&, void);
         DECL_LINK( OnNameModified, weld::Entry&, void );
 
         void implCheckMoveButtons();
@@ -144,7 +144,7 @@ namespace dbp
 
         void implTraveledOptions();
 
-        DECL_LINK( OnOptionSelected, weld::TreeView&, void );
+        DECL_LINK(OnOptionSelected, weld::ItemView&, void);
     };
 
     class OOptionDBFieldPage : public ODBFieldPage

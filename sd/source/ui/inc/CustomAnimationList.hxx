@@ -133,7 +133,7 @@ private:
 
     bool    mbIgnorePaint;
 
-    DECL_LINK(SelectHdl, weld::TreeView&, void);
+    DECL_LINK(SelectHdl, weld::ItemView&, void);
     DECL_LINK(CommandHdl, const CommandEvent&, bool);
     DECL_LINK(DoubleClickHdl, const weld::TreeIter&, bool);
     DECL_LINK(DragBeginHdl, bool&, bool);

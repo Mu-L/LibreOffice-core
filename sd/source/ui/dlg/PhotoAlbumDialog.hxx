@@ -67,7 +67,7 @@ private:
     DECL_LINK(DownHdl, weld::Button&, void);
     DECL_LINK(RemoveHdl, weld::Button&, void);
 
-    DECL_LINK(SelectHdl, weld::TreeView&, void);
+    DECL_LINK(SelectHdl, weld::ItemView&, void);
     DECL_LINK(TypeSelectHdl, weld::ComboBox&, void);
 
     Reference< drawing::XDrawPage > appendNewSlide(AutoLayout aLayout,

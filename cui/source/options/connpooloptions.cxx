@@ -229,7 +229,7 @@ namespace offapp
         implInitControls(*_rSet);
     }
 
-    IMPL_LINK_NOARG(ConnectionPoolOptionsPage, OnDriverRowChanged, weld::TreeView&, void)
+    IMPL_LINK_NOARG(ConnectionPoolOptionsPage, OnDriverRowChanged, weld::ItemView&, void)
     {
         const int nDriverPos = m_xDriverList->get_selected_index();
         bool bValidRow = (nDriverPos != -1);

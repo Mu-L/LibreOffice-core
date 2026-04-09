@@ -455,7 +455,7 @@ void ScTpUserLists::RemoveList( size_t nList )
 
 // Handler:
 
-IMPL_LINK( ScTpUserLists, LbSelectHdl, weld::TreeView&, rLb, void )
+IMPL_LINK(ScTpUserLists, LbSelectHdl, weld::ItemView&, rLb, void)
 {
     if ( &rLb != mxLbLists.get() )
         return;

@@ -67,7 +67,7 @@ SwChangeDBDlg::SwChangeDBDlg(SwView const & rVw)
     m_xUsedDBTLB->set_selection_mode(SelectionMode::Multiple);
     m_xUsedDBTLB->make_sorted();
 
-    Link<weld::TreeView&,void> aLink = LINK(this, SwChangeDBDlg, TreeSelectHdl);
+    Link<weld::ItemView&, void> aLink = LINK(this, SwChangeDBDlg, TreeSelectHdl);
 
     m_xUsedDBTLB->connect_selection_changed(aLink);
     m_xAvailDBTLB->connect_changed(aLink);
@@ -206,7 +206,7 @@ IMPL_LINK_NOARG(SwChangeDBDlg, ButtonHdl, weld::Button&, void)
     m_xDialog->response(RET_OK);
 }
 
-IMPL_LINK_NOARG(SwChangeDBDlg, TreeSelectHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SwChangeDBDlg, TreeSelectHdl, weld::ItemView&, void)
 {
     TreeSelect();
 }

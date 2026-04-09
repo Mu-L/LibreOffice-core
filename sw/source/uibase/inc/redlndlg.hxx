@@ -92,7 +92,7 @@ class SW_DLLPUBLIC SwRedlineAcceptDlg final : public SfxListener
     DECL_DLLPRIVATE_LINK( RejectHdl,     SvxTPView*, void );
     DECL_DLLPRIVATE_LINK( RejectAllHdl,  SvxTPView*, void );
     DECL_DLLPRIVATE_LINK( UndoHdl,       SvxTPView*, void );
-    DECL_DLLPRIVATE_LINK( SelectHdl,   weld::TreeView&, void );
+    DECL_DLLPRIVATE_LINK(SelectHdl, weld::ItemView&, void);
     DECL_DLLPRIVATE_LINK( GotoHdl, Timer*, void );
     DECL_DLLPRIVATE_LINK( CommandHdl, const CommandEvent&, bool );
 

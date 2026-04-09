@@ -68,7 +68,7 @@ namespace offapp
 
         DECL_LINK(OnEnabledDisabled, weld::Toggleable&, void);
         DECL_LINK(OnSpinValueChanged, weld::SpinButton&, void);
-        DECL_LINK(OnDriverRowChanged, weld::TreeView&, void);
+        DECL_LINK(OnDriverRowChanged, weld::ItemView&, void);
 
         void implInitControls(const SfxItemSet& _rSet);
 

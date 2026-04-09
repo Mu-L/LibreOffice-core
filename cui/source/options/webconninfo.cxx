@@ -206,8 +206,7 @@ IMPL_LINK_NOARG(WebConnectionInfoDialog, ChangePasswordHdl, weld::Button&, void)
     {}
 }
 
-
-IMPL_LINK_NOARG(WebConnectionInfoDialog, EntrySelectedHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(WebConnectionInfoDialog, EntrySelectedHdl, weld::ItemView&, void)
 {
     int nEntry = m_xPasswordsLB->get_selected_index();
     if (nEntry == -1)

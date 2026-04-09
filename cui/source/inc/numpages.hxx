@@ -283,7 +283,7 @@ class SvxNumOptionsTabPage : public SfxTabPage
     void                CheckForStartValue_Impl(sal_uInt16 nNumberingType);
 
     DECL_LINK(NumberTypeSelectHdl_Impl, weld::ComboBox&, void);
-    DECL_LINK(LevelHdl_Impl, weld::TreeView&, void);
+    DECL_LINK(LevelHdl_Impl, weld::ItemView&, void);
     DECL_LINK(LevelHdl, void *, void);
     DECL_LINK(PopupActivateHdl_Impl, weld::Toggleable&, void);
     DECL_LINK(GraphicHdl_Impl, const OUString&, void);
@@ -371,7 +371,7 @@ class SvxNumPositionTabPage : public SfxTabPage
 
     void                InitControls();
 
-    DECL_LINK(LevelHdl_Impl, weld::TreeView&, void);
+    DECL_LINK(LevelHdl_Impl, weld::ItemView&, void);
     DECL_LINK(LevelHdl, void *, void);
     DECL_LINK(EditModifyHdl_Impl, weld::ComboBox&, void);
     DECL_LINK(DistanceHdl_Impl, weld::MetricSpinButton&, void);

@@ -218,7 +218,7 @@ private:
     std::unique_ptr<weld::CustomWeld> m_xDragWIN;
 
     DECL_LINK(OKHdl_Impl, weld::Button&, void);
-    DECL_LINK(ListBoxSelectHdl_Impl, weld::TreeView&, void);
+    DECL_LINK(ListBoxSelectHdl_Impl, weld::ItemView&, void);
     DECL_LINK(EditModifyHdl_Impl, AddressMultiLineEdit&, void);
     DECL_LINK(ImageButtonHdl_Impl, weld::Button&, void);
     DECL_LINK(SelectionChangedHdl_Impl, bool, void);

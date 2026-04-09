@@ -187,7 +187,7 @@ void SwCondCollPage::AssignRemove(const weld::Widget* pBtn)
         m_xTbLinks->set_text(nPos, u""_ustr, 1);
 }
 
-IMPL_LINK(SwCondCollPage, SelectTreeListBoxHdl, weld::TreeView&, rBox, void)
+IMPL_LINK(SwCondCollPage, SelectTreeListBoxHdl, weld::ItemView&, rBox, void)
 {
     SelectHdl(&rBox);
 }

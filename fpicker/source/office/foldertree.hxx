@@ -39,7 +39,7 @@ public:
 
     void clear() { m_xTreeView->clear(); }
 
-    void connect_changed(const Link<weld::TreeView&, void>& rLink)
+    void connect_changed(const Link<weld::ItemView&, void>& rLink)
     {
         m_xTreeView->connect_selection_changed(rLink);
     }

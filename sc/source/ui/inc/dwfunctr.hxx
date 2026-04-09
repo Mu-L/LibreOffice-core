@@ -83,7 +83,7 @@ private:
                     DECL_LINK( SetHelpClickHdl, weld::Button&, void );
                     DECL_LINK( SetSimilarityToggleHdl, weld::Toggleable&, void );
                     DECL_LINK( SelComboHdl, weld::ComboBox&, void );
-                    DECL_LINK( SelTreeHdl, weld::TreeView&, void );
+                    DECL_LINK(SelTreeHdl, weld::ItemView&, void);
                     DECL_LINK( ModifyHdl, weld::Entry&, void );
                     DECL_LINK( KeyInputHdl, const KeyEvent&, bool);
 

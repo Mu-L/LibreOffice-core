@@ -180,7 +180,7 @@ IMPL_LINK_NOARG(SvxThesaurusDialog, WordSelectHdl_Impl, weld::ComboBox&, void)
     m_aModifyIdle.Start();
 }
 
-IMPL_LINK_NOARG(SvxThesaurusDialog, AlternativesSelectHdl_Impl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SvxThesaurusDialog, AlternativesSelectHdl_Impl, weld::ItemView&, void)
 {
     int nEntry = m_xAlternativesCT->get_selected_index();
     if (nEntry != -1)

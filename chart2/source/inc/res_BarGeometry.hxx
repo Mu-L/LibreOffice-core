@@ -35,7 +35,7 @@ public:
     sal_Int32 get_selected_index() const;
     void select(sal_Int32 nPos);
 
-    void connect_changed(const Link<weld::TreeView&, void>& rLink);
+    void connect_changed(const Link<weld::ItemView&, void>& rLink);
 
 private:
     std::unique_ptr<weld::Label> m_xFT_Geometry;

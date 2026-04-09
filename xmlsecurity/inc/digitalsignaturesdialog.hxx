@@ -77,7 +77,7 @@ private:
     DECL_LINK(AddButtonHdl, weld::Button&, void);
     void AddButtonHdlImpl();
     DECL_LINK(RemoveButtonHdl, weld::Button&, void);
-    DECL_LINK(SignatureHighlightHdl, weld::TreeView&, void);
+    DECL_LINK(SignatureHighlightHdl, weld::ItemView&, void);
     DECL_LINK(SignatureSelectHdl, const weld::TreeIter&, bool);
     DECL_LINK(StartVerifySignatureHdl, LinkParamNone*, bool);
     DECL_LINK(OKButtonHdl, weld::Button&, void);

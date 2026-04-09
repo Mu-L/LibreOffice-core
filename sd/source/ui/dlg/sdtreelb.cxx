@@ -848,7 +848,7 @@ IMPL_LINK(SdPageObjsTLV, EditedEntryHdl, const IterString&, rIterString, bool)
     return true;
 }
 
-IMPL_LINK_NOARG(SdPageObjsTLV, SelectHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SdPageObjsTLV, SelectHdl, weld::ItemView&, void)
 {
     if (m_nSelectEventId)
         Application::RemoveUserEvent(m_nSelectEventId);

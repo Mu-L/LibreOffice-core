@@ -190,7 +190,7 @@ void SwGlossaryGroupDlg::Apply()
     }
 }
 
-IMPL_LINK_NOARG( SwGlossaryGroupDlg, SelectHdl, weld::TreeView&, void )
+IMPL_LINK_NOARG(SwGlossaryGroupDlg, SelectHdl, weld::ItemView&, void)
 {
     m_xNewPB->set_sensitive(false);
     int nFirstEntry = m_xGroupTLB->get_selected_index();

@@ -29,7 +29,7 @@ private:
     DECL_LINK(OKHdl_Impl, weld::Button&, void);
     // After operations in a TreeView we have nothing selected
     // Is Selected element handler for the TreeView
-    DECL_LINK(SelectHdl, weld::TreeView&, void);
+    DECL_LINK(SelectHdl, weld::ItemView&, void);
 
     std::set<OUString> m_aURLs;
 

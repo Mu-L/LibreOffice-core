@@ -89,7 +89,7 @@ namespace dbaui
 
         DECL_LINK(OnVisitedTimeout, Timer*, void);
         DECL_LINK(OnValueModified, weld::Entry&, void);
-        DECL_LINK(OnEntryListBoxSelected, weld::TreeView&, void);
+        DECL_LINK(OnEntryListBoxSelected, weld::ItemView&, void);
         DECL_LINK(OnButtonClicked, weld::Button&, void);
         DECL_LINK(OnValueLoseFocusHdl, weld::Widget&, void);
         bool CheckValueForError();

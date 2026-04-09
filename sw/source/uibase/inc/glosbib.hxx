@@ -60,7 +60,7 @@ class SwGlossaryGroupDlg final : public SfxDialogController
     bool IsDeleteAllowed(const OUString& rGroup);
 
     void Apply();
-    DECL_LINK(SelectHdl, weld::TreeView&, void);
+    DECL_LINK(SelectHdl, weld::ItemView&, void);
     DECL_LINK(NewHdl, weld::Button&, void);
     DECL_LINK(DeleteHdl, weld::Button&, void);
     DECL_LINK(ModifyHdl, weld::Entry&, void);

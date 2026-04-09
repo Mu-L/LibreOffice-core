@@ -55,7 +55,7 @@ public:
 
     void    AddDataSource(const OUString& rSource);
 
-    void connect_changed(const Link<weld::TreeView&, void>& rLink)
+    void connect_changed(const Link<weld::ItemView&, void>& rLink)
     {
         m_xTreeView->connect_selection_changed(rLink);
     }

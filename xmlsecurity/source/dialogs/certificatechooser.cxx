@@ -420,7 +420,7 @@ IMPL_LINK_NOARG(CertificateChooser, SearchModifyHdl, weld::Entry&, void)
     ImplInitialize(true);
 }
 
-IMPL_LINK_NOARG(CertificateChooser, CertificateHighlightHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(CertificateChooser, CertificateHighlightHdl, weld::ItemView&, void)
 {
     bool bEnable = m_xCertLB->get_selected_index() != -1;
     m_xViewBtn->set_sensitive(bEnable);

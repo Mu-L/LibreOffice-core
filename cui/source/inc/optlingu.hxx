@@ -56,7 +56,7 @@ class SvxEditModulesDlg : public weld::GenericDialogController
 
     css::uno::Reference< css::configuration::XReadWriteAccess> m_xReadWriteAccess;
 
-    DECL_LINK( SelectHdl_Impl, weld::TreeView&, void );
+    DECL_LINK(SelectHdl_Impl, weld::ItemView&, void);
     DECL_LINK( UpDownHdl_Impl, weld::Button&, void );
     DECL_LINK( ClickHdl_Impl, weld::Button&, void );
     DECL_LINK( BackHdl_Impl, weld::Button&, void );
@@ -122,7 +122,7 @@ private:
     void    AddDicBoxEntry( const css::uno::Reference< css::linguistic2::XDictionary > &rxDic, sal_uInt16 nIdx );
     static sal_uInt32 GetDicUserData( const css::uno::Reference< css::linguistic2::XDictionary > &rxDic, sal_uInt16 nIdx );
 
-    DECL_LINK( SelectHdl_Impl, weld::TreeView&, void );
+    DECL_LINK(SelectHdl_Impl, weld::ItemView&, void);
     DECL_LINK( ClickHdl_Impl, weld::Button&, void );
     DECL_LINK(BoxDoubleClickHdl_Impl, const weld::TreeIter&, bool);
     DECL_LINK( ModulesBoxCheckButtonHdl_Impl, const weld::TreeView::iter_col&, void );

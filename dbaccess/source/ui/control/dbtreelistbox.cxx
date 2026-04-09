@@ -176,7 +176,7 @@ void TreeListBox::implStartSelectionTimer()
     m_aTimer.Start();
 }
 
-IMPL_LINK_NOARG(TreeListBox, SelectHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(TreeListBox, SelectHdl, weld::ItemView&, void)
 {
     implStartSelectionTimer();
 }

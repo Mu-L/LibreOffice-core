@@ -107,7 +107,7 @@ bool IsExpandable(const IdeSymbolInfo& rSymbol)
 }
 
 std::shared_ptr<const IdeSymbolInfo>
-GetSymbolForIter(const weld::TreeIter& rIter, const weld::TreeView& rTree,
+GetSymbolForIter(const weld::TreeIter& rIter, const weld::ItemView& rTree,
                  const std::map<OUString, std::shared_ptr<IdeSymbolInfo>>& rIndex)
 {
     const OUString sId = rTree.get_id(rIter);
@@ -727,12 +727,12 @@ void ObjectBrowser::dispose()
         m_xScopeSelector->connect_changed(Link<weld::ComboBox&, void>());
     if (m_xLeftTreeView)
     {
-        m_xLeftTreeView->connect_selection_changed(Link<weld::TreeView&, void>());
+        m_xLeftTreeView->connect_selection_changed(Link<weld::ItemView&, void>());
         m_xLeftTreeView->connect_expanding(Link<const weld::TreeIter&, bool>());
     }
     if (m_xRightMembersView)
     {
-        m_xRightMembersView->connect_selection_changed(Link<weld::TreeView&, void>());
+        m_xRightMembersView->connect_selection_changed(Link<weld::ItemView&, void>());
     }
 
     m_pDocNotifier->dispose();
@@ -1138,7 +1138,7 @@ void ObjectBrowser::onDocumentClosed(const ScriptDocument&) { ScheduleRefresh();
 void ObjectBrowser::onDocumentTitleChanged(const ScriptDocument&) { ScheduleRefresh(); }
 void ObjectBrowser::onDocumentModeChanged(const ScriptDocument&) { /* STUB */}
 
-IMPL_LINK(ObjectBrowser, OnLeftTreeSelect, weld::TreeView&, rTree, void)
+IMPL_LINK(ObjectBrowser, OnLeftTreeSelect, weld::ItemView&, rTree, void)
 {
     if (m_bDisposed)
     {
@@ -1171,7 +1171,7 @@ IMPL_LINK(ObjectBrowser, OnLeftTreeSelect, weld::TreeView&, rTree, void)
     }
 }
 
-IMPL_LINK(ObjectBrowser, OnRightTreeSelect, weld::TreeView&, rTree, void)
+IMPL_LINK(ObjectBrowser, OnRightTreeSelect, weld::ItemView&, rTree, void)
 {
     if (m_bDisposed)
     {

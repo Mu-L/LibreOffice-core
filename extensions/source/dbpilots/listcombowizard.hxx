@@ -115,7 +115,7 @@ private:
     virtual bool canAdvance() const override;
 
     DECL_LINK(OnTableDoubleClicked, const weld::TreeIter&, bool);
-    DECL_LINK(OnTableSelected, weld::TreeView&, void);
+    DECL_LINK(OnTableSelected, weld::ItemView&, void);
 };
 
 class OContentFieldSelection final : public OLCPage
@@ -129,7 +129,7 @@ public:
     virtual ~OContentFieldSelection() override;
 
 private:
-    DECL_LINK(OnFieldSelected, weld::TreeView&, void);
+    DECL_LINK(OnFieldSelected, weld::ItemView&, void);
     DECL_LINK(OnTableDoubleClicked, const weld::TreeIter&, bool);
 
     // OWizardPage overridables

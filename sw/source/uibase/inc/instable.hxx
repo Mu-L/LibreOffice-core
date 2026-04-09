@@ -64,7 +64,7 @@ class SwInsTableDlg final : public SfxDialogController
     void InitAutoTableFormat();
 
     DECL_LINK(TextFilterHdl, OUString&, bool);
-    DECL_LINK(SelFormatHdl, weld::TreeView&, void);
+    DECL_LINK(SelFormatHdl, weld::ItemView&, void);
     DECL_LINK(ModifyName, weld::Entry&, void);
     DECL_LINK(ModifyRowCol, weld::Entry&, void);
     DECL_LINK(OKHdl, weld::Button&, void);

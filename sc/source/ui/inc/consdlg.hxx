@@ -88,7 +88,7 @@ private:
     DECL_LINK( GetFocusHdl, weld::Widget&, void );
     DECL_LINK( GetEditFocusHdl, formula::RefEdit&, void );
     DECL_LINK( ModifyHdl, formula::RefEdit&, void );
-    DECL_LINK( SelectTVHdl, weld::TreeView&, void );
+    DECL_LINK(SelectTVHdl, weld::ItemView&, void);
     DECL_LINK( SelectCBHdl, weld::ComboBox&, void );
 
     static ScSubTotalFunc  LbPosToFunc( sal_Int32 nPos );

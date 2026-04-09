@@ -77,7 +77,7 @@ SelectSheetViewDialog::SelectSheetViewDialog(weld::Window* pParent, ScViewData& 
 
 SelectSheetViewDialog::~SelectSheetViewDialog() {}
 
-IMPL_LINK_NOARG(SelectSheetViewDialog, NameModifyHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SelectSheetViewDialog, NameModifyHdl, weld::ItemView&, void)
 {
     m_nCurrentIndex = m_xEntryTree->get_selected_id().toInt32();
 }

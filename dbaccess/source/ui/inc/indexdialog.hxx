@@ -75,7 +75,7 @@ private:
 
     void IndexSelected();
 
-    DECL_LINK(OnIndexSelected, weld::TreeView&, void);
+    DECL_LINK(OnIndexSelected, weld::ItemView&, void);
     DECL_LINK(OnIndexAction, const OUString&, void);
     DECL_LINK(OnEntryEditing, const weld::TreeIter&, bool);
     DECL_LINK(OnEntryEdited, const IterString&, bool);

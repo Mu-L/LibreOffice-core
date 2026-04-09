@@ -199,7 +199,7 @@ IMPL_LINK_NOARG(ODbaseIndexDialog, RemoveAllClickHdl, weld::Button&, void)
     checkButtons();
 }
 
-IMPL_LINK_NOARG(ODbaseIndexDialog, OnListEntrySelected, weld::TreeView&, void)
+IMPL_LINK_NOARG(ODbaseIndexDialog, OnListEntrySelected, weld::ItemView&, void)
 {
     checkButtons();
 }

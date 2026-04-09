@@ -451,7 +451,7 @@ void DataSourceTabPage::updateControlState()
     isValid();
 }
 
-IMPL_LINK_NOARG(DataSourceTabPage, SeriesSelectionChangedHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(DataSourceTabPage, SeriesSelectionChangedHdl, weld::ItemView&, void)
 {
     m_rDialogModel.startControllerLockTimer();
     if (m_xLB_SERIES->get_selected_index() != -1)
@@ -462,7 +462,7 @@ IMPL_LINK_NOARG(DataSourceTabPage, SeriesSelectionChangedHdl, weld::TreeView&, v
     updateControlState();
 }
 
-IMPL_LINK_NOARG(DataSourceTabPage, RoleSelectionChangedHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(DataSourceTabPage, RoleSelectionChangedHdl, weld::ItemView&, void)
 {
     m_rDialogModel.startControllerLockTimer();
     int nEntry = m_xLB_ROLE->get_selected_index();

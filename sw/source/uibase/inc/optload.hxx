@@ -192,7 +192,7 @@ private:
     DECL_LINK(ModifyEntryHdl, weld::Entry&, void);
     DECL_LINK(ModifyComboHdl, weld::ComboBox&, void);
     DECL_LINK(OrderHdl, weld::ComboBox&, void );
-    DECL_LINK(ShowEntryHdl, weld::TreeView&, void);
+    DECL_LINK(ShowEntryHdl, weld::ItemView&, void);
     DECL_LINK(ToggleEntryHdl, const weld::TreeView::iter_col&, void);
     DECL_LINK(TextFilterHdl, OUString&, bool);
 

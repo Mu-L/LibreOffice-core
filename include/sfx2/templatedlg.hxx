@@ -164,7 +164,7 @@ private:
 
 public:
     DECL_LINK(NewCategoryEditHdl, weld::Entry&, void);
-    DECL_LINK(SelectCategoryHdl, weld::TreeView&, void);
+    DECL_LINK(SelectCategoryHdl, weld::ItemView&, void);
 
     void SetCategoryLBEntries(std::vector<OUString> names);
 

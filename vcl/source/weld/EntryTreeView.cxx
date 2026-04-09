@@ -19,7 +19,7 @@ EntryTreeView::EntryTreeView(std::unique_ptr<Entry> xEntry, std::unique_ptr<Tree
     m_xEntry->connect_changed(LINK(this, EntryTreeView, ModifyHdl));
 }
 
-IMPL_LINK(EntryTreeView, ClickHdl, weld::TreeView&, rView, void)
+IMPL_LINK(EntryTreeView, ClickHdl, weld::ItemView&, rView, void)
 {
     m_xEntry->set_text(rView.get_selected_text());
     m_aChangeHdl.Call(*this);

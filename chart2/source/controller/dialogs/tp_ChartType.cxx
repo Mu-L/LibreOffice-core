@@ -227,10 +227,7 @@ IMPL_LINK_NOARG(ChartTypeTabPage, SelectSubTypeHdl, ValueSet*, void)
     }
 }
 
-IMPL_LINK_NOARG(ChartTypeTabPage, SelectMainTypeHdl, weld::TreeView&, void)
-{
-    selectMainType();
-}
+IMPL_LINK_NOARG(ChartTypeTabPage, SelectMainTypeHdl, weld::ItemView&, void) { selectMainType(); }
 
 void ChartTypeTabPage::selectMainType()
 {

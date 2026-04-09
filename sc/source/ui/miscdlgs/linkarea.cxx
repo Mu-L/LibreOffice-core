@@ -166,7 +166,7 @@ void ScLinkedAreaDlg::InitFromOldLink( const OUString& rFile, const OUString& rF
     UpdateEnable();
 }
 
-IMPL_LINK_NOARG(ScLinkedAreaDlg, RangeHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(ScLinkedAreaDlg, RangeHdl, weld::ItemView&, void)
 {
     UpdateEnable();
 }

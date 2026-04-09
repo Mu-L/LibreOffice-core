@@ -87,7 +87,7 @@ class ODbaseIndexDialog : public weld::GenericDialogController
     DECL_LINK( AddAllClickHdl, weld::Button&, void );
     DECL_LINK( RemoveAllClickHdl, weld::Button&, void );
     DECL_LINK( OKClickHdl, weld::Button&, void );
-    DECL_LINK( OnListEntrySelected, weld::TreeView&, void );
+    DECL_LINK(OnListEntrySelected, weld::ItemView&, void);
 
 protected:
     void        Init();

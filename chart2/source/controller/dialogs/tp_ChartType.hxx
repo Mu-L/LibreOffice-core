@@ -27,7 +27,11 @@
 
 #include <vcl/wizardmachine.hxx>
 
-namespace weld { class CustomWeld; }
+namespace weld
+{
+class CustomWeld;
+class ItemView;
+}
 
 class ValueSet;
 
@@ -64,7 +68,7 @@ private:
     void commitToModel( const ChartTypeParameter& rParameter );
     void selectMainType();
 
-    DECL_LINK(SelectMainTypeHdl, weld::TreeView&, void);
+    DECL_LINK(SelectMainTypeHdl, weld::ItemView&, void);
     DECL_LINK(SelectSubTypeHdl, ValueSet*, void );
 
     std::unique_ptr<Dim3DLookResourceGroup>     m_pDim3DLookResourceGroup;

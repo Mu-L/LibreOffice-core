@@ -44,7 +44,7 @@ private:
 
     DECL_LINK(BtnOkHdl, weld::Button&, void);
     DECL_LINK(OptionHdl, weld::Toggleable&, void);
-    DECL_LINK(SelectHdl, weld::TreeView&, void);
+    DECL_LINK(SelectHdl, weld::ItemView&, void);
 
 public:
     ColorSchemeDialog(weld::Window* pParent, VclPtr<ModulWindowLayout> pModulWinLayout);

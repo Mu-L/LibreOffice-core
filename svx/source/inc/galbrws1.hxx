@@ -155,12 +155,12 @@ private:
     virtual void Notify(SfxBroadcaster& rBC, const SfxHint& rHint) override;
 
     DECL_LINK(ClickNewThemeHdl, weld::Button&, void);
-    DECL_LINK(SelectThemeHdl, weld::TreeView&, void);
+    DECL_LINK(SelectThemeHdl, weld::ItemView&, void);
     DECL_LINK(PopupMenuHdl1, const CommandEvent&, bool);
     DECL_LINK(KeyInputHdl1, const KeyEvent&, bool);
     DECL_STATIC_LINK(GalleryBrowser, OnMoreGalleriesClick, weld::Button&, void);
 
-    DECL_LINK(SelectObjectHdl, weld::TreeView&, void);
+    DECL_LINK(SelectObjectHdl, weld::ItemView&, void);
     DECL_LINK(SelectObjectValueSetHdl, ValueSet*, void);
     DECL_LINK(SelectTbxHdl, weld::Toggleable&, void);
     DECL_LINK(PopupMenuHdl2, const CommandEvent&, bool);

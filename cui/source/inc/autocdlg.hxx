@@ -118,7 +118,7 @@ class OfaSwAutoFmtOptionsPage : public SfxTabPage
     std::unique_ptr<weld::TreeView> m_xCheckLB;
     std::unique_ptr<weld::Button> m_xEditPB;
 
-    DECL_LINK(SelectHdl, weld::TreeView&, void);
+    DECL_LINK(SelectHdl, weld::ItemView&, void);
     DECL_LINK(EditHdl, weld::Button&, void);
     DECL_LINK(DoubleClickEditHdl, const weld::TreeIter&, bool);
 
@@ -191,7 +191,7 @@ private:
     std::unique_ptr<weld::Button> m_xDeleteReplacePB;
     std::unique_ptr<weld::Container> m_xButtonBox;
 
-    DECL_LINK(SelectHdl, weld::TreeView&, void);
+    DECL_LINK(SelectHdl, weld::ItemView&, void);
     DECL_LINK(NewDelButtonHdl, weld::Button&, void);
     DECL_LINK(NewDelActionHdl, weld::Entry&, bool);
     DECL_LINK(EntrySizeAllocHdl, const Size&, void);
@@ -250,7 +250,7 @@ private:
 
     DECL_LINK(NewDelButtonHdl, weld::Button&, void);
     DECL_LINK(NewDelActionHdl, weld::Entry&, bool);
-    DECL_LINK(SelectHdl, weld::TreeView&, void);
+    DECL_LINK(SelectHdl, weld::ItemView&, void);
     DECL_LINK(ModifyHdl, weld::Entry&, void);
     bool            NewDelHdl(const weld::Widget*);
                     /// Box filled with new language
@@ -409,7 +409,7 @@ private:
         Enables/disables the properties push button if selection in the
         smart tag types list box changes.
     */
-    DECL_LINK(SelectHdl, weld::TreeView&, void);
+    DECL_LINK(SelectHdl, weld::ItemView&, void);
 
 public:
     /// construction via Create()

@@ -732,7 +732,7 @@ void DbaIndexDialog::IndexSelected()
     updateToolbox();
 }
 
-IMPL_LINK_NOARG(DbaIndexDialog, OnIndexSelected, weld::TreeView&, void)
+IMPL_LINK_NOARG(DbaIndexDialog, OnIndexSelected, weld::ItemView&, void)
 {
     if (m_bNoHandlerCall)
         return;

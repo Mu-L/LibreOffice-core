@@ -65,7 +65,7 @@ namespace dbaui
         IContextMenuProvider*       m_pContextMenuProvider;
 
         DECL_LINK(KeyInputHdl, const KeyEvent&, bool);
-        DECL_LINK(SelectHdl, weld::TreeView&, void);
+        DECL_LINK(SelectHdl, weld::ItemView&, void);
         DECL_LINK(QueryTooltipHdl, const weld::TreeIter&, OUString);
         DECL_LINK(CommandHdl, const CommandEvent&, bool);
         DECL_LINK(DragBeginHdl, bool&, bool);

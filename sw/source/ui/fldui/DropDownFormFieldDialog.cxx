@@ -52,7 +52,7 @@ DropDownFormFieldDialog::DropDownFormFieldDialog(weld::Widget* pParent,
 
 DropDownFormFieldDialog::~DropDownFormFieldDialog() {}
 
-IMPL_LINK_NOARG(DropDownFormFieldDialog, ListChangedHdl, weld::TreeView&, void) { UpdateButtons(); }
+IMPL_LINK_NOARG(DropDownFormFieldDialog, ListChangedHdl, weld::ItemView&, void) { UpdateButtons(); }
 
 IMPL_LINK(DropDownFormFieldDialog, KeyPressedHdl, const KeyEvent&, rEvent, bool)
 {

@@ -371,7 +371,7 @@ namespace dbp
         return true;
     }
 
-    IMPL_LINK_NOARG(OGridFieldsSelection, OnEntrySelected, weld::TreeView&, void)
+    IMPL_LINK_NOARG(OGridFieldsSelection, OnEntrySelected, weld::ItemView&, void)
     {
         implCheckButtons();
     }

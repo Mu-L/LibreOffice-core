@@ -204,7 +204,7 @@ void SwFieldVarPage::Reset(const SfxItemSet* )
     }
 }
 
-IMPL_LINK_NOARG(SwFieldVarPage, TypeHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SwFieldVarPage, TypeHdl, weld::ItemView&, void)
 {
     // save old ListBoxPos
     const sal_Int32 nOld = GetTypeSel();
@@ -234,7 +234,7 @@ IMPL_LINK_NOARG(SwFieldVarPage, TypeHdl, weld::TreeView&, void)
     m_bInit = false;
 }
 
-IMPL_LINK( SwFieldVarPage, SubTypeListBoxHdl, weld::TreeView&, rBox, void )
+IMPL_LINK(SwFieldVarPage, SubTypeListBoxHdl, weld::ItemView&, rBox, void)
 {
     SubTypeHdl(&rBox);
 }
@@ -252,7 +252,7 @@ static inline sal_uInt32 lcl_getUsedNumFormat( const SwNumFormatTreeView& rNumFo
     return nNumberFormat;
 }
 
-void SwFieldVarPage::SubTypeHdl(const weld::TreeView* pBox)
+void SwFieldVarPage::SubTypeHdl(const weld::ItemView* pBox)
 {
     SwFieldTypesEnum nTypeId = static_cast<SwFieldTypesEnum>(m_xTypeLB->get_id(GetTypeSel()).toUInt32());
     sal_Int32 nSelPos = m_xSelectionLB->get_selected_index();

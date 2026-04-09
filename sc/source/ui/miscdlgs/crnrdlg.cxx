@@ -609,7 +609,7 @@ IMPL_LINK_NOARG(ScColRowNameRangesDlg, RemoveBtnHdl, weld::Button&, void)
 }
 
 // handler called when a row in the listbox is selected, updates form input fields
-IMPL_LINK_NOARG(ScColRowNameRangesDlg, Range1SelectHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(ScColRowNameRangesDlg, Range1SelectHdl, weld::ItemView&, void)
 {
     sal_Int32 nSelectPos = m_xLbRange->get_selected_index();
     const sal_Int32 nCnt = m_xLbRange->n_children();

@@ -677,10 +677,7 @@ void ObjectPage::CheckButtons()
         m_xDelButton->set_sensitive(false);
 }
 
-IMPL_LINK_NOARG(ObjectPage, BasicBoxHighlightHdl, weld::TreeView&, void)
-{
-    CheckButtons();
-}
+IMPL_LINK_NOARG(ObjectPage, BasicBoxHighlightHdl, weld::ItemView&, void) { CheckButtons(); }
 
 IMPL_LINK(ObjectPage, ButtonHdl, weld::Button&, rButton, void)
 {

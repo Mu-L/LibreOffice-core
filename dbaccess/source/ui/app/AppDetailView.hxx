@@ -71,7 +71,7 @@ namespace dbaui
         int m_nCursorIndex;
 
         DECL_LINK(onSelected, const weld::TreeIter&, bool);
-        DECL_LINK(OnEntrySelectHdl, weld::TreeView&, void);
+        DECL_LINK(OnEntrySelectHdl, weld::ItemView&, void);
         DECL_LINK(FocusInHdl, weld::Widget&, void);
         DECL_LINK(FocusOutHdl, weld::Widget&, void);
 

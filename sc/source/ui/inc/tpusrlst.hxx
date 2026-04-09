@@ -85,7 +85,7 @@ private:
                                   const ScRefAddress& rEndPos );
 
     // Handler:
-    DECL_LINK( LbSelectHdl, weld::TreeView&, void );
+    DECL_LINK(LbSelectHdl, weld::ItemView&, void);
     DECL_LINK( BtnClickHdl, weld::Button&, void );
     DECL_LINK( EdEntriesModHdl, weld::TextView&, void);
 };

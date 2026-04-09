@@ -181,7 +181,7 @@ public:
     {
         mxTreeView->connect_item_activated(rLink);
     }
-    void connect_changed(const Link<weld::TreeView&, void>& rLink)
+    void connect_changed(const Link<weld::ItemView&, void>& rLink)
     {
         mxTreeView->connect_selection_changed(rLink);
     }
@@ -363,7 +363,7 @@ public:
     }
 
 protected:
-    DECL_LINK(ChangedHdl, weld::TreeView&, void);
+    DECL_LINK(ChangedHdl, weld::ItemView&, void);
     DECL_LINK(SelectionChangedHdl, weld::IconView&, void);
     DECL_LINK(RowActivatedHdl, const weld::TreeIter&, bool);
     DECL_LINK(ItemActivatedHdl, const weld::TreeIter&, bool);
@@ -1317,7 +1317,7 @@ void SvtFileView_Impl::FilterFolderContent_Impl( std::u16string_view rFilter )
         });
 }
 
-IMPL_LINK_NOARG(SvtFileView_Impl, ChangedHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SvtFileView_Impl, ChangedHdl, weld::ItemView&, void)
 {
     if (!mnSuspendSelectCallback)
         m_aSelectHandler.Call(m_pAntiImpl);

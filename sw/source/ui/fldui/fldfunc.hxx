@@ -57,14 +57,14 @@ class SwFieldFuncPage : public SwFieldPage
     std::unique_ptr<weld::Button> m_xListDownPB;
     std::unique_ptr<weld::Entry> m_xListNameED;
 
-    DECL_LINK( TypeHdl, weld::TreeView&, void );
-    DECL_LINK( SelectHdl, weld::TreeView&, void );
+    DECL_LINK(TypeHdl, weld::ItemView&, void);
+    DECL_LINK(SelectHdl, weld::ItemView&, void);
     DECL_LINK(InsertMacroHdl, const weld::TreeIter&, bool );
     DECL_LINK( ModifyHdl, weld::Entry&, void );
     DECL_LINK( ListModifyReturnActionHdl, weld::Entry&, bool );
     DECL_LINK( ListModifyButtonHdl, weld::Button&, void );
     DECL_LINK( ListEnableHdl, weld::Entry&, void );
-    DECL_LINK( ListEnableListBoxHdl, weld::TreeView&, void );
+    DECL_LINK(ListEnableListBoxHdl, weld::ItemView&, void);
     void ListModifyHdl(const weld::Widget*);
 
     // select Macro

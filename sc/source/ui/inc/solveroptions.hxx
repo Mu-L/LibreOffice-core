@@ -76,7 +76,7 @@ class ScSolverOptionsDialog : public weld::GenericDialogController
     std::shared_ptr<ScSolverValueDialog> m_xValDialog;
 
     DECL_LINK( EngineSelectHdl, weld::ComboBox&, void );
-    DECL_LINK( SettingsSelHdl, weld::TreeView&, void );
+    DECL_LINK(SettingsSelHdl, weld::ItemView&, void);
     DECL_LINK(SettingsDoubleClickHdl, const weld::TreeIter&, bool);
     DECL_LINK( ButtonHdl, weld::Button&, void );
 

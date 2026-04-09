@@ -309,7 +309,7 @@ void OAddFieldWindow::_elementReplaced( const container::ContainerEvent& /*_rEve
 {
 }
 
-IMPL_LINK_NOARG( OAddFieldWindow, OnSelectHdl, weld::TreeView&, void )
+IMPL_LINK_NOARG(OAddFieldWindow, OnSelectHdl, weld::ItemView&, void)
 {
     m_xActions->set_item_sensitive(u"insert"_ustr, m_xListBox->get_selected_index() != -1);
 }

@@ -101,7 +101,7 @@ IMPL_LINK( SdCustomShowDlg, ClickButtonHdl, weld::Button&, r, void )
     SelectHdl(&r);
 }
 
-IMPL_LINK( SdCustomShowDlg, SelectListBoxHdl, weld::TreeView&, rListBox, void )
+IMPL_LINK(SdCustomShowDlg, SelectListBoxHdl, weld::ItemView&, rListBox, void)
 {
     SelectHdl(&rListBox);
 }
@@ -324,12 +324,12 @@ IMPL_LINK( SdDefineCustomShowDlg, ClickButtonHdl, weld::Button&, rWidget, void )
     ClickButtonHdl2(&rWidget);
 }
 
-IMPL_LINK( SdDefineCustomShowDlg, ClickButtonHdl3, weld::TreeView&, rWidget, void )
+IMPL_LINK(SdDefineCustomShowDlg, ClickButtonHdl3, weld::ItemView&, rWidget, void)
 {
     ClickButtonHdl2(&rWidget);
 }
 
-IMPL_LINK( SdDefineCustomShowDlg, ClickButtonHdl4, weld::TreeView&, rListBox, void )
+IMPL_LINK(SdDefineCustomShowDlg, ClickButtonHdl4, weld::ItemView&, rListBox, void)
 {
     ClickButtonHdl2(&rListBox);
 }

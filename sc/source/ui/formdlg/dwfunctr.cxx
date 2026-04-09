@@ -565,7 +565,7 @@ IMPL_LINK_NOARG(ScFunctionWin, SelComboHdl, weld::ComboBox&, void)
     SetDescription();
 }
 
-IMPL_LINK_NOARG(ScFunctionWin, SelTreeHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(ScFunctionWin, SelTreeHdl, weld::ItemView&, void)
 {
     bool bSensitivity = weld::fromId<const ScFuncDesc*>(xFuncList->get_selected_id());
     xHelpButton->set_sensitive(bSensitivity);

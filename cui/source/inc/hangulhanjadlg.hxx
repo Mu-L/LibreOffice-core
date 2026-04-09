@@ -63,7 +63,7 @@ namespace svx
         OUString GetEntry( sal_uInt16 nPos ) const;
         OUString GetSelectedEntry() const;
 
-        DECL_LINK( SelectSuggestionListBoxHdl, weld::TreeView&, void );
+        DECL_LINK(SelectSuggestionListBoxHdl, weld::ItemView&, void);
         DECL_LINK( SelectSuggestionValueSetHdl, ValueSet*, void );
         void SelectSuggestionHdl(bool bListBox);
 
@@ -195,7 +195,7 @@ namespace svx
         std::unique_ptr<weld::Button> m_xOkPB;
 
         DECL_LINK( OkHdl, weld::Button&, void );
-        DECL_LINK( DictsLB_SelectHdl, weld::TreeView&, void );
+        DECL_LINK(DictsLB_SelectHdl, weld::ItemView&, void);
         DECL_LINK( NewDictHdl, weld::Button&, void );
         DECL_LINK( EditDictHdl, weld::Button&, void );
         DECL_LINK( DeleteDictHdl, weld::Button&, void );

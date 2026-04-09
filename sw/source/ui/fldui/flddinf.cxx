@@ -249,7 +249,7 @@ void SwFieldDokInfPage::Reset(const SfxItemSet* )
     }
 }
 
-IMPL_LINK_NOARG(SwFieldDokInfPage, TypeHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SwFieldDokInfPage, TypeHdl, weld::ItemView&, void)
 {
     // current ListBoxPos
     if (std::unique_ptr<weld::TreeIter> pSelected = m_pTypeView->get_selected())
@@ -260,7 +260,7 @@ IMPL_LINK_NOARG(SwFieldDokInfPage, TypeHdl, weld::TreeView&, void)
     SubTypeHdl(*m_xSelectionLB);
 }
 
-IMPL_LINK_NOARG(SwFieldDokInfPage, SubTypeHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SwFieldDokInfPage, SubTypeHdl, weld::ItemView&, void)
 {
     SwDocInfoSubType nSubType = static_cast<SwDocInfoSubType>(m_pTypeView->get_id(*m_xSelEntry).toUInt32());
     sal_Int32 nPos = m_xSelectionLB->get_selected_index();

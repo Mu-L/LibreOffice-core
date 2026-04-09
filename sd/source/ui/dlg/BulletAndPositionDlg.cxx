@@ -691,7 +691,7 @@ void SvxBulletAndPositionDlg::CheckForStartValue_Impl(sal_uInt16 nNumberingType)
         SpinModifyHdl_Impl(*m_xStartED);
 }
 
-IMPL_LINK_NOARG(SvxBulletAndPositionDlg, LevelHdl_Impl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SvxBulletAndPositionDlg, LevelHdl_Impl, weld::ItemView&, void)
 {
     sal_uInt16 nSaveNumLvl = nActNumLvl;
     nActNumLvl = 0;

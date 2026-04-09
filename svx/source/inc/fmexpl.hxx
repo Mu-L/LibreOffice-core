@@ -452,7 +452,7 @@ namespace svxform
 
         DECL_LINK( OnEdit, void*, void );
 
-        DECL_LINK( OnEntrySelDesel, weld::TreeView&, void );
+        DECL_LINK(OnEntrySelDesel, weld::ItemView&, void);
         DECL_LINK( OnSynchronizeTimer, Timer*, void );
 
         DECL_LINK( OnClipboardAction, OLocalExchange&, void );

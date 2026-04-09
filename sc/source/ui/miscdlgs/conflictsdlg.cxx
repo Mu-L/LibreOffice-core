@@ -433,7 +433,7 @@ void ScConflictsDlg::HandleListBoxSelection()
     }
 }
 
-IMPL_LINK_NOARG(ScConflictsDlg, SelectHandle, weld::TreeView&, void)
+IMPL_LINK_NOARG(ScConflictsDlg, SelectHandle, weld::ItemView&, void)
 {
     if (mbInSelectHdl)
         return;

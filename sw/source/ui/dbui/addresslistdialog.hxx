@@ -71,7 +71,7 @@ class SwAddressListDialog : public SfxDialogController
     DECL_LINK(LoadHdl_Impl, weld::Button&, void);
     DECL_LINK(CreateHdl_Impl, weld::Button&, void);
     DECL_LINK(RemoveHdl_Impl, weld::Button&, void);
-    DECL_LINK(ListBoxSelectHdl_Impl, weld::TreeView&, void);
+    DECL_LINK(ListBoxSelectHdl_Impl, weld::ItemView&, void);
     DECL_LINK(EditHdl_Impl, weld::Button&, void);
     DECL_LINK(TableSelectHdl_Impl, weld::Button&, void);
     void TableSelectHdl(const weld::Button* pButton);

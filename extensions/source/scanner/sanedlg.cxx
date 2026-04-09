@@ -687,7 +687,7 @@ IMPL_LINK( SaneDlg, SelectHdl, weld::ComboBox&, rListBox, void )
     }
 }
 
-IMPL_LINK_NOARG(SaneDlg, OptionsBoxSelectHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SaneDlg, OptionsBoxSelectHdl, weld::ItemView&, void)
 {
     if (!Sane::IsSane())
         return;

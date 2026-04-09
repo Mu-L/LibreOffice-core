@@ -98,7 +98,7 @@ OUString PlacesListBox::getEntryIcon( const PlacePtr& pPlace )
     return theImage;
 }
 
-IMPL_LINK_NOARG( PlacesListBox, Selection, weld::TreeView&, void )
+IMPL_LINK_NOARG(PlacesListBox, Selection, weld::ItemView&, void)
 {
     int nSelected = mxImpl->get_cursor_index();
     assert(nSelected != -1 && "no selection");

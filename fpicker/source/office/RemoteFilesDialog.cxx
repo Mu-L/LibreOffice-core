@@ -776,7 +776,7 @@ IMPL_LINK_NOARG( RemoteFilesDialog, SelectFilterHdl, weld::ComboBox&, void )
     }
 }
 
-IMPL_LINK(RemoteFilesDialog, TreeSelectHdl, weld::TreeView&, rBox, void)
+IMPL_LINK(RemoteFilesDialog, TreeSelectHdl, weld::ItemView&, rBox, void)
 {
     OpenURL(rBox.get_selected_id());
     m_xFileView->grab_focus();
@@ -1052,7 +1052,7 @@ void RemoteFilesDialog::UpdateControls( const OUString& rURL )
 
     m_xPath->SetURL( rURL );
 
-    m_xTreeView->connect_changed(Link<weld::TreeView&,void>());
+    m_xTreeView->connect_changed(Link<weld::ItemView&, void>());
 
     // read cached data for this url and fill the tree
     const ::std::vector< SvtContentEntry > aContentFolders = m_xFileView->GetContent();

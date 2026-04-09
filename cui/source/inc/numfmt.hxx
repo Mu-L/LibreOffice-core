@@ -138,7 +138,7 @@ private:
     DECL_LINK(LostFocusHdl_Impl, weld::Widget&, void);
     DECL_LINK(DoubleClickHdl_Impl, const weld::TreeIter&, bool);
     DECL_LINK(SelFormatListBoxHdl_Impl, weld::ComboBox&, void);
-    DECL_LINK(SelFormatTreeListBoxHdl_Impl, weld::TreeView&, void);
+    DECL_LINK(SelFormatTreeListBoxHdl_Impl, weld::ItemView&, void);
     DECL_LINK(SelFormatClickHdl_Impl, weld::Toggleable&, void);
     void SelFormatHdl_Impl(weld::Widget*);
     DECL_LINK(ClickHdl_Impl, weld::Button&, void);

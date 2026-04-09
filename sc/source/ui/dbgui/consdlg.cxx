@@ -435,7 +435,7 @@ IMPL_LINK( ScConsolidateDlg, ClickHdl, weld::Button&, rBtn, void )
     }
 }
 
-IMPL_LINK( ScConsolidateDlg, SelectTVHdl, weld::TreeView&, rLb, void )
+IMPL_LINK(ScConsolidateDlg, SelectTVHdl, weld::ItemView&, rLb, void)
 {
     if (rLb.get_selected_index() != -1)
         m_xBtnRemove->set_sensitive(true);

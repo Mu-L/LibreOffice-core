@@ -65,7 +65,7 @@ private:
     DECL_LINK(AddHdl, weld::Button&, void);
     DECL_LINK(DeleteHdl, weld::Button&, void);
     DECL_LINK(MakeDefHdl, weld::Button&, void);
-    DECL_LINK(SelectHdl, weld::TreeView&, void);
+    DECL_LINK(SelectHdl, weld::ItemView&, void);
 
 public:
     ManageLanguageDialog(weld::Window* pParent, std::shared_ptr<LocalizationMgr> _pLMgr);

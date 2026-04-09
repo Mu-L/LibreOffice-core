@@ -41,7 +41,7 @@ class SwCustomizeAddressListDialog : public SfxDialogController
     DECL_LINK(AddRenameHdl_Impl, weld::Button&, void);
     DECL_LINK(DeleteHdl_Impl, weld::Button&, void);
     DECL_LINK(UpDownHdl_Impl, weld::Button&, void);
-    DECL_LINK(ListBoxSelectHdl_Impl, weld::TreeView&, void);
+    DECL_LINK(ListBoxSelectHdl_Impl, weld::ItemView&, void);
 
     void UpdateButtons();
 public:

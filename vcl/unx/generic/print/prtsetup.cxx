@@ -371,7 +371,7 @@ IMPL_LINK(RTSDevicePage, ModifyHdl, weld::Entry&, rEdit, void)
     }
 }
 
-IMPL_LINK( RTSDevicePage, SelectHdl, weld::TreeView&, rBox, void )
+IMPL_LINK(RTSDevicePage, SelectHdl, weld::ItemView&, rBox, void)
 {
     if (&rBox == m_xPPDKeyBox.get())
     {

@@ -31,7 +31,7 @@ class SvxMenuConfigPage : public SvxConfigPage
 private:
     bool m_bIsMenuBar;
 
-    DECL_LINK(SelectMenuEntry, weld::TreeView&, void);
+    DECL_LINK(SelectMenuEntry, weld::ItemView&, void);
     DECL_LINK(ContentContextMenuHdl, const CommandEvent&, bool);
     DECL_LINK(FunctionContextMenuHdl, const CommandEvent&, bool);
 

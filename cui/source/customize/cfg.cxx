@@ -1651,7 +1651,7 @@ IMPL_LINK_NOARG(SvxConfigPage, FunctionDoubleClickHdl, const weld::TreeIter&, bo
     return true;
 }
 
-IMPL_LINK_NOARG(SvxConfigPage, SelectFunctionHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SvxConfigPage, SelectFunctionHdl, weld::ItemView&, void)
 {
     // GetScriptURL() returns a non-empty string if a
     // valid command is selected on the left box
@@ -1885,7 +1885,7 @@ IMPL_LINK_NOARG(SvxMainMenuOrganizerDialog, ModifyHdl, weld::Entry&, void)
     m_xMenuListBox->select(nOldSelection);
 }
 
-IMPL_LINK_NOARG(SvxMainMenuOrganizerDialog, SelectHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SvxMainMenuOrganizerDialog, SelectHdl, weld::ItemView&, void)
 {
     UpdateButtonStates();
 }

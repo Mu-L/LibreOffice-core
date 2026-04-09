@@ -41,7 +41,7 @@ IMPL_LINK_NOARG(SdSelectLayerDlg, DoubleClickHdl, const weld::TreeIter&, bool)
     return true;
 }
 
-IMPL_LINK_NOARG(SdSelectLayerDlg, SelectHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SdSelectLayerDlg, SelectHdl, weld::ItemView&, void)
 {
     m_xOk->set_sensitive(m_xListLB->get_selected_index() != -1);
 }

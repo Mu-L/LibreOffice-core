@@ -222,7 +222,7 @@ bool SfxMacroTabPage::IsReadOnly() const
     return false;
 }
 
-IMPL_LINK_NOARG(SfxMacroTabPage, SelectEvent_Impl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SfxMacroTabPage, SelectEvent_Impl, weld::ItemView&, void)
 {
     weld::TreeView& rListBox = m_xEventLB->GetListBox();
     int nSelected = rListBox.get_selected_index();
@@ -236,7 +236,7 @@ IMPL_LINK_NOARG(SfxMacroTabPage, SelectEvent_Impl, weld::TreeView&, void)
     EnableButtons();
 }
 
-IMPL_LINK_NOARG(SfxMacroTabPage, SelectGroup_Impl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SfxMacroTabPage, SelectGroup_Impl, weld::ItemView&, void)
 {
     m_xGroupLB->GroupSelected();
     const OUString sScriptURI = m_xMacroLB->GetSelectedScriptURI();
@@ -248,7 +248,7 @@ IMPL_LINK_NOARG(SfxMacroTabPage, SelectGroup_Impl, weld::TreeView&, void)
     EnableButtons();
 }
 
-IMPL_LINK_NOARG(SfxMacroTabPage, SelectMacro_Impl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SfxMacroTabPage, SelectMacro_Impl, weld::ItemView&, void)
 {
     EnableButtons();
 }

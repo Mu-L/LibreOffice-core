@@ -605,7 +605,7 @@ IMPL_LINK(GalleryBrowser, PopupMenuHdl1, const CommandEvent&, rCEvt, bool)
     return true;
 }
 
-IMPL_LINK_NOARG(GalleryBrowser, SelectThemeHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(GalleryBrowser, SelectThemeHdl, weld::ItemView&, void)
 {
     SelectTheme(GetSelectedTheme());
 }
@@ -1498,7 +1498,7 @@ IMPL_LINK_NOARG(GalleryBrowser, SelectObjectValueSetHdl, ValueSet*, void)
     ImplUpdateSelection();
 }
 
-IMPL_LINK_NOARG(GalleryBrowser, SelectObjectHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(GalleryBrowser, SelectObjectHdl, weld::ItemView&, void)
 {
     ImplUpdateSelection();
 }

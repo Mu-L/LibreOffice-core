@@ -6772,7 +6772,7 @@ void SwContentTree::ShowActualView()
     }
 }
 
-IMPL_LINK_NOARG(SwContentTree, SelectHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SwContentTree, SelectHdl, weld::ItemView&, void)
 {
     if (m_pConfig->IsNavigateOnSelect())
     {

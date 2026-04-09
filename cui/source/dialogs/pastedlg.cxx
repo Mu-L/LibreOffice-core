@@ -55,7 +55,7 @@ void SvPasteObjectDialog::SelectObject()
     }
 }
 
-IMPL_LINK_NOARG(SvPasteObjectDialog, SelectHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SvPasteObjectDialog, SelectHdl, weld::ItemView&, void)
 {
     if (!m_xOKButton->get_sensitive())
         m_xOKButton->set_sensitive(true);

@@ -224,7 +224,7 @@ private:
     void implEnableChildren(const weld::TreeIter& rEntry, bool bEnable);
 
     DECL_STATIC_LINK(WatchWindow, ButtonHdl, weld::Button&, void);
-    DECL_LINK(TreeListHdl, weld::TreeView&, void);
+    DECL_LINK(TreeListHdl, weld::ItemView&, void);
     DECL_LINK(RequestingChildrenHdl, const weld::TreeIter&, bool);
     DECL_LINK(ActivateHdl, weld::Entry&, bool);
     DECL_LINK(KeyInputHdl, const KeyEvent&, bool);
@@ -500,7 +500,7 @@ private:
     TextView* GetParentEditView();
 
     DECL_LINK(ImplDoubleClickHdl, const weld::TreeIter&, bool);
-    DECL_LINK(ImplSelectHdl, weld::TreeView&, void);
+    DECL_LINK(ImplSelectHdl, weld::ItemView&, void);
     DECL_LINK(KeyInputHdl, const KeyEvent&, bool);
 
 public:

@@ -31,7 +31,7 @@ class SelectSheetViewDialog : public weld::GenericDialogController
     std::vector<SheetViewListEntry> m_aEntries;
     sal_Int32 m_nCurrentIndex = -1;
 
-    DECL_LINK(NameModifyHdl, weld::TreeView&, void);
+    DECL_LINK(NameModifyHdl, weld::ItemView&, void);
 
 public:
     SelectSheetViewDialog(weld::Window* pParent, ScViewData& rViewData);

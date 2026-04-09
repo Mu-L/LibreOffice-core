@@ -258,7 +258,7 @@ namespace dbp
             m_xRadioName->grab_focus();
     }
 
-    IMPL_LINK_NOARG( ORadioSelectionPage, OnEntrySelected, weld::TreeView&, void )
+    IMPL_LINK_NOARG(ORadioSelectionPage, OnEntrySelected, weld::ItemView&, void)
     {
         implCheckMoveButtons();
     }
@@ -351,7 +351,7 @@ namespace dbp
     {
     }
 
-    IMPL_LINK_NOARG( OOptionValuesPage, OnOptionSelected, weld::TreeView&, void )
+    IMPL_LINK_NOARG(OOptionValuesPage, OnOptionSelected, weld::ItemView&, void)
     {
         implTraveledOptions();
     }

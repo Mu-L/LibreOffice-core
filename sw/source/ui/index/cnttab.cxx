@@ -2463,7 +2463,7 @@ void SwTOXEntryTabPage::WriteBackLevel()
     }
 }
 
-void SwTOXEntryTabPage::LevelHdlImpl(weld::TreeView& rBox, bool bGrabFocus)
+void SwTOXEntryTabPage::LevelHdlImpl(weld::ItemView& rBox, bool bGrabFocus)
 {
     if (m_bInLevelHdl)
         return;
@@ -2505,7 +2505,7 @@ void SwTOXEntryTabPage::LevelHdlImpl(weld::TreeView& rBox, bool bGrabFocus)
     }
 }
 
-IMPL_LINK(SwTOXEntryTabPage, LevelHdl, weld::TreeView&, rBox, void)
+IMPL_LINK(SwTOXEntryTabPage, LevelHdl, weld::ItemView&, rBox, void)
 {
     LevelHdlImpl(rBox, true);
 }
@@ -3750,7 +3750,7 @@ IMPL_LINK_NOARG(SwTOXStylesTabPage, DoubleClickHdl, const weld::TreeIter&, bool)
 }
 
 // enable only when selected
-IMPL_LINK_NOARG(SwTOXStylesTabPage, EnableSelectHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SwTOXStylesTabPage, EnableSelectHdl, weld::ItemView&, void)
 {
     m_xStdBT->set_sensitive(m_xLevelLB->get_selected_index() != -1);
 

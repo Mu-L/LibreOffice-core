@@ -611,7 +611,7 @@ sal_uInt16  OfaTreeOptionsDialog::AddGroup(const OUString& rGroupName,
     return nRet - 1;
 }
 
-IMPL_LINK_NOARG(OfaTreeOptionsDialog, ShowPageHdl_Impl, weld::TreeView&, void)
+IMPL_LINK_NOARG(OfaTreeOptionsDialog, ShowPageHdl_Impl, weld::ItemView&, void)
 {
     SelectHdl_Impl();
 }

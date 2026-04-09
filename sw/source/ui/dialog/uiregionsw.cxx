@@ -753,8 +753,7 @@ void SwEditRegionDlg::UpdateFromSelection()
     m_bDontCheckPasswd = false;
 }
 
-
-IMPL_LINK_NOARG(SwEditRegionDlg, GetFirstEntryHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SwEditRegionDlg, GetFirstEntryHdl, weld::ItemView&, void)
 {
     UpdateFromSelection();
 }

@@ -432,7 +432,7 @@ void SwGlossaryDlg::SelectGroup()
     }
 }
 
-IMPL_LINK_NOARG(SwGlossaryDlg, GrpSelect, weld::TreeView&, void)
+IMPL_LINK_NOARG(SwGlossaryDlg, GrpSelect, weld::ItemView&, void)
 {
     SelectGroup();
 }

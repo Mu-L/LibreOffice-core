@@ -54,7 +54,7 @@ private:
     DECL_LINK(RemoveChartColor, weld::Button&, void);
     DECL_LINK(BoxClickedHdl, ValueSet*, void);
     DECL_LINK(SelectPaletteLbHdl, weld::ComboBox&, void);
-    DECL_LINK(LbChartColorsSelectionChangedHdl, weld::TreeView&, void);
+    DECL_LINK(LbChartColorsSelectionChangedHdl, weld::ItemView&, void);
 
     void FillPaletteLB();
 

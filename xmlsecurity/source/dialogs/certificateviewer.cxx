@@ -241,7 +241,7 @@ CertificateViewerDetailsTP::CertificateViewerDetailsTP(weld::Container* pParent,
         LINK(this, CertificateViewerDetailsTP, ElementSelectHdl));
 }
 
-IMPL_LINK_NOARG(CertificateViewerDetailsTP, ElementSelectHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(CertificateViewerDetailsTP, ElementSelectHdl, weld::ItemView&, void)
 {
     int nEntry = m_xElementsLB->get_selected_index();
     OUString aElementText;
@@ -348,7 +348,7 @@ IMPL_LINK_NOARG(CertificateViewerCertPathTP, ViewCertHdl, weld::Button&, void)
     }
 }
 
-IMPL_LINK_NOARG(CertificateViewerCertPathTP, CertSelectHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(CertificateViewerCertPathTP, CertSelectHdl, weld::ItemView&, void)
 {
     OUString sStatus;
 

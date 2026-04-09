@@ -47,12 +47,12 @@ class SwFieldDBPage : public SwFieldPage
     std::unique_ptr<weld::ComboBox> m_xFormatLB;
     std::unique_ptr<weld::Widget> m_xFormat;
 
-    DECL_LINK( TypeListBoxHdl, weld::TreeView&, void );
+    DECL_LINK(TypeListBoxHdl, weld::ItemView&, void);
     DECL_LINK( NumSelectHdl, weld::ComboBox&, void );
-    DECL_LINK( TreeSelectHdl, weld::TreeView&, void );
+    DECL_LINK(TreeSelectHdl, weld::ItemView&, void);
     DECL_LINK( ModifyHdl, weld::Entry&, void );
     DECL_LINK( AddDBHdl, weld::Button&, void );
-    void TypeHdl(const weld::TreeView*);
+    void TypeHdl(const weld::ItemView*);
 
     void                CheckInsert();
 

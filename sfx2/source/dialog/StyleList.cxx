@@ -1838,13 +1838,14 @@ IMPL_LINK(StyleList, CustomRenderHdl, weld::TreeView::render_args, aPayload, voi
 }
 
 // Selection of a template during the Watercan-Status
-IMPL_LINK(StyleList, FmtSelectHdl, weld::TreeView&, rListBox, void)
+IMPL_LINK(StyleList, FmtSelectHdl, weld::ItemView&, rListBox, void)
 {
     std::unique_ptr<weld::TreeIter> xHdlEntry = rListBox.get_cursor();
     if (!xHdlEntry)
         return;
 
-    m_pParentDialog->SelectStyle(rListBox.get_text(*xHdlEntry), true, *this);
+    weld::TreeView& rTreeView = dynamic_cast<weld::TreeView&>(rListBox);
+    m_pParentDialog->SelectStyle(rTreeView.get_text(*xHdlEntry), true, *this);
 }
 
 IMPL_LINK_NOARG(StyleList, TreeListApplyHdl, const weld::TreeIter&, bool)

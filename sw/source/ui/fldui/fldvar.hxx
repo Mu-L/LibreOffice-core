@@ -54,15 +54,15 @@ class SwFieldVarPage : public SwFieldPage
     sal_uInt32          m_nOldFormat;
     bool                m_bInit;
 
-    DECL_LINK( TypeHdl, weld::TreeView&, void );
-    DECL_LINK( SubTypeListBoxHdl, weld::TreeView&, void );
+    DECL_LINK(TypeHdl, weld::ItemView&, void);
+    DECL_LINK(SubTypeListBoxHdl, weld::ItemView&, void);
     DECL_LINK( ModifyHdl, weld::Entry&, void );
     DECL_LINK( ModifyValueHdl, weld::TextView&, void );
     DECL_LINK( TBClickHdl, weld::Button&, void );
     DECL_LINK( ChapterHdl, weld::ComboBox&, void );
     DECL_LINK( SeparatorHdl, weld::Entry&, void );
     DECL_LINK(SubTypeInsertHdl, const weld::TreeIter&, bool);
-    void SubTypeHdl(const weld::TreeView*);
+    void SubTypeHdl(const weld::ItemView*);
 
     void                UpdateSubType();
     void                FillFormatLB(SwFieldTypesEnum nTypeId);

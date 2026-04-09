@@ -294,7 +294,7 @@ IMPL_LINK_NOARG(SfxVersionDialog, DClickHdl_Impl, const weld::TreeIter&, bool)
     return true;
 }
 
-IMPL_LINK_NOARG(SfxVersionDialog, SelectHdl_Impl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SfxVersionDialog, SelectHdl_Impl, weld::ItemView&, void)
 {
     bool bEnable = m_xVersionBox->get_selected_index() != -1;
     SfxObjectShell* pObjShell = m_pViewFrame->GetObjectShell();

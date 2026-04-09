@@ -902,7 +902,7 @@ ObjectInspectorNodeInterface* BasicValueNode::createNodeObjectForAny(OUString co
 // Object inspector tree view helper functions
 namespace
 {
-ObjectInspectorNodeInterface* getSelectedNode(weld::TreeView const& rTreeView)
+ObjectInspectorNodeInterface* getSelectedNode(weld::ItemView const& rTreeView)
 {
     OUString sID = rTreeView.get_selected_id();
     if (sID.isEmpty())
@@ -1063,7 +1063,7 @@ IMPL_LINK(ObjectInspectorTreeHandler, ExpandingHandlerMethods, weld::TreeIter co
     return true;
 }
 
-IMPL_LINK(ObjectInspectorTreeHandler, SelectionChanged, weld::TreeView&, rTreeView, void)
+IMPL_LINK(ObjectInspectorTreeHandler, SelectionChanged, weld::ItemView&, rTreeView, void)
 {
     bool bHaveNodeWithObject = false;
     mpObjectInspectorWidgets->mpTextView->set_text(u""_ustr);

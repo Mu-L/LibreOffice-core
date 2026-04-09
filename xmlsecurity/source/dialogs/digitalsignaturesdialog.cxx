@@ -456,7 +456,7 @@ short DigitalSignaturesDialog::run()
     return GenericDialogController::run();
 }
 
-IMPL_LINK_NOARG(DigitalSignaturesDialog, SignatureHighlightHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(DigitalSignaturesDialog, SignatureHighlightHdl, weld::ItemView&, void)
 {
     bool bSel = m_xSignaturesLB->get_selected_index() != -1;
     m_xViewBtn->set_sensitive( bSel );

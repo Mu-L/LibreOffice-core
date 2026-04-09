@@ -23,7 +23,7 @@ namespace weld
 class VCL_DLLPUBLIC EntryTreeView : virtual public ComboBox
 {
 private:
-    DECL_DLLPRIVATE_LINK(ClickHdl, weld::TreeView&, void);
+    DECL_DLLPRIVATE_LINK(ClickHdl, weld::ItemView&, void);
     DECL_DLLPRIVATE_LINK(ModifyHdl, weld::Entry&, void);
 
 protected:

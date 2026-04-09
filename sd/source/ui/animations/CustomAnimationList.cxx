@@ -998,7 +998,7 @@ void CustomAnimationList::onSelectionChanged(const Any& rSelection)
     }
 }
 
-IMPL_LINK_NOARG(CustomAnimationList, SelectHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(CustomAnimationList, SelectHdl, weld::ItemView&, void)
 {
     Select();
 }

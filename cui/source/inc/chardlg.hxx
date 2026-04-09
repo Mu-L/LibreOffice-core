@@ -321,11 +321,11 @@ private:
 
     void                UpdatePreview_Impl();
     void                Initialize();
-    void                SelectCharacter(weld::TreeView* pBox);
+    void SelectCharacter(weld::ItemView* pBox);
     void                SetBracket(sal_Unicode cBracket, bool bStart);
 
     DECL_LINK(TwoLinesHdl_Impl, weld::Toggleable&, void);
-    DECL_LINK(CharacterMapHdl_Impl, weld::TreeView&, void);
+    DECL_LINK(CharacterMapHdl_Impl, weld::ItemView&, void);
 
 public:
     SvxCharTwoLinesPage(weld::Container* pPage, weld::DialogController* pController, const SfxItemSet& rSet);

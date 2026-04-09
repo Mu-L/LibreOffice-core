@@ -233,7 +233,7 @@ public:
     OExceptionChainDialog(weld::Window* pParent, ExceptionDisplayChain&& rExceptions);
 
 protected:
-    DECL_LINK(OnExceptionSelected, weld::TreeView&, void);
+    DECL_LINK(OnExceptionSelected, weld::ItemView&, void);
 
 private:
     void insertExceptionEntry(size_t nElementPos, const ExceptionDisplayInfo& rEntry);
@@ -297,7 +297,7 @@ void OExceptionChainDialog::insertExceptionEntry(size_t nElementPos,
                              lcl_getImageName(rEntry.eType));
 }
 
-IMPL_LINK_NOARG(OExceptionChainDialog, OnExceptionSelected, weld::TreeView&, void)
+IMPL_LINK_NOARG(OExceptionChainDialog, OnExceptionSelected, weld::ItemView&, void)
 {
     OUString sText;
 

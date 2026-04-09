@@ -45,7 +45,7 @@ class SwCondCollPage final : public SfxTabPage
 
     DECL_LINK(AssignRemoveTreeListBoxHdl, const weld::TreeIter&, bool);
     DECL_LINK(AssignRemoveClickHdl, weld::Button&, void);
-    DECL_LINK(SelectTreeListBoxHdl, weld::TreeView&, void);
+    DECL_LINK(SelectTreeListBoxHdl, weld::ItemView&, void);
     DECL_LINK(SelectListBoxHdl, weld::ComboBox&, void);
     void AssignRemove(const weld::Widget*);
     void SelectHdl(const weld::Widget*);

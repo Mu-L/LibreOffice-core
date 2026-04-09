@@ -441,7 +441,7 @@ IMPL_LINK_NOARG(NumFormatListBox, SelectHdl, weld::ComboBox&, void)
     CallSelectHdl();
 }
 
-IMPL_LINK_NOARG(SwNumFormatTreeView, SelectHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SwNumFormatTreeView, SelectHdl, weld::ItemView&, void)
 {
     CallSelectHdl();
 }

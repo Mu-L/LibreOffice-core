@@ -935,7 +935,7 @@ IMPL_LINK_NOARG(TPGalleryThemeProperties, ClickTakeAllHdl, weld::Button&, void)
     }
 }
 
-IMPL_LINK_NOARG(TPGalleryThemeProperties, SelectFoundHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(TPGalleryThemeProperties, SelectFoundHdl, weld::ItemView&, void)
 {
     if (!bInputAllowed)
         return;

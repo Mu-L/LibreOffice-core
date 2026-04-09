@@ -271,7 +271,7 @@ IMPL_LINK_NOARG(ScInsertTableDlg, BrowseHdl_Impl, weld::Button&, void)
     pDocInserter->StartExecuteModal( LINK( this, ScInsertTableDlg, DialogClosedHdl ) );
 }
 
-IMPL_LINK_NOARG(ScInsertTableDlg, SelectHdl_Impl, weld::TreeView&, void)
+IMPL_LINK_NOARG(ScInsertTableDlg, SelectHdl_Impl, weld::ItemView&, void)
 {
     DoEnable_Impl();
 }

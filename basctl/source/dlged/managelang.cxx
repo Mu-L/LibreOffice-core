@@ -198,7 +198,7 @@ IMPL_LINK_NOARG(ManageLanguageDialog, MakeDefHdl, weld::Button&, void)
     }
 }
 
-IMPL_LINK_NOARG(ManageLanguageDialog, SelectHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(ManageLanguageDialog, SelectHdl, weld::ItemView&, void)
 {
     const sal_Int32 nCount = m_xLanguageLB->n_children();
     bool bEmpty = ( !nCount ||

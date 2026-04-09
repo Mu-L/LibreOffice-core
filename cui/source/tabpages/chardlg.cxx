@@ -3158,7 +3158,7 @@ void SvxCharTwoLinesPage::Initialize()
 
     m_xTwoLinesBtn->connect_toggled(LINK(this, SvxCharTwoLinesPage, TwoLinesHdl_Impl));
 
-    Link<weld::TreeView&,void> aLink = LINK(this, SvxCharTwoLinesPage, CharacterMapHdl_Impl);
+    Link<weld::ItemView&, void> aLink = LINK(this, SvxCharTwoLinesPage, CharacterMapHdl_Impl);
     m_xStartBracketLB->connect_selection_changed(aLink);
     m_xEndBracketLB->connect_selection_changed(aLink);
 
@@ -3170,7 +3170,7 @@ void SvxCharTwoLinesPage::Initialize()
     rCTLFont.SetFontSize( Size( 0, 220 ) );
 }
 
-void SvxCharTwoLinesPage::SelectCharacter(weld::TreeView* pBox)
+void SvxCharTwoLinesPage::SelectCharacter(weld::ItemView* pBox)
 {
     bool bStart = pBox == m_xStartBracketLB.get();
     SvxCharacterMap aDlg(GetFrameWeld(), nullptr, nullptr);
@@ -3232,7 +3232,7 @@ IMPL_LINK_NOARG(SvxCharTwoLinesPage, TwoLinesHdl_Impl, weld::Toggleable&, void)
     UpdatePreview_Impl();
 }
 
-IMPL_LINK(SvxCharTwoLinesPage, CharacterMapHdl_Impl, weld::TreeView&, rBox, void)
+IMPL_LINK(SvxCharTwoLinesPage, CharacterMapHdl_Impl, weld::ItemView&, rBox, void)
 {
     int nPos = rBox.get_selected_index();
     if (rBox.get_id(nPos).toInt32() == CHRDLG_ENCLOSE_SPECIAL_CHAR)

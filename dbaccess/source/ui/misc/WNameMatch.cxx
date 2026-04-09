@@ -236,7 +236,7 @@ namespace
     }
 }
 
-IMPL_LINK_NOARG(OWizNameMatching, TableListClickHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(OWizNameMatching, TableListClickHdl, weld::ItemView&, void)
 {
     int nPos = m_xCTRL_LEFT->get_selected_index();
     if (nPos == -1)
@@ -262,7 +262,7 @@ IMPL_LINK_NOARG(OWizNameMatching, TableListClickHdl, weld::TreeView&, void)
     }
 }
 
-IMPL_LINK_NOARG( OWizNameMatching, TableListRightSelectHdl, weld::TreeView&, void )
+IMPL_LINK_NOARG(OWizNameMatching, TableListRightSelectHdl, weld::ItemView&, void)
 {
     int nPos = m_xCTRL_RIGHT->get_selected_index();
     if (nPos == -1)

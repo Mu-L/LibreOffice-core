@@ -45,7 +45,7 @@ private:
     const FormulaToken* pSelectedToken;
     bool            bActiveFlag;
 
-    DECL_LINK(SelectHdl, weld::TreeView&, void);
+    DECL_LINK(SelectHdl, weld::ItemView&, void);
 
     const FormulaToken* GetFunctionEntry(const weld::TreeIter* pEntry);
 

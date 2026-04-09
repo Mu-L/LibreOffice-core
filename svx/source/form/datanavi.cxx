@@ -261,7 +261,7 @@ namespace svxform
         DoToolBoxAction(rIdent);
     }
 
-    IMPL_LINK_NOARG(XFormsPage, ItemSelectHdl, weld::TreeView&, void)
+    IMPL_LINK_NOARG(XFormsPage, ItemSelectHdl, weld::ItemView&, void)
     {
         EnableMenuItems();
         PrepDnD();
@@ -2695,7 +2695,7 @@ namespace svxform
     {
     }
 
-    IMPL_LINK_NOARG( NamespaceItemDialog, SelectHdl, weld::TreeView&, void)
+    IMPL_LINK_NOARG(NamespaceItemDialog, SelectHdl, weld::ItemView&, void)
     {
         bool bEnable = m_xNamespacesList->get_selected_index() != -1;
         m_xEditNamespaceBtn->set_sensitive( bEnable );

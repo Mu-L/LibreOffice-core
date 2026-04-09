@@ -140,7 +140,7 @@ public:
     void fillParameter(ChartTypeParameter& rParameter);
 
 private:
-    DECL_LINK(GeometryChangeHdl, weld::TreeView&, void);
+    DECL_LINK(GeometryChangeHdl, weld::ItemView&, void);
 
 private:
     BarGeometryResources m_aGeometryResources;

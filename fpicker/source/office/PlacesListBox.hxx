@@ -57,7 +57,7 @@ private:
 
     static OUString getEntryIcon(const PlacePtr& pPlace);
 
-    DECL_LINK( Selection, weld::TreeView&, void );
+    DECL_LINK(Selection, weld::ItemView&, void);
     DECL_LINK(DoubleClick, const weld::TreeIter&, bool);
     DECL_LINK(QueryTooltipHdl, const weld::TreeIter&, OUString);
 };

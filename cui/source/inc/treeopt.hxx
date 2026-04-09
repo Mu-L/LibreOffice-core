@@ -189,7 +189,7 @@ private:
 
     void            ApplyOptions();
 
-    DECL_LINK(ShowPageHdl_Impl, weld::TreeView&, void);
+    DECL_LINK(ShowPageHdl_Impl, weld::ItemView&, void);
     DECL_LINK(BackHdl_Impl, weld::Button&, void);
     DECL_LINK(ApplyHdl_Impl, weld::Button&, void);
     DECL_LINK(HelpHdl_Impl, weld::Widget&, bool);

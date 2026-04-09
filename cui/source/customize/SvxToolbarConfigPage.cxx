@@ -293,7 +293,7 @@ SaveInData* SvxToolbarConfigPage::CreateSaveInData(
         new ToolbarSaveInData(xCfgMgr, xParentCfgMgr, aModuleId, bDocConfig));
 }
 
-IMPL_LINK_NOARG(SvxToolbarConfigPage, SelectToolbarEntry, weld::TreeView&, void)
+IMPL_LINK_NOARG(SvxToolbarConfigPage, SelectToolbarEntry, weld::ItemView&, void)
 {
     UpdateButtonStates();
 }

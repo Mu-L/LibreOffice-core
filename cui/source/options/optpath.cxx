@@ -342,7 +342,7 @@ void SvxPathTabPage::Reset( const SfxItemSet* )
     PathSelect_Impl(*m_xPathBox);
 }
 
-IMPL_LINK_NOARG(SvxPathTabPage, PathSelect_Impl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SvxPathTabPage, PathSelect_Impl, weld::ItemView&, void)
 {
     bool bEnable = false;
     int nEntry = m_xPathBox->get_selected_index();

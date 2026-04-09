@@ -158,7 +158,7 @@ public:
     NavigatorTree(std::unique_ptr<weld::TreeView>, OReportController& rController);
     virtual ~NavigatorTree() override;
 
-    DECL_LINK(OnEntrySelDesel, weld::TreeView&, void);
+    DECL_LINK(OnEntrySelDesel, weld::ItemView&, void);
     DECL_LINK(CommandHdl, const CommandEvent&, bool);
 
     virtual void _selectionChanged( const lang::EventObject& aEvent ) override;
@@ -326,7 +326,7 @@ IMPL_LINK(NavigatorTree, CommandHdl, const CommandEvent&, rEvt, bool)
     return bHandled;
 }
 
-IMPL_LINK_NOARG(NavigatorTree, OnEntrySelDesel, weld::TreeView&, void)
+IMPL_LINK_NOARG(NavigatorTree, OnEntrySelDesel, weld::ItemView&, void)
 {
     if ( !m_pSelectionListener->locked() )
     {

@@ -97,7 +97,7 @@ class SvxScriptOrgDialog : public SfxDialogController
     std::unique_ptr<weld::Button> m_xRenameButton;
     std::unique_ptr<weld::Button> m_xDelButton;
 
-    DECL_LINK( ScriptSelectHdl, weld::TreeView&, void );
+    DECL_LINK(ScriptSelectHdl, weld::ItemView&, void);
     DECL_LINK( ExpandingHdl, const weld::TreeIter&, bool );
     DECL_LINK( ButtonHdl, weld::Button&, void );
     static bool         getBoolProperty( css::uno::Reference< css::beans::XPropertySet > const & xProps, OUString const & propName );

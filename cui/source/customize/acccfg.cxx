@@ -1328,7 +1328,7 @@ IMPL_LINK_NOARG(SfxAcceleratorConfigPage, RemoveHdl, weld::Button&, void)
     SelectHdl(m_xFunctionBox->get_widget());
 }
 
-IMPL_LINK(SfxAcceleratorConfigPage, SelectHdl, weld::TreeView&, rListBox, void)
+IMPL_LINK(SfxAcceleratorConfigPage, SelectHdl, weld::ItemView&, rListBox, void)
 {
     const std::vector<OUString>& rAssignments = GetAssignments();
 

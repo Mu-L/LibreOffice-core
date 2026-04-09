@@ -22,6 +22,7 @@
 #include <memory>
 #include <sfx2/tabdlg.hxx>
 #include <vcl/weld/Entry.hxx>
+#include <vcl/weld/ItemView.hxx>
 #include <vcl/weld/MenuButton.hxx>
 #include <vcl/weld/SpinButton.hxx>
 #include <swtypes.hxx>
@@ -89,7 +90,7 @@ class SwOutlineSettingsTabPage final : public SfxTabPage
     std::unique_ptr<weld::CustomWeld> m_xPreviewWIN;
 
     void ApplyLevelSelection();
-    DECL_LINK( LevelHdl, weld::TreeView&, void );
+    DECL_LINK(LevelHdl, weld::ItemView&, void);
     DECL_LINK( ToggleComplete, weld::SpinButton&, void );
     DECL_LINK( CollSelect, weld::ComboBox&, void );
     void CollSave();

@@ -255,7 +255,7 @@ namespace dbaui
         }
     }
 
-    IMPL_LINK_NOARG(OParameterDialog, OnEntryListBoxSelected, weld::TreeView&, void)
+    IMPL_LINK_NOARG(OParameterDialog, OnEntryListBoxSelected, weld::ItemView&, void)
     {
         OnEntrySelected();
     }

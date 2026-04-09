@@ -817,8 +817,7 @@ bool UpdateDialog::isIgnoredUpdate( UpdateDialog::Index * index )
     return bIsIgnored;
 }
 
-
-IMPL_LINK_NOARG(UpdateDialog, selectionHandler, weld::TreeView&, void)
+IMPL_LINK_NOARG(UpdateDialog, selectionHandler, weld::ItemView&, void)
 {
     OUStringBuffer b;
     int nSelectedPos = m_xUpdates->get_selected_index();

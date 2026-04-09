@@ -354,12 +354,12 @@ IMPL_LINK_NOARG(MacroSecurityTrustedSourcesTP, RemoveLocPBHdl, weld::Button&, vo
     ImplCheckButtons();
 }
 
-IMPL_LINK_NOARG(MacroSecurityTrustedSourcesTP, TrustCertLBSelectHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(MacroSecurityTrustedSourcesTP, TrustCertLBSelectHdl, weld::ItemView&, void)
 {
     ImplCheckButtons();
 }
 
-IMPL_LINK_NOARG(MacroSecurityTrustedSourcesTP, TrustFileLocLBSelectHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(MacroSecurityTrustedSourcesTP, TrustFileLocLBSelectHdl, weld::ItemView&, void)
 {
     ImplCheckButtons();
 }

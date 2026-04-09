@@ -37,7 +37,7 @@ public:
     virtual ~XMLFilterSettingsDialog() override;
 
     DECL_LINK(ClickHdl_Impl, weld::Button&, void );
-    DECL_LINK(SelectionChangedHdl_Impl, weld::TreeView&, void);
+    DECL_LINK(SelectionChangedHdl_Impl, weld::ItemView&, void);
     DECL_LINK(DoubleClickHdl_Impl, const weld::TreeIter&, bool);
 
     void    UpdateWindow();

@@ -32,6 +32,7 @@ namespace weld { class Button; }
 namespace weld { class CheckButton; }
 namespace weld { class CustomWeld; }
 namespace weld { class Expander; }
+namespace weld { class ItemView; }
 namespace weld { class Label; }
 namespace weld { class TreeIter; }
 namespace weld { class TreeView; }
@@ -83,8 +84,8 @@ private:
 
     DECL_DLLPRIVATE_LINK( Update, Timer *, void );
 
-    DECL_DLLPRIVATE_LINK(RegionSelect, weld::TreeView&, void);
-    DECL_DLLPRIVATE_LINK(TemplateSelect, weld::TreeView&, void);
+    DECL_DLLPRIVATE_LINK(RegionSelect, weld::ItemView&, void);
+    DECL_DLLPRIVATE_LINK(TemplateSelect, weld::ItemView&, void);
     DECL_DLLPRIVATE_LINK(DoubleClick, const weld::TreeIter&, bool);
     DECL_DLLPRIVATE_LINK(Expand, weld::Expander&, void);
     sal_uInt16  GetSelectedTemplatePos() const;

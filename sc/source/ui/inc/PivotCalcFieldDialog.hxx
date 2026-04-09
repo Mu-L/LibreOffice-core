@@ -87,7 +87,7 @@ private:
     DECL_LINK(AddModClicked, weld::Button&, void);
     DECL_LINK(DeleteClicked, weld::Button&, void);
     DECL_LINK(DoubleClickHdl, const weld::TreeIter&, bool);
-    DECL_LINK(FieldListSelected, weld::TreeView&, void);
+    DECL_LINK(FieldListSelected, weld::ItemView&, void);
     DECL_LINK(CalcFieldNameSelected, weld::ComboBox&, void);
     DECL_LINK(CalcEntryChanged, weld::TextView&, void);
 };

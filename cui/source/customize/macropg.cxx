@@ -374,7 +374,7 @@ void SvxMacroTabPage_::DisplayAppEvents(bool appEvents, int nSelectIndex)
 }
 
 // select event handler on the listbox
-IMPL_LINK_NOARG( SvxMacroTabPage_, SelectEvent_Impl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SvxMacroTabPage_, SelectEvent_Impl, weld::ItemView&, void)
 {
     int nEntry = mpImpl->xEventLB->get_selected_index();
 

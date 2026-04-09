@@ -45,7 +45,7 @@ private:
     void            CheckState();
 
     DECL_LINK( ClickButtonHdl, weld::Button&, void );
-    DECL_LINK( SelectListBoxHdl, weld::TreeView&, void );
+    DECL_LINK(SelectListBoxHdl, weld::ItemView&, void);
     DECL_LINK( StartShowHdl, weld::Button&, void );
     void SelectHdl(void const *);
 
@@ -76,8 +76,8 @@ private:
 
     DECL_LINK( ClickButtonHdl, weld::Button&, void );
     DECL_LINK( ClickButtonEditHdl, weld::Entry&, void );
-    DECL_LINK( ClickButtonHdl3, weld::TreeView&, void );
-    DECL_LINK( ClickButtonHdl4, weld::TreeView&, void );
+    DECL_LINK(ClickButtonHdl3, weld::ItemView&, void);
+    DECL_LINK(ClickButtonHdl4, weld::ItemView&, void);
     DECL_LINK( OKHdl, weld::Button&, void );
     void ClickButtonHdl2(void const *);
 

@@ -65,7 +65,7 @@ class SwNumNamesDlg : public weld::GenericDialogController
     std::unique_ptr<weld::Button> m_xOKBtn;
 
     DECL_LINK( ModifyHdl, weld::Entry&, void );
-    DECL_LINK( SelectHdl, weld::TreeView&, void );
+    DECL_LINK(SelectHdl, weld::ItemView&, void);
     DECL_LINK(DoubleClickHdl, const weld::TreeIter&, bool);
 
 public:
@@ -78,7 +78,7 @@ public:
 }
 
 // remember selected entry
-IMPL_LINK( SwNumNamesDlg, SelectHdl, weld::TreeView&, rBox, void )
+IMPL_LINK(SwNumNamesDlg, SelectHdl, weld::ItemView&, rBox, void)
 {
     m_xFormEdit->set_text(rBox.get_selected_text());
     m_xFormEdit->select_region(0, -1);
@@ -561,7 +561,7 @@ void SwOutlineSettingsTabPage::ApplyLevelSelection()
     Update();
 }
 
-IMPL_LINK_NOARG(SwOutlineSettingsTabPage, LevelHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SwOutlineSettingsTabPage, LevelHdl, weld::ItemView&, void)
 {
     ApplyLevelSelection();
 }

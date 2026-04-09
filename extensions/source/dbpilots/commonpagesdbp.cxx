@@ -213,7 +213,7 @@ IMPL_LINK_NOARG(OTableSelectionPage, OnListboxDoubleClicked, const weld::TreeIte
     return true;
 }
 
-IMPL_LINK(OTableSelectionPage, OnListboxSelection, weld::TreeView&, _rBox, void)
+IMPL_LINK(OTableSelectionPage, OnListboxSelection, weld::ItemView&, _rBox, void)
 {
     if (m_xDatasource.get() == &_rBox)
     { // new data source selected

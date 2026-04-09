@@ -299,7 +299,7 @@ IMPL_LINK(SvxFontSubstTabPage, ClickHdl, weld::Button&, rButton, void)
     SelectHdl(&rButton);
 }
 
-IMPL_LINK(SvxFontSubstTabPage, TreeListBoxSelectHdl, weld::TreeView&, rButton, void)
+IMPL_LINK(SvxFontSubstTabPage, TreeListBoxSelectHdl, weld::ItemView&, rButton, void)
 {
     SelectHdl(&rButton);
 }

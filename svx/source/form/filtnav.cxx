@@ -1243,7 +1243,7 @@ sal_Int8 FmFilterNavigator::ExecuteDrop( const ExecuteDropEvent& rEvt )
     return DND_ACTION_COPY;
 }
 
-IMPL_LINK_NOARG(FmFilterNavigator, SelectHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(FmFilterNavigator, SelectHdl, weld::ItemView&, void)
 {
     std::unique_ptr<weld::TreeIter> xIter = m_xTreeView->get_selected();
     if (!xIter)

@@ -440,7 +440,7 @@ protected:
     SvxConfigPage(weld::Container* pPage, weld::DialogController* pController, const SfxItemSet&);
 
     DECL_LINK(MoveHdl, weld::Button&, void);
-    DECL_LINK(SelectFunctionHdl, weld::TreeView&, void);
+    DECL_LINK(SelectFunctionHdl, weld::ItemView&, void);
     DECL_LINK(FunctionDoubleClickHdl, const weld::TreeIter&, bool);
     DECL_LINK(SelectSaveInLocation, weld::ComboBox&, void);
     DECL_LINK(SelectElementHdl, weld::ComboBox&, void);
@@ -549,7 +549,7 @@ class SvxMainMenuOrganizerDialog : public weld::GenericDialogController
 
     DECL_LINK(MoveHdl, weld::Button&, void);
     DECL_LINK(ModifyHdl, weld::Entry&, void);
-    DECL_LINK(SelectHdl, weld::TreeView&, void);
+    DECL_LINK(SelectHdl, weld::ItemView&, void);
 
 public:
     SvxMainMenuOrganizerDialog(

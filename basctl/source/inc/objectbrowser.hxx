@@ -129,8 +129,8 @@ private:
     std::unique_ptr<basctl::DocumentEventNotifier> m_pDocNotifier;
 
     // UI Event Handlers
-    DECL_LINK(OnLeftTreeSelect, weld::TreeView&, void);
-    DECL_LINK(OnRightTreeSelect, weld::TreeView&, void);
+    DECL_LINK(OnLeftTreeSelect, weld::ItemView&, void);
+    DECL_LINK(OnRightTreeSelect, weld::ItemView&, void);
     DECL_LINK(OnRightNodeExpand, const weld::TreeIter&, bool);
     DECL_LINK(OnRightTreeDoubleClick, const weld::TreeIter&, bool);
     DECL_LINK(OnNodeExpand, const weld::TreeIter&, bool);

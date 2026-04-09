@@ -292,7 +292,7 @@ IMPL_LINK_NOARG(FuncPage, SelComboBoxHdl, weld::ComboBox&, void)
     UpdateFunctionList(searchStr);
 }
 
-IMPL_LINK_NOARG(FuncPage, SelTreeViewHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(FuncPage, SelTreeViewHdl, weld::ItemView&, void)
 {
     const IFunctionDescription* pDesc = GetFuncDesc();
     if (pDesc)

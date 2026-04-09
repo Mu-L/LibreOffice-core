@@ -547,24 +547,25 @@ void SvxEditDictionaryDialog::ShowWords_Impl( sal_uInt16 nId )
     }
 }
 
-IMPL_LINK(SvxEditDictionaryDialog, SelectHdl, weld::TreeView&, rBox, void)
+IMPL_LINK(SvxEditDictionaryDialog, SelectHdl, weld::ItemView&, rBox, void)
 {
     if (bDoNothing)
         return;
 
-    int nEntry = rBox.get_selected_index();
+    weld::TreeView& rTreeView = dynamic_cast<weld::TreeView&>(rBox);
+    int nEntry = rTreeView.get_selected_index();
 
     if(!bFirstSelect)
     {
         if (nEntry != -1)
         {
-            OUString sTmpShort(rBox.get_text(nEntry, 0));
+            OUString sTmpShort(rTreeView.get_text(nEntry, 0));
             // without this the cursor is always at the beginning of a word, if the text
             // is set over the ModifyHdl, although you're editing there at the moment
             if (m_xWordED->get_text() != sTmpShort)
                 m_xWordED->set_text(sTmpShort);
             if (&rBox == m_xDoubleColumnLB.get())
-                m_xReplaceED->set_text(rBox.get_text(nEntry, 1));
+                m_xReplaceED->set_text(rTreeView.get_text(nEntry, 1));
         }
     }
     else

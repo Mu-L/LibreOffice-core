@@ -48,7 +48,7 @@ private:
     virtual void initializePage() override;
     virtual bool commitPage(::vcl::WizardTypes::CommitPageReason _eReason) override;
 
-    DECL_LINK(OnListboxSelection, weld::TreeView&, void);
+    DECL_LINK(OnListboxSelection, weld::ItemView&, void);
     DECL_LINK(OnListboxDoubleClicked, const weld::TreeIter&, bool);
     DECL_LINK(OnSearchClicked, weld::Button&, void);
 

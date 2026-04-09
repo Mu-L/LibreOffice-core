@@ -49,7 +49,7 @@ private:
     std::unique_ptr<weld::TreeView> m_xErrors;
     std::unique_ptr<weld::Label> m_xExplanation;
 
-    DECL_LINK(SelectHdl, weld::TreeView&, void);
+    DECL_LINK(SelectHdl, weld::ItemView&, void);
 
 public:
     explicit ImplErrorDialog(weld::Window* pParent, const std::set<vcl::pdf::PDFWriter::ErrorCode>& rErrorCodes);

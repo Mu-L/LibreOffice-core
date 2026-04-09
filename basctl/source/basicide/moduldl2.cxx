@@ -430,10 +430,7 @@ void LibPage::ActivatePage()
     SetCurLib();
 }
 
-IMPL_LINK_NOARG(LibPage, TreeListHighlightHdl, weld::TreeView&, void)
-{
-    CheckButtons();
-}
+IMPL_LINK_NOARG(LibPage, TreeListHighlightHdl, weld::ItemView&, void) { CheckButtons(); }
 
 IMPL_LINK_NOARG( LibPage, BasicSelectHdl, weld::ComboBox&, void )
 {

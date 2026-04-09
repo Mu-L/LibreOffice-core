@@ -117,7 +117,7 @@ private:
         css::xml::dom::XNode > const & aUpdateInfo);
     bool showDescription( const OUString& rDescription);
 
-    DECL_LINK(selectionHandler, weld::TreeView&, void);
+    DECL_LINK(selectionHandler, weld::ItemView&, void);
     DECL_LINK(allHandler, weld::Toggleable&, void);
     DECL_LINK(okHandler, weld::Button&, void);
     DECL_LINK(closeHandler, weld::Button&, void);

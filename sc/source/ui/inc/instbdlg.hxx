@@ -86,7 +86,7 @@ private:
 
     DECL_LINK( BrowseHdl_Impl, weld::Button&, void );
     DECL_LINK( ChoiceHdl_Impl, weld::Toggleable&, void );
-    DECL_LINK( SelectHdl_Impl, weld::TreeView&, void );
+    DECL_LINK(SelectHdl_Impl, weld::ItemView&, void);
     DECL_LINK( CountHdl_Impl, weld::SpinButton&, void );
     DECL_LINK( DoEnterHdl, weld::Button&, void );
     DECL_LINK( BrowseTimeoutHdl, Timer *, void );

@@ -188,7 +188,7 @@ void SwFieldDokPage::Reset(const SfxItemSet* )
     }
 }
 
-IMPL_LINK_NOARG(SwFieldDokPage, TypeHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SwFieldDokPage, TypeHdl, weld::ItemView&, void)
 {
     // save old ListBoxPos
     const sal_Int32 nOld = GetTypeSel();
@@ -282,7 +282,7 @@ IMPL_LINK_NOARG(SwFieldDokPage, TypeHdl, weld::TreeView&, void)
                 }
             }
         }
-        m_xSelectionLB->connect_selection_changed(Link<weld::TreeView&, void>());
+        m_xSelectionLB->connect_selection_changed(Link<weld::ItemView&, void>());
     }
     else
     {
@@ -442,7 +442,7 @@ void SwFieldDokPage::AddSubType(SwFieldTypesEnum nTypeId)
     m_xSelectionLB->append(OUString::number(static_cast<sal_uInt16>(nTypeId)), SwFieldType::GetTypeStr(nTypeId));
 }
 
-IMPL_LINK_NOARG(SwFieldDokPage, SubTypeHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SwFieldDokPage, SubTypeHdl, weld::ItemView&, void)
 {
     sal_Int32 nPos = m_xSelectionLB->get_selected_index();
     if(nPos == -1)
@@ -520,7 +520,7 @@ sal_Int32 SwFieldDokPage::FillFormatLB(SwFieldTypesEnum nTypeId)
     return nSize;
 }
 
-IMPL_LINK_NOARG(SwFieldDokPage, FormatHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SwFieldDokPage, FormatHdl, weld::ItemView&, void)
 {
     SwFieldTypesEnum nTypeId = static_cast<SwFieldTypesEnum>(m_xTypeLB->get_id(GetTypeSel()).toUInt32());
 

@@ -573,7 +573,7 @@ IMPL_LINK_NOARG(SdPhotoAlbumDialog, RemoveHdl, weld::Button&, void)
     EnableDisableButtons();
 }
 
-IMPL_LINK_NOARG(SdPhotoAlbumDialog, SelectHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SdPhotoAlbumDialog, SelectHdl, weld::ItemView&, void)
 {
     OUString sImgUrl = m_xImagesLst->get_selected_id();
 

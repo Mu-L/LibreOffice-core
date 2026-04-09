@@ -80,7 +80,7 @@ private:
     void DeleteScenario();
     const ScenarioEntry* GetSelectedScenarioEntry() const;
 
-    DECL_LINK(SelectHdl, weld::TreeView&, void);
+    DECL_LINK(SelectHdl, weld::ItemView&, void);
     DECL_LINK(DoubleClickHdl, const weld::TreeIter&, bool);
     DECL_LINK(KeyInputHdl, const KeyEvent&, bool);
     DECL_LINK(ContextMenuHdl, const CommandEvent&, bool);

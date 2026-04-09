@@ -100,7 +100,7 @@ private:
     void RefEditModified();
 
     DECL_LINK(BtnPressedHdl, weld::Button&, void);
-    DECL_LINK(TreeItemSelectHdl, weld::TreeView&, void);
+    DECL_LINK(TreeItemSelectHdl, weld::ItemView&, void);
     DECL_LINK(RefModifiedHdl, formula::RefEdit&, void);
 };
 

@@ -382,7 +382,7 @@ void GeometryResourceGroup::fillParameter(ChartTypeParameter& rParameter)
         rParameter.nGeometry3D = nSelected;
 }
 
-IMPL_LINK_NOARG(GeometryResourceGroup, GeometryChangeHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(GeometryResourceGroup, GeometryChangeHdl, weld::ItemView&, void)
 {
     if (m_pChangeListener)
         m_pChangeListener->stateChanged();

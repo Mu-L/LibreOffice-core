@@ -30,7 +30,7 @@
 class SvxToolbarConfigPage : public SvxConfigPage
 {
 private:
-    DECL_LINK(SelectToolbarEntry, weld::TreeView&, void);
+    DECL_LINK(SelectToolbarEntry, weld::ItemView&, void);
     DECL_LINK(MoveHdl, weld::Button&, void);
 
     DECL_LINK(GearHdl, const OUString&, void);

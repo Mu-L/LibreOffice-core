@@ -817,7 +817,7 @@ void MacroManagerDialog::Notify(SfxBroadcaster&, const SfxHint& rHint)
     }
 }
 
-IMPL_LINK(MacroManagerDialog, SelectHdl, weld::TreeView&, rItemView, void)
+IMPL_LINK(MacroManagerDialog, SelectHdl, weld::ItemView&, rItemView, void)
 {
     weld::TreeView& rTreeView = m_xScriptContainersListBox->get_widget();
     if (&rItemView == &rTreeView)

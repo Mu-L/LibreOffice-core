@@ -526,7 +526,7 @@ IMPL_LINK_NOARG(ScNameDlg, AssignGetFocusHdl, formula::RefEdit&, void)
     RefEdModifyHdl(*m_xEdAssign);
 }
 
-IMPL_LINK_NOARG(ScNameDlg, SelectionChangedHdl_Impl, weld::TreeView&, void)
+IMPL_LINK_NOARG(ScNameDlg, SelectionChangedHdl_Impl, weld::ItemView&, void)
 {
     SelectionChanged();
 }

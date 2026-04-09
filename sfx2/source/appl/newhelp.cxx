@@ -461,7 +461,7 @@ IMPL_LINK(IndexTabPage_Impl, CustomRenderHdl, weld::TreeView::render_args, aPayl
         rRenderContext.DrawText(aPos, aEntry);
 }
 
-IMPL_LINK_NOARG(IndexTabPage_Impl, TreeChangeHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(IndexTabPage_Impl, TreeChangeHdl, weld::ItemView&, void)
 {
     m_xIndexEntry->set_text(m_xIndexList->get_selected_text());
 }

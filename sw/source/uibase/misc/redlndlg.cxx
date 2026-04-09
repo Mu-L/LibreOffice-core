@@ -836,7 +836,7 @@ void SwRedlineAcceptDlg::RemoveParents(SwRedlineTable::size_type nStart, SwRedli
     weld::TreeView& rTreeView = m_pTable->GetWidget();
 
     // because of Bug of TLB that ALWAYS calls the SelectHandler at Remove:
-    rTreeView.connect_selection_changed(Link<weld::TreeView&, void>());
+    rTreeView.connect_selection_changed(Link<weld::ItemView&, void>());
 
     bool bChildrenRemoved = false;
     rTreeView.thaw();
@@ -1303,7 +1303,7 @@ IMPL_LINK_NOARG(SwRedlineAcceptDlg, FilterChangedHdl, SvxTPFilter*, void)
     Init();
 }
 
-IMPL_LINK_NOARG(SwRedlineAcceptDlg, SelectHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SwRedlineAcceptDlg, SelectHdl, weld::ItemView&, void)
 {
     m_aSelectTimer.Start();
 }

@@ -44,7 +44,7 @@ class SvPasteObjectDialog : public weld::GenericDialogController
     weld::TreeView& ObjectLB() { return *m_xLbInsertList; }
 
     void            SelectObject();
-    DECL_LINK(SelectHdl, weld::TreeView&, void);
+    DECL_LINK(SelectHdl, weld::ItemView&, void);
     DECL_LINK(DoubleClickHdl, const weld::TreeIter&, bool);
 
 public:

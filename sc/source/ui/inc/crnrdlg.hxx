@@ -80,7 +80,7 @@ private:
     DECL_LINK( OkBtnHdl, weld::Button&, void );
     DECL_LINK( AddBtnHdl, weld::Button&, void );
     DECL_LINK( RemoveBtnHdl, weld::Button&, void );
-    DECL_LINK( Range1SelectHdl, weld::TreeView&, void );
+    DECL_LINK(Range1SelectHdl, weld::ItemView&, void);
     DECL_LINK( Range1DataModifyHdl, formula::RefEdit&, void );
     DECL_LINK( ColRowToggleHdl, weld::Toggleable&, void );
     DECL_LINK( Range2DataModifyHdl, formula::RefEdit&, void );

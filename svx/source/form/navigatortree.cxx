@@ -1422,7 +1422,7 @@ namespace svxform
         m_xEditEntry.reset();
     }
 
-    IMPL_LINK_NOARG(NavigatorTree, OnEntrySelDesel, weld::TreeView&, void)
+    IMPL_LINK_NOARG(NavigatorTree, OnEntrySelDesel, weld::ItemView&, void)
     {
         m_sdiState = SDI_DIRTY;
 

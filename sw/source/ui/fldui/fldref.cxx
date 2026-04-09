@@ -314,7 +314,7 @@ void SwFieldRefPage::Reset(const SfxItemSet* )
     }
 }
 
-IMPL_LINK_NOARG(SwFieldRefPage, TypeHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SwFieldRefPage, TypeHdl, weld::ItemView&, void)
 {
     // save old ListBoxPos
     const sal_Int32 nOld = GetTypeSel();
@@ -458,17 +458,17 @@ IMPL_LINK_NOARG(SwFieldRefPage, TypeHdl, weld::TreeView&, void)
     ModifyHdl(*m_xFilterED);
 }
 
-IMPL_LINK_NOARG(SwFieldRefPage, SubTypeTreeListBoxHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SwFieldRefPage, SubTypeTreeListBoxHdl, weld::ItemView&, void)
 {
     SubTypeHdl();
 }
 
-IMPL_LINK_NOARG(SwFieldRefPage, SubTypeListBoxHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SwFieldRefPage, SubTypeListBoxHdl, weld::ItemView&, void)
 {
     SubTypeHdl();
 }
 
-IMPL_LINK_NOARG(SwFieldRefPage, FormatHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SwFieldRefPage, FormatHdl, weld::ItemView&, void)
 {
     SubTypeHdl();
 }

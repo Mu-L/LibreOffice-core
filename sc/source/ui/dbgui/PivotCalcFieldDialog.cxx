@@ -544,7 +544,7 @@ IMPL_LINK_NOARG(ScPivotCalcFieldDlg, DoubleClickHdl, const weld::TreeIter&, bool
     return true;
 }
 
-IMPL_LINK_NOARG(ScPivotCalcFieldDlg, FieldListSelected, weld::TreeView&, void)
+IMPL_LINK_NOARG(ScPivotCalcFieldDlg, FieldListSelected, weld::ItemView&, void)
 {
     mxBtnInsert->set_sensitive(mxFieldList->get_cursor_index() != -1);
 }

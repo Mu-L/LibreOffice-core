@@ -32,10 +32,8 @@ class XInterface;
 
 namespace weld
 {
+class ItemView;
 class TreeIter;
-}
-namespace weld
-{
 class TreeView;
 }
 
@@ -94,7 +92,7 @@ public:
     DECL_LINK(ExpandingHandlerMethods, const weld::TreeIter&, bool);
 
     // callback when the tree view selection changed to a different node
-    DECL_LINK(SelectionChanged, weld::TreeView&, void);
+    DECL_LINK(SelectionChanged, weld::ItemView&, void);
 
     // callback when a pop-up is triggered on a tree view node
     DECL_LINK(PopupMenuHandler, const CommandEvent&, bool);

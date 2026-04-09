@@ -264,7 +264,7 @@ private:
     DECL_STATIC_LINK(FmFilterNavigator, CustomGetSizeHdl, weld::TreeView::get_size_args, Size);
     DECL_STATIC_LINK(FmFilterNavigator, CustomRenderHdl, weld::TreeView::render_args, void);
 
-    DECL_LINK(SelectHdl, weld::TreeView&, void);
+    DECL_LINK(SelectHdl, weld::ItemView&, void);
     DECL_LINK(EditingEntryHdl, const weld::TreeIter&, bool);
     typedef std::pair<const weld::TreeIter&, OUString> IterString;
     DECL_LINK(EditedEntryHdl, const IterString&, bool);

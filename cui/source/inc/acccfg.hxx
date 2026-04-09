@@ -108,7 +108,7 @@ private:
 
     DECL_LINK(ChangeHdl, weld::Button&, void);
     DECL_LINK(RemoveHdl, weld::Button&, void);
-    DECL_LINK(SelectHdl, weld::TreeView&, void);
+    DECL_LINK(SelectHdl, weld::ItemView&, void);
     DECL_LINK(SearchUpdateHdl, weld::Entry&, void);
     DECL_LINK(Save, weld::Button&, void);
     DECL_LINK(Load, weld::Button&, void);

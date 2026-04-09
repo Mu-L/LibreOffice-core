@@ -43,8 +43,8 @@ class SwFieldDokInfPage : public SwFieldPage
     std::unique_ptr<SwNumFormatTreeView> m_xFormatLB;
     std::unique_ptr<weld::CheckButton> m_xFixedCB;
 
-    DECL_LINK(TypeHdl, weld::TreeView&, void);
-    DECL_LINK(SubTypeHdl, weld::TreeView&, void);
+    DECL_LINK(TypeHdl, weld::ItemView&, void);
+    DECL_LINK(SubTypeHdl, weld::ItemView&, void);
 
     sal_Int32               FillSelectionLB(SwDocInfoSubType nSubTypeId);
 

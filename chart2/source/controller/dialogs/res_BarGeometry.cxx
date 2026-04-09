@@ -32,7 +32,7 @@ BarGeometryResources::BarGeometryResources(weld::Builder* pBuilder)
     m_xLB_Geometry->set_size_request(-1, m_xLB_Geometry->get_height_rows(std::size(CHART_TYPE)));
 }
 
-void BarGeometryResources::connect_changed(const Link<weld::TreeView&, void>& rLink)
+void BarGeometryResources::connect_changed(const Link<weld::ItemView&, void>& rLink)
 {
     m_xLB_Geometry->connect_selection_changed(rLink);
 }

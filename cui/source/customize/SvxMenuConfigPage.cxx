@@ -150,7 +150,7 @@ void SvxMenuConfigPage::Init()
     SelectFunctionHdl(m_xFunctions->get_widget());
 }
 
-IMPL_LINK_NOARG(SvxMenuConfigPage, SelectMenuEntry, weld::TreeView&, void) { UpdateButtonStates(); }
+IMPL_LINK_NOARG(SvxMenuConfigPage, SelectMenuEntry, weld::ItemView&, void) { UpdateButtonStates(); }
 
 void SvxMenuConfigPage::UpdateButtonStates()
 {

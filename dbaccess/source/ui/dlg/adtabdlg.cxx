@@ -419,7 +419,7 @@ void OAddTableDlg::Add()
     }
 }
 
-IMPL_LINK_NOARG( OAddTableDlg, TableListSelectHdl, weld::TreeView&, void )
+IMPL_LINK_NOARG(OAddTableDlg, TableListSelectHdl, weld::ItemView&, void)
 {
     m_xAddButton->set_sensitive( m_xCurrentList->isLeafSelected() );
 }

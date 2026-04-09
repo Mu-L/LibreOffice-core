@@ -43,7 +43,7 @@
 using namespace ::com::sun::star::ui::dialogs;
 using namespace ::com::sun::star::uno;
 
-IMPL_LINK_NOARG(SvxMultiPathDialog, SelectHdl_Impl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SvxMultiPathDialog, SelectHdl_Impl, weld::ItemView&, void)
 {
     auto nCount = m_xRadioLB->n_children();
     bool bIsSelected = m_xRadioLB->get_selected_index() != -1;
@@ -51,7 +51,7 @@ IMPL_LINK_NOARG(SvxMultiPathDialog, SelectHdl_Impl, weld::TreeView&, void)
     m_xDelBtn->set_sensitive(bEnable && bIsSelected);
 }
 
-IMPL_LINK_NOARG(SvxPathSelectDialog, SelectHdl_Impl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SvxPathSelectDialog, SelectHdl_Impl, weld::ItemView&, void)
 {
     auto nCount = m_xPathLB->n_children();
     bool bIsSelected = m_xPathLB->get_selected_index() != -1;

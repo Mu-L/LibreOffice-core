@@ -1712,7 +1712,7 @@ void SvxNumOptionsTabPage::SwitchNumberType( NumberType nType )
     m_xOrientLB->set_sensitive(bEnableBitmap);
 }
 
-IMPL_LINK_NOARG(SvxNumOptionsTabPage, LevelHdl_Impl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SvxNumOptionsTabPage, LevelHdl_Impl, weld::ItemView&, void)
 {
     if (m_pLevelHdlEvent)
         return;
@@ -2818,7 +2818,7 @@ IMPL_LINK_NOARG(SvxNumPositionTabPage, EditModifyHdl_Impl, weld::ComboBox&, void
     SetModified();
 }
 
-IMPL_LINK_NOARG(SvxNumPositionTabPage, LevelHdl_Impl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SvxNumPositionTabPage, LevelHdl_Impl, weld::ItemView&, void)
 {
     if (m_pLevelHdlEvent)
         return;

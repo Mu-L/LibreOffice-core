@@ -151,7 +151,7 @@ IMPL_LINK(SvxJavaOptionsPage, CheckHdl_Impl, const weld::TreeView::iter_col&, rR
     HandleCheckEntry(m_xJavaList->get_iter_index_in_parent(rRowCol.first));
 }
 
-IMPL_LINK_NOARG(SvxJavaOptionsPage, SelectHdl_Impl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SvxJavaOptionsPage, SelectHdl_Impl, weld::ItemView&, void)
 {
     UpdateJavaPathText();
 }
@@ -710,7 +710,7 @@ IMPL_LINK_NOARG(SvxJavaParameterDlg, EditHdl_Impl, weld::Button&, void)
     EditParameter();
 }
 
-IMPL_LINK_NOARG(SvxJavaParameterDlg, SelectHdl_Impl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SvxJavaParameterDlg, SelectHdl_Impl, weld::ItemView&, void)
 {
     EnableEditButton();
     EnableRemoveButton();
@@ -944,7 +944,7 @@ IMPL_LINK_NOARG(SvxJavaClassPathDlg, RemoveHdl_Impl, weld::Button&, void)
     EnableRemoveButton();
 }
 
-IMPL_LINK_NOARG(SvxJavaClassPathDlg, SelectHdl_Impl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SvxJavaClassPathDlg, SelectHdl_Impl, weld::ItemView&, void)
 {
     EnableRemoveButton();
 }

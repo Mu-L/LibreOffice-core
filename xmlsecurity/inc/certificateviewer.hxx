@@ -115,7 +115,7 @@ private:
     std::unique_ptr<weld::TreeView> m_xElementsLB;
     std::unique_ptr<weld::TextView> m_xValueDetails;
 
-    DECL_LINK(ElementSelectHdl, weld::TreeView&, void);
+    DECL_LINK(ElementSelectHdl, weld::ItemView&, void);
     void                InsertElement(const OUString& rField, const OUString& rValue,
                                       const OUString& rDetails, bool bFixedWidthFont = false);
 public:
@@ -151,7 +151,7 @@ private:
     std::unique_ptr<weld::Label> mxCertNotValidated;
 
     DECL_LINK(ViewCertHdl, weld::Button&, void);
-    DECL_LINK(CertSelectHdl, weld::TreeView&, void);
+    DECL_LINK(CertSelectHdl, weld::ItemView&, void);
     void                InsertCert(const weld::TreeIter* pParent, const OUString& _rName,
                                    const css::uno::Reference< css::security::XCertificate >& rxCert,
                                    bool bValid);

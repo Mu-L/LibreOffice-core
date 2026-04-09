@@ -105,7 +105,7 @@ IMPL_LINK_NOARG(TSAURLsDialog, AddHdl_Impl, weld::Button&, void)
     m_xDeleteBtn->set_sensitive(false);
 }
 
-IMPL_LINK_NOARG(TSAURLsDialog, SelectHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(TSAURLsDialog, SelectHdl, weld::ItemView&, void)
 {
     m_xDeleteBtn->set_sensitive(true);
 }

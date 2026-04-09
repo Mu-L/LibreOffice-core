@@ -370,7 +370,7 @@ class SwTOXEntryTabPage final : public SfxTabPage
     DECL_LINK(StyleSelectHdl, weld::ComboBox&, void);
     DECL_LINK(EditStyleHdl, weld::Button&, void);
     DECL_LINK(InsertTokenHdl, weld::Button&, void);
-    DECL_LINK(LevelHdl, weld::TreeView&, void);
+    DECL_LINK(LevelHdl, weld::ItemView&, void);
     DECL_LINK(AutoRightHdl, weld::Toggleable&, void);
     DECL_LINK(TokenSelectedHdl, SwFormToken&, void);
     DECL_LINK(TabPosHdl, weld::MetricSpinButton&, void);
@@ -391,7 +391,7 @@ class SwTOXEntryTabPage final : public SfxTabPage
     DECL_LINK(ModifyClickHdl, weld::Toggleable&, void);
 
     void ShowHideControls(int eType);
-    void LevelHdlImpl(weld::TreeView& rBox, bool bGrabFocus);
+    void LevelHdlImpl(weld::ItemView& rBox, bool bGrabFocus);
 
 public:
     SwTOXEntryTabPage(weld::Container* pPage, weld::DialogController* pController, const SfxItemSet& rAttrSet);
@@ -422,7 +422,7 @@ class SwTOXStylesTabPage final : public SfxTabPage
 
     DECL_LINK(EditStyleHdl, weld::Button&, void);
     DECL_LINK(StdHdl, weld::Button&, void);
-    DECL_LINK(EnableSelectHdl, weld::TreeView&, void);
+    DECL_LINK(EnableSelectHdl, weld::ItemView&, void);
     DECL_LINK(DoubleClickHdl, const weld::TreeIter&, bool);
     DECL_LINK(AssignHdl, weld::Button&, void);
     void Modify();

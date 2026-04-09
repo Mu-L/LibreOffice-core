@@ -130,7 +130,7 @@ private:
     void                KeepHandler( bool bMine );
     void                KeepAllHandler( bool bMine );
 
-    DECL_LINK( SelectHandle, weld::TreeView&, void );
+    DECL_LINK(SelectHandle, weld::ItemView&, void);
     DECL_LINK( UpdateSelectionHdl, Timer*, void );
     DECL_LINK( KeepMineHandle, weld::Button&, void );
     DECL_LINK( KeepOtherHandle, weld::Button&, void );

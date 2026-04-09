@@ -92,7 +92,7 @@ IMPL_LINK_NOARG(SfxSaveAsTemplateDialog, TemplateNameEditHdl, weld::Entry&, void
     SelectCategoryHdl(*m_xLBCategory);
 }
 
-IMPL_LINK_NOARG(SfxSaveAsTemplateDialog, SelectCategoryHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SfxSaveAsTemplateDialog, SelectCategoryHdl, weld::ItemView&, void)
 {
     if (m_xLBCategory->get_selected_index() == 0)
     {

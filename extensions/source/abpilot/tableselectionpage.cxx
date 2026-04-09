@@ -75,7 +75,7 @@ namespace abp
         return true;
     }
 
-    IMPL_LINK_NOARG( TableSelectionPage, OnTableSelected, weld::TreeView&, void )
+    IMPL_LINK_NOARG(TableSelectionPage, OnTableSelected, weld::ItemView&, void)
     {
         updateDialogTravelUI();
     }

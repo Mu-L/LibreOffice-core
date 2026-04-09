@@ -94,7 +94,7 @@ class ScAcceptChgDlg final : public SfxModelessDialogController
     DECL_LINK( RejectAllHandle, SvxTPView*, void );
     DECL_LINK( AcceptAllHandle, SvxTPView*, void );
     DECL_LINK( ExpandingHandle, const weld::TreeIter&, bool );
-    DECL_LINK( SelectHandle, weld::TreeView&, void );
+    DECL_LINK(SelectHandle, weld::ItemView&, void);
     DECL_LINK( RefInfoHandle, const OUString*, void );
 
     DECL_LINK( UpdateSelectionHdl, Timer*, void );

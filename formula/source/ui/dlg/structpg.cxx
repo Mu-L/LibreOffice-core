@@ -124,7 +124,7 @@ const FormulaToken* StructPage::GetFunctionEntry(const weld::TreeIter* pEntry)
     return nullptr;
 }
 
-IMPL_LINK(StructPage, SelectHdl, weld::TreeView&, rTlb, void)
+IMPL_LINK(StructPage, SelectHdl, weld::ItemView&, rTlb, void)
 {
     if (!GetActiveFlag())
         return;

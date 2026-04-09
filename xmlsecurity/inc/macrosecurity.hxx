@@ -120,8 +120,8 @@ private:
     DECL_LINK(RemoveCertPBHdl, weld::Button&, void);
     DECL_LINK(AddLocPBHdl, weld::Button&, void);
     DECL_LINK(RemoveLocPBHdl, weld::Button&, void);
-    DECL_LINK(TrustCertLBSelectHdl, weld::TreeView&, void);
-    DECL_LINK(TrustFileLocLBSelectHdl, weld::TreeView&, void);
+    DECL_LINK(TrustCertLBSelectHdl, weld::ItemView&, void);
+    DECL_LINK(TrustFileLocLBSelectHdl, weld::ItemView&, void);
 
     void FillCertLB(const bool bShowWarnings = false);
     void ImplCheckButtons();

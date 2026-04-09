@@ -212,7 +212,7 @@ namespace svxform
         bool                        m_bLinkOnce;
 
         DECL_LINK(TbxSelectHdl, const OUString&, void);
-        DECL_LINK(ItemSelectHdl, weld::TreeView&, void);
+        DECL_LINK(ItemSelectHdl, weld::ItemView&, void);
         DECL_LINK(KeyInputHdl, const KeyEvent&, bool);
         DECL_LINK(PopupMenuHdl, const CommandEvent&, bool);
 
@@ -456,7 +456,7 @@ namespace svxform
         std::unique_ptr<weld::Button> m_xDeleteNamespaceBtn;
         std::unique_ptr<weld::Button> m_xOKBtn;
 
-        DECL_LINK(SelectHdl, weld::TreeView&, void);
+        DECL_LINK(SelectHdl, weld::ItemView&, void);
         DECL_LINK(ClickHdl, weld::Button&, void);
         DECL_LINK(OKHdl, weld::Button&, void);
 

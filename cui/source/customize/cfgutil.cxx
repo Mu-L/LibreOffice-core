@@ -1209,7 +1209,7 @@ SvxScriptSelectorDialog::~SvxScriptSelectorDialog()
 {
 }
 
-IMPL_LINK(SvxScriptSelectorDialog, SelectHdl, weld::TreeView&, rCtrl, void)
+IMPL_LINK(SvxScriptSelectorDialog, SelectHdl, weld::ItemView&, rCtrl, void)
 {
     if (&rCtrl == &m_xCategories->get_widget())
     {

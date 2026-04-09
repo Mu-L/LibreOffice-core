@@ -44,7 +44,7 @@ class SfxVersionDialog final : public SfxDialogController
     std::unique_ptr<weld::TreeView> m_xVersionBox;
 
     DECL_LINK(DClickHdl_Impl, const weld::TreeIter&, bool);
-    DECL_LINK(SelectHdl_Impl, weld::TreeView&, void);
+    DECL_LINK(SelectHdl_Impl, weld::ItemView&, void);
     DECL_LINK(ButtonHdl_Impl, weld::Button&, void);
     DECL_LINK(ToggleHdl_Impl, weld::Toggleable&, void);
     void Init_Impl();

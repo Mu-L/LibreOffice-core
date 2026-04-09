@@ -1497,7 +1497,7 @@ IMPL_LINK(SvxLinguTabPage, ClickHdl_Impl, weld::Button&, rBtn, void)
     }
 }
 
-IMPL_LINK(SvxLinguTabPage, SelectHdl_Impl, weld::TreeView&, rBox, void)
+IMPL_LINK(SvxLinguTabPage, SelectHdl_Impl, weld::ItemView&, rBox, void)
 {
     if (m_xLinguModulesCLB.get() == &rBox)
     {
@@ -1612,7 +1612,7 @@ SvxEditModulesDlg::~SvxEditModulesDlg()
         delete weld::fromId<ModuleUserData_Impl*>(m_xModulesCLB->get_id(i));
 }
 
-IMPL_LINK( SvxEditModulesDlg, SelectHdl_Impl, weld::TreeView&, rBox, void )
+IMPL_LINK(SvxEditModulesDlg, SelectHdl_Impl, weld::ItemView&, rBox, void)
 {
     int nCurPos = rBox.get_selected_index();
     if (nCurPos == -1)

@@ -38,7 +38,7 @@ class SwChangeDBDlg final : public SfxDialogController
 
     void TreeSelect();
 
-    DECL_LINK(TreeSelectHdl, weld::TreeView&, void);
+    DECL_LINK(TreeSelectHdl, weld::ItemView&, void);
     DECL_LINK(ButtonHdl, weld::Button&, void);
     DECL_LINK(AddDBHdl, weld::Button&, void);
 

@@ -29,7 +29,7 @@ class SearchResultsDlg : public SfxDialogController
     std::unique_ptr<weld::Label> mxSearchResults;
     std::unique_ptr<weld::CheckButton> mxShowDialog;
 
-    DECL_LINK(ListSelectHdl, weld::TreeView&, void);
+    DECL_LINK(ListSelectHdl, weld::ItemView&, void);
     DECL_LINK(HeaderBarClick, int, void);
     DECL_STATIC_LINK(SearchResultsDlg, OnShowToggled, weld::Toggleable&, void);
 public:

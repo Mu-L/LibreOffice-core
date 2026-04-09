@@ -1007,7 +1007,7 @@ IMPL_LINK_NOARG(ScAcceptChgDlg, AcceptAllHandle, SvxTPView*, void)
     m_xDialog->set_busy_cursor(false);
 }
 
-IMPL_LINK_NOARG(ScAcceptChgDlg, SelectHandle, weld::TreeView&, void)
+IMPL_LINK_NOARG(ScAcceptChgDlg, SelectHandle, weld::ItemView&, void)
 {
     if (!bNoSelection)
         aSelectionIdle.Start();

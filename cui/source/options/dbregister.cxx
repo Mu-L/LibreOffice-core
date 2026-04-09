@@ -264,7 +264,7 @@ IMPL_LINK( DbRegistrationOptionsPage, HeaderSelect_Impl, int, nCol, void )
     m_xPathBox->set_sort_indicator(bSortMode ? TRISTATE_TRUE : TRISTATE_FALSE, nCol);
 }
 
-IMPL_LINK_NOARG(DbRegistrationOptionsPage, PathSelect_Impl, weld::TreeView&, void)
+IMPL_LINK_NOARG(DbRegistrationOptionsPage, PathSelect_Impl, weld::ItemView&, void)
 {
     DatabaseRegistration* pRegistration = weld::fromId<DatabaseRegistration*>(m_xPathBox->get_selected_id());
 

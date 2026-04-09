@@ -100,7 +100,7 @@ private:
     DECL_LINK(RefEdModifyHdl, formula::RefEdit&, void);
     DECL_LINK(EdModifyCheckBoxHdl, weld::Toggleable&, void);
     DECL_LINK(AssignGetFocusHdl, formula::RefEdit&, void);
-    DECL_LINK(SelectionChangedHdl_Impl, weld::TreeView&, void);
+    DECL_LINK(SelectionChangedHdl_Impl, weld::ItemView&, void);
     DECL_LINK(ScopeChangedHdl, weld::ComboBox&, void);
 
 protected:

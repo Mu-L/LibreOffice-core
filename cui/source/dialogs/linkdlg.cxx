@@ -140,7 +140,7 @@ SvBaseLinksDlg::~SvBaseLinksDlg()
 /*************************************************************************
 |*    SvBaseLinksDlg::Handler()
 *************************************************************************/
-IMPL_LINK_NOARG(SvBaseLinksDlg, LinksSelectHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SvBaseLinksDlg, LinksSelectHdl, weld::ItemView&, void)
 {
     LinksSelectHdl(m_xTbLinks.get());
 }

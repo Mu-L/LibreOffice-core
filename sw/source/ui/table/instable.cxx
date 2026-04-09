@@ -146,7 +146,7 @@ void SwInsTableDlg::InitAutoTableFormat()
     SelFormatHdl( *m_xLbFormat );
 }
 
-IMPL_LINK_NOARG(SwInsTableDlg, SelFormatHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(SwInsTableDlg, SelFormatHdl, weld::ItemView&, void)
 {
     // Get index of selected item from the listbox
     int styleIdx = m_xLbFormat->get_selected_index();

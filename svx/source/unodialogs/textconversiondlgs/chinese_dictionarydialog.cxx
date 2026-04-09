@@ -459,7 +459,7 @@ IMPL_LINK_NOARG(ChineseDictionaryDialog, EditFieldsHdl, weld::Entry&, void)
     updateButtons();
 }
 
-IMPL_LINK_NOARG(ChineseDictionaryDialog, MappingSelectHdl, weld::TreeView&, void)
+IMPL_LINK_NOARG(ChineseDictionaryDialog, MappingSelectHdl, weld::ItemView&, void)
 {
     DictionaryEntry* pE = getActiveDictionary().getFirstSelectedEntry();
     if (pE)

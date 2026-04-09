@@ -44,7 +44,7 @@ SwMultiTOXMarkDlg::SwMultiTOXMarkDlg(weld::Window* pParent, SwTOXMgr& rTOXMgr)
     m_xTextFT->set_label(m_rMgr.GetTOXMark(0)->GetTOXType()->GetTypeName());
 }
 
-IMPL_LINK(SwMultiTOXMarkDlg, SelectHdl, weld::TreeView&, rBox, void)
+IMPL_LINK(SwMultiTOXMarkDlg, SelectHdl, weld::ItemView&, rBox, void)
 {
     if (rBox.get_selected_index() != -1)
     {

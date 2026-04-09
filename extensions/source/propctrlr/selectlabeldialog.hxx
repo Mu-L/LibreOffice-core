@@ -62,7 +62,7 @@ private:
     sal_Int32 InsertEntries(const css::uno::Reference<css::uno::XInterface>& _xContainer,
                             const weld::TreeIter& rContainerEntry);
 
-    DECL_LINK(OnEntrySelected, weld::TreeView&, void);
+    DECL_LINK(OnEntrySelected, weld::ItemView&, void);
     DECL_LINK(OnNoAssignmentClicked, weld::Toggleable&, void);
 };
 } // namespace pcr

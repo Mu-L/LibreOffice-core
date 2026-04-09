@@ -23,6 +23,7 @@
 
 #include <vcl/wizardmachine.hxx>
 #include <vcl/weld/Entry.hxx>
+#include <vcl/weld/ItemView.hxx>
 
 #include <RangeSelectionListener.hxx>
 
@@ -69,8 +70,8 @@ private:
 
     virtual void        initializePage() override;
 
-    DECL_LINK( SeriesSelectionChangedHdl, weld::TreeView&, void );
-    DECL_LINK( RoleSelectionChangedHdl, weld::TreeView&, void );
+    DECL_LINK(SeriesSelectionChangedHdl, weld::ItemView&, void);
+    DECL_LINK(RoleSelectionChangedHdl, weld::ItemView&, void);
     DECL_LINK( MainRangeButtonClickedHdl, weld::Button&, void );
     DECL_LINK( CategoriesRangeButtonClickedHdl, weld::Button&, void );
     DECL_LINK( AddButtonClickedHdl, weld::Button&, void );
