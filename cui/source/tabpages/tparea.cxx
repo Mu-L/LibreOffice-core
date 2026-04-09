@@ -387,29 +387,6 @@ std::unique_ptr<SfxTabPage> SvxAreaTabPage::CreateWithSlideBackground(
     return xRet;
 }
 
-std::unique_ptr<SfxTabPage> SvxAreaTabPage::CreateFillStyleTabPage(FillType eFillType)
-{
-    SfxOkDialogController* pController = GetDialogController();
-    CreateTabPage fnCreate = nullptr;
-    switch (eFillType)
-    {
-        case FillType::TRANSPARENT: fnCreate = nullptr; break;
-        case FillType::SOLID: fnCreate = &SvxColorTabPage::Create; break;
-        case FillType::GRADIENT: fnCreate = &SvxGradientTabPage::Create; break;
-        case FillType::HATCH: fnCreate = &SvxHatchTabPage::Create; break;
-        case FillType::BITMAP: fnCreate = &SvxBitmapTabPage::Create; break;
-        case FillType::PATTERN: fnCreate = &SvxPatternTabPage::Create; break;
-        case FillType::USE_BACKGROUND_FILL: fnCreate = nullptr; break;
-        default: break;
-    }
-
-    if (!fnCreate)
-        return nullptr;
-
-    std::unique_ptr<SfxTabPage> pTabPage = (*fnCreate)(m_xFillTab.get(), pController, &m_rXFSet);
-    return pTabPage;
-}
-
 IMPL_LINK(SvxAreaTabPage, SelectFillTypeHdl_Impl, weld::Toggleable&, rButton, void)
 {
     if (rButton.get_active())
@@ -459,9 +436,25 @@ void SvxAreaTabPage::PageCreated(const SfxAllItemSet& aSet)
 
 std::unique_ptr<SfxTabPage> SvxAreaTabPage::CreatePage(FillType eFillType)
 {
-    std::unique_ptr<SfxTabPage> pTabPage = CreateFillStyleTabPage(eFillType);
-    if (!pTabPage)
+    SfxOkDialogController* pController = GetDialogController();
+    CreateTabPage fnCreate = nullptr;
+    switch (eFillType)
+    {
+        case FillType::TRANSPARENT: fnCreate = nullptr; break;
+        case FillType::SOLID: fnCreate = &SvxColorTabPage::Create; break;
+        case FillType::GRADIENT: fnCreate = &SvxGradientTabPage::Create; break;
+        case FillType::HATCH: fnCreate = &SvxHatchTabPage::Create; break;
+        case FillType::BITMAP: fnCreate = &SvxBitmapTabPage::Create; break;
+        case FillType::PATTERN: fnCreate = &SvxPatternTabPage::Create; break;
+        case FillType::USE_BACKGROUND_FILL: fnCreate = nullptr; break;
+        default: break;
+    }
+
+    if (!fnCreate)
         return nullptr;
+
+    std::unique_ptr<SfxTabPage> pTabPage = (*fnCreate)(m_xFillTab.get(), pController, &m_rXFSet);
+    assert(pTabPage);
 
     if (eFillType == FillType::SOLID)
     {
