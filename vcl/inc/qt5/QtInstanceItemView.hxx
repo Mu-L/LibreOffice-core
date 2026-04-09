@@ -80,6 +80,9 @@ protected:
 private:
     QAbstractItemView& getItemView() const;
     QItemSelectionModel& getSelectionModel() const;
+
+private Q_SLOTS:
+    void handleActivated(const QModelIndex& rIndex);
 };
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab cinoptions=b1,g0,N-s cinkeys+=0=break: */

@@ -30,7 +30,6 @@ QtInstanceIconView::QtInstanceIconView(QListView* pListView)
     m_pSelectionModel = m_pListView->selectionModel();
     assert(m_pSelectionModel);
 
-    connect(m_pListView, &QListView::activated, this, &QtInstanceIconView::handleActivated);
     connect(m_pSelectionModel, &QItemSelectionModel::selectionChanged, this,
             &QtInstanceIconView::handleSelectionChanged);
 }
@@ -207,12 +206,6 @@ bool QtInstanceIconView::handleToolTipEvent(const QHelpEvent& rHelpEvent)
     QToolTip::showText(rHelpEvent.globalPos(), toRichTextTooltip(sToolTip), m_pListView,
                        m_pListView->visualRect(aIndex));
     return true;
-}
-
-void QtInstanceIconView::handleActivated(const QModelIndex& rIndex)
-{
-    SolarMutexGuard g;
-    signal_item_activated(treeIter(rIndex));
 }
 
 void QtInstanceIconView::handleSelectionChanged()

@@ -16,6 +16,7 @@ QtInstanceItemView::QtInstanceItemView(QAbstractItemView* pItemView, QAbstractIt
     : QtInstanceWidget(pItemView)
     , m_rModel(rModel)
 {
+    connect(pItemView, &QAbstractItemView::activated, this, &QtInstanceItemView::handleActivated);
 }
 
 std::unique_ptr<weld::TreeIter> QtInstanceItemView::make_iterator(const weld::TreeIter* pOrig) const
@@ -266,6 +267,12 @@ void QtInstanceItemView::enableActivateOnSingleClick(const QAbstractItemView& rI
 {
     QObject::connect(&rItemView, &QAbstractItemView::clicked, &rItemView,
                      &QAbstractItemView::activated);
+}
+
+void QtInstanceItemView::handleActivated(const QModelIndex& rIndex)
+{
+    SolarMutexGuard g;
+    signal_item_activated(treeIter(rIndex));
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab cinoptions=b1,g0,N-s cinkeys+=0=break: */

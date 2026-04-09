@@ -39,7 +39,6 @@ QtInstanceTreeView::QtInstanceTreeView(QTreeView* pTreeView)
     m_pColumnRoles = columnRoles(*pTreeView);
     assert(m_pColumnRoles.size() == m_pModel->columnCount() && "column count doesn't match");
 
-    connect(m_pTreeView, &QTreeView::activated, this, &QtInstanceTreeView::handleActivated);
     connect(m_pSelectionModel, &QItemSelectionModel::selectionChanged, this,
             &QtInstanceTreeView::handleSelectionChanged);
     connect(m_pModel, &QSortFilterProxyModel::dataChanged, this,
@@ -974,12 +973,6 @@ bool QtInstanceTreeView::handleViewPortToolTipEvent(const QHelpEvent& rHelpEvent
     QToolTip::showText(rHelpEvent.globalPos(), toRichTextTooltip(sToolTip), m_pTreeView,
                        m_pTreeView->visualRect(aIndex));
     return true;
-}
-
-void QtInstanceTreeView::handleActivated(const QModelIndex& rIndex)
-{
-    SolarMutexGuard g;
-    signal_item_activated(treeIter(rIndex));
 }
 
 void QtInstanceTreeView::handleDataChanged(const QModelIndex& rTopLeft,
