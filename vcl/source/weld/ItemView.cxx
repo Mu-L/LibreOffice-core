@@ -11,6 +11,13 @@
 
 namespace weld
 {
+bool ItemView::signal_item_activated(const TreeIter& rIter)
+{
+    if (notify_events_disabled())
+        return true;
+    return m_aItemActivatedHdl.Call(rIter);
+}
+
 OUString ItemView::get_id(int pos) const
 {
     if (std::unique_ptr<weld::TreeIter> pIter = get_iterator(pos))

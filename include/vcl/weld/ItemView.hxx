@@ -20,7 +20,11 @@ class VCL_DLLPUBLIC ItemView : virtual public Widget
 {
     OUString m_sSavedValue;
 
+    Link<const TreeIter&, bool> m_aItemActivatedHdl;
+
 protected:
+    bool signal_item_activated(const TreeIter& rIter);
+
     virtual void do_set_cursor(const TreeIter& rIter) = 0;
 
     virtual void do_select(const TreeIter& rIter) = 0;
@@ -82,6 +86,17 @@ public:
     void save_value() { m_sSavedValue = get_selected_text(); }
     OUString const& get_saved_value() const { return m_sSavedValue; }
     bool get_value_changed_from_saved() const { return m_sSavedValue != get_selected_text(); }
+
+    /* An item/row is "activated" when the user double clicks a treeview row or IconView item.
+     * It may also be emitted when it is selected and Space or Enter is pressed.
+
+       A return value of "true" means the activation has been handled, a "false" propagates
+       the activation to the default handler which expands/collapses the row, if possible.
+    */
+    void connect_item_activated(const Link<const TreeIter&, bool>& rLink)
+    {
+        m_aItemActivatedHdl = rLink;
+    }
 };
 }
 

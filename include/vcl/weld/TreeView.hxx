@@ -42,7 +42,6 @@ public:
 
 private:
     Link<TreeView&, void> m_aSelectionChangedHdl;
-    Link<const weld::TreeIter&, bool> m_aItemActivatedHdl;
     Link<int, void> m_aColumnClickedHdl;
     Link<const iter_col&, void> m_aRadioToggleHdl;
     Link<const TreeIter&, bool> m_aEditingStartedHdl;
@@ -66,13 +65,6 @@ protected:
         if (notify_events_disabled())
             return;
         m_aSelectionChangedHdl.Call(*this);
-    }
-
-    bool signal_item_activated(const weld::TreeIter& rIter)
-    {
-        if (notify_events_disabled())
-            return true;
-        return m_aItemActivatedHdl.Call(rIter);
     }
 
     void signal_column_clicked(int nColumn) { m_aColumnClickedHdl.Call(nColumn); }
@@ -203,17 +195,6 @@ public:
     void connect_selection_changed(const Link<TreeView&, void>& rLink)
     {
         m_aSelectionChangedHdl = rLink;
-    }
-
-    /* A row is "activated" when the user double clicks a treeview row. It may
-       also be emitted when a row is selected and Space or Enter is pressed.
-
-       a return of "true" means the activation has been handled, a "false" propagates
-       the activation to the default handler which expands/collapses the row, if possible.
-    */
-    void connect_item_activated(const Link<const weld::TreeIter&, bool>& rLink)
-    {
-        m_aItemActivatedHdl = rLink;
     }
 
     // Argument is a pair of iter, col describing the toggled node
