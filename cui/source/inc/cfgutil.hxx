@@ -122,9 +122,9 @@ public:
         m_xTreeView->connect_selection_changed(rLink);
     }
     void connect_command(const Link<const CommandEvent&, bool>& rLink) { m_xTreeView->connect_command(rLink); }
-    void connect_row_activated(const Link<const weld::TreeIter&, bool>& rLink)
+    void connect_item_activated(const Link<const weld::TreeIter&, bool>& rLink)
     {
-        m_xTreeView->connect_row_activated(rLink);
+        m_xTreeView->connect_item_activated(rLink);
     }
     void freeze() { m_xTreeView->freeze(); }
     void thaw() { m_xTreeView->thaw(); }

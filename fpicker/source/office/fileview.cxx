@@ -177,7 +177,10 @@ public:
 
     OUString get_id(const weld::TreeIter& rIter) { return mxTreeView->get_id(rIter); }
 
-    void connect_row_activated(const Link<const weld::TreeIter&, bool>& rLink) { mxTreeView->connect_row_activated(rLink); }
+    void connect_item_activated(const Link<const weld::TreeIter&, bool>& rLink)
+    {
+        mxTreeView->connect_item_activated(rLink);
+    }
     void connect_changed(const Link<weld::TreeView&, void>& rLink)
     {
         mxTreeView->connect_selection_changed(rLink);
@@ -1348,7 +1351,7 @@ void SvtFileView_Impl::SetDoubleClickHandler(const Link<SvtFileView*,bool>& rHdl
 {
     maDoubleClickHandler = rHdl;
 
-    mxView->connect_row_activated(LINK(this, SvtFileView_Impl, RowActivatedHdl));
+    mxView->connect_item_activated(LINK(this, SvtFileView_Impl, RowActivatedHdl));
     mxIconView->connect_item_activated(LINK(this, SvtFileView_Impl, ItemActivatedHdl));
 }
 

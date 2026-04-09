@@ -32,7 +32,7 @@ ScShowTabDlg::ScShowTabDlg(weld::Window* pParent)
 {
     m_xLb->set_selection_mode(SelectionMode::Multiple);
     m_xLb->set_size_request(-1, m_xLb->get_height_rows(10));
-    m_xLb->connect_row_activated(LINK(this, ScShowTabDlg, DblClkHdl));
+    m_xLb->connect_item_activated(LINK(this, ScShowTabDlg, DblClkHdl));
 }
 
 ScShowTabDlg::~ScShowTabDlg() {}

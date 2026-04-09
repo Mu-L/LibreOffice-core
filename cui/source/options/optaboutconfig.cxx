@@ -114,7 +114,7 @@ CuiAboutConfigTabPage::CuiAboutConfigTabPage(weld::Window* pParent)
 
     m_xEditBtn->connect_clicked(LINK(this, CuiAboutConfigTabPage, StandardHdl_Impl));
     m_xResetBtn->connect_clicked(LINK(this, CuiAboutConfigTabPage, ResetBtnHdl_Impl));
-    m_xPrefBox->connect_row_activated(LINK(this, CuiAboutConfigTabPage, DoubleClickHdl_Impl));
+    m_xPrefBox->connect_item_activated(LINK(this, CuiAboutConfigTabPage, DoubleClickHdl_Impl));
     m_xPrefBox->connect_expanding(LINK(this, CuiAboutConfigTabPage, ExpandingHdl_Impl));
     m_xSearchBtn->connect_clicked(LINK(this, CuiAboutConfigTabPage, SearchHdl_Impl));
     m_xModifiedCheckBtn->connect_toggled(LINK(this, CuiAboutConfigTabPage, ModifiedHdl_Impl));

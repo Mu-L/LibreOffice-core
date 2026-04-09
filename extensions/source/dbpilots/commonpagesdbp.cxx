@@ -74,7 +74,7 @@ OTableSelectionPage::OTableSelectionPage(weld::Container* pPage, OControlWizard*
 
     m_xDatasource->connect_selection_changed(LINK(this, OTableSelectionPage, OnListboxSelection));
     m_xTable->connect_selection_changed(LINK(this, OTableSelectionPage, OnListboxSelection));
-    m_xTable->connect_row_activated(LINK(this, OTableSelectionPage, OnListboxDoubleClicked));
+    m_xTable->connect_item_activated(LINK(this, OTableSelectionPage, OnListboxDoubleClicked));
     m_xSearchDatabase->connect_clicked(LINK(this, OTableSelectionPage, OnSearchClicked));
 }
 

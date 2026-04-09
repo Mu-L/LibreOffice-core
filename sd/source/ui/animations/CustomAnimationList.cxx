@@ -457,7 +457,7 @@ CustomAnimationList::CustomAnimationList(std::unique_ptr<weld::TreeView> xTreeVi
     mxTreeView->connect_selection_changed(LINK(this, CustomAnimationList, SelectHdl));
     mxTreeView->connect_key_press(LINK(this, CustomAnimationList, KeyInputHdl));
     mxTreeView->connect_command(LINK(this, CustomAnimationList, CommandHdl));
-    mxTreeView->connect_row_activated(LINK(this, CustomAnimationList, DoubleClickHdl));
+    mxTreeView->connect_item_activated(LINK(this, CustomAnimationList, DoubleClickHdl));
     mxTreeView->connect_expanding(LINK(this, CustomAnimationList, ExpandHdl));
     mxTreeView->connect_collapsing(LINK(this, CustomAnimationList, CollapseHdl));
     mxTreeView->connect_drag_begin(LINK(this, CustomAnimationList, DragBeginHdl));

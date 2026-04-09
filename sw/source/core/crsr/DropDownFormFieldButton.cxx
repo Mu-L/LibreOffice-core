@@ -103,7 +103,7 @@ void DropDownFormFieldButton::LaunchPopup()
     m_xFieldPopup = m_xFieldPopupBuilder->weld_popover(u"FormDropDown"_ustr);
     m_xTreeView = m_xFieldPopupBuilder->weld_tree_view(u"list"_ustr);
     InitDropdown();
-    m_xTreeView->connect_row_activated(LINK(this, DropDownFormFieldButton, MyListBoxHandler));
+    m_xTreeView->connect_item_activated(LINK(this, DropDownFormFieldButton, MyListBoxHandler));
     FormFieldButton::LaunchPopup();
     m_xTreeView->grab_focus();
 }

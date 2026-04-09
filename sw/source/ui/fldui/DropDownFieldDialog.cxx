@@ -44,7 +44,7 @@ sw::DropDownFieldDialog::DropDownFieldDialog(weld::Widget *pParent, SwWrtShell &
 {
     m_xListItemsLB->set_size_request(m_xListItemsLB->get_approximate_digit_width() * 24,
                                      m_xListItemsLB->get_height_rows(12));
-    m_xListItemsLB->connect_row_activated(LINK(this, DropDownFieldDialog, DoubleClickHdl));
+    m_xListItemsLB->connect_item_activated(LINK(this, DropDownFieldDialog, DoubleClickHdl));
 
     Link<weld::Button&, void> aEditButtonLk = LINK(this, DropDownFieldDialog, EditHdl);
     Link<weld::Button&,void> aPrevButtonLk = LINK(this, DropDownFieldDialog, PrevHdl);

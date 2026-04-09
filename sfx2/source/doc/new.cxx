@@ -285,7 +285,7 @@ SfxNewFileDialog::SfxNewFileDialog(weld::Window *pParent, SfxNewFileDialogMode n
     m_xMoreBt->set_expanded(bExpand && (nFlags != SfxNewFileDialogMode::NONE));
 
     m_xTemplateLb->connect_selection_changed(LINK(this, SfxNewFileDialog, TemplateSelect));
-    m_xTemplateLb->connect_row_activated(LINK(this, SfxNewFileDialog, DoubleClick));
+    m_xTemplateLb->connect_item_activated(LINK(this, SfxNewFileDialog, DoubleClick));
 
     // update the template configuration if necessary
     {

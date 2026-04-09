@@ -25,7 +25,7 @@ ScGoToTabDlg::ScGoToTabDlg(weld::Window* pParent)
 {
     m_xLb->set_selection_mode(SelectionMode::Single);
     m_xLb->set_size_request(-1, m_xLb->get_height_rows(10));
-    m_xLb->connect_row_activated(LINK(this, ScGoToTabDlg, DblClkHdl));
+    m_xLb->connect_item_activated(LINK(this, ScGoToTabDlg, DblClkHdl));
     m_xEnNameMask->connect_changed(LINK(this, ScGoToTabDlg, FindNameHdl));
 }
 

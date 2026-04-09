@@ -42,7 +42,7 @@ public:
 
 private:
     Link<TreeView&, void> m_aSelectionChangedHdl;
-    Link<const weld::TreeIter&, bool> m_aRowActivatedHdl;
+    Link<const weld::TreeIter&, bool> m_aItemActivatedHdl;
     Link<int, void> m_aColumnClickedHdl;
     Link<const iter_col&, void> m_aRadioToggleHdl;
     Link<const TreeIter&, bool> m_aEditingStartedHdl;
@@ -68,11 +68,11 @@ protected:
         m_aSelectionChangedHdl.Call(*this);
     }
 
-    bool signal_row_activated(const weld::TreeIter& rIter)
+    bool signal_item_activated(const weld::TreeIter& rIter)
     {
         if (notify_events_disabled())
             return true;
-        return m_aRowActivatedHdl.Call(rIter);
+        return m_aItemActivatedHdl.Call(rIter);
     }
 
     void signal_column_clicked(int nColumn) { m_aColumnClickedHdl.Call(nColumn); }
@@ -211,9 +211,9 @@ public:
        a return of "true" means the activation has been handled, a "false" propagates
        the activation to the default handler which expands/collapses the row, if possible.
     */
-    void connect_row_activated(const Link<const weld::TreeIter&, bool>& rLink)
+    void connect_item_activated(const Link<const weld::TreeIter&, bool>& rLink)
     {
-        m_aRowActivatedHdl = rLink;
+        m_aItemActivatedHdl = rLink;
     }
 
     // Argument is a pair of iter, col describing the toggled node

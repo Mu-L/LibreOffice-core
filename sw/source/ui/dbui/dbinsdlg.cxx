@@ -366,9 +366,9 @@ SwInsertDBColAutoPilot::SwInsertDBColAutoPilot( SwView& rView,
     m_xLbDbFormatFromUsr->connect_changed( LINK( this, SwInsertDBColAutoPilot, CBSelectHdl ));
     m_xLbTableCol->connect_selection_changed(LINK(this, SwInsertDBColAutoPilot, TVSelectHdl));
 
-    m_xLbTextDbColumn->connect_row_activated( LINK( this, SwInsertDBColAutoPilot, DblClickHdl ));
-    m_xLbTableDbColumn->connect_row_activated( LINK( this, SwInsertDBColAutoPilot, DblClickHdl ));
-    m_xLbTableCol->connect_row_activated( LINK( this, SwInsertDBColAutoPilot, DblClickHdl ));
+    m_xLbTextDbColumn->connect_item_activated(LINK(this, SwInsertDBColAutoPilot, DblClickHdl));
+    m_xLbTableDbColumn->connect_item_activated(LINK(this, SwInsertDBColAutoPilot, DblClickHdl));
+    m_xLbTableCol->connect_item_activated(LINK(this, SwInsertDBColAutoPilot, DblClickHdl));
 
     for( size_t n = 0; n < m_aDBColumns.size(); ++n )
     {

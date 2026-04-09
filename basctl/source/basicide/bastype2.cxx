@@ -172,7 +172,7 @@ SbTreeListBox::SbTreeListBox(std::unique_ptr<weld::TreeView> xControl, weld::Win
     , m_bFreezeOnFirstAddRemove(false)
     , m_aNotifier(*this)
 {
-    m_xControl->connect_row_activated(LINK(this, SbTreeListBox, OpenCurrentHdl));
+    m_xControl->connect_item_activated(LINK(this, SbTreeListBox, OpenCurrentHdl));
     m_xControl->connect_expanding(LINK(this, SbTreeListBox, RequestingChildrenHdl));
     m_xControl->connect_command(LINK(this, SbTreeListBox, ContextMenuHdl));
     nMode = BrowseMode::All;   // everything

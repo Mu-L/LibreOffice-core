@@ -93,10 +93,10 @@ SfxMacroTabPage::SfxMacroTabPage(weld::Container* pPage, weld::DialogController*
     SetFrame( rxDocumentFrame );
 
     weld::TreeView& rListBox = m_xEventLB->GetListBox();
-    m_xMacroLB->connect_row_activated(LINK(this, SfxMacroTabPage, MacroTreeViewActivatedHdl));
+    m_xMacroLB->connect_item_activated(LINK(this, SfxMacroTabPage, MacroTreeViewActivatedHdl));
     m_xDeletePB->connect_clicked(LINK(this, SfxMacroTabPage, AssignDeleteClickHdl_Impl));
     m_xAssignPB->connect_clicked(LINK(this, SfxMacroTabPage, AssignDeleteClickHdl_Impl));
-    rListBox.connect_row_activated(LINK(this, SfxMacroTabPage, AssignmentsTreeViewActivatedHdl));
+    rListBox.connect_item_activated(LINK(this, SfxMacroTabPage, AssignmentsTreeViewActivatedHdl));
 
     rListBox.connect_selection_changed(LINK(this, SfxMacroTabPage, SelectEvent_Impl));
     m_xGroupLB->connect_changed(LINK(this, SfxMacroTabPage, SelectGroup_Impl));

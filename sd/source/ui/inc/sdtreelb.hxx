@@ -217,7 +217,7 @@ public:
         return m_eSelectionMode;
     }
 
-    void connect_row_activated(const Link<weld::TreeView&, bool>& rLink)
+    void connect_item_activated(const Link<weld::TreeView&, bool>& rLink)
     {
         m_aRowActivatedHdl = rLink;
     }

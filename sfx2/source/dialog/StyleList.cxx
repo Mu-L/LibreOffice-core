@@ -363,7 +363,7 @@ void StyleList::Initialize()
     m_pBindings->Invalidate(SID_STYLE_FAMILY);
     m_pBindings->Update(SID_STYLE_FAMILY);
 
-    m_xFmtLb->connect_row_activated(LINK(this, StyleList, TreeListApplyHdl));
+    m_xFmtLb->connect_item_activated(LINK(this, StyleList, TreeListApplyHdl));
     m_xFmtLb->connect_mouse_press(LINK(this, StyleList, MousePressHdl));
     m_xFmtLb->connect_query_tooltip(LINK(this, StyleList, QueryTooltipHdl));
     m_xFmtLb->connect_selection_changed(LINK(this, StyleList, FmtSelectHdl));
@@ -371,7 +371,7 @@ void StyleList::Initialize()
     m_xFmtLb->connect_key_press(LINK(this, StyleList, KeyInputHdl));
     m_xFmtLb->set_selection_mode(SelectionMode::Multiple);
     m_xTreeBox->connect_selection_changed(LINK(this, StyleList, FmtSelectHdl));
-    m_xTreeBox->connect_row_activated(LINK(this, StyleList, TreeListApplyHdl));
+    m_xTreeBox->connect_item_activated(LINK(this, StyleList, TreeListApplyHdl));
     m_xTreeBox->connect_mouse_press(LINK(this, StyleList, MousePressHdl));
     m_xTreeBox->connect_query_tooltip(LINK(this, StyleList, QueryTooltipHdl));
     m_xTreeBox->connect_command(LINK(this, StyleList, PopupTreeMenuHdl));

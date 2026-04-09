@@ -64,8 +64,8 @@ SwCondCollPage::SwCondCollPage(weld::Container* pPage, weld::DialogController* p
     SetExchangeSupport();
 
     // Install handlers
-    m_xTbLinks->connect_row_activated(LINK(this, SwCondCollPage, AssignRemoveTreeListBoxHdl));
-    m_xStyleLB->connect_row_activated(LINK(this, SwCondCollPage, AssignRemoveTreeListBoxHdl));
+    m_xTbLinks->connect_item_activated(LINK(this, SwCondCollPage, AssignRemoveTreeListBoxHdl));
+    m_xStyleLB->connect_item_activated(LINK(this, SwCondCollPage, AssignRemoveTreeListBoxHdl));
     m_xRemovePB->connect_clicked(LINK(this, SwCondCollPage, AssignRemoveClickHdl));
     m_xAssignPB->connect_clicked(LINK(this, SwCondCollPage, AssignRemoveClickHdl));
     m_xTbLinks->connect_selection_changed(LINK(this, SwCondCollPage, SelectTreeListBoxHdl));

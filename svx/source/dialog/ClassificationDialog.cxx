@@ -212,7 +212,8 @@ ClassificationDialog::ClassificationDialog(weld::Window* pParent, const css::uno
     {
         m_xMarkingListBox->set_size_request(m_xMarkingListBox->get_approximate_digit_width() * 10,
                                             m_xMarkingListBox->get_height_rows(4));
-        m_xMarkingListBox->connect_row_activated(LINK(this, ClassificationDialog, SelectMarkingHdl));
+        m_xMarkingListBox->connect_item_activated(
+            LINK(this, ClassificationDialog, SelectMarkingHdl));
 
         for (const OUString& rName : maHelper.GetMarkings())
             m_xMarkingListBox->append_text(rName);
@@ -225,13 +226,15 @@ ClassificationDialog::ClassificationDialog(weld::Window* pParent, const css::uno
 
     m_xIntellectualPropertyPartNumberListBox->set_size_request(m_xIntellectualPropertyPartNumberListBox->get_approximate_digit_width() * 10,
                                                                m_xIntellectualPropertyPartNumberListBox->get_height_rows(5));
-    m_xIntellectualPropertyPartNumberListBox->connect_row_activated(LINK(this, ClassificationDialog, SelectIPPartNumbersHdl));
+    m_xIntellectualPropertyPartNumberListBox->connect_item_activated(
+        LINK(this, ClassificationDialog, SelectIPPartNumbersHdl));
     for (const OUString& rName : maHelper.GetIntellectualPropertyPartNumbers())
         m_xIntellectualPropertyPartNumberListBox->append_text(rName);
 
     m_xIntellectualPropertyPartNumberListBox->set_size_request(m_xIntellectualPropertyPartNumberListBox->get_approximate_digit_width() * 20,
                                                                m_xIntellectualPropertyPartListBox->get_height_rows(5));
-    m_xIntellectualPropertyPartListBox->connect_row_activated(LINK(this, ClassificationDialog, SelectIPPartHdl));
+    m_xIntellectualPropertyPartListBox->connect_item_activated(
+        LINK(this, ClassificationDialog, SelectIPPartHdl));
     for (const OUString& rName : maHelper.GetIntellectualPropertyParts())
         m_xIntellectualPropertyPartListBox->append_text(rName);
 

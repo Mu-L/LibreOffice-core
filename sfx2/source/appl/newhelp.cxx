@@ -338,7 +338,7 @@ ContentTabPage_Impl::ContentTabPage_Impl(weld::Widget* pParent, SfxHelpIndexWind
 {
     m_xContentBox->set_size_request(m_xContentBox->get_approximate_digit_width() * 30,
                                     m_xContentBox->get_height_rows(20));
-    m_xContentBox->connect_row_activated(LINK(this, ContentTabPage_Impl, DoubleClickHdl));
+    m_xContentBox->connect_item_activated(LINK(this, ContentTabPage_Impl, DoubleClickHdl));
     m_xContentBox->connect_expanding(LINK(this, ContentTabPage_Impl, ExpandingHdl));
     m_xContentBox->connect_collapsing(LINK(this, ContentTabPage_Impl, CollapsingHdl));
 
@@ -408,7 +408,7 @@ IndexTabPage_Impl::IndexTabPage_Impl(weld::Widget* pParent, SfxHelpIndexWindow_I
     aFactoryIdle.SetInvokeHandler( LINK(this, IndexTabPage_Impl, IdleHdl ));
     aAutoCompleteIdle.SetInvokeHandler( LINK(this, IndexTabPage_Impl, AutoCompleteHdl ));
     aKeywordTimer.SetInvokeHandler( LINK( this, IndexTabPage_Impl, TimeoutHdl ) );
-    m_xIndexList->connect_row_activated(LINK(this, IndexTabPage_Impl, DoubleClickHdl));
+    m_xIndexList->connect_item_activated(LINK(this, IndexTabPage_Impl, DoubleClickHdl));
     m_xIndexList->connect_selection_changed(LINK(this, IndexTabPage_Impl, TreeChangeHdl));
     m_xIndexList->connect_custom_get_size(LINK(this, IndexTabPage_Impl, CustomGetSizeHdl));
     m_xIndexList->connect_custom_render(LINK(this, IndexTabPage_Impl, CustomRenderHdl));
@@ -912,7 +912,7 @@ SearchTabPage_Impl::SearchTabPage_Impl(weld::Widget* pParent, SfxHelpIndexWindow
     m_xSearchED->connect_changed(LINK(this, SearchTabPage_Impl, ModifyHdl));
     m_xSearchED->connect_entry_activate(LINK(this, SearchTabPage_Impl, ActivateHdl));
     m_xOpenBtn->connect_clicked(LINK(this, SearchTabPage_Impl, OpenHdl));
-    m_xResultsLB->connect_row_activated(LINK(this, SearchTabPage_Impl, DoubleClickHdl));
+    m_xResultsLB->connect_item_activated(LINK(this, SearchTabPage_Impl, DoubleClickHdl));
 
     SvtViewOptions aViewOpt( EViewType::TabPage, CONFIGNAME_SEARCHPAGE );
     if ( aViewOpt.Exists() )
@@ -1155,7 +1155,7 @@ BookmarksTabPage_Impl::BookmarksTabPage_Impl(weld::Widget* pParent, SfxHelpIndex
                                       m_xBookmarksBox->get_height_rows(20));
 
     m_xBookmarksPB->connect_clicked( LINK(this, BookmarksTabPage_Impl, OpenHdl));
-    m_xBookmarksBox->connect_row_activated(LINK(this, BookmarksTabPage_Impl, DoubleClickHdl));
+    m_xBookmarksBox->connect_item_activated(LINK(this, BookmarksTabPage_Impl, DoubleClickHdl));
     m_xBookmarksBox->connect_command(LINK(this, BookmarksTabPage_Impl, CommandHdl));
     m_xBookmarksBox->connect_key_press(LINK(this, BookmarksTabPage_Impl, KeyInputHdl));
 

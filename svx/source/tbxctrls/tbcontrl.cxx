@@ -4009,7 +4009,8 @@ namespace
             m_xCurrencyLb->thaw();
             // enable multiple selection enabled so we can start with nothing selected
             m_xCurrencyLb->set_selection_mode(SelectionMode::Multiple);
-            m_xCurrencyLb->connect_row_activated( LINK( this, SvxCurrencyList_Impl, RowActivatedHdl ) );
+            m_xCurrencyLb->connect_item_activated(
+                LINK(this, SvxCurrencyList_Impl, RowActivatedHdl));
             m_xCurrencyLb->select( nSelectedPos );
 
             // gtk will initially make a best guess depending on the first few entries, so copy the probable

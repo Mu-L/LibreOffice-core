@@ -131,7 +131,7 @@ SwNumNamesDlg::SwNumNamesDlg(weld::Window *pParent)
 
     m_xFormEdit->connect_changed(LINK(this, SwNumNamesDlg, ModifyHdl));
     m_xFormBox->connect_selection_changed(LINK(this, SwNumNamesDlg, SelectHdl));
-    m_xFormBox->connect_row_activated(LINK(this, SwNumNamesDlg, DoubleClickHdl));
+    m_xFormBox->connect_item_activated(LINK(this, SwNumNamesDlg, DoubleClickHdl));
     m_xFormBox->set_size_request(-1, m_xFormBox->get_height_rows(9));
 }
 

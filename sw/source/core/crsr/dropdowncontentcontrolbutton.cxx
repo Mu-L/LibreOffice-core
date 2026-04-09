@@ -82,7 +82,7 @@ void SwDropDownContentControlButton::LaunchPopup()
     m_xPopup = m_xPopupBuilder->weld_popover(u"ContentControlDropDown"_ustr);
     m_xTreeView = m_xPopupBuilder->weld_tree_view(u"list"_ustr);
     InitDropdown();
-    m_xTreeView->connect_row_activated(LINK(this, SwDropDownContentControlButton, ListBoxHandler));
+    m_xTreeView->connect_item_activated(LINK(this, SwDropDownContentControlButton, ListBoxHandler));
     SwContentControlButton::LaunchPopup();
     m_xTreeView->grab_focus();
 }

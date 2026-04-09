@@ -81,7 +81,8 @@ ScSolverOptionsDialog::ScSolverOptionsDialog(weld::Window* pParent,
     m_xBtnEdit->connect_clicked( LINK( this, ScSolverOptionsDialog, ButtonHdl ) );
 
     m_xLbSettings->connect_selection_changed(LINK(this, ScSolverOptionsDialog, SettingsSelHdl));
-    m_xLbSettings->connect_row_activated( LINK( this, ScSolverOptionsDialog, SettingsDoubleClickHdl ) );
+    m_xLbSettings->connect_item_activated(
+        LINK(this, ScSolverOptionsDialog, SettingsDoubleClickHdl));
 
     sal_Int32 nSelect = -1;
     sal_Int32 nImplCount = maImplNames.getLength();

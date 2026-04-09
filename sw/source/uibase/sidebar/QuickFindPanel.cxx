@@ -192,7 +192,7 @@ QuickFindPanel::QuickFindPanel(weld::Widget* pParent, const uno::Reference<frame
         LINK(this, QuickFindPanel, SimilaritySettingsDialogButtonClickedHandler));
     m_xSearchFindsList->connect_selection_changed(
         LINK(this, QuickFindPanel, SearchFindsListSelectionChangedHandler));
-    m_xSearchFindsList->connect_row_activated(
+    m_xSearchFindsList->connect_item_activated(
         LINK(this, QuickFindPanel, SearchFindsListRowActivatedHandler));
     m_xSearchFindsList->connect_key_press(
         LINK(this, QuickFindPanel, SearchFindsListKeyPressHandler));

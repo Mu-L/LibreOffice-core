@@ -2859,7 +2859,7 @@ CodeCompleteWindow::CodeCompleteWindow(EditorWindow* pPar)
     , pParent(pPar)
     , m_xListBox(m_xBuilder->weld_tree_view(u"treeview"_ustr))
 {
-    m_xListBox->connect_row_activated(LINK(this, CodeCompleteWindow, ImplDoubleClickHdl));
+    m_xListBox->connect_item_activated(LINK(this, CodeCompleteWindow, ImplDoubleClickHdl));
     m_xListBox->connect_selection_changed(LINK(this, CodeCompleteWindow, ImplSelectHdl));
     m_xListBox->connect_key_press(LINK(this, CodeCompleteWindow, KeyInputHdl));
     m_xListBox->make_sorted();

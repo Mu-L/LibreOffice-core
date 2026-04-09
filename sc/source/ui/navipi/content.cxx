@@ -136,7 +136,7 @@ ScContentTree::ScContentTree(std::unique_ptr<weld::TreeView> xTreeView, ScNaviga
     for (sal_uInt16 i = 1; i < int(ScContentId::LAST); ++i)
         InitRoot(static_cast<ScContentId>(i));
 
-    m_xTreeView->connect_row_activated(LINK(this, ScContentTree, ContentDoubleClickHdl));
+    m_xTreeView->connect_item_activated(LINK(this, ScContentTree, ContentDoubleClickHdl));
     m_xTreeView->connect_mouse_release(LINK(this, ScContentTree, MouseReleaseHdl));
     m_xTreeView->connect_key_press(LINK(this, ScContentTree, KeyInputHdl));
     m_xTreeView->connect_command(LINK(this, ScContentTree, CommandHdl));

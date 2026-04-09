@@ -405,7 +405,7 @@ OfaSwAutoFmtOptionsPage::OfaSwAutoFmtOptionsPage(weld::Container* pPage, weld::D
     , m_xEditPB(m_xBuilder->weld_button(u"edit"_ustr))
 {
     m_xCheckLB->connect_selection_changed(LINK(this, OfaSwAutoFmtOptionsPage, SelectHdl));
-    m_xCheckLB->connect_row_activated(LINK(this, OfaSwAutoFmtOptionsPage, DoubleClickEditHdl));
+    m_xCheckLB->connect_item_activated(LINK(this, OfaSwAutoFmtOptionsPage, DoubleClickEditHdl));
 
     std::vector<int> aWidths
     {

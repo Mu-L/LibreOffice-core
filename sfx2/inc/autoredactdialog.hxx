@@ -62,9 +62,9 @@ public:
     // Sync data on the targets box with the data on the target
     void setRowData(int nRowIndex, const RedactionTarget* pTarget);
 
-    void connect_row_activated(const Link<const weld::TreeIter&, bool>& rLink)
+    void connect_item_activated(const Link<const weld::TreeIter&, bool>& rLink)
     {
-        m_xControl->connect_row_activated(rLink);
+        m_xControl->connect_item_activated(rLink);
     };
 };
 

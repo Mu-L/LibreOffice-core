@@ -94,7 +94,7 @@ SvxPopupWindowListBox::SvxPopupWindowListBox(SvxUndoRedoControl* pControl, weld:
     m_xListBox->set_size_request(m_xListBox->get_approximate_digit_width() * 25,
                                  m_xListBox->get_height_rows(m_nVisRows) + 2);
 
-    m_xListBox->connect_row_activated(LINK(this, SvxPopupWindowListBox, ActivateHdl));
+    m_xListBox->connect_item_activated(LINK(this, SvxPopupWindowListBox, ActivateHdl));
     m_xListBox->connect_mouse_move(LINK(this, SvxPopupWindowListBox, MouseMoveHdl));
     m_xListBox->connect_mouse_press(LINK(this, SvxPopupWindowListBox, MousePressHdl));
     m_xListBox->connect_mouse_release(LINK(this, SvxPopupWindowListBox, MouseReleaseHdl));

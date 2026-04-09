@@ -132,7 +132,7 @@ SvxTabulatorTabPage::SvxTabulatorTabPage(weld::Container* pPage, weld::DialogCon
     m_xFillChar->connect_focus_out(LINK(this,  SvxTabulatorTabPage, GetFillCharHdl_Impl));
     m_xFillChar->set_sensitive(false);
 
-    m_xTabBox->connect_row_activated(LINK(this, SvxTabulatorTabPage, SelectHdl_Impl));
+    m_xTabBox->connect_item_activated(LINK(this, SvxTabulatorTabPage, SelectHdl_Impl));
     m_xTabBox->connect_changed(LINK(this, SvxTabulatorTabPage, ModifyHdl_Impl));
     m_xTabBox->connect_focus_out(LINK(this,  SvxTabulatorTabPage, ReformatHdl_Impl));
 

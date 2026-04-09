@@ -1053,7 +1053,7 @@ SvxConfigPage::SvxConfigPage(weld::Container* pPage, weld::DialogController* pCo
     m_xSearchEdit->connect_changed(LINK(this, SvxConfigPage, SearchUpdateHdl));
     m_xSearchEdit->connect_focus_out(LINK(this, SvxConfigPage, FocusOut_Impl));
 
-    rTreeView.connect_row_activated(LINK(this, SvxConfigPage, FunctionDoubleClickHdl));
+    rTreeView.connect_item_activated(LINK(this, SvxConfigPage, FunctionDoubleClickHdl));
     rTreeView.connect_selection_changed(LINK(this, SvxConfigPage, SelectFunctionHdl));
 }
 

@@ -390,7 +390,7 @@ SwInsertBookmarkDlg::SwInsertBookmarkDlg(weld::Window* pParent, SwWrtShell& rS,
     , m_xForbiddenChars(m_xBuilder->weld_label(u"lbForbiddenChars"_ustr))
 {
     m_xBookmarksBox->connect_changed(LINK(this, SwInsertBookmarkDlg, SelectionChangedHdl));
-    m_xBookmarksBox->connect_row_activated(LINK(this, SwInsertBookmarkDlg, DoubleClickHdl));
+    m_xBookmarksBox->connect_item_activated(LINK(this, SwInsertBookmarkDlg, DoubleClickHdl));
     m_xBookmarksBox->connect_column_clicked(LINK(this, SwInsertBookmarkDlg, HeaderBarClick));
     m_xBookmarksBox->connect_editing(LINK(this, SwInsertBookmarkDlg, EditingHdl),
                                      LINK(this, SwInsertBookmarkDlg, EditedHdl));

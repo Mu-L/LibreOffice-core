@@ -683,7 +683,7 @@ void OAppDetailPageHelper::setupTree(DBTreeViewBase& rDBTreeView)
     // an arbitrary small size it's allowed to shrink to
     rTreeView.set_size_request(42, 42);
 
-    rTreeView.connect_row_activated(LINK(this, OAppDetailPageHelper, OnEntryDoubleClick));
+    rTreeView.connect_item_activated(LINK(this, OAppDetailPageHelper, OnEntryDoubleClick));
 
     rDBTreeView.getListBox().SetSelChangeHdl(LINK(this, OAppDetailPageHelper, OnEntrySelChange));
 

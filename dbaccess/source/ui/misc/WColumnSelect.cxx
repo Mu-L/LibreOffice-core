@@ -61,8 +61,8 @@ OWizColumnSelect::OWizColumnSelect(weld::Container* pPage, OCopyTableWizard* pWi
     m_xOrgColumnNames->set_selection_mode(SelectionMode::Multiple);
     m_xNewColumnNames->set_selection_mode(SelectionMode::Multiple);
 
-    m_xOrgColumnNames->connect_row_activated(LINK(this,OWizColumnSelect,ListDoubleClickHdl));
-    m_xNewColumnNames->connect_row_activated(LINK(this,OWizColumnSelect,ListDoubleClickHdl));
+    m_xOrgColumnNames->connect_item_activated(LINK(this, OWizColumnSelect, ListDoubleClickHdl));
+    m_xNewColumnNames->connect_item_activated(LINK(this, OWizColumnSelect, ListDoubleClickHdl));
 }
 
 OWizColumnSelect::~OWizColumnSelect()

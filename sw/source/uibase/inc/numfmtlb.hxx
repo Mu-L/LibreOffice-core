@@ -131,7 +131,10 @@ public:
     int             get_selected_index() const { return mxControl->get_selected_index(); }
     void            set_visible(bool bVisible) { mxControl->set_visible(bVisible); }
     void            select(int nPos) { mxControl->select(nPos); }
-    void            connect_row_activated(const Link<const weld::TreeIter&, bool>& rLink) { mxControl->connect_row_activated(rLink); }
+    void connect_item_activated(const Link<const weld::TreeIter&, bool>& rLink)
+    {
+        mxControl->connect_item_activated(rLink);
+    }
     OUString        get_buildable_name() const { return mxControl->get_buildable_name(); }
     void            set_buildable_name(const OUString& rId){ mxControl->set_buildable_name(rId); }
 };

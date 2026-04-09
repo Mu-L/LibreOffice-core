@@ -162,7 +162,7 @@ PageSizeControl::PageSizeControl(PageSizePopup* pControl, weld::Widget* pParent)
     mxPageSizeTreeView->set_size_request(-1, nHeight);
     mxPageSizeTreeView->queue_resize();
 
-    mxPageSizeTreeView->connect_row_activated(LINK(this, PageSizeControl, ImplSizeHdl));
+    mxPageSizeTreeView->connect_item_activated(LINK(this, PageSizeControl, ImplSizeHdl));
 
     mxMoreButton->connect_clicked( LINK( this, PageSizeControl, MoreButtonClickHdl_Impl ) );
     mxMoreButton->grab_focus();

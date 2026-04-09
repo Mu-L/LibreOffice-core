@@ -211,7 +211,7 @@ ScFilterListBox::ScFilterListBox(weld::Window* pParent, ScGridWindow* pGrid,
     , eMode(eNewMode)
     , nAsyncSelectHdl(nullptr)
 {
-    xTreeView->connect_row_activated(LINK(this, ScFilterListBox, SelectHdl));
+    xTreeView->connect_item_activated(LINK(this, ScFilterListBox, SelectHdl));
     xTreeView->connect_key_press(LINK(this, ScFilterListBox, KeyInputHdl));
 }
 

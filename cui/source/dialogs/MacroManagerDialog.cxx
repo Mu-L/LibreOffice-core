@@ -666,7 +666,7 @@ MacroManagerDialog::MacroManagerDialog(weld::Window* pParent,
     m_xScriptContainersListBox->connect_changed(LINK(this, MacroManagerDialog, SelectHdl));
 
     m_xScriptsListBox->connect_changed(LINK(this, MacroManagerDialog, SelectHdl));
-    m_xScriptsListBox->connect_row_activated(
+    m_xScriptsListBox->connect_item_activated(
         LINK(this, MacroManagerDialog, FunctionDoubleClickHdl));
     m_xScriptsListBox->connect_command(LINK(this, MacroManagerDialog, ContextMenuHdl));
 

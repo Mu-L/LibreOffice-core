@@ -274,7 +274,7 @@ SpellDialog::SpellDialog(SpellDialogChildWindow* pChildWindow,
     m_xCheckGrammarCB->connect_toggled( LINK( this, SpellDialog, CheckGrammarHdl ));
     m_xOptionsPB->connect_clicked( LINK( this, SpellDialog, ExtClickHdl ) );
 
-    m_xSuggestionLB->connect_row_activated( LINK( this, SpellDialog, DoubleClickChangeHdl ) );
+    m_xSuggestionLB->connect_item_activated(LINK(this, SpellDialog, DoubleClickChangeHdl));
 
     m_xSentenceED->SetModifyHdl(LINK ( this, SpellDialog, ModifyHdl) );
 

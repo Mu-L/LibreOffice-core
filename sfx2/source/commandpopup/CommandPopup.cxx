@@ -196,7 +196,7 @@ CommandListBox::CommandListBox(weld::Window* pParent, uno::Reference<frame::XFra
     mpEntry->connect_changed(LINK(this, CommandListBox, ModifyHdl));
     mpEntry->connect_key_press(LINK(this, CommandListBox, TreeViewKeyPress));
     mpCommandTreeView->connect_query_tooltip(LINK(this, CommandListBox, QueryTooltip));
-    mpCommandTreeView->connect_row_activated(LINK(this, CommandListBox, RowActivated));
+    mpCommandTreeView->connect_item_activated(LINK(this, CommandListBox, RowActivated));
 
     Size aFrameSize = pParent->get_size();
 

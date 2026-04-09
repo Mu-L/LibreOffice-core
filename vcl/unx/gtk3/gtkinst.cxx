@@ -13970,7 +13970,7 @@ private:
     {
         GtkTreeIter aIter;
         gtk_tree_model_get_iter(m_pTreeModel, &aIter, pTreePath);
-        if (signal_row_activated(GtkInstanceTreeIter(*this, m_pTreeModel, aIter)))
+        if (signal_item_activated(GtkInstanceTreeIter(*this, m_pTreeModel, aIter)))
             return;
         std::unique_ptr<weld::TreeIter> pIter = get_cursor();
         if (!pIter)

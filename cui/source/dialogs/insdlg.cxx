@@ -148,7 +148,7 @@ SvInsertOleDlg::SvInsertOleDlg(weld::Window* pParent, const Reference<embed::XSt
 {
     m_xLbObjecttype->set_size_request(m_xLbObjecttype->get_approximate_digit_width() * 32,
                                       m_xLbObjecttype->get_height_rows(6));
-    m_xLbObjecttype->connect_row_activated(LINK(this, SvInsertOleDlg, DoubleClickHdl));
+    m_xLbObjecttype->connect_item_activated(LINK(this, SvInsertOleDlg, DoubleClickHdl));
     m_xBtnFilepath->connect_clicked(LINK( this, SvInsertOleDlg, BrowseHdl));
     Link<weld::Toggleable&,void> aLink( LINK( this, SvInsertOleDlg, RadioHdl ) );
     m_xRbNewObject->connect_toggled( aLink );

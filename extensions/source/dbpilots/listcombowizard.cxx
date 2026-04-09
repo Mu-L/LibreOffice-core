@@ -272,7 +272,8 @@ OContentTableSelection::OContentTableSelection(weld::Container* pPage, OListComb
 {
     enableFormDatasourceDisplay();
 
-    m_xSelectTable->connect_row_activated(LINK(this, OContentTableSelection, OnTableDoubleClicked));
+    m_xSelectTable->connect_item_activated(
+        LINK(this, OContentTableSelection, OnTableDoubleClicked));
     m_xSelectTable->connect_selection_changed(LINK(this, OContentTableSelection, OnTableSelected));
 }
 
@@ -351,7 +352,7 @@ OContentFieldSelection::OContentFieldSelection(weld::Container* pPage, OListComb
                                                          : RID_STR_FIELDINFO_COMBOBOX));
     m_xSelectTableField->connect_selection_changed(
         LINK(this, OContentFieldSelection, OnFieldSelected));
-    m_xSelectTableField->connect_row_activated(
+    m_xSelectTableField->connect_item_activated(
         LINK(this, OContentFieldSelection, OnTableDoubleClicked));
 }
 

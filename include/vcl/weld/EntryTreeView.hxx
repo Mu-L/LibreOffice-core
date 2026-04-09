@@ -119,9 +119,9 @@ public:
 
     virtual vcl::Font get_entry_font() override { return m_xEntry->get_font(); }
 
-    void connect_row_activated(const Link<const weld::TreeIter&, bool>& rLink)
+    void connect_item_activated(const Link<const weld::TreeIter&, bool>& rLink)
     {
-        m_xTreeView->connect_row_activated(rLink);
+        m_xTreeView->connect_item_activated(rLink);
     }
 
     virtual bool get_popup_shown() const override { return false; }

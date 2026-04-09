@@ -155,12 +155,12 @@ void SwFieldVarPage::Reset(const SfxItemSet* )
     // select old Pos
     RestorePos(*m_xTypeLB);
 
-    m_xTypeLB->connect_row_activated(LINK(this, SwFieldVarPage, TreeViewInsertHdl));
+    m_xTypeLB->connect_item_activated(LINK(this, SwFieldVarPage, TreeViewInsertHdl));
     m_xTypeLB->connect_selection_changed(LINK(this, SwFieldVarPage, TypeHdl));
     m_xSelectionLB->connect_selection_changed(LINK(this, SwFieldVarPage, SubTypeListBoxHdl));
-    m_xSelectionLB->connect_row_activated(LINK(this, SwFieldVarPage, SubTypeInsertHdl));
-    m_xFormatLB->connect_row_activated(LINK(this, SwFieldVarPage, TreeViewInsertHdl));
-    m_xNumFormatLB->connect_row_activated(LINK(this, SwFieldVarPage, TreeViewInsertHdl));
+    m_xSelectionLB->connect_item_activated(LINK(this, SwFieldVarPage, SubTypeInsertHdl));
+    m_xFormatLB->connect_item_activated(LINK(this, SwFieldVarPage, TreeViewInsertHdl));
+    m_xNumFormatLB->connect_item_activated(LINK(this, SwFieldVarPage, TreeViewInsertHdl));
     m_xNameED->connect_changed(LINK(this, SwFieldVarPage, ModifyHdl));
     m_xValueED->connect_changed(LINK(this, SwFieldVarPage, ModifyValueHdl));
     m_xNewPB->connect_clicked(LINK(this, SwFieldVarPage, TBClickHdl));

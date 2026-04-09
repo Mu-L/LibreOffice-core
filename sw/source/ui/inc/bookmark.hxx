@@ -60,9 +60,9 @@ public:
     {
         m_xControl->connect_selection_changed(rLink);
     }
-    void connect_row_activated(const Link<const weld::TreeIter&, bool>& rLink)
+    void connect_item_activated(const Link<const weld::TreeIter&, bool>& rLink)
     {
-        m_xControl->connect_row_activated(rLink);
+        m_xControl->connect_item_activated(rLink);
     }
     void connect_column_clicked(const Link<int, void>& rLink)
     {

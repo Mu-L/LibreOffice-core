@@ -189,7 +189,7 @@ GalleryBrowser::GalleryBrowser(
     mxListView->connect_selection_changed(LINK(this, GalleryBrowser, SelectObjectHdl));
     mxListView->connect_command(LINK(this, GalleryBrowser, PopupMenuHdl2));
     mxListView->connect_key_press(LINK(this, GalleryBrowser, KeyInputHdl2));
-    mxListView->connect_row_activated(LINK(this, GalleryBrowser, RowActivatedHdl));
+    mxListView->connect_item_activated(LINK(this, GalleryBrowser, RowActivatedHdl));
     mxDragDropTargetHelper.reset(new GalleryDragDrop(this, mxListView->get_drop_target()));
     mxListView->connect_drag_begin(LINK(this, GalleryBrowser, DragBeginHdl));
     mxSearchField->connect_changed( LINK( this, GalleryBrowser, SearchHdl));

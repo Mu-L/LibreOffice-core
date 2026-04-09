@@ -665,7 +665,7 @@ void ObjectBrowser::Initialize()
         m_xRightMembersView->connect_selection_changed(
             LINK(this, ObjectBrowser, OnRightTreeSelect));
         m_xRightMembersView->connect_expanding(LINK(this, ObjectBrowser, OnRightNodeExpand));
-        m_xRightMembersView->connect_row_activated(
+        m_xRightMembersView->connect_item_activated(
             LINK(this, ObjectBrowser, OnRightTreeDoubleClick));
     }
 

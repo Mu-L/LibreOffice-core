@@ -66,7 +66,7 @@ ScPivotLayoutTreeListData::ScPivotLayoutTreeListData(std::unique_ptr<weld::TreeV
     : ScPivotLayoutTreeListBase(std::move(xControl))
 {
     mxControl->connect_key_press(LINK(this, ScPivotLayoutTreeListData, KeyInputHdl));
-    mxControl->connect_row_activated(LINK(this, ScPivotLayoutTreeListData, DoubleClickHdl));
+    mxControl->connect_item_activated(LINK(this, ScPivotLayoutTreeListData, DoubleClickHdl));
 }
 
 ScPivotLayoutTreeListData::~ScPivotLayoutTreeListData()

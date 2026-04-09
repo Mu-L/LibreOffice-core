@@ -32,7 +32,7 @@ TemplateDlgLocalView::TemplateDlgLocalView(std::unique_ptr<weld::ScrolledWindow>
     , ListView(std::move(xTreeView))
     , mViewMode(TemplateViewMode::ThumbnailView)
 {
-    mxTreeView->connect_row_activated(LINK(this, TemplateDlgLocalView, RowActivatedHdl));
+    mxTreeView->connect_item_activated(LINK(this, TemplateDlgLocalView, RowActivatedHdl));
     mxTreeView->connect_column_clicked(LINK(this, ListView, ColumnClickedHdl));
     mxTreeView->connect_selection_changed(LINK(this, TemplateDlgLocalView, ListViewChangedHdl));
     mxTreeView->connect_command(LINK(this, TemplateDlgLocalView, PopupMenuHdl));

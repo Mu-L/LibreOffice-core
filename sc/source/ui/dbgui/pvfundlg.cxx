@@ -306,7 +306,7 @@ void ScDPFunctionDlg::Init( const ScDPLabelData& rLabelData, const ScPivotFuncDa
     mxFtName->set_label(rLabelData.getDisplayName());
 
     // handlers
-    mxLbFunc->connect_row_activated( LINK( this, ScDPFunctionDlg, DblClickHdl ) );
+    mxLbFunc->connect_item_activated(LINK(this, ScDPFunctionDlg, DblClickHdl));
     mxLbType->connect_changed( LINK( this, ScDPFunctionDlg, SelectHdl ) );
     mxLbBaseField->connect_changed( LINK( this, ScDPFunctionDlg, SelectHdl ) );
 
@@ -545,7 +545,7 @@ void ScDPSubtotalDlg::Init( const ScDPLabelData& rLabelData, const ScPivotFuncDa
 
     // list box
     mxLbFunc->SetSelection( rFuncData.mnFuncMask );
-    mxLbFunc->connect_row_activated( LINK( this, ScDPSubtotalDlg, DblClickHdl ) );
+    mxLbFunc->connect_item_activated(LINK(this, ScDPSubtotalDlg, DblClickHdl));
 
     // show all
     mxCbShowAll->set_active( rLabelData.mbShowAll );
@@ -931,7 +931,7 @@ ScDPShowDetailDlg::ScDPShowDetailDlg(weld::Window* pParent, ScDPObject& rDPObj, 
     if (mxLbDims->n_children())
        mxLbDims->select(0);
 
-    mxLbDims->connect_row_activated(LINK(this, ScDPShowDetailDlg, DblClickHdl));
+    mxLbDims->connect_item_activated(LINK(this, ScDPShowDetailDlg, DblClickHdl));
 }
 
 ScDPShowDetailDlg::~ScDPShowDetailDlg()

@@ -29,7 +29,7 @@ SwSelGlossaryDlg::SwSelGlossaryDlg(weld::Window * pParent, std::u16string_view r
 {
     m_xFrame->set_label(m_xFrame->get_label() + rShortName);
     m_xGlosBox->set_size_request(-1, m_xGlosBox->get_height_rows(10));
-    m_xGlosBox->connect_row_activated(LINK(this, SwSelGlossaryDlg, DoubleClickHdl));
+    m_xGlosBox->connect_item_activated(LINK(this, SwSelGlossaryDlg, DoubleClickHdl));
 }
 
 SwSelGlossaryDlg::~SwSelGlossaryDlg()

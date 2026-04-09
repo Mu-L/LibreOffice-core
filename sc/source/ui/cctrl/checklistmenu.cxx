@@ -650,7 +650,7 @@ ScCheckListMenuControl::ScCheckListMenuControl(weld::Widget* pParent, ScViewData
     mxEdSearch->show();
     mxButtonBox->show();
 
-    mxMenu->connect_row_activated(LINK(this, ScCheckListMenuControl, RowActivatedHdl));
+    mxMenu->connect_item_activated(LINK(this, ScCheckListMenuControl, RowActivatedHdl));
     mxMenu->connect_selection_changed(LINK(this, ScCheckListMenuControl, SelectHdl));
     mxMenu->connect_key_press(LINK(this, ScCheckListMenuControl, MenuKeyInputHdl));
 
@@ -1867,7 +1867,7 @@ ScListSubMenuControl::ScListSubMenuControl(weld::Widget* pParent, ScCheckListMen
 
 void ScListSubMenuControl::SetupMenu(weld::TreeView& rMenu)
 {
-    rMenu.connect_row_activated(LINK(this, ScListSubMenuControl, RowActivatedHdl));
+    rMenu.connect_item_activated(LINK(this, ScListSubMenuControl, RowActivatedHdl));
     rMenu.connect_key_press(LINK(this, ScListSubMenuControl, MenuKeyInputHdl));
 }
 

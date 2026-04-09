@@ -123,7 +123,7 @@ FmFieldWin::FmFieldWin(SfxBindings* _pBindings, SfxChildWindow* _pMgr, weld::Win
     m_xDialog->set_help_id(HID_FIELD_SEL_WIN);
     m_xListBox->set_help_id(HID_FIELD_SEL);
 
-    m_xListBox->connect_row_activated(LINK(this, FmFieldWin, RowActivatedHdl));
+    m_xListBox->connect_item_activated(LINK(this, FmFieldWin, RowActivatedHdl));
     m_xHelper.set(new OColumnTransferable(
         ColumnTransferFormatFlags::FIELD_DESCRIPTOR | ColumnTransferFormatFlags::CONTROL_EXCHANGE | ColumnTransferFormatFlags::COLUMN_DESCRIPTOR
     ));

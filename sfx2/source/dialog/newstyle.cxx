@@ -78,7 +78,7 @@ SfxNewStyleDlg::SfxNewStyleDlg(weld::Widget* pParent, SfxStyleSheetBasePool& rIn
 
     m_xOKBtn->connect_clicked(LINK(this, SfxNewStyleDlg, OKClickHdl));
     m_xColBox->connect_changed(LINK(this, SfxNewStyleDlg, ModifyHdl));
-    m_xColBox->connect_row_activated(LINK(this, SfxNewStyleDlg, OKHdl));
+    m_xColBox->connect_item_activated(LINK(this, SfxNewStyleDlg, OKHdl));
 
     auto xIter = m_rPool.CreateIterator(eFam, SfxStyleSearchBits::UserDefined);
     SfxStyleSheetBase *pStyle = xIter->First();

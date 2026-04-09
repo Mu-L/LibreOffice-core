@@ -77,7 +77,7 @@ void ScPivotCalcFieldDlg::Init()
     mxBtnInsert->connect_clicked(LINK(this, ScPivotCalcFieldDlg, InsertClicked));
     mxBtnAdd->connect_clicked(LINK(this, ScPivotCalcFieldDlg, AddModClicked));
     mxBtnDel->connect_clicked(LINK(this, ScPivotCalcFieldDlg, DeleteClicked));
-    mxFieldList->connect_row_activated(LINK(this, ScPivotCalcFieldDlg, DoubleClickHdl));
+    mxFieldList->connect_item_activated(LINK(this, ScPivotCalcFieldDlg, DoubleClickHdl));
     mxFieldList->connect_selection_changed(LINK(this, ScPivotCalcFieldDlg, FieldListSelected));
     mxCalcNames->connect_changed(LINK(this, ScPivotCalcFieldDlg, CalcFieldNameSelected));
     mxCalculation->connect_changed(LINK(this, ScPivotCalcFieldDlg, CalcEntryChanged));

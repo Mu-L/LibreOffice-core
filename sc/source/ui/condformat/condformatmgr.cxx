@@ -104,7 +104,7 @@ ScCondFormatManagerDlg::ScCondFormatManagerDlg(weld::Window* pParent, ScDocument
     m_xBtnRemove->connect_clicked(LINK(this, ScCondFormatManagerDlg, RemoveBtnHdl));
     m_xBtnEdit->connect_clicked(LINK(this, ScCondFormatManagerDlg, EditBtnClickHdl));
     m_xBtnAdd->connect_clicked(LINK(this, ScCondFormatManagerDlg, AddBtnHdl));
-    m_xTreeView->connect_row_activated(LINK(this, ScCondFormatManagerDlg, EditBtnHdl));
+    m_xTreeView->connect_item_activated(LINK(this, ScCondFormatManagerDlg, EditBtnHdl));
 
     SvtViewOptions aDlgOpt(EViewType::Dialog, u"CondFormatDialog"_ustr);
     if (aDlgOpt.Exists())

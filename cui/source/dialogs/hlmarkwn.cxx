@@ -83,7 +83,7 @@ SvxHlinkDlgMarkWnd::SvxHlinkDlgMarkWnd(weld::Window* pParentDialog)
                                mxLbTree->get_height_rows(12));
     mxBtApply->connect_clicked( LINK ( this, SvxHlinkDlgMarkWnd, ClickApplyHdl_Impl ) );
     mxBtClose->connect_clicked( LINK ( this, SvxHlinkDlgMarkWnd, ClickCloseHdl_Impl ) );
-    mxLbTree->connect_row_activated( LINK ( this, SvxHlinkDlgMarkWnd, DoubleClickApplyHdl_Impl ) );
+    mxLbTree->connect_item_activated(LINK(this, SvxHlinkDlgMarkWnd, DoubleClickApplyHdl_Impl));
 
     // tdf#149935 - remember last used position and size
     SvtViewOptions aDlgOpt(EViewType::Dialog, m_xDialog->get_help_id());

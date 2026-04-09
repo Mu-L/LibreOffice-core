@@ -192,7 +192,7 @@ SvxPathTabPage::SvxPathTabPage(weld::Container* pPage, weld::DialogController* p
     m_xPathBox->set_size_request(m_xPathBox->get_approximate_digit_width() * 60,
                                  m_xPathBox->get_height_rows(20));
 
-    m_xPathBox->connect_row_activated( LINK( this, SvxPathTabPage, DoubleClickPathHdl_Impl ) );
+    m_xPathBox->connect_item_activated(LINK(this, SvxPathTabPage, DoubleClickPathHdl_Impl));
     m_xPathBox->connect_column_clicked(LINK(this, SvxPathTabPage, HeaderBarClick));
     m_xPathBox->connect_selection_changed(LINK(this, SvxPathTabPage, PathSelect_Impl));
     m_xPathBox->set_selection_mode(SelectionMode::Multiple);

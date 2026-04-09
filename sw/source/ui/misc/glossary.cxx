@@ -330,7 +330,7 @@ SwGlossaryDlg::SwGlossaryDlg(const SfxViewFrame& rViewFrame,
     m_xNameED->connect_changed(LINK(this,SwGlossaryDlg,NameModify));
     m_xShortNameEdit->connect_changed(LINK(this,SwGlossaryDlg,NameModify));
 
-    m_xCategoryBox->connect_row_activated(LINK(this, SwGlossaryDlg, NameDoubleClick));
+    m_xCategoryBox->connect_item_activated(LINK(this, SwGlossaryDlg, NameDoubleClick));
     m_xCategoryBox->connect_selection_changed(LINK(this, SwGlossaryDlg, GrpSelect));
     m_xCategoryBox->connect_key_press(LINK(this, SwGlossaryDlg, KeyInputHdl));
 

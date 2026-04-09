@@ -5020,7 +5020,7 @@ IMPL_LINK_NOARG(SalInstanceTreeView, DeSelectHdl, SvTreeListBox*, void)
 IMPL_LINK_NOARG(SalInstanceTreeView, DoubleClickHdl, SvTreeListBox*, bool)
 {
     if (SvTreeListEntry* pCurEntry = m_xTreeView->GetCurEntry())
-        return !signal_row_activated(SalInstanceTreeIter(*this, pCurEntry));
+        return !signal_item_activated(SalInstanceTreeIter(*this, pCurEntry));
 
     return false;
 }

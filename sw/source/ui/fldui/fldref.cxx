@@ -114,17 +114,17 @@ SwFieldRefPage::SwFieldRefPage(weld::Container* pPage, weld::DialogController* p
     m_xNameED->connect_changed(LINK(this, SwFieldRefPage, ModifyHdl));
     m_xFilterED->connect_changed( LINK( this, SwFieldRefPage, ModifyHdl_Impl ) );
 
-    m_xTypeLB->connect_row_activated(LINK(this, SwFieldRefPage, TreeViewInsertHdl));
+    m_xTypeLB->connect_item_activated(LINK(this, SwFieldRefPage, TreeViewInsertHdl));
     m_xTypeLB->connect_selection_changed(LINK(this, SwFieldRefPage, TypeHdl));
     m_xSelectionLB->connect_selection_changed(LINK(this, SwFieldRefPage, SubTypeListBoxHdl));
-    m_xSelectionLB->connect_row_activated(LINK(this, SwFieldRefPage, TreeViewInsertHdl));
-    m_xFormatLB->connect_row_activated(LINK(this, SwFieldRefPage, TreeViewInsertHdl));
+    m_xSelectionLB->connect_item_activated(LINK(this, SwFieldRefPage, TreeViewInsertHdl));
+    m_xFormatLB->connect_item_activated(LINK(this, SwFieldRefPage, TreeViewInsertHdl));
     m_xFormatLB->connect_selection_changed(LINK(this, SwFieldRefPage, FormatHdl));
 
     // #i83479#
     m_xSelectionToolTipLB->connect_selection_changed(
         LINK(this, SwFieldRefPage, SubTypeTreeListBoxHdl));
-    m_xSelectionToolTipLB->connect_row_activated( LINK(this, SwFieldRefPage, TreeViewInsertHdl) );
+    m_xSelectionToolTipLB->connect_item_activated(LINK(this, SwFieldRefPage, TreeViewInsertHdl));
     m_xFilterED->grab_focus();
 
     // uitests

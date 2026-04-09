@@ -43,7 +43,7 @@ SvPasteObjectDialog::SvPasteObjectDialog(weld::Window* pParent)
     m_xOKButton->set_sensitive(false);
 
     ObjectLB().connect_selection_changed(LINK(this, SvPasteObjectDialog, SelectHdl));
-    ObjectLB().connect_row_activated(LINK( this, SvPasteObjectDialog, DoubleClickHdl));
+    ObjectLB().connect_item_activated(LINK(this, SvPasteObjectDialog, DoubleClickHdl));
 }
 
 void SvPasteObjectDialog::SelectObject()

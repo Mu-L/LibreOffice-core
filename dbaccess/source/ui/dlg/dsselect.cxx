@@ -37,7 +37,7 @@ ODatasourceSelectDialog::ODatasourceSelectDialog(weld::Window* _pParent, const s
     m_xManageDatasources->set_sensitive(true);
     m_xManageDatasources->connect_clicked(LINK(this,ODatasourceSelectDialog,ManageClickHdl));
 #endif
-    m_xDatasource->connect_row_activated(LINK(this,ODatasourceSelectDialog,ListDblClickHdl));
+    m_xDatasource->connect_item_activated(LINK(this, ODatasourceSelectDialog, ListDblClickHdl));
 }
 
 ODatasourceSelectDialog::~ODatasourceSelectDialog()

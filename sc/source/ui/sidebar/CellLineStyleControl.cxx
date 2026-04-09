@@ -71,7 +71,7 @@ CellLineStylePopup::CellLineStylePopup(weld::Toolbar* pParent, const OUString& r
     mxCellLineStyleTreeView->set_size_request(-1, nHeight);
     mxCellLineStyleTreeView->queue_resize();
 
-    mxCellLineStyleTreeView->connect_row_activated(LINK(this, CellLineStylePopup, StyleSelectHdl));
+    mxCellLineStyleTreeView->connect_item_activated(LINK(this, CellLineStylePopup, StyleSelectHdl));
 }
 
 CellLineStylePopup::~CellLineStylePopup()

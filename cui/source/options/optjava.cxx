@@ -658,7 +658,7 @@ SvxJavaParameterDlg::SvxJavaParameterDlg(weld::Window* pParent)
     m_xRemoveBtn->connect_clicked( LINK( this, SvxJavaParameterDlg, RemoveHdl_Impl ) );
     m_xEditBtn->connect_clicked( LINK( this, SvxJavaParameterDlg, EditHdl_Impl ) );
     m_xAssignedList->connect_selection_changed(LINK(this, SvxJavaParameterDlg, SelectHdl_Impl));
-    m_xAssignedList->connect_row_activated( LINK( this, SvxJavaParameterDlg, DblClickHdl_Impl ) );
+    m_xAssignedList->connect_item_activated(LINK(this, SvxJavaParameterDlg, DblClickHdl_Impl));
 
     ModifyHdl_Impl(*m_xParameterEdit);
     EnableEditButton();

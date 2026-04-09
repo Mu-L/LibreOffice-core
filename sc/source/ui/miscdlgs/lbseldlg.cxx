@@ -30,7 +30,7 @@ ScSelEntryDlg::ScSelEntryDlg(weld::Window* pParent, const std::vector<OUString> 
 {
     m_xLb->set_size_request(m_xLb->get_approximate_digit_width() * 32,
                             m_xLb->get_height_rows(8));
-    m_xLb->connect_row_activated(LINK(this, ScSelEntryDlg, DblClkHdl));
+    m_xLb->connect_item_activated(LINK(this, ScSelEntryDlg, DblClkHdl));
 
     for (const auto& rEntry : rEntryList)
         m_xLb->append_text(rEntry);

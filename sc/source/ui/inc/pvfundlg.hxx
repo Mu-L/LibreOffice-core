@@ -44,7 +44,10 @@ public:
 
     void set_sensitive(bool sensitive) { m_xControl->set_sensitive(sensitive); }
     void set_selection_mode(SelectionMode eMode) { m_xControl->set_selection_mode(eMode); }
-    void connect_row_activated(const Link<const weld::TreeIter&, bool>& rLink) { m_xControl->connect_row_activated(rLink); }
+    void connect_item_activated(const Link<const weld::TreeIter&, bool>& rLink)
+    {
+        m_xControl->connect_item_activated(rLink);
+    }
     int get_height_rows(int nRows) const { return m_xControl->get_height_rows(nRows); }
     void set_size_request(int nWidth, int nHeight) { m_xControl->set_size_request(nWidth, nHeight); }
 

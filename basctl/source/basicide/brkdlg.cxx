@@ -88,7 +88,7 @@ BreakPointDialog::BreakPointDialog(weld::Window* pParent, BreakPointList& rBrkPn
 
     m_xCheckBox->connect_toggled(LINK(this, BreakPointDialog, CheckBoxHdl));
     m_xComboBox->connect_changed(LINK(this, BreakPointDialog, EditModifyHdl));
-    m_xComboBox->connect_row_activated(LINK(this, BreakPointDialog, TreeModifyHdl));
+    m_xComboBox->connect_item_activated(LINK(this, BreakPointDialog, TreeModifyHdl));
     m_xComboBox->grab_focus();
 
     m_xNumericField->set_range(0, 0x7FFFFFFF);

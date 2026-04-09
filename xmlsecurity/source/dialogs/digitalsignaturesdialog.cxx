@@ -238,7 +238,8 @@ DigitalSignaturesDialog::DigitalSignaturesDialog(
 
     m_xSignaturesLB->connect_selection_changed(
         LINK(this, DigitalSignaturesDialog, SignatureHighlightHdl));
-    m_xSignaturesLB->connect_row_activated( LINK( this, DigitalSignaturesDialog, SignatureSelectHdl ) );
+    m_xSignaturesLB->connect_item_activated(
+        LINK(this, DigitalSignaturesDialog, SignatureSelectHdl));
 
     m_xViewBtn->connect_clicked( LINK( this, DigitalSignaturesDialog, ViewButtonHdl ) );
     m_xViewBtn->set_sensitive(false);

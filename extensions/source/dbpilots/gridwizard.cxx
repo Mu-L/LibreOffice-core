@@ -296,8 +296,10 @@ namespace dbp
         m_xExistFields->connect_selection_changed(
             LINK(this, OGridFieldsSelection, OnEntrySelected));
         m_xSelFields->connect_selection_changed(LINK(this, OGridFieldsSelection, OnEntrySelected));
-        m_xExistFields->connect_row_activated(LINK(this, OGridFieldsSelection, OnEntryDoubleClicked));
-        m_xSelFields->connect_row_activated(LINK(this, OGridFieldsSelection, OnEntryDoubleClicked));
+        m_xExistFields->connect_item_activated(
+            LINK(this, OGridFieldsSelection, OnEntryDoubleClicked));
+        m_xSelFields->connect_item_activated(
+            LINK(this, OGridFieldsSelection, OnEntryDoubleClicked));
     }
 
     OGridFieldsSelection::~OGridFieldsSelection()

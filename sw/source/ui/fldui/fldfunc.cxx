@@ -122,11 +122,11 @@ void SwFieldFuncPage::Reset(const SfxItemSet* )
         }
     }
 
-    m_xTypeLB->connect_row_activated(LINK(this, SwFieldFuncPage, TreeViewInsertHdl));
+    m_xTypeLB->connect_item_activated(LINK(this, SwFieldFuncPage, TreeViewInsertHdl));
     m_xTypeLB->connect_selection_changed(LINK(this, SwFieldFuncPage, TypeHdl));
     m_xSelectionLB->connect_selection_changed(LINK(this, SwFieldFuncPage, SelectHdl));
-    m_xSelectionLB->connect_row_activated(LINK(this, SwFieldFuncPage, InsertMacroHdl));
-    m_xFormatLB->connect_row_activated(LINK(this, SwFieldFuncPage, TreeViewInsertHdl));
+    m_xSelectionLB->connect_item_activated(LINK(this, SwFieldFuncPage, InsertMacroHdl));
+    m_xFormatLB->connect_item_activated(LINK(this, SwFieldFuncPage, TreeViewInsertHdl));
     m_xMacroBT->connect_clicked(LINK(this, SwFieldFuncPage, MacroHdl));
     Link<weld::Button&,void> aListModifyLk( LINK(this, SwFieldFuncPage, ListModifyButtonHdl));
     m_xListAddPB->connect_clicked(aListModifyLk);

@@ -627,7 +627,7 @@ SfxAutoRedactDialog::SfxAutoRedactDialog(weld::Window* pParent)
     m_xAddBtn->connect_clicked(LINK(this, SfxAutoRedactDialog, AddHdl));
     m_xEditBtn->connect_clicked(LINK(this, SfxAutoRedactDialog, EditHdl));
     m_xDeleteBtn->connect_clicked(LINK(this, SfxAutoRedactDialog, DeleteHdl));
-    m_aTargetsBox.connect_row_activated(LINK(this, SfxAutoRedactDialog, DoubleClickEditHdl));
+    m_aTargetsBox.connect_item_activated(LINK(this, SfxAutoRedactDialog, DoubleClickEditHdl));
 }
 
 void SfxAutoRedactDialog::ImplDestroy()

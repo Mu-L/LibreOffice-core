@@ -1387,7 +1387,7 @@ SwContentTree::SwContentTree(std::unique_ptr<weld::TreeView> xTreeView, SwNaviga
 
     m_xTreeView->connect_expanding(LINK(this, SwContentTree, ExpandHdl));
     m_xTreeView->connect_collapsing(LINK(this, SwContentTree, CollapseHdl));
-    m_xTreeView->connect_row_activated(LINK(this, SwContentTree, ContentDoubleClickHdl));
+    m_xTreeView->connect_item_activated(LINK(this, SwContentTree, ContentDoubleClickHdl));
     m_xTreeView->connect_selection_changed(LINK(this, SwContentTree, SelectHdl));
     m_xTreeView->connect_focus_in(LINK(this, SwContentTree, FocusInHdl));
     m_xTreeView->connect_key_press(LINK(this, SwContentTree, KeyInputHdl));

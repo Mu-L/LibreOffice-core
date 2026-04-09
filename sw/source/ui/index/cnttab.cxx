@@ -3592,7 +3592,7 @@ SwTOXStylesTabPage::SwTOXStylesTabPage(weld::Container* pPage, weld::DialogContr
     m_xStdBT->connect_clicked(LINK(this, SwTOXStylesTabPage, StdHdl));
     m_xParaLayLB->connect_selection_changed(LINK(this, SwTOXStylesTabPage, EnableSelectHdl));
     m_xLevelLB->connect_selection_changed(LINK(this, SwTOXStylesTabPage, EnableSelectHdl));
-    m_xParaLayLB->connect_row_activated(LINK(this, SwTOXStylesTabPage, DoubleClickHdl));
+    m_xParaLayLB->connect_item_activated(LINK(this, SwTOXStylesTabPage, DoubleClickHdl));
 }
 
 SwTOXStylesTabPage::~SwTOXStylesTabPage()

@@ -117,7 +117,7 @@ OTasksWindow::OTasksWindow(weld::Container* pParent, OApplicationDetailView* pDe
     m_xContainer->set_stack_background();
 
     m_xTreeView->set_help_id(HID_APP_CREATION_LIST);
-    m_xTreeView->connect_row_activated(LINK(this, OTasksWindow, onSelected));
+    m_xTreeView->connect_item_activated(LINK(this, OTasksWindow, onSelected));
     m_xTreeView->connect_selection_changed(LINK(this, OTasksWindow, OnEntrySelectHdl));
     m_xTreeView->connect_focus_in(LINK(this, OTasksWindow, FocusInHdl));
     m_xTreeView->connect_focus_out(LINK(this, OTasksWindow, FocusOutHdl));

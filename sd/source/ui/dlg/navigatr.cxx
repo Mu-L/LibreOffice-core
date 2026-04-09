@@ -85,7 +85,7 @@ SdNavigatorWin::SdNavigatorWin(weld::Widget* pParent, SfxBindings* pInBindings, 
 
     mxTlbObjects->SetViewFrame( mpBindings->GetDispatcher()->GetFrame() );
 
-    mxTlbObjects->connect_row_activated(LINK(this, SdNavigatorWin, ClickObjectHdl));
+    mxTlbObjects->connect_item_activated(LINK(this, SdNavigatorWin, ClickObjectHdl));
     mxTlbObjects->set_selection_mode(SelectionMode::Multiple);
     mxTlbObjects->connect_mouse_release(LINK(this, SdNavigatorWin, MouseReleaseHdl));
     mxTlbObjects->connect_popup_menu(LINK(this, SdNavigatorWin, CommandHdl));

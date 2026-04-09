@@ -296,7 +296,7 @@ void SvxNumberFormatTabPage::Init_Impl()
     m_xBtnThousand->connect_focus_in(LINK(this, SvxNumberFormatTabPage, LostFocusHdl_Impl));
     m_xBtnEngineering->connect_toggled(LINK(this, SvxNumberFormatTabPage, OptClickHdl_Impl));
     m_xBtnEngineering->connect_focus_in(LINK(this, SvxNumberFormatTabPage, LostFocusHdl_Impl));
-    m_xLbFormat->connect_row_activated(LINK(this, SvxNumberFormatTabPage, DoubleClickHdl_Impl));
+    m_xLbFormat->connect_item_activated(LINK(this, SvxNumberFormatTabPage, DoubleClickHdl_Impl));
     m_xEdFormat->connect_changed(LINK(this, SvxNumberFormatTabPage, EditModifyHdl_Impl));
     m_xEdFormat->connect_focus_in(LINK(this, SvxNumberFormatTabPage, LostFocusHdl_Impl));
     m_xIbAdd->connect_clicked(LINK(this, SvxNumberFormatTabPage, ClickHdl_Impl));

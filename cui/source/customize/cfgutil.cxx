@@ -1175,7 +1175,8 @@ SvxScriptSelectorDialog::SvxScriptSelectorDialog(
     m_xCategories->connect_changed(
             LINK( this, SvxScriptSelectorDialog, SelectHdl ) );
     m_xCommands->connect_changed( LINK( this, SvxScriptSelectorDialog, SelectHdl ) );
-    m_xCommands->connect_row_activated( LINK( this, SvxScriptSelectorDialog, FunctionDoubleClickHdl ) );
+    m_xCommands->connect_item_activated(
+        LINK(this, SvxScriptSelectorDialog, FunctionDoubleClickHdl));
     m_xCommands->connect_command( LINK( this, SvxScriptSelectorDialog, ContextMenuHdl ) );
 
     m_xOKButton->connect_clicked( LINK( this, SvxScriptSelectorDialog, ClickHdl ) );

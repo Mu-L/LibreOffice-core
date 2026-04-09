@@ -64,7 +64,7 @@ public:
     static void trigger_row_activated(weld::TreeView& rTreeView)
     {
         if (std::unique_ptr<weld::TreeIter> pSelected = rTreeView.get_selected())
-            rTreeView.signal_row_activated(*pSelected);
+            rTreeView.signal_item_activated(*pSelected);
     }
 
     static void trigger_popup_menu(weld::TreeView& rTreeView, const CommandEvent& rCommand)

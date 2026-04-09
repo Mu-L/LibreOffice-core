@@ -50,7 +50,7 @@ OTableWindowListBox::OTableWindowListBox(OTableWindow* pParent)
     , m_nDropEvent(nullptr)
     , m_nUiEvent(nullptr)
 {
-    m_xTreeView->connect_row_activated(LINK(this, OTableWindowListBox, OnDoubleClick));
+    m_xTreeView->connect_item_activated(LINK(this, OTableWindowListBox, OnDoubleClick));
     m_xTreeView->connect_visible_range_changed(LINK(this, OTableWindowListBox, ScrollHdl));
     m_xTreeView->connect_command(LINK(this, OTableWindowListBox, CommandHdl));
 

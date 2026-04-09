@@ -429,7 +429,7 @@ DBChangeDialog_Impl::DBChangeDialog_Impl(weld::Window* pParent, const BibDataMan
     , m_xSelectionLB(m_xBuilder->weld_tree_view(u"treeview"_ustr))
 {
     m_xSelectionLB->set_size_request(-1, m_xSelectionLB->get_height_rows(6));
-    m_xSelectionLB->connect_row_activated(LINK(this, DBChangeDialog_Impl, DoubleClickHdl));
+    m_xSelectionLB->connect_item_activated(LINK(this, DBChangeDialog_Impl, DoubleClickHdl));
     m_xSelectionLB->make_sorted();
 
     try

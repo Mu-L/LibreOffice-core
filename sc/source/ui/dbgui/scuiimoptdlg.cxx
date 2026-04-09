@@ -257,7 +257,7 @@ ScImportOptionsDlg::ScImportOptionsDlg(weld::Window* pParent, bool bAscii,
         m_xCbQuoteAll->hide();
         m_xCbFormulas->hide();
         m_xTvCharset->grab_focus();
-        m_xTvCharset->connect_row_activated(LINK(this, ScImportOptionsDlg, DoubleClickHdl));
+        m_xTvCharset->connect_item_activated(LINK(this, ScImportOptionsDlg, DoubleClickHdl));
         m_xTvCharset->SelectTextEncoding(pOptions ? pOptions->eCharSet : osl_getThreadTextEncoding());
     }
 

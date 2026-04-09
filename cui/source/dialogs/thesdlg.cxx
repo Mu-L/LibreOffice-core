@@ -263,7 +263,8 @@ SvxThesaurusDialog::SvxThesaurusDialog(
     m_xLangLB->connect_changed( LINK( this, SvxThesaurusDialog, LanguageHdl_Impl ) );
     m_xAlternativesCT->connect_selection_changed(
         LINK(this, SvxThesaurusDialog, AlternativesSelectHdl_Impl));
-    m_xAlternativesCT->connect_row_activated( LINK( this, SvxThesaurusDialog, AlternativesDoubleClickHdl_Impl ));
+    m_xAlternativesCT->connect_item_activated(
+        LINK(this, SvxThesaurusDialog, AlternativesDoubleClickHdl_Impl));
     m_xAlternativesCT->connect_key_press(LINK(this, SvxThesaurusDialog, KeyInputHdl));
 
     xThesaurus = xThes;

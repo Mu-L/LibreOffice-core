@@ -63,9 +63,9 @@ SwFieldDokPage::SwFieldDokPage(weld::Container* pPage, weld::DialogController* p
     m_xSelectionLB->set_size_request(nWidth, nHeight);
     m_xFormatLB->set_size_request(nWidth * 2, nHeight);
 
-    m_xSelectionLB->connect_row_activated(LINK(this, SwFieldDokPage, TreeViewInsertHdl));
-    m_xFormatLB->connect_row_activated(LINK(this, SwFieldDokPage, TreeViewInsertHdl));
-    m_xNumFormatLB->connect_row_activated(LINK(this, SwFieldDokPage, NumFormatHdl));
+    m_xSelectionLB->connect_item_activated(LINK(this, SwFieldDokPage, TreeViewInsertHdl));
+    m_xFormatLB->connect_item_activated(LINK(this, SwFieldDokPage, TreeViewInsertHdl));
+    m_xNumFormatLB->connect_item_activated(LINK(this, SwFieldDokPage, NumFormatHdl));
 
     for (sal_uInt16 i = 1; i <= MAXLEVEL; i++)
         m_xLevelED->append_text(OUString::number(i));
@@ -151,7 +151,7 @@ void SwFieldDokPage::Reset(const SfxItemSet* )
     // select old Pos
     RestorePos(*m_xTypeLB);
 
-    m_xTypeLB->connect_row_activated(LINK(this, SwFieldDokPage, TreeViewInsertHdl));
+    m_xTypeLB->connect_item_activated(LINK(this, SwFieldDokPage, TreeViewInsertHdl));
     m_xTypeLB->connect_selection_changed(LINK(this, SwFieldDokPage, TypeHdl));
     m_xFormatLB->connect_selection_changed(LINK(this, SwFieldDokPage, FormatHdl));
 

@@ -86,7 +86,7 @@ OCollectionView::OCollectionView(weld::Window* pParent,
     m_xName->set_text(_sDefaultName);
     m_xName->grab_focus();
 
-    m_xView->connect_row_activated( LINK( this, OCollectionView, Dbl_Click_FileView ) );
+    m_xView->connect_item_activated(LINK(this, OCollectionView, Dbl_Click_FileView));
     m_xUp->connect_clicked( LINK( this, OCollectionView, Up_Click ) );
     m_xNewFolder->connect_clicked( LINK( this, OCollectionView, NewFolder_Click ) );
     m_xPB_OK->connect_clicked( LINK( this, OCollectionView, Save_Click ) );
