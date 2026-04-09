@@ -546,9 +546,9 @@ void    SwOutlineSettingsTabPage::Update()
     SetModified();
 }
 
-IMPL_LINK( SwOutlineSettingsTabPage, LevelHdl, weld::TreeView&, rBox, void )
+void SwOutlineSettingsTabPage::ApplyLevelSelection()
 {
-    auto aRows = rBox.get_selected_rows();
+    auto aRows = m_xLevelLB->get_selected_rows();
     assert(aRows.empty() || aRows.size() == 1); // Single selection only
     if (aRows.empty() || aRows[0] == MAXLEVEL)
     {
@@ -559,6 +559,11 @@ IMPL_LINK( SwOutlineSettingsTabPage, LevelHdl, weld::TreeView&, rBox, void )
         m_nActLevel = 1 << aRows[0];
     }
     Update();
+}
+
+IMPL_LINK_NOARG(SwOutlineSettingsTabPage, LevelHdl, weld::TreeView&, void)
+{
+    ApplyLevelSelection();
 }
 
 IMPL_LINK(SwOutlineSettingsTabPage, ToggleComplete, weld::SpinButton&, rEdit, void)
@@ -791,7 +796,7 @@ void SwOutlineSettingsTabPage::ActivatePage(const SfxItemSet& )
         m_xLevelLB->select(lcl_BitToLevel(m_nActLevel));
     else
         m_xLevelLB->select(MAXLEVEL);
-    LevelHdl(*m_xLevelLB);
+    ApplyLevelSelection();
 }
 
 DeactivateRC SwOutlineSettingsTabPage::DeactivatePage(SfxItemSet*)

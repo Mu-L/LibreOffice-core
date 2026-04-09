@@ -88,6 +88,7 @@ class SwOutlineSettingsTabPage final : public SfxTabPage
     std::unique_ptr<weld::SpinButton> m_xStartEdit;
     std::unique_ptr<weld::CustomWeld> m_xPreviewWIN;
 
+    void ApplyLevelSelection();
     DECL_LINK( LevelHdl, weld::TreeView&, void );
     DECL_LINK( ToggleComplete, weld::SpinButton&, void );
     DECL_LINK( CollSelect, weld::ComboBox&, void );
