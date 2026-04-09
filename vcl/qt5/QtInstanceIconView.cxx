@@ -49,6 +49,7 @@ void QtInstanceIconView::do_insert(int nPos, const OUString* pStr, const OUStrin
             nPos = m_pModel->rowCount();
 
         QStandardItem* pItem = new QStandardItem;
+        pItem->setEditable(false);
         if (pStr)
             pItem->setText(toQString(*pStr));
         if (pId)
