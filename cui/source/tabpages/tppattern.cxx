@@ -254,8 +254,9 @@ void SvxPatternTabPage::Reset( const SfxItemSet*  )
     }
 }
 
-std::unique_ptr<SfxTabPage> SvxPatternTabPage::Create( weld::Container* pPage, weld::DialogController* pController,
-                                             const SfxItemSet* rSet )
+std::unique_ptr<SvxPatternTabPage> SvxPatternTabPage::Create(weld::Container* pPage,
+                                                             weld::DialogController* pController,
+                                                             const SfxItemSet* rSet)
 {
     return std::make_unique<SvxPatternTabPage>(pPage, pController, *rSet);
 }

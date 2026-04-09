@@ -437,89 +437,75 @@ void SvxAreaTabPage::PageCreated(const SfxAllItemSet& aSet)
 std::unique_ptr<SfxTabPage> SvxAreaTabPage::CreatePage(FillType eFillType)
 {
     SfxOkDialogController* pController = GetDialogController();
-    CreateTabPage fnCreate = nullptr;
-    switch (eFillType)
-    {
-        case FillType::TRANSPARENT: fnCreate = nullptr; break;
-        case FillType::SOLID: fnCreate = &SvxColorTabPage::Create; break;
-        case FillType::GRADIENT: fnCreate = &SvxGradientTabPage::Create; break;
-        case FillType::HATCH: fnCreate = &SvxHatchTabPage::Create; break;
-        case FillType::BITMAP: fnCreate = &SvxBitmapTabPage::Create; break;
-        case FillType::PATTERN: fnCreate = &SvxPatternTabPage::Create; break;
-        case FillType::USE_BACKGROUND_FILL: fnCreate = nullptr; break;
-        default: break;
-    }
-
-    if (!fnCreate)
-        return nullptr;
-
-    std::unique_ptr<SfxTabPage> pTabPage = (*fnCreate)(m_xFillTab.get(), pController, &m_rXFSet);
-    assert(pTabPage);
-
     switch (eFillType)
     {
         case FillType::SOLID:
         {
-            auto& rColorTab = static_cast<SvxColorTabPage&>(*pTabPage);
-            rColorTab.SetColorList(m_pColorList);
-            rColorTab.SetColorChgd(m_pnColorListState);
-            rColorTab.Construct();
-            rColorTab.ActivatePage(m_rXFSet);
-            rColorTab.Reset(&m_rXFSet);
-            rColorTab.set_visible(true);
-            break;
+            std::unique_ptr<SvxColorTabPage> pColorTabPage
+                = SvxColorTabPage::Create(m_xFillTab.get(), pController, &m_rXFSet);
+            pColorTabPage->SetColorList(m_pColorList);
+            pColorTabPage->SetColorChgd(m_pnColorListState);
+            pColorTabPage->Construct();
+            pColorTabPage->ActivatePage(m_rXFSet);
+            pColorTabPage->Reset(&m_rXFSet);
+            pColorTabPage->set_visible(true);
+            return pColorTabPage;
         }
         case FillType::GRADIENT:
         {
-            auto& rGradientTab = static_cast<SvxGradientTabPage&>(*pTabPage);
-            rGradientTab.SetColorList(m_pColorList);
-            rGradientTab.SetGradientList(m_pGradientList);
-            rGradientTab.SetColorChgd(m_pnColorListState);
-            rGradientTab.Construct();
-            rGradientTab.ActivatePage(m_rXFSet);
-            rGradientTab.Reset(&m_rXFSet);
-            rGradientTab.set_visible(true);
-            break;
+            std::unique_ptr<SvxGradientTabPage> pGradientTabPage
+                = SvxGradientTabPage::Create(m_xFillTab.get(), pController, &m_rXFSet);
+            pGradientTabPage->SetColorList(m_pColorList);
+            pGradientTabPage->SetGradientList(m_pGradientList);
+            pGradientTabPage->SetColorChgd(m_pnColorListState);
+            pGradientTabPage->Construct();
+            pGradientTabPage->ActivatePage(m_rXFSet);
+            pGradientTabPage->Reset(&m_rXFSet);
+            pGradientTabPage->set_visible(true);
+            return pGradientTabPage;
         }
         case FillType::HATCH:
         {
-            auto& rHatchTab = static_cast<SvxHatchTabPage&>(*pTabPage);
-            rHatchTab.SetColorList(m_pColorList);
-            rHatchTab.SetHatchingList(m_pHatchingList);
-            rHatchTab.SetColorChgd(m_pnColorListState);
-            rHatchTab.Construct();
-            rHatchTab.ActivatePage(m_rXFSet);
-            rHatchTab.Reset(&m_rXFSet);
-            rHatchTab.set_visible(true);
-            break;
+            std::unique_ptr<SvxHatchTabPage> pHatchTabPage
+                = SvxHatchTabPage::Create(m_xFillTab.get(), pController, &m_rXFSet);
+            pHatchTabPage->SetColorList(m_pColorList);
+            pHatchTabPage->SetHatchingList(m_pHatchingList);
+            pHatchTabPage->SetColorChgd(m_pnColorListState);
+            pHatchTabPage->Construct();
+            pHatchTabPage->ActivatePage(m_rXFSet);
+            pHatchTabPage->Reset(&m_rXFSet);
+            pHatchTabPage->set_visible(true);
+            return pHatchTabPage;
         }
         case FillType::BITMAP:
         {
-            auto& rBitmapTab = static_cast<SvxBitmapTabPage&>(*pTabPage);
-            rBitmapTab.SetBitmapList(m_pBitmapList);
-            rBitmapTab.Construct();
-            rBitmapTab.ActivatePage(m_rXFSet);
-            rBitmapTab.Reset(&m_rXFSet);
-            rBitmapTab.set_visible(true);
-            break;
+            std::unique_ptr<SvxBitmapTabPage> pBitmapTabPage
+                = SvxBitmapTabPage::Create(m_xFillTab.get(), pController, &m_rXFSet);
+            pBitmapTabPage->SetBitmapList(m_pBitmapList);
+            pBitmapTabPage->Construct();
+            pBitmapTabPage->ActivatePage(m_rXFSet);
+            pBitmapTabPage->Reset(&m_rXFSet);
+            pBitmapTabPage->set_visible(true);
+            return pBitmapTabPage;
         }
         case FillType::PATTERN:
         {
-            auto& rPatternTab = static_cast<SvxPatternTabPage&>(*pTabPage);
-            rPatternTab.SetColorList(m_pColorList);
-            rPatternTab.SetPatternList(m_pPatternList);
-            rPatternTab.SetColorChgd(m_pnColorListState);
-            rPatternTab.Construct();
-            rPatternTab.ActivatePage(m_rXFSet);
-            rPatternTab.Reset(&m_rXFSet);
-            rPatternTab.set_visible(true);
-            break;
+            std::unique_ptr<SvxPatternTabPage> pPatternTabPage
+                = SvxPatternTabPage::Create(m_xFillTab.get(), pController, &m_rXFSet);
+            pPatternTabPage->SetColorList(m_pColorList);
+            pPatternTabPage->SetPatternList(m_pPatternList);
+            pPatternTabPage->SetColorChgd(m_pnColorListState);
+            pPatternTabPage->Construct();
+            pPatternTabPage->ActivatePage(m_rXFSet);
+            pPatternTabPage->Reset(&m_rXFSet);
+            pPatternTabPage->set_visible(true);
+            return pPatternTabPage;
         }
+        case FillType::TRANSPARENT:
+        case FillType::USE_BACKGROUND_FILL:
         default:
-            break;
+            return {};
     }
-
-    return pTabPage;
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

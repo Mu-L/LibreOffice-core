@@ -286,8 +286,9 @@ void SvxHatchTabPage::Reset( const SfxItemSet* rSet )
     m_aCtlPreview.Invalidate();
 }
 
-std::unique_ptr<SfxTabPage> SvxHatchTabPage::Create( weld::Container* pPage, weld::DialogController* pController,
-                                            const SfxItemSet* rSet )
+std::unique_ptr<SvxHatchTabPage> SvxHatchTabPage::Create(weld::Container* pPage,
+                                                         weld::DialogController* pController,
+                                                         const SfxItemSet* rSet)
 {
     return std::make_unique<SvxHatchTabPage>(pPage, pController, *rSet);
 }

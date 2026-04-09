@@ -273,7 +273,9 @@ void SvxColorTabPage::Reset( const SfxItemSet* rSet )
     UpdateModified();
 }
 
-std::unique_ptr<SfxTabPage> SvxColorTabPage::Create(weld::Container* pPage, weld::DialogController* pController, const SfxItemSet* rOutAttrs)
+std::unique_ptr<SvxColorTabPage> SvxColorTabPage::Create(weld::Container* pPage,
+                                                         weld::DialogController* pController,
+                                                         const SfxItemSet* rOutAttrs)
 {
     return std::make_unique<SvxColorTabPage>(pPage, pController, *rOutAttrs);
 }
