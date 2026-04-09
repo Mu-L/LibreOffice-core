@@ -135,10 +135,6 @@ public:
 
     rtl_TextEncoding    GetSelectTextEncoding() const;
 
-    void connect_changed(const Link<weld::TreeView&, void>& rLink)
-    {
-        m_xControl->connect_selection_changed(rLink);
-    }
     void connect_item_activated(const Link<const weld::TreeIter&, bool>& rLink)
     {
         m_xControl->connect_item_activated(rLink);
