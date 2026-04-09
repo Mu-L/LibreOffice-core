@@ -769,7 +769,6 @@ public:
     virtual void ActivatePage( const SfxItemSet& rSet ) override;
     virtual DeactivateRC DeactivatePage( SfxItemSet* pSet ) override;
 
-    void    SetPropertyList( XPropertyListType t, const XPropertyListRef &xRef );
     void    SetColorList( const XColorListRef& pColList );
 
     void SetColorChgd(ChangeType* pIn) { m_pnColorListState = pIn; }

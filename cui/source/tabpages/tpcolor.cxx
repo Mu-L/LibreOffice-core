@@ -803,16 +803,9 @@ void SvxColorTabPage::FillUserData()
     SetUserData(OUString::number(static_cast<int>(m_eCM)));
 }
 
-
-void SvxColorTabPage::SetPropertyList( XPropertyListType t, const XPropertyListRef &xRef )
-{
-    OSL_ASSERT( t == XPropertyListType::Color );
-    m_pColorList = XColorListRef(static_cast<XColorList*>(xRef.get()));
-}
-
 void SvxColorTabPage::SetColorList( const XColorListRef& pColList )
 {
-    SetPropertyList( XPropertyListType::Color, XPropertyListRef( ( pColList.get() ) ) );
+    m_pColorList = pColList;
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
