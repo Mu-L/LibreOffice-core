@@ -958,12 +958,12 @@ void OfaAutocorrReplacePage::SetLanguage(LanguageType eSet)
     }
 }
 
-IMPL_LINK(OfaAutocorrReplacePage, SelectHdl, weld::TreeView&, rBox, void)
+IMPL_LINK_NOARG(OfaAutocorrReplacePage, SelectHdl, weld::TreeView&, void)
 {
     if(!bFirstSelect || !bHasSelectionText)
     {
-        int nEntry = rBox.get_selected_index();
-        OUString sTmpShort(rBox.get_text(nEntry, 0));
+        int nEntry = m_xReplaceTLB->get_selected_index();
+        OUString sTmpShort(m_xReplaceTLB->get_text(nEntry, 0));
         // if the text is set via ModifyHdl, the cursor is always at the beginning
         // of a word, although you're editing here
         bool bSameContent = 0 == maCompareClass.compareString(sTmpShort, m_xShortED->get_text());
@@ -978,9 +978,9 @@ IMPL_LINK(OfaAutocorrReplacePage, SelectHdl, weld::TreeView&, rBox, void)
                 m_xShortED->select_region(nStartPos, nEndPos);
             }
         }
-        m_xReplaceED->set_text(rBox.get_text(nEntry, 1));
+        m_xReplaceED->set_text(m_xReplaceTLB->get_text(nEntry, 1));
         // with UserData there is a Formatinfo
-        m_xTextOnlyCB->set_active(rBox.get_id(nEntry).isEmpty());
+        m_xTextOnlyCB->set_active(m_xReplaceTLB->get_id(nEntry).isEmpty());
     }
     else
     {
