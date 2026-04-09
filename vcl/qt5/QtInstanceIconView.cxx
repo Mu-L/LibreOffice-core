@@ -26,9 +26,6 @@ QtInstanceIconView::QtInstanceIconView(QListView* pListView)
 
     m_pModel = qobject_cast<QStandardItemModel*>(m_pListView->model());
     assert(m_pModel && "list view doesn't have expected item model set");
-
-    connect(&getSelectionModel(), &QItemSelectionModel::selectionChanged, this,
-            &QtInstanceIconView::handleSelectionChanged);
 }
 
 int QtInstanceIconView::get_item_width() const
@@ -204,12 +201,6 @@ bool QtInstanceIconView::handleToolTipEvent(const QHelpEvent& rHelpEvent)
     QToolTip::showText(rHelpEvent.globalPos(), toRichTextTooltip(sToolTip), m_pListView,
                        m_pListView->visualRect(aIndex));
     return true;
-}
-
-void QtInstanceIconView::handleSelectionChanged()
-{
-    SolarMutexGuard g;
-    signal_selection_changed();
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab cinoptions=b1,g0,N-s cinkeys+=0=break: */

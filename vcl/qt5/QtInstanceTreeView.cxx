@@ -36,8 +36,6 @@ QtInstanceTreeView::QtInstanceTreeView(QTreeView* pTreeView)
     m_pColumnRoles = columnRoles(*pTreeView);
     assert(m_pColumnRoles.size() == m_pModel->columnCount() && "column count doesn't match");
 
-    connect(&getSelectionModel(), &QItemSelectionModel::selectionChanged, this,
-            &QtInstanceTreeView::handleSelectionChanged);
     connect(m_pModel, &QSortFilterProxyModel::dataChanged, this,
             &QtInstanceTreeView::handleDataChanged);
     connect(m_pTreeView, &QTreeView::collapsed, this, &QtInstanceTreeView::signalCollapsing);
@@ -992,12 +990,6 @@ void QtInstanceTreeView::handleDataChanged(const QModelIndex& rTopLeft,
         nColIndex = -1;
 
     signal_toggled(iter_col(QtInstanceTreeIter(*this, rTopLeft), nColIndex));
-}
-
-void QtInstanceTreeView::handleSelectionChanged()
-{
-    SolarMutexGuard g;
-    signal_selection_changed();
 }
 
 void QtInstanceTreeView::signalCollapsing(const QModelIndex& rIndex)

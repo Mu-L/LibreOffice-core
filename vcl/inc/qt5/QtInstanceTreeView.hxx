@@ -186,7 +186,6 @@ private:
 private Q_SLOTS:
     void handleDataChanged(const QModelIndex& rTopLeft, const QModelIndex& rBottomRight,
                            const QVector<int>& rRoles);
-    void handleSelectionChanged();
     void signalCollapsing(const QModelIndex& rIndex);
     void signalExpanding(const QModelIndex& rIndex);
 };
