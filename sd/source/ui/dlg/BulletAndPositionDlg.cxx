@@ -691,18 +691,18 @@ void SvxBulletAndPositionDlg::CheckForStartValue_Impl(sal_uInt16 nNumberingType)
         SpinModifyHdl_Impl(*m_xStartED);
 }
 
-IMPL_LINK(SvxBulletAndPositionDlg, LevelHdl_Impl, weld::TreeView&, rBox, void)
+IMPL_LINK_NOARG(SvxBulletAndPositionDlg, LevelHdl_Impl, weld::TreeView&, void)
 {
     sal_uInt16 nSaveNumLvl = nActNumLvl;
     nActNumLvl = 0;
-    auto aSelectedRows = rBox.get_selected_rows();
+    auto aSelectedRows = m_xLevelLB->get_selected_rows();
     if (std::find(aSelectedRows.begin(), aSelectedRows.end(), pActNum->GetLevelCount())
             != aSelectedRows.end()
         && (aSelectedRows.size() == 1 || nSaveNumLvl != 0xffff))
     {
         nActNumLvl = 0xFFFF;
         for (sal_uInt16 i = 0; i < pActNum->GetLevelCount(); i++)
-            rBox.unselect(i);
+            m_xLevelLB->unselect(i);
     }
     else if (!aSelectedRows.empty())
     {
@@ -713,7 +713,7 @@ IMPL_LINK(SvxBulletAndPositionDlg, LevelHdl_Impl, weld::TreeView&, rBox, void)
                 nActNumLvl |= nMask;
             nMask <<= 1;
         }
-        rBox.unselect(pActNum->GetLevelCount());
+        m_xLevelLB->unselect(pActNum->GetLevelCount());
     }
     else
         nActNumLvl = nSaveNumLvl;
