@@ -140,9 +140,9 @@ SvBaseLinksDlg::~SvBaseLinksDlg()
 /*************************************************************************
 |*    SvBaseLinksDlg::Handler()
 *************************************************************************/
-IMPL_LINK(SvBaseLinksDlg, LinksSelectHdl, weld::TreeView&, rTreeView, void)
+IMPL_LINK_NOARG(SvBaseLinksDlg, LinksSelectHdl, weld::TreeView&, void)
 {
-    LinksSelectHdl(&rTreeView);
+    LinksSelectHdl(m_xTbLinks.get());
 }
 
 void SvBaseLinksDlg::LinksSelectHdl(weld::TreeView* pSvTabListBox)
