@@ -288,9 +288,9 @@ void SvxHatchTabPage::Reset( const SfxItemSet* rSet )
 
 std::unique_ptr<SvxHatchTabPage> SvxHatchTabPage::Create(weld::Container* pPage,
                                                          weld::DialogController* pController,
-                                                         const SfxItemSet* rSet)
+                                                         const SfxItemSet& rSet)
 {
-    return std::make_unique<SvxHatchTabPage>(pPage, pController, *rSet);
+    return std::make_unique<SvxHatchTabPage>(pPage, pController, rSet);
 }
 
 IMPL_LINK( SvxHatchTabPage, ModifiedListBoxHdl_Impl, weld::ComboBox&, rListBox, void )

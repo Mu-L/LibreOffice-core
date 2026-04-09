@@ -275,9 +275,9 @@ void SvxColorTabPage::Reset( const SfxItemSet* rSet )
 
 std::unique_ptr<SvxColorTabPage> SvxColorTabPage::Create(weld::Container* pPage,
                                                          weld::DialogController* pController,
-                                                         const SfxItemSet* rOutAttrs)
+                                                         const SfxItemSet& rOutAttrs)
 {
-    return std::make_unique<SvxColorTabPage>(pPage, pController, *rOutAttrs);
+    return std::make_unique<SvxColorTabPage>(pPage, pController, rOutAttrs);
 }
 
 // is called when the content of the MtrFields is changed for color values

@@ -249,9 +249,9 @@ void SvxGradientTabPage::Reset( const SfxItemSet* )
 
 std::unique_ptr<SvxGradientTabPage> SvxGradientTabPage::Create(weld::Container* pPage,
                                                                weld::DialogController* pController,
-                                                               const SfxItemSet* rOutAttrs)
+                                                               const SfxItemSet& rOutAttrs)
 {
-    return std::make_unique<SvxGradientTabPage>(pPage, pController, *rOutAttrs);
+    return std::make_unique<SvxGradientTabPage>(pPage, pController, rOutAttrs);
 }
 
 IMPL_LINK( SvxGradientTabPage, ModifiedListBoxHdl_Impl, weld::ComboBox&, rListBox, void )

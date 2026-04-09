@@ -120,30 +120,30 @@ void SvxAreaTabPage::SetOptimalSize(weld::DialogController* pController)
     m_xFillTab->set_size_request(-1, -1);
 
     // Calculate optimal size of all pages...
-    m_xFillTabPage = SvxColorTabPage::Create(m_xFillTab.get(), pController, &m_rXFSet);
+    m_xFillTabPage = SvxColorTabPage::Create(m_xFillTab.get(), pController, m_rXFSet);
     Size aSize(m_xFillTab->get_preferred_size());
 
     if (m_xBtnGradient->get_visible())
     {
-        m_xFillTabPage = SvxGradientTabPage::Create(m_xFillTab.get(), pController, &m_rXFSet);
+        m_xFillTabPage = SvxGradientTabPage::Create(m_xFillTab.get(), pController, m_rXFSet);
         Size aGradientSize = m_xFillTab->get_preferred_size();
         lclExtendSize(aSize, aGradientSize);
     }
     if (m_xBtnBitmap->get_visible())
     {
-        m_xFillTabPage = SvxBitmapTabPage::Create(m_xFillTab.get(), pController, &m_rXFSet);
+        m_xFillTabPage = SvxBitmapTabPage::Create(m_xFillTab.get(), pController, m_rXFSet);
         Size aBitmapSize = m_xFillTab->get_preferred_size();
         lclExtendSize(aSize, aBitmapSize);
     }
     if (m_xBtnHatch->get_visible())
     {
-        m_xFillTabPage = SvxHatchTabPage::Create(m_xFillTab.get(), pController, &m_rXFSet);
+        m_xFillTabPage = SvxHatchTabPage::Create(m_xFillTab.get(), pController, m_rXFSet);
         Size aHatchSize = m_xFillTab->get_preferred_size();
         lclExtendSize(aSize, aHatchSize);
     }
     if (m_xBtnPattern->get_visible())
     {
-        m_xFillTabPage = SvxPatternTabPage::Create(m_xFillTab.get(), pController, &m_rXFSet);
+        m_xFillTabPage = SvxPatternTabPage::Create(m_xFillTab.get(), pController, m_rXFSet);
         Size aPatternSize = m_xFillTab->get_preferred_size();
         lclExtendSize(aSize, aPatternSize);
     }
@@ -442,7 +442,7 @@ std::unique_ptr<SfxTabPage> SvxAreaTabPage::CreatePage(FillType eFillType)
         case FillType::SOLID:
         {
             std::unique_ptr<SvxColorTabPage> pColorTabPage
-                = SvxColorTabPage::Create(m_xFillTab.get(), pController, &m_rXFSet);
+                = SvxColorTabPage::Create(m_xFillTab.get(), pController, m_rXFSet);
             pColorTabPage->SetColorList(m_pColorList);
             pColorTabPage->SetColorChgd(m_pnColorListState);
             pColorTabPage->Construct();
@@ -454,7 +454,7 @@ std::unique_ptr<SfxTabPage> SvxAreaTabPage::CreatePage(FillType eFillType)
         case FillType::GRADIENT:
         {
             std::unique_ptr<SvxGradientTabPage> pGradientTabPage
-                = SvxGradientTabPage::Create(m_xFillTab.get(), pController, &m_rXFSet);
+                = SvxGradientTabPage::Create(m_xFillTab.get(), pController, m_rXFSet);
             pGradientTabPage->SetColorList(m_pColorList);
             pGradientTabPage->SetGradientList(m_pGradientList);
             pGradientTabPage->SetColorChgd(m_pnColorListState);
@@ -467,7 +467,7 @@ std::unique_ptr<SfxTabPage> SvxAreaTabPage::CreatePage(FillType eFillType)
         case FillType::HATCH:
         {
             std::unique_ptr<SvxHatchTabPage> pHatchTabPage
-                = SvxHatchTabPage::Create(m_xFillTab.get(), pController, &m_rXFSet);
+                = SvxHatchTabPage::Create(m_xFillTab.get(), pController, m_rXFSet);
             pHatchTabPage->SetColorList(m_pColorList);
             pHatchTabPage->SetHatchingList(m_pHatchingList);
             pHatchTabPage->SetColorChgd(m_pnColorListState);
@@ -480,7 +480,7 @@ std::unique_ptr<SfxTabPage> SvxAreaTabPage::CreatePage(FillType eFillType)
         case FillType::BITMAP:
         {
             std::unique_ptr<SvxBitmapTabPage> pBitmapTabPage
-                = SvxBitmapTabPage::Create(m_xFillTab.get(), pController, &m_rXFSet);
+                = SvxBitmapTabPage::Create(m_xFillTab.get(), pController, m_rXFSet);
             pBitmapTabPage->SetBitmapList(m_pBitmapList);
             pBitmapTabPage->Construct();
             pBitmapTabPage->ActivatePage(m_rXFSet);
@@ -491,7 +491,7 @@ std::unique_ptr<SfxTabPage> SvxAreaTabPage::CreatePage(FillType eFillType)
         case FillType::PATTERN:
         {
             std::unique_ptr<SvxPatternTabPage> pPatternTabPage
-                = SvxPatternTabPage::Create(m_xFillTab.get(), pController, &m_rXFSet);
+                = SvxPatternTabPage::Create(m_xFillTab.get(), pController, m_rXFSet);
             pPatternTabPage->SetColorList(m_pColorList);
             pPatternTabPage->SetPatternList(m_pPatternList);
             pPatternTabPage->SetColorChgd(m_pnColorListState);
