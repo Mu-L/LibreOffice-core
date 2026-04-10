@@ -21,7 +21,6 @@ ChartColorPalettes::ChartColorPalettes(weld::Builder& rBuilder, const OUString& 
                                        const OUString& winId)
     : mxIconView(rBuilder.weld_icon_view(id))
     , mxWindow(rBuilder.weld_scrolled_window(winId))
-    , mnHighlightedItemId(0)
 {
     mxIconView->connect_mouse_move(LINK(this, ChartColorPalettes, OnMouseMove));
 }
@@ -61,9 +60,7 @@ const ChartColorPalette* ChartColorPalettes::getPalette(const sal_uInt32 nItem) 
     return nullptr;
 }
 
-sal_uInt16 ChartColorPalettes::GetHighlightedItemId() { return mnHighlightedItemId; }
-
-void ChartColorPalettes::setMouseMoveHdl(const Link<const MouseEvent&, bool>& rLink)
+void ChartColorPalettes::setMouseMoveHdl(const Link<const OUString&, bool>& rLink)
 {
     maMouseMoveHdl = rLink;
 }
@@ -100,26 +97,22 @@ void ChartColorPalettes::Fill()
     }
 
     mxIconView->thaw();
-    mnHighlightedItemId = 0;
 }
 
 IMPL_LINK(ChartColorPalettes, OnMouseMove, const MouseEvent&, rMouseEvent, bool)
 {
-    mnHighlightedItemId = 0;
-
+    OUString sHighlightedId;
     if (!rMouseEvent.IsLeaveWindow())
     {
         if (std::unique_ptr<weld::TreeIter> pItem
             = mxIconView->get_item_at_pos(rMouseEvent.GetPosPixel()))
         {
-            const OUString sId = mxIconView->get_id(*pItem);
-            if (!sId.isEmpty())
-                mnHighlightedItemId = static_cast<sal_uInt16>(sId.toUInt32());
+            sHighlightedId = mxIconView->get_id(*pItem);
         }
     }
 
     if (maMouseMoveHdl.IsSet())
-        return maMouseMoveHdl.Call(rMouseEvent);
+        return maMouseMoveHdl.Call(sHighlightedId);
     return false;
 }
 

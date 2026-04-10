@@ -27,8 +27,7 @@ private:
     std::unique_ptr<weld::IconView> mxIconView;
     std::unique_ptr<weld::ScrolledWindow> mxWindow;
     std::vector<ChartColorPalette> maColorSets;
-    sal_uInt16 mnHighlightedItemId;
-    Link<const MouseEvent&, bool> maMouseMoveHdl;
+    Link<const OUString&, bool> maMouseMoveHdl;
 
 public:
     ChartColorPalettes(weld::Builder& rBuilder, const OUString& id, const OUString& winId);
@@ -43,7 +42,7 @@ public:
 
     void insert(ChartColorPalette const& rColorSet);
     const ChartColorPalette* getPalette(sal_uInt32 nItem) const;
-    void setMouseMoveHdl(const Link<const MouseEvent&, bool>& rLink);
+    void setMouseMoveHdl(const Link<const OUString&, bool>& rLink);
 
     void Fill();
 

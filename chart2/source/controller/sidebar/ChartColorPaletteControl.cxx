@@ -18,6 +18,7 @@
  */
 
 #include <memory>
+#include <o3tl/string_view.hxx>
 #include <vcl/image.hxx>
 #include <vcl/svapp.hxx>
 #include <vcl/toolbox.hxx>
@@ -360,22 +361,24 @@ ChartColorPalettePopup::SelectPaletteHdl(const std::unique_ptr<ChartColorPalette
     return static_cast<sal_uInt32>(-1);
 }
 
-IMPL_LINK_NOARG(ChartColorPalettePopup, ColorfulMouseMoveHdl, const MouseEvent&, bool)
+IMPL_LINK(ChartColorPalettePopup, ColorfulMouseMoveHdl, const OUString&, rHighlightedId, bool)
 {
-    MouseMoveHdl(*mxColorfulPalettes, ChartColorPaletteType::Colorful);
+    MouseMoveHdl(*mxColorfulPalettes, ChartColorPaletteType::Colorful, rHighlightedId);
     return true;
 }
 
-IMPL_LINK_NOARG(ChartColorPalettePopup, MonoMouseMoveHdl, const MouseEvent&, bool)
+IMPL_LINK(ChartColorPalettePopup, MonoMouseMoveHdl, const OUString&, rHighlightedId, bool)
 {
-    MouseMoveHdl(*mxMonoPalettes, ChartColorPaletteType::Monochromatic);
+    MouseMoveHdl(*mxMonoPalettes, ChartColorPaletteType::Monochromatic, rHighlightedId);
     return true;
 }
 
 void ChartColorPalettePopup::MouseMoveHdl(ChartColorPalettes& rPalettes,
-                                          const ChartColorPaletteType eHlItemType)
+                                          const ChartColorPaletteType eHlItemType,
+                                          std::u16string_view sHighlightedId)
 {
-    const sal_uInt16 nHlId = rPalettes.GetHighlightedItemId();
+    const sal_uInt16 nHlId
+        = sHighlightedId.empty() ? 0 : static_cast<sal_uInt16>(o3tl::toUInt32(sHighlightedId));
     if (eHlItemType == meHighlightedItemType && nHlId == mnHighlightedItemId)
         return;
 
