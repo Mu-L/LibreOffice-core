@@ -3808,7 +3808,7 @@ void SwContentTree::Display( bool bActive )
             {
                 std::unique_ptr<weld::TreeIter> xIter(m_xTreeView->make_iterator(xCntTypeEntry.get()));
                 std::unique_ptr<weld::TreeIter> xTemp(m_xTreeView->make_iterator(xIter.get()));
-                sal_uLong nPos = 1;
+                size_t nPos = 1;
                 bool bNext;
                 while ((bNext = m_xTreeView->iter_next(*xIter) && lcl_IsContent(*xIter, *m_xTreeView)))
                 {

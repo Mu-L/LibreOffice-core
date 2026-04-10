@@ -1647,7 +1647,7 @@ void SwFramePage::FillRelLB(const FrameMap* _pMap,
                 nLBRelations = _pMap[_nLBSelPos].nLBRelations;
             }
 
-            for (sal_uLong nBit = 1; nBit < 0x80000000; nBit <<= 1)
+            for (sal_uInt32 nBit = 1; nBit < 0x80000000; nBit <<= 1)
             {
                 if (nLBRelations & static_cast<LB>(nBit))
                 {
