@@ -102,8 +102,7 @@ SdrObjGroup::SdrObjGroup(SdrModel& rSdrModel, SdrObjGroup const & rSource)
     // copy local parameters
     maRefPoint  = rSource.maRefPoint;
 
-    static bool bActivateAdvancedDiagramFeatures(nullptr != std::getenv("ACTIVATE_ADVANCED_DIAGRAM_FEATURES"));
-    if (bActivateAdvancedDiagramFeatures && rSource.getDiagramHelper())
+    if (SdrObject::useAdvancedDiagramFeatures() && rSource.getDiagramHelper())
     {
         // create complete clone of current DiagramData
         mp_DiagramHelper.reset(rSource.getDiagramHelper()->clone());
@@ -821,8 +820,7 @@ void SdrObjGroup::TRSetBaseGeometry(const basegfx::B2DHomMatrix& rMatrix, const 
 
 void SdrObjGroup::SetDescription(const OUString& rStr)
 {
-    static bool bActivateAdvancedDiagramFeatures(nullptr != std::getenv("ACTIVATE_ADVANCED_DIAGRAM_FEATURES"));
-    if (!bActivateAdvancedDiagramFeatures)
+    if (!SdrObject::useAdvancedDiagramFeatures())
     {
         SdrObject::SetDescription(rStr);
         return;
@@ -864,8 +862,7 @@ void SdrObjGroup::SetDescription(const OUString& rStr)
 
 OUString SdrObjGroup::GetDescription() const
 {
-    static bool bActivateAdvancedDiagramFeatures(nullptr != std::getenv("ACTIVATE_ADVANCED_DIAGRAM_FEATURES"));
-    if (!bActivateAdvancedDiagramFeatures)
+    if (!SdrObject::useAdvancedDiagramFeatures())
         return SdrObject::GetDescription();
 
     // call parent to get original description

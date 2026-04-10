@@ -316,6 +316,7 @@ protected:
 
     /// True when DiagramReplacementVisualization is exported
     bool mbDiagaramExport;
+    bool mbDiagaramReplacementExport;
 
     bool mbEmbedFonts = false;
 
@@ -376,6 +377,10 @@ public:
     DocumentType GetDocumentType() const { return meDocumentType; }
     /// The application-specific text exporter callback, if there is one.
     DMLTextExport* GetTextExport() { return mpTextExport; }
+
+    /// get/set mbDiagaramReplacementExport
+    void setDiagaramReplacementExport(bool bNew) { mbDiagaramReplacementExport = bNew; }
+    bool isDiagaramReplacementExport() const { return mbDiagaramReplacementExport;}
 
     /// get/set mbDiagaramExport
     void setDiagaramExport(bool bNew) { mbDiagaramExport = bNew; }
