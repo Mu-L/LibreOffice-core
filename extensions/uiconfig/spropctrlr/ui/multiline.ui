@@ -26,6 +26,7 @@
         <property name="receives-default">True</property>
         <property name="tooltip-text" translatable="yes" context="multiline|tooltip">Multiline Editing</property>
         <property name="draw-indicator">True</property>
+        <property name="label" translatable="no"></property>
         <child>
           <placeholder/>
         </child>
