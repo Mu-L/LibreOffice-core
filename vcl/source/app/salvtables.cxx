@@ -3906,8 +3906,7 @@ void SalInstanceTreeView::columns_autosize()
     {
         std::vector<int> aColWidths;
         aColWidths.push_back(aWidths[1] + aWidths[0]);
-        for (size_t i = 2; i < aWidths.size(); ++i)
-            aColWidths.push_back(aWidths[i]);
+        aColWidths.insert(aColWidths.end(), aWidths.begin() + 2, aWidths.end());
 
         // take column headers into account
         if (VclPtr<SvHeaderTabListBox> pTabListBox

@@ -392,10 +392,7 @@ void SAL_CALL DataSeries::setData( const uno::Sequence< Reference< chart2::data:
         MutexGuard aGuard( m_aMutex );
         xModifyEventForwarder = m_xModifyEventForwarder;
         std::swap( aOldDataSequences, m_aDataSequences );
-        for (const auto & i : aData)
-        {
-            aNewDataSequences.push_back(i);
-        }
+        aNewDataSequences.insert(aNewDataSequences.end(), aData.begin(), aData.end());
         m_aDataSequences = aNewDataSequences;
     }
     ModifyListenerHelper::removeListenerFromAllElements( aOldDataSequences, xModifyEventForwarder );

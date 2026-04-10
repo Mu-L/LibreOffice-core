@@ -233,10 +233,7 @@ void LwpStory::SortPageLayout()
     //put all the sorted  layouts into list
     m_LayoutList.clear();
 
-    for (auto const& layout : aLayoutList)
-    {
-        m_LayoutList.push_back(layout);
-    }
+    m_LayoutList.insert(m_LayoutList.end(), aLayoutList.begin(), aLayoutList.end());
 }
 
 /**************************************************************************
