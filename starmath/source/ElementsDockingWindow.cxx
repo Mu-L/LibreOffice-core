@@ -591,7 +591,6 @@ SmElementsControl::SmElementsControl(std::unique_ptr<weld::IconView> pIconView,
     maParser.reset(starmathdatabase::GetVersionSmParser(m_nSmSyntaxVersion));
     maParser->SetImportSymbolNames(true);
 
-    mpIconView->connect_query_tooltip(LINK(this, SmElementsControl, QueryTooltipHandler));
     mpIconView->connect_item_activated(LINK(this, SmElementsControl, ElementActivatedHandler));
     mpIconView->connect_command(LINK(this, SmElementsControl, CommandHdl));
 }
@@ -672,7 +671,9 @@ void SmElementsControl::addElement(const OUString& aElementVisual, const OUStrin
     const OUString aId(weld::toId(maItemDatas.back().get()));
     Bitmap aBitmap( pDevice->GetBitmap(Point(0,0), pDevice->GetOutputSize()) );
     mpIconView->insert(-1, nullptr, &aId, &aBitmap, nullptr);
-    mpIconView->set_item_accessible_name(mpIconView->n_children() - 1, GetElementHelpText(aId));
+    const OUString sHelpText = GetElementHelpText(aId);
+    mpIconView->set_item_accessible_name(mpIconView->n_children() - 1, sHelpText);
+    mpIconView->set_item_tooltip_text(mpIconView->n_children() - 1, sHelpText);
     if (mpIconView->get_item_width() < aSize.Width())
         mpIconView->set_item_width(aSize.Width());
 }
@@ -767,13 +768,6 @@ void SmElementsControl::setSmSyntaxVersion(sal_Int16 nSmSyntaxVersion)
         // Be careful, we need the parser in order to build !!!
         build();
     }
-}
-
-IMPL_LINK(SmElementsControl, QueryTooltipHandler, const weld::TreeIter&, iter, OUString)
-{
-    if (const OUString id = mpIconView->get_id(iter); !id.isEmpty())
-        return GetElementHelpText(id);
-    return {};
 }
 
 IMPL_LINK(SmElementsControl, ElementActivatedHandler, const weld::TreeIter&, rIter, bool)

@@ -55,7 +55,6 @@ class SmElementsControl
 
     void build();
 
-    DECL_LINK(QueryTooltipHandler, const weld::TreeIter&, OUString);
     DECL_LINK(ElementActivatedHandler, const weld::TreeIter&, bool);
     DECL_LINK(CommandHdl, const CommandEvent&, bool);
 
