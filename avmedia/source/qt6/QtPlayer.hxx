@@ -19,12 +19,42 @@
 #include <com/sun/star/media/XPlayer.hpp>
 #include <com/sun/star/media/XPlayerNotifier.hpp>
 
+#include <QtCore/QThread>
 #include <QtMultimedia/QMediaPlayer>
 #include <QtWidgets/QWidget>
 
 namespace avmedia::qt
 {
 typedef cppu::WeakComponentImplHelper<css::media::XPlayer, css::lang::XServiceInfo> QtPlayer_BASE;
+
+namespace playerhelper
+{
+class VideoResolutionHelperTaskWorker : public QObject
+{
+public:
+    explicit VideoResolutionHelperTaskWorker(const QUrl& url, std::atomic_bool& re);
+    QSize getVideoResolution();
+    void start();
+
+private:
+    std::unique_ptr<QMediaPlayer> m_preloaderMediaPlayer;
+    QUrl m_url;
+    std::atomic_bool& m_readyRef;
+};
+
+class VideoResolutionHelper : public QObject
+{
+public:
+    explicit VideoResolutionHelper(const QUrl& url);
+    QSize loadResolution();
+    ~VideoResolutionHelper();
+
+private:
+    VideoResolutionHelperTaskWorker* m_worker;
+    QThread m_resolutionHelperThread;
+    std::atomic_bool m_ready{ false };
+};
+}
 
 class QtPlayer final : public QObject, public cppu::BaseMutex, public QtPlayer_BASE
 {

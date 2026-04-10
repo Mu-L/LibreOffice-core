@@ -41,6 +41,66 @@ using namespace ::com::sun::star;
 
 namespace avmedia::qt
 {
+namespace playerhelper
+{
+VideoResolutionHelperTaskWorker::VideoResolutionHelperTaskWorker(const QUrl& url,
+                                                                 std::atomic_bool& re)
+    : QObject(nullptr)
+    , m_url(url)
+    , m_readyRef(re)
+{
+}
+
+QSize VideoResolutionHelperTaskWorker::getVideoResolution()
+{
+    auto res = m_preloaderMediaPlayer->metaData().value(QMediaMetaData::Resolution);
+    if (res.canConvert<QSize>())
+    {
+        return res.value<QSize>();
+    }
+    return { 0, 0 };
+}
+
+void VideoResolutionHelperTaskWorker::start()
+{
+    m_preloaderMediaPlayer = std::make_unique<QMediaPlayer>();
+    connect(m_preloaderMediaPlayer.get(), &QMediaPlayer::mediaStatusChanged, this,
+            [this](const QMediaPlayer::MediaStatus& status) {
+                if (status != QMediaPlayer::MediaStatus::LoadingMedia)
+                {
+                    m_readyRef = true;
+                    m_readyRef.notify_one();
+                }
+            });
+    m_preloaderMediaPlayer->setSource(m_url);
+}
+
+VideoResolutionHelper::VideoResolutionHelper(const QUrl& url)
+    : QObject(nullptr)
+{
+    m_worker = new VideoResolutionHelperTaskWorker(url, m_ready);
+    m_worker->moveToThread(&m_resolutionHelperThread);
+
+    QObject::connect(&m_resolutionHelperThread, &QThread::started, m_worker,
+                     &VideoResolutionHelperTaskWorker::start);
+    QObject::connect(&m_resolutionHelperThread, &QThread::finished, m_worker,
+                     &QObject::deleteLater);
+}
+
+QSize VideoResolutionHelper::loadResolution()
+{
+    m_resolutionHelperThread.start();
+    m_ready.wait(false);
+    return m_worker->getVideoResolution();
+}
+
+VideoResolutionHelper::~VideoResolutionHelper()
+{
+    m_resolutionHelperThread.quit();
+    m_resolutionHelperThread.wait();
+}
+}
+
 QtPlayer::QtPlayer()
     : QtPlayer_BASE(m_aMutex)
     , m_pMediaWidgetParent(nullptr)
@@ -181,27 +241,23 @@ awt::Size SAL_CALL QtPlayer::getPreferredPlayerWindowSize()
 
     assert(m_xMediaPlayer);
 
-    // if media hasn't been loaded yet, ensure this happens, since
-    // retrieving resolution doesn't work reliably otherwise
+    QSize aResolution{ 0, 0 };
+
     if (m_xMediaPlayer->mediaStatus() == QMediaPlayer::LoadingMedia)
+    { //still loading, using helper
+        playerhelper::VideoResolutionHelper ph(m_xMediaPlayer->source());
+        aResolution = ph.loadResolution();
+    }
+    else
     {
-        m_xMediaPlayer->play();
-
-        while (m_xMediaPlayer->mediaStatus() == QMediaPlayer::LoadingMedia)
-            QCoreApplication::processEvents();
-
-        m_xMediaPlayer->stop();
+        QVariant res = m_xMediaPlayer->metaData().value(QMediaMetaData::Resolution);
+        if (res.canConvert<QSize>())
+        {
+            aResolution = res.value<QSize>();
+        }
     }
 
-    const QMediaMetaData aMetaData = m_xMediaPlayer->metaData();
-    const QVariant aResolutionVariant = aMetaData.value(QMediaMetaData::Resolution);
-    if (aResolutionVariant.canConvert<QSize>())
-    {
-        const QSize aResolution = aResolutionVariant.value<QSize>();
-        return awt::Size(aResolution.width(), aResolution.height());
-    }
-
-    return awt::Size(0, 0);
+    return awt::Size(aResolution.width(), aResolution.height());
 }
 
 uno::Reference<::media::XPlayerWindow>
