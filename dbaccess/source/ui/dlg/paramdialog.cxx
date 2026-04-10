@@ -306,15 +306,7 @@ namespace dbaui
         m_aVisitedParams[m_nCurrentlySelected] |= VisitFlags::Visited;
 
         // was it the last "not visited yet" entry ?
-        bool bVisited = false;
-        for (auto const& visitedParam : m_aVisitedParams)
-        {
-            if (!(visitedParam & VisitFlags::Visited))
-            {
-                bVisited = true;
-                break;
-            }
-        }
+        bool bVisited = std::ranges::any_of(m_aVisitedParams, [](const auto& p){ return !(p & VisitFlags::Visited); });
 
         if (!bVisited)
         {

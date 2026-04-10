@@ -127,15 +127,10 @@ DbaIndexDialog::DbaIndexDialog(weld::Window* pParent, const Sequence<OUString>& 
     m_xClose->connect_clicked(LINK(this, DbaIndexDialog, OnCloseDialog));
 
     // if all of the indexes have an empty description, we're not interested in displaying it
-    bool bFound = false;
-    for (auto const& check : *m_xIndexes)
-    {
-        if (!check.sDescription.isEmpty())
-        {
-            bFound = true;
-            break;
-        }
-    }
+    bool bFound
+        = std::ranges::any_of(m_xIndexes->begin(), m_xIndexes->end(),
+                              [](const auto& check) { return !check.sDescription.isEmpty(); });
+
     if (!bFound)
     {
         // hide the controls which are necessary for the description
