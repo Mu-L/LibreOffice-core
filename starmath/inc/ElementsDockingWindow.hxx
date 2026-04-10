@@ -43,7 +43,6 @@ class SmElementsControl
     int           mnCurrentSetIndex;
     sal_Int16     m_nSmSyntaxVersion;
     bool          m_bAllowDelete;
-    OUString      m_sHoveredItem;
 
     std::vector<std::unique_ptr<ElementData>> maItemDatas;
     std::unique_ptr<weld::IconView> mpIconView;
@@ -58,7 +57,7 @@ class SmElementsControl
 
     DECL_LINK(QueryTooltipHandler, const weld::TreeIter&, OUString);
     DECL_LINK(ElementActivatedHandler, const weld::TreeIter&, bool);
-    DECL_LINK(MousePressHdl, const MouseEvent&, bool);
+    DECL_LINK(CommandHdl, const CommandEvent&, bool);
 
     static OUString GetElementSource(const OUString& itemId);
     static OUString GetElementHelpText(const OUString& itemId);
