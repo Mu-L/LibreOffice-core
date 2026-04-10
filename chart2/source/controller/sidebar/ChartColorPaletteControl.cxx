@@ -362,26 +362,26 @@ ChartColorPalettePopup::SelectPaletteHdl(const std::unique_ptr<ChartColorPalette
 
 IMPL_LINK_NOARG(ChartColorPalettePopup, ColorfulMouseMoveHdl, const MouseEvent&, bool)
 {
-    MouseMoveHdl(mxColorfulPalettes, ChartColorPaletteType::Colorful);
+    MouseMoveHdl(*mxColorfulPalettes, ChartColorPaletteType::Colorful);
     return true;
 }
 
 IMPL_LINK_NOARG(ChartColorPalettePopup, MonoMouseMoveHdl, const MouseEvent&, bool)
 {
-    MouseMoveHdl(mxMonoPalettes, ChartColorPaletteType::Monochromatic);
+    MouseMoveHdl(*mxMonoPalettes, ChartColorPaletteType::Monochromatic);
     return true;
 }
 
-void ChartColorPalettePopup::MouseMoveHdl(const std::unique_ptr<ChartColorPalettes>& xPalettes,
+void ChartColorPalettePopup::MouseMoveHdl(ChartColorPalettes& rPalettes,
                                           const ChartColorPaletteType eHlItemType)
 {
-    const sal_uInt16 nHlId = xPalettes->GetHighlightedItemId();
+    const sal_uInt16 nHlId = rPalettes.GetHighlightedItemId();
     if (eHlItemType == meHighlightedItemType && nHlId == mnHighlightedItemId)
         return;
 
     if (nHlId > 0)
     {
-        if (const ChartColorPalette* pPalette = xPalettes->getPalette(nHlId - 1))
+        if (const ChartColorPalette* pPalette = rPalettes.getPalette(nHlId - 1))
         {
             mxControl->applyColorPalette(pPalette);
         }
