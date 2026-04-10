@@ -3516,17 +3516,6 @@ void SalInstanceItemView::set_id(const weld::TreeIter& rIter, const OUString& rI
     rVclIter.iter->SetUserData(m_aUserData.back().get());
 }
 
-OUString SalInstanceItemView::get_selected_id() const
-{
-    assert(m_pTreeListBox->IsUpdateMode() && "don't request selection when frozen");
-    if (SvTreeListEntry* pEntry = m_pTreeListBox->FirstSelected())
-    {
-        if (const OUString* pStr = pEntry->GetUserData())
-            return *pStr;
-    }
-    return OUString();
-}
-
 OUString SalInstanceItemView::get_selected_text() const
 {
     assert(m_pTreeListBox->IsUpdateMode() && "don't request selection when frozen");

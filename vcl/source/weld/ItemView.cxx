@@ -39,6 +39,14 @@ void ItemView::set_id(int pos, const OUString& rId)
         return set_id(*pIter, rId);
 }
 
+OUString ItemView::get_selected_id() const
+{
+    if (std::unique_ptr<weld::TreeIter> pIter = get_selected())
+        return get_id(*pIter);
+
+    return OUString();
+}
+
 int ItemView::get_selected_index() const
 {
     if (std::unique_ptr<weld::TreeIter> pIter = get_selected())

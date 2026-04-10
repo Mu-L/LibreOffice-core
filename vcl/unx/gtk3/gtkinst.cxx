@@ -15472,15 +15472,6 @@ public:
         return OUString();
     }
 
-    virtual OUString get_selected_id() const override
-    {
-        assert(gtk_tree_view_get_model(m_pTreeView) && "don't request selection when frozen");
-        GtkTreeIter iter;
-        if (get_selected_iterator(&iter))
-            return get(iter, m_nIdCol);
-        return OUString();
-    }
-
     virtual void copy_iterator(const weld::TreeIter& rSource, weld::TreeIter& rDest) const override
     {
         const GtkInstanceTreeIter& rGtkSource(static_cast<const GtkInstanceTreeIter&>(rSource));
@@ -16649,15 +16640,6 @@ public:
     virtual void connect_get_image(const Link<const weld::encoded_image_query&, bool>& /*rLink*/) override
     {
         //not implemented for the gtk variant
-    }
-
-    virtual OUString get_selected_id() const override
-    {
-        assert(gtk_icon_view_get_model(m_pIconView) && "don't request selection when frozen");
-        GtkTreeIter iter;
-        if (get_selected_iterator(&iter))
-            return get(iter, m_nIdCol);
-        return OUString();
     }
 
     virtual void do_clear() override

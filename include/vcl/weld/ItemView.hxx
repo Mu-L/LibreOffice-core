@@ -55,7 +55,7 @@ public:
     void set_id(int pos, const OUString& rId);
     virtual void set_id(const TreeIter& rIter, const OUString& rId) = 0;
 
-    virtual OUString get_selected_id() const = 0;
+    OUString get_selected_id() const;
     virtual OUString get_selected_text() const = 0;
 
     virtual std::unique_ptr<weld::TreeIter> get_selected() const = 0;
