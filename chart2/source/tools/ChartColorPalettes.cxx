@@ -63,7 +63,10 @@ const ChartColorPalette* ChartColorPalettes::getPalette(const sal_uInt32 nItem) 
 
 sal_uInt16 ChartColorPalettes::GetHighlightedItemId() { return mnHighlightedItemId; }
 
-void ChartColorPalettes::setMouseMoveHdl(const MouseEventHandler& rLink) { maMouseMoveHdl = rLink; }
+void ChartColorPalettes::setMouseMoveHdl(const Link<const MouseEvent&, bool>& rLink)
+{
+    maMouseMoveHdl = rLink;
+}
 
 void ChartColorPalettes::Fill()
 {
