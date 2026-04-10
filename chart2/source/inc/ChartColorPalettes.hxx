@@ -51,7 +51,6 @@ public:
     void Fill();
 
 private:
-    DECL_LINK(OnQueryTooltip, const weld::TreeIter&, OUString);
     DECL_LINK(OnMouseMove, const MouseEvent&, bool);
 };
 

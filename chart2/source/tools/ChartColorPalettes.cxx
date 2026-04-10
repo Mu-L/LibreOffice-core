@@ -24,7 +24,6 @@ ChartColorPalettes::ChartColorPalettes(weld::Builder& rBuilder, const OUString& 
     , mnHighlightedItemId(0)
 {
     mxIconView->connect_mouse_move(LINK(this, ChartColorPalettes, OnMouseMove));
-    mxIconView->connect_query_tooltip(LINK(this, ChartColorPalettes, OnQueryTooltip));
 }
 
 void ChartColorPalettes::SetSelectHdl(const Link<const weld::TreeIter&, bool>& rLink)
@@ -101,19 +100,21 @@ void ChartColorPalettes::Fill()
     mnHighlightedItemId = 0;
 }
 
-IMPL_LINK(ChartColorPalettes, OnQueryTooltip, const weld::TreeIter&, rIter, OUString)
-{
-    OUString sId = mxIconView->get_id(rIter);
-    mnHighlightedItemId = sId.isEmpty() ? 0 : static_cast<sal_uInt16>(sId.toUInt32());
-
-    // Suppress actual tooltip text.
-    return {};
-}
-
 IMPL_LINK(ChartColorPalettes, OnMouseMove, const MouseEvent&, rMouseEvent, bool)
 {
-    if (rMouseEvent.IsLeaveWindow())
-        mnHighlightedItemId = 0;
+    mnHighlightedItemId = 0;
+
+    if (!rMouseEvent.IsLeaveWindow())
+    {
+        if (std::unique_ptr<weld::TreeIter> pItem
+            = mxIconView->get_item_at_pos(rMouseEvent.GetPosPixel()))
+        {
+            const OUString sId = mxIconView->get_id(*pItem);
+            if (!sId.isEmpty())
+                mnHighlightedItemId = static_cast<sal_uInt16>(sId.toUInt32());
+        }
+    }
+
     if (maMouseMoveHdl.IsSet())
         return maMouseMoveHdl.Call(rMouseEvent);
     return false;
