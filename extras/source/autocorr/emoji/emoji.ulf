@@ -529,7 +529,7 @@ en-US = "divides"
 
 [DOES_NOT_DIVIDE]
 x-comment = "∤ (U+02224), see http://wiki.documentfoundation.org/Emoji"
-en-US = "not divides"
+en-US = "does not divide"
 
 [PARALLEL_TO]
 x-comment = "∥ (U+02225), see http://wiki.documentfoundation.org/Emoji"
