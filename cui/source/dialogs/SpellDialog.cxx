@@ -2143,7 +2143,7 @@ svx::SpellPortions SentenceEditWindow_Impl::CreateSpellPortions() const
                 aPortion1.eLanguage = eLang;
 
                 aPortion1.sText = m_xEditEngine->GetText(ESelection(0, nStart, 0, aStart->nPosition));
-                bool bIsIgnoreError = m_aIgnoreErrorsAt.find( nStart ) != m_aIgnoreErrorsAt.end();
+                bool bIsIgnoreError = m_aIgnoreErrorsAt.contains( nStart );
                 if( bIsIgnoreError )
                 {
                     aPortion1.bIgnoreThisError = true;

@@ -4988,7 +4988,7 @@ bool IsValidOOXMLFormula(std::u16string_view sFormula)
     for (sal_Int16 i = 1; i < nSize; i++)
     {
         OUString sVal = strTokens[i];
-        if (builtInVariables.find(sVal) != builtInVariables.end())
+        if (builtInVariables.contains(sVal))
             continue; // valid built-in variable
 
         // TODO: recognize valid 'guide name' pointing to other equations or adjustments
