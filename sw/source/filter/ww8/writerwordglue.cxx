@@ -162,7 +162,7 @@ namespace myImplHelpers
         //If this is a built-in word style that has a built-in writer
         //equivalent, then map it to one of our built in styles regardless
         //of its name
-        if (sal::static_int_cast< size_t >(eSti) < SAL_N_ELEMENTS(aArr) && aArr[eSti] != RES_NONE)
+        if (sal::static_int_cast< size_t >(eSti) < std::size(aArr) && aArr[eSti] != RES_NONE)
             pRet = mrDoc.getIDocumentStylePoolAccess().GetTextCollFromPool( aArr[eSti], false);
         return pRet;
     }

@@ -450,7 +450,7 @@ bool wwSectionManager::SetCols(SwFrameFormat &rFormat, const wwSection &rSection
     if (!rSep.fEvenlySpaced)
     {
         aCol.SetOrtho_(false);
-        const sal_uInt16 maxIdx = SAL_N_ELEMENTS(rSep.rgdxaColumnWidthSpacing);
+        const sal_uInt16 maxIdx = std::size(rSep.rgdxaColumnWidthSpacing);
         for (sal_uInt16 i = 0, nIdx = 1; i < nCols && nIdx < maxIdx; i++, nIdx+=2 )
         {
             SwColumn* pCol = &aCol.GetColumns()[i];
@@ -5149,7 +5149,7 @@ void SwWW8Shade::SetShade(Color nFore, Color nBack, sal_uInt16 nIndex)
     if (nUseBack == COL_AUTO)
         nUseBack = COL_WHITE;
 
-    if( nIndex >= SAL_N_ELEMENTS( eMSGrayScale ) )
+    if( nIndex >= std::size(eMSGrayScale))
         nIndex = 0;
 
     sal_uLong nWW8BrushStyle = eMSGrayScale[nIndex];

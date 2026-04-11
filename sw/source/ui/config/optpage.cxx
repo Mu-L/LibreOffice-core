@@ -2467,9 +2467,9 @@ void SwRedlineOptionsTabPage::Reset( const SfxItemSet*  )
     m_xChangedLB->set_sensitive(!officecfg::Office::Writer::Revision::TextDisplay::ChangedAttribute::Color::isReadOnly());
     m_xChangedImg->set_visible(officecfg::Office::Writer::Revision::TextDisplay::ChangedAttribute::Color::isReadOnly());
 
-    lcl_FillRedlineAttrListBox(*m_xInsertLB, rInsertAttr, aInsertAttrMap, SAL_N_ELEMENTS(aInsertAttrMap));
-    lcl_FillRedlineAttrListBox(*m_xDeletedLB, rDeletedAttr, aDeletedAttrMap, SAL_N_ELEMENTS(aDeletedAttrMap));
-    lcl_FillRedlineAttrListBox(*m_xChangedLB, rChangedAttr, aChangedAttrMap, SAL_N_ELEMENTS(aChangedAttrMap));
+    lcl_FillRedlineAttrListBox(*m_xInsertLB, rInsertAttr, aInsertAttrMap, std::size(aInsertAttrMap));
+    lcl_FillRedlineAttrListBox(*m_xDeletedLB, rDeletedAttr, aDeletedAttrMap, std::size(aDeletedAttrMap));
+    lcl_FillRedlineAttrListBox(*m_xChangedLB, rChangedAttr, aChangedAttrMap, std::size(aChangedAttrMap));
 
     sal_Int32 nPos = 0;
     switch (pOpt->GetMarkAlignMode())
