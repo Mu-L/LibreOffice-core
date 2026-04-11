@@ -259,7 +259,8 @@ IMPL_LINK(ScFilterListBox, SelectHdl, const weld::TreeIter&, rIter, bool)
     if (!bInit && !bCancelled && !nAsyncSelectHdl)
     {
         nSel = xTreeView->get_iter_index_in_parent(rIter);
-        assert(nSel >= 0 && "Invalid index for activated row");
+        assert(xTreeView->get_iter_index_in_parent(rIter) >= 0
+               && "Invalid index for activated row");
         // #i81298# launch async so the box isn't deleted from modifications within FilterSelect
         nAsyncSelectHdl = Application::PostUserEvent(LINK(this, ScFilterListBox, AsyncSelectHdl));
     }
