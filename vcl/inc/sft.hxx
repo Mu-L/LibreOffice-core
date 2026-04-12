@@ -437,7 +437,6 @@ FontWeight AnalyzeTTFWeight(const TrueTypeFont* pTTFont);
 
 class UNLESS_MERGELIBS(VCL_DLLPUBLIC) AbstractTrueTypeFont
 {
-    std::string m_sFileName;
     sal_uInt32 m_nGlyphs;
     std::vector<sal_uInt32> m_aGlyphOffsets;
     bool m_bMicrosoftSymbolEncoded;
@@ -446,12 +445,11 @@ protected:
     SFErrCodes indexGlyphData();
 
 public:
-    AbstractTrueTypeFont(const char* fileName = nullptr);
+    AbstractTrueTypeFont();
     virtual ~AbstractTrueTypeFont();
 
     SFErrCodes initialize();
 
-    std::string const & fileName() const { return m_sFileName; }
     sal_uInt32 glyphCount() const { return m_nGlyphs; }
     sal_uInt32 glyphOffset(sal_uInt32 glyphID) const;
     bool IsMicrosoftSymbolEncoded() const { return m_bMicrosoftSymbolEncoded; }
@@ -476,7 +474,7 @@ class TrueTypeFont final : public AbstractTrueTypeFont
     void loadTable(hb_tag_t tag) const;
 
 public:
-    TrueTypeFont(const char* pFileName = nullptr);
+    TrueTypeFont();
     ~TrueTypeFont() override;
 
     SFErrCodes open(hb_blob_t* pBlob, sal_uInt32 facenum);

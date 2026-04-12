@@ -157,7 +157,7 @@ SFErrCodes OpenTTFontFile(const char* fname, sal_uInt32 facenum, TrueTypeFont** 
     if (!pBlob)
         return SFErrCodes::BadFile;
 
-    *ttf = new TrueTypeFont(fname);
+    *ttf = new TrueTypeFont();
     SFErrCodes ret = (*ttf)->open(pBlob, facenum);
     hb_blob_destroy(pBlob);
     if (ret != SFErrCodes::Ok)
@@ -171,7 +171,7 @@ SFErrCodes OpenTTFontFile(const char* fname, sal_uInt32 facenum, TrueTypeFont** 
 
 SFErrCodes OpenTTFontBuffer(const void* pBuffer, sal_uInt32 nLen, sal_uInt32 facenum, TrueTypeFont** ttf)
 {
-    *ttf = new TrueTypeFont(nullptr);
+    *ttf = new TrueTypeFont();
     if( *ttf == nullptr )
         return SFErrCodes::Memory;
 
@@ -187,20 +187,17 @@ SFErrCodes OpenTTFontBuffer(const void* pBuffer, sal_uInt32 nLen, sal_uInt32 fac
     return ret;
 }
 
-AbstractTrueTypeFont::AbstractTrueTypeFont(const char* pFileName)
+AbstractTrueTypeFont::AbstractTrueTypeFont()
     : m_nGlyphs(0xFFFFFFFF)
     , m_bMicrosoftSymbolEncoded(false)
 {
-    if (pFileName)
-        m_sFileName = pFileName;
 }
 
 AbstractTrueTypeFont::~AbstractTrueTypeFont()
 {
 }
 
-TrueTypeFont::TrueTypeFont(const char* pFileName)
-    : AbstractTrueTypeFont(pFileName)
+TrueTypeFont::TrueTypeFont()
 {
 }
 
