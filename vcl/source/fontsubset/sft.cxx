@@ -187,17 +187,9 @@ SFErrCodes OpenTTFontBuffer(const void* pBuffer, sal_uInt32 nLen, sal_uInt32 fac
     return ret;
 }
 
-AbstractTrueTypeFont::AbstractTrueTypeFont()
+TrueTypeFont::TrueTypeFont()
     : m_nGlyphs(0xFFFFFFFF)
     , m_bMicrosoftSymbolEncoded(false)
-{
-}
-
-AbstractTrueTypeFont::~AbstractTrueTypeFont()
-{
-}
-
-TrueTypeFont::TrueTypeFont()
 {
 }
 
@@ -254,23 +246,14 @@ const sal_uInt8* TrueTypeFont::table(hb_tag_t tag, sal_uInt32& size) const
 
 void CloseTTFont(TrueTypeFont* ttf) { delete ttf; }
 
-SFErrCodes AbstractTrueTypeFont::initialize()
-{
-    SFErrCodes ret = indexGlyphData();
-    if (ret != SFErrCodes::Ok)
-        return ret;
-
-    return SFErrCodes::Ok;
-}
-
-sal_uInt32 AbstractTrueTypeFont::glyphOffset(sal_uInt32 glyphID) const
+sal_uInt32 TrueTypeFont::glyphOffset(sal_uInt32 glyphID) const
 {
     if (m_aGlyphOffsets.empty()) // the T_CFF and Bitmap cases
         return 0;
     return m_aGlyphOffsets[glyphID];
 }
 
-SFErrCodes AbstractTrueTypeFont::indexGlyphData()
+SFErrCodes TrueTypeFont::indexGlyphData()
 {
     if (!(hasTable(T_maxp) && hasTable(T_head) && hasTable(T_name) && hasTable(T_cmap)))
         return SFErrCodes::TtFormat;
@@ -347,7 +330,7 @@ SFErrCodes TrueTypeFont::open(hb_blob_t* pBlob, sal_uInt32 facenum)
     if (!m_pFace)
         return SFErrCodes::TtFormat;
 
-    return AbstractTrueTypeFont::initialize();
+    return indexGlyphData();
 }
 
 void GetTTGlobalFontInfo(const TrueTypeFont *ttf, TTGlobalFontInfo *info)

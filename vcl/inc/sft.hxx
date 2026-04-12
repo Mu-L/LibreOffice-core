@@ -368,7 +368,6 @@ constexpr sal_uInt32 T_true = 0x74727565;        /* 'true' */
 constexpr sal_uInt32 T_ttcf = 0x74746366;        /* 'ttcf' */
 constexpr sal_uInt32 T_otto = 0x4f54544f;        /* 'OTTO' */
 
-class AbstractTrueTypeFont;
 class TrueTypeFont;
 
 /**
@@ -435,32 +434,12 @@ void GetTTGlobalFontInfo(const TrueTypeFont *ttf, TTGlobalFontInfo *info);
 
 FontWeight AnalyzeTTFWeight(const TrueTypeFont* pTTFont);
 
-class UNLESS_MERGELIBS(VCL_DLLPUBLIC) AbstractTrueTypeFont
+class UNLESS_MERGELIBS(VCL_DLLPUBLIC) TrueTypeFont
 {
+    hb_face_t* m_pFace = nullptr;
     sal_uInt32 m_nGlyphs;
     std::vector<sal_uInt32> m_aGlyphOffsets;
     bool m_bMicrosoftSymbolEncoded;
-
-protected:
-    SFErrCodes indexGlyphData();
-
-public:
-    AbstractTrueTypeFont();
-    virtual ~AbstractTrueTypeFont();
-
-    SFErrCodes initialize();
-
-    sal_uInt32 glyphCount() const { return m_nGlyphs; }
-    sal_uInt32 glyphOffset(sal_uInt32 glyphID) const;
-    bool IsMicrosoftSymbolEncoded() const { return m_bMicrosoftSymbolEncoded; }
-
-    virtual bool hasTable(hb_tag_t tag) const = 0;
-    virtual const sal_uInt8* table(hb_tag_t tag, sal_uInt32& size) const = 0;
-};
-
-class TrueTypeFont final : public AbstractTrueTypeFont
-{
-    hb_face_t* m_pFace = nullptr;
 
     struct TTFontTable_
     {
@@ -472,17 +451,22 @@ class TrueTypeFont final : public AbstractTrueTypeFont
     mutable std::map<hb_tag_t, TTFontTable_> m_aTableCache;
 
     void loadTable(hb_tag_t tag) const;
+    SFErrCodes indexGlyphData();
 
 public:
     TrueTypeFont();
-    ~TrueTypeFont() override;
+    ~TrueTypeFont();
 
     SFErrCodes open(hb_blob_t* pBlob, sal_uInt32 facenum);
 
     OUString getName(hb_ot_name_id_t nNameID, const LanguageTag& rLang = LanguageTag(LANGUAGE_DONTKNOW)) const;
 
-    bool hasTable(hb_tag_t tag) const override;
-    const sal_uInt8* table(hb_tag_t tag, sal_uInt32& size) const override;
+    sal_uInt32 glyphCount() const { return m_nGlyphs; }
+    sal_uInt32 glyphOffset(sal_uInt32 glyphID) const;
+    bool IsMicrosoftSymbolEncoded() const { return m_bMicrosoftSymbolEncoded; }
+
+    bool hasTable(hb_tag_t tag) const;
+    const sal_uInt8* table(hb_tag_t tag, sal_uInt32& size) const;
 };
 
 } // namespace vcl
