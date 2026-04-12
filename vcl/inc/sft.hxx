@@ -46,6 +46,8 @@
 #include <vcl/fontcapabilities.hxx>
 #include <i18nlangtag/lang.h>
 
+#include <hb.h>
+
 #include <array>
 #include <vector>
 #include "fontsubset.hxx"
@@ -500,24 +502,24 @@ public:
 
 class TrueTypeFont final : public AbstractTrueTypeFont
 {
+    hb_face_t* m_pFace = nullptr;
+
     struct TTFontTable_
     {
+        hb_blob_t* pBlob = nullptr;
         const sal_uInt8* pData = nullptr; /* pointer to a raw subtable in the SFNT file */
         sal_uInt32 nSize = 0; /* table size */
     };
 
     std::array<struct TTFontTable_, NUM_TAGS> m_aTableList;
 
-public:
-        sal_Int32   fsize;
-        intptr_t    mmhandle;
-        sal_uInt8   *ptr;
-        sal_uInt32  ntables;
+    void loadTable(sal_uInt32 ord, hb_tag_t tag);
 
+public:
     TrueTypeFont(const char* pFileName = nullptr);
     ~TrueTypeFont() override;
 
-    SFErrCodes open(sal_uInt32 facenum);
+    SFErrCodes open(hb_blob_t* pBlob, sal_uInt32 facenum);
 
     bool hasTable(sal_uInt32 ord) const override { return m_aTableList[ord].pData != nullptr; }
     inline const sal_uInt8* table(sal_uInt32 ord, sal_uInt32& size) const override;

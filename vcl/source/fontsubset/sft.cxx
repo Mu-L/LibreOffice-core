@@ -28,6 +28,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <hb-ot.h>
 #include <sft.hxx>
 #include <font/TTFStructure.hxx>
 #include <impfontcharmap.hxx>
@@ -348,64 +349,16 @@ int CountTTCFonts(const char* fname)
 #if !defined(_WIN32) || defined(DO_USE_TTF_ON_WIN32)
 SFErrCodes OpenTTFontFile(const char* fname, sal_uInt32 facenum, TrueTypeFont** ttf)
 {
-    SFErrCodes ret;
-    int fd = -1;
-    struct stat st;
+    if (!fname || !*fname)
+        return SFErrCodes::BadFile;
 
-    if (!fname || !*fname) return SFErrCodes::BadFile;
+    hb_blob_t* pBlob = hb_blob_create_from_file_or_fail(fname);
+    if (!pBlob)
+        return SFErrCodes::BadFile;
 
     *ttf = new TrueTypeFont(fname);
-    if( ! *ttf )
-        return SFErrCodes::Memory;
-
-    if( (*ttf)->fileName().empty() )
-    {
-        ret = SFErrCodes::Memory;
-        goto cleanup;
-    }
-
-#ifdef LINUX
-    int nFD;
-    int n;
-    if (sscanf(fname, "/:FD:/%d%n", &nFD, &n) == 1 && fname[n] == '\0')
-    {
-        lseek(nFD, 0, SEEK_SET);
-        fd = dup(nFD);
-    }
-    else
-#endif
-        fd = wrap_open(fname, O_RDONLY, 0);
-
-    if (fd == -1) {
-        ret = SFErrCodes::BadFile;
-        goto cleanup;
-    }
-
-    if (wrap_fstat(fd, &st) == -1) {
-        ret = SFErrCodes::FileIo;
-        goto cleanup;
-    }
-
-    (*ttf)->fsize = st.st_size;
-
-    /* On Mac OS, most likely will happen if a Mac user renames a font file
-     * to be .ttf when it's really a Mac resource-based font.
-     * Size will be 0, but fonts smaller than 4 bytes would be broken anyway.
-     */
-    if ((*ttf)->fsize == 0) {
-        ret = SFErrCodes::BadFile;
-        goto cleanup;
-    }
-
-    if (((*ttf)->ptr = static_cast<sal_uInt8 *>(wrap_mmap((*ttf)->fsize, fd, &(*ttf)->mmhandle))) == MAP_FAILED) {
-        ret = SFErrCodes::Memory;
-        goto cleanup;
-    }
-
-    ret = (*ttf)->open(facenum);
-
-cleanup:
-    if (fd != -1) wrap_close(fd);
+    SFErrCodes ret = (*ttf)->open(pBlob, facenum);
+    hb_blob_destroy(pBlob);
     if (ret != SFErrCodes::Ok)
     {
         delete *ttf;
@@ -421,29 +374,16 @@ SFErrCodes OpenTTFontBuffer(const void* pBuffer, sal_uInt32 nLen, sal_uInt32 fac
     if( *ttf == nullptr )
         return SFErrCodes::Memory;
 
-    (*ttf)->fsize = nLen;
-    (*ttf)->ptr   = const_cast<sal_uInt8 *>(static_cast<sal_uInt8 const *>(pBuffer));
-
-    SFErrCodes ret = (*ttf)->open(facenum);
+    hb_blob_t* pBlob = hb_blob_create(static_cast<const char*>(pBuffer), nLen,
+                                       HB_MEMORY_MODE_READONLY, nullptr, nullptr);
+    SFErrCodes ret = (*ttf)->open(pBlob, facenum);
+    hb_blob_destroy(pBlob);
     if (ret != SFErrCodes::Ok)
     {
         delete *ttf;
         *ttf = nullptr;
     }
     return ret;
-}
-
-namespace {
-
-bool withinBounds(sal_uInt32 tdoffset, sal_uInt32 moreoffset, sal_uInt32 len, sal_uInt32 available)
-{
-    sal_uInt32 result;
-    if (o3tl::checked_add(tdoffset, moreoffset, result))
-        return false;
-    if (o3tl::checked_add(result, len, result))
-        return false;
-    return result <= available;
-}
 }
 
 AbstractTrueTypeFont::AbstractTrueTypeFont(const char* pFileName)
@@ -460,19 +400,33 @@ AbstractTrueTypeFont::~AbstractTrueTypeFont()
 
 TrueTypeFont::TrueTypeFont(const char* pFileName)
     : AbstractTrueTypeFont(pFileName)
-    , fsize(-1)
-    , mmhandle(0)
-    , ptr(nullptr)
-    , ntables(0)
 {
 }
 
 TrueTypeFont::~TrueTypeFont()
 {
-#if !defined(_WIN32) || defined(DO_USE_TTF_ON_WIN32)
-    if (!fileName().empty())
-        wrap_munmap(ptr, fsize, mmhandle);
-#endif
+    for (auto& rTable : m_aTableList)
+    {
+        if (rTable.pBlob)
+            hb_blob_destroy(rTable.pBlob);
+    }
+    if (m_pFace)
+        hb_face_destroy(m_pFace);
+}
+
+void TrueTypeFont::loadTable(sal_uInt32 ord, hb_tag_t tag)
+{
+    hb_blob_t* pBlob = hb_face_reference_table(m_pFace, tag);
+    if (pBlob == hb_blob_get_empty())
+    {
+        hb_blob_destroy(pBlob);
+        return;
+    }
+    unsigned int nSize;
+    const char* pData = hb_blob_get_data(pBlob, &nSize);
+    m_aTableList[ord].pBlob = pBlob;
+    m_aTableList[ord].pData = reinterpret_cast<const sal_uInt8*>(pData);
+    m_aTableList[ord].nSize = nSize;
 }
 
 void CloseTTFont(TrueTypeFont* ttf) { delete ttf; }
@@ -548,138 +502,30 @@ SFErrCodes AbstractTrueTypeFont::indexGlyphData()
     return SFErrCodes::Ok;
 }
 
-SFErrCodes TrueTypeFont::open(sal_uInt32 facenum)
+SFErrCodes TrueTypeFont::open(hb_blob_t* pBlob, sal_uInt32 facenum)
 {
-    if (fsize < 4)
+    m_pFace = hb_face_create_or_fail(pBlob, facenum);
+
+    if (!m_pFace)
         return SFErrCodes::TtFormat;
 
-    int i;
-    sal_uInt32 length, tag;
-    sal_uInt32 tdoffset = 0;        /* offset to TableDirectory in a TTC file. For TTF files is 0 */
+    static const struct { sal_uInt32 ord; hb_tag_t tag; } aTableMap[] = {
+        { O_maxp, HB_TAG('m','a','x','p') },
+        { O_glyf, HB_TAG('g','l','y','f') },
+        { O_head, HB_TAG('h','e','a','d') },
+        { O_loca, HB_TAG('l','o','c','a') },
+        { O_name, HB_TAG('n','a','m','e') },
+        { O_cmap, HB_TAG('c','m','a','p') },
+        { O_OS2,  HB_TAG('O','S','/','2') },
+        { O_post, HB_TAG('p','o','s','t') },
+        { O_cvt,  HB_TAG('c','v','t',' ') },
+        { O_prep, HB_TAG('p','r','e','p') },
+        { O_fpgm, HB_TAG('f','p','g','m') },
+        { O_CFF,  HB_TAG('C','F','F',' ') },
+    };
 
-    sal_uInt32 TTCTag = GetInt32(ptr, 0);
-
-    if ((TTCTag == 0x00010000) || (TTCTag == T_true)) {
-        tdoffset = 0;
-    } else if (TTCTag == T_otto) {                         /* PS-OpenType font */
-        tdoffset = 0;
-    } else if (TTCTag == T_ttcf) {                         /* TrueType collection */
-        if (!withinBounds(12, 4 * facenum, sizeof(sal_uInt32), fsize))
-            return SFErrCodes::FontNo;
-        sal_uInt32 Version = GetUInt32(ptr, 4);
-        if (Version != 0x00010000 && Version != 0x00020000) {
-            return SFErrCodes::TtFormat;
-        }
-        if (facenum >= GetUInt32(ptr, 8))
-            return SFErrCodes::FontNo;
-        tdoffset = GetUInt32(ptr, 12 + 4 * facenum);
-    } else {
-        return SFErrCodes::TtFormat;
-    }
-
-    if (withinBounds(tdoffset, 0, 4 + sizeof(sal_uInt16), fsize))
-        ntables = GetUInt16(ptr + tdoffset, 4);
-
-    if (ntables >= 128 || ntables == 0)
-        return SFErrCodes::TtFormat;
-
-    /* parse the tables */
-    for (i = 0; i < static_cast<int>(ntables); i++)
-    {
-        int nIndex;
-        const sal_uInt32 nStart = tdoffset + 12;
-        const sal_uInt32 nOffset = 16 * i;
-        if (withinBounds(nStart, nOffset, sizeof(sal_uInt32), fsize))
-            tag = GetUInt32(ptr + nStart, nOffset);
-        else
-            tag = static_cast<sal_uInt32>(-1);
-        switch( tag ) {
-            case T_maxp: nIndex = O_maxp; break;
-            case T_glyf: nIndex = O_glyf; break;
-            case T_head: nIndex = O_head; break;
-            case T_loca: nIndex = O_loca; break;
-            case T_name: nIndex = O_name; break;
-            case T_cmap: nIndex = O_cmap; break;
-            case T_OS2 : nIndex = O_OS2;  break;
-            case T_post: nIndex = O_post; break;
-            case T_cvt : nIndex = O_cvt;  break;
-            case T_prep: nIndex = O_prep; break;
-            case T_fpgm: nIndex = O_fpgm; break;
-            case T_CFF:  nIndex = O_CFF; break;
-            default: nIndex = -1; break;
-        }
-
-        if ((nIndex >= 0) && withinBounds(nStart, nOffset, 12 + sizeof(sal_uInt32), fsize))
-        {
-            sal_uInt32 nTableOffset = GetUInt32(ptr + nStart, nOffset + 8);
-            length = GetUInt32(ptr + nStart, nOffset + 12);
-            m_aTableList[nIndex].pData = ptr + nTableOffset;
-            m_aTableList[nIndex].nSize = length;
-        }
-    }
-
-    /* Fixup offsets when only a TTC extract was provided */
-    if (facenum == sal_uInt32(~0))
-    {
-        sal_uInt8* pHead = const_cast<sal_uInt8*>(m_aTableList[O_head].pData);
-        if (!pHead)
-            return SFErrCodes::TtFormat;
-
-        /* limit Head candidate to TTC extract's limits */
-        if (pHead > ptr + (fsize - 54))
-            pHead = ptr + (fsize - 54);
-
-        /* TODO: find better method than searching head table's magic */
-        sal_uInt8* p = nullptr;
-        for (p = pHead + 12; p > ptr; --p)
-        {
-            if( p[0]==0x5F && p[1]==0x0F && p[2]==0x3C && p[3]==0xF5 ) {
-                int nDelta = (pHead + 12) - p;
-                if( nDelta )
-                    for( int j = 0; j < NUM_TAGS; ++j )
-                        if (hasTable(j))
-                            m_aTableList[j].pData -= nDelta;
-                break;
-            }
-        }
-        if (p <= ptr)
-            return SFErrCodes::TtFormat;
-    }
-
-    /* Check the table offsets after TTC correction */
-    for (i=0; i<NUM_TAGS; i++) {
-        /* sanity check: table must lay completely within the file
-         * at this point one could check the checksum of all contained
-         * tables, but this would be quite time intensive.
-         * Try to fix tables, so we can cope with minor problems.
-         */
-
-        if (m_aTableList[i].pData < ptr)
-        {
-#if OSL_DEBUG_LEVEL > 1
-            SAL_WARN_IF(m_aTableList[i].pData, "vcl.fonts", "font file " << fileName()
-                    << " has bad table offset "
-                    << (sal_uInt8*)m_aTableList[i].pData - ptr
-                    << "d (tagnum=" << i << ").");
-#endif
-            m_aTableList[i].nSize = 0;
-            m_aTableList[i].pData = nullptr;
-        }
-        else if (const_cast<sal_uInt8*>(m_aTableList[i].pData) + m_aTableList[i].nSize > ptr + fsize)
-        {
-            sal_PtrDiff nMaxLen = (ptr + fsize) - m_aTableList[i].pData;
-            if( nMaxLen < 0 )
-                nMaxLen = 0;
-            m_aTableList[i].nSize = nMaxLen;
-#if OSL_DEBUG_LEVEL > 1
-            SAL_WARN("vcl.fonts", "font file " << fileName()
-                    << " has too big table (tagnum=" << i << ").");
-#endif
-        }
-    }
-
-    /* At this point TrueTypeFont is constructed, now need to verify the font format
-       and read the basic font properties */
+    for (const auto& rEntry : aTableMap)
+        loadTable(rEntry.ord, rEntry.tag);
 
     return AbstractTrueTypeFont::initialize();
 }
