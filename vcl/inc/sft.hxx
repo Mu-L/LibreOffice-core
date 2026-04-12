@@ -49,8 +49,8 @@
 
 #include <hb-ot.h>
 
-#include <map>
 #include <vector>
+#include "font/PhysicalFontFace.hxx"
 #include "fontsubset.hxx"
 
 namespace vcl
@@ -437,16 +437,6 @@ class UNLESS_MERGELIBS(VCL_DLLPUBLIC) TrueTypeFont
     std::vector<sal_uInt32> m_aGlyphOffsets;
     bool m_bMicrosoftSymbolEncoded;
 
-    struct TTFontTable_
-    {
-        hb_blob_t* pBlob = nullptr;
-        const sal_uInt8* pData = nullptr; /* pointer to a raw subtable in the SFNT file */
-        sal_uInt32 nSize = 0; /* table size */
-    };
-
-    mutable std::map<hb_tag_t, TTFontTable_> m_aTableCache;
-
-    void loadTable(hb_tag_t tag) const;
     SFErrCodes indexGlyphData();
 
 public:
@@ -457,12 +447,11 @@ public:
 
     OUString getName(hb_ot_name_id_t nNameID, const LanguageTag& rLang = LanguageTag(LANGUAGE_DONTKNOW)) const;
 
+    font::RawFontData getTable(hb_tag_t tag) const;
+
     sal_uInt32 glyphCount() const { return m_nGlyphs; }
     sal_uInt32 glyphOffset(sal_uInt32 glyphID) const;
     bool IsMicrosoftSymbolEncoded() const { return m_bMicrosoftSymbolEncoded; }
-
-    bool hasTable(hb_tag_t tag) const;
-    const sal_uInt8* table(hb_tag_t tag, sal_uInt32& size) const;
 };
 
 } // namespace vcl

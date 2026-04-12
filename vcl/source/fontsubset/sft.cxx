@@ -153,53 +153,13 @@ TrueTypeFont::TrueTypeFont()
 
 TrueTypeFont::~TrueTypeFont()
 {
-    for (auto& [tag, rTable] : m_aTableCache)
-    {
-        if (rTable.pBlob)
-            hb_blob_destroy(rTable.pBlob);
-    }
     if (m_pFace)
         hb_face_destroy(m_pFace);
 }
 
-void TrueTypeFont::loadTable(hb_tag_t tag) const
+font::RawFontData TrueTypeFont::getTable(hb_tag_t tag) const
 {
-    hb_blob_t* pBlob = hb_face_reference_table(m_pFace, tag);
-    if (pBlob == hb_blob_get_empty())
-    {
-        hb_blob_destroy(pBlob);
-        return;
-    }
-    unsigned int nSize;
-    const char* pData = hb_blob_get_data(pBlob, &nSize);
-    auto& rEntry = m_aTableCache[tag];
-    rEntry.pBlob = pBlob;
-    rEntry.pData = reinterpret_cast<const sal_uInt8*>(pData);
-    rEntry.nSize = nSize;
-}
-
-bool TrueTypeFont::hasTable(hb_tag_t tag) const
-{
-    auto it = m_aTableCache.find(tag);
-    if (it != m_aTableCache.end())
-        return it->second.pData != nullptr;
-    loadTable(tag);
-    return m_aTableCache.count(tag) > 0;
-}
-
-const sal_uInt8* TrueTypeFont::table(hb_tag_t tag, sal_uInt32& size) const
-{
-    auto it = m_aTableCache.find(tag);
-    if (it == m_aTableCache.end())
-        loadTable(tag);
-    it = m_aTableCache.find(tag);
-    if (it == m_aTableCache.end())
-    {
-        size = 0;
-        return nullptr;
-    }
-    size = it->second.nSize;
-    return it->second.pData;
+    return font::RawFontData(hb_face_reference_table(m_pFace, tag));
 }
 
 void CloseTTFont(TrueTypeFont* ttf) { delete ttf; }
@@ -213,53 +173,52 @@ sal_uInt32 TrueTypeFont::glyphOffset(sal_uInt32 glyphID) const
 
 SFErrCodes TrueTypeFont::indexGlyphData()
 {
-    if (!(hasTable(T_maxp) && hasTable(T_head) && hasTable(T_name) && hasTable(T_cmap)))
+    auto aMaxp = getTable(T_maxp);
+    auto aHead = getTable(T_head);
+    auto aName = getTable(T_name);
+    auto aCmap = getTable(T_cmap);
+    if (aMaxp.empty() || aHead.empty() || aName.empty() || aCmap.empty())
         return SFErrCodes::TtFormat;
 
-    sal_uInt32 table_size;
-    const sal_uInt8* table = this->table(T_maxp, table_size);
-    m_nGlyphs = table_size >= 6 ? GetUInt16(table, 4) : 0;
+    m_nGlyphs = aMaxp.size() >= 6 ? GetUInt16(aMaxp.data(), 4) : 0;
 
-    table = this->table(T_head, table_size);
-    if (table_size < HEAD_Length)
+    if (aHead.size() < HEAD_Length)
         return SFErrCodes::TtFormat;
 
-    sal_uInt32 unitsPerEm = GetUInt16(table, HEAD_unitsPerEm_offset);
-    int indexfmt = GetInt16(table, HEAD_indexToLocFormat_offset);
+    sal_uInt32 unitsPerEm = GetUInt16(aHead.data(), HEAD_unitsPerEm_offset);
+    int indexfmt = GetInt16(aHead.data(), HEAD_indexToLocFormat_offset);
 
     if (((indexfmt != 0) && (indexfmt != 1)) || (unitsPerEm <= 0))
         return SFErrCodes::TtFormat;
 
-    if (hasTable(T_glyf) && (table = this->table(T_loca, table_size))) /* TTF or TTF-OpenType */
+    auto aGlyf = getTable(T_glyf);
+    auto aLoca = getTable(T_loca);
+    auto aCFF = getTable(T_CFF);
+    if (!aGlyf.empty() && !aLoca.empty()) /* TTF or TTF-OpenType */
     {
-        int k = (table_size / (indexfmt ? 4 : 2)) - 1;
+        int k = (aLoca.size() / (indexfmt ? 4 : 2)) - 1;
         if (k < static_cast<int>(m_nGlyphs))       /* Hack for broken Chinese fonts */
             m_nGlyphs = k;
 
         m_aGlyphOffsets.clear();
         m_aGlyphOffsets.reserve(m_nGlyphs + 1);
         for (int i = 0; i <= static_cast<int>(m_nGlyphs); ++i)
-            m_aGlyphOffsets.push_back(indexfmt ? GetUInt32(table, i << 2) : static_cast<sal_uInt32>(GetUInt16(table, i << 1)) << 1);
+            m_aGlyphOffsets.push_back(indexfmt ? GetUInt32(aLoca.data(), i << 2) : static_cast<sal_uInt32>(GetUInt16(aLoca.data(), i << 1)) << 1);
     }
-    else if (this->table(T_CFF, table_size)) /* PS-OpenType */
+    else if (!aCFF.empty()) /* PS-OpenType */
     {
-        int k = (table_size / 2) - 1; /* set a limit here, presumably much lower than the table size, but establishes some sort of physical bound */
+        int k = (aCFF.size() / 2) - 1; /* set a limit here, presumably much lower than the table size, but establishes some sort of physical bound */
         if (k < static_cast<int>(m_nGlyphs))
             m_nGlyphs = k;
 
         m_aGlyphOffsets.clear();
-        /* TODO: implement to get subsetting */
     }
     else {
         // Bitmap font, accept for now.
-        // TODO: We only need this for fonts with CBDT table since they usually
-        // lack glyf or CFF table, the check should be more specific, or better
-        // non-subsetting code should not be calling this.
         m_aGlyphOffsets.clear();
     }
 
-    table = this->table(T_cmap, table_size);
-    m_bMicrosoftSymbolEncoded = HasMicrosoftSymbolCmap(table, table_size);
+    m_bMicrosoftSymbolEncoded = HasMicrosoftSymbolCmap(aCmap.data(), aCmap.size());
 
     return SFErrCodes::Ok;
 }
@@ -299,25 +258,24 @@ void GetTTGlobalFontInfo(const TrueTypeFont *ttf, TTGlobalFontInfo *info)
     info->subfamily = ttf->getName(HB_OT_NAME_ID_FONT_SUBFAMILY);
     info->microsoftSymbolEncoded = ttf->IsMicrosoftSymbolEncoded();
 
-    sal_uInt32 table_size;
-    const sal_uInt8* table = ttf->table(T_OS2, table_size);
-    if (table_size >= 42)
+    auto aOS2 = ttf->getTable(T_OS2);
+    if (aOS2.size() >= 42)
     {
-        info->weight = GetUInt16(table, OS2_usWeightClass_offset);
-        info->width  = GetUInt16(table, OS2_usWidthClass_offset);
-        info->typeFlags = GetUInt16( table, OS2_fsType_offset );
+        info->weight = GetUInt16(aOS2.data(), OS2_usWeightClass_offset);
+        info->width  = GetUInt16(aOS2.data(), OS2_usWidthClass_offset);
+        info->typeFlags = GetUInt16(aOS2.data(), OS2_fsType_offset);
     }
 
-    table = ttf->table(T_post, table_size);
-    if (table_size >= 12 + sizeof(sal_uInt32))
+    auto aPost = ttf->getTable(T_post);
+    if (aPost.size() >= 12 + sizeof(sal_uInt32))
     {
-        info->pitch  = GetUInt32(table, POST_isFixedPitch_offset);
-        info->italicAngle = GetInt32(table, POST_italicAngle_offset);
+        info->pitch  = GetUInt32(aPost.data(), POST_isFixedPitch_offset);
+        info->italicAngle = GetInt32(aPost.data(), POST_italicAngle_offset);
     }
 
-    table = ttf->table(T_head, table_size);
-    if (table_size >= 46)
-        info->macStyle = GetUInt16(table, HEAD_macStyle_offset);
+    auto aHead = ttf->getTable(T_head);
+    if (aHead.size() >= 46)
+        info->macStyle = GetUInt16(aHead.data(), HEAD_macStyle_offset);
 }
 
 
@@ -380,11 +338,10 @@ static FontWeight ImplWeightToSal( int nWeight )
 
 FontWeight AnalyzeTTFWeight(const TrueTypeFont* ttf)
 {
-    sal_uInt32 table_size;
-    const sal_uInt8* table = ttf->table(T_OS2, table_size);
-    if (table_size >= 42)
+    auto aOS2 = ttf->getTable(T_OS2);
+    if (aOS2.size() >= 42)
     {
-        sal_uInt16 weightOS2 = GetUInt16(table, OS2_usWeightClass_offset);
+        sal_uInt16 weightOS2 = GetUInt16(aOS2.data(), OS2_usWeightClass_offset);
         return ImplWeightToSal(weightOS2);
     }
 
