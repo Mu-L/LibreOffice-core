@@ -2039,7 +2039,6 @@ sal_Int32 PDFWriterImpl::emitFontDescriptor( const vcl::font::PhysicalFontFace* 
             case FontType::SFNT_TTF:
                 aLine.append( '2' );
                 break;
-            case FontType::CFF_FONT:
             case FontType::SFNT_CFF:
                 aLine.append( "3" );
                 break;
@@ -2147,18 +2146,6 @@ bool PDFWriterImpl::emitFonts()
                     if (!writeBufferBytes(aBuffer.data(), aBuffer.size()))
                         return false;
                 }
-                else if( aSubsetInfo.m_nFontType & FontType::CFF_FONT)
-                {
-                    aLine.append("/Subtype/Type1C>>\nstream\n");
-                    if ( !writeBuffer( aLine ) ) return false;
-                    if ( osl::File::E_None != m_aFile.getPos(nStartPos) ) return false;
-
-                    // copy font file
-                    beginCompression();
-                    checkAndEnableStreamEncryption( nFontStream );
-                    if (!writeBufferBytes(aBuffer.data(), aBuffer.size()))
-                        return false;
-                }
                 else if( aSubsetInfo.m_nFontType & FontType::TYPE1_PFB) // TODO: also support PFA?
                 {
                     // get the PFB-segment lengths
@@ -2219,7 +2206,7 @@ bool PDFWriterImpl::emitFonts()
                 if ( !updateObject( nFontObject ) ) return false;
                 aLine.setLength( 0 );
                 aLine.append( OString::number(nFontObject) + " 0 obj\n" );
-                aLine.append( (aSubsetInfo.m_nFontType & (FontType::SFNT_CFF | FontType::TYPE1_PFB | FontType::CFF_FONT)) ?
+                aLine.append( (aSubsetInfo.m_nFontType & (FontType::SFNT_CFF | FontType::TYPE1_PFB)) ?
                              "<</Type/Font/Subtype/Type1/BaseFont/" :
                              "<</Type/Font/Subtype/TrueType/BaseFont/" );
                 appendSubsetName( s_subset.m_nFontID, aSubsetInfo.m_aPSName, aLine );
