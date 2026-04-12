@@ -435,10 +435,6 @@ class TrueTypeFont;
  */
     void VCL_DLLPUBLIC CloseTTFont(TrueTypeFont *);
 
-    bool ConvertCFFfontToType1(const unsigned char* pFontBytes, int nByteLength,
-                              std::vector<sal_uInt8>& rOutBuffer,
-                              FontSubsetInfo& rInfo);
-
 /**
  * Returns global font information about the TrueType font.
  * @see TTGlobalFontInfo
