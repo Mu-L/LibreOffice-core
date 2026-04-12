@@ -45,14 +45,13 @@
 #include <vcl/dllapi.h>
 #include <vcl/fontcapabilities.hxx>
 #include <i18nlangtag/lang.h>
+#include <i18nlangtag/languagetag.hxx>
 
 #include <hb-ot.h>
 
 #include <map>
 #include <vector>
 #include "fontsubset.hxx"
-
-class LanguageTag;
 
 namespace vcl
 {
@@ -116,17 +115,6 @@ namespace vcl
     };
 
 
-
-/** Structure used by the TrueType Creator and CreateTTFromTTGlyphs() */
-    struct NameRecord {
-        sal_uInt16 platformID;                  /**< Platform ID                                            */
-        sal_uInt16 encodingID;                  /**< Platform-specific encoding ID                          */
-        LanguageType languageID;                /**< Language ID                                            */
-        sal_uInt16 nameID;                      /**< Name ID                                                */
-        std::vector<sal_uInt8> sptr;            /**< string data (not zero-terminated!)          */
-    };
-
-    OUString convertSfntName(const NameRecord& rNameRecord);
 
 /** Return value of GetTTGlobalFontInfo() */
 
@@ -445,8 +433,6 @@ class TrueTypeFont;
  */
 void GetTTGlobalFontInfo(const TrueTypeFont *ttf, TTGlobalFontInfo *info);
 
-OUString analyzeSfntName(const TrueTypeFont* pTTFont, sal_uInt16 nameId, const LanguageTag& rPrefLang);
-
 FontWeight AnalyzeTTFWeight(const TrueTypeFont* pTTFont);
 
 class UNLESS_MERGELIBS(VCL_DLLPUBLIC) AbstractTrueTypeFont
@@ -495,7 +481,7 @@ public:
 
     SFErrCodes open(hb_blob_t* pBlob, sal_uInt32 facenum);
 
-    OUString getName(hb_ot_name_id_t nNameID) const;
+    OUString getName(hb_ot_name_id_t nNameID, const LanguageTag& rLang = LanguageTag(LANGUAGE_DONTKNOW)) const;
 
     bool hasTable(hb_tag_t tag) const override;
     const sal_uInt8* table(hb_tag_t tag, sal_uInt32& size) const override;

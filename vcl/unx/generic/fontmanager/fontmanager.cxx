@@ -356,7 +356,8 @@ namespace {
 
 OUString analyzeSfntFamilyName(void const * pTTFont)
 {
-    return analyzeSfntName(static_cast<TrueTypeFont const *>(pTTFont), 1, SvtSysLocaleOptions().GetRealUILanguageTag());
+    return static_cast<TrueTypeFont const *>(pTTFont)->getName(HB_OT_NAME_ID_FONT_FAMILY,
+        SvtSysLocaleOptions().GetRealUILanguageTag());
 }
 
 }

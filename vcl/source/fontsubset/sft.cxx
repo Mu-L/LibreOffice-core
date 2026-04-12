@@ -37,7 +37,6 @@
 #else
 #include <tools/fix16.hxx>
 #endif
-#include <i18nlangtag/applelangid.hxx>
 #include <i18nlangtag/languagetag.hxx>
 #include <rtl/crc.h>
 #include <rtl/ustring.hxx>
@@ -327,13 +326,20 @@ SFErrCodes AbstractTrueTypeFont::indexGlyphData()
     return SFErrCodes::Ok;
 }
 
-OUString TrueTypeFont::getName(hb_ot_name_id_t nNameID) const
+OUString TrueTypeFont::getName(hb_ot_name_id_t nNameID, const LanguageTag& rLang) const
 {
-    auto nName = hb_ot_name_get_utf16(m_pFace, nNameID, HB_LANGUAGE_INVALID, nullptr, nullptr);
+    hb_language_t aHbLang = HB_LANGUAGE_INVALID;
+    if (rLang.getLanguageType() != LANGUAGE_DONTKNOW)
+    {
+        auto aLanguage(rLang.getBcp47().toUtf8());
+        aHbLang = hb_language_from_string(aLanguage.getStr(), aLanguage.getLength());
+    }
+
+    auto nName = hb_ot_name_get_utf16(m_pFace, nNameID, aHbLang, nullptr, nullptr);
     if (!nName)
         return OUString();
     std::vector<uint16_t> aBuf(++nName); // make space for terminating NUL
-    hb_ot_name_get_utf16(m_pFace, nNameID, HB_LANGUAGE_INVALID, &nName, aBuf.data());
+    hb_ot_name_get_utf16(m_pFace, nNameID, aHbLang, &nName, aBuf.data());
     return OUString(reinterpret_cast<sal_Unicode*>(aBuf.data()), nName);
 }
 
@@ -377,78 +383,6 @@ void GetTTGlobalFontInfo(const TrueTypeFont *ttf, TTGlobalFontInfo *info)
 }
 
 
-
-/**
- * Extracts all Name Records from the font and stores them in an allocated
- * array of NameRecord structs
- */
-static void GetTTNameRecords(AbstractTrueTypeFont const *ttf, std::vector<NameRecord>& nr)
-{
-    sal_uInt32 nTableSize;
-    const sal_uInt8* table = ttf->table(T_name, nTableSize);
-
-    nr.clear();
-
-    if (nTableSize < 6)
-    {
-#if OSL_DEBUG_LEVEL > 1
-        SAL_WARN("vcl.fonts", "T_name table too small.");
-#endif
-        return;
-    }
-
-    sal_uInt16 n = GetUInt16(table, 2);
-    sal_uInt32 nStrBase = GetUInt16(table, 4);
-    int i;
-
-    if (n == 0) return;
-
-    const sal_uInt32 remaining_table_size = nTableSize-6;
-    const sal_uInt32 nMinRecordSize = 12;
-    const sal_uInt32 nMaxRecords = remaining_table_size / nMinRecordSize;
-    if (n > nMaxRecords)
-    {
-        SAL_WARN("vcl.fonts", "Parsing error in " << OUString::createFromAscii(ttf->fileName()) <<
-                 ": " << nMaxRecords << " max possible entries, but " <<
-                 n << " claimed, truncating");
-        n = nMaxRecords;
-    }
-
-    nr.resize(n);
-
-    for (i = 0; i < n; i++) {
-        sal_uInt32 nLargestFixedOffsetPos = 6 + 10 + 12 * i;
-        sal_uInt32 nMinSize = nLargestFixedOffsetPos + sizeof(sal_uInt16);
-        if (nMinSize > nTableSize)
-        {
-            SAL_WARN( "vcl.fonts", "Font " << OUString::createFromAscii(ttf->fileName()) << " claimed to have "
-                << n << " name records, but only space for " << i);
-            break;
-        }
-
-        nr[i].platformID = GetUInt16(table, 6 + 0 + 12 * i);
-        nr[i].encodingID = GetUInt16(table, 6 + 2 + 12 * i);
-        nr[i].languageID = LanguageType(GetUInt16(table, 6 + 4 + 12 * i));
-        nr[i].nameID = GetUInt16(table, 6 + 6 + 12 * i);
-        sal_uInt16 slen = GetUInt16(table, 6 + 8 + 12 * i);
-        sal_uInt32 nStrOffset = GetUInt16(table, nLargestFixedOffsetPos);
-        if (slen) {
-            if (nStrBase + nStrOffset + slen >= nTableSize)
-                continue;
-
-            const sal_uInt32 rec_string = nStrBase + nStrOffset;
-            const size_t available_space = rec_string > nTableSize ? 0 : (nTableSize - rec_string);
-            if (slen <= available_space)
-            {
-                nr[i].sptr.resize(slen);
-                memcpy(nr[i].sptr.data(), table + rec_string, slen);
-            }
-        }
-        // some fonts have 3.0 names => fix them to 3.1
-        if( (nr[i].platformID == 3) && (nr[i].encodingID == 0) )
-            nr[i].encodingID = 1;
-    }
-}
 
 template<size_t N> static void
 append(std::bitset<N> & rSet, size_t const nOffset, sal_uInt32 const nValue)
@@ -506,196 +440,6 @@ static FontWeight ImplWeightToSal( int nWeight )
         return WEIGHT_BLACK;
 }
 
-/*
- *  static helpers
- */
-static sal_uInt16 getUInt16BE( const sal_uInt8*& pBuffer )
-{
-    sal_uInt16 nRet = static_cast<sal_uInt16>(pBuffer[1]) |
-        (static_cast<sal_uInt16>(pBuffer[0]) << 8);
-    pBuffer+=2;
-    return nRet;
-}
-
-OUString convertSfntName( const NameRecord& rNameRecord )
-{
-    OUString aValue;
-    if(
-       ( rNameRecord.platformID == 3 && ( rNameRecord.encodingID == 0 || rNameRecord.encodingID == 1 ) )  // MS, Unicode
-       ||
-       ( rNameRecord.platformID == 0 ) // Apple, Unicode
-       )
-    {
-        OUStringBuffer aName( rNameRecord.sptr.size()/2 );
-        const sal_uInt8* pNameBuffer = rNameRecord.sptr.data();
-        for(size_t n = 0; n < rNameRecord.sptr.size()/2; n++ )
-            aName.append( static_cast<sal_Unicode>(getUInt16BE( pNameBuffer )) );
-        aValue = aName.makeStringAndClear();
-    }
-    else if( rNameRecord.platformID == 3 )
-    {
-        if( rNameRecord.encodingID >= 2 && rNameRecord.encodingID <= 6 )
-        {
-            /*
-             *  and now for a special kind of madness:
-             *  some fonts encode their byte value string as BE uint16
-             *  (leading to stray zero bytes in the string)
-             *  while others code two bytes as a uint16 and swap to BE
-             */
-            OStringBuffer aName;
-            const sal_uInt8* pNameBuffer = rNameRecord.sptr.data();
-            for(size_t n = 0; n < rNameRecord.sptr.size()/2; n++ )
-            {
-                sal_Unicode aCode = static_cast<sal_Unicode>(getUInt16BE( pNameBuffer ));
-                char aChar = aCode >> 8;
-                if( aChar )
-                    aName.append( aChar );
-                aChar = aCode & 0x00ff;
-                if( aChar )
-                    aName.append( aChar );
-            }
-            switch( rNameRecord.encodingID )
-            {
-                case 2:
-                    aValue = OStringToOUString( aName, RTL_TEXTENCODING_MS_932 );
-                    break;
-                case 3:
-                    aValue = OStringToOUString( aName, RTL_TEXTENCODING_MS_936 );
-                    break;
-                case 4:
-                    aValue = OStringToOUString( aName, RTL_TEXTENCODING_MS_950 );
-                    break;
-                case 5:
-                    aValue = OStringToOUString( aName, RTL_TEXTENCODING_MS_949 );
-                    break;
-                case 6:
-                    aValue = OStringToOUString( aName, RTL_TEXTENCODING_MS_1361 );
-                    break;
-            }
-        }
-    }
-    else if( rNameRecord.platformID == 1 )
-    {
-        std::string_view aName(reinterpret_cast<const char*>(rNameRecord.sptr.data()), rNameRecord.sptr.size());
-        rtl_TextEncoding eEncoding = RTL_TEXTENCODING_DONTKNOW;
-        switch (rNameRecord.encodingID)
-        {
-            case 0:
-                eEncoding = RTL_TEXTENCODING_APPLE_ROMAN;
-                break;
-            case 1:
-                eEncoding = RTL_TEXTENCODING_APPLE_JAPANESE;
-                break;
-            case 2:
-                eEncoding = RTL_TEXTENCODING_APPLE_CHINTRAD;
-                break;
-            case 3:
-                eEncoding = RTL_TEXTENCODING_APPLE_KOREAN;
-                break;
-            case 4:
-                eEncoding = RTL_TEXTENCODING_APPLE_ARABIC;
-                break;
-            case 5:
-                eEncoding = RTL_TEXTENCODING_APPLE_HEBREW;
-                break;
-            case 6:
-                eEncoding = RTL_TEXTENCODING_APPLE_GREEK;
-                break;
-            case 7:
-                eEncoding = RTL_TEXTENCODING_APPLE_CYRILLIC;
-                break;
-            case 9:
-                eEncoding = RTL_TEXTENCODING_APPLE_DEVANAGARI;
-                break;
-            case 10:
-                eEncoding = RTL_TEXTENCODING_APPLE_GURMUKHI;
-                break;
-            case 11:
-                eEncoding = RTL_TEXTENCODING_APPLE_GUJARATI;
-                break;
-            case 21:
-                eEncoding = RTL_TEXTENCODING_APPLE_THAI;
-                break;
-            case 25:
-                eEncoding = RTL_TEXTENCODING_APPLE_CHINSIMP;
-                break;
-            case 29:
-                eEncoding = RTL_TEXTENCODING_APPLE_CENTEURO;
-                break;
-            case 32:    //Uninterpreted
-                eEncoding = RTL_TEXTENCODING_UTF8;
-                break;
-            default:
-                if (o3tl::starts_with(aName, "Khmer OS") || // encoding '20' (Khmer) isn't implemented
-                    o3tl::starts_with(aName, "YoavKtav")) // tdf#152278
-                {
-                    eEncoding = RTL_TEXTENCODING_UTF8;
-                }
-                SAL_WARN_IF(eEncoding == RTL_TEXTENCODING_DONTKNOW, "vcl.fonts", "mac encoding " <<
-                            rNameRecord.encodingID << " in font '" << aName << "'" <<
-                            (rNameRecord.encodingID > 32 ? " is invalid" : " has unimplemented conversion"));
-                break;
-        }
-        if (eEncoding != RTL_TEXTENCODING_DONTKNOW)
-            aValue = OStringToOUString(aName, eEncoding);
-    }
-
-    return aValue;
-}
-
-OUString analyzeSfntName(const TrueTypeFont* pTTFont, sal_uInt16 nameId, const LanguageTag& rPrefLang)
-{
-    OUString aResult;
-
-    std::vector<NameRecord> aNameRecords;
-    GetTTNameRecords(pTTFont, aNameRecords);
-    if( !aNameRecords.empty() )
-    {
-        LanguageType eLang = rPrefLang.getLanguageType();
-        int nLastMatch = -1;
-        for( size_t i = 0; i < aNameRecords.size(); i++ )
-        {
-            if( aNameRecords[i].nameID != nameId || aNameRecords[i].sptr.empty() )
-                continue;
-            int nMatch = -1;
-            if( aNameRecords[i].platformID == 0 ) // Unicode
-                nMatch = 4000;
-            else if( aNameRecords[i].platformID == 3 )
-            {
-                // this bases on the LanguageType actually being a Win LCID
-                if (aNameRecords[i].languageID == eLang)
-                    nMatch = 8000;
-                else if( aNameRecords[i].languageID == LANGUAGE_ENGLISH_US )
-                    nMatch = 2000;
-                else if( aNameRecords[i].languageID == LANGUAGE_ENGLISH ||
-                         aNameRecords[i].languageID == LANGUAGE_ENGLISH_UK )
-                    nMatch = 1500;
-                else
-                    nMatch = 1000;
-            }
-            else if (aNameRecords[i].platformID == 1)
-            {
-                AppleLanguageId aAppleId = static_cast<AppleLanguageId>(static_cast<sal_uInt16>(aNameRecords[i].languageID));
-                LanguageTag aApple(makeLanguageTagFromAppleLanguageId(aAppleId));
-                if (aApple == rPrefLang)
-                    nMatch = 8000;
-                else if (aAppleId == AppleLanguageId::ENGLISH)
-                    nMatch = 2000;
-                else
-                    nMatch = 1000;
-            }
-            OUString aName = convertSfntName( aNameRecords[i] );
-            if (!(aName.isEmpty()) && nMatch >= nLastMatch)
-            {
-                nLastMatch = nMatch;
-                aResult = aName;
-            }
-        }
-    }
-
-    return aResult;
-}
-
 FontWeight AnalyzeTTFWeight(const TrueTypeFont* ttf)
 {
     sal_uInt32 table_size;
@@ -707,7 +451,7 @@ FontWeight AnalyzeTTFWeight(const TrueTypeFont* ttf)
     }
 
     // Fallback to inferring from the style name (name ID 2).
-    OUString sStyle = analyzeSfntName(ttf, 2, LanguageTag(LANGUAGE_ENGLISH_US));
+    OUString sStyle = ttf->getName(HB_OT_NAME_ID_FONT_SUBFAMILY);
 
     bool bBold(false), bItalic(false);
     if (o3tl::equalsIgnoreAsciiCase(sStyle, u"Regular"))
