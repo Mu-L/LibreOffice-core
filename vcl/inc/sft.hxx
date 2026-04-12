@@ -48,7 +48,7 @@
 
 #include <hb.h>
 
-#include <array>
+#include <map>
 #include <vector>
 #include "fontsubset.hxx"
 
@@ -452,23 +452,6 @@ OUString analyzeSfntName(const TrueTypeFont* pTTFont, sal_uInt16 nameId, const L
 
 FontWeight AnalyzeTTFWeight(const TrueTypeFont* pTTFont);
 
-/*- private definitions */
-
-/* indexes into TrueTypeFont::tables[] and TrueTypeFont::tlens[] */
-constexpr int O_maxp = 0;
-constexpr int O_glyf = 1;    /* 'glyf' */
-constexpr int O_head = 2;    /* 'head' */
-constexpr int O_loca = 3;    /* 'loca' */
-constexpr int O_name = 4;    /* 'name' */
-constexpr int O_cmap = 5;    /* 'cmap' */
-constexpr int O_OS2  = 6;   /* 'OS/2' */
-constexpr int O_post = 7;   /* 'post' */
-constexpr int O_cvt  = 8;   /* 'cvt_' - only used in TT->TT generation */
-constexpr int O_prep = 9;   /* 'prep' - only used in TT->TT generation */
-constexpr int O_fpgm = 10;   /* 'fpgm' - only used in TT->TT generation */
-constexpr int O_CFF = 11;   /* 'CFF' */
-constexpr int NUM_TAGS = 12;
-
 class UNLESS_MERGELIBS(VCL_DLLPUBLIC) AbstractTrueTypeFont
 {
     std::string m_sFileName;
@@ -490,8 +473,8 @@ public:
     sal_uInt32 glyphOffset(sal_uInt32 glyphID) const;
     bool IsMicrosoftSymbolEncoded() const { return m_bMicrosoftSymbolEncoded; }
 
-    virtual bool hasTable(sal_uInt32 ord) const = 0;
-    virtual const sal_uInt8* table(sal_uInt32 ord, sal_uInt32& size) const = 0;
+    virtual bool hasTable(hb_tag_t tag) const = 0;
+    virtual const sal_uInt8* table(hb_tag_t tag, sal_uInt32& size) const = 0;
 
     OString     psname;
     OString     family;
@@ -511,9 +494,9 @@ class TrueTypeFont final : public AbstractTrueTypeFont
         sal_uInt32 nSize = 0; /* table size */
     };
 
-    std::array<struct TTFontTable_, NUM_TAGS> m_aTableList;
+    mutable std::map<hb_tag_t, TTFontTable_> m_aTableCache;
 
-    void loadTable(sal_uInt32 ord, hb_tag_t tag);
+    void loadTable(hb_tag_t tag) const;
 
 public:
     TrueTypeFont(const char* pFileName = nullptr);
@@ -521,22 +504,9 @@ public:
 
     SFErrCodes open(hb_blob_t* pBlob, sal_uInt32 facenum);
 
-    bool hasTable(sal_uInt32 ord) const override { return m_aTableList[ord].pData != nullptr; }
-    inline const sal_uInt8* table(sal_uInt32 ord, sal_uInt32& size) const override;
+    bool hasTable(hb_tag_t tag) const override;
+    const sal_uInt8* table(hb_tag_t tag, sal_uInt32& size) const override;
 };
-
-const sal_uInt8* TrueTypeFont::table(sal_uInt32 ord, sal_uInt32& size) const
-{
-    if (ord >= NUM_TAGS)
-    {
-        size = 0;
-        return nullptr;
-    }
-
-    auto& rTable = m_aTableList[ord];
-    size = rTable.nSize;
-    return rTable.pData;
-}
 
 } // namespace vcl
 

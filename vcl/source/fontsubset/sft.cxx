@@ -183,12 +183,12 @@ static int findname( const sal_uInt8 *name, sal_uInt16 n, sal_uInt16 platformID,
 static void GetNames(AbstractTrueTypeFont *t)
 {
     sal_uInt32 nTableSize;
-    const sal_uInt8* table = t->table(O_name, nTableSize);
+    const sal_uInt8* table = t->table(T_name, nTableSize);
 
     if (nTableSize < 6)
     {
 #if OSL_DEBUG_LEVEL > 1
-        SAL_WARN("vcl.fonts", "O_name table too small.");
+        SAL_WARN("vcl.fonts", "T_name table too small.");
 #endif
         return;
     }
@@ -405,7 +405,7 @@ TrueTypeFont::TrueTypeFont(const char* pFileName)
 
 TrueTypeFont::~TrueTypeFont()
 {
-    for (auto& rTable : m_aTableList)
+    for (auto& [tag, rTable] : m_aTableCache)
     {
         if (rTable.pBlob)
             hb_blob_destroy(rTable.pBlob);
@@ -414,7 +414,7 @@ TrueTypeFont::~TrueTypeFont()
         hb_face_destroy(m_pFace);
 }
 
-void TrueTypeFont::loadTable(sal_uInt32 ord, hb_tag_t tag)
+void TrueTypeFont::loadTable(hb_tag_t tag) const
 {
     hb_blob_t* pBlob = hb_face_reference_table(m_pFace, tag);
     if (pBlob == hb_blob_get_empty())
@@ -424,9 +424,34 @@ void TrueTypeFont::loadTable(sal_uInt32 ord, hb_tag_t tag)
     }
     unsigned int nSize;
     const char* pData = hb_blob_get_data(pBlob, &nSize);
-    m_aTableList[ord].pBlob = pBlob;
-    m_aTableList[ord].pData = reinterpret_cast<const sal_uInt8*>(pData);
-    m_aTableList[ord].nSize = nSize;
+    auto& rEntry = m_aTableCache[tag];
+    rEntry.pBlob = pBlob;
+    rEntry.pData = reinterpret_cast<const sal_uInt8*>(pData);
+    rEntry.nSize = nSize;
+}
+
+bool TrueTypeFont::hasTable(hb_tag_t tag) const
+{
+    auto it = m_aTableCache.find(tag);
+    if (it != m_aTableCache.end())
+        return it->second.pData != nullptr;
+    loadTable(tag);
+    return m_aTableCache.count(tag) > 0;
+}
+
+const sal_uInt8* TrueTypeFont::table(hb_tag_t tag, sal_uInt32& size) const
+{
+    auto it = m_aTableCache.find(tag);
+    if (it == m_aTableCache.end())
+        loadTable(tag);
+    it = m_aTableCache.find(tag);
+    if (it == m_aTableCache.end())
+    {
+        size = 0;
+        return nullptr;
+    }
+    size = it->second.nSize;
+    return it->second.pData;
 }
 
 void CloseTTFont(TrueTypeFont* ttf) { delete ttf; }
@@ -444,21 +469,21 @@ SFErrCodes AbstractTrueTypeFont::initialize()
 
 sal_uInt32 AbstractTrueTypeFont::glyphOffset(sal_uInt32 glyphID) const
 {
-    if (m_aGlyphOffsets.empty()) // the O_CFF and Bitmap cases
+    if (m_aGlyphOffsets.empty()) // the T_CFF and Bitmap cases
         return 0;
     return m_aGlyphOffsets[glyphID];
 }
 
 SFErrCodes AbstractTrueTypeFont::indexGlyphData()
 {
-    if (!(hasTable(O_maxp) && hasTable(O_head) && hasTable(O_name) && hasTable(O_cmap)))
+    if (!(hasTable(T_maxp) && hasTable(T_head) && hasTable(T_name) && hasTable(T_cmap)))
         return SFErrCodes::TtFormat;
 
     sal_uInt32 table_size;
-    const sal_uInt8* table = this->table(O_maxp, table_size);
+    const sal_uInt8* table = this->table(T_maxp, table_size);
     m_nGlyphs = table_size >= 6 ? GetUInt16(table, 4) : 0;
 
-    table = this->table(O_head, table_size);
+    table = this->table(T_head, table_size);
     if (table_size < HEAD_Length)
         return SFErrCodes::TtFormat;
 
@@ -468,7 +493,7 @@ SFErrCodes AbstractTrueTypeFont::indexGlyphData()
     if (((indexfmt != 0) && (indexfmt != 1)) || (unitsPerEm <= 0))
         return SFErrCodes::TtFormat;
 
-    if (hasTable(O_glyf) && (table = this->table(O_loca, table_size))) /* TTF or TTF-OpenType */
+    if (hasTable(T_glyf) && (table = this->table(T_loca, table_size))) /* TTF or TTF-OpenType */
     {
         int k = (table_size / (indexfmt ? 4 : 2)) - 1;
         if (k < static_cast<int>(m_nGlyphs))       /* Hack for broken Chinese fonts */
@@ -479,7 +504,7 @@ SFErrCodes AbstractTrueTypeFont::indexGlyphData()
         for (int i = 0; i <= static_cast<int>(m_nGlyphs); ++i)
             m_aGlyphOffsets.push_back(indexfmt ? GetUInt32(table, i << 2) : static_cast<sal_uInt32>(GetUInt16(table, i << 1)) << 1);
     }
-    else if (this->table(O_CFF, table_size)) /* PS-OpenType */
+    else if (this->table(T_CFF, table_size)) /* PS-OpenType */
     {
         int k = (table_size / 2) - 1; /* set a limit here, presumably much lower than the table size, but establishes some sort of physical bound */
         if (k < static_cast<int>(m_nGlyphs))
@@ -496,7 +521,7 @@ SFErrCodes AbstractTrueTypeFont::indexGlyphData()
         m_aGlyphOffsets.clear();
     }
 
-    table = this->table(O_cmap, table_size);
+    table = this->table(T_cmap, table_size);
     m_bMicrosoftSymbolEncoded = HasMicrosoftSymbolCmap(table, table_size);
 
     return SFErrCodes::Ok;
@@ -508,24 +533,6 @@ SFErrCodes TrueTypeFont::open(hb_blob_t* pBlob, sal_uInt32 facenum)
 
     if (!m_pFace)
         return SFErrCodes::TtFormat;
-
-    static const struct { sal_uInt32 ord; hb_tag_t tag; } aTableMap[] = {
-        { O_maxp, HB_TAG('m','a','x','p') },
-        { O_glyf, HB_TAG('g','l','y','f') },
-        { O_head, HB_TAG('h','e','a','d') },
-        { O_loca, HB_TAG('l','o','c','a') },
-        { O_name, HB_TAG('n','a','m','e') },
-        { O_cmap, HB_TAG('c','m','a','p') },
-        { O_OS2,  HB_TAG('O','S','/','2') },
-        { O_post, HB_TAG('p','o','s','t') },
-        { O_cvt,  HB_TAG('c','v','t',' ') },
-        { O_prep, HB_TAG('p','r','e','p') },
-        { O_fpgm, HB_TAG('f','p','g','m') },
-        { O_CFF,  HB_TAG('C','F','F',' ') },
-    };
-
-    for (const auto& rEntry : aTableMap)
-        loadTable(rEntry.ord, rEntry.tag);
 
     return AbstractTrueTypeFont::initialize();
 }
@@ -540,7 +547,7 @@ void GetTTGlobalFontInfo(const AbstractTrueTypeFont *ttf, TTGlobalFontInfo *info
     info->microsoftSymbolEncoded = ttf->IsMicrosoftSymbolEncoded();
 
     sal_uInt32 table_size;
-    const sal_uInt8* table = ttf->table(O_OS2, table_size);
+    const sal_uInt8* table = ttf->table(T_OS2, table_size);
     if (table_size >= 42)
     {
         info->weight = GetUInt16(table, OS2_usWeightClass_offset);
@@ -548,14 +555,14 @@ void GetTTGlobalFontInfo(const AbstractTrueTypeFont *ttf, TTGlobalFontInfo *info
         info->typeFlags = GetUInt16( table, OS2_fsType_offset );
     }
 
-    table = ttf->table(O_post, table_size);
+    table = ttf->table(T_post, table_size);
     if (table_size >= 12 + sizeof(sal_uInt32))
     {
         info->pitch  = GetUInt32(table, POST_isFixedPitch_offset);
         info->italicAngle = GetInt32(table, POST_italicAngle_offset);
     }
 
-    table = ttf->table(O_head, table_size);
+    table = ttf->table(T_head, table_size);
     if (table_size >= 46)
         info->macStyle = GetUInt16(table, HEAD_macStyle_offset);
 }
@@ -569,14 +576,14 @@ void GetTTGlobalFontInfo(const AbstractTrueTypeFont *ttf, TTGlobalFontInfo *info
 static void GetTTNameRecords(AbstractTrueTypeFont const *ttf, std::vector<NameRecord>& nr)
 {
     sal_uInt32 nTableSize;
-    const sal_uInt8* table = ttf->table(O_name, nTableSize);
+    const sal_uInt8* table = ttf->table(T_name, nTableSize);
 
     nr.clear();
 
     if (nTableSize < 6)
     {
 #if OSL_DEBUG_LEVEL > 1
-        SAL_WARN("vcl.fonts", "O_name table too small.");
+        SAL_WARN("vcl.fonts", "T_name table too small.");
 #endif
         return;
     }
@@ -883,7 +890,7 @@ OUString analyzeSfntName(const TrueTypeFont* pTTFont, sal_uInt16 nameId, const L
 FontWeight AnalyzeTTFWeight(const TrueTypeFont* ttf)
 {
     sal_uInt32 table_size;
-    const sal_uInt8* table = ttf->table(O_OS2, table_size);
+    const sal_uInt8* table = ttf->table(T_OS2, table_size);
     if (table_size >= 42)
     {
         sal_uInt16 weightOS2 = GetUInt16(table, OS2_usWeightClass_offset);
