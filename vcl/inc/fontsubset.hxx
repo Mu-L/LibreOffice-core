@@ -34,7 +34,6 @@ enum class FontType {
     NO_FONT     = 0,
     SFNT_TTF    = 1<<1,                     ///< SFNT container with TrueType glyphs
     SFNT_CFF    = 1<<2,                     ///< SFNT container with CFF-container
-    ANY_SFNT    = SFNT_TTF | SFNT_CFF
 };
 namespace o3tl {
     template<> struct typed_flags<FontType> : is_typed_flags<FontType, 0x06> {};
