@@ -25,6 +25,8 @@
 
 #include <vcl/dllapi.h>
 
+#include <vector>
+
 // Translate units from TT to PS (standard 1/1000)
 inline int XUnits(int nUPEM, int n) { return (n * 1000) / nUPEM; }
 
@@ -50,6 +52,7 @@ public: // TODO: make subsetter results private and provide accessor methods ins
     int                     m_nCapHeight = 0;
     tools::Rectangle        m_aFontBBox;
     FontType                m_nFontType = FontType::NO_FONT; ///< font-type of subset result
+    std::vector<OString>    m_aGlyphNames;                   ///< glyph names for CFF encoding
 };
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

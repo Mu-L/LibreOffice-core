@@ -2040,6 +2040,7 @@ sal_Int32 PDFWriterImpl::emitFontDescriptor( const vcl::font::PhysicalFontFace* 
                 aLine.append( '2' );
                 break;
             case FontType::CFF_FONT:
+            case FontType::SFNT_CFF:
                 aLine.append( "3" );
                 break;
             case FontType::TYPE1_PFB:
@@ -2131,9 +2132,23 @@ bool PDFWriterImpl::emitFonts()
                     if (!writeBufferBytes(aBuffer.data(), aBuffer.size()))
                         return false;
                 }
+                else if( aSubsetInfo.m_nFontType == FontType::SFNT_CFF )
+                {
+                    aLine.append("/Length1 "
+                        + OString::number(aBuffer.size())
+                        + "/Subtype/OpenType>>\n"
+                          "stream\n" );
+                    if ( !writeBuffer( aLine ) ) return false;
+                    if ( osl::File::E_None != m_aFile.getPos(nStartPos) ) return false;
+
+                    // copy font file
+                    beginCompression();
+                    checkAndEnableStreamEncryption( nFontStream );
+                    if (!writeBufferBytes(aBuffer.data(), aBuffer.size()))
+                        return false;
+                }
                 else if( aSubsetInfo.m_nFontType & FontType::CFF_FONT)
                 {
-                    // CFF subset is embedded as an SFNT font (same as TrueType)
                     aLine.append("/Subtype/Type1C>>\nstream\n");
                     if ( !writeBuffer( aLine ) ) return false;
                     if ( osl::File::E_None != m_aFile.getPos(nStartPos) ) return false;
@@ -2204,7 +2219,7 @@ bool PDFWriterImpl::emitFonts()
                 if ( !updateObject( nFontObject ) ) return false;
                 aLine.setLength( 0 );
                 aLine.append( OString::number(nFontObject) + " 0 obj\n" );
-                aLine.append( (aSubsetInfo.m_nFontType & (FontType::TYPE1_PFB | FontType::CFF_FONT)) ?
+                aLine.append( (aSubsetInfo.m_nFontType & (FontType::SFNT_CFF | FontType::TYPE1_PFB | FontType::CFF_FONT)) ?
                              "<</Type/Font/Subtype/Type1/BaseFont/" :
                              "<</Type/Font/Subtype/TrueType/BaseFont/" );
                 appendSubsetName( s_subset.m_nFontID, aSubsetInfo.m_aPSName, aLine );
@@ -2228,6 +2243,17 @@ bool PDFWriterImpl::emitFonts()
                     aLine.append( "/ToUnicode "
                         + OString::number( nToUnicodeStream )
                         + " 0 R\n" );
+                }
+                if( aSubsetInfo.m_nFontType == FontType::SFNT_CFF
+                    && !aSubsetInfo.m_aGlyphNames.empty() )
+                {
+                    aLine.append( "/Encoding<</Type/Encoding/Differences[" );
+                    for (size_t i = 0; i < aSubsetInfo.m_aGlyphNames.size(); i++)
+                    {
+                        aLine.append( OString::number(sal_Int32(i))
+                            + "/" + aSubsetInfo.m_aGlyphNames[i] + " " );
+                    }
+                    aLine.append( "]>>\n" );
                 }
                 aLine.append( ">>\n"
                              "endobj\n\n" );
