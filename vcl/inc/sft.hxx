@@ -364,10 +364,6 @@ constexpr int GLYF_yMin_offset = 4;
 constexpr int GLYF_xMax_offset = 6;
 constexpr int GLYF_yMax_offset = 8;
 
-constexpr sal_uInt32 T_true = 0x74727565;        /* 'true' */
-constexpr sal_uInt32 T_ttcf = 0x74746366;        /* 'ttcf' */
-constexpr sal_uInt32 T_otto = 0x4f54544f;        /* 'OTTO' */
-
 class TrueTypeFont;
 
 /**

@@ -47,7 +47,6 @@
 #include <o3tl/string_view.hxx>
 #include <osl/endian.h>
 #include <osl/thread.h>
-#include <tools/UnixWrappers.h>
 #include <unotools/tempfile.hxx>
 #include <fontsubset.hxx>
 
@@ -98,53 +97,12 @@ static sal_Int32 GetInt32(const sal_uInt8* ptr, size_t offset)
 
 int CountTTCFonts(const char* fname)
 {
-    FILE* fd;
-#ifdef LINUX
-    int nFD;
-    int n;
-    if (sscanf(fname, "/:FD:/%d%n", &nFD, &n) == 1 && fname[n] == '\0')
-    {
-        lseek(nFD, 0, SEEK_SET);
-        int nDupFd = dup(nFD);
-        fd = nDupFd != -1 ? fdopen(nDupFd, "rb") : nullptr;
-    }
-    else
-#endif
-        fd = wrap_fopen(fname, "rb");
-
-    if (!fd)
+    hb_blob_t* pBlob = hb_blob_create_from_file_or_fail(fname);
+    if (!pBlob)
         return 0;
-
-    int nFonts = 0;
-    sal_uInt8 buffer[12];
-    if (fread(buffer, 1, 12, fd) == 12) {
-        if(GetUInt32(buffer, 0) == T_ttcf )
-            nFonts = GetUInt32(buffer, 8);
-    }
-
-    if (nFonts > 0)
-    {
-        fseek(fd, 0, SEEK_END);
-        sal_uInt64 fileSize = ftell(fd);
-
-        //Feel free to calc the exact max possible number of fonts a file
-        //could contain given its physical size. But this will clamp it to
-        //a sane starting point
-        //http://processingjs.nihongoresources.com/the_smallest_font/
-        //https://github.com/grzegorzrolek/null-ttf
-        const int nMaxFontsPossible = fileSize / 528;
-        if (nFonts > nMaxFontsPossible)
-        {
-            SAL_WARN("vcl.fonts", "font file " << fname <<" claims to have "
-                     << nFonts << " fonts, but only "
-                     << nMaxFontsPossible << " are possible");
-            nFonts = nMaxFontsPossible;
-        }
-    }
-
-    fclose(fd);
-
-    return nFonts;
+    unsigned int nFaces = hb_face_count(pBlob);
+    hb_blob_destroy(pBlob);
+    return nFaces;
 }
 
 #if !defined(_WIN32) || defined(DO_USE_TTF_ON_WIN32)
