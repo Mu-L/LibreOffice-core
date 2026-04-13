@@ -724,10 +724,8 @@ namespace
             TTGlobalFontInfo aInfo;
             GetTTGlobalFontInfo( pTTF, &aInfo );
             // most importantly: the family name
-            if( !aInfo.ufamily.isEmpty() )
-                o_rResult.SetFamilyName( aInfo.ufamily );
-            else if( !aInfo.family.isEmpty() )
-                o_rResult.SetFamilyName( OStringToOUString( aInfo.family, RTL_TEXTENCODING_ASCII_US ) );
+            if( !aInfo.family.isEmpty() )
+                o_rResult.SetFamilyName( aInfo.family );
             // set weight
             if( aInfo.weight )
             {

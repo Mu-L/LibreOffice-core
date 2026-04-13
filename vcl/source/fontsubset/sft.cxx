@@ -492,8 +492,10 @@ SFErrCodes TrueTypeFont::open(hb_blob_t* pBlob, sal_uInt32 facenum)
 
 void GetTTGlobalFontInfo(const AbstractTrueTypeFont *ttf, TTGlobalFontInfo *info)
 {
-    info->family = ttf->family;
-    info->ufamily = ttf->ufamily;
+    if (!ttf->ufamily.isEmpty())
+        info->family = ttf->ufamily;
+    else if (!ttf->family.isEmpty())
+        info->family = OStringToOUString(ttf->family, RTL_TEXTENCODING_ASCII_US);
     info->subfamily = ttf->subfamily;
     info->usubfamily = ttf->usubfamily;
     info->microsoftSymbolEncoded = ttf->IsMicrosoftSymbolEncoded();
