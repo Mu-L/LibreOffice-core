@@ -541,9 +541,8 @@ IMPL_LINK_NOARG(SvxHatchTabPage, ClickDeleteHdl_Impl, SvxPresetListBox*, void)
     m_nHatchingListState |= ChangeType::MODIFIED;
 }
 
-IMPL_LINK_NOARG(SvxHatchTabPage, ClickRenameHdl_Impl, SvxPresetListBox*, void )
+IMPL_LINK(SvxHatchTabPage, ClickRenameHdl_Impl, sal_uInt16, nId, void)
 {
-    const sal_uInt16 nId = m_xHatchLB->GetContextMenuItemId();
     const size_t nPos = m_xHatchLB->GetItemPos(nId);
 
     if( nPos == VALUESET_ITEM_NOTFOUND )
@@ -577,7 +576,6 @@ IMPL_LINK_NOARG(SvxHatchTabPage, ClickRenameHdl_Impl, SvxPresetListBox*, void )
             xBox->run();
         }
     }
-
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

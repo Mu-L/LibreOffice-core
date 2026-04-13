@@ -28,7 +28,7 @@ class SVXCORE_DLLPUBLIC SvxPresetListBox : public ValueSet
 private:
     Size                         m_aIconSize;
     sal_uInt16 mnContextMenuItemId;
-    Link<SvxPresetListBox*,void> maRenameHdl;
+    Link<sal_uInt16, void> maRenameHdl;
     Link<SvxPresetListBox*,void> maDeleteHdl;
 
     void OnMenuItemSelected(std::u16string_view rIdent);
@@ -44,10 +44,7 @@ public:
     Size const & GetIconSize() const { return m_aIconSize; }
     sal_uInt16 GetContextMenuItemId() const { return mnContextMenuItemId; }
 
-    void SetRenameHdl( const Link<SvxPresetListBox*,void>& rLink )
-    {
-        maRenameHdl = rLink;
-    }
+    void SetRenameHdl(const Link<sal_uInt16, void>& rLink) { maRenameHdl = rLink; }
     void SetDeleteHdl( const Link<SvxPresetListBox*,void>& rLink )
     {
         maDeleteHdl = rLink;

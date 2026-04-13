@@ -96,7 +96,7 @@ void SvxPresetListBox::FillPresetListBox(XPatternList& pList, sal_uInt32 nStartI
 void SvxPresetListBox::OnMenuItemSelected(std::u16string_view rIdent)
 {
     if (rIdent == u"rename")
-        maRenameHdl.Call(this);
+        maRenameHdl.Call(mnContextMenuItemId);
     else if (rIdent == u"delete")
         maDeleteHdl.Call(this);
 }

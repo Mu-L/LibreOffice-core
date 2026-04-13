@@ -436,10 +436,8 @@ IMPL_LINK_NOARG(SvxPatternTabPage, ClickModifyHdl_Impl, weld::Button&, void)
     m_nPatternListState |= ChangeType::MODIFIED;
 }
 
-
-IMPL_LINK_NOARG(SvxPatternTabPage, ClickRenameHdl_Impl, SvxPresetListBox*, void)
+IMPL_LINK(SvxPatternTabPage, ClickRenameHdl_Impl, sal_uInt16, nId, void)
 {
-    const sal_uInt16 nId = m_xPatternLB->GetContextMenuItemId();
     const size_t nPos = m_xPatternLB->GetItemPos(nId);
 
     if ( nPos == VALUESET_ITEM_NOTFOUND )

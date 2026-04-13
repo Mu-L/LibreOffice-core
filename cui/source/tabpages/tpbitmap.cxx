@@ -573,9 +573,8 @@ IMPL_LINK_NOARG(SvxBitmapTabPage, ModifyBitmapHdl, ValueSet*, void)
 
 }
 
-IMPL_LINK_NOARG(SvxBitmapTabPage, ClickRenameHdl, SvxPresetListBox*, void)
+IMPL_LINK(SvxBitmapTabPage, ClickRenameHdl, sal_uInt16, nId, void)
 {
-    const sal_uInt16 nId = m_xBitmapLB->GetContextMenuItemId();
     const size_t nPos = m_xBitmapLB->GetItemPos(nId);
 
     if( nPos == VALUESET_ITEM_NOTFOUND )
