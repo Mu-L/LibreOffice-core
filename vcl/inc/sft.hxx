@@ -443,7 +443,7 @@ class TrueTypeFont;
  * @ingroup sft
  *
  */
-void GetTTGlobalFontInfo(const AbstractTrueTypeFont *ttf, TTGlobalFontInfo *info);
+void GetTTGlobalFontInfo(const TrueTypeFont *ttf, TTGlobalFontInfo *info);
 
 OUString analyzeSfntName(const TrueTypeFont* pTTFont, sal_uInt16 nameId, const LanguageTag& rPrefLang);
 

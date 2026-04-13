@@ -503,9 +503,11 @@ SFErrCodes TrueTypeFont::open(hb_blob_t* pBlob, sal_uInt32 facenum)
     return AbstractTrueTypeFont::initialize();
 }
 
-void GetTTGlobalFontInfo(const AbstractTrueTypeFont *ttf, TTGlobalFontInfo *info)
+void GetTTGlobalFontInfo(const TrueTypeFont *ttf, TTGlobalFontInfo *info)
 {
-    info->family = ttf->family;
+    info->family = ttf->getName(HB_OT_NAME_ID_FONT_FAMILY);
+    if (info->family.isEmpty())
+        info->family = ttf->getName(HB_OT_NAME_ID_POSTSCRIPT_NAME);
     info->subfamily = ttf->subfamily;
     info->microsoftSymbolEncoded = ttf->IsMicrosoftSymbolEncoded();
 
