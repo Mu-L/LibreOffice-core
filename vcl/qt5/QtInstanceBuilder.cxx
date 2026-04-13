@@ -94,6 +94,7 @@ constexpr auto SUPPORTED_UI_FILES = frozen::make_unordered_set<std::u16string_vi
     u"cui/ui/pastespecial.ui",
     u"cui/ui/positionsizedialog.ui",
     u"cui/ui/qrcodegen.ui",
+    u"cui/ui/querydeletebitmapdialog.ui",
     u"cui/ui/querydeletechartcolordialog.ui",
     u"cui/ui/querydeletedictionarydialog.ui",
     u"cui/ui/querydeletelineenddialog.ui",
