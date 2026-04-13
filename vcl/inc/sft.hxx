@@ -373,8 +373,6 @@ class TrueTypeFont;
 
 void GetTTGlobalFontInfo(const TrueTypeFont *ttf, TTGlobalFontInfo *info);
 
-FontWeight AnalyzeTTFWeight(const TrueTypeFont* pTTFont);
-
 class UNLESS_MERGELIBS(VCL_DLLPUBLIC) TrueTypeFont
 {
     hb_face_t* m_pFace = nullptr;
@@ -396,6 +394,7 @@ public:
     font::RawFontData getTable(hb_tag_t tag) const;
 
     sal_uInt32 countNonEmptyGlyphs() const;
+    FontWeight analyzeFontWeight() const;
     bool IsMicrosoftSymbolEncoded() const { return m_bMicrosoftSymbolEncoded; }
 };
 

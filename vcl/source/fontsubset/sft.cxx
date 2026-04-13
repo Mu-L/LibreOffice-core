@@ -266,9 +266,12 @@ static FontWeight ImplWeightToSal( int nWeight )
         return WEIGHT_BLACK;
 }
 
-FontWeight AnalyzeTTFWeight(const TrueTypeFont* ttf)
+FontWeight TrueTypeFont::analyzeFontWeight() const
 {
-    auto aOS2 = ttf->getTable(T_OS2);
+    if (!m_pFace)
+        return WEIGHT_DONTKNOW;
+
+    auto aOS2 = getTable(T_OS2);
     if (aOS2.size() >= 42)
     {
         sal_uInt16 weightOS2 = GetUInt16(aOS2.data(), OS2_usWeightClass_offset);
@@ -276,7 +279,7 @@ FontWeight AnalyzeTTFWeight(const TrueTypeFont* ttf)
     }
 
     // Fallback to inferring from the style name (name ID 2).
-    OUString sStyle = ttf->getName(HB_OT_NAME_ID_FONT_SUBFAMILY);
+    OUString sStyle = getName(HB_OT_NAME_ID_FONT_SUBFAMILY);
 
     bool bBold(false), bItalic(false);
     if (o3tl::equalsIgnoreAsciiCase(sStyle, u"Regular"))

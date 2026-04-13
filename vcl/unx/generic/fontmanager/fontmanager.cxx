@@ -398,7 +398,7 @@ bool PrintFontManager::analyzeSfntFile( PrintFont& rFont ) const
 
         rDFA.SetFamilyType(matchFamilyName(rDFA.GetFamilyName()));
 
-        rDFA.SetWeight(AnalyzeTTFWeight(&aFont));
+        rDFA.SetWeight(aFont.analyzeFontWeight());
 
         switch( aInfo.width )
         {
