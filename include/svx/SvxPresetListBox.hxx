@@ -29,7 +29,7 @@ private:
     Size                         m_aIconSize;
     sal_uInt16 mnContextMenuItemId;
     Link<sal_uInt16, void> maRenameHdl;
-    Link<SvxPresetListBox*,void> maDeleteHdl;
+    Link<sal_uInt16, void> maDeleteHdl;
 
     void OnMenuItemSelected(std::u16string_view rIdent);
 
@@ -42,13 +42,9 @@ public:
     virtual bool Command(const CommandEvent& rEvent) override;
     virtual void SetDrawingArea(weld::DrawingArea* pDrawingArea) override;
     Size const & GetIconSize() const { return m_aIconSize; }
-    sal_uInt16 GetContextMenuItemId() const { return mnContextMenuItemId; }
 
     void SetRenameHdl(const Link<sal_uInt16, void>& rLink) { maRenameHdl = rLink; }
-    void SetDeleteHdl( const Link<SvxPresetListBox*,void>& rLink )
-    {
-        maDeleteHdl = rLink;
-    }
+    void SetDeleteHdl(const Link<sal_uInt16, void>& rLink) { maDeleteHdl = rLink; }
 
     void FillPresetListBox(XGradientList& pList, sal_uInt32 nStartIndex = 1);
     void FillPresetListBox(XHatchList& pList, sal_uInt32 nStartIndex = 1);

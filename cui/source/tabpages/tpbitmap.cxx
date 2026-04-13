@@ -610,11 +610,7 @@ IMPL_LINK(SvxBitmapTabPage, ClickRenameHdl, sal_uInt16, nId, void)
     }
 }
 
-IMPL_LINK_NOARG(SvxBitmapTabPage, ClickDeleteHdl, SvxPresetListBox*, void)
-{
-    DeleteBitmapHdl_Impl(m_xBitmapLB->GetContextMenuItemId());
-}
-
+IMPL_LINK(SvxBitmapTabPage, ClickDeleteHdl, sal_uInt16, nId, void) { DeleteBitmapHdl_Impl(nId); }
 
 SvxBitmapTabPage::SvxPresetListBoxValueSet::SvxPresetListBoxValueSet(std::unique_ptr<weld::ScrolledWindow> pWindow)
     : SvxPresetListBox(std::move(pWindow))

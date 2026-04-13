@@ -475,9 +475,8 @@ IMPL_LINK(SvxPatternTabPage, ClickRenameHdl_Impl, sal_uInt16, nId, void)
     }
 }
 
-IMPL_LINK_NOARG(SvxPatternTabPage, ClickDeleteHdl_Impl, SvxPresetListBox*, void)
+IMPL_LINK(SvxPatternTabPage, ClickDeleteHdl_Impl, sal_uInt16, nId, void)
 {
-    const sal_uInt16 nId = m_xPatternLB->GetContextMenuItemId();
     const size_t nPos = m_xPatternLB->GetItemPos(nId);
 
     if( nPos != VALUESET_ITEM_NOTFOUND )

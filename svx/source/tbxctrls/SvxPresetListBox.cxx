@@ -98,7 +98,7 @@ void SvxPresetListBox::OnMenuItemSelected(std::u16string_view rIdent)
     if (rIdent == u"rename")
         maRenameHdl.Call(mnContextMenuItemId);
     else if (rIdent == u"delete")
-        maDeleteHdl.Call(this);
+        maDeleteHdl.Call(mnContextMenuItemId);
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

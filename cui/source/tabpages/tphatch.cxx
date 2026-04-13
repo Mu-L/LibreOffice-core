@@ -513,9 +513,8 @@ IMPL_LINK_NOARG(SvxHatchTabPage, ClickModifyHdl_Impl, weld::Button&, void)
     m_nHatchingListState |= ChangeType::MODIFIED;
 }
 
-IMPL_LINK_NOARG(SvxHatchTabPage, ClickDeleteHdl_Impl, SvxPresetListBox*, void)
+IMPL_LINK(SvxHatchTabPage, ClickDeleteHdl_Impl, sal_uInt16, nId, void)
 {
-    const sal_uInt16 nId = m_xHatchLB->GetContextMenuItemId();
     const size_t nPos = m_xHatchLB->GetItemPos(nId);
 
     if( nPos == VALUESET_ITEM_NOTFOUND )

@@ -445,9 +445,8 @@ IMPL_LINK_NOARG(SvxGradientTabPage, ClickModifyHdl_Impl, weld::Button&, void)
     m_nGradientListState |= ChangeType::MODIFIED;
 }
 
-IMPL_LINK_NOARG(SvxGradientTabPage, ClickDeleteHdl_Impl, SvxPresetListBox*, void)
+IMPL_LINK(SvxGradientTabPage, ClickDeleteHdl_Impl, sal_uInt16, nId, void)
 {
-    const sal_uInt16 nId = m_xGradientLB->GetContextMenuItemId();
     const size_t nPos = m_xGradientLB->GetItemPos(nId);
 
     if( nPos != VALUESET_ITEM_NOTFOUND )
