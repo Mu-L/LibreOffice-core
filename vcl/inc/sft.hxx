@@ -473,8 +473,7 @@ public:
     virtual bool hasTable(hb_tag_t tag) const = 0;
     virtual const sal_uInt8* table(hb_tag_t tag, sal_uInt32& size) const = 0;
 
-    OString     family;
-    OUString    ufamily;
+    OUString    family;
     OString     subfamily;
     OUString    usubfamily;
 };

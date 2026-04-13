@@ -224,19 +224,21 @@ static void GetNames(AbstractTrueTypeFont *t)
         psname = "Unknown"_ostr;
 
     /* Font family and subfamily names: preferred Apple */
-    t->family.clear();
+    OString family;
     if ((r = findname(table, n, 0, 0, 0, 1)) != -1)
-        t->family = nameExtract(table, nTableSize, r, 1, &t->ufamily);
-    if ( t->family.isEmpty() && (r = findname(table, n, 3, 1, 0x0409, 1)) != -1)
-        t->family = nameExtract(table, nTableSize, r, 1, &t->ufamily);
-    if ( t->family.isEmpty() && (r = findname(table, n, 1, 0, 0, 1)) != -1)
-        t->family = nameExtract(table, nTableSize, r, 0, nullptr);
-    if ( t->family.isEmpty() && (r = findname(table, n, 3, 1, 0x0411, 1)) != -1)
-        t->family = nameExtract(table, nTableSize, r, 1, &t->ufamily);
-    if ( t->family.isEmpty() && (r = findname(table, n, 3, 0, 0x0409, 1)) != -1)
-        t->family = nameExtract(table, nTableSize, r, 1, &t->ufamily);
-    if ( t->family.isEmpty() )
-        t->family = psname;
+        family = nameExtract(table, nTableSize, r, 1, &t->family);
+    if ( family.isEmpty() && (r = findname(table, n, 3, 1, 0x0409, 1)) != -1)
+        family = nameExtract(table, nTableSize, r, 1, &t->family);
+    if ( family.isEmpty() && (r = findname(table, n, 1, 0, 0, 1)) != -1)
+        family = nameExtract(table, nTableSize, r, 0, nullptr);
+    if ( family.isEmpty() && (r = findname(table, n, 3, 1, 0x0411, 1)) != -1)
+        family = nameExtract(table, nTableSize, r, 1, &t->family);
+    if ( family.isEmpty() && (r = findname(table, n, 3, 0, 0x0409, 1)) != -1)
+        family = nameExtract(table, nTableSize, r, 1, &t->family);
+    if ( family.isEmpty() )
+        family = psname;
+    if ( t->family.isEmpty() && !family.isEmpty() )
+        t->family = OStringToOUString(family, RTL_TEXTENCODING_ASCII_US);
 
     t->subfamily.clear();
     t->usubfamily.clear();
@@ -492,10 +494,7 @@ SFErrCodes TrueTypeFont::open(hb_blob_t* pBlob, sal_uInt32 facenum)
 
 void GetTTGlobalFontInfo(const AbstractTrueTypeFont *ttf, TTGlobalFontInfo *info)
 {
-    if (!ttf->ufamily.isEmpty())
-        info->family = ttf->ufamily;
-    else if (!ttf->family.isEmpty())
-        info->family = OStringToOUString(ttf->family, RTL_TEXTENCODING_ASCII_US);
+    info->family = ttf->family;
     if (!ttf->usubfamily.isEmpty())
         info->subfamily = ttf->usubfamily;
     else if (!ttf->subfamily.isEmpty())
