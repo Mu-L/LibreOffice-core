@@ -779,10 +779,8 @@ namespace
             o_rResult.SetPitch( (aInfo.pitch == 0) ? PITCH_VARIABLE : PITCH_FIXED );
 
             // set style name
-            if( !aInfo.usubfamily.isEmpty() )
-                o_rResult.SetStyleName( aInfo.usubfamily );
-            else if( !aInfo.subfamily.isEmpty() )
-                o_rResult.SetStyleName( OUString::createFromAscii( aInfo.subfamily ) );
+            if( !aInfo.subfamily.isEmpty() )
+                o_rResult.SetStyleName( aInfo.subfamily );
 
             // cleanup
             CloseTTFont( pTTF );

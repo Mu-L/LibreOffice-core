@@ -393,8 +393,8 @@ bool PrintFontManager::analyzeSfntFile( PrintFont& rFont ) const
             rDFA.SetFamilyName(aFamily);
         }
 
-        if( !aInfo.usubfamily.isEmpty() )
-            rDFA.SetStyleName(aInfo.usubfamily);
+        if( !aInfo.subfamily.isEmpty() )
+            rDFA.SetStyleName(aInfo.subfamily);
 
         rDFA.SetFamilyType(matchFamilyName(rDFA.GetFamilyName()));
 

@@ -496,8 +496,10 @@ void GetTTGlobalFontInfo(const AbstractTrueTypeFont *ttf, TTGlobalFontInfo *info
         info->family = ttf->ufamily;
     else if (!ttf->family.isEmpty())
         info->family = OStringToOUString(ttf->family, RTL_TEXTENCODING_ASCII_US);
-    info->subfamily = ttf->subfamily;
-    info->usubfamily = ttf->usubfamily;
+    if (!ttf->usubfamily.isEmpty())
+        info->subfamily = ttf->usubfamily;
+    else if (!ttf->subfamily.isEmpty())
+        info->subfamily = OStringToOUString(ttf->subfamily, RTL_TEXTENCODING_ASCII_US);
     info->microsoftSymbolEncoded = ttf->IsMicrosoftSymbolEncoded();
 
     sal_uInt32 table_size;

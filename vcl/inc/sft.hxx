@@ -132,8 +132,7 @@ namespace vcl
 
     typedef struct TTGlobalFontInfo_ {
         OUString   family;            /**< family name                                             */
-        OString    subfamily;     /**< subfamily name                                          */
-        OUString   usubfamily;    /**< subfamily name UCS2 */
+        OUString   subfamily;         /**< subfamily name                                          */
         sal_uInt16 macStyle = 0;      /**< macstyle bits from 'HEAD' table */
         int   weight = 0;             /**< value of WeightClass or 0 if can't be determined        */
         int   width = 0;              /**< value of WidthClass or 0 if can't be determined         */
