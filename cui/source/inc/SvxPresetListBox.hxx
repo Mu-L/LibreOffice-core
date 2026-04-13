@@ -23,7 +23,7 @@
 #include <svx/xtable.hxx>
 #include <tools/gen.hxx>
 
-class SVXCORE_DLLPUBLIC SvxPresetListBox : public ValueSet
+class SvxPresetListBox : public ValueSet
 {
 private:
     Size m_aIconSize;

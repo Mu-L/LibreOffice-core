@@ -222,6 +222,7 @@ $(eval $(call gb_Library_add_exception_objects,cui,\
     cui/source/tabpages/numpages \
     cui/source/tabpages/page \
     cui/source/tabpages/paragrph \
+    cui/source/tabpages/SvxPresetListBox \
     cui/source/tabpages/swpossizetabpage \
     cui/source/tabpages/tabarea \
     cui/source/tabpages/tabline \

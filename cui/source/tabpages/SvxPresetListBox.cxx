@@ -17,7 +17,8 @@
  *   the License at http://www.apache.org/licenses/LICENSE-2.0 .
  */
 
-#include <svx/SvxPresetListBox.hxx>
+#include <SvxPresetListBox.hxx>
+
 #include <svx/xtable.hxx>
 #include <vcl/commandevent.hxx>
 #include <vcl/image.hxx>

@@ -18,12 +18,13 @@
  */
 #pragma once
 
+#include "SvxPresetListBox.hxx"
+
 #include <svtools/valueset.hxx>
 #include <svx/dlgctrl.hxx>
 #include <svx/xflasit.hxx>
 #include <svx/tabarea.hxx>
 #include <svx/SvxColorValueSet.hxx>
-#include <svx/SvxPresetListBox.hxx>
 #include <svx/PaletteManager.hxx>
 #include <svx/svdview.hxx>
 #include <vcl/hexcolorcontrol.hxx>
