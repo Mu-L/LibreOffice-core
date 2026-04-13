@@ -261,6 +261,7 @@ QObject* QtBuilder::insertObject(QObject* pParent, const OUString& rClass, std::
         QListView* pListView = new QListView(pParentWidget);
         pListView->setModel(new QStandardItemModel(pListView));
         pListView->setViewMode(QListView::IconMode);
+        pListView->setResizeMode(QListView::Adjust);
         pListView->setMovement(QListView::Static);
         setItemViewProperties(*pListView, rProps);
         pObject = pListView;
