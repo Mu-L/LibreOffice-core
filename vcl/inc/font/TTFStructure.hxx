@@ -163,21 +163,10 @@ enum class NameID : sal_uInt16
 } // end font namespace
 
 // Standard TrueType table tags
-constexpr sal_uInt32 T_maxp = 0x6D617870;
-constexpr sal_uInt32 T_glyf = 0x676C7966;
 constexpr sal_uInt32 T_head = 0x68656164;
-constexpr sal_uInt32 T_loca = 0x6C6F6361;
 constexpr sal_uInt32 T_name = 0x6E616D65;
-constexpr sal_uInt32 T_hhea = 0x68686561;
-constexpr sal_uInt32 T_hmtx = 0x686D7478;
 constexpr sal_uInt32 T_cmap = 0x636D6170;
-constexpr sal_uInt32 T_vhea = 0x76686561;
-constexpr sal_uInt32 T_vmtx = 0x766D7478;
 constexpr sal_uInt32 T_OS2 = 0x4F532F32;
 constexpr sal_uInt32 T_post = 0x706F7374;
-constexpr sal_uInt32 T_cvt = 0x63767420;
-constexpr sal_uInt32 T_prep = 0x70726570;
-constexpr sal_uInt32 T_fpgm = 0x6670676D;
-constexpr sal_uInt32 T_CFF = 0x43464620;
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
