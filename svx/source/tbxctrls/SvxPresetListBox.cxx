@@ -45,14 +45,27 @@ bool SvxPresetListBox::Command(const CommandEvent& rEvent)
 {
     if (rEvent.GetCommand() != CommandEventId::ContextMenu)
         return CustomWidgetController::Command(rEvent);
-    sal_uInt16 nContextMenuItemId = GetHighlightedItemId();
+
+    sal_uInt16 nContextMenuItemId = 0;
+    Point aPos;
+    if (rEvent.IsMouseEvent())
+    {
+        nContextMenuItemId = GetHighlightedItemId();
+        aPos = rEvent.GetMousePosPixel();
+    }
+    else
+    {
+        nContextMenuItemId = GetSelectedItemId();
+        aPos = GetItemRect(nContextMenuItemId).Center();
+    }
+
     if (nContextMenuItemId > 0)
     {
         std::unique_ptr<weld::Builder> xBuilder(
             Application::CreateBuilder(GetDrawingArea(), u"svx/ui/presetmenu.ui"_ustr));
         std::unique_ptr<weld::Menu> xMenu(xBuilder->weld_menu(u"menu"_ustr));
-        const OUString sIdent = xMenu->popup_at_rect(
-            GetDrawingArea(), tools::Rectangle(rEvent.GetMousePosPixel(), Size(1, 1)));
+        const OUString sIdent
+            = xMenu->popup_at_rect(GetDrawingArea(), tools::Rectangle(aPos, Size(1, 1)));
         if (sIdent == u"rename")
             maRenameHdl.Call(nContextMenuItemId);
         else if (sIdent == u"delete")
