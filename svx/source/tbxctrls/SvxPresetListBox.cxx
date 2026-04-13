@@ -77,35 +77,35 @@ bool SvxPresetListBox::Command(const CommandEvent& rEvent)
 }
 
 template <typename ListType, typename EntryType>
-void SvxPresetListBox::FillPresetListBoxImpl(ListType& pList, sal_uInt32 nStartIndex)
+void SvxPresetListBox::FillPresetListBoxImpl(ListType& rList, sal_uInt32 nStartIndex)
 {
     const Size aSize(GetIconSize());
-    for (tools::Long nIndex = 0; nIndex < pList.Count(); nIndex++, nStartIndex++)
+    for (tools::Long nIndex = 0; nIndex < rList.Count(); nIndex++, nStartIndex++)
     {
-        Bitmap aBitmap = pList.GetBitmapForPreview(nIndex, aSize);
-        EntryType* pItem = static_cast<EntryType*>(pList.Get(nIndex));
+        Bitmap aBitmap = rList.GetBitmapForPreview(nIndex, aSize);
+        EntryType* pItem = static_cast<EntryType*>(rList.Get(nIndex));
         InsertItem(nStartIndex, Image(aBitmap), pItem->GetName());
     }
 }
 
-void SvxPresetListBox::FillPresetListBox(XGradientList& pList, sal_uInt32 nStartIndex)
+void SvxPresetListBox::FillPresetListBox(XGradientList& rList, sal_uInt32 nStartIndex)
 {
-    FillPresetListBoxImpl<XGradientList, XGradientEntry>(pList, nStartIndex);
+    FillPresetListBoxImpl<XGradientList, XGradientEntry>(rList, nStartIndex);
 }
 
-void SvxPresetListBox::FillPresetListBox(XHatchList& pList, sal_uInt32 nStartIndex)
+void SvxPresetListBox::FillPresetListBox(XHatchList& rList, sal_uInt32 nStartIndex)
 {
-    FillPresetListBoxImpl<XHatchList, XHatchEntry>(pList, nStartIndex);
+    FillPresetListBoxImpl<XHatchList, XHatchEntry>(rList, nStartIndex);
 }
 
-void SvxPresetListBox::FillPresetListBox(XBitmapList& pList, sal_uInt32 nStartIndex)
+void SvxPresetListBox::FillPresetListBox(XBitmapList& rList, sal_uInt32 nStartIndex)
 {
-    FillPresetListBoxImpl<XBitmapList, XBitmapEntry>(pList, nStartIndex);
+    FillPresetListBoxImpl<XBitmapList, XBitmapEntry>(rList, nStartIndex);
 }
 
-void SvxPresetListBox::FillPresetListBox(XPatternList& pList, sal_uInt32 nStartIndex)
+void SvxPresetListBox::FillPresetListBox(XPatternList& rList, sal_uInt32 nStartIndex)
 {
-    FillPresetListBoxImpl<XPatternList, XBitmapEntry>(pList, nStartIndex);
+    FillPresetListBoxImpl<XPatternList, XBitmapEntry>(rList, nStartIndex);
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

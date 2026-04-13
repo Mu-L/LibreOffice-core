@@ -31,7 +31,7 @@ private:
     Link<sal_uInt16, void> maDeleteHdl;
 
     template <typename ListType, typename EntryType>
-    void FillPresetListBoxImpl(ListType& pList, sal_uInt32 nStartIndex);
+    void FillPresetListBoxImpl(ListType& rList, sal_uInt32 nStartIndex);
 
 public:
     SvxPresetListBox(std::unique_ptr<weld::ScrolledWindow> pWindow);
@@ -43,10 +43,10 @@ public:
     void SetRenameHdl(const Link<sal_uInt16, void>& rLink) { maRenameHdl = rLink; }
     void SetDeleteHdl(const Link<sal_uInt16, void>& rLink) { maDeleteHdl = rLink; }
 
-    void FillPresetListBox(XGradientList& pList, sal_uInt32 nStartIndex = 1);
-    void FillPresetListBox(XHatchList& pList, sal_uInt32 nStartIndex = 1);
-    void FillPresetListBox(XBitmapList& pList, sal_uInt32 nStartIndex = 1);
-    void FillPresetListBox(XPatternList& pList, sal_uInt32 nStartIndex = 1);
+    void FillPresetListBox(XGradientList& rList, sal_uInt32 nStartIndex = 1);
+    void FillPresetListBox(XHatchList& rList, sal_uInt32 nStartIndex = 1);
+    void FillPresetListBox(XBitmapList& rList, sal_uInt32 nStartIndex = 1);
+    void FillPresetListBox(XPatternList& rList, sal_uInt32 nStartIndex = 1);
 };
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
