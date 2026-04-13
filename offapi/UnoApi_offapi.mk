@@ -3359,6 +3359,7 @@ $(eval $(call gb_UnoApi_add_idlfiles,offapi,com/sun/star/sheet,\
 	DataResult \
 	DataResultFlags \
 	DimensionFlags \
+	ExternalLinkRelType \
 	ExternalLinkInfo \
 	ExternalLinkType \
 	ExternalReference \

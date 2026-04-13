@@ -366,7 +366,9 @@ private:
     XclSupbookType      meType;         /// Type of this SUPBOOK record.
     sal_uInt16          mnXclTabCount;  /// Number of internal sheets.
     sal_uInt16          mnFileId;       /// 1-based external reference file ID for OOXML
-    bool                mbPathMissing = false; /// true if external relation is xlPathMissing.
+
+    bool                mbPathMissing = false;  /// true if external relation is xlPathMissing.
+    bool                mbXlStartup = false;    /// true if path is relative to XLSTART folder.
 };
 
 // All SUPBOOKS in a document =================================================
@@ -1533,6 +1535,7 @@ XclExpSupbook::XclExpSupbook( const XclExpRoot& rRoot, const OUString& rUrl ) :
     sal_uInt16 nFileId = pRefMgr->getExternalFileId( rUrl );
     mnFileId = nFileId + 1;
     mbPathMissing = pRefMgr->isPathMissing(nFileId);
+    mbXlStartup = pRefMgr->isXlStartup(nFileId);
     ScfStringVec aTabNames;
     pRefMgr->getAllCachedTableNames( nFileId, aTabNames );
     size_t nTabIndex = 0;
@@ -1675,6 +1678,8 @@ void XclExpSupbook::SaveXml( XclExpXmlStream& rStrm )
     OUString sRelType;
     if (mbPathMissing)
         sRelType = oox::getRelationship(Relationship::MISSINGEXTERNALLINKPATH);
+    else if (mbXlStartup)
+        sRelType = oox::getRelationship(Relationship::XLSTARTUPEXTERNALLINKPATH);
     else
     {
         sal_uInt16 nLevel = 0;
