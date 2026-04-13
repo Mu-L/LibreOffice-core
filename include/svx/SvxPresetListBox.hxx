@@ -26,7 +26,6 @@
 class SVXCORE_DLLPUBLIC SvxPresetListBox : public ValueSet
 {
 private:
-    static constexpr sal_uInt32  s_nColCount = 3;
     Size                         m_aIconSize;
     sal_uInt16 mnContextMenuItemId;
     Link<SvxPresetListBox*,void> maRenameHdl;

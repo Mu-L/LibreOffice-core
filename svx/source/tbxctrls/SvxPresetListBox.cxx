@@ -42,7 +42,7 @@ void SvxPresetListBox::SetDrawingArea(weld::DrawingArea* pDrawingArea)
 
 void SvxPresetListBox::Resize()
 {
-    SetColCount(s_nColCount);
+    SetColCount(3);
     SetLineCount(5);
     WinBits aWinBits(GetStyle());
     aWinBits |= WB_VSCROLL;
