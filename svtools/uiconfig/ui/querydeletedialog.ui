@@ -29,6 +29,11 @@
                 <property name="has-default">True</property>
                 <property name="receives-default">True</property>
                 <property name="use-underline">True</property>
+                <child internal-child="accessible">
+                  <object class="AtkObject" id="yes-atkobject">
+                    <property name="AtkObject::accessible-description" translatable="yes" context="querydeletedialog|extended_tip|yes">Click to delete the file with the name shown in this dialog.</property>
+                  </object>
+                </child>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -44,6 +49,11 @@
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="use-underline">True</property>
+                <child internal-child="accessible">
+                  <object class="AtkObject" id="all-atkobject">
+                    <property name="AtkObject::accessible-description" translatable="yes" context="querydeletedialog|extended_tip|all">Click to delete all selected files.</property>
+                  </object>
+                </child>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -58,6 +68,11 @@
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="use-underline">True</property>
+                <child internal-child="accessible">
+                  <object class="AtkObject" id="no-atkobject">
+                    <property name="AtkObject::accessible-description" translatable="yes" context="querydeletedialog|extended_tip|no">Click to cancel deletion of the file with the name shown in this dialog.</property>
+                  </object>
+                </child>
               </object>
               <packing>
                 <property name="expand">False</property>
