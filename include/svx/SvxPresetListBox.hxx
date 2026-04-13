@@ -31,8 +31,6 @@ private:
     Link<sal_uInt16, void> maRenameHdl;
     Link<sal_uInt16, void> maDeleteHdl;
 
-    void OnMenuItemSelected(std::u16string_view rIdent);
-
     template< typename ListType, typename EntryType >
     void FillPresetListBoxImpl(ListType& pList, sal_uInt32 nStartIndex);
 

@@ -52,8 +52,12 @@ bool SvxPresetListBox::Command(const CommandEvent& rEvent)
         std::unique_ptr<weld::Builder> xBuilder(
             Application::CreateBuilder(GetDrawingArea(), u"svx/ui/presetmenu.ui"_ustr));
         std::unique_ptr<weld::Menu> xMenu(xBuilder->weld_menu(u"menu"_ustr));
-        OnMenuItemSelected(xMenu->popup_at_rect(
-            GetDrawingArea(), tools::Rectangle(rEvent.GetMousePosPixel(), Size(1, 1))));
+        const OUString sIdent = xMenu->popup_at_rect(
+            GetDrawingArea(), tools::Rectangle(rEvent.GetMousePosPixel(), Size(1, 1)));
+        if (sIdent == u"rename")
+            maRenameHdl.Call(mnContextMenuItemId);
+        else if (sIdent == u"delete")
+            maDeleteHdl.Call(mnContextMenuItemId);
 
         mnContextMenuItemId = 0;
         return true;
@@ -91,14 +95,6 @@ void SvxPresetListBox::FillPresetListBox(XBitmapList& pList, sal_uInt32 nStartIn
 void SvxPresetListBox::FillPresetListBox(XPatternList& pList, sal_uInt32 nStartIndex)
 {
     FillPresetListBoxImpl<XPatternList, XBitmapEntry>(pList, nStartIndex);
-}
-
-void SvxPresetListBox::OnMenuItemSelected(std::u16string_view rIdent)
-{
-    if (rIdent == u"rename")
-        maRenameHdl.Call(mnContextMenuItemId);
-    else if (rIdent == u"delete")
-        maDeleteHdl.Call(mnContextMenuItemId);
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
