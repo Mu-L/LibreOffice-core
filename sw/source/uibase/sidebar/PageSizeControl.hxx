@@ -21,14 +21,12 @@
 #include <i18nutil/paper.hxx>
 
 #include <svtools/toolbarmenu.hxx>
-#include <svtools/valueset.hxx>
 #include <vcl/weld/MetricSpinButton.hxx>
 #include <vcl/weld/TreeView.hxx>
 
 #include <vector>
 
 class PageSizePopup;
-class ValueSet;
 
 namespace sw::sidebar
 {
