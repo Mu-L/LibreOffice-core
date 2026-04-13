@@ -104,7 +104,7 @@ namespace vcl
 
 
 
-/** Return value of GetTTGlobalFontInfo() */
+/** Return value of TrueTypeFont::getGlobalFontInfo() */
 
     typedef struct TTGlobalFontInfo_ {
         OUString   family;            /**< family name                                             */
@@ -371,14 +371,12 @@ class TrueTypeFont;
         std::optional<std::bitset<CodePageCoverage::MAX_CP_ENUM>> & rCodePageCoverage,
         const unsigned char* pTable, size_t nLength);
 
-void GetTTGlobalFontInfo(const TrueTypeFont *ttf, TTGlobalFontInfo *info);
-
 class UNLESS_MERGELIBS(VCL_DLLPUBLIC) TrueTypeFont
 {
     hb_face_t* m_pFace = nullptr;
-    bool m_bMicrosoftSymbolEncoded = false;
 
     void open(hb_blob_t* pBlob, sal_uInt32 facenum);
+    font::RawFontData getTable(hb_tag_t tag) const;
 
 public:
     /** Construct from a file path */
@@ -391,11 +389,9 @@ public:
 
     OUString getName(hb_ot_name_id_t nNameID, const LanguageTag& rLang = LanguageTag(LANGUAGE_DONTKNOW)) const;
 
-    font::RawFontData getTable(hb_tag_t tag) const;
-
+    TTGlobalFontInfo getGlobalFontInfo() const;
     sal_uInt32 countNonEmptyGlyphs() const;
     FontWeight analyzeFontWeight() const;
-    bool IsMicrosoftSymbolEncoded() const { return m_bMicrosoftSymbolEncoded; }
 };
 
 } // namespace vcl

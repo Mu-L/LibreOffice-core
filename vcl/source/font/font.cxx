@@ -721,8 +721,7 @@ namespace
         TrueTypeFont aFont(i_pBuffer, i_nSize, 0);
         if( aFont.isValid() )
         {
-            TTGlobalFontInfo aInfo;
-            GetTTGlobalFontInfo( &aFont, &aInfo );
+            TTGlobalFontInfo aInfo = aFont.getGlobalFontInfo();
             // most importantly: the family name
             if( !aInfo.family.isEmpty() )
                 o_rResult.SetFamilyName( aInfo.family );

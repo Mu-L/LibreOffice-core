@@ -374,8 +374,7 @@ bool PrintFontManager::analyzeSfntFile( PrintFont& rFont ) const
 
     if( aFont.isValid() )
     {
-        TTGlobalFontInfo aInfo;
-        GetTTGlobalFontInfo( &aFont, & aInfo );
+        TTGlobalFontInfo aInfo = aFont.getGlobalFontInfo();
 
         if (rDFA.GetFamilyName().isEmpty())
         {

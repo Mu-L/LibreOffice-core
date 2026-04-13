@@ -230,8 +230,7 @@ bool sufficientTTFRights(const void* data, tools::Long size,
     TrueTypeFont font(data, size, 0 /*TODO*/);
     if (font.isValid())
     {
-        TTGlobalFontInfo info;
-        GetTTGlobalFontInfo(&font, &info);
+        TTGlobalFontInfo info = font.getGlobalFontInfo();
         // https://www.microsoft.com/typography/otspec/os2.htm#fst
         int copyright = info.typeFlags;
         switch (rights)

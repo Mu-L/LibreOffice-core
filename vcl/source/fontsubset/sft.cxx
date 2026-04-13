@@ -171,41 +171,41 @@ OUString TrueTypeFont::getName(hb_ot_name_id_t nNameID, const LanguageTag& rLang
 void TrueTypeFont::open(hb_blob_t* pBlob, sal_uInt32 facenum)
 {
     m_pFace = hb_face_create_or_fail(pBlob, facenum);
+}
 
-    if (!m_pFace)
-        return;
+TTGlobalFontInfo TrueTypeFont::getGlobalFontInfo() const
+{
+    TTGlobalFontInfo info;
+
+    info.family = getName(HB_OT_NAME_ID_FONT_FAMILY);
+    if (info.family.isEmpty())
+        info.family = getName(HB_OT_NAME_ID_POSTSCRIPT_NAME);
+    info.subfamily = getName(HB_OT_NAME_ID_FONT_SUBFAMILY);
 
     auto aCmap = getTable(T_cmap);
     if (!aCmap.empty())
-        m_bMicrosoftSymbolEncoded = HasMicrosoftSymbolCmap(aCmap.data(), aCmap.size());
-}
+        info.microsoftSymbolEncoded = HasMicrosoftSymbolCmap(aCmap.data(), aCmap.size());
 
-void GetTTGlobalFontInfo(const TrueTypeFont *ttf, TTGlobalFontInfo *info)
-{
-    info->family = ttf->getName(HB_OT_NAME_ID_FONT_FAMILY);
-    if (info->family.isEmpty())
-        info->family = ttf->getName(HB_OT_NAME_ID_POSTSCRIPT_NAME);
-    info->subfamily = ttf->getName(HB_OT_NAME_ID_FONT_SUBFAMILY);
-    info->microsoftSymbolEncoded = ttf->IsMicrosoftSymbolEncoded();
-
-    auto aOS2 = ttf->getTable(T_OS2);
+    auto aOS2 = getTable(T_OS2);
     if (aOS2.size() >= 42)
     {
-        info->weight = GetUInt16(aOS2.data(), OS2_usWeightClass_offset);
-        info->width  = GetUInt16(aOS2.data(), OS2_usWidthClass_offset);
-        info->typeFlags = GetUInt16(aOS2.data(), OS2_fsType_offset);
+        info.weight = GetUInt16(aOS2.data(), OS2_usWeightClass_offset);
+        info.width  = GetUInt16(aOS2.data(), OS2_usWidthClass_offset);
+        info.typeFlags = GetUInt16(aOS2.data(), OS2_fsType_offset);
     }
 
-    auto aPost = ttf->getTable(T_post);
+    auto aPost = getTable(T_post);
     if (aPost.size() >= 12 + sizeof(sal_uInt32))
     {
-        info->pitch  = GetUInt32(aPost.data(), POST_isFixedPitch_offset);
-        info->italicAngle = GetInt32(aPost.data(), POST_italicAngle_offset);
+        info.pitch  = GetUInt32(aPost.data(), POST_isFixedPitch_offset);
+        info.italicAngle = GetInt32(aPost.data(), POST_italicAngle_offset);
     }
 
-    auto aHead = ttf->getTable(T_head);
+    auto aHead = getTable(T_head);
     if (aHead.size() >= 46)
-        info->macStyle = GetUInt16(aHead.data(), HEAD_macStyle_offset);
+        info.macStyle = GetUInt16(aHead.data(), HEAD_macStyle_offset);
+
+    return info;
 }
 
 
