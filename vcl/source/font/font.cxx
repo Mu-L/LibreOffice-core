@@ -718,11 +718,11 @@ namespace
     bool identifyTrueTypeFont( const void* i_pBuffer, sal_uInt32 i_nSize, Font& o_rResult )
     {
         bool bResult = false;
-        TrueTypeFont* pTTF = nullptr;
-        if( OpenTTFontBuffer( i_pBuffer, i_nSize, 0, &pTTF ) == SFErrCodes::Ok )
+        TrueTypeFont aFont(i_pBuffer, i_nSize, 0);
+        if( aFont.isValid() )
         {
             TTGlobalFontInfo aInfo;
-            GetTTGlobalFontInfo( pTTF, &aInfo );
+            GetTTGlobalFontInfo( &aFont, &aInfo );
             // most importantly: the family name
             if( !aInfo.family.isEmpty() )
                 o_rResult.SetFamilyName( aInfo.family );
@@ -782,9 +782,6 @@ namespace
             if( !aInfo.subfamily.isEmpty() )
                 o_rResult.SetStyleName( aInfo.subfamily );
 
-            // cleanup
-            CloseTTFont( pTTF );
-            // success
             bResult = true;
         }
         return bResult;

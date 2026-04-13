@@ -60,18 +60,6 @@ namespace vcl
     typedef sal_Int32       F16Dot16;           /**< fixed: 16.16 */
 /*@}*/
 
-/** Return value of OpenTTFont() */
-    enum class SFErrCodes {
-        Ok,                              /**< no error                                     */
-        BadFile,                         /**< file not found                               */
-        FileIo,                          /**< file I/O error                               */
-        Memory,                          /**< memory allocation error                      */
-        GlyphNum,                        /**< incorrect number of glyphs                   */
-        BadArg,                          /**< incorrect arguments                          */
-        TtFormat,                        /**< incorrect TrueType font format               */
-        FontNo                           /**< incorrect logical font number of a TTC font  */
-    };
-
 #ifndef FW_THIN /* WIN32 compilation would conflict */
 /** Value of the weight member of the TTGlobalFontInfo struct */
     enum WeightClass {
@@ -378,54 +366,11 @@ class TrueTypeFont;
  */
     int CountTTCFonts(const char* fname);
 
-/**
- * TrueTypeFont constructor.
- * The font file has to be provided as a memory buffer and length
- * @param  pBuffer - memory buffer
- * @param  nLen    - size of memory buffer
- * @param  facenum - logical font number within a TTC file. This value is ignored
- *                   for TrueType fonts
- * @param  ttf     - returns the opened TrueTypeFont
- * @return value of SFErrCodes enum
- * @ingroup sft
- */
-    SFErrCodes VCL_DLLPUBLIC OpenTTFontBuffer(const void* pBuffer, sal_uInt32 nLen, sal_uInt32 facenum,
-                                              TrueTypeFont** ttf);
-#if !defined(_WIN32) || defined(DO_USE_TTF_ON_WIN32)
-/**
- * TrueTypeFont constructor.
- * Reads the font file and allocates the memory for the structure.
- * on WIN32 the font has to be provided as a memory buffer and length
- * @param  fname   - name of TrueType font file
- * @param  facenum - logical font number within a TTC file. This value is ignored
- *                   for TrueType fonts
- * @param  ttf     - returns the opened TrueTypeFont
- * @return value of SFErrCodes enum
- * @ingroup sft
- */
-    SFErrCodes VCL_DLLPUBLIC OpenTTFontFile(const char *fname, sal_uInt32 facenum, TrueTypeFont** ttf);
-#endif
-
     bool VCL_DLLPUBLIC getTTCoverage(
         std::optional<std::bitset<UnicodeCoverage::MAX_UC_ENUM>> & rUnicodeCoverage,
         std::optional<std::bitset<CodePageCoverage::MAX_CP_ENUM>> & rCodePageCoverage,
         const unsigned char* pTable, size_t nLength);
 
-/**
- * TrueTypeFont destructor. Deallocates the memory.
- * @ingroup sft
- */
-    void VCL_DLLPUBLIC CloseTTFont(TrueTypeFont *);
-
-/**
- * Returns global font information about the TrueType font.
- * @see TTGlobalFontInfo
- *
- * @param ttf         pointer to a TrueTypeFont structure
- * @param info        pointer to a TTGlobalFontInfo structure
- * @ingroup sft
- *
- */
 void GetTTGlobalFontInfo(const TrueTypeFont *ttf, TTGlobalFontInfo *info);
 
 FontWeight AnalyzeTTFWeight(const TrueTypeFont* pTTFont);
@@ -435,11 +380,16 @@ class UNLESS_MERGELIBS(VCL_DLLPUBLIC) TrueTypeFont
     hb_face_t* m_pFace = nullptr;
     bool m_bMicrosoftSymbolEncoded = false;
 
+    void open(hb_blob_t* pBlob, sal_uInt32 facenum);
+
 public:
-    TrueTypeFont();
+    /** Construct from a file path */
+    TrueTypeFont(const char* pFileName, sal_uInt32 facenum);
+    /** Construct from a memory buffer */
+    TrueTypeFont(const void* pBuffer, sal_uInt32 nLen, sal_uInt32 facenum);
     ~TrueTypeFont();
 
-    SFErrCodes open(hb_blob_t* pBlob, sal_uInt32 facenum);
+    bool isValid() const { return m_pFace != nullptr; }
 
     OUString getName(hb_ot_name_id_t nNameID, const LanguageTag& rLang = LanguageTag(LANGUAGE_DONTKNOW)) const;
 

@@ -367,20 +367,19 @@ bool PrintFontManager::analyzeSfntFile( PrintFont& rFont ) const
     bool bSuccess = false;
     rtl_TextEncoding aEncoding = osl_getThreadTextEncoding();
     OString aFile = getFontFile( rFont );
-    TrueTypeFont* pTTFont = nullptr;
+    TrueTypeFont aFont(aFile.getStr(), rFont.m_nCollectionEntry);
 
     auto& rDFA = rFont.m_aFontAttributes;
     rDFA.SetQuality(512);
 
-    auto const e = OpenTTFontFile( aFile.getStr(), rFont.m_nCollectionEntry, &pTTFont );
-    if( e == SFErrCodes::Ok )
+    if( aFont.isValid() )
     {
         TTGlobalFontInfo aInfo;
-        GetTTGlobalFontInfo( pTTFont, & aInfo );
+        GetTTGlobalFontInfo( &aFont, & aInfo );
 
         if (rDFA.GetFamilyName().isEmpty())
         {
-            OUString aFamily = analyzeSfntFamilyName(pTTFont);
+            OUString aFamily = analyzeSfntFamilyName(&aFont);
             if (aFamily.isEmpty())
             {
                  // poor font does not have a family name
@@ -399,7 +398,7 @@ bool PrintFontManager::analyzeSfntFile( PrintFont& rFont ) const
 
         rDFA.SetFamilyType(matchFamilyName(rDFA.GetFamilyName()));
 
-        rDFA.SetWeight(AnalyzeTTFWeight(pTTFont));
+        rDFA.SetWeight(AnalyzeTTFWeight(&aFont));
 
         switch( aInfo.width )
         {
@@ -425,11 +424,10 @@ bool PrintFontManager::analyzeSfntFile( PrintFont& rFont ) const
 
         rDFA.SetMicrosoftSymbolEncoded(aInfo.microsoftSymbolEncoded);
 
-        CloseTTFont( pTTFont );
         bSuccess = true;
     }
     else
-        SAL_WARN("vcl.fonts", "Could not OpenTTFont \"" << aFile << "\": " << int(e));
+        SAL_WARN("vcl.fonts", "Invalid or unsupported font file: \"" << aFile << "\"");
 
     return bSuccess;
 }

@@ -100,48 +100,22 @@ int CountTTCFonts(const char* fname)
     return nFaces;
 }
 
-#if !defined(_WIN32) || defined(DO_USE_TTF_ON_WIN32)
-SFErrCodes OpenTTFontFile(const char* fname, sal_uInt32 facenum, TrueTypeFont** ttf)
+TrueTypeFont::TrueTypeFont(const char* pFileName, sal_uInt32 facenum)
 {
-    if (!fname || !*fname)
-        return SFErrCodes::BadFile;
-
-    hb_blob_t* pBlob = hb_blob_create_from_file_or_fail(fname);
-    if (!pBlob)
-        return SFErrCodes::BadFile;
-
-    *ttf = new TrueTypeFont();
-    SFErrCodes ret = (*ttf)->open(pBlob, facenum);
-    hb_blob_destroy(pBlob);
-    if (ret != SFErrCodes::Ok)
+    hb_blob_t* pBlob = hb_blob_create_from_file_or_fail(pFileName);
+    if (pBlob)
     {
-        delete *ttf;
-        *ttf = nullptr;
+        open(pBlob, facenum);
+        hb_blob_destroy(pBlob);
     }
-    return ret;
 }
-#endif
 
-SFErrCodes OpenTTFontBuffer(const void* pBuffer, sal_uInt32 nLen, sal_uInt32 facenum, TrueTypeFont** ttf)
+TrueTypeFont::TrueTypeFont(const void* pBuffer, sal_uInt32 nLen, sal_uInt32 facenum)
 {
-    *ttf = new TrueTypeFont();
-    if( *ttf == nullptr )
-        return SFErrCodes::Memory;
-
     hb_blob_t* pBlob = hb_blob_create(static_cast<const char*>(pBuffer), nLen,
                                        HB_MEMORY_MODE_READONLY, nullptr, nullptr);
-    SFErrCodes ret = (*ttf)->open(pBlob, facenum);
+    open(pBlob, facenum);
     hb_blob_destroy(pBlob);
-    if (ret != SFErrCodes::Ok)
-    {
-        delete *ttf;
-        *ttf = nullptr;
-    }
-    return ret;
-}
-
-TrueTypeFont::TrueTypeFont()
-{
 }
 
 TrueTypeFont::~TrueTypeFont()
@@ -152,13 +126,15 @@ TrueTypeFont::~TrueTypeFont()
 
 font::RawFontData TrueTypeFont::getTable(hb_tag_t tag) const
 {
+    if (!m_pFace)
+        return font::RawFontData();
     return font::RawFontData(hb_face_reference_table(m_pFace, tag));
 }
 
-void CloseTTFont(TrueTypeFont* ttf) { delete ttf; }
-
 sal_uInt32 TrueTypeFont::countNonEmptyGlyphs() const
 {
+    if (!m_pFace)
+        return 0;
     hb_font_t* pFont = hb_font_create(m_pFace);
     sal_uInt32 nGlyphs = hb_face_get_glyph_count(m_pFace);
     sal_uInt32 nCount = 0;
@@ -175,6 +151,8 @@ sal_uInt32 TrueTypeFont::countNonEmptyGlyphs() const
 
 OUString TrueTypeFont::getName(hb_ot_name_id_t nNameID, const LanguageTag& rLang) const
 {
+    if (!m_pFace)
+        return OUString();
     hb_language_t aHbLang = HB_LANGUAGE_INVALID;
     if (rLang.getLanguageType() != LANGUAGE_DONTKNOW)
     {
@@ -190,18 +168,16 @@ OUString TrueTypeFont::getName(hb_ot_name_id_t nNameID, const LanguageTag& rLang
     return OUString(reinterpret_cast<sal_Unicode*>(aBuf.data()), nName);
 }
 
-SFErrCodes TrueTypeFont::open(hb_blob_t* pBlob, sal_uInt32 facenum)
+void TrueTypeFont::open(hb_blob_t* pBlob, sal_uInt32 facenum)
 {
     m_pFace = hb_face_create_or_fail(pBlob, facenum);
 
     if (!m_pFace)
-        return SFErrCodes::TtFormat;
+        return;
 
     auto aCmap = getTable(T_cmap);
     if (!aCmap.empty())
         m_bMicrosoftSymbolEncoded = HasMicrosoftSymbolCmap(aCmap.data(), aCmap.size());
-
-    return SFErrCodes::Ok;
 }
 
 void GetTTGlobalFontInfo(const TrueTypeFont *ttf, TTGlobalFontInfo *info)

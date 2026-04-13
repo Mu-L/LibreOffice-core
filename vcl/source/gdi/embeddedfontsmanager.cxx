@@ -227,12 +227,11 @@ OUString getFilenameForExport(std::u16string_view familyName, FontFamily family,
 bool sufficientTTFRights(const void* data, tools::Long size,
                          EmbeddedFontsManager::FontRights rights)
 {
-    TrueTypeFont* font;
-    if (OpenTTFontBuffer(data, size, 0 /*TODO*/, &font) == SFErrCodes::Ok)
+    TrueTypeFont font(data, size, 0 /*TODO*/);
+    if (font.isValid())
     {
         TTGlobalFontInfo info;
-        GetTTGlobalFontInfo(font, &info);
-        CloseTTFont(font);
+        GetTTGlobalFontInfo(&font, &info);
         // https://www.microsoft.com/typography/otspec/os2.htm#fst
         int copyright = info.typeFlags;
         switch (rights)
@@ -341,13 +340,8 @@ bool EmbeddedFontsManager::addEmbeddedFont( const uno::Reference< io::XInputStre
 
     if (bSubsetted)
     {
-        TrueTypeFont* font;
-        sal_uInt32 nGlyphs = 0;
-        if (OpenTTFontBuffer(fontData.data(), fontData.size(), 0, &font) == SFErrCodes::Ok)
-        {
-            nGlyphs = font->countNonEmptyGlyphs();
-            CloseTTFont(font);
-        }
+        TrueTypeFont font(fontData.data(), fontData.size(), 0);
+        sal_uInt32 nGlyphs = font.countNonEmptyGlyphs();
         // Check if it has reasonable amount of glyphs, set the limit to the number of glyphs in the
         // English alphabet (not differentiating lowercase and uppercase).
         if (nGlyphs < 26)
@@ -558,12 +552,11 @@ bool EmbeddedFontsManager::isEmbeddedAndRestricted(std::u16string_view familyNam
 
 bool EmbeddedFontsManager::analyzeTTF(const void* data, tools::Long size, FontWeight& weight)
 {
-    TrueTypeFont* font;
-    if (OpenTTFontBuffer( data, size, 0 /*TODO*/, &font ) != SFErrCodes::Ok)
+    TrueTypeFont font(data, size, 0);
+    if (!font.isValid())
         return false;
 
-    weight = AnalyzeTTFWeight(font);
-    CloseTTFont(font);
+    weight = AnalyzeTTFWeight(&font);
 
     return true;
 }
