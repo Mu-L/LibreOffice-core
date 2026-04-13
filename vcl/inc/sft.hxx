@@ -135,7 +135,6 @@ namespace vcl
         OUString   ufamily;       /**< family name UCS2                                         */
         OString    subfamily;     /**< subfamily name                                          */
         OUString   usubfamily;    /**< subfamily name UCS2 */
-        OString    psname;        /**< PostScript name                                         */
         sal_uInt16 macStyle = 0;      /**< macstyle bits from 'HEAD' table */
         int   weight = 0;             /**< value of WeightClass or 0 if can't be determined        */
         int   width = 0;              /**< value of WidthClass or 0 if can't be determined         */
@@ -476,7 +475,6 @@ public:
     virtual bool hasTable(hb_tag_t tag) const = 0;
     virtual const sal_uInt8* table(hb_tag_t tag, sal_uInt32& size) const = 0;
 
-    OString     psname;
     OString     family;
     OUString    ufamily;
     OString     subfamily;

@@ -203,25 +203,24 @@ static void GetNames(AbstractTrueTypeFont *t)
         n = 0;
 
     int i, r;
-    bool bPSNameOK = true;
 
     /* PostScript name: preferred Microsoft */
-    t->psname.clear();
+    OString psname;
     if ((r = findname(table, n, 3, 1, 0x0409, 6)) != -1)
-        t->psname = nameExtract(table, nTableSize, r, 1, nullptr);
-    if ( t->psname.isEmpty() && (r = findname(table, n, 1, 0, 0, 6)) != -1)
-        t->psname = nameExtract(table, nTableSize, r, 0, nullptr);
-    if ( t->psname.isEmpty() && (r = findname(table, n, 3, 0, 0x0409, 6)) != -1)
+        psname = nameExtract(table, nTableSize, r, 1, nullptr);
+    if ( psname.isEmpty() && (r = findname(table, n, 1, 0, 0, 6)) != -1)
+        psname = nameExtract(table, nTableSize, r, 0, nullptr);
+    if ( psname.isEmpty() && (r = findname(table, n, 3, 0, 0x0409, 6)) != -1)
     {
         // some symbol fonts like Marlett have a 3,0 name!
-        t->psname = nameExtract(table, nTableSize, r, 1, nullptr);
+        psname = nameExtract(table, nTableSize, r, 1, nullptr);
     }
     // for embedded font in Ghostscript PDFs
-    if ( t->psname.isEmpty() && (r = findname(table, n, 2, 2, 0, 6)) != -1)
+    if ( psname.isEmpty() && (r = findname(table, n, 2, 2, 0, 6)) != -1)
     {
-        t->psname = nameExtract(table, nTableSize, r, 0, nullptr);
+        psname = nameExtract(table, nTableSize, r, 0, nullptr);
     }
-    if ( t->psname.isEmpty() )
+    if ( psname.isEmpty() )
     {
         if (!t->fileName().empty())
         {
@@ -238,10 +237,10 @@ static void GetNames(AbstractTrueTypeFont *t)
                     break;
                 }
             }
-            t->psname = OString(std::string_view(pReverse, nReverseLen));
+            psname = OString(std::string_view(pReverse, nReverseLen));
         }
         else
-            t->psname = "Unknown"_ostr;
+            psname = "Unknown"_ostr;
     }
 
     /* Font family and subfamily names: preferred Apple */
@@ -257,7 +256,7 @@ static void GetNames(AbstractTrueTypeFont *t)
     if ( t->family.isEmpty() && (r = findname(table, n, 3, 0, 0x0409, 1)) != -1)
         t->family = nameExtract(table, nTableSize, r, 1, &t->ufamily);
     if ( t->family.isEmpty() )
-        t->family = t->psname;
+        t->family = psname;
 
     t->subfamily.clear();
     t->usubfamily.clear();
@@ -265,32 +264,6 @@ static void GetNames(AbstractTrueTypeFont *t)
         t->subfamily = nameExtract(table, nTableSize, r, 0, &t->usubfamily);
     if ( t->subfamily.isEmpty() && (r = findname(table, n, 3, 1, 0x0409, 2)) != -1)
         t->subfamily = nameExtract(table, nTableSize, r, 1, &t->usubfamily);
-
-    /* #i60349# sanity check psname
-     * psname practically has to be 7bit ASCII and should not contain spaces
-     * there is a class of broken fonts which do not fulfill that at all, so let's try
-     * if the family name is 7bit ASCII and take it instead if so
-     */
-    /* check psname */
-    for( i = 0; i < t->psname.getLength() && bPSNameOK; i++ )
-        if( t->psname[ i ] < 33 || (t->psname[ i ] & 0x80) )
-            bPSNameOK = false;
-    if( bPSNameOK )
-        return;
-
-    /* check if family is a suitable replacement */
-    if( t->ufamily.isEmpty() && t->family.isEmpty() )
-        return;
-
-    bool bReplace = true;
-
-    for( i = 0; i < t->ufamily.getLength() && bReplace; i++ )
-        if( t->ufamily[ i ] < 33 || t->ufamily[ i ] > 127 )
-            bReplace = false;
-    if( bReplace )
-    {
-        t->psname = t->family;
-    }
 }
 
 /*- Public functions */
@@ -543,7 +516,6 @@ void GetTTGlobalFontInfo(const AbstractTrueTypeFont *ttf, TTGlobalFontInfo *info
     info->ufamily = ttf->ufamily;
     info->subfamily = ttf->subfamily;
     info->usubfamily = ttf->usubfamily;
-    info->psname = ttf->psname;
     info->microsoftSymbolEncoded = ttf->IsMicrosoftSymbolEncoded();
 
     sal_uInt32 table_size;
