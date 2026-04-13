@@ -39,7 +39,6 @@ private:
 public:
     SvxPresetListBox(std::unique_ptr<weld::ScrolledWindow> pWindow);
 
-    virtual void Resize() override;
     virtual bool Command(const CommandEvent& rEvent) override;
     virtual void SetDrawingArea(weld::DrawingArea* pDrawingArea) override;
     Size const & GetIconSize() const { return m_aIconSize; }

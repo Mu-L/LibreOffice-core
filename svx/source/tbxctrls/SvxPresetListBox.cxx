@@ -37,17 +37,9 @@ SvxPresetListBox::SvxPresetListBox(std::unique_ptr<weld::ScrolledWindow> pWindow
 void SvxPresetListBox::SetDrawingArea(weld::DrawingArea* pDrawingArea)
 {
     ValueSet::SetDrawingArea(pDrawingArea);
-    SetStyle(GetStyle() | WB_ITEMBORDER);
-}
-
-void SvxPresetListBox::Resize()
-{
+    SetStyle(GetStyle() | WB_ITEMBORDER | WB_VSCROLL);
     SetColCount(3);
     SetLineCount(5);
-    WinBits aWinBits(GetStyle());
-    aWinBits |= WB_VSCROLL;
-    SetStyle(aWinBits);
-    ValueSet::Resize();
 }
 
 bool SvxPresetListBox::Command(const CommandEvent& rEvent)
