@@ -345,18 +345,7 @@ bool EmbeddedFontsManager::addEmbeddedFont( const uno::Reference< io::XInputStre
         sal_uInt32 nGlyphs = 0;
         if (OpenTTFontBuffer(fontData.data(), fontData.size(), 0, &font) == SFErrCodes::Ok)
         {
-            sal_uInt32 nGlyphCount = font->glyphCount();
-            for (sal_uInt32 i = 0; i < nGlyphCount; ++i)
-            {
-                sal_uInt32 nOffset = font->glyphOffset(i);
-                sal_uInt32 nNextOffset = font->glyphOffset(i + 1);
-                if (nOffset == nNextOffset)
-                {
-                    // GetTTGlyphComponents() says this is an empty glyph, ignore it.
-                    continue;
-                }
-                ++nGlyphs;
-            }
+            nGlyphs = font->countNonEmptyGlyphs();
             CloseTTFont(font);
         }
         // Check if it has reasonable amount of glyphs, set the limit to the number of glyphs in the

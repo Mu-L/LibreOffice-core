@@ -71,11 +71,6 @@ static sal_uInt16 GetUInt16(const sal_uInt8 *ptr, size_t offset)
     return t;
 }
 
-static sal_Int16 GetInt16(const sal_uInt8* ptr, size_t offset)
-{
-    return static_cast<sal_Int16>(GetUInt16(ptr, offset));
-}
-
 static sal_uInt32 GetUInt32(const sal_uInt8 *ptr, size_t offset)
 {
     sal_uInt32 t;
@@ -146,8 +141,6 @@ SFErrCodes OpenTTFontBuffer(const void* pBuffer, sal_uInt32 nLen, sal_uInt32 fac
 }
 
 TrueTypeFont::TrueTypeFont()
-    : m_nGlyphs(0xFFFFFFFF)
-    , m_bMicrosoftSymbolEncoded(false)
 {
 }
 
@@ -164,63 +157,20 @@ font::RawFontData TrueTypeFont::getTable(hb_tag_t tag) const
 
 void CloseTTFont(TrueTypeFont* ttf) { delete ttf; }
 
-sal_uInt32 TrueTypeFont::glyphOffset(sal_uInt32 glyphID) const
+sal_uInt32 TrueTypeFont::countNonEmptyGlyphs() const
 {
-    if (m_aGlyphOffsets.empty()) // the T_CFF and Bitmap cases
-        return 0;
-    return m_aGlyphOffsets[glyphID];
-}
-
-SFErrCodes TrueTypeFont::indexGlyphData()
-{
-    auto aMaxp = getTable(T_maxp);
-    auto aHead = getTable(T_head);
-    auto aName = getTable(T_name);
-    auto aCmap = getTable(T_cmap);
-    if (aMaxp.empty() || aHead.empty() || aName.empty() || aCmap.empty())
-        return SFErrCodes::TtFormat;
-
-    m_nGlyphs = aMaxp.size() >= 6 ? GetUInt16(aMaxp.data(), 4) : 0;
-
-    if (aHead.size() < HEAD_Length)
-        return SFErrCodes::TtFormat;
-
-    sal_uInt32 unitsPerEm = GetUInt16(aHead.data(), HEAD_unitsPerEm_offset);
-    int indexfmt = GetInt16(aHead.data(), HEAD_indexToLocFormat_offset);
-
-    if (((indexfmt != 0) && (indexfmt != 1)) || (unitsPerEm <= 0))
-        return SFErrCodes::TtFormat;
-
-    auto aGlyf = getTable(T_glyf);
-    auto aLoca = getTable(T_loca);
-    auto aCFF = getTable(T_CFF);
-    if (!aGlyf.empty() && !aLoca.empty()) /* TTF or TTF-OpenType */
+    hb_font_t* pFont = hb_font_create(m_pFace);
+    sal_uInt32 nGlyphs = hb_face_get_glyph_count(m_pFace);
+    sal_uInt32 nCount = 0;
+    for (sal_uInt32 i = 0; i < nGlyphs; ++i)
     {
-        int k = (aLoca.size() / (indexfmt ? 4 : 2)) - 1;
-        if (k < static_cast<int>(m_nGlyphs))       /* Hack for broken Chinese fonts */
-            m_nGlyphs = k;
-
-        m_aGlyphOffsets.clear();
-        m_aGlyphOffsets.reserve(m_nGlyphs + 1);
-        for (int i = 0; i <= static_cast<int>(m_nGlyphs); ++i)
-            m_aGlyphOffsets.push_back(indexfmt ? GetUInt32(aLoca.data(), i << 2) : static_cast<sal_uInt32>(GetUInt16(aLoca.data(), i << 1)) << 1);
+        hb_glyph_extents_t aExtents;
+        if (hb_font_get_glyph_extents(pFont, i, &aExtents)
+            && (aExtents.width || aExtents.height))
+            ++nCount;
     }
-    else if (!aCFF.empty()) /* PS-OpenType */
-    {
-        int k = (aCFF.size() / 2) - 1; /* set a limit here, presumably much lower than the table size, but establishes some sort of physical bound */
-        if (k < static_cast<int>(m_nGlyphs))
-            m_nGlyphs = k;
-
-        m_aGlyphOffsets.clear();
-    }
-    else {
-        // Bitmap font, accept for now.
-        m_aGlyphOffsets.clear();
-    }
-
-    m_bMicrosoftSymbolEncoded = HasMicrosoftSymbolCmap(aCmap.data(), aCmap.size());
-
-    return SFErrCodes::Ok;
+    hb_font_destroy(pFont);
+    return nCount;
 }
 
 OUString TrueTypeFont::getName(hb_ot_name_id_t nNameID, const LanguageTag& rLang) const
@@ -247,7 +197,11 @@ SFErrCodes TrueTypeFont::open(hb_blob_t* pBlob, sal_uInt32 facenum)
     if (!m_pFace)
         return SFErrCodes::TtFormat;
 
-    return indexGlyphData();
+    auto aCmap = getTable(T_cmap);
+    if (!aCmap.empty())
+        m_bMicrosoftSymbolEncoded = HasMicrosoftSymbolCmap(aCmap.data(), aCmap.size());
+
+    return SFErrCodes::Ok;
 }
 
 void GetTTGlobalFontInfo(const TrueTypeFont *ttf, TTGlobalFontInfo *info)
