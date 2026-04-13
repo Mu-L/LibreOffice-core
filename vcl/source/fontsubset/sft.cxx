@@ -210,50 +210,6 @@ TTGlobalFontInfo TrueTypeFont::getGlobalFontInfo() const
 
 
 
-template<size_t N> static void
-append(std::bitset<N> & rSet, size_t const nOffset, sal_uInt32 const nValue)
-{
-    for (size_t i = 0; i < 32; ++i)
-    {
-        rSet.set(nOffset + i, (nValue & (1U << i)) != 0);
-    }
-}
-
-bool getTTCoverage(
-    std::optional<std::bitset<UnicodeCoverage::MAX_UC_ENUM>> &rUnicodeRange,
-    std::optional<std::bitset<CodePageCoverage::MAX_CP_ENUM>> &rCodePageRange,
-    const unsigned char* pTable, size_t nLength)
-{
-    // parse OS/2 header
-    SvMemoryStream aStream(const_cast<unsigned char*>(pTable), nLength, StreamMode::READ);
-    aStream.SetEndian(SvStreamEndian::BIG);
-
-    sal_uInt32 nValue;
-
-    rUnicodeRange = std::bitset<UnicodeCoverage::MAX_UC_ENUM>();
-    aStream.Seek(OS2_ulUnicodeRange1_offset);
-    aStream.ReadUInt32(nValue);
-    append(*rUnicodeRange,  0, nValue);
-    aStream.ReadUInt32(nValue);
-    append(*rUnicodeRange, 32, nValue);
-    aStream.ReadUInt32(nValue);
-    append(*rUnicodeRange, 64, nValue);
-    aStream.ReadUInt32(nValue);
-    append(*rUnicodeRange, 96, nValue);
-
-    if (aStream.good())
-    {
-        rCodePageRange = std::bitset<CodePageCoverage::MAX_CP_ENUM>();
-        aStream.Seek(OS2_ulCodePageRange1_offset);
-        aStream.ReadUInt32(nValue);
-        append(*rCodePageRange,  0, nValue);
-        aStream.ReadUInt32(nValue);
-        append(*rCodePageRange, 32, nValue);
-    }
-
-    return aStream.good();
-}
-
 static FontWeight ImplWeightToSal( int nWeight )
 {
     if ( nWeight <= FW_THIN )

@@ -43,7 +43,6 @@
 #include <rtl/ustring.hxx>
 #include <tools/fontenum.hxx>
 #include <vcl/dllapi.h>
-#include <vcl/fontcapabilities.hxx>
 #include <i18nlangtag/lang.h>
 #include <i18nlangtag/languagetag.hxx>
 
@@ -365,11 +364,6 @@ class TrueTypeFont;
  * @ingroup sft
  */
     int CountTTCFonts(const char* fname);
-
-    bool VCL_DLLPUBLIC getTTCoverage(
-        std::optional<std::bitset<UnicodeCoverage::MAX_UC_ENUM>> & rUnicodeCoverage,
-        std::optional<std::bitset<CodePageCoverage::MAX_CP_ENUM>> & rCodePageCoverage,
-        const unsigned char* pTable, size_t nLength);
 
 class UNLESS_MERGELIBS(VCL_DLLPUBLIC) TrueTypeFont
 {

@@ -283,14 +283,51 @@ FontCharMapRef PhysicalFontFace::GetFontCharMap() const
     return mxCharMap;
 }
 
+namespace
+{
+template <size_t N>
+void appendBitset(std::bitset<N>& rSet, size_t const nOffset, sal_uInt32 const nValue)
+{
+    for (size_t i = 0; i < 32; ++i)
+        rSet.set(nOffset + i, (nValue & (1U << i)) != 0);
+}
+
+} // anonymous namespace
+
 bool PhysicalFontFace::GetFontCapabilities(vcl::FontCapabilities& rFontCapabilities) const
 {
     if (!mxFontCapabilities)
     {
         mxFontCapabilities.emplace();
         RawFontData aData(GetRawFontData(HB_TAG('O', 'S', '/', '2')));
-        getTTCoverage(mxFontCapabilities->oUnicodeRange, mxFontCapabilities->oCodePageRange,
-                      aData.data(), aData.size());
+
+        SvMemoryStream aStream(const_cast<uint8_t*>(aData.data()), aData.size(), StreamMode::READ);
+        aStream.SetEndian(SvStreamEndian::BIG);
+
+        sal_uInt32 nValue;
+
+        auto& rUnicodeRange = mxFontCapabilities->oUnicodeRange;
+        rUnicodeRange = std::bitset<vcl::UnicodeCoverage::MAX_UC_ENUM>();
+        aStream.Seek(vcl::OS2_ulUnicodeRange1_offset);
+        aStream.ReadUInt32(nValue);
+        appendBitset(*rUnicodeRange, 0, nValue);
+        aStream.ReadUInt32(nValue);
+        appendBitset(*rUnicodeRange, 32, nValue);
+        aStream.ReadUInt32(nValue);
+        appendBitset(*rUnicodeRange, 64, nValue);
+        aStream.ReadUInt32(nValue);
+        appendBitset(*rUnicodeRange, 96, nValue);
+
+        if (aStream.good())
+        {
+            auto& rCodePageRange = mxFontCapabilities->oCodePageRange;
+            rCodePageRange = std::bitset<vcl::CodePageCoverage::MAX_CP_ENUM>();
+            aStream.Seek(vcl::OS2_ulCodePageRange1_offset);
+            aStream.ReadUInt32(nValue);
+            appendBitset(*rCodePageRange, 0, nValue);
+            aStream.ReadUInt32(nValue);
+            appendBitset(*rCodePageRange, 32, nValue);
+        }
     }
 
     rFontCapabilities = *mxFontCapabilities;
