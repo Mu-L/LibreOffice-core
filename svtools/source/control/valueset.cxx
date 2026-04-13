@@ -451,21 +451,13 @@ bool ValueSet::KeyInput( const KeyEvent& rKeyEvent )
 
 void ValueSet::ImplTracking(bool bLeaveWindow, const Point& rPos)
 {
-    ValueSetItem* pItem = bLeaveWindow ? nullptr : ImplGetItem(ImplGetItem(rPos));
-    if ( pItem )
-    {
-        if( GetStyle() & WB_MENUSTYLEVALUESET || GetStyle() & WB_FLATVALUESET )
-            mbHighlight = true;
+    if (GetStyle() & WB_MENUSTYLEVALUESET || GetStyle() & WB_FLATVALUESET)
+        mbHighlight = true;
 
+    if (ValueSetItem* pItem = bLeaveWindow ? nullptr : ImplGetItem(ImplGetItem(rPos)))
         ImplHighlightItem(pItem->mnId);
-    }
     else
-    {
-        if( GetStyle() & WB_MENUSTYLEVALUESET || GetStyle() & WB_FLATVALUESET )
-            mbHighlight = true;
-
         ImplHighlightItem(0);
-    }
 }
 
 bool ValueSet::MouseButtonDown( const MouseEvent& rMouseEvent )
