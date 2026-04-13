@@ -29,7 +29,6 @@
 SvxPresetListBox::SvxPresetListBox(std::unique_ptr<weld::ScrolledWindow> pWindow)
     : ValueSet(std::move(pWindow))
     , m_aIconSize(60, 64)
-    , mnContextMenuItemId(0)
 {
     SetEdgeBlending(true);
 }
@@ -46,8 +45,8 @@ bool SvxPresetListBox::Command(const CommandEvent& rEvent)
 {
     if (rEvent.GetCommand() != CommandEventId::ContextMenu)
         return CustomWidgetController::Command(rEvent);
-    mnContextMenuItemId = GetHighlightedItemId();
-    if (mnContextMenuItemId > 0)
+    sal_uInt16 nContextMenuItemId = GetHighlightedItemId();
+    if (nContextMenuItemId > 0)
     {
         std::unique_ptr<weld::Builder> xBuilder(
             Application::CreateBuilder(GetDrawingArea(), u"svx/ui/presetmenu.ui"_ustr));
@@ -55,11 +54,10 @@ bool SvxPresetListBox::Command(const CommandEvent& rEvent)
         const OUString sIdent = xMenu->popup_at_rect(
             GetDrawingArea(), tools::Rectangle(rEvent.GetMousePosPixel(), Size(1, 1)));
         if (sIdent == u"rename")
-            maRenameHdl.Call(mnContextMenuItemId);
+            maRenameHdl.Call(nContextMenuItemId);
         else if (sIdent == u"delete")
-            maDeleteHdl.Call(mnContextMenuItemId);
+            maDeleteHdl.Call(nContextMenuItemId);
 
-        mnContextMenuItemId = 0;
         return true;
     }
     return false;

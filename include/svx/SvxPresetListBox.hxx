@@ -27,7 +27,6 @@ class SVXCORE_DLLPUBLIC SvxPresetListBox : public ValueSet
 {
 private:
     Size                         m_aIconSize;
-    sal_uInt16 mnContextMenuItemId;
     Link<sal_uInt16, void> maRenameHdl;
     Link<sal_uInt16, void> maDeleteHdl;
 
