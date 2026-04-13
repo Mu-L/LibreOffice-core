@@ -202,7 +202,7 @@ static void GetNames(AbstractTrueTypeFont *t)
     if (n >= nMaxRecords)
         n = 0;
 
-    int i, r;
+    int r;
 
     /* PostScript name: preferred Microsoft */
     OString psname;
@@ -221,27 +221,7 @@ static void GetNames(AbstractTrueTypeFont *t)
         psname = nameExtract(table, nTableSize, r, 0, nullptr);
     }
     if ( psname.isEmpty() )
-    {
-        if (!t->fileName().empty())
-        {
-            const char* pReverse = t->fileName().data() + t->fileName().length();
-            /* take only last token of filename */
-            while (pReverse != t->fileName().data() && *pReverse != '/') pReverse--;
-            if(*pReverse == '/') pReverse++;
-            int nReverseLen = strlen(pReverse);
-            for (i=nReverseLen - 1; i > 0; i--)
-            {
-                /*- Remove the suffix  -*/
-                if (*(pReverse + i) == '.' ) {
-                    nReverseLen = i;
-                    break;
-                }
-            }
-            psname = OString(std::string_view(pReverse, nReverseLen));
-        }
-        else
-            psname = "Unknown"_ostr;
-    }
+        psname = "Unknown"_ostr;
 
     /* Font family and subfamily names: preferred Apple */
     t->family.clear();
