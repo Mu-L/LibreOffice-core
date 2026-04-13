@@ -59,7 +59,6 @@ public:
     void FillPresetListBox(XHatchList& pList, sal_uInt32 nStartIndex = 1);
     void FillPresetListBox(XBitmapList& pList, sal_uInt32 nStartIndex = 1);
     void FillPresetListBox(XPatternList& pList, sal_uInt32 nStartIndex = 1);
-    void DrawLayout();
 };
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

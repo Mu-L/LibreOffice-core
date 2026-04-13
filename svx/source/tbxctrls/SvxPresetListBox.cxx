@@ -42,7 +42,8 @@ void SvxPresetListBox::SetDrawingArea(weld::DrawingArea* pDrawingArea)
 
 void SvxPresetListBox::Resize()
 {
-    DrawLayout();
+    SetColCount(s_nColCount);
+    SetLineCount(5);
     WinBits aWinBits(GetStyle());
     aWinBits |= WB_VSCROLL;
     SetStyle(aWinBits);
@@ -66,12 +67,6 @@ bool SvxPresetListBox::Command(const CommandEvent& rEvent)
         return true;
     }
     return false;
-}
-
-void SvxPresetListBox::DrawLayout()
-{
-    SetColCount(s_nColCount);
-    SetLineCount(5);
 }
 
 template <typename ListType, typename EntryType>
