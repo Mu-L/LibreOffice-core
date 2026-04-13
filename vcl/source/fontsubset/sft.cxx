@@ -240,12 +240,13 @@ static void GetNames(AbstractTrueTypeFont *t)
     if ( t->family.isEmpty() && !family.isEmpty() )
         t->family = OStringToOUString(family, RTL_TEXTENCODING_ASCII_US);
 
-    t->subfamily.clear();
-    t->usubfamily.clear();
+    OString subfamily;
     if ((r = findname(table, n, 1, 0, 0, 2)) != -1)
-        t->subfamily = nameExtract(table, nTableSize, r, 0, &t->usubfamily);
-    if ( t->subfamily.isEmpty() && (r = findname(table, n, 3, 1, 0x0409, 2)) != -1)
-        t->subfamily = nameExtract(table, nTableSize, r, 1, &t->usubfamily);
+        subfamily = nameExtract(table, nTableSize, r, 0, &t->subfamily);
+    if ( subfamily.isEmpty() && (r = findname(table, n, 3, 1, 0x0409, 2)) != -1)
+        subfamily = nameExtract(table, nTableSize, r, 1, &t->subfamily);
+    if ( t->subfamily.isEmpty() && !subfamily.isEmpty() )
+        t->subfamily = OStringToOUString(subfamily, RTL_TEXTENCODING_ASCII_US);
 }
 
 /*- Public functions */
@@ -495,10 +496,7 @@ SFErrCodes TrueTypeFont::open(hb_blob_t* pBlob, sal_uInt32 facenum)
 void GetTTGlobalFontInfo(const AbstractTrueTypeFont *ttf, TTGlobalFontInfo *info)
 {
     info->family = ttf->family;
-    if (!ttf->usubfamily.isEmpty())
-        info->subfamily = ttf->usubfamily;
-    else if (!ttf->subfamily.isEmpty())
-        info->subfamily = OStringToOUString(ttf->subfamily, RTL_TEXTENCODING_ASCII_US);
+    info->subfamily = ttf->subfamily;
     info->microsoftSymbolEncoded = ttf->IsMicrosoftSymbolEncoded();
 
     sal_uInt32 table_size;

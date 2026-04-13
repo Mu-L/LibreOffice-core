@@ -474,8 +474,7 @@ public:
     virtual const sal_uInt8* table(hb_tag_t tag, sal_uInt32& size) const = 0;
 
     OUString    family;
-    OString     subfamily;
-    OUString    usubfamily;
+    OUString    subfamily;
 };
 
 class TrueTypeFont final : public AbstractTrueTypeFont
