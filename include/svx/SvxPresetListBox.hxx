@@ -26,11 +26,11 @@
 class SVXCORE_DLLPUBLIC SvxPresetListBox : public ValueSet
 {
 private:
-    Size                         m_aIconSize;
+    Size m_aIconSize;
     Link<sal_uInt16, void> maRenameHdl;
     Link<sal_uInt16, void> maDeleteHdl;
 
-    template< typename ListType, typename EntryType >
+    template <typename ListType, typename EntryType>
     void FillPresetListBoxImpl(ListType& pList, sal_uInt32 nStartIndex);
 
 public:
@@ -38,7 +38,7 @@ public:
 
     virtual bool Command(const CommandEvent& rEvent) override;
     virtual void SetDrawingArea(weld::DrawingArea* pDrawingArea) override;
-    Size const & GetIconSize() const { return m_aIconSize; }
+    Size const& GetIconSize() const { return m_aIconSize; }
 
     void SetRenameHdl(const Link<sal_uInt16, void>& rLink) { maRenameHdl = rLink; }
     void SetDeleteHdl(const Link<sal_uInt16, void>& rLink) { maDeleteHdl = rLink; }

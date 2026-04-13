@@ -5524,7 +5524,6 @@ include/svx/ShapeTypeHandler.hxx
 include/svx/SmartTagItem.hxx
 include/svx/SmartTagMgr.hxx
 include/svx/SvxColorChildWindow.hxx
-include/svx/SvxPresetListBox.hxx
 include/svx/algitem.hxx
 include/svx/anchorid.hxx
 include/svx/autoformathelper.hxx
