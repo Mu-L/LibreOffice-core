@@ -483,6 +483,16 @@ SFErrCodes AbstractTrueTypeFont::indexGlyphData()
     return SFErrCodes::Ok;
 }
 
+OUString TrueTypeFont::getName(hb_ot_name_id_t nNameID) const
+{
+    auto nName = hb_ot_name_get_utf16(m_pFace, nNameID, HB_LANGUAGE_INVALID, nullptr, nullptr);
+    if (!nName)
+        return OUString();
+    std::vector<uint16_t> aBuf(++nName); // make space for terminating NUL
+    hb_ot_name_get_utf16(m_pFace, nNameID, HB_LANGUAGE_INVALID, &nName, aBuf.data());
+    return OUString(reinterpret_cast<sal_Unicode*>(aBuf.data()), nName);
+}
+
 SFErrCodes TrueTypeFont::open(hb_blob_t* pBlob, sal_uInt32 facenum)
 {
     m_pFace = hb_face_create_or_fail(pBlob, facenum);

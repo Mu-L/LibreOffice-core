@@ -46,7 +46,7 @@
 #include <vcl/fontcapabilities.hxx>
 #include <i18nlangtag/lang.h>
 
-#include <hb.h>
+#include <hb-ot.h>
 
 #include <map>
 #include <vector>
@@ -497,6 +497,8 @@ public:
     ~TrueTypeFont() override;
 
     SFErrCodes open(hb_blob_t* pBlob, sal_uInt32 facenum);
+
+    OUString getName(hb_ot_name_id_t nNameID) const;
 
     bool hasTable(hb_tag_t tag) const override;
     const sal_uInt8* table(hb_tag_t tag, sal_uInt32& size) const override;
