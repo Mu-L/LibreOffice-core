@@ -35,7 +35,7 @@ class masterSlides(UITestCase):
 
             with self.ui_test.execute_dialog_through_command(".uno:PresentationLayout") as xDialog:
 
-                xSelect = xDialog.getChild('select')
+                xSelect = xDialog.getChild('layoutsiconview')
                 xSelect.executeAction("TYPE", mkPropertyValues({"KEYCODE": "RIGHT"}))
 
 

@@ -2,6 +2,16 @@
 <!-- Generated with glade 3.40.0 -->
 <interface domain="sd">
   <requires lib="gtk+" version="3.24"/>
+  <object class="GtkTreeStore" id="layoutsiconview_treestore">
+    <columns>
+      <!-- column-name pixbuf -->
+      <column type="GdkPixbuf"/>
+      <!-- column-name id -->
+      <column type="gchararray"/>
+      <!-- column-name tooltip -->
+      <column type="gchararray"/>
+    </columns>
+  </object>
   <object class="GtkDialog" id="SlideDesignDialog">
     <property name="can-focus">False</property>
     <property name="border-width">6</property>
@@ -148,29 +158,15 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkScrolledWindow" id="selectwin">
+                  <object class="GtkIconView" id="layoutsiconview">
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
+                    <property name="margin">6</property>
                     <property name="hexpand">True</property>
                     <property name="vexpand">True</property>
-                    <property name="hscrollbar-policy">never</property>
-                    <property name="vscrollbar-policy">never</property>
-                    <property name="shadow-type">in</property>
-                    <child>
-                      <object class="GtkViewport" id="selectwi">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <child>
-                          <object class="GtkDrawingArea" id="select">
-                            <property name="visible">True</property>
-                            <property name="can-focus">True</property>
-                            <property name="events">GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK | GDK_STRUCTURE_MASK</property>
-                            <property name="hexpand">True</property>
-                            <property name="vexpand">True</property>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
+                    <property name="model">layoutsiconview_treestore</property>
+                    <property name="pixbuf-column">0</property>
+                    <property name="tooltip-column">2</property>
                   </object>
                   <packing>
                     <property name="left-attach">0</property>

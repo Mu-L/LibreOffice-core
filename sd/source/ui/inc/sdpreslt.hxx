@@ -25,8 +25,12 @@
 #include <vcl/weld/weld.hxx>
 
 class SfxItemSet;
-class ValueSet;
-namespace weld { class CustomWeld; }
+namespace weld
+{
+class CustomWeld;
+class IconView;
+class TreeIter;
+}
 
 namespace sd {
 class DrawDocShell;
@@ -44,7 +48,7 @@ public:
 
     void                GetAttr(SfxItemSet& rOutAttrs);
 
-    DECL_LINK(ClickLayoutHdl, ValueSet*, void);
+    DECL_LINK(ActivateLayoutHdl, const weld::TreeIter&, bool);
     DECL_LINK(ClickLoadHdl, weld::Button&, void);
 
 private:
@@ -61,11 +65,10 @@ private:
     std::unique_ptr<weld::CheckButton> m_xCbxMasterPage;
     std::unique_ptr<weld::CheckButton> m_xCbxCheckMasters;
     std::unique_ptr<weld::Button> m_xBtnLoad;
-    std::unique_ptr<ValueSet> m_xVS;
-    std::unique_ptr<weld::CustomWeld> m_xVSWin;
+    std::unique_ptr<weld::IconView> m_xIconView;
     std::unique_ptr<weld::Label> m_xLabel;
 
-    void                FillValueSet();
+    void FillIconView();
     void                Reset();
 };
 

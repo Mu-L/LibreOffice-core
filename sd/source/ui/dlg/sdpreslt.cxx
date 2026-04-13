@@ -21,11 +21,11 @@
 #include <svl/eitem.hxx>
 #include <svl/stritem.hxx>
 #include <sfx2/new.hxx>
-#include <svtools/valueset.hxx>
 #include <tools/debug.hxx>
 #include <vcl/image.hxx>
 #include <vcl/vclenum.hxx>
 #include <vcl/weld/Builder.hxx>
+#include <vcl/weld/IconView.hxx>
 #include <vcl/weld/ScrolledWindow.hxx>
 #include <vcl/weld/Dialog.hxx>
 
@@ -49,8 +49,7 @@ SdPresLayoutDlg::SdPresLayoutDlg(::sd::DrawDocShell* pDocShell,
     , m_xCbxMasterPage(m_xBuilder->weld_check_button(u"masterpage"_ustr))
     , m_xCbxCheckMasters(m_xBuilder->weld_check_button(u"checkmasters"_ustr))
     , m_xBtnLoad(m_xBuilder->weld_button(u"load"_ustr))
-    , m_xVS(new ValueSet(m_xBuilder->weld_scrolled_window(u"selectwin"_ustr, true)))
-    , m_xVSWin(new weld::CustomWeld(*m_xBuilder, u"select"_ustr, *m_xVS))
+    , m_xIconView(m_xBuilder->weld_icon_view(u"layoutsiconview"_ustr))
     , m_xLabel(m_xBuilder->weld_label(u"label1"_ustr))
 {
     if (mpDocSh->GetDoc()->GetDocumentType() == DocumentType::Draw)
@@ -63,10 +62,8 @@ SdPresLayoutDlg::SdPresLayoutDlg(::sd::DrawDocShell* pDocShell,
         m_xDialog->set_title(SdResId(STR_AVAILABLE_MASTERSLIDE));
         m_xLabel->set_label(SdResId(STR_SELECT_SLIDE));
     }
-    m_xVSWin->set_size_request(m_xBtnLoad->get_approximate_digit_width() * 60,
-                               m_xBtnLoad->get_text_height() * 20);
 
-    m_xVS->SetDoubleClickHdl(LINK(this, SdPresLayoutDlg, ClickLayoutHdl));
+    m_xIconView->connect_item_activated(LINK(this, SdPresLayoutDlg, ActivateLayoutHdl));
     m_xBtnLoad->connect_clicked(LINK(this, SdPresLayoutDlg, ClickLoadHdl));
 
     Reset();
@@ -99,7 +96,7 @@ void SdPresLayoutDlg::Reset()
     else
         maName.clear();
 
-    FillValueSet();
+    FillIconView();
 
     mnLayoutCount = maLayoutNames.size();
     for( nName = 0; nName < mnLayoutCount; nName++ )
@@ -109,8 +106,7 @@ void SdPresLayoutDlg::Reset()
     }
     DBG_ASSERT(nName < mnLayoutCount, "Layout not found");
 
-    m_xVS->SelectItem(static_cast<sal_uInt16>(nName) + 1);  // Indices of the ValueSets start at 1
-
+    m_xIconView->select(nName);
 }
 
 /**
@@ -118,19 +114,19 @@ void SdPresLayoutDlg::Reset()
  */
 void SdPresLayoutDlg::GetAttr(SfxItemSet& rOutAttrs)
 {
-    short nId = m_xVS->GetSelectedItemId();
-    bool bLoad = nId > mnLayoutCount;
+    const int nIndex = m_xIconView->get_selected_index();
+    bool bLoad = nIndex >= mnLayoutCount;
     rOutAttrs.Put( SfxBoolItem( ATTR_PRESLAYOUT_LOAD, bLoad ) );
 
     OUString aLayoutName;
 
     if( bLoad )
     {
-        aLayoutName = maName + "#" + maLayoutNames[ nId - 1 ];
+        aLayoutName = maName + "#" + maLayoutNames.at(nIndex);
     }
-    else if (nId)
+    else if (nIndex >= 0)
     {
-        aLayoutName = maLayoutNames[ nId - 1 ];
+        aLayoutName = maLayoutNames.at(nIndex);
         if( aLayoutName == maStrNone )
             aLayoutName.clear(); // that way we encode "- nothing -" (see below)
     }
@@ -141,17 +137,10 @@ void SdPresLayoutDlg::GetAttr(SfxItemSet& rOutAttrs)
 }
 
 /**
- * Fills ValueSet with bitmaps
+ * Fills icon view with bitmaps
  */
-void SdPresLayoutDlg::FillValueSet()
+void SdPresLayoutDlg::FillIconView()
 {
-    m_xVS->SetStyle(m_xVS->GetStyle() | WB_ITEMBORDER | WB_DOUBLEBORDER
-                                      | WB_VSCROLL | WB_NAMEFIELD);
-
-    m_xVS->SetColCount(2);
-    m_xVS->SetLineCount(2);
-    m_xVS->SetExtraSpacing(2);
-
     SdDrawDocument* pDoc = mpDocSh->GetDoc();
 
     sal_uInt16 nCount = pDoc->GetMasterPageCount();
@@ -165,20 +154,18 @@ void SdPresLayoutDlg::FillValueSet()
             aLayoutName = aLayoutName.copy(0, aLayoutName.indexOf(SD_LT_SEPARATOR));
             maLayoutNames.push_back(aLayoutName);
 
-            Image aBitmap(mpDocSh->GetPagePreviewBitmap(pMaster));
-            m_xVS->InsertItem(static_cast<sal_uInt16>(maLayoutNames.size()), aBitmap, aLayoutName);
+            Bitmap aBitmap(mpDocSh->GetPagePreviewBitmap(pMaster));
+            m_xIconView->insert(maLayoutNames.size() - 1, nullptr, nullptr, &aBitmap, nullptr);
+            m_xIconView->set_item_accessible_name(maLayoutNames.size() - 1, aLayoutName);
+            m_xIconView->set_item_tooltip_text(maLayoutNames.size() - 1, aLayoutName);
         }
     }
-
-    m_xVS->Show();
 }
 
-/**
- * DoubleClick handler
- */
-IMPL_LINK_NOARG(SdPresLayoutDlg, ClickLayoutHdl, ValueSet*, void)
+IMPL_LINK_NOARG(SdPresLayoutDlg, ActivateLayoutHdl, const weld::TreeIter&, bool)
 {
     m_xDialog->response(RET_OK);
+    return true;
 }
 
 /**
@@ -226,9 +213,9 @@ IMPL_LINK_NOARG(SdPresLayoutDlg, ClickLoadHdl, weld::Button&, void)
     auto it = std::find(maLayoutNames.begin(), maLayoutNames.end(), aCompareStr);
     if (it != maLayoutNames.end())
     {
-        sal_uInt16 aPos = static_cast<sal_uInt16>(std::distance(maLayoutNames.begin(), it));
         // select template
-        m_xVS->SelectItem( aPos + 1 );
+        const int nPos = std::distance(maLayoutNames.begin(), it);
+        m_xIconView->select(nPos);
     }
     else
     {
@@ -254,8 +241,12 @@ IMPL_LINK_NOARG(SdPresLayoutDlg, ClickLoadHdl, weld::Button&, void)
                         aLayoutName = aLayoutName.copy(0, aLayoutName.indexOf(SD_LT_SEPARATOR));
                         maLayoutNames.push_back(aLayoutName);
 
-                        Image aBitmap(pTemplDocSh->GetPagePreviewBitmap(pMaster));
-                        m_xVS->InsertItem(static_cast<sal_uInt16>(maLayoutNames.size()), aBitmap, aLayoutName);
+                        Bitmap aBitmap = pTemplDocSh->GetPagePreviewBitmap(pMaster);
+                        m_xIconView->insert(maLayoutNames.size() - 1, nullptr, nullptr, &aBitmap,
+                                            nullptr);
+                        m_xIconView->set_item_accessible_name(maLayoutNames.size() - 1,
+                                                              aLayoutName);
+                        m_xIconView->set_item_tooltip_text(maLayoutNames.size() - 1, aLayoutName);
                     }
                 }
             }
@@ -270,14 +261,16 @@ IMPL_LINK_NOARG(SdPresLayoutDlg, ClickLoadHdl, weld::Button&, void)
         {
             // empty layout
             maLayoutNames.push_back(maStrNone);
-            m_xVS->InsertItem( static_cast<sal_uInt16>(maLayoutNames.size()),
-                    Image(BMP_SLIDE_NONE), maStrNone );
+            Bitmap aBitmap(BMP_SLIDE_NONE);
+            m_xIconView->insert(maLayoutNames.size() - 1, nullptr, nullptr, &aBitmap, nullptr);
+            m_xIconView->set_item_accessible_name(maLayoutNames.size() - 1, maStrNone);
+            m_xIconView->set_item_tooltip_text(maLayoutNames.size() - 1, maStrNone);
         }
 
         if (!bCancel)
         {
             // select template
-            m_xVS->SelectItem( static_cast<sal_uInt16>(maLayoutNames.size()) );
+            m_xIconView->select(maLayoutNames.size() - 1);
         }
     }
 }
