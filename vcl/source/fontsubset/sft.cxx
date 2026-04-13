@@ -224,24 +224,34 @@ bool getTTCoverage(
     std::optional<std::bitset<CodePageCoverage::MAX_CP_ENUM>> &rCodePageRange,
     const unsigned char* pTable, size_t nLength)
 {
-    bool bRet = false;
     // parse OS/2 header
-    if (nLength >= OS2_Legacy_length)
+    SvMemoryStream aStream(const_cast<unsigned char*>(pTable), nLength, StreamMode::READ);
+    aStream.SetEndian(SvStreamEndian::BIG);
+
+    sal_uInt32 nValue;
+
+    rUnicodeRange = std::bitset<UnicodeCoverage::MAX_UC_ENUM>();
+    aStream.Seek(OS2_ulUnicodeRange1_offset);
+    aStream.ReadUInt32(nValue);
+    append(*rUnicodeRange,  0, nValue);
+    aStream.ReadUInt32(nValue);
+    append(*rUnicodeRange, 32, nValue);
+    aStream.ReadUInt32(nValue);
+    append(*rUnicodeRange, 64, nValue);
+    aStream.ReadUInt32(nValue);
+    append(*rUnicodeRange, 96, nValue);
+
+    if (aStream.good())
     {
-        rUnicodeRange = std::bitset<UnicodeCoverage::MAX_UC_ENUM>();
-        append(*rUnicodeRange,  0, GetUInt32(pTable, OS2_ulUnicodeRange1_offset));
-        append(*rUnicodeRange, 32, GetUInt32(pTable, OS2_ulUnicodeRange2_offset));
-        append(*rUnicodeRange, 64, GetUInt32(pTable, OS2_ulUnicodeRange3_offset));
-        append(*rUnicodeRange, 96, GetUInt32(pTable, OS2_ulUnicodeRange4_offset));
-        bRet = true;
-        if (nLength >= OS2_V1_length)
-        {
-            rCodePageRange = std::bitset<CodePageCoverage::MAX_CP_ENUM>();
-            append(*rCodePageRange,  0, GetUInt32(pTable, OS2_ulCodePageRange1_offset));
-            append(*rCodePageRange, 32, GetUInt32(pTable, OS2_ulCodePageRange2_offset));
-        }
+        rCodePageRange = std::bitset<CodePageCoverage::MAX_CP_ENUM>();
+        aStream.Seek(OS2_ulCodePageRange1_offset);
+        aStream.ReadUInt32(nValue);
+        append(*rCodePageRange,  0, nValue);
+        aStream.ReadUInt32(nValue);
+        append(*rCodePageRange, 32, nValue);
     }
-    return bRet;
+
+    return aStream.good();
 }
 
 static FontWeight ImplWeightToSal( int nWeight )
