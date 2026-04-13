@@ -508,7 +508,7 @@ void GetTTGlobalFontInfo(const TrueTypeFont *ttf, TTGlobalFontInfo *info)
     info->family = ttf->getName(HB_OT_NAME_ID_FONT_FAMILY);
     if (info->family.isEmpty())
         info->family = ttf->getName(HB_OT_NAME_ID_POSTSCRIPT_NAME);
-    info->subfamily = ttf->subfamily;
+    info->subfamily = ttf->getName(HB_OT_NAME_ID_FONT_SUBFAMILY);
     info->microsoftSymbolEncoded = ttf->IsMicrosoftSymbolEncoded();
 
     sal_uInt32 table_size;
