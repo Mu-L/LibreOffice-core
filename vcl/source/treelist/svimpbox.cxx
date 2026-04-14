@@ -1107,7 +1107,7 @@ void SvImpLBox::AdjustScrollBars( Size& rSize )
     const WinBits nWindowStyle = m_rView.GetStyle();
     bool bVerSBar = ( nWindowStyle & WB_VSCROLL ) != 0;
     bool bHorBar = false;
-    tools::Long nMaxRight = aOSize.Width(); //GetOutputSize().Width();
+    tools::Long nMaxRight = aOSize.Width();
     Point aOrigin(m_rView.GetMapMode().GetOrigin());
     aOrigin.setX( aOrigin.X() * -1 );
     nMaxRight += aOrigin.X() - 1;
