@@ -311,7 +311,6 @@ public:
 class SVXCORE_DLLPUBLIC XHatchList final : public XPropertyList
 {
 private:
-    Bitmap CreateBitmap(tools::Long nIndex, const Size& rSize) const;
     virtual Bitmap CreateBitmapForUI(tools::Long nIndex) override;
 public:
     XHatchList(const OUString& rPath, const OUString& rReferer);
@@ -319,7 +318,7 @@ public:
 
     void Replace(std::unique_ptr<XHatchEntry> pEntry, tools::Long nIndex);
     XHatchEntry* GetHatch(tools::Long nIndex) const;
-    Bitmap GetBitmapForPreview(tools::Long nIndex, const Size& rSize);
+    Bitmap CreateBitmap(tools::Long nIndex, const Size& rSize) const;
 
     virtual css::uno::Reference< css::container::XNameContainer > createInstance() override;
     virtual bool Create() override;
@@ -328,7 +327,6 @@ public:
 class SVXCORE_DLLPUBLIC XGradientList final : public XPropertyList
 {
 private:
-    Bitmap CreateBitmap(tools::Long nIndex, const Size& rSize) const;
     virtual Bitmap CreateBitmapForUI(tools::Long nIndex) override;
 
 public:
@@ -337,7 +335,7 @@ public:
 
     void Replace(std::unique_ptr<XGradientEntry> pEntry, tools::Long nIndex);
     XGradientEntry* GetGradient(tools::Long nIndex) const;
-    Bitmap GetBitmapForPreview(tools::Long nIndex, const Size& rSize);
+    Bitmap CreateBitmap(tools::Long nIndex, const Size& rSize) const;
 
     virtual css::uno::Reference< css::container::XNameContainer > createInstance() override;
     virtual bool Create() override;
@@ -346,7 +344,6 @@ public:
 class SVXCORE_DLLPUBLIC XBitmapList final : public XPropertyList
 {
 private:
-    Bitmap CreateBitmap( tools::Long nIndex, const Size& rSize ) const;
     virtual Bitmap CreateBitmapForUI(tools::Long nIndex) override;
 
 public:
@@ -354,7 +351,7 @@ public:
         : XPropertyList(XPropertyListType::Bitmap, rPath, rReferer) {}
 
     XBitmapEntry* GetBitmap(tools::Long nIndex) const;
-    Bitmap GetBitmapForPreview(tools::Long nIndex, const Size& rSize);
+    Bitmap CreateBitmap(tools::Long nIndex, const Size& rSize) const;
 
     virtual css::uno::Reference< css::container::XNameContainer > createInstance() override;
     virtual bool Create() override;
@@ -363,7 +360,6 @@ public:
 class SVXCORE_DLLPUBLIC XPatternList final : public XPropertyList
 {
 private:
-    Bitmap CreateBitmap( tools::Long nIndex, const Size& rSize ) const;
     virtual Bitmap CreateBitmapForUI(tools::Long nIndex) override;
 
 public:
@@ -371,7 +367,7 @@ public:
         : XPropertyList(XPropertyListType::Pattern, rPath, rReferer) {}
 
     XBitmapEntry* GetBitmap(tools::Long nIndex) const;
-    Bitmap GetBitmapForPreview(tools::Long nIndex, const Size& rSize);
+    Bitmap CreateBitmap(tools::Long nIndex, const Size& rSize) const;
 
     virtual css::uno::Reference< css::container::XNameContainer > createInstance() override;
     virtual bool Create() override;

@@ -141,9 +141,4 @@ Bitmap XPatternList::CreateBitmapForUI( tools::Long nIndex )
     return CreateBitmap(nIndex, rSize);
 }
 
-Bitmap XPatternList::GetBitmapForPreview( tools::Long nIndex, const Size& rSize )
-{
-    return CreateBitmap(nIndex, rSize);
-}
-
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

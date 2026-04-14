@@ -99,7 +99,7 @@ template <typename ListType> void SvxPresetListBox::FillPresetListBoxImpl(ListTy
     sal_uInt32 nStartIndex = 1;
     for (tools::Long nIndex = 0; nIndex < rList.Count(); nIndex++, nStartIndex++)
     {
-        Bitmap aBitmap = rList.GetBitmapForPreview(nIndex, aSize);
+        Bitmap aBitmap = rList.CreateBitmap(nIndex, aSize);
         XPropertyEntry* pItem = rList.Get(nIndex);
         InsertItem(nStartIndex, Image(aBitmap), pItem->GetName());
     }

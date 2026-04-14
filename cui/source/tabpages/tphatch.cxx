@@ -428,7 +428,7 @@ void SvxHatchTabPage::AddHatch(const OUString& aName, tools::Long nCount)
     m_pHatchingList->Insert(std::make_unique<XHatchEntry>(aXHatch, aName), nCount);
 
     sal_Int32 nId = m_xHatchLB->GetItemId(nCount - 1); // calculate the last ID
-    Bitmap aBitmap = m_pHatchingList->GetBitmapForPreview( nCount, m_xHatchLB->GetIconSize() );
+    Bitmap aBitmap = m_pHatchingList->CreateBitmap(nCount, m_xHatchLB->GetIconSize());
     // Insert the new entry at the next ID
     m_xHatchLB->InsertItem( nId + 1, Image(aBitmap), aName );
     m_xHatchLB->SelectItem( nId + 1 );
@@ -498,7 +498,8 @@ IMPL_LINK_NOARG(SvxHatchTabPage, ClickModifyHdl_Impl, weld::Button&, void)
 
     m_pHatchingList->Replace(std::make_unique<XHatchEntry>(aXHatch, aName), nPos);
 
-    Bitmap aBitmap = m_pHatchingList->GetBitmapForPreview( static_cast<sal_uInt16>(nPos), m_xHatchLB->GetIconSize() );
+    Bitmap aBitmap
+        = m_pHatchingList->CreateBitmap(static_cast<sal_uInt16>(nPos), m_xHatchLB->GetIconSize());
     m_xHatchLB->RemoveItem( nId );
     m_xHatchLB->InsertItem( nId, Image(aBitmap), aName, static_cast<sal_uInt16>(nPos) );
     m_xHatchLB->SelectItem( nId );
