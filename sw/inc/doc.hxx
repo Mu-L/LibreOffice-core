@@ -394,11 +394,11 @@ private:
 
        @param eDocType Enumeration value representing doctype to be generated
        @param rPath String representing parent directories of file to be generated
-       @param concatFunc Function representing how token is concatenated to the filename
+       @param rConcatFunc Function representing how token is concatenated to the filename
     */
     bool SplitDoc(sal_uInt16 eDocType, const OUString& rPath, bool bOutline,
                   const SwTextFormatColl* pSplitColl, int nOutlineLevel = 0,
-                  std::function<OUString(OUString, OUString)> concatFunc =
+                  const std::function<OUString(OUString, OUString)>& rConcatFunc =
                   [](OUString aName, OUString token) -> OUString { return aName + token; });
 
     // Update charts of given table.
@@ -1543,34 +1543,30 @@ public:
     // If no collection is given, use chapter styles for 1st level.
     bool GenerateGlobalDoc(
         const OUString& rPath, const SwTextFormatColl* pSplitColl,
-        std::function<OUString(OUString, OUString)> concatFunc
-        = [](OUString aName, OUString token) -> OUString { return aName + token; })
+        const std::function<OUString(OUString, OUString)> rConcatFunc)
     {
-        return SplitDoc(SPLITDOC_TO_GLOBALDOC, rPath, false, pSplitColl, 0, concatFunc);
+        return SplitDoc(SPLITDOC_TO_GLOBALDOC, rPath, false, pSplitColl, 0, rConcatFunc);
     }
 
     bool GenerateGlobalDoc(
         const OUString& rPath, int nOutlineLevel,
-        std::function<OUString(OUString, OUString)> concatFunc
-        = [](OUString aName, OUString token) -> OUString { return aName + token; })
+        const std::function<OUString(OUString, OUString)>& rConcatFunc)
     {
-        return SplitDoc(SPLITDOC_TO_GLOBALDOC, rPath, true, nullptr, nOutlineLevel, concatFunc);
+        return SplitDoc(SPLITDOC_TO_GLOBALDOC, rPath, true, nullptr, nOutlineLevel, rConcatFunc);
     }
 
     bool GenerateHTMLDoc(
         const OUString& rPath, const SwTextFormatColl* pSplitColl,
-        std::function<OUString(OUString, OUString)> concatFunc
-        = [](OUString aName, OUString token) -> OUString { return aName + token; })
+        const std::function<OUString(OUString, OUString)>& rConcatFunc)
     {
-        return SplitDoc(SPLITDOC_TO_HTML, rPath, false, pSplitColl, 0, concatFunc);
+        return SplitDoc(SPLITDOC_TO_HTML, rPath, false, pSplitColl, 0, rConcatFunc);
     }
 
     bool GenerateHTMLDoc(
         const OUString& rPath, int nOutlineLevel,
-        std::function<OUString(OUString, OUString)> concatFunc
-        = [](OUString aName, OUString token) -> OUString { return aName + token; })
+        const std::function<OUString(OUString, OUString)>& rConcatFunc)
     {
-        return SplitDoc(SPLITDOC_TO_HTML, rPath, true, nullptr, nOutlineLevel, concatFunc);
+        return SplitDoc(SPLITDOC_TO_HTML, rPath, true, nullptr, nOutlineLevel, rConcatFunc);
     }
 
     //  Compare two documents.

@@ -279,14 +279,14 @@ The extension string may be f.e. ".txt" or "", if no extension string is given, 
     @param pExtension String representing filename extension
     @param bCreateParentDirs If rLeadingChars contains a slash, this will create the required
            parent directories.
-    @param concatFunc Optional parameter to change the way the counter is added onto the character.
+    @param rConcatFunc Optional parameter to change the way the counter is added onto the character.
             Default is to just add the number immediately after the name, e.g. "abc0" "abc1" etc.
 */
 UNOTOOLS_DLLPUBLIC OUString CreateTempURL(
     std::u16string_view rLeadingChars, bool _bStartWithZero = true,
     std::u16string_view pExtension = {}, const OUString* pParent = nullptr,
     bool bCreateParentDirs = false,
-    std::function<OUString(OUString, OUString)> concatFunc
+    const std::function<OUString(OUString, OUString)>& rConcatFunc
     = [](OUString aName, OUString token) -> OUString { return aName + token; });
 
 /**

@@ -141,7 +141,7 @@ OUString lcl_createName(
     std::u16string_view rLeadingChars, Tokens & tokens, std::u16string_view pExtension,
     const OUString* pParent, bool bDirectory, bool bKeep, bool bLock,
     bool bCreateParentDirs,
-    std::function<OUString(OUString,OUString)> concatFunc =
+    const std::function<OUString(OUString,OUString)>& rConcatFunc =
         [](OUString aName, OUString token) -> OUString { return aName + token; })
 {
     OUString aName = ConstructTempDir_Impl( pParent, bCreateParentDirs );
@@ -161,7 +161,7 @@ OUString lcl_createName(
     OUString token;
     while (tokens.next(&token))
     {
-        OUString aTmp(aName + concatFunc(OUString(rLeadingChars), token));
+        OUString aTmp(aName + rConcatFunc(OUString(rLeadingChars), token));
         if ( !pExtension.empty() )
             aTmp += pExtension;
         else
@@ -325,11 +325,11 @@ OUString CreateTempURL( const OUString* pParent, bool bDirectory )
 OUString CreateTempURL(std::u16string_view rLeadingChars, bool _bStartWithZero,
                        std::u16string_view pExtension, const OUString* pParent,
                        bool bCreateParentDirs,
-                       std::function<OUString(OUString, OUString)> concatFunc)
+                       const std::function<OUString(OUString, OUString)>& rConcatFunc)
 {
     PaddedSequentialTokens<3,1> t(_bStartWithZero);
     return lcl_createName(rLeadingChars, t, pExtension, pParent, false,
-                           true, true, bCreateParentDirs, concatFunc);
+                           true, true, bCreateParentDirs, rConcatFunc);
 }
 
 TempFileNamed::TempFileNamed( const OUString* pParent, bool bDirectory )

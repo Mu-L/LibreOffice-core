@@ -127,7 +127,8 @@ static SwNode* GetEndNode( const SwOutlineNodes* pOutlNds, const SwTextFormatCol
     return nullptr;
 }
 
-bool SwDoc::SplitDoc(sal_uInt16 eDocType, const OUString& rPath, bool bOutline, const SwTextFormatColl* pSplitColl, int nOutlineLevel, std::function<OUString(OUString, OUString)> concatFunc)
+bool SwDoc::SplitDoc(sal_uInt16 eDocType, const OUString& rPath, bool bOutline, const SwTextFormatColl* pSplitColl, int nOutlineLevel,
+        const std::function<OUString(OUString, OUString)>& rConcatFunc)
 {
     // Iterate over all the template's Nodes, creating an own
     // document for every single one and replace linked sections (GlobalDoc) for links (HTML).
@@ -286,7 +287,7 @@ bool SwDoc::SplitDoc(sal_uInt16 eDocType, const OUString& rPath, bool bOutline, 
                         pDoc->GetNodes().GetEndOfContent().GetIndex() )
                         pDoc->GetNodes().Delete(aIdx);
 
-                    sFileName = utl::CreateTempURL(sLeading, true, sExt, &sPath, false, concatFunc);
+                    sFileName = utl::CreateTempURL(sLeading, true, sExt, &sPath, false, rConcatFunc);
                     SfxMedium* pTmpMed = new SfxMedium( sFileName,
                                                 StreamMode::STD_READWRITE );
                     pTmpMed->SetFilter( pFilter );
