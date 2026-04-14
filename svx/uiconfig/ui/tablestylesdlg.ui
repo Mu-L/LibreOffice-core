@@ -147,8 +147,8 @@
                                 </accessibility>
                                 <child internal-child="accessible">
                                   <object class="AtkObject" id="basicnameentry-atkobject">
-                                    <property name="AtkObject::accessible-name" translatable="yes" context="basicnameentry-atkobject|accessible-name">hello</property>
-                                    <property name="AtkObject::accessible-description" translatable="yes" context="basicnameentry-atkobject|accessible-description">how are you</property>
+                                    <property name="AtkObject::accessible-name" translatable="yes" context="basicnameentry-atkobject|accessible-name">Name</property>
+                                    <property name="AtkObject::accessible-description" translatable="yes" context="basicnameentry-atkobject|accessible-description">Enter table style name</property>
                                   </object>
                                 </child>
                               </object>
@@ -344,7 +344,7 @@
                             </accessibility>
                             <child internal-child="accessible">
                               <object class="AtkObject" id="elementbox-atkobject">
-                                <property name="AtkObject::accessible-name" translatable="yes" context="elementbox-atkobject|accessible-name">something</property>
+                                <property name="AtkObject::accessible-name" translatable="yes" context="elementbox-atkobject|accessible-name">Element</property>
                               </object>
                             </child>
                           </object>
@@ -472,7 +472,7 @@
                                         </accessibility>
                                         <child internal-child="accessible">
                                           <object class="AtkObject" id="cellpaddingsb-atkobject">
-                                            <property name="AtkObject::accessible-name" translatable="yes" context="cellpaddingsb-atkobject|accessible-name">something</property>
+                                            <property name="AtkObject::accessible-name" translatable="yes" context="cellpaddingsb-atkobject|accessible-name">Padding</property>
                                           </object>
                                         </child>
                                       </object>
@@ -966,7 +966,7 @@
                                         </accessibility>
                                         <child internal-child="accessible">
                                           <object class="AtkObject" id="charnamebox-atkobject">
-                                            <property name="AtkObject::accessible-name" translatable="yes" context="charnamebox-atkobject|accessible-name">box</property>
+                                            <property name="AtkObject::accessible-name" translatable="yes" context="charnamebox-atkobject|accessible-name">Font Name</property>
                                           </object>
                                         </child>
                                       </object>
@@ -1019,7 +1019,7 @@
                                         </accessibility>
                                         <child internal-child="accessible">
                                           <object class="AtkObject" id="charsizebox-atkobject">
-                                            <property name="AtkObject::accessible-name" translatable="yes" context="charsizebox-atkobject|accessible-name">helloworld</property>
+                                            <property name="AtkObject::accessible-name" translatable="yes" context="charsizebox-atkobject|accessible-name">Font Size</property>
                                           </object>
                                         </child>
                                       </object>
@@ -1291,6 +1291,11 @@
                     </accessibility>
                   </object>
                 </child>
+                <child internal-child="accessible">
+                  <object class="AtkObject" id="rightframe-atkobject">
+                    <property name="AtkObject::accessible-name" translatable="yes" context="rightframe-atkobject|accessible-name">Properties</property>
+                  </object>
+                </child>
                 <child type="label">
                   <object class="GtkLabel" id="propertieslb">
                     <property name="visible">True</property>
@@ -1302,11 +1307,6 @@
                     <accessibility>
                       <relation type="label-for" target="properties"/>
                     </accessibility>
-                  </object>
-                </child>
-                <child internal-child="accessible">
-                  <object class="AtkObject" id="rightframe-atkobject">
-                    <property name="AtkObject::accessible-name" translatable="yes" context="rightframe-atkobject|accessible-name">rightframe</property>
                   </object>
                 </child>
               </object>
