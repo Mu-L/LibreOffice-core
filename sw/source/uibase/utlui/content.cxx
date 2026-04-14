@@ -2917,7 +2917,7 @@ bool SwContentTree::RequestingChildren(const weld::TreeIter& rParent)
                     }
                 }
 
-                vMemberIndexes = vNoParentYetFoundForMemberIndexes;
+                vMemberIndexes = std::move(vNoParentYetFoundForMemberIndexes);
             }
         }
         else
