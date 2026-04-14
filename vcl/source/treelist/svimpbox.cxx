@@ -1068,8 +1068,6 @@ void SvImpLBox::DrawNet(vcl::RenderContext& rRenderContext)
 
 void SvImpLBox::PositionScrollBars( Size& rSize, sal_uInt16 nMask )
 {
-    tools::Long nOverlap = 0;
-
     Size aVerSize( m_nVerSBarWidth, rSize.Height() );
     Size aHorSize( rSize.Width(), m_nHorSBarHeight );
 
@@ -1078,12 +1076,10 @@ void SvImpLBox::PositionScrollBars( Size& rSize, sal_uInt16 nMask )
     if( nMask & 0x0002 )
         aVerSize.AdjustHeight( -m_nHorSBarHeight );
 
-    aVerSize.AdjustHeight(2 * nOverlap );
-    Point aVerPos( rSize.Width() - aVerSize.Width() + nOverlap, -nOverlap );
+    Point aVerPos(rSize.Width() - aVerSize.Width(), 0);
     m_aVerSBar->SetPosSizePixel( aVerPos, aVerSize );
 
-    aHorSize.AdjustWidth(2 * nOverlap );
-    Point aHorPos( -nOverlap, rSize.Height() - aHorSize.Height() + nOverlap );
+    Point aHorPos(0, rSize.Height() - aHorSize.Height());
 
     m_aHorSBar->SetPosSizePixel( aHorPos, aHorSize );
 
