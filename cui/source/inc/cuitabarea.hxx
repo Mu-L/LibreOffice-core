@@ -566,7 +566,6 @@ class SvxBitmapTabPage : public SfxTabPage
     DECL_LINK( ClickImportHdl, weld::Button&, void );
     void ClickBitmapHdl_Impl();
     void CalculateBitmapPresetSize();
-    void DeleteBitmapHdl_Impl(const sal_uInt16 nId);
     sal_Int32 SearchBitmapList(std::u16string_view rBitmapName);
     sal_Int32 SearchBitmapList(const GraphicObject& rGraphicObject);
     tools::Long AddBitmap(const GraphicObject& rGraphicObject, const OUString& rName,
