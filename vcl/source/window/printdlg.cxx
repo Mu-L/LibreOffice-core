@@ -1048,7 +1048,10 @@ void PrintDialog::preparePreview( bool i_bMayUseCache )
             bSwapToLandscape = true;
         }
         if (bSwapToLandscape)
+        {
+            // coverity[swapped_arguments : FALSE] - this is in the correct order
             aCurPageSize = Size(aCurPageSize.Height(), aCurPageSize.Width());
+        }
     }
     // tdf#123076 Get paper size for the preview top label
     mePaper = aPrt->GetPaper();
