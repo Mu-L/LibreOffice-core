@@ -83,16 +83,12 @@ class VCL_PLUGIN_PUBLIC PrintFontManager
 
     OString getFontFile(const PrintFont& rFont) const;
 
-    std::vector<PrintFont> analyzeFontFile(int nDirID, const OString& rFileName) const;
-    bool analyzeSfntFile(PrintFont& rFont) const;
     // finds the font id for the nFaceIndex face in this font file
     // There may be multiple font ids for font collections
     fontID findFontFileID(int nDirID, const OString& rFile, int nFaceIndex, int nVariationIndex) const;
 
     // There may be multiple font ids for font collections
     std::vector<fontID> findFontFileIDs( int nDirID, const OString& rFile ) const;
-
-    static FontFamily matchFamilyName( std::u16string_view rFamily );
 
     std::optional<PrintFont> fontFromFcPattern(FcPattern* pPattern);
     std::vector<PrintFont> fontsFromFontconfigFile(std::string_view rFilePath);
