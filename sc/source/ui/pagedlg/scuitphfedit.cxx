@@ -160,8 +160,8 @@ ScHFEditPage::ScHFEditPage(weld::Container* pPage, weld::DialogController* pCont
         m_xLbFontFamily->append_text(rFontMetric.GetFamilyName());
     }
 
-    const SvxFontItem *pFontItem = m_pEditFocus->GetEditView()->GetAttribs().GetItemIfSet( EE_CHAR_FONTINFO );
-    m_xLbFontFamily->set_active_text(pFontItem->GetFamilyName());
+    if (const SvxFontItem *pFontItem = m_pEditFocus->GetEditView()->GetAttribs().GetItemIfSet( EE_CHAR_FONTINFO ))
+        m_xLbFontFamily->set_active_text(pFontItem->GetFamilyName());
 
     sal_uInt16 nFontHeight;
     for (nFontHeight = 6; nFontHeight <= 16; ++nFontHeight)
@@ -175,8 +175,8 @@ ScHFEditPage::ScHFEditPage(weld::Container* pPage, weld::DialogController* pCont
     for (nFontHeight = 80; nFontHeight <= 96; nFontHeight += 8)
         m_xLbFontHeight->append_text( OUString::number(nFontHeight) );
 
-    const SvxFontHeightItem *pFontHeightItem = m_pEditFocus->GetEditView()->GetAttribs().GetItemIfSet( EE_CHAR_FONTHEIGHT );
-    m_xLbFontHeight->set_active_text( OUString::number(pFontHeightItem->GetHeight() / 20) );
+    if (const SvxFontHeightItem *pFontHeightItem = m_pEditFocus->GetEditView()->GetAttribs().GetItemIfSet( EE_CHAR_FONTHEIGHT ))
+        m_xLbFontHeight->set_active_text( OUString::number(pFontHeightItem->GetHeight() / 20) );
 }
 
 IMPL_LINK_NOARG( ScHFEditPage, ObjectSelectHdl, ScEditWindow&, void )
@@ -750,17 +750,17 @@ void ScHFEditPage::UpdateFontAttributes()
 {
     const SfxItemSet aSet = m_pEditFocus->GetEditView()->GetAttribs();
 
-    const SvxFontItem*             pFontItem = aSet.GetItemIfSet( EE_CHAR_FONTINFO );
-    const SvxFontHeightItem* pFontHeightItem = aSet.GetItemIfSet( EE_CHAR_FONTHEIGHT );
-    const SvxWeightItem*         pWeightItem = aSet.GetItemIfSet( EE_CHAR_WEIGHT );
-    const SvxUnderlineItem*   pUnderlineItem = aSet.GetItemIfSet( EE_CHAR_UNDERLINE );
-    const SvxPostureItem*        pItalicItem = aSet.GetItemIfSet( EE_CHAR_ITALIC );
+    if (const SvxFontItem* pFontItem = aSet.GetItemIfSet( EE_CHAR_FONTINFO ))
+        m_xLbFontFamily->set_active_text(pFontItem->GetFamilyName());
+    if (const SvxFontHeightItem* pFontHeightItem = aSet.GetItemIfSet( EE_CHAR_FONTHEIGHT ))
+        m_xLbFontHeight->set_active_text(OUString::number(pFontHeightItem->GetHeight() / 20));
+    if (const SvxWeightItem* pWeightItem = aSet.GetItemIfSet( EE_CHAR_WEIGHT ))
+        m_xBtnBold->set_active(pWeightItem->GetValue() == WEIGHT_BOLD);
+    if (const SvxUnderlineItem* pUnderlineItem = aSet.GetItemIfSet( EE_CHAR_UNDERLINE ))
+        m_xBtnUnderline->set_active(pUnderlineItem->GetValue() != LINESTYLE_NONE);
+    if (const SvxPostureItem* pItalicItem = aSet.GetItemIfSet( EE_CHAR_ITALIC ))
+        m_xBtnItalic->set_active(pItalicItem->GetValue() == ITALIC_NORMAL);
 
-    m_xLbFontFamily->set_active_text(pFontItem->GetFamilyName());
-    m_xLbFontHeight->set_active_text(OUString::number(pFontHeightItem->GetHeight() / 20));
-    if (pWeightItem) m_xBtnBold->set_active(pWeightItem->GetValue() == WEIGHT_BOLD);
-    if (pItalicItem) m_xBtnItalic->set_active(pItalicItem->GetValue() == ITALIC_NORMAL);
-    if (pUnderlineItem) m_xBtnUnderline->set_active(pUnderlineItem->GetValue() != LINESTYLE_NONE);
 }
 
 // Handler:
