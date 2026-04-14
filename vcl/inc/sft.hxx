@@ -357,14 +357,6 @@ class TrueTypeFont;
  * @defgroup sft Sun Font Tools Exported Functions
  */
 
-/**
- * Get the number of fonts contained in a TrueType collection
- * @param  fname - file name
- * @return number of fonts or zero, if file is not a TTC file.
- * @ingroup sft
- */
-    int CountTTCFonts(const char* fname);
-
 class UNLESS_MERGELIBS(VCL_DLLPUBLIC) TrueTypeFont
 {
     hb_face_t* m_pFace = nullptr;

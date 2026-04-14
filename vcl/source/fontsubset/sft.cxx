@@ -90,16 +90,6 @@ static sal_Int32 GetInt32(const sal_uInt8* ptr, size_t offset)
 
 /*- Public functions */
 
-int CountTTCFonts(const char* fname)
-{
-    hb_blob_t* pBlob = hb_blob_create_from_file_or_fail(fname);
-    if (!pBlob)
-        return 0;
-    unsigned int nFaces = hb_face_count(pBlob);
-    hb_blob_destroy(pBlob);
-    return nFaces;
-}
-
 TrueTypeFont::TrueTypeFont(const char* pFileName, sal_uInt32 facenum)
 {
     hb_blob_t* pBlob = hb_blob_create_from_file_or_fail(pFileName);
