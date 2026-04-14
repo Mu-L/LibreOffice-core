@@ -35,5 +35,5 @@
  <toolbar:toolbarseparator/>
  <toolbar:toolbaritem xlink:href=".uno:ScalingFactor"/>
  <toolbar:toolbarseparator/>
- <toolbar:toolbaritem xlink:href=".uno:ClosePreview"/>
+ <toolbar:toolbaritem xlink:href=".uno:ClosePreview" toolbar:style="image text" />
 </toolbar:toolbar>
