@@ -706,6 +706,31 @@ std::optional<PrintFontManager::PrintFont> PrintFontManager::fontFromFcPattern(F
     return aFont;
 }
 
+std::vector<PrintFontManager::PrintFont> PrintFontManager::fontsFromFontconfigFile(std::string_view rFilePath)
+{
+    std::vector<PrintFont> aFonts;
+
+    FcFontSet* pFSet = FcConfigGetFonts(FcConfigGetCurrent(), FcSetApplication);
+    if (!pFSet)
+        return aFonts;
+
+    for (int i = 0; i < pFSet->nfont; i++)
+    {
+        FcChar8* file = nullptr;
+        FcResult eFileRes = FcPatternGetString(pFSet->fonts[i], FC_FILE, 0, &file);
+        if (eFileRes != FcResultMatch)
+            continue;
+        if (rFilePath != reinterpret_cast<char*>(file))
+            continue;
+
+        auto oFont = fontFromFcPattern(pFSet->fonts[i]);
+        if (oFont)
+            aFonts.push_back(std::move(*oFont));
+    }
+
+    return aFonts;
+}
+
 void PrintFontManager::countFontconfigFonts()
 {
     int nFonts = 0;

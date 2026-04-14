@@ -95,6 +95,7 @@ class VCL_PLUGIN_PUBLIC PrintFontManager
     static FontFamily matchFamilyName( std::u16string_view rFamily );
 
     std::optional<PrintFont> fontFromFcPattern(FcPattern* pPattern);
+    std::vector<PrintFont> fontsFromFontconfigFile(std::string_view rFilePath);
 
     OString getDirectory( int nAtom ) const;
     int getDirectoryAtom( const OString& rDirectory );

@@ -31,16 +31,13 @@
 #include <vcl/pdf/PDFSegmentType.hxx>
 #include <vcl/pdf/PDFTextRenderMode.hxx>
 
-#if defined MACOSX || defined _WIN32
 #include <set>
 static std::ostream& operator<<(std::ostream& rStream, const std::set<rtl::OString>& rSet);
-#endif
 
 #include <test/unoapi_test.hxx>
 
 using namespace ::com::sun::star;
 
-#if defined MACOSX || defined _WIN32
 static std::ostream& operator<<(std::ostream& rStream, const std::set<OString>& rSet)
 {
     rStream << "{ ";
@@ -53,7 +50,6 @@ static std::ostream& operator<<(std::ostream& rStream, const std::set<OString>& 
     rStream << " }";
     return rStream;
 }
-#endif
 
 namespace
 {
@@ -2083,9 +2079,6 @@ CPPUNIT_TEST_FIXTURE(PdfExportTest, testTdf105954)
 
 CPPUNIT_TEST_FIXTURE(PdfExportTest, testVariableFontPSName1)
 {
-// Embedding variable fonts does not work on Linux, only the default instance is enumerated
-// https://bugs.documentfoundation.org/show_bug.cgi?id=155853
-#if defined MACOSX || defined _WIN32
     loadFromFile(u"variable-font-psname-1.odt");
     save(TestFilter::PDF_WRITER);
 
@@ -2108,7 +2101,7 @@ CPPUNIT_TEST_FIXTURE(PdfExportTest, testVariableFontPSName1)
         }
     }
 
-#if defined MACOSX
+#if !defined _WIN32
     std::set<OString> aExpected{ "STIXTwoText"_ostr,
                                  "STIXTwoTextRoman-Bold"_ostr,
                                  "STIXTwoText-Italic"_ostr,
@@ -2121,14 +2114,10 @@ CPPUNIT_TEST_FIXTURE(PdfExportTest, testVariableFontPSName1)
 #endif
 
     CPPUNIT_ASSERT_EQUAL(aExpected, aFontNames);
-#endif
 }
 
 CPPUNIT_TEST_FIXTURE(PdfExportTest, testVariableFontPSName2)
 {
-// Embedding variable fonts does not work on Linux, only the default instance is enumerated
-// https://bugs.documentfoundation.org/show_bug.cgi?id=155853
-#if defined MACOSX || defined _WIN32
     loadFromFile(u"variable-font-psname-2.odt");
     save(TestFilter::PDF_WRITER);
 
@@ -2151,7 +2140,7 @@ CPPUNIT_TEST_FIXTURE(PdfExportTest, testVariableFontPSName2)
         }
     }
 
-#if defined MACOSX
+#if !defined _WIN32
     std::set<OString> aExpected{
         "SourceCodePro-Regular"_ostr,  "SourceCodePro-Bold"_ostr,
         "SourceCodePro-Italic"_ostr,   "SourceCodePro-BoldItalic"_ostr,
@@ -2163,7 +2152,6 @@ CPPUNIT_TEST_FIXTURE(PdfExportTest, testVariableFontPSName2)
 #endif
 
     CPPUNIT_ASSERT_EQUAL(aExpected, aFontNames);
-#endif
 }
 
 // This test document embeds a variable font with opsz axis, and sets the text in the same font but
@@ -2171,9 +2159,6 @@ CPPUNIT_TEST_FIXTURE(PdfExportTest, testVariableFontPSName2)
 // corresponding to the different opsz values.
 CPPUNIT_TEST_FIXTURE(PdfExportTest, testOpticalSizing)
 {
-// Embedding variable fonts does not work on Linux, only the default instance is enumerated
-// https://bugs.documentfoundation.org/show_bug.cgi?id=155853
-#if defined MACOSX || defined _WIN32
     loadFromFile(u"testOpticalSizing.odt");
     save(TestFilter::PDF_WRITER);
 
@@ -2196,7 +2181,7 @@ CPPUNIT_TEST_FIXTURE(PdfExportTest, testOpticalSizing)
         }
     }
 
-#if defined MACOSX
+#if !defined _WIN32
     std::set<OString> aExpected{ "Fraunces_144opsz_400wght"_ostr, "Fraunces_80opsz_400wght"_ostr,
                                  "Fraunces_60opsz_400wght"_ostr,  "Fraunces_40opsz_400wght"_ostr,
                                  "Fraunces_20opsz_400wght"_ostr,  "Fraunces-Regular"_ostr };
@@ -2205,7 +2190,6 @@ CPPUNIT_TEST_FIXTURE(PdfExportTest, testOpticalSizing)
 #endif
 
     CPPUNIT_ASSERT_EQUAL(aExpected, aFontNames);
-#endif
 }
 
 CPPUNIT_TEST_FIXTURE(PdfExportTest, testTdf157679)
@@ -3973,8 +3957,6 @@ CPPUNIT_TEST_FIXTURE(PdfExportTest, testTdf167659)
 // each with a PostScript name encoding the variation axis values.
 CPPUNIT_TEST_FIXTURE(PdfExportTest, testFontVariationSettingsODT)
 {
-// Variable font instances only work on macOS and Windows
-#if defined MACOSX || defined _WIN32
     loadFromFile(u"testFontVariationSettings.odt");
     save(TestFilter::PDF_WRITER);
 
@@ -4005,7 +3987,6 @@ CPPUNIT_TEST_FIXTURE(PdfExportTest, testFontVariationSettingsODT)
         "AmstelvarRoman_87wdth"_ostr,
     };
     CPPUNIT_ASSERT_EQUAL(aExpected, aFontNames);
-#endif
 }
 
 CPPUNIT_TEST_FIXTURE(PdfExportTest, testFontVariationSettingsODP)

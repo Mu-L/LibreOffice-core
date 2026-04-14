@@ -5170,14 +5170,8 @@ CPPUNIT_TEST_FIXTURE(PdfExportTest2, testTdf155161)
         }
     }
 
-#ifdef MACOSX
     // There must be two fonts
     std::set<OString> aExpected{ "Cantarell-Regular"_ostr, "Cantarell-Bold"_ostr };
-#else
-    // But it seems that embedded variable fonts don’t register all supported
-    // styles on Linux, so the bold and regular text use the same regular font.
-    std::set<OString> aExpected{ "Cantarell-Regular"_ostr };
-#endif
     CPPUNIT_ASSERT_EQUAL(aExpected, aFontNames);
 #endif
 }
