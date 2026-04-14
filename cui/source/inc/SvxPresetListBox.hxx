@@ -30,7 +30,7 @@ private:
     Link<sal_uInt16, void> maRenameHdl;
     Link<sal_uInt16, void> maDeleteHdl;
 
-    template <typename ListType, typename EntryType> void FillPresetListBoxImpl(ListType& rList);
+    template <typename ListType> void FillPresetListBoxImpl(ListType& rList);
 
 public:
     SvxPresetListBox(std::unique_ptr<weld::ScrolledWindow> pWindow);

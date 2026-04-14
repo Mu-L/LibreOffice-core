@@ -93,37 +93,36 @@ bool SvxPresetListBox::SvxPresetListBox::KeyInput(const KeyEvent& rKEvt)
     }
 }
 
-template <typename ListType, typename EntryType>
-void SvxPresetListBox::FillPresetListBoxImpl(ListType& rList)
+template <typename ListType> void SvxPresetListBox::FillPresetListBoxImpl(ListType& rList)
 {
     const Size aSize(GetIconSize());
     sal_uInt32 nStartIndex = 1;
     for (tools::Long nIndex = 0; nIndex < rList.Count(); nIndex++, nStartIndex++)
     {
         Bitmap aBitmap = rList.GetBitmapForPreview(nIndex, aSize);
-        EntryType* pItem = static_cast<EntryType*>(rList.Get(nIndex));
+        XPropertyEntry* pItem = rList.Get(nIndex);
         InsertItem(nStartIndex, Image(aBitmap), pItem->GetName());
     }
 }
 
 void SvxPresetListBox::FillPresetListBox(XGradientList& rList)
 {
-    FillPresetListBoxImpl<XGradientList, XGradientEntry>(rList);
+    FillPresetListBoxImpl<XGradientList>(rList);
 }
 
 void SvxPresetListBox::FillPresetListBox(XHatchList& rList)
 {
-    FillPresetListBoxImpl<XHatchList, XHatchEntry>(rList);
+    FillPresetListBoxImpl<XHatchList>(rList);
 }
 
 void SvxPresetListBox::FillPresetListBox(XBitmapList& rList)
 {
-    FillPresetListBoxImpl<XBitmapList, XBitmapEntry>(rList);
+    FillPresetListBoxImpl<XBitmapList>(rList);
 }
 
 void SvxPresetListBox::FillPresetListBox(XPatternList& rList)
 {
-    FillPresetListBoxImpl<XPatternList, XBitmapEntry>(rList);
+    FillPresetListBoxImpl<XPatternList>(rList);
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
