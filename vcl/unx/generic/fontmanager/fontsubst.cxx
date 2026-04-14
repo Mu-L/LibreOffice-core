@@ -127,7 +127,7 @@ bool FcPreMatchSubstitution::FindFontSubstitute(vcl::font::FontSelectPattern &rF
     }
 
     OUString aDummy;
-    const vcl::font::FontSelectPattern aOut = GetFcSubstitute( rFontSelData, aDummy );
+    vcl::font::FontSelectPattern aOut = GetFcSubstitute( rFontSelData, aDummy );
 
     if( aOut.maSearchName.isEmpty() )
         return false;
@@ -165,7 +165,7 @@ bool FcPreMatchSubstitution::FindFontSubstitute(vcl::font::FontSelectPattern &rF
         // a fair chunk larger to accommodate weird documents./
         if (rCachedFontMap.size() > 256)
             rCachedFontMap.pop_back();
-        rFontSelData = aOut;
+        rFontSelData = std::move(aOut);
     }
 
     return bHaveSubstitute;
@@ -182,7 +182,7 @@ bool FcGlyphFallbackSubstitution::FindFontSubstitute(vcl::font::FontSelectPatter
     if ( IsOpenSymbol(rFontSelData.maSearchName) )
         return false;
 
-    const vcl::font::FontSelectPattern aOut = GetFcSubstitute( rFontSelData, rMissingCodes );
+    vcl::font::FontSelectPattern aOut = GetFcSubstitute( rFontSelData, rMissingCodes );
     // TODO: cache the unicode + srcfont specific result
     // FC doing it would be preferable because it knows the invariables
     // e.g. FC knows the FC rule that all Arial gets replaced by LiberationSans
@@ -216,7 +216,7 @@ bool FcGlyphFallbackSubstitution::FindFontSubstitute(vcl::font::FontSelectPatter
 #endif
 
     if( bHaveSubstitute )
-        rFontSelData = aOut;
+        rFontSelData = std::move(aOut);
 
     return bHaveSubstitute;
 }
