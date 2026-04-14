@@ -107,7 +107,7 @@
 #include <osl/file.hxx>
 #include <svl/cryptosign.hxx>
 
-#include <vcl/abstdlg.hxx>
+#include <svtools/confirmationdlg.hxx>
 
 #ifdef _WIN32
 #include <Shlobj.h>
@@ -2090,9 +2090,6 @@ bool SfxStoringHelper::WarnUnacceptableFormat( const uno::Reference< frame::XMod
                                                     const OUString& aDefExtension,
                                                     bool bDefIsAlien )
 {
-    if ( !officecfg::Office::Common::Save::Document::WarnAlienFormat::get() )
-        return true;
-
     weld::Window* pWin = SfxStoringHelper::GetModelWindow(xModel);
 
     OUString sInfoText = SfxResId(STR_QUERY_ALIENFORMAT_TEXT);
@@ -2110,23 +2107,13 @@ bool SfxStoringHelper::WarnUnacceptableFormat( const uno::Reference< frame::XMod
         sQuestion = sQuestion.replaceAll("%EXTENSION", aDefExtension);
     }
 
-    VclAbstractDialogFactory* pFact = VclAbstractDialogFactory::Create();
-    bool bShowAgain = !officecfg::Office::Common::Save::Document::WarnAlienFormat::isReadOnly();
-    auto pDlg = pFact->CreateQueryDialog(pWin, SfxResId(STR_QUERY_ALIENFORMAT_TTITLE), sInfoText, sQuestion, bShowAgain);
-    pDlg->SetYesLabel(SfxResId(STR_QUERY_ALIENFORMAT_YES).replaceAll("%FORMATNAME", aOldUIName)); // "Use %FORMATNAME Format"
-    pDlg->SetNoLabel(SfxResId(STR_QUERY_ALIENFORMAT_NO).replaceAll("%DEFAULTEXTENSION", sExtension)); // "Use %DEFAULTEXTENSION _Format"
-
-    sal_Int32 nResult = pDlg->Execute();
-    if (pDlg->ShowAgain() == false)
-    {
-        std::shared_ptr<comphelper::ConfigurationChanges> xChanges(
-            comphelper::ConfigurationChanges::create());
-        officecfg::Office::Common::Save::Document::WarnAlienFormat::set(false, xChanges);
-        xChanges->commit();
-    }
-    pDlg->disposeOnce();
-
-    return nResult == RET_YES;
+    const OUString sTitle = SfxResId(STR_QUERY_ALIENFORMAT_TTITLE);
+    const OUString sYesLabel
+        = SfxResId(STR_QUERY_ALIENFORMAT_YES).replaceAll("%FORMATNAME", aOldUIName);
+    const OUString sNoLabel
+        = SfxResId(STR_QUERY_ALIENFORMAT_NO).replaceAll("%DEFAULTEXTENSION", sExtension);
+    return ConfirmationDlg::Query<officecfg::Office::Common::Save::Document::WarnAlienFormat>(
+        pWin, sTitle, sInfoText, sQuestion, sYesLabel, sNoLabel);
 }
 
 uno::Reference<awt::XWindow> SfxStoringHelper::GetModelXWindow(const uno::Reference<frame::XModel2>& xModel)

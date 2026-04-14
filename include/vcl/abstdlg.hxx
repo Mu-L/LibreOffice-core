@@ -162,7 +162,7 @@ class VCL_DLLPUBLIC AbstractQueryDialog : public VclAbstractDialog
 protected:
     virtual ~AbstractQueryDialog() override = default;
 public:
-    virtual bool ShowAgain() const = 0;
+    virtual bool DontShowAgain() const = 0;
     virtual void SetYesLabel(const OUString& sLabel) = 0;
     virtual void SetNoLabel(const OUString& sLabel) = 0;
 };

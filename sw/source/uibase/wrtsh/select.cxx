@@ -23,6 +23,7 @@
 #include <sfx2/viewfrm.hxx>
 #include <svl/eitem.hxx>
 #include <svl/macitem.hxx>
+#include <svtools/confirmationdlg.hxx>
 #include <unotools/charclass.hxx>
 #include <sfx2/event.hxx>
 #include <osl/diagnose.h>
@@ -732,27 +733,12 @@ void SwWrtShell::ImplSetInsMode(bool bOn)
 
 void SwWrtShell::SetInsMode( bool bOn )
 {
-    const bool bDoAsk = officecfg::Office::Common::Misc::QuerySetInsMode::get();
-    if (!bOn && bDoAsk)
+    if (!bOn)
     {
-        VclAbstractDialogFactory* pFact = VclAbstractDialogFactory::Create();
-        auto pDlg = pFact->CreateQueryDialog(
-            GetView().GetFrameWeld(), SwResId(STR_QUERY_INSMODE_TITLE),
-            SwResId(STR_QUERY_INSMODE_TEXT), SwResId(STR_QUERY_INSMODE_QUESTION), true);
-        pDlg->StartExecuteAsync( [this, pDlg] (sal_Int32 nResult)->void
-        {
-            if (pDlg->ShowAgain() == false)
-            {
-                std::shared_ptr<comphelper::ConfigurationChanges> xChanges(
-                    comphelper::ConfigurationChanges::create());
-                officecfg::Office::Common::Misc::QuerySetInsMode::set(false, xChanges);
-                xChanges->commit();
-            }
-            if (nResult == RET_YES)
-                ImplSetInsMode(false);
-            pDlg->disposeOnce();
-        });
-        return;
+        if (!ConfirmationDlg::Query<officecfg::Office::Common::Misc::QuerySetInsMode>(
+                GetView().GetFrameWeld(), SwResId(STR_QUERY_INSMODE_TITLE),
+                SwResId(STR_QUERY_INSMODE_TEXT), SwResId(STR_QUERY_INSMODE_QUESTION)))
+            return;
     }
     ImplSetInsMode(bOn);
 }

@@ -38,6 +38,7 @@
 #include <sfx2/bindings.hxx>
 #include <sfx2/dispatch.hxx>
 #include <sfx2/sidebar/SidebarChildWindow.hxx>
+#include <svtools/confirmationdlg.hxx>
 #include <uivwimp.hxx>
 #include <unotxdoc.hxx>
 #include <avmedia/mediaplayer.hxx>
@@ -588,26 +589,16 @@ void SwView::ExecViewOptions(SfxRequest &rReq)
     case FN_VIEW_FIELDNAME:
     {
         if( STATE_TOGGLE == eState )
-            bFlag = !pOpt->IsFieldName() ;
-        const bool bDoAsk = officecfg::Office::Common::Misc::QueryShowFieldName::get();
-        short nresult = RET_YES;
-        if (bFlag && bDoAsk)
-        {
-            VclAbstractDialogFactory* pFact = VclAbstractDialogFactory::Create();
-            auto pDlg = pFact->CreateQueryDialog(
-                GetWrtShell().GetView().GetFrameWeld(), SwResId(STR_QUERY_FIELDNAME_TITLE),
-                SwResId(STR_QUERY_FIELDNAME_TEXT), SwResId(STR_QUERY_FIELDNAME_QUESTION), true);
-            nresult = pDlg->Execute();
-            if (pDlg->ShowAgain() == false)
-            {
-                std::shared_ptr<comphelper::ConfigurationChanges> xChanges(
-                    comphelper::ConfigurationChanges::create());
-                officecfg::Office::Common::Misc::QueryShowFieldName::set(false, xChanges);
-                xChanges->commit();
-            }
-            pDlg->disposeOnce();
-        }
-        if (nresult == RET_YES)
+            bFlag = !pOpt->IsFieldName();
+
+        bool bDoSetFieldName = true;
+        if (bFlag)
+            bDoSetFieldName
+                = ConfirmationDlg::Query<officecfg::Office::Common::Misc::QueryShowFieldName>(
+                      GetWrtShell().GetView().GetFrameWeld(), SwResId(STR_QUERY_FIELDNAME_TITLE),
+                      SwResId(STR_QUERY_FIELDNAME_TEXT), SwResId(STR_QUERY_FIELDNAME_QUESTION));
+
+        if (bDoSetFieldName)
             pOpt->SetFieldName(bFlag);
         break;
     }

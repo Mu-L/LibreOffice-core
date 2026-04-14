@@ -1556,7 +1556,7 @@ class AbstractQueryDialog_Impl final
 {
 public:
     using AbstractDialogImpl_BASE::AbstractDialogImpl_BASE;
-    bool ShowAgain() const override { return m_pDlg->ShowAgain(); }
+    bool DontShowAgain() const override { return m_pDlg->DontShowAgain(); }
     void SetYesLabel(const OUString& sLabel) override { m_pDlg->SetYesLabel(sLabel); }
     void SetNoLabel(const OUString& sLabel) override { m_pDlg->SetNoLabel(sLabel); }
 };

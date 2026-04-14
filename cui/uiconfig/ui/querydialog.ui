@@ -21,10 +21,27 @@
             <property name="hexpand">True</property>
             <property name="layout-style">end</property>
             <child>
+              <object class="GtkCheckButton" id="cbDontShowAgain">
+                <property name="label" translatable="yes" context="QueryDialog|Checkbox">Do not show again</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">False</property>
+                <property name="halign">start</property>
+                <property name="draw-indicator">True</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+                <property name="secondary">True</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkButton" id="btnNo">
                 <property name="label" translatable="yes" context="QueryDialog|Button_No">No</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
+                <property name="has-focus">True</property>
                 <property name="receives-default">True</property>
               </object>
               <packing>
@@ -46,16 +63,42 @@
                 <property name="position">2</property>
               </packing>
             </child>
+            <child>
+              <object class="GtkButton" id="btnNoLarge">
+                <property name="label">button</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">3</property>
+                <property name="non-homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="btnYesLarge">
+                <property name="label">button</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">4</property>
+                <property name="non-homogeneous">True</property>
+              </packing>
+            </child>
           </object>
           <packing>
-            <property name="expand">False</property>
+            <property name="expand">True</property>
             <property name="fill">True</property>
             <property name="pack-type">end</property>
             <property name="position">1</property>
           </packing>
         </child>
         <child>
-          <!-- n-columns=2 n-rows=4 -->
+          <!-- n-columns=2 n-rows=3 -->
           <object class="GtkGrid">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
@@ -66,6 +109,8 @@
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="hexpand">True</property>
+                <property name="wrap">True</property>
+                <property name="max-width-chars">50</property>
                 <property name="xalign">0</property>
                 <attributes>
                   <attribute name="weight" value="bold"/>
@@ -123,28 +168,13 @@
               </packing>
             </child>
             <child>
-              <object class="GtkCheckButton" id="cbDontShowAgain">
-                <property name="label" translatable="yes" context="QueryDialog|Checkbox">Do show again</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="receives-default">False</property>
-                <property name="halign">start</property>
-                <property name="active">True</property>
-                <property name="draw-indicator">True</property>
-              </object>
-              <packing>
-                <property name="left-attach">1</property>
-                <property name="top-attach">3</property>
-              </packing>
-            </child>
-            <child>
               <object class="GtkImage" id="imQuery">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="halign">center</property>
                 <property name="valign">center</property>
                 <property name="pixel-size">150</property>
-                <property name="icon_size">0</property>
+                <property name="icon_size">6</property>
                 <child internal-child="accessible">
                   <object class="AtkObject" id="imQuery-atkobject">
                     <property name="AtkObject::accessible-role">dialog</property>
@@ -154,7 +184,7 @@
               <packing>
                 <property name="left-attach">0</property>
                 <property name="top-attach">0</property>
-                <property name="height">4</property>
+                <property name="height">3</property>
               </packing>
             </child>
           </object>
@@ -169,6 +199,8 @@
     <action-widgets>
       <action-widget response="-9">btnNo</action-widget>
       <action-widget response="-8">btnYes</action-widget>
+      <action-widget response="-9">btnNoLarge</action-widget>
+      <action-widget response="-8">btnYesLarge</action-widget>
     </action-widgets>
   </object>
 </interface>

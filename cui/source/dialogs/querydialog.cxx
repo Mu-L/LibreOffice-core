@@ -22,7 +22,7 @@
 #include <vcl/weld/Builder.hxx>
 
 QueryDialog::QueryDialog(weld::Window* pParent, const OUString& sTitle, const OUString& sText,
-                         const OUString& sQuestion, bool bShowAgain)
+                         const OUString& sQuestion, bool bHideShowAgain)
     : GenericDialogController(pParent, u"cui/ui/querydialog.ui"_ustr, u"QueryDialog"_ustr)
     , m_pTitle(m_xBuilder->weld_label(u"lbTitle"_ustr))
     , m_pText(m_xBuilder->weld_label(u"lbText"_ustr))
@@ -31,12 +31,28 @@ QueryDialog::QueryDialog(weld::Window* pParent, const OUString& sTitle, const OU
     , m_pCheckBox(m_xBuilder->weld_check_button(u"cbDontShowAgain"_ustr))
     , m_pYes(m_xBuilder->weld_button(u"btnYes"_ustr))
     , m_pNo(m_xBuilder->weld_button(u"btnNo"_ustr))
+    , m_pYesLarge(m_xBuilder->weld_button(u"btnYesLarge"_ustr))
+    , m_pNoLarge(m_xBuilder->weld_button(u"btnNoLarge"_ustr))
 {
     m_pTitle->set_label(sTitle);
     m_pText->set_label(sText);
     m_pQuestion->set_label(sQuestion);
     m_pImage->set_from_icon_name(RID_CUIBMP_QUERY);
 
-    if (!bShowAgain)
+    if (bHideShowAgain)
         m_pCheckBox->hide();
+}
+
+void QueryDialog::SetYesLabel(const OUString& rLabel)
+{
+    m_pYesLarge->set_label(rLabel);
+    m_pYesLarge->set_visible(true);
+    m_pYes->set_visible(false);
+}
+
+void QueryDialog::SetNoLabel(const OUString& rLabel)
+{
+    m_pNoLarge->set_label(rLabel);
+    m_pNoLarge->set_visible(true);
+    m_pNo->set_visible(false);
 }

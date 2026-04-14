@@ -22,7 +22,6 @@
 #include <recentdocsview.hxx>
 #include <sfx2/sfxresid.hxx>
 #include <unotools/historyoptions.hxx>
-#include <vcl/abstdlg.hxx>
 #include <vcl/event.hxx>
 #include <vcl/ptrstyle.hxx>
 #include <vcl/svapp.hxx>
@@ -34,6 +33,7 @@
 #include <sfx2/app.hxx>
 
 #include <officecfg/Office/Common.hxx>
+#include <svtools/confirmationdlg.hxx>
 
 #include <map>
 
@@ -194,28 +194,10 @@ void RecentDocsView::setFilter(ApplicationType aFilter)
 
 void RecentDocsView::clearUnavailableFiles()
 {
-    const bool bDoAsk = officecfg::Office::Common::Misc::QueryClearUnavailableDocuments::get();
-    short nresult = RET_YES;
-    if (bDoAsk)
-    {
-        VclAbstractDialogFactory* pFact = VclAbstractDialogFactory::Create();
-        auto pDlg = pFact->CreateQueryDialog(
-            Application::GetDefDialogParent(),
-            SfxResId(STR_QUERY_CLR_UNAVAILABLE_DOCS_TITLE),
+    if (ConfirmationDlg::Query<officecfg::Office::Common::Misc::QueryClearUnavailableDocuments>(
+            Application::GetDefDialogParent(), SfxResId(STR_QUERY_CLR_UNAVAILABLE_DOCS_TITLE),
             SfxResId(STR_QUERY_CLR_UNAVAILABLE_DOCS_TEXT),
-            SfxResId(STR_QUERY_CLR_UNAVAILABLE_DOCS_QUESTION),
-            true);
-        nresult = pDlg->Execute();
-        if (pDlg->ShowAgain() == false)
-        {
-            std::shared_ptr<comphelper::ConfigurationChanges> xChanges(
-                comphelper::ConfigurationChanges::create());
-            officecfg::Office::Common::Misc::QueryClearUnavailableDocuments::set(false, xChanges);
-            xChanges->commit();
-        }
-        pDlg->disposeOnce();
-    }
-    if ( ! bDoAsk || nresult == RET_YES )
+            SfxResId(STR_QUERY_CLR_UNAVAILABLE_DOCS_QUESTION)))
     {
         std::vector< SvtHistoryOptions::HistoryItem > aHistoryList = SvtHistoryOptions::GetList( EHistoryType::PickList );
         for ( size_t i = 0; i < aHistoryList.size(); i++ )

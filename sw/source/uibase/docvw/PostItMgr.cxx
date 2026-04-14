@@ -90,6 +90,7 @@
 #include <swabstdlg.hxx>
 #include <pagefrm.hxx>
 #include <officecfg/Office/Common.hxx>
+#include <svtools/confirmationdlg.hxx>
 
 #include <memory>
 
@@ -1673,30 +1674,6 @@ void SwPostItMgr::RemoveSidebarWin()
     PreparePageContainer();
 }
 
-static bool ConfirmDeleteAll(const SwView& pView, const OUString& sText)
-{
-    const bool bAsk = officecfg::Office::Common::Misc::QueryDeleteAllComments::get();
-    bool bConfirm = true;
-    if (bAsk)
-    {
-        VclAbstractDialogFactory* pFact = VclAbstractDialogFactory::Create();
-        auto pDlg
-            = pFact->CreateQueryDialog(pView.GetFrameWeld(),
-                                       SwResId(STR_QUERY_DELALLCOMMENTS_TITLE), sText, "", true);
-        sal_Int32 nResult = pDlg->Execute();
-        if (pDlg->ShowAgain() == false)
-        {
-            std::shared_ptr<comphelper::ConfigurationChanges> xChanges(
-                comphelper::ConfigurationChanges::create());
-            officecfg::Office::Common::Misc::QueryDeleteAllComments::set(false, xChanges);
-            xChanges->commit();
-        }
-        bConfirm = (nResult == RET_YES);
-        pDlg->disposeOnce();
-    }
-    return bConfirm;
-}
-
 std::unique_ptr<SwPostItMgr::CommentDeleteFlagsRestore> SwPostItMgr::ConfigureForCommentDelete()
 {
     if (!mpWrtShell->IsRedlineOn())
@@ -1715,7 +1692,9 @@ void SwPostItMgr::Delete(const OUString& rAuthor)
 {
     OUString sQuestion = SwResId(STR_QUERY_DELALLCOMMENTSAUTHOR_QUESTION);
     sQuestion = sQuestion.replaceAll("%AUTHOR", rAuthor);
-    if (!ConfirmDeleteAll(mpWrtShell->GetView(), sQuestion))
+    if (!ConfirmationDlg::Query<officecfg::Office::Common::Misc::QueryDeleteAllComments>(
+            mpWrtShell->GetView().GetFrameWeld(), SwResId(STR_QUERY_DELALLCOMMENTS_TITLE),
+            sQuestion, ""))
         return;
 
     // tdf#136540 - prevent scrolling to cursor during deletion of annotations
@@ -1861,7 +1840,9 @@ void SwPostItMgr::ToggleResolvedForThread(sal_uInt32 nPostItId)
 
 void SwPostItMgr::Delete()
 {
-    if (!ConfirmDeleteAll(mpWrtShell->GetView(), SwResId(STR_QUERY_DELALLCOMMENTS_QUESTION)))
+    if (!ConfirmationDlg::Query<officecfg::Office::Common::Misc::QueryDeleteAllComments>(
+            mpWrtShell->GetView().GetFrameWeld(), SwResId(STR_QUERY_DELALLCOMMENTS_TITLE),
+            SwResId(STR_QUERY_DELALLCOMMENTS_QUESTION), ""))
         return;
 
     mpWrtShell->StartAllAction();
