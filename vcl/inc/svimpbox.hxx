@@ -72,6 +72,20 @@ namespace o3tl
     template<> struct typed_flags<LBoxFlags> : is_typed_flags<LBoxFlags, 0x07fe> {};
 }
 
+enum class ScrollBarMask
+{
+    None = 0x0000,
+    Vertical = 0x0001,
+    Horizontal = 0x0002,
+};
+
+namespace o3tl
+{
+template <> struct typed_flags<ScrollBarMask> : is_typed_flags<ScrollBarMask, 0x0003>
+{
+};
+}
+
 #define NODE_BMP_TABDIST_NOTVALID   -2000000
 #define FIRST_ENTRY_TAB             1
 
@@ -205,7 +219,7 @@ protected:
 
     tools::Rectangle           GetVisibleArea() const;
     void                SetCursor( SvTreeListEntry* pEntry, bool bForceNoSelect = false );
-    void                PositionScrollBars( Size& rOSize, sal_uInt16 nMask );
+    void PositionScrollBars(Size& rOSize, ScrollBarMask eMask);
     void                FindMostRight();
     void                FillView();
     void                ShowVerSBar();

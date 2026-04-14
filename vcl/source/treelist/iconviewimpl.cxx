@@ -355,7 +355,7 @@ void IconViewImpl::AdjustScrollBars( Size& rSize )
     if( !nEntryHeight )
         return;
 
-    sal_uInt16 nResult = 0;
+    ScrollBarMask eResult = ScrollBarMask::None;
 
     Size aOSize(m_rView.Control::GetOutputSizePixel());
 
@@ -380,19 +380,19 @@ void IconViewImpl::AdjustScrollBars( Size& rSize )
     // do we need a vertical scrollbar?
     if( bVerSBar || totalHeight > aOSize.Height())
     {
-        nResult = 1;
+        eResult |= ScrollBarMask::Vertical;
     }
 
     // do we need a Horizontal scrollbar?
     bool bHorSBar = (nWindowStyle & WB_HSCROLL) != 0;
     if (bHorSBar || m_rView.GetEntryWidth() > aOSize.Width())
     {
-        nResult += 2;
+        eResult |= ScrollBarMask::Horizontal;
         m_aHorSBar->SetRange(Range(0, m_rView.GetEntryWidth()));
         m_aHorSBar->SetVisibleSize(aOSize.Width());
     }
 
-    PositionScrollBars( aOSize, nResult );
+    PositionScrollBars(aOSize, eResult);
 
     // adapt Range, VisibleRange etc.
 
@@ -413,12 +413,12 @@ void IconViewImpl::AdjustScrollBars( Size& rSize )
         m_nFlags |= LBoxFlags::EndScrollSetVisSize;
     }
 
-    if( nResult & 0x0001 )
+    if (eResult & ScrollBarMask::Vertical)
         m_aVerSBar->Show();
     else
         m_aVerSBar->Hide();
 
-    if (nResult & 0x0002)
+    if (eResult & ScrollBarMask::Horizontal)
         m_aHorSBar->Show();
     else
         m_aHorSBar->Hide();

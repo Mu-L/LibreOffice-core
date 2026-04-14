@@ -1066,14 +1066,14 @@ void SvImpLBox::DrawNet(vcl::RenderContext& rRenderContext)
     }
 }
 
-void SvImpLBox::PositionScrollBars( Size& rSize, sal_uInt16 nMask )
+void SvImpLBox::PositionScrollBars(Size& rSize, ScrollBarMask eMask)
 {
     Size aVerSize( m_nVerSBarWidth, rSize.Height() );
     Size aHorSize( rSize.Width(), m_nHorSBarHeight );
 
-    if( nMask & 0x0001 )
+    if (eMask & ScrollBarMask::Vertical)
         aHorSize.AdjustWidth( -m_nVerSBarWidth );
-    if( nMask & 0x0002 )
+    if (eMask & ScrollBarMask::Horizontal)
         aVerSize.AdjustHeight( -m_nHorSBarHeight );
 
     Point aVerPos(rSize.Width() - aVerSize.Width(), 0);
@@ -1083,12 +1083,12 @@ void SvImpLBox::PositionScrollBars( Size& rSize, sal_uInt16 nMask )
 
     m_aHorSBar->SetPosSizePixel( aHorPos, aHorSize );
 
-    if( nMask & 0x0001 )
+    if (eMask & ScrollBarMask::Vertical)
         rSize.setWidth( aVerPos.X() );
-    if( nMask & 0x0002 )
+    if (eMask & ScrollBarMask::Horizontal)
         rSize.setHeight( aHorPos.Y() );
 
-    if( (nMask & (0x0001|0x0002)) == (0x0001|0x0002) )
+    if (eMask == (ScrollBarMask::Horizontal | ScrollBarMask::Vertical))
         m_aScrBarBox->Show();
     else
         m_aScrBarBox->Hide();
@@ -1100,7 +1100,7 @@ void SvImpLBox::AdjustScrollBars( Size& rSize )
     if( !nEntryHeight )
         return;
 
-    sal_uInt16 nResult = 0;
+    ScrollBarMask eResult = ScrollBarMask::None;
 
     Size aOSize(m_rView.Control::GetOutputSizePixel());
 
@@ -1127,7 +1127,7 @@ void SvImpLBox::AdjustScrollBars( Size& rSize )
     // do we need a vertical scrollbar?
     if( bVerSBar || nTotalCount > m_nVisibleCount )
     {
-        nResult = 1;
+        eResult |= ScrollBarMask::Vertical;
         nMaxRight -= m_nVerSBarWidth;
         if( !bHorBar )
         {
@@ -1140,19 +1140,18 @@ void SvImpLBox::AdjustScrollBars( Size& rSize )
     // do we need a horizontal scrollbar?
     if( bHorBar )
     {
-        nResult |= 0x0002;
+        eResult |= ScrollBarMask::Horizontal;
         // the number of entries visible within the view has to be recalculated
         // because the horizontal scrollbar is now visible.
         m_nVisibleCount = o3tl::make_unsigned(std::max<tools::Long>(0, aOSize.Height() - m_nHorSBarHeight) / nEntryHeight);
         // we might actually need a vertical scrollbar now
-        if( !(nResult & 0x0001) &&
-            ((nTotalCount > m_nVisibleCount) || bVerSBar) )
+        if (!(eResult & ScrollBarMask::Vertical) && ((nTotalCount > m_nVisibleCount) || bVerSBar))
         {
-            nResult = 3;
+            eResult = ScrollBarMask::Horizontal | ScrollBarMask::Vertical;
         }
     }
 
-    PositionScrollBars( aOSize, nResult );
+    PositionScrollBars(aOSize, eResult);
 
     // adapt Range, VisibleRange etc.
 
@@ -1201,12 +1200,12 @@ void SvImpLBox::AdjustScrollBars( Size& rSize )
         KeyLeftRight( nTemp );
     }
 
-    if( nResult & 0x0001 )
+    if (eResult & ScrollBarMask::Vertical)
         m_aVerSBar->Show();
     else
         m_aVerSBar->Hide();
 
-    if( nResult & 0x0002 )
+    if (eResult & ScrollBarMask::Horizontal)
         m_aHorSBar->Show();
     else
     {
