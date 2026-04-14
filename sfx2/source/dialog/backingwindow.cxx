@@ -45,6 +45,7 @@
 
 #include <i18nlangtag/languagetag.hxx>
 #include <comphelper/diagnose_ex.hxx>
+#include <comphelper/random.hxx>
 
 #include <com/sun/star/configuration/theDefaultProvider.hpp>
 #include <com/sun/star/container/XNameAccess.hpp>
@@ -208,8 +209,7 @@ BackingWindow::BackingWindow(vcl::Window* i_pParent)
     assert(DONATIONBANNER_FREQ > 0 && DONATIONBANNER_HEIGHT > 0 && DONATIONBANNER_HEIGHT < 1);
     if (bShowDonation)
     {
-        std::srand(std::time({}));
-        nRand = std::rand() % std::size(STR_DONATIONBANNER);
+        nRand = comphelper::rng::uniform_int_distribution(0, std::size(STR_DONATIONBANNER) - 1);
 
         const auto t0 = std::chrono::system_clock::now().time_since_epoch();
         const sal_Int32 nDay = std::chrono::duration_cast<std::chrono::hours>(t0).count()/24; // days since 1970-01-01
