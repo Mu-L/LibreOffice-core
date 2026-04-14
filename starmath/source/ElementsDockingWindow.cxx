@@ -43,6 +43,7 @@
 #include <vcl/virdev.hxx>
 #include <vcl/weld/Menu.hxx>
 
+#include <span>
 #include <unordered_map>
 
 namespace
@@ -52,7 +53,7 @@ typedef std::tuple<std::u16string_view, TranslateId, std::u16string_view, Transl
 
 // SmParser 5 elements
 
-const SmElementDescr s_a5UnaryBinaryOperatorsList[] =
+constexpr const SmElementDescr s_a5UnaryBinaryOperatorsList[] =
 {
     {RID_PLUSX, RID_PLUSX_HELP, {}, {}},
     {RID_MINUSX, RID_MINUSX_HELP, {}, {}},
@@ -539,24 +540,22 @@ const std::vector<TranslateId> s_a5Categories{
     RID_CATEGORY_USERDEFINED,
 };
 
-template <size_t N>
-constexpr std::pair<const SmElementDescr*, size_t> asPair(const SmElementDescr (&category)[N])
-{
-    return { category, N };
-}
-
-const std::vector<std::pair<const SmElementDescr*, size_t>> s_a5CategoryDescriptions{
-    { asPair(s_a5UnaryBinaryOperatorsList) },
-    { asPair(s_a5RelationsList) },
-    { asPair(s_a5SetOperationsList) },
-    { asPair(s_a5FunctionsList) },
-    { asPair(s_a5OperatorsList) },
-    { asPair(s_a5AttributesList) },
-    { asPair(s_a5BracketsList) },
-    { asPair(s_a5FormatsList) },
-    { asPair(s_a5OthersList) },
-    { asPair(s_a5ExamplesList) },
+constexpr std::span<const SmElementDescr> s_a5CategoryDescriptionsArray[] = {
+    std::span<const SmElementDescr>(s_a5UnaryBinaryOperatorsList),
+    std::span<const SmElementDescr>(s_a5RelationsList),
+    std::span<const SmElementDescr>(s_a5SetOperationsList),
+    std::span<const SmElementDescr>(s_a5FunctionsList),
+    std::span<const SmElementDescr>(s_a5OperatorsList),
+    std::span<const SmElementDescr>(s_a5AttributesList),
+    std::span<const SmElementDescr>(s_a5BracketsList),
+    std::span<const SmElementDescr>(s_a5FormatsList),
+    std::span<const SmElementDescr>(s_a5OthersList),
+    std::span<const SmElementDescr>(s_a5ExamplesList),
+    std::span<const SmElementDescr>(s_a5ExamplesList),
 };
+
+constexpr std::span<const std::span<const SmElementDescr>>
+    s_a5CategoryDescriptions(s_a5CategoryDescriptionsArray);
 
 } // namespace
 
@@ -710,11 +709,9 @@ void SmElementsControl::addElements(int nCategory)
 
     if (o3tl::make_unsigned(nCategory) < s_a5CategoryDescriptions.size())
     {
-        const auto& [aElementsArray, aElementsArraySize] = s_a5CategoryDescriptions[nCategory];
-
-        for (size_t i = 0; i < aElementsArraySize; i++)
+        const std::span<const SmElementDescr>& rDescriptions = s_a5CategoryDescriptions[nCategory];
+        for (const auto& [element, elementHelp, elementVisual, visualTranslatable] : rDescriptions)
         {
-            const auto& [element, elementHelp, elementVisual, visualTranslatable] = aElementsArray[i];
             if (element.empty())
             {
                 mpIconView->append_separator({});
