@@ -94,7 +94,7 @@ TrueTypeFont::TrueTypeFont(const void* pBuffer, sal_uInt32 nLen, sal_uInt32 face
 {
     hb_blob_t* pBlob = hb_blob_create(static_cast<const char*>(pBuffer), nLen,
                                        HB_MEMORY_MODE_READONLY, nullptr, nullptr);
-    open(pBlob, facenum);
+    m_pFace = hb_face_create_or_fail(pBlob, facenum);
     hb_blob_destroy(pBlob);
 }
 
@@ -146,11 +146,6 @@ OUString TrueTypeFont::getName(hb_ot_name_id_t nNameID, const LanguageTag& rLang
     std::vector<uint16_t> aBuf(++nName); // make space for terminating NUL
     hb_ot_name_get_utf16(m_pFace, nNameID, aHbLang, &nName, aBuf.data());
     return OUString(reinterpret_cast<sal_Unicode*>(aBuf.data()), nName);
-}
-
-void TrueTypeFont::open(hb_blob_t* pBlob, sal_uInt32 facenum)
-{
-    m_pFace = hb_face_create_or_fail(pBlob, facenum);
 }
 
 TTGlobalFontInfo TrueTypeFont::getGlobalFontInfo() const

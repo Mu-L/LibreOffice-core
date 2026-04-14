@@ -361,7 +361,6 @@ class UNLESS_MERGELIBS(VCL_DLLPUBLIC) TrueTypeFont
 {
     hb_face_t* m_pFace = nullptr;
 
-    void open(hb_blob_t* pBlob, sal_uInt32 facenum);
     font::RawFontData getTable(hb_tag_t tag) const;
 
 public:
