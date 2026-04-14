@@ -817,7 +817,7 @@ $(eval $(call gb_ExternalPackage_add_unpacked_files,python3,$(LIBO_BIN_FOLDER)/p
 	Lib/pip/_internal/models/index.py \
 	Lib/pip/_internal/models/installation_report.py \
 	Lib/pip/_internal/models/link.py \
-	Lib/pip/_internal/models/pylock.py \
+	Lib/pip/_internal/models/release_control.py \
 	Lib/pip/_internal/models/scheme.py \
 	Lib/pip/_internal/models/search_scope.py \
 	Lib/pip/_internal/models/selection_prefs.py \
@@ -860,6 +860,7 @@ $(eval $(call gb_ExternalPackage_add_unpacked_files,python3,$(LIBO_BIN_FOLDER)/p
 $(eval $(call gb_ExternalPackage_add_unpacked_files,python3,$(LIBO_BIN_FOLDER)/python-core-$(PYTHON_VERSION)/lib/pip/_internal/req,\
 	Lib/pip/_internal/req/__init__.py \
 	Lib/pip/_internal/req/constructors.py \
+	Lib/pip/_internal/req/pep723.py \
 	Lib/pip/_internal/req/req_dependency_group.py \
 	Lib/pip/_internal/req/req_file.py \
 	Lib/pip/_internal/req/req_install.py \
@@ -908,6 +909,7 @@ $(eval $(call gb_ExternalPackage_add_unpacked_files,python3,$(LIBO_BIN_FOLDER)/p
 	Lib/pip/_internal/utils/logging.py \
 	Lib/pip/_internal/utils/misc.py \
 	Lib/pip/_internal/utils/packaging.py \
+	Lib/pip/_internal/utils/pylock.py \
 	Lib/pip/_internal/utils/retry.py \
 	Lib/pip/_internal/utils/subprocess.py \
 	Lib/pip/_internal/utils/temp_dir.py \
@@ -1016,6 +1018,7 @@ $(eval $(call gb_ExternalPackage_add_unpacked_files,python3,$(LIBO_BIN_FOLDER)/p
 	Lib/pip/_vendor/packaging/_tokenizer.py \
 	Lib/pip/_vendor/packaging/markers.py \
 	Lib/pip/_vendor/packaging/metadata.py \
+	Lib/pip/_vendor/packaging/pylock.py \
 	Lib/pip/_vendor/packaging/requirements.py \
 	Lib/pip/_vendor/packaging/specifiers.py \
 	Lib/pip/_vendor/packaging/tags.py \
@@ -1293,6 +1296,7 @@ $(eval $(call gb_ExternalPackage_add_unpacked_files,python3,$(LIBO_BIN_FOLDER)/p
 
 $(eval $(call gb_ExternalPackage_add_unpacked_files,python3,$(LIBO_BIN_FOLDER)/python-core-$(PYTHON_VERSION)/lib/pydoc_data,\
 	Lib/pydoc_data/__init__.py \
+	Lib/pydoc_data/module_docs.py \
 	Lib/pydoc_data/topics.py \
 ))
 
