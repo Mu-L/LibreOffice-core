@@ -30,6 +30,7 @@
 
 #include <font/PhysicalFontFace.hxx>
 
+#include <optional>
 #include <set>
 #include <memory>
 #include <string_view>
@@ -92,6 +93,8 @@ class VCL_PLUGIN_PUBLIC PrintFontManager
     std::vector<fontID> findFontFileIDs( int nDirID, const OString& rFile ) const;
 
     static FontFamily matchFamilyName( std::u16string_view rFamily );
+
+    std::optional<PrintFont> fontFromFcPattern(FcPattern* pPattern);
 
     OString getDirectory( int nAtom ) const;
     int getDirectoryAtom( const OString& rDirectory );

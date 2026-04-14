@@ -616,6 +616,96 @@ namespace
     }
 }
 
+std::optional<PrintFontManager::PrintFont> PrintFontManager::fontFromFcPattern(FcPattern* pPattern)
+{
+    FontCfgWrapper& rWrapper = FontCfgWrapper::get();
+
+    FcChar8* file = nullptr;
+    FcChar8* family = nullptr;
+    FcChar8* style = nullptr;
+    FcChar8* format = nullptr;
+    int slant = 0;
+    int weight = 0;
+    int width = 0;
+    int spacing = 0;
+    int symbol = 0;
+    int nEntryId = -1;
+    FcBool scalable = false;
+
+    FcResult eFileRes         = FcPatternGetString(pPattern, FC_FILE, 0, &file);
+    FcResult eFamilyRes       = rWrapper.LocalizedElementFromPattern( pPattern, &family, FC_FAMILY, FC_FAMILYLANG );
+    FcResult eStyleRes        = rWrapper.LocalizedElementFromPattern( pPattern, &style, FC_STYLE, FC_STYLELANG );
+    FcResult eSlantRes        = FcPatternGetInteger(pPattern, FC_SLANT, 0, &slant);
+    FcResult eWeightRes       = FcPatternGetInteger(pPattern, FC_WEIGHT, 0, &weight);
+    FcResult eWidthRes        = FcPatternGetInteger(pPattern, FC_WIDTH, 0, &width);
+    FcResult eSpacRes         = FcPatternGetInteger(pPattern, FC_SPACING, 0, &spacing);
+    FcResult eScalableRes     = FcPatternGetBool(pPattern, FC_SCALABLE, 0, &scalable);
+    FcResult eSymbolRes       = FcPatternGetBool(pPattern, FC_SYMBOL, 0, &symbol);
+    FcResult eIndexRes        = FcPatternGetInteger(pPattern, FC_INDEX, 0, &nEntryId);
+    FcResult eFormatRes       = FcPatternGetString(pPattern, FC_FONTFORMAT, 0, &format);
+
+    if( eFileRes != FcResultMatch || eFamilyRes != FcResultMatch || eScalableRes != FcResultMatch || eStyleRes != FcResultMatch )
+        return std::nullopt;
+
+#ifdef MACOSX
+    // Skip system fonts not intended for app use
+    if (family && family[0] == '.')
+        return std::nullopt;
+#endif
+
+    SAL_INFO(
+        "vcl.fonts.detail",
+        "found font \"" << family << "\" in file " << file << ", weight = "
+        << (eWeightRes == FcResultMatch ? weight : -1) << ", slant = "
+        << (eSpacRes == FcResultMatch ? slant : -1) << ", style = \""
+        << (eStyleRes == FcResultMatch ? reinterpret_cast<const char*>(style) : "<nil>")
+        << "\",  width = " << (eWeightRes == FcResultMatch ? width : -1) << ", spacing = "
+        << (eSpacRes == FcResultMatch ? spacing : -1) << ", scalable = "
+        << (eScalableRes == FcResultMatch ? scalable : -1) << ", format "
+        << (eFormatRes == FcResultMatch
+            ? reinterpret_cast<const char*>(format) : "<unknown>")
+        << " symbol = " << (eSymbolRes == FcResultMatch ? symbol : -1));
+
+    // We support only scalable fonts
+    if( eScalableRes == FcResultMatch && ! scalable )
+        return std::nullopt;
+
+    OString aDir, aBase, aOrgPath( reinterpret_cast<char*>(file) );
+    splitPath( aOrgPath, aDir, aBase );
+    int nDirID = getDirectoryAtom( aDir );
+
+    PrintFont aFont;
+    aFont.m_nDirectory = nDirID;
+    aFont.m_aFontFile = aBase;
+    if (eIndexRes == FcResultMatch)
+    {
+        aFont.m_nCollectionEntry = GetCollectionIndex(nEntryId);
+        aFont.m_nVariationEntry = GetVariationIndex(nEntryId);
+    }
+
+    auto& rFA = aFont.m_aFontAttributes;
+    rFA.SetWeight(WEIGHT_NORMAL);
+    rFA.SetWidthType(WIDTH_NORMAL);
+    rFA.SetPitch(PITCH_VARIABLE);
+    rFA.SetQuality(512);
+
+    rFA.SetFamilyName(OStringToOUString(std::string_view(reinterpret_cast<char*>(family)), RTL_TEXTENCODING_UTF8));
+    if (eStyleRes == FcResultMatch)
+        rFA.SetStyleName(OStringToOUString(std::string_view(reinterpret_cast<char*>(style)), RTL_TEXTENCODING_UTF8));
+    if (eWeightRes == FcResultMatch)
+        rFA.SetWeight(convertWeight(weight));
+    if (eWidthRes == FcResultMatch)
+        rFA.SetWidthType(convertWidth(width));
+    if (eSpacRes == FcResultMatch)
+        rFA.SetPitch(convertSpacing(spacing));
+    if (eSlantRes == FcResultMatch)
+        rFA.SetItalic(convertSlant(slant));
+    if (eSymbolRes == FcResultMatch)
+        rFA.SetMicrosoftSymbolEncoded(bool(symbol));
+
+    return aFont;
+}
+
 void PrintFontManager::countFontconfigFonts()
 {
     int nFonts = 0;
@@ -631,110 +721,38 @@ void PrintFontManager::countFontconfigFonts()
 
         for( int i = 0; i < pFSet->nfont; i++ )
         {
-            FcChar8* file = nullptr;
-            FcChar8* family = nullptr;
-            FcChar8* style = nullptr;
-            FcChar8* format = nullptr;
-            int slant = 0;
-            int weight = 0;
-            int width = 0;
-            int spacing = 0;
-            int symbol = 0;
-            int nEntryId = -1;
-            FcBool scalable = false;
-
-            FcResult eFileRes         = FcPatternGetString(pFSet->fonts[i], FC_FILE, 0, &file);
-            FcResult eFamilyRes       = rWrapper.LocalizedElementFromPattern( pFSet->fonts[i], &family, FC_FAMILY, FC_FAMILYLANG );
-            if (bMinimalFontset && strncmp(reinterpret_cast<char*>(family), "Liberation", strlen("Liberation")))
-                continue;
-            FcResult eStyleRes        = rWrapper.LocalizedElementFromPattern( pFSet->fonts[i], &style, FC_STYLE, FC_STYLELANG );
-            FcResult eSlantRes        = FcPatternGetInteger(pFSet->fonts[i], FC_SLANT, 0, &slant);
-            FcResult eWeightRes       = FcPatternGetInteger(pFSet->fonts[i], FC_WEIGHT, 0, &weight);
-            FcResult eWidthRes        = FcPatternGetInteger(pFSet->fonts[i], FC_WIDTH, 0, &width);
-            FcResult eSpacRes         = FcPatternGetInteger(pFSet->fonts[i], FC_SPACING, 0, &spacing);
-            FcResult eScalableRes     = FcPatternGetBool(pFSet->fonts[i], FC_SCALABLE, 0, &scalable);
-            FcResult eSymbolRes       = FcPatternGetBool(pFSet->fonts[i], FC_SYMBOL, 0, &symbol);
-            FcResult eIndexRes        = FcPatternGetInteger(pFSet->fonts[i], FC_INDEX, 0, &nEntryId);
-            FcResult eFormatRes       = FcPatternGetString(pFSet->fonts[i], FC_FONTFORMAT, 0, &format);
-
-            if( eFileRes != FcResultMatch || eFamilyRes != FcResultMatch || eScalableRes != FcResultMatch || eStyleRes != FcResultMatch )
-                continue;
-
-#ifdef MACOSX
-            // Skip system fonts not intended for app use
-            if (family && family[0] == '.')
-                continue;
-#endif
-
-            SAL_INFO(
-                "vcl.fonts.detail",
-                "found font \"" << family << "\" in file " << file << ", weight = "
-                << (eWeightRes == FcResultMatch ? weight : -1) << ", slant = "
-                << (eSpacRes == FcResultMatch ? slant : -1) << ", style = \""
-                << (eStyleRes == FcResultMatch ? reinterpret_cast<const char*>(style) : "<nil>")
-                << "\",  width = " << (eWeightRes == FcResultMatch ? width : -1) << ", spacing = "
-                << (eSpacRes == FcResultMatch ? spacing : -1) << ", scalable = "
-                << (eScalableRes == FcResultMatch ? scalable : -1) << ", format "
-                << (eFormatRes == FcResultMatch
-                    ? reinterpret_cast<const char*>(format) : "<unknown>")
-                << " symbol = " << (eSymbolRes == FcResultMatch ? symbol : -1));
-
-//            OSL_ASSERT(eScalableRes != FcResultMatch || scalable);
-
-            // We support only scalable fonts
-            if( eScalableRes == FcResultMatch && ! scalable )
-                continue;
+            if (bMinimalFontset)
+            {
+                FcChar8* family = nullptr;
+                FcPatternGetString(pFSet->fonts[i], FC_FAMILY, 0, &family);
+                if (family && strncmp(reinterpret_cast<char*>(family), "Liberation", strlen("Liberation")))
+                    continue;
+            }
 
             if (isPreviouslyDuplicateOrObsoleted(pFSet, i))
             {
+                FcChar8* file = nullptr;
+                FcPatternGetString(pFSet->fonts[i], FC_FILE, 0, &file);
                 SAL_INFO("vcl.fonts.detail", "Ditching " << file << " as duplicate/obsolete");
                 continue;
             }
 
-            OString aDir, aBase, aOrgPath( reinterpret_cast<char*>(file) );
-            splitPath( aOrgPath, aDir, aBase );
-            int nDirID = getDirectoryAtom( aDir );
-
-            PrintFont aFont;
-            aFont.m_nDirectory = nDirID;
-            aFont.m_aFontFile = aBase;
-            if (eIndexRes == FcResultMatch)
-            {
-                aFont.m_nCollectionEntry = GetCollectionIndex(nEntryId);
-                aFont.m_nVariationEntry = GetVariationIndex(nEntryId);
-            }
-
-            auto& rFA = aFont.m_aFontAttributes;
-            rFA.SetWeight(WEIGHT_NORMAL);
-            rFA.SetWidthType(WIDTH_NORMAL);
-            rFA.SetPitch(PITCH_VARIABLE);
-            rFA.SetQuality(512);
-
-            rFA.SetFamilyName(OStringToOUString(std::string_view(reinterpret_cast<char*>(family)), RTL_TEXTENCODING_UTF8));
-            if (eStyleRes == FcResultMatch)
-                rFA.SetStyleName(OStringToOUString(std::string_view(reinterpret_cast<char*>(style)), RTL_TEXTENCODING_UTF8));
-            if (eWeightRes == FcResultMatch)
-                rFA.SetWeight(convertWeight(weight));
-            if (eWidthRes == FcResultMatch)
-                rFA.SetWidthType(convertWidth(width));
-            if (eSpacRes == FcResultMatch)
-                rFA.SetPitch(convertSpacing(spacing));
-            if (eSlantRes == FcResultMatch)
-                rFA.SetItalic(convertSlant(slant));
-            if (eSymbolRes == FcResultMatch)
-                rFA.SetMicrosoftSymbolEncoded(bool(symbol));
+            auto oFont = fontFromFcPattern(pFSet->fonts[i]);
+            if (!oFont)
+                continue;
 
             // sort into known fonts
             fontID nFontID = m_nNextFontID++;
-            m_aFonts.emplace(nFontID, aFont);
-            m_aFontFileToFontID[aBase].insert(nFontID);
+            const OString aFontFile = oFont->m_aFontFile;
+            m_aFonts.emplace(nFontID, std::move(*oFont));
+            m_aFontFileToFontID[aFontFile].insert(nFontID);
             nFonts++;
 
             FcPattern* pPattern = pFSet->fonts[i];
             FcPatternReference(pPattern);
             FcFontSetAdd(pFilteredSet, pPattern);
 
-            SAL_INFO("vcl.fonts.detail", "inserted font " << family << " as fontID " << nFontID);
+            SAL_INFO("vcl.fonts.detail", "inserted font as fontID " << nFontID);
         }
 
         // tdf#157939 if we drop fonts, drop them from the FcConfig set too so they are not
