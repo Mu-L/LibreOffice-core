@@ -55,10 +55,6 @@
 namespace vcl
 {
 
-/*@{*/
-    typedef sal_Int32       F16Dot16;           /**< fixed: 16.16 */
-/*@}*/
-
 #ifndef FW_THIN /* WIN32 compilation would conflict */
 /** Value of the weight member of the TTGlobalFontInfo struct */
     enum WeightClass {
@@ -86,22 +82,6 @@ namespace vcl
         FWIDTH_EXTRA_EXPANDED = 8,          /**< 150% of normal                     */
         FWIDTH_ULTRA_EXPANDED = 9           /**< 200% of normal                     */
     };
-
-/** Composite glyph flags definition */
-    enum CompositeFlags {
-        ARG_1_AND_2_ARE_WORDS     = 1,
-        ARGS_ARE_XY_VALUES        = 1<<1,
-        ROUND_XY_TO_GRID          = 1<<2,
-        WE_HAVE_A_SCALE           = 1<<3,
-        MORE_COMPONENTS           = 1<<5,
-        WE_HAVE_AN_X_AND_Y_SCALE  = 1<<6,
-        WE_HAVE_A_TWO_BY_TWO      = 1<<7,
-        WE_HAVE_INSTRUCTIONS      = 1<<8,
-        USE_MY_METRICS            = 1<<9,
-        OVERLAP_COMPOUND          = 1<<10
-    };
-
-
 
 /** Return value of TrueTypeFont::getGlobalFontInfo() */
 
@@ -350,12 +330,6 @@ constexpr int GLYF_xMin_offset = 2;
 constexpr int GLYF_yMin_offset = 4;
 constexpr int GLYF_xMax_offset = 6;
 constexpr int GLYF_yMax_offset = 8;
-
-class TrueTypeFont;
-
-/**
- * @defgroup sft Sun Font Tools Exported Functions
- */
 
 class UNLESS_MERGELIBS(VCL_DLLPUBLIC) TrueTypeFont
 {
