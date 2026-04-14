@@ -1145,7 +1145,7 @@ void SvImpLBox::AdjustScrollBars( Size& rSize )
         // because the horizontal scrollbar is now visible.
         m_nVisibleCount = o3tl::make_unsigned(std::max<tools::Long>(0, aOSize.Height() - m_nHorSBarHeight) / nEntryHeight);
         // we might actually need a vertical scrollbar now
-        if (!(eResult & ScrollBarMask::Vertical) && ((nTotalCount > m_nVisibleCount) || bVerSBar))
+        if (nTotalCount > m_nVisibleCount || bVerSBar)
         {
             eResult = ScrollBarMask::Horizontal | ScrollBarMask::Vertical;
         }
