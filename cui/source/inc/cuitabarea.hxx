@@ -517,26 +517,6 @@ public:
 
 class SvxBitmapTabPage : public SfxTabPage
 {
-
-public:
-
-    class SvxPresetListBoxValueSet : public SvxPresetListBox
-    {
-    public:
-        SvxPresetListBoxValueSet(std::unique_ptr<weld::ScrolledWindow> pWindow);
-        virtual bool KeyInput(const KeyEvent& rKEvt) override;
-
-        void SetDialog(SvxBitmapTabPage* pSvxBitmapTabPage)
-        {
-            m_pSvxBitmapTabPage = pSvxBitmapTabPage;
-        }
-
-    private:
-        SvxBitmapTabPage* m_pSvxBitmapTabPage;
-    };
-
-private:
-
     const SfxItemSet&          m_rOutAttrs;
 
     XBitmapListRef             m_pBitmapList;
@@ -556,7 +536,7 @@ private:
     Size                       rZoomedSize;
 
     SvxXRectPreview m_aCtlBitmapPreview;
-    std::unique_ptr<SvxPresetListBoxValueSet>   m_xBitmapLB;
+    std::unique_ptr<SvxPresetListBox> m_xBitmapLB;
     std::unique_ptr<weld::ComboBox> m_xBitmapStyleLB;
     std::unique_ptr<weld::Container> m_xSizeBox;
     std::unique_ptr<weld::CheckButton> m_xTsbScale;

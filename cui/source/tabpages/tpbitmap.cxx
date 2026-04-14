@@ -85,7 +85,7 @@ SvxBitmapTabPage::SvxBitmapTabPage(weld::Container* pPage, weld::DialogControlle
     , m_aXFillAttr(rInAttrs.GetPool())
     , m_rXFSet(m_aXFillAttr.GetItemSet())
     , mpView(nullptr)
-    , m_xBitmapLB(new SvxPresetListBoxValueSet(m_xBuilder->weld_scrolled_window(u"imagewin"_ustr, true)))
+    , m_xBitmapLB(new SvxPresetListBox(m_xBuilder->weld_scrolled_window(u"imagewin"_ustr, true)))
     , m_xBitmapStyleLB(m_xBuilder->weld_combo_box(u"imagestyle"_ustr))
     , m_xSizeBox(m_xBuilder->weld_container(u"sizebox"_ustr))
     , m_xTsbScale(m_xBuilder->weld_check_button(u"scaletsb"_ustr))
@@ -111,7 +111,6 @@ SvxBitmapTabPage::SvxBitmapTabPage(weld::Container* pPage, weld::DialogControlle
     m_xBitmapLB->SetSelectHdl( LINK(this, SvxBitmapTabPage, ModifyBitmapHdl) );
     m_xBitmapLB->SetRenameHdl( LINK(this, SvxBitmapTabPage, ClickRenameHdl) );
     m_xBitmapLB->SetDeleteHdl( LINK(this, SvxBitmapTabPage, ClickDeleteHdl) );
-    m_xBitmapLB->SetDialog(this);
     m_xBitmapStyleLB->connect_changed( LINK(this, SvxBitmapTabPage, ModifyBitmapStyleHdl) );
     Link<weld::MetricSpinButton&, void> aLink1( LINK(this, SvxBitmapTabPage, ModifyBitmapSizeHdl) );
     m_xBitmapWidth->connect_value_changed( aLink1 );
@@ -611,27 +610,6 @@ IMPL_LINK(SvxBitmapTabPage, ClickRenameHdl, sal_uInt16, nId, void)
 }
 
 IMPL_LINK(SvxBitmapTabPage, ClickDeleteHdl, sal_uInt16, nId, void) { DeleteBitmapHdl_Impl(nId); }
-
-SvxBitmapTabPage::SvxPresetListBoxValueSet::SvxPresetListBoxValueSet(std::unique_ptr<weld::ScrolledWindow> pWindow)
-    : SvxPresetListBox(std::move(pWindow))
-    , m_pSvxBitmapTabPage(nullptr)
-{
-}
-
-bool SvxBitmapTabPage::SvxPresetListBoxValueSet::KeyInput(const KeyEvent& rKEvt)
-{
-    switch (rKEvt.GetKeyCode().GetCode())
-    {
-        case KEY_DELETE:
-        {
-            m_pSvxBitmapTabPage->DeleteBitmapHdl_Impl(GetSelectedItemId());
-            return true;
-        }
-        break;
-        default:
-            return SvxPresetListBox::KeyInput(rKEvt);
-    }
-}
 
 IMPL_LINK_NOARG( SvxBitmapTabPage, ModifyBitmapSizeHdl, weld::MetricSpinButton&, void )
 {

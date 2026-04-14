@@ -23,7 +23,7 @@
 #include <svx/xtable.hxx>
 #include <tools/gen.hxx>
 
-class SvxPresetListBox : public ValueSet
+class SvxPresetListBox final : public ValueSet
 {
 private:
     Size m_aIconSize;
@@ -37,7 +37,9 @@ public:
     SvxPresetListBox(std::unique_ptr<weld::ScrolledWindow> pWindow);
 
     virtual bool Command(const CommandEvent& rEvent) override;
+    virtual bool KeyInput(const KeyEvent& rKEvt) override;
     virtual void SetDrawingArea(weld::DrawingArea* pDrawingArea) override;
+
     Size const& GetIconSize() const { return m_aIconSize; }
 
     void SetRenameHdl(const Link<sal_uInt16, void>& rLink) { maRenameHdl = rLink; }

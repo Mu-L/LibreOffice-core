@@ -21,6 +21,7 @@
 
 #include <svx/xtable.hxx>
 #include <vcl/commandevent.hxx>
+#include <vcl/event.hxx>
 #include <vcl/image.hxx>
 #include <vcl/svapp.hxx>
 #include <vcl/weld/Builder.hxx>
@@ -75,6 +76,21 @@ bool SvxPresetListBox::Command(const CommandEvent& rEvent)
         return true;
     }
     return false;
+}
+
+bool SvxPresetListBox::SvxPresetListBox::KeyInput(const KeyEvent& rKEvt)
+{
+    switch (rKEvt.GetKeyCode().GetCode())
+    {
+        case KEY_DELETE:
+        {
+            maDeleteHdl.Call(GetSelectedItemId());
+            return true;
+        }
+        break;
+        default:
+            return ValueSet::KeyInput(rKEvt);
+    }
 }
 
 template <typename ListType, typename EntryType>
