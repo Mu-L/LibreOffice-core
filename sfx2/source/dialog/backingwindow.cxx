@@ -21,6 +21,7 @@
 #include <utility>
 #include <vcl/event.hxx>
 #include <vcl/help.hxx>
+#include <vcl/metaactiontypes.hxx>
 #include <vcl/ptrstyle.hxx>
 #include <vcl/settings.hxx>
 #include <vcl/svapp.hxx>
@@ -45,7 +46,6 @@
 
 #include <i18nlangtag/languagetag.hxx>
 #include <comphelper/diagnose_ex.hxx>
-#include <comphelper/random.hxx>
 
 #include <com/sun/star/configuration/theDefaultProvider.hpp>
 #include <com/sun/star/container/XNameAccess.hpp>
@@ -70,7 +70,6 @@
 #include <sfx2/sfxsids.hrc>
 #include <sfx2/strings.hrc>
 #include <sfx2/sfxresid.hxx>
-#include <sfx2/donationbanner.hrc>
 #include <bitmaps.hlst>
 #include <rtl/bootstrap.hxx>
 #include <vcl/virdev.hxx>
@@ -197,7 +196,10 @@ BackingWindow::BackingWindow(vcl::Window* i_pParent)
     , mxLocalView(new TemplateDefaultView(m_xBuilder->weld_scrolled_window(u"scrolllocal"_ustr, true),
                                           m_xBuilder->weld_menu(u"localmenu"_ustr)))
     , mxLocalViewWin(new weld::CustomWeld(*m_xBuilder, u"local_view"_ustr, *mxLocalView))
-    , mxDonation(m_xBuilder->weld_image(u"imgDonation"_ustr))
+    , mxDonationLeft(m_xBuilder->weld_image(u"imgDonationLeft"_ustr))
+    , mxDonationRight(m_xBuilder->weld_image(u"imgDonationRight"_ustr))
+    , mxDonationLink(m_xBuilder->weld_link_button(u"btnDonateLink"_ustr))
+    , mxDonationBox(m_xBuilder->weld_container(u"gdDonation"_ustr))
     , mbLocalViewInitialized(false)
     , mbInitControls(false)
 {
@@ -206,20 +208,13 @@ BackingWindow::BackingWindow(vcl::Window* i_pParent)
 
     // draw the donation image/text
     const bool bShowDonation(officecfg::Office::Common::Misc::ShowDonation::get());
-    assert(DONATIONBANNER_FREQ > 0 && DONATIONBANNER_HEIGHT > 0 && DONATIONBANNER_HEIGHT < 1);
-    if (bShowDonation)
-    {
-        nRand = comphelper::rng::uniform_int_distribution(0, std::size(STR_DONATIONBANNER) - 1);
 
-        const auto t0 = std::chrono::system_clock::now().time_since_epoch();
-        const sal_Int32 nDay = std::chrono::duration_cast<std::chrono::hours>(t0).count()/24; // days since 1970-01-01
-        if (nDay % DONATIONBANNER_FREQ == 0)
-        {
-            mxDonation->set_visible(true);
-            mxDonation->connect_mouse_release(LINK(this, BackingWindow, MouseReleaseHdl));
-            mxRightBox->connect_size_allocate(LINK(this, BackingWindow, ResizeHdl));
-        }
-    }
+    const auto t0 = std::chrono::system_clock::now().time_since_epoch();
+    const sal_Int32 nDay = std::chrono::duration_cast<std::chrono::hours>(t0).count()/24; // days since 1970-01-01
+    if (bShowDonation && (nDay % 30 == 0))  // show the donation banner every 30 days
+        initDonationBanner();
+    else
+        mxDonationBox->set_visible(false);
 
     // square action button
     auto nHeight = mxFilter->get_preferred_size().getHeight();
@@ -263,79 +258,55 @@ BackingWindow::BackingWindow(vcl::Window* i_pParent)
 
 }
 
+void BackingWindow::initDonationBanner()
+{
+    mxDonationLink->connect_activate_link(LINK(this, BackingWindow, OnDonateLinkClick));
+
+    mxDonationBox->set_background(Color(
+        ColorTransparency,
+        officecfg::Office::Common::Help::StartCenter::StartCenterThumbnailsBackgroundColor::get()));
+
+    ScopedVclPtr<VirtualDevice> m_pVirDevLeft = mxDonationLeft->create_virtual_device();
+    Graphic aGraphic;
+    Size aGraphicSize;
+    OUString aURL = "$BRAND_BASE_DIR/" LIBO_ETC_FOLDER + u"/shell/donate1.png"_ustr;
+    rtl::Bootstrap::expandMacros( aURL );
+    if (GraphicFilter::LoadGraphic(aURL, OUString(), aGraphic) == ERRCODE_NONE)
+    {
+        aGraphicSize = Size(200, 200);
+        m_pVirDevLeft->SetOutputSizePixel(aGraphicSize);
+        m_pVirDevLeft->DrawBitmap(Point(0, 0), aGraphicSize, aGraphic.GetBitmap());
+    }
+    mxDonationLeft->set_image(m_pVirDevLeft.get());
+    m_pVirDevLeft.disposeAndClear();
+
+    ScopedVclPtr<VirtualDevice> m_pVirDevRight = mxDonationRight->create_virtual_device();
+    aURL = "$BRAND_BASE_DIR/" LIBO_ETC_FOLDER + u"/shell/donate2.png"_ustr;
+    rtl::Bootstrap::expandMacros( aURL );
+    if (GraphicFilter::LoadGraphic(aURL, OUString(), aGraphic) == ERRCODE_NONE)
+    {
+        aGraphicSize = Size(150, 150);
+        m_pVirDevRight->SetOutputSizePixel(aGraphicSize);
+        // image has a transparent background and needs to be drawn with the advanced function
+        m_pVirDevRight->DrawBitmap(Point(0, 0), aGraphicSize, Point(), aGraphicSize,
+                                   aGraphic.GetBitmap(), MetaActionType::BMPEX);
+    }
+    mxDonationRight->set_image(m_pVirDevRight.get());
+    m_pVirDevRight.disposeAndClear();
+}
+
+IMPL_STATIC_LINK_NOARG(BackingWindow, OnDonateLinkClick, weld::LinkButton&, bool)
+{
+    SfxDispatcher &rDispatcher = *SfxGetpApp()->GetDispatcher_Impl();
+    rDispatcher.Execute(SID_DONATION, SfxCallMode::ASYNCHRON);
+
+    return true;
+}
+
 IMPL_LINK(BackingWindow, ClickHelpHdl, weld::Button&, rButton, void)
 {
     if (Help* pHelp = Application::GetHelp())
         pHelp->Start(m_xContainer->get_help_id(), &rButton);
-}
-
-IMPL_STATIC_LINK(BackingWindow, MouseReleaseHdl, const MouseEvent&, rMEvt, bool)
-{
-    if (rMEvt.IsLeft())
-    {
-        SfxDispatcher &rDispatcher = *SfxGetpApp()->GetDispatcher_Impl();
-        rDispatcher.Execute(SID_DONATION, SfxCallMode::ASYNCHRON);
-    }
-    return true;
-}
-
-IMPL_LINK(BackingWindow, ResizeHdl, const Size&, rSize, void)
-{
-    if (rSize == Size(1,1)) //initial size
-        return;
-
-    const Size aBannerSize(Size(rSize.getWidth(), rSize.getHeight() * DONATIONBANNER_HEIGHT));
-    mxDonation->set_size_request(aBannerSize.getWidth(), aBannerSize.getHeight());
-
-    ScopedVclPtr<VirtualDevice> m_pVirDev = mxDonation->create_virtual_device();
-    m_pVirDev->SetOutputSizePixel(aBannerSize);
-
-    OUString aURL = "$BRAND_BASE_DIR/" LIBO_ETC_FOLDER + u"/shell/"_ustr + DONATIONBANNER_BACKGROUND;
-    rtl::Bootstrap::expandMacros( aURL );
-    Graphic aGraphic;
-    Size aGraphicSize;
-    if (GraphicFilter::LoadGraphic(aURL, OUString(), aGraphic) == ERRCODE_NONE)
-    {
-        aGraphicSize = aGraphic.GetBitmap().GetSizePixel();
-        m_pVirDev->DrawBitmap(Point(0, 0), aGraphicSize, aGraphic.GetBitmap());
-    }
-
-    auto[sText, sImage] = STR_DONATIONBANNER[nRand];
-
-    // image proportionally scaled to banner height and placed at the right side
-    aURL = "$BRAND_BASE_DIR/" LIBO_ETC_FOLDER + u"/shell/"_ustr + sImage;
-    rtl::Bootstrap::expandMacros( aURL );
-    if (GraphicFilter::LoadGraphic(aURL, OUString(), aGraphic) == ERRCODE_NONE)
-    {
-        aGraphicSize = aGraphic.GetBitmap().GetSizePixel();
-        const float nRel
-            = static_cast<float>(aBannerSize.getHeight()) / static_cast<float>(aGraphicSize.getHeight());
-        aGraphicSize = Size(aGraphicSize.getWidth() * nRel, aGraphicSize.getHeight() * nRel);
-        m_pVirDev->DrawBitmap(Point(aBannerSize.getWidth() - aGraphicSize.getWidth(), 0),
-                              aGraphicSize, aGraphic.GetBitmap());
-    }
-    else
-        aGraphicSize = Size(0,0);
-
-    // text
-    #define cMargin 24
-    tools::Rectangle aRect(Point(cMargin, 0), Size(aBannerSize.getWidth() - aGraphicSize.getWidth() - cMargin,
-                                             aBannerSize.getHeight()));
-    vcl::Font aFont = m_pVirDev->GetFont();
-    aFont.SetFontHeight(48);
-    m_pVirDev->SetFont(aFont);
-    DrawTextFlags const nTextStyle = DrawTextFlags::MultiLine | DrawTextFlags::WordBreak | DrawTextFlags::VCenter;
-    while (m_pVirDev->GetTextRect(aRect, SfxResId(sText), nTextStyle).GetHeight()
-           > aBannerSize.getHeight())
-    {
-        aFont.SetFontHeight(aFont.GetFontHeight() - 1);
-        m_pVirDev->SetFont(aFont);
-        if (aFont.GetFontHeight() < 12)
-            break;
-    }
-    m_pVirDev->DrawText(aRect, SfxResId(sText), nTextStyle);
-    mxDonation->set_image(m_pVirDev.get());
-    m_pVirDev.disposeAndClear();
 }
 
 BackingWindow::~BackingWindow()

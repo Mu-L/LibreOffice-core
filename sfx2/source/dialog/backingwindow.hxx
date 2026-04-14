@@ -81,7 +81,10 @@ class BackingWindow : public InterimItemWindow
     std::unique_ptr<weld::CustomWeld> mxAllRecentThumbnailsWin;
     std::unique_ptr<TemplateDefaultView> mxLocalView;
     std::unique_ptr<weld::CustomWeld> mxLocalViewWin;
-    std::unique_ptr<weld::Image> mxDonation;
+    std::unique_ptr<weld::Image> mxDonationLeft;
+    std::unique_ptr<weld::Image> mxDonationRight;
+    std::unique_ptr<weld::LinkButton> mxDonationLink;
+    std::unique_ptr<weld::Container> mxDonationBox;
 
     bool mbLocalViewInitialized;
 
@@ -105,10 +108,10 @@ class BackingWindow : public InterimItemWindow
     DECL_LINK(CreateContextMenuHdl, TemplateViewItem*, void);
     DECL_LINK(OpenTemplateHdl, const OUString&, void);
     DECL_LINK(EditTemplateHdl, const OUString&, void);
-    DECL_LINK(ResizeHdl, const Size&, void);
-    DECL_STATIC_LINK(BackingWindow, MouseReleaseHdl, const MouseEvent&, bool);
+    DECL_STATIC_LINK(BackingWindow, OnDonateLinkClick, weld::LinkButton&, bool);
 
     void initControls();
+    void initDonationBanner();
 
     void initializeLocalView();
 
