@@ -1911,6 +1911,7 @@ public:
     virtual void set_item_accessible_name(int pos, const OUString& rName) override;
 
     virtual void set_item_tooltip_text(int pos, const OUString& rToolTip) override;
+    virtual OUString get_item_tooltip_text(const weld::TreeIter& rIter) const override;
 
     virtual OUString get_text(const weld::TreeIter& rIter) const override;
 

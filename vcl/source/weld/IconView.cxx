@@ -11,6 +11,14 @@
 
 namespace weld
 {
+OUString IconView::get_item_tooltip_text(int pos) const
+{
+    if (std::unique_ptr<weld::TreeIter> pIter = get_iterator(pos))
+        return get_item_tooltip_text(*pIter);
+
+    return {};
+}
+
 tools::Rectangle IconView::get_rect(int pos) const
 {
     if (std::unique_ptr<weld::TreeIter> pIter = get_iterator(pos))

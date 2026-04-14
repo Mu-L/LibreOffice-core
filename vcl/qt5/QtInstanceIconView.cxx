@@ -145,6 +145,19 @@ void QtInstanceIconView::set_item_tooltip_text(int nPos, const OUString& rToolTi
     });
 }
 
+OUString QtInstanceIconView::get_item_tooltip_text(const weld::TreeIter& rIter) const
+{
+    SolarMutexGuard g;
+
+    OUString sToolTip;
+    GetQtInstance().RunInMainThread([&] {
+        const QModelIndex aIndex = modelIndex(rIter);
+        sToolTip = toOUString(m_pModel->data(aIndex, Qt::ToolTipRole).toString());
+    });
+
+    return sToolTip;
+}
+
 tools::Rectangle QtInstanceIconView::get_rect(const weld::TreeIter& rIter) const
 {
     SolarMutexGuard g;

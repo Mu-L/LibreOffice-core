@@ -16539,6 +16539,15 @@ private:
             gtk_tree_store_set(m_pTreeStore, &iter, nToolTipCol, rToolTip.toUtf8().getStr(), -1);
     }
 
+    virtual OUString get_item_tooltip_text(const weld::TreeIter& rIter) const override
+    {
+        const GtkInstanceTreeIter& rGtkIter = static_cast<const GtkInstanceTreeIter&>(rIter);
+        const int nToolTipCol = gtk_icon_view_get_tooltip_column(m_pIconView);
+        assert(nToolTipCol >= 0
+               && "Invalid tooltip column. Is GtkIconView::tooltip-column set in the .ui file?");
+        return get(rGtkIter.iter, nToolTipCol);
+    }
+
     virtual void do_remove(const weld::TreeIter& rIter) override
     {
         disable_notify_events();

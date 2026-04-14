@@ -44,7 +44,10 @@ public:
     virtual void set_image(int nPos, VirtualDevice& rDevice) override;
     virtual void set_text(int nPos, const OUString& rText) override;
     virtual void set_item_accessible_name(int nPos, const OUString& rName) override;
+
     virtual void set_item_tooltip_text(int nPos, const OUString& rToolTip) override;
+    virtual OUString get_item_tooltip_text(const weld::TreeIter& rIter) const override;
+
     virtual tools::Rectangle get_rect(const weld::TreeIter& rIter) const override;
 
     virtual OUString get_text(const weld::TreeIter& rIter) const override;

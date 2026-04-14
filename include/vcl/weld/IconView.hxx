@@ -89,7 +89,10 @@ public:
     virtual void set_image(int pos, VirtualDevice& rDevice) = 0;
     virtual void set_text(int pos, const OUString& rText) = 0;
     virtual void set_item_accessible_name(int pos, const OUString& rName) = 0;
+
     virtual void set_item_tooltip_text(int pos, const OUString& rToolTip) = 0;
+    OUString get_item_tooltip_text(int pos) const;
+    virtual OUString get_item_tooltip_text(const TreeIter& rIter) const = 0;
 
     tools::Rectangle get_rect(int pos) const;
     virtual tools::Rectangle get_rect(const TreeIter& rIter) const = 0;
