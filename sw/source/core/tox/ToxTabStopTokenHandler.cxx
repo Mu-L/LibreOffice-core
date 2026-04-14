@@ -133,7 +133,7 @@ DefaultToxTabStopTokenHandler::CalculatePageMarginFromPageDescription(const SwTe
     }
     const SwFrameFormat& rPgDscFormat = pPageDesc->GetMaster();
     tools::Long result = rPgDscFormat.GetFrameSize().GetWidth()
-                         - rPgDscFormat.GetLRSpace().ResolveLeft({})
+                         - rPgDscFormat.GetLRSpace().ResolveLeft()
                          - rPgDscFormat.GetLRSpace().ResolveRight({});
     // Also consider borders
     const SvxBoxItem& rBox = rPgDscFormat.GetBox();

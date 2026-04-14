@@ -128,13 +128,13 @@ void SwView::SetZoom_( const Size &rEditSize, SvxZoomType eZoomType,
             {
                 const SvxLRSpaceItem &rLeftLRSpace = rDesc.GetLeft().GetLRSpace();
                 aPageSize.AdjustWidth(
-                    std::abs(rLeftLRSpace.ResolveLeft({}) - rLRSpace.ResolveLeft({})));
+                    std::abs(rLeftLRSpace.ResolveLeft() - rLRSpace.ResolveLeft()));
             }
 
             if (!pPostItMgr->HasNotes() || !pPostItMgr->ShowNotes())
                 aPageSize.AdjustWidth(
-                    -(rLRSpace.ResolveLeft({}) + rLRSpace.ResolveRight({}) + nLeftOfst * 2));
-            lLeftMargin = rLRSpace.ResolveLeft({}) + DOCUMENTBORDER + nLeftOfst;
+                    -(rLRSpace.ResolveLeft() + rLRSpace.ResolveRight({}) + nLeftOfst * 2));
+            lLeftMargin = rLRSpace.ResolveLeft() + DOCUMENTBORDER + nLeftOfst;
             nFac = aWindowSize.Width() * 100 / aPageSize.Width();
         }
         else if(SvxZoomType::WHOLEPAGE == eZoomType || SvxZoomType::PAGEWIDTH == eZoomType )

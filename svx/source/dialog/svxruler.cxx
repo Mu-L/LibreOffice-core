@@ -1335,7 +1335,7 @@ tools::Long SvxRuler::GetLeftFrameMargin() const
     }
 
     if (mxBorderItem && (!mxColumnItem || mxColumnItem->IsTable()))
-        nLeft += mxBorderItem->ResolveLeft({});
+        nLeft += mxBorderItem->ResolveLeft();
 
     return nLeft;
 }

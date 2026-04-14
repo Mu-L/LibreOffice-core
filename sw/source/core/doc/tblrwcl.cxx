@@ -2651,11 +2651,11 @@ bool SwTable::SetColWidth( SwTableBox& rCurrentBox, TableChgWidthHeightType eTyp
                 {
                     // silence -Wsign-compare on Android with the static cast
                     bRet = rSz.GetWidth() < static_cast<unsigned short>(USHRT_MAX) - nRelDiff;
-                    bChgLRSpace = bLeft ? rLR.ResolveLeft({}) >= nAbsDiff
+                    bChgLRSpace = bLeft ? rLR.ResolveLeft() >= nAbsDiff
                                         : rLR.ResolveRight({}) >= nAbsDiff;
                 }
                 else
-                    bRet = bLeft ? rLR.ResolveLeft({}) >= nAbsDiff
+                    bRet = bLeft ? rLR.ResolveLeft() >= nAbsDiff
                                  : rLR.ResolveRight({}) >= nAbsDiff;
 
                 if( !bRet )
@@ -2712,13 +2712,13 @@ bool SwTable::SetColWidth( SwTableBox& rCurrentBox, TableChgWidthHeightType eTyp
 
                     if( bLeft )
                         aLR.SetLeft(
-                            SvxIndentValue::twips(sal_uInt16(aLR.ResolveLeft({}) - nAbsDiff)));
+                            SvxIndentValue::twips(sal_uInt16(aLR.ResolveLeft() - nAbsDiff)));
                     else
                         aLR.SetRight(
                             SvxIndentValue::twips(sal_uInt16(aLR.ResolveRight({}) - nAbsDiff)));
                 }
                 else if( bLeft )
-                    aLR.SetLeft(SvxIndentValue::twips(sal_uInt16(aLR.ResolveLeft({}) + nAbsDiff)));
+                    aLR.SetLeft(SvxIndentValue::twips(sal_uInt16(aLR.ResolveLeft() + nAbsDiff)));
                 else
                     aLR.SetRight(
                         SvxIndentValue::twips(sal_uInt16(aLR.ResolveRight({}) + nAbsDiff)));
@@ -2727,7 +2727,7 @@ bool SwTable::SetColWidth( SwTableBox& rCurrentBox, TableChgWidthHeightType eTyp
                     GetFrameFormat()->SetFormatAttr( aLR );
                 const SwFormatHoriOrient& rHOri = GetFrameFormat()->GetHoriOrient();
                 if (text::HoriOrientation::FULL == rHOri.GetHoriOrient()
-                    || (text::HoriOrientation::LEFT == rHOri.GetHoriOrient() && aLR.ResolveLeft({}))
+                    || (text::HoriOrientation::LEFT == rHOri.GetHoriOrient() && aLR.ResolveLeft())
                     || (text::HoriOrientation::RIGHT == rHOri.GetHoriOrient()
                         && aLR.ResolveRight({})))
                 {
@@ -2762,7 +2762,7 @@ bool SwTable::SetColWidth( SwTableBox& rCurrentBox, TableChgWidthHeightType eTyp
                 if (rSz.GetWidthPercent())
                     aSz.SetWidthPercent(static_cast<sal_uInt8>(
                         (aSz.GetWidth() * 100)
-                        / (aSz.GetWidth() + aLR.ResolveRight({}) + aLR.ResolveLeft({}))));
+                        / (aSz.GetWidth() + aLR.ResolveRight({}) + aLR.ResolveLeft())));
 
                 GetFrameFormat()->SetFormatAttr( aSz );
 

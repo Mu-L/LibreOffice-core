@@ -1933,11 +1933,11 @@ void SwHTMLWriter::OutCSS1_FrameFormatOptions( const SwFrameFormat& rFrameFormat
                     // left
                     if( IsHTMLMode( HTMLMODE_FLY_MARGINS) )
                     {
-                        nXPos -= aLRItem.ResolveLeft({});
+                        nXPos -= aLRItem.ResolveLeft();
                         if( nXPos < 0 )
                         {
                             aLRItem.SetLeft(SvxIndentValue::twips(
-                                o3tl::narrowing<sal_uInt16>(aLRItem.ResolveLeft({}) + nXPos)));
+                                o3tl::narrowing<sal_uInt16>(aLRItem.ResolveLeft() + nXPos)));
                             nXPos = 0;
                         }
                     }
@@ -2951,7 +2951,7 @@ static SwHTMLWriter& OutCSS1_SvxULSpace_SvxLRSpace( SwHTMLWriter& rWrt,
         && pULItem->GetUpper() != rWrt.m_nDfltTopMargin
         && pULItem->GetLower() != rWrt.m_nDfltBottomMargin)
     {
-        rWrt.OutCSS1_UnitProperty(sCSS1_P_margin, pLRItem->ResolveLeft({}));
+        rWrt.OutCSS1_UnitProperty(sCSS1_P_margin, pLRItem->ResolveLeft());
     }
     else
     {

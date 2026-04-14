@@ -614,7 +614,7 @@ OString SwHTMLWriter::OutFrameFormatOptions( const SwFrameFormat &rFrameFormat,
     if( (nFrameOpts & (HtmlFrmOpts::Space|HtmlFrmOpts::MarginSize)) &&
         (pLRSpaceItem = rItemSet.GetItemIfSet( RES_LR_SPACE )) )
     {
-        aTwipSpc.setWidth((pLRSpaceItem->ResolveLeft({}) + pLRSpaceItem->ResolveRight({})) / 2);
+        aTwipSpc.setWidth((pLRSpaceItem->ResolveLeft() + pLRSpaceItem->ResolveRight({})) / 2);
         m_nDfltLeftMargin = m_nDfltRightMargin = aTwipSpc.Width();
     }
     const SvxULSpaceItem* pULSpaceItem;
@@ -866,7 +866,7 @@ void SwHTMLWriter::writeFrameFormatOptions(HtmlWriter& aHtml, const SwFrameForma
     if( (nFrameOptions & (HtmlFrmOpts::Space | HtmlFrmOpts::MarginSize)) &&
         (pLRSpaceItem = rItemSet.GetItemIfSet( RES_LR_SPACE )) )
     {
-        aTwipSpc.setWidth((pLRSpaceItem->ResolveLeft({}) + pLRSpaceItem->ResolveRight({})) / 2);
+        aTwipSpc.setWidth((pLRSpaceItem->ResolveLeft() + pLRSpaceItem->ResolveRight({})) / 2);
         m_nDfltLeftMargin = m_nDfltRightMargin = aTwipSpc.Width();
     }
     const SvxULSpaceItem* pULSpaceItem;

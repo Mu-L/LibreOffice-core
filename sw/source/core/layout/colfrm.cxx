@@ -424,7 +424,7 @@ void SwLayoutFrame::AdjustColumns( const SwFormatCol *pAttr, bool bAdjustAttribu
                 static_cast<SwLayoutFrame*>(pCol)->GetFormat()->SetFormatAttr( aUL );
             }
 
-            nGutter += aLR.ResolveLeft({}) + aLR.ResolveRight({});
+            nGutter += aLR.ResolveLeft() + aLR.ResolveRight({});
         }
 
         pCol = bR2L ? pCol->GetPrev() : pCol->GetNext();
@@ -443,7 +443,7 @@ void SwLayoutFrame::AdjustColumns( const SwFormatCol *pAttr, bool bAdjustAttribu
         else
         {
             SvxLRSpaceItem aLR( pCol->GetAttrSet()->GetLRSpace() );
-            nWidth = nInnerWidth + aLR.ResolveLeft({}) + aLR.ResolveRight({});
+            nWidth = nInnerWidth + aLR.ResolveLeft() + aLR.ResolveRight({});
         }
         if( nWidth < 0 )
             nWidth = 0;

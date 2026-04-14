@@ -2068,7 +2068,7 @@ sal_Int32 SwEscherEx::WriteFlyFrameAttr(const SwFrameFormat& rFormat, MSO_SPT eS
      */
     if (const SvxLRSpaceItem* pItem = rFormat.GetItemIfSet(RES_LR_SPACE))
     {
-        rPropOpt.AddOpt(ESCHER_Prop_dxWrapDistLeft, DrawModelToEmu(pItem->ResolveLeft({})));
+        rPropOpt.AddOpt(ESCHER_Prop_dxWrapDistLeft, DrawModelToEmu(pItem->ResolveLeft()));
         rPropOpt.AddOpt(ESCHER_Prop_dxWrapDistRight, DrawModelToEmu(pItem->ResolveRight({})));
     }
     else

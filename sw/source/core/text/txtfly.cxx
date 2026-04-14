@@ -247,7 +247,7 @@ SwRect SwContourCache::ContourRect( const SwFormat* pFormat,
         CacheItem item{ pObj, // due to #37347 the Object must be entered only after GetContour()
                         std::make_unique<TextRanger>(
                             aPolyPolygon, pPolyPolygon ? &*pPolyPolygon : nullptr, 20,
-                            o3tl::narrowing<sal_uInt16>(rLRSpace.ResolveLeft({})),
+                            o3tl::narrowing<sal_uInt16>(rLRSpace.ResolveLeft()),
                             o3tl::narrowing<sal_uInt16>(rLRSpace.ResolveRight({})),
                             pFormat->GetSurround().IsOutside(), false, pFrame->IsVertical()) };
         mvItems.insert(mvItems.begin(), std::move(item));

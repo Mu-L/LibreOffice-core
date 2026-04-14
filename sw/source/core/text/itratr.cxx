@@ -1161,9 +1161,9 @@ static void lcl_MinMaxNode(SwFrameFormat* pNd, SwMinMaxNodeArgs& rIn)
     }
 
     const SvxLRSpaceItem &rLR = pNd->GetLRSpace();
-    nMin += rLR.ResolveLeft({});
+    nMin += rLR.ResolveLeft();
     nMin += rLR.ResolveRight({});
-    nMax += rLR.ResolveLeft({});
+    nMax += rLR.ResolveLeft();
     nMax += rLR.ResolveRight({});
 
     if( css::text::WrapTextMode_THROUGH == pNd->GetSurround().GetSurround() )
@@ -1389,7 +1389,7 @@ void SwTextNode::GetMinMaxSize( SwNodeOffset nIndex, sal_uLong& rMin, sal_uLong 
                             else
                                 nCurrentWidth = pFrameFormat->GetFrameSize().GetWidth();
                         }
-                        nCurrentWidth += rLR.ResolveLeft({});
+                        nCurrentWidth += rLR.ResolveLeft();
                         nCurrentWidth += rLR.ResolveRight({});
                         aArg.m_nWordAdd = nOldWidth + nOldAdd;
                         aArg.m_nWordWidth = nCurrentWidth;

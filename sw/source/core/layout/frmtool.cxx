@@ -2439,7 +2439,7 @@ tools::Long SwBorderAttrs::CalcLeft( const SwFrame *pCaller ) const
         }
         else
         {
-            nLeft += m_xLR->ResolveLeft({});
+            nLeft += m_xLR->ResolveLeft();
         }
     }
 
@@ -3279,7 +3279,7 @@ void Notify( SwFlyFrame *pFly, SwPageFrame *pOld, const SwRect &rOld,
     if ( rOld.Pos() != aFrame.Pos() )
     {   // changed position, invalidate old and new area
         if (rOld.HasArea()
-            && rOld.Left() + pFly->GetFormat()->GetLRSpace().ResolveLeft({}) < FAR_AWAY)
+            && rOld.Left() + pFly->GetFormat()->GetLRSpace().ResolveLeft() < FAR_AWAY)
         {
             pFly->NotifyBackground( pOld, rOld, PrepareHint::FlyFrameLeave );
         }

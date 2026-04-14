@@ -251,7 +251,7 @@ XclExpPageSettings::XclExpPageSettings( const XclExpRoot& rRoot ) :
         maData.mbManualStart   = maData.mnStartPage && (!nScTab || rDoc.NeedPageResetAfterTab( nScTab - 1 ));
 
         const SvxLRSpaceItem& rLRItem = rItemSet.Get( ATTR_LRSPACE );
-        maData.mfLeftMargin = XclTools::GetInchFromTwips(rLRItem.ResolveLeft({}));
+        maData.mfLeftMargin = XclTools::GetInchFromTwips(rLRItem.ResolveLeft());
         maData.mfRightMargin = XclTools::GetInchFromTwips(rLRItem.ResolveRight({}));
         const SvxULSpaceItem& rULItem = rItemSet.Get( ATTR_ULSPACE );
         maData.mfTopMargin     = XclTools::GetInchFromTwips( rULItem.GetUpper() );

@@ -151,7 +151,7 @@ void TextObjectBar::Execute(SfxRequest& rReq)
                         const SvxLRSpaceItem& rItem = aAttr.Get( EE_PARA_LRSPACE );
                         std::unique_ptr<SvxLRSpaceItem> pNewItem(rItem.Clone());
 
-                        ::tools::Long nLeft = pNewItem->ResolveLeft({});
+                        ::tools::Long nLeft = pNewItem->ResolveLeft();
                         if( nSlot == SID_INC_INDENT )
                             nLeft += nIndentDefaultDist;
                         else

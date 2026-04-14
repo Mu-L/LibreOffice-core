@@ -1381,7 +1381,7 @@ bool SwTextBoxHelper::doTextBoxPositioning(SwFrameFormat* pShape, SdrObject* pOb
             }
             else
             {
-                auto nLeftSpace = pShape->GetLRSpace().ResolveLeft({});
+                auto nLeftSpace = pShape->GetLRSpace().ResolveLeft();
                 aNewHOri.SetPos(aRect.Left() + nLeftSpace
                                 + (bIsGroupObj ? pObj->GetRelativePos().getX() : 0));
             }

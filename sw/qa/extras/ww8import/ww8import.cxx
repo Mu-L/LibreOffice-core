@@ -143,7 +143,7 @@ CPPUNIT_TEST_FIXTURE(Test, testTdf121734)
         CPPUNIT_ASSERT_EQUAL(SfxItemState::SET, rFormat.GetItemState(RES_LR_SPACE, false, &pItem));
         auto pLR = static_cast<const SvxLRSpaceItem*>(pItem);
         CPPUNIT_ASSERT(pLR);
-        CPPUNIT_ASSERT_EQUAL(sal_Int32(0), pLR->ResolveLeft({}));
+        CPPUNIT_ASSERT_EQUAL(sal_Int32(0), pLR->ResolveLeft());
         CPPUNIT_ASSERT_EQUAL(sal_Int32(0), pLR->ResolveRight({}));
 
         CPPUNIT_ASSERT_EQUAL(SfxItemState::SET, rFormat.GetItemState(RES_UL_SPACE, false, &pItem));
@@ -204,7 +204,7 @@ CPPUNIT_TEST_FIXTURE(Test, testTdf122425_1)
         CPPUNIT_ASSERT_EQUAL(SfxItemState::SET, rFormat.GetItemState(RES_LR_SPACE, false, &pItem));
         auto pLR = static_cast<const SvxLRSpaceItem*>(pItem);
         CPPUNIT_ASSERT(pLR);
-        CPPUNIT_ASSERT_EQUAL(sal_Int32(0), pLR->ResolveLeft({}));
+        CPPUNIT_ASSERT_EQUAL(sal_Int32(0), pLR->ResolveLeft());
         CPPUNIT_ASSERT_EQUAL(sal_Int32(0), pLR->ResolveRight({}));
 
         CPPUNIT_ASSERT_EQUAL(SfxItemState::SET, rFormat.GetItemState(RES_UL_SPACE, false, &pItem));

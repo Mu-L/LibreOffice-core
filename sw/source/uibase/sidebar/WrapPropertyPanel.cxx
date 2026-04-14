@@ -146,7 +146,7 @@ void WrapPropertyPanel::NotifyItemUpdate(
                 const SvxLRSpaceItem* pItem = dynamic_cast< const SvxLRSpaceItem* >(pState);
                 if(pItem)
                 {
-                    m_nLeft = pItem->ResolveLeft({});
+                    m_nLeft = pItem->ResolveLeft();
                     m_nRight = pItem->ResolveRight({});
 
                     UpdateSpacingLB();

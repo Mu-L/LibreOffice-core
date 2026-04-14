@@ -1095,7 +1095,7 @@ void RtfAttributeOutput::TablePositioning(const SwFrameFormat* pFlyFormat)
     m_aRowDefs.append(static_cast<sal_Int32>(nTdfrmtxtBottom));
 
     // Similar to RtfAttributeOutput::FormatLRSpace(), but for tables.
-    sal_uInt16 nTdfrmtxtLeft = pFlyFormat->GetLRSpace().ResolveLeft({});
+    sal_uInt16 nTdfrmtxtLeft = pFlyFormat->GetLRSpace().ResolveLeft();
     m_aRowDefs.append(LO_STRING_SVTOOLS_RTF_TDFRMTXTLEFT);
     m_aRowDefs.append(static_cast<sal_Int32>(nTdfrmtxtLeft));
     sal_uInt16 nTdfrmtxtRight = pFlyFormat->GetLRSpace().ResolveRight({});
@@ -1175,7 +1175,7 @@ void RtfAttributeOutput::TableDefinition(
         // value of nSz is needed.
         nSz += pCellFormat->GetFrameSize().GetWidth();
         m_aRowDefs.append(OOO_STRING_SVTOOLS_RTF_CELLX);
-        m_aRowDefs.append(static_cast<sal_Int32>(pFormat->GetLRSpace().ResolveLeft({})
+        m_aRowDefs.append(static_cast<sal_Int32>(pFormat->GetLRSpace().ResolveLeft()
                                                  + rtl::math::round(nSz * fWidthRatio)));
     }
 }
@@ -1400,7 +1400,7 @@ void RtfAttributeOutput::TableOrientation(
         case text::HoriOrientation::NONE:
         case text::HoriOrientation::LEFT_AND_WIDTH:
             aTableAdjust.append(OOO_STRING_SVTOOLS_RTF_TRLEFT);
-            aTableAdjust.append(pFormat->GetLRSpace().ResolveLeft({}));
+            aTableAdjust.append(pFormat->GetLRSpace().ResolveLeft());
             break;
         default:
             break;
@@ -3860,10 +3860,10 @@ void RtfAttributeOutput::FormatLRSpace(const SvxLRSpaceItem& rLRSpace)
                     = pBoxItem->CalcLineSpace(SvxBoxItemLine::RIGHT, /*bEvenIfNoLine*/ true);
             }
 
-            m_aPageMargins.nLeft += sal::static_int_cast<sal_uInt16>(rLRSpace.ResolveLeft({}));
+            m_aPageMargins.nLeft += sal::static_int_cast<sal_uInt16>(rLRSpace.ResolveLeft());
             m_aPageMargins.nRight += sal::static_int_cast<sal_uInt16>(rLRSpace.ResolveRight({}));
 
-            if (rLRSpace.ResolveLeft({}))
+            if (rLRSpace.ResolveLeft())
             {
                 m_aSectionBreaks.append(OOO_STRING_SVTOOLS_RTF_MARGLSXN);
                 m_aSectionBreaks.append(static_cast<sal_Int32>(m_aPageMargins.nLeft));
@@ -3904,7 +3904,7 @@ void RtfAttributeOutput::FormatLRSpace(const SvxLRSpaceItem& rLRSpace)
         m_aFlyProperties.push_back(std::make_pair<OString, OString>(
             "dxWrapDistLeft"_ostr,
             OString::number(
-                o3tl::convert(rLRSpace.ResolveLeft({}), o3tl::Length::twip, o3tl::Length::emu))));
+                o3tl::convert(rLRSpace.ResolveLeft(), o3tl::Length::twip, o3tl::Length::emu))));
         m_aFlyProperties.push_back(std::make_pair<OString, OString>(
             "dxWrapDistRight"_ostr,
             OString::number(

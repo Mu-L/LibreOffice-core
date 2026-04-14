@@ -2483,7 +2483,7 @@ static void lcl_PDFExportMediaShapeScreen(const OutputDevice* pDev, const std::u
                 SfxStyleSheetBase* pStyleSheet = pStylePool->Find(rDoc.GetPageStyle(nTab), SfxStyleFamily::Page);
                 SfxItemSet* pItemSet = &pStyleSheet->GetItemSet();
 
-                tools::Long nLeftMargin(pItemSet->Get(ATTR_LRSPACE).ResolveLeft({}));
+                tools::Long nLeftMargin(pItemSet->Get(ATTR_LRSPACE).ResolveLeft());
                 nLeftMargin = o3tl::convert(nLeftMargin, o3tl::Length::twip, o3tl::Length::mm100);
 
                 tools::Long nTopMargin(pItemSet->Get(ATTR_ULSPACE).GetUpper());

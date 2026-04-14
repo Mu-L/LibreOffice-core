@@ -359,9 +359,9 @@ static SvxLRSpaceItem lcl_getWordLRSpace(const SwFrameFormat& rFormat)
     const SvxBoxItem& rBox = rFormat.GetBox();
 
     aLR.SetLeft(
-        SvxIndentValue::twips(aLR.ResolveLeft({}) + rBox.GetDistance(SvxBoxItemLine::LEFT)));
+        SvxIndentValue::twips(aLR.ResolveLeft() + rBox.GetDistance(SvxBoxItemLine::LEFT)));
     if (const editeng::SvxBorderLine* pLeft = rBox.GetLeft())
-        aLR.SetLeft(SvxIndentValue::twips(aLR.ResolveLeft({}) + pLeft->GetWidth()));
+        aLR.SetLeft(SvxIndentValue::twips(aLR.ResolveLeft() + pLeft->GetWidth()));
 
     aLR.SetRight(
         SvxIndentValue::twips(aLR.ResolveRight({}) + rBox.GetDistance(SvxBoxItemLine::RIGHT)));

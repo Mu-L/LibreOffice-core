@@ -177,7 +177,7 @@ void SwToLayoutAnchoredObjectPosition::CalcPosition()
                 = nWidth
                   - (nObjWidth + (aRectFnSet.IsVert() ? rUL.GetLower() : rLR.ResolveRight({})));
         else
-            nRelPosX = aRectFnSet.IsVert() ? rUL.GetUpper() : rLR.ResolveLeft({});
+            nRelPosX = aRectFnSet.IsVert() ? rUL.GetUpper() : rLR.ResolveLeft();
         nRelPosX += nOffset;
 
         // no 'negative' relative horizontal position

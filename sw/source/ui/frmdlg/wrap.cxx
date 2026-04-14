@@ -242,7 +242,7 @@ void SwWrapTabPage::Reset(const SfxItemSet *rSet)
     const SvxLRSpaceItem& rLR = rSet->Get(RES_LR_SPACE);
 
     // gap to text
-    m_xLeftMarginED->set_value(m_xLeftMarginED->normalize(rLR.ResolveLeft({})), FieldUnit::TWIP);
+    m_xLeftMarginED->set_value(m_xLeftMarginED->normalize(rLR.ResolveLeft()), FieldUnit::TWIP);
     m_xRightMarginED->set_value(m_xRightMarginED->normalize(rLR.ResolveRight({})), FieldUnit::TWIP);
     m_xTopMarginED->set_value(m_xTopMarginED->normalize(rUL.GetUpper()), FieldUnit::TWIP);
     m_xBottomMarginED->set_value(m_xBottomMarginED->normalize(rUL.GetLower()), FieldUnit::TWIP);

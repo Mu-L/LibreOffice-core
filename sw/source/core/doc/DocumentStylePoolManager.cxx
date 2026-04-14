@@ -119,7 +119,7 @@ namespace
         // page style
         const SwFrameFormat& rPgDscFormat = rDoc.GetPageDesc( 0 ).GetMaster();
         const SvxLRSpaceItem& rLR = rPgDscFormat.GetLRSpace();
-        const tools::Long nLeft = rLR.ResolveLeft({});
+        const tools::Long nLeft = rLR.ResolveLeft();
         const tools::Long nRight = rLR.ResolveRight({});
         const tools::Long nWidth = rPgDscFormat.GetFrameSize().GetWidth();
         return nWidth - nLeft - nRight;
@@ -1829,8 +1829,8 @@ SwPageDesc* DocumentStylePoolManager::GetPageDescFromPool( SwPoolFormatId nId, b
     }
     SvxULSpaceItem aUL( RES_UL_SPACE );
     {
-        aUL.SetUpper(o3tl::narrowing<sal_uInt16>(aLR.ResolveLeft({})));
-        aUL.SetLower(o3tl::narrowing<sal_uInt16>(aLR.ResolveLeft({})));
+        aUL.SetUpper(o3tl::narrowing<sal_uInt16>(aLR.ResolveLeft()));
+        aUL.SetLower(o3tl::narrowing<sal_uInt16>(aLR.ResolveLeft()));
     }
 
     SwAttrSet aSet( m_rDoc.GetAttrPool(), aPgFrameFormatSetRange );

@@ -1079,7 +1079,7 @@ void ScPreview::MouseButtonUp( const MouseEvent& rMEvt )
                 }
                 else if (bRightRulerChange
                          && (o3tl::convert(aButtonUpPt.X(), o3tl::Length::mm100, o3tl::Length::twip)
-                             < aLRItem.ResolveLeft({})
+                             < aLRItem.ResolveLeft()
                                    - o3tl::convert(aOffset.X(), o3tl::Length::mm100,
                                                    o3tl::Length::twip)))
                 {

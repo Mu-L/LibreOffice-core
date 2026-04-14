@@ -314,7 +314,7 @@ static bool lcl_HFPresentation
                 sal_uInt16 nPropRightMargin = rLRItem.GetPropRight();
                 sal_uInt16 nLeftMargin, nRightMargin;
                 tools::Long nTmp;
-                nTmp = rLRItem.ResolveLeft({});
+                nTmp = rLRItem.ResolveLeft();
                 nLeftMargin = nTmp < 0 ? 0 : sal_uInt16(nTmp);
                 nTmp = rLRItem.ResolveRight({});
                 nRightMargin = nTmp < 0 ? 0 : sal_uInt16(nTmp);

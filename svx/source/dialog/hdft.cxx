@@ -388,7 +388,7 @@ void SvxHFPage::Reset( const SfxItemSet* rSet )
             }
 
             m_xHeightDynBtn->set_active(rDynamic.GetValue());
-            SetMetricValue(*m_xLMEdit, rLR.ResolveLeft({}), eUnit);
+            SetMetricValue(*m_xLMEdit, rLR.ResolveLeft(), eUnit);
             SetMetricValue(*m_xRMEdit, rLR.ResolveRight({}), eUnit);
             m_xCntSharedBox->set_active(rShared.GetValue());
         }
@@ -796,7 +796,7 @@ void SvxHFPage::ActivatePage( const SfxItemSet& rSet )
     if (const SvxLRSpaceItem* pItem = GetItem( rSet, SID_ATTR_LRSPACE ))
     {
         // Set left and right margins
-        m_aBspWin.SetLeft(pItem->ResolveLeft({}));
+        m_aBspWin.SetLeft(pItem->ResolveLeft());
         m_aBspWin.SetRight(pItem->ResolveRight({}));
     }
     else
@@ -865,7 +865,7 @@ void SvxHFPage::ActivatePage( const SfxItemSet& rSet )
 
             m_aBspWin.SetHdHeight( rSize.GetSize().Height() - nDist );
             m_aBspWin.SetHdDist( nDist );
-            m_aBspWin.SetHdLeft(rLR.ResolveLeft({}));
+            m_aBspWin.SetHdLeft(rLR.ResolveLeft());
             m_aBspWin.SetHdRight(rLR.ResolveRight({}));
             m_aBspWin.SetHeader( true );
             const SfxBoolItem* pSharedFirst = nullptr;
@@ -914,7 +914,7 @@ void SvxHFPage::ActivatePage( const SfxItemSet& rSet )
 
             m_aBspWin.SetFtHeight( rSize.GetSize().Height() - nDist );
             m_aBspWin.SetFtDist( nDist );
-            m_aBspWin.SetFtLeft(rLR.ResolveLeft({}));
+            m_aBspWin.SetFtLeft(rLR.ResolveLeft());
             m_aBspWin.SetFtRight(rLR.ResolveRight({}));
             m_aBspWin.SetFooter( true );
             const SfxBoolItem* pSharedFirst = nullptr;

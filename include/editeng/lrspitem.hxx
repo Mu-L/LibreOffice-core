@@ -387,7 +387,7 @@ public:
 
     // Query/direct setting of the absolute values
     const SvxIndentValue & GetLeft() const;
-    sal_Int32 ResolveLeft(const SvxFontUnitMetrics& rMetrics) const;
+    sal_Int32 ResolveLeft() const;
     const SvxIndentValue & GetRight() const;
     sal_Int32 ResolveRight(const SvxFontUnitMetrics& rMetrics) const;
     bool IsAutoFirst()  const { return bAutoFirst; }

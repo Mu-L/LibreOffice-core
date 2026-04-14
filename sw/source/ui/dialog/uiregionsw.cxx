@@ -2127,7 +2127,7 @@ void SwSectionIndentTabPage::Reset( const SfxItemSet* rSet)
         const SvxLRSpaceItem& rSpace =
             rSet->Get( RES_LR_SPACE );
 
-        m_xBeforeMF->set_value(m_xBeforeMF->normalize(rSpace.ResolveLeft({})), FieldUnit::TWIP);
+        m_xBeforeMF->set_value(m_xBeforeMF->normalize(rSpace.ResolveLeft()), FieldUnit::TWIP);
         m_xAfterMF->set_value(m_xAfterMF->normalize(rSpace.ResolveRight({})), FieldUnit::TWIP);
     }
     else

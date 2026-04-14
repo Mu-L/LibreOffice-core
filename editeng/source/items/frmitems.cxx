@@ -449,7 +449,7 @@ bool SvxLRSpaceItem::QueryValue( uno::Any& rVal, sal_uInt8 nMemberId ) const
         {
             css::frame::status::LeftRightMarginScale aLRSpace;
 
-            auto nLeftTwips = ResolveLeft({});
+            auto nLeftTwips = ResolveLeft();
             aLRSpace.Left
                 = static_cast<sal_Int32>(bConvert ? convertTwipToMm100(nLeftTwips) : nLeftTwips);
 
@@ -675,9 +675,9 @@ void SvxLRSpaceItem::SetLeft(SvxIndentValue stL, const sal_uInt16 nProp)
 
 const SvxIndentValue & SvxLRSpaceItem::GetLeft() const { return m_stLeftMargin; }
 
-sal_Int32 SvxLRSpaceItem::ResolveLeft(const SvxFontUnitMetrics& rMetrics) const
+sal_Int32 SvxLRSpaceItem::ResolveLeft() const
 {
-    return m_stLeftMargin.Resolve(rMetrics);
+    return m_stLeftMargin.Resolve({});
 }
 
 void SvxRightMarginItem::SetRight(SvxIndentValue stR, const sal_uInt16 nProp)
@@ -2163,7 +2163,7 @@ boost::property_tree::ptree SvxLRSpaceItem::dumpAsJSON() const
 
     MapUnit eTargetUnit = MapUnit::MapInch;
 
-    OUString sLeft = GetMetricText(ResolveLeft({}), MapUnit::MapTwip, eTargetUnit, nullptr);
+    OUString sLeft = GetMetricText(ResolveLeft(), MapUnit::MapTwip, eTargetUnit, nullptr);
 
     OUString sRight = GetMetricText(ResolveRight({}), MapUnit::MapTwip, eTargetUnit, nullptr);
 

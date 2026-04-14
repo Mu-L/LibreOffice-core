@@ -1160,7 +1160,7 @@ void DocxAttributeOutput::PopulateFrameProperties(const SwFrameFormat* pFrameFor
     else if (aPos.Y)
         attrList->add( FSNS( XML_w, XML_y), OString::number(aPos.Y));
 
-    sal_Int16 nLeft = pFrameFormat->GetLRSpace().ResolveLeft({});
+    sal_Int16 nLeft = pFrameFormat->GetLRSpace().ResolveLeft();
     sal_Int16 nRight = pFrameFormat->GetLRSpace().ResolveRight({});
     sal_Int16 nUpper = pFrameFormat->GetULSpace().GetUpper();
     sal_Int16 nLower = pFrameFormat->GetULSpace().GetLower();
@@ -6550,9 +6550,9 @@ OString DocxAttributeOutput::GetOLEStyle(const SwFlyFrameFormat& rFormat, const 
                         "pt"; //from VMLExport::AddRectangleDimensions(), it does: value/20
 
     const SvxLRSpaceItem& rLRSpace = rFormat.GetLRSpace();
-    if (rLRSpace.IsExplicitZeroMarginValLeft() || rLRSpace.ResolveLeft({}))
+    if (rLRSpace.IsExplicitZeroMarginValLeft() || rLRSpace.ResolveLeft())
         sShapeStyle += ";mso-wrap-distance-left:"
-                       + OString::number(double(rLRSpace.ResolveLeft({})) / 20) + "pt";
+                       + OString::number(double(rLRSpace.ResolveLeft()) / 20) + "pt";
     if (rLRSpace.IsExplicitZeroMarginValRight() || rLRSpace.ResolveRight({}))
         sShapeStyle += ";mso-wrap-distance-right:"
                        + OString::number(double(rLRSpace.ResolveRight({})) / 20) + "pt";
@@ -9864,7 +9864,7 @@ void DocxAttributeOutput::FormatLRSpace( const SvxLRSpaceItem& rLRSpace )
     if (m_rExport.SdrExporter().getTextFrameSyntax())
     {
         m_rExport.SdrExporter().getTextFrameStyle().append(
-            ";mso-wrap-distance-left:" + OString::number(double(rLRSpace.ResolveLeft({})) / 20)
+            ";mso-wrap-distance-left:" + OString::number(double(rLRSpace.ResolveLeft()) / 20)
             + "pt");
         m_rExport.SdrExporter().getTextFrameStyle().append(
             ";mso-wrap-distance-right:" + OString::number(double(rLRSpace.ResolveRight({})) / 20)
@@ -9876,7 +9876,7 @@ void DocxAttributeOutput::FormatLRSpace( const SvxLRSpaceItem& rLRSpace )
     else if ( m_rExport.m_bOutFlyFrameAttrs )
     {
         AddToAttrList(m_rExport.SdrExporter().getFlyAttrList(), FSNS(XML_w, XML_hSpace),
-                      OString::number((rLRSpace.ResolveLeft({}) + rLRSpace.ResolveRight({})) / 2));
+                      OString::number((rLRSpace.ResolveLeft() + rLRSpace.ResolveRight({})) / 2));
     }
     else if ( m_rExport.m_bOutPageDescs )
     {
@@ -9890,7 +9890,7 @@ void DocxAttributeOutput::FormatLRSpace( const SvxLRSpaceItem& rLRSpace )
             m_pageMargins.nRight = pBoxItem->CalcLineSpace( SvxBoxItemLine::RIGHT, /*bEvenIfNoLine*/true );
         }
 
-        m_pageMargins.nLeft += sal::static_int_cast<sal_uInt16>(rLRSpace.ResolveLeft({}));
+        m_pageMargins.nLeft += sal::static_int_cast<sal_uInt16>(rLRSpace.ResolveLeft());
         m_pageMargins.nRight += sal::static_int_cast<sal_uInt16>(rLRSpace.ResolveRight({}));
 
         // if page layout is 'left' then left/right margin may need to be exchanged

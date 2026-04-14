@@ -668,7 +668,7 @@ static void lcl_FillHFParam( ScPrintHFParam& rParam, const SfxItemSet* pHFSet )
         rParam.nHeight  = pHFSet->Get(ATTR_PAGE_SIZE).GetSize().Height();
         const SvxLRSpaceItem* pHFLR = &pHFSet->Get(ATTR_LRSPACE);
         tools::Long nTmp;
-        nTmp = pHFLR->ResolveLeft({});
+        nTmp = pHFLR->ResolveLeft();
         rParam.nLeft = nTmp < 0 ? 0 : sal_uInt16(nTmp);
         nTmp = pHFLR->ResolveRight({});
         rParam.nRight = nTmp < 0 ? 0 : sal_uInt16(nTmp);
@@ -859,7 +859,7 @@ void ScPrintFunc::InitParam( const ScPrintOptions* pOptions )
     // TabPage "Page"
     const SvxLRSpaceItem* pLRItem = &pParamSet->Get( ATTR_LRSPACE );
     tools::Long nTmp;
-    nTmp = pLRItem->ResolveLeft({});
+    nTmp = pLRItem->ResolveLeft();
     nLeftMargin = nTmp < 0 ? 0 : sal_uInt16(nTmp);
     nTmp = pLRItem->ResolveRight({});
     nRightMargin = nTmp < 0 ? 0 : sal_uInt16(nTmp);

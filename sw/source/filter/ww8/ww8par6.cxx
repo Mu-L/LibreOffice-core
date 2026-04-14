@@ -228,7 +228,7 @@ void SwWW8ImplReader::SetDocumentGrid(SwFrameFormat &rFormat, const wwSection &r
 
     SwTwips nTextareaWidth = rFormat.GetFrameSize().GetWidth();
     const SvxLRSpaceItem &rLR = rFormat.GetFormatAttr(RES_LR_SPACE);
-    nTextareaWidth -= rLR.ResolveLeft({});
+    nTextareaWidth -= rLR.ResolveLeft();
     nTextareaWidth -= rLR.ResolveRight({});
 
     if (rSection.IsVertical())
@@ -566,7 +566,7 @@ void SwWW8ImplReader::SetPageBorder(SwFrameFormat &rFormat, const wwSection &rSe
     bool bFromEdge = rSection.maSep.pgbOffsetFrom == 1;
 
     aLR.SetLeft(SvxIndentValue::twips(
-        SetBorderDistance(bFromEdge, aBox, SvxBoxItemLine::LEFT, aLR.ResolveLeft({}))));
+        SetBorderDistance(bFromEdge, aBox, SvxBoxItemLine::LEFT, aLR.ResolveLeft())));
     aLR.SetRight(SvxIndentValue::twips(
         SetBorderDistance(bFromEdge, aBox, SvxBoxItemLine::RIGHT, aLR.ResolveRight({}))));
     aUL.SetUpper(SetBorderDistance(bFromEdge, aBox, SvxBoxItemLine::TOP, aUL.GetUpper()));
@@ -757,7 +757,7 @@ SwSectionFormat *wwSectionManager::InsertSection(
 
     SwFrameFormat& rFormat = pPage->GetMaster();
     const SvxLRSpaceItem& rLR = rFormat.GetLRSpace();
-    tools::Long nPageLeft = rLR.ResolveLeft({});
+    tools::Long nPageLeft = rLR.ResolveLeft();
     tools::Long nPageRight = rLR.ResolveRight({});
     tools::Long nSectionLeft = rSection.GetPageLeft() - nPageLeft;
     tools::Long nSectionRight = rSection.GetPageRight() - nPageRight;

@@ -534,7 +534,7 @@ void FuPage::ApplyItemSet( const SfxItemSet* pArgs )
     if( pArgs->GetItemState(mrDoc.GetPool().GetWhichIDFromSlotID(SID_ATTR_LRSPACE),
                             true, &pPoolItem) == SfxItemState::SET )
     {
-        nLeft = static_cast<const SvxLRSpaceItem*>(pPoolItem)->ResolveLeft({});
+        nLeft = static_cast<const SvxLRSpaceItem*>(pPoolItem)->ResolveLeft();
         nRight = static_cast<const SvxLRSpaceItem*>(pPoolItem)->ResolveRight({});
 
         if( mpPage->GetLeftBorder() != nLeft || mpPage->GetRightBorder() != nRight )

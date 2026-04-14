@@ -886,7 +886,7 @@ SwHTMLWriter& OutHTML_SwTableNode( SwHTMLWriter& rWrt, SwTableNode & rNode,
 
         const SvxLRSpaceItem& rLRSpace = pFlyFrameFormat->GetLRSpace();
         nFlyHSpace
-            = static_cast<sal_uInt16>((rLRSpace.ResolveLeft({}) + rLRSpace.ResolveRight({})) / 2);
+            = static_cast<sal_uInt16>((rLRSpace.ResolveLeft() + rLRSpace.ResolveRight({})) / 2);
 
         const SvxULSpaceItem& rULSpace = pFlyFrameFormat->GetULSpace();
         nFlyVSpace = (rULSpace.GetUpper() + rULSpace.GetLower()) / 2;
@@ -978,7 +978,7 @@ SwHTMLWriter& OutHTML_SwTableNode( SwHTMLWriter& rWrt, SwTableNode & rNode,
                 rWrt.GetNextNumInfo(),
                 "NumInfo for next paragraph is missing!" );
         const SvxLRSpaceItem& aLRItem = pFormat->GetLRSpace();
-        if (aLRItem.ResolveLeft({}) > 0 && rWrt.m_nDefListMargin > 0
+        if (aLRItem.ResolveLeft() > 0 && rWrt.m_nDefListMargin > 0
             && (!rWrt.GetNumInfo().GetNumRule()
                 || (rWrt.GetNextNumInfo()
                     && (rWrt.GetNumInfo().GetNumRule() != rWrt.GetNextNumInfo()->GetNumRule()
@@ -989,7 +989,7 @@ SwHTMLWriter& OutHTML_SwTableNode( SwHTMLWriter& rWrt, SwTableNode & rNode,
             // a different rule, we can maintain the indentation with a DL.
             // Otherwise we keep the indentation of the numbering.
             nNewDefListLvl = static_cast<sal_uInt16>(
-                (aLRItem.ResolveLeft({}) + (rWrt.m_nDefListMargin / 2)) / rWrt.m_nDefListMargin);
+                (aLRItem.ResolveLeft() + (rWrt.m_nDefListMargin / 2)) / rWrt.m_nDefListMargin);
         }
     }
 

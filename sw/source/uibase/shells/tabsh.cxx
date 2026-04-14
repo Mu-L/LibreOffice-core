@@ -237,7 +237,7 @@ static std::shared_ptr<SwTableRep> lcl_TableParamToItemSet( SfxItemSet& rSet, Sw
     const sal_uInt16 nAlign = pFormat->GetHoriOrient().GetHoriOrient();
     pRep->SetAlign(nAlign);
     SvxLRSpaceItem aLRSpace( pFormat->GetLRSpace() );
-    SwTwips nLeft = aLRSpace.ResolveLeft({});
+    SwTwips nLeft = aLRSpace.ResolveLeft();
     SwTwips nRight = aLRSpace.ResolveRight({});
     if(nAlign != text::HoriOrientation::FULL)
     {
@@ -1726,7 +1726,7 @@ void SwTableShell::GetState(SfxItemSet &rSet)
                 rSh.GetTabCols(aTabCols);
                 tools::Long nSpace = aTabCols.GetRightMax();
                 SvxLRSpaceItem aLRSpace(pFormat->GetLRSpace());
-                SwTwips nLeft = aLRSpace.ResolveLeft({});
+                SwTwips nLeft = aLRSpace.ResolveLeft();
                 SwTwips nRight = aLRSpace.ResolveRight({});
 
                 sal_uInt16 nPercent = 0;

@@ -696,7 +696,7 @@ void DocxSdrExport::startDMLAnchorInline(const SwFrameFormat* pFrameFormat, cons
     const SvxULSpaceItem& aULSpaceItem = pFrameFormat->GetULSpace();
     sal_Int64 nDistT = aULSpaceItem.GetUpper();
     sal_Int64 nDistB = aULSpaceItem.GetLower();
-    sal_Int64 nDistL = aLRSpaceItem.ResolveLeft({});
+    sal_Int64 nDistL = aLRSpaceItem.ResolveLeft();
     sal_Int64 nDistR = aLRSpaceItem.ResolveRight({});
 
     // LibreOffice behaves different for frames and drawing objects, but MS Office treats frames

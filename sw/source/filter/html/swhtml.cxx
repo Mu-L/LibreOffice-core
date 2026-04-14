@@ -5162,7 +5162,7 @@ SwTwips SwHTMLParser::GetCurrentBrowseWidth()
         const SvxULSpaceItem& rUL = rPgFormat.GetULSpace();
         const SwFormatCol& rCol = rPgFormat.GetCol();
 
-        m_aHTMLPageSize.setWidth(rSz.GetWidth() - rLR.ResolveLeft({}) - rLR.ResolveRight({}));
+        m_aHTMLPageSize.setWidth(rSz.GetWidth() - rLR.ResolveLeft() - rLR.ResolveRight({}));
         m_aHTMLPageSize.setHeight( rSz.GetHeight() - rUL.GetUpper() - rUL.GetLower() );
 
         if( 1 < rCol.GetNumCols() )

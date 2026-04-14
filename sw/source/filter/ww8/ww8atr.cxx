@@ -4460,7 +4460,7 @@ void WW8AttributeOutput::FormatLRSpace( const SvxLRSpaceItem& rLR )
         m_rWW8Export.InsUInt16( NS_sprm::LN_PDxaFromText10 );
         // use average, since WW only knows one value
         m_rWW8Export.InsUInt16(
-            (rLR.ResolveLeft({}) + rLR.ResolveRight({})) / 2);
+            (rLR.ResolveLeft() + rLR.ResolveRight({})) / 2);
     }
     else if ( m_rWW8Export.m_bOutPageDescs )                // PageDescs
     {
@@ -4473,7 +4473,7 @@ void WW8AttributeOutput::FormatLRSpace( const SvxLRSpaceItem& rLR )
             m_pageMargins.nRight = pBoxItem->CalcLineSpace( SvxBoxItemLine::RIGHT, /*bEvenIfNoLine*/true );
         }
 
-        m_pageMargins.nLeft += sal::static_int_cast<sal_uInt16>(rLR.ResolveLeft({}));
+        m_pageMargins.nLeft += sal::static_int_cast<sal_uInt16>(rLR.ResolveLeft());
         m_pageMargins.nRight += sal::static_int_cast<sal_uInt16>(rLR.ResolveRight({}));
         sal_uInt16 nGutter = rLR.GetGutterMargin();
 
@@ -5079,7 +5079,7 @@ SwTwips WW8Export::CurrentPageWidth(SwTwips &rLeft, SwTwips &rRight) const
 
     const SvxLRSpaceItem& rLR = pFormat->GetLRSpace();
     SwTwips nPageSize = pFormat->GetFrameSize().GetWidth();
-    rLeft = rLR.ResolveLeft({});
+    rLeft = rLR.ResolveLeft();
     rRight = rLR.ResolveRight({});
     return nPageSize;
 }
@@ -5169,7 +5169,7 @@ void AttributeOutputBase::FormatColumns( const SwFormatCol& rCol )
     {
         const SvxLRSpaceItem &rLR = pFormat->GetLRSpace();
         nPageSize = pFormat->GetFrameSize().GetWidth();
-        nPageSize -= rLR.ResolveLeft({}) + rLR.ResolveRight({});
+        nPageSize -= rLR.ResolveLeft() + rLR.ResolveRight({});
         //i120133: The Section width should consider page indent value.
         nPageSize -= rCol.GetAdjustValue();
 
