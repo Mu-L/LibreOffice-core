@@ -14,7 +14,6 @@
 #include "sal/saldllapi.h"
 #include "sal/types.h"
 #include "rtl/ustring.hxx"
-#include <memory>
 
 /// @cond INTERNAL
 /**

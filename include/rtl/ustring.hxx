@@ -29,15 +29,11 @@
 #include <cassert>
 #include <cstddef>
 #include <cstdlib>
-#include <limits>
-#include <new>
 #include <ostream>
 #include <utility>
 
 #if defined LIBO_INTERNAL_ONLY
 #include <algorithm>
-#include <string_view>
-#include <type_traits>
 #endif
 
 #include "rtl/math.h"

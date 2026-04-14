@@ -22,7 +22,6 @@
 #include <tools/toolsdllapi.h>
 #include <tools/gen.hxx>
 
-#include <cstddef>
 #include <vector>
 #include <o3tl/sorted_vector.hxx>
 

@@ -18,7 +18,6 @@
  */
 
 #include <svx/numinf.hxx>
-#include <utility>
 
 
 SvxNumberInfoItem::SvxNumberInfoItem( SvNumberFormatter* pNumFormatter,

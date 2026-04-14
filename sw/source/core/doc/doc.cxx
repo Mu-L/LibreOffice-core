@@ -17,7 +17,6 @@
  *   the License at http://www.apache.org/licenses/LICENSE-2.0 .
  */
 
-#include <svx/TableAutoFmt.hxx>
 #include <config_features.h>
 
 #include <doc.hxx>
@@ -48,7 +47,6 @@
 #include <comphelper/random.hxx>
 #include <tools/multisel.hxx>
 #include <rtl/ustring.hxx>
-#include <svl/poolitem.hxx>
 #include <unotools/syslocale.hxx>
 #include <editeng/keepitem.hxx>
 #include <editeng/formatbreakitem.hxx>
@@ -61,9 +59,7 @@
 
 #include <officecfg/Office/Writer.hxx>
 
-#include <swatrset.hxx>
 #include <swmodule.hxx>
-#include <fmtrfmrk.hxx>
 #include <fmtinfmt.hxx>
 #include <fmtfld.hxx>
 #include <txtfld.hxx>

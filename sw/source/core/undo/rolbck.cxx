@@ -60,9 +60,6 @@
 #include <bookmark.hxx>
 #include <frameformats.hxx>
 
-#include <memory>
-#include <utility>
-
 OUString SwHistoryHint::GetDescription() const
 {
     return OUString();

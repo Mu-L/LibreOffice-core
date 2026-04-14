@@ -19,8 +19,6 @@
 
 #include <sal/config.h>
 
-#include <cstdlib>
-
 #include <IDocumentMarkAccess.hxx>
 #include <crossrefbookmark.hxx>
 #include <ndtxt.hxx>

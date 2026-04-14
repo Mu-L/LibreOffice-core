@@ -23,7 +23,6 @@
 
 #include <doc.hxx>
 #include <docsh.hxx>
-#include <utility>
 #include <view.hxx>
 #include <drawdoc.hxx>
 #include <ndarr.hxx>

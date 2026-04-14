@@ -67,8 +67,6 @@
 #include <docsh.hxx>
 
 #include <memory>
-#include <utility>
-#include <vector>
 
 #ifdef DBG_UTIL
 #define CHECK_TABLE(t) (t).CheckConsistency();

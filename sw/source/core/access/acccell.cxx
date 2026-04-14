@@ -37,7 +37,6 @@
 #include "acccell.hxx"
 
 #include <cfloat>
-#include <string_view>
 
 #include <editeng/brushitem.hxx>
 #include <swatrset.hxx>
