@@ -90,16 +90,6 @@ static sal_Int32 GetInt32(const sal_uInt8* ptr, size_t offset)
 
 /*- Public functions */
 
-TrueTypeFont::TrueTypeFont(const char* pFileName, sal_uInt32 facenum)
-{
-    hb_blob_t* pBlob = hb_blob_create_from_file_or_fail(pFileName);
-    if (pBlob)
-    {
-        open(pBlob, facenum);
-        hb_blob_destroy(pBlob);
-    }
-}
-
 TrueTypeFont::TrueTypeFont(const void* pBuffer, sal_uInt32 nLen, sal_uInt32 facenum)
 {
     hb_blob_t* pBlob = hb_blob_create(static_cast<const char*>(pBuffer), nLen,

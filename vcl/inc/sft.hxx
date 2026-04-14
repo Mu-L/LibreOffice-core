@@ -365,9 +365,6 @@ class UNLESS_MERGELIBS(VCL_DLLPUBLIC) TrueTypeFont
     font::RawFontData getTable(hb_tag_t tag) const;
 
 public:
-    /** Construct from a file path */
-    TrueTypeFont(const char* pFileName, sal_uInt32 facenum);
-    /** Construct from a memory buffer */
     TrueTypeFont(const void* pBuffer, sal_uInt32 nLen, sal_uInt32 facenum);
     ~TrueTypeFont();
 
