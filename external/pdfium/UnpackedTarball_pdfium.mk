@@ -29,6 +29,8 @@ endif
 # TODO, attempt upstream
 pdfium_patches += ofz451333752.patch
 pdfium_patches += extractpatterns.patch
+# Hide bundled FreeType symbols
+pdfium_patches += freetype-hidden-visibility.patch
 
 $(eval $(call gb_UnpackedTarball_UnpackedTarball,pdfium))
 
