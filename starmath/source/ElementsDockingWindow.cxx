@@ -551,7 +551,6 @@ constexpr std::span<const SmElementDescr> s_a5CategoryDescriptionsArray[] = {
     std::span<const SmElementDescr>(s_a5FormatsList),
     std::span<const SmElementDescr>(s_a5OthersList),
     std::span<const SmElementDescr>(s_a5ExamplesList),
-    std::span<const SmElementDescr>(s_a5ExamplesList),
 };
 
 constexpr std::span<const std::span<const SmElementDescr>>
