@@ -25,6 +25,7 @@
 
 #include <comphelper/solarmutex.hxx>
 #include <o3tl/char16_t2wchar_t.hxx>
+#include <o3tl/temporary.hxx>
 #include <vcl/skia/SkiaHelper.hxx>
 
 #include <winspool.h>
@@ -209,5 +210,144 @@ OUString WindowsInstance::GetDefaultPrinter()
     }
     return OUString();
 }
+
+typedef LONG NTSTATUS;
+typedef NTSTATUS(WINAPI* RtlGetVersion_t)(PRTL_OSVERSIONINFOW);
+constexpr NTSTATUS STATUS_SUCCESS = 0x00000000;
+
+OUString WindowsInstance::getWinArch()
+{
+    USHORT nNativeMachine = IMAGE_FILE_MACHINE_UNKNOWN;
+
+    using LPFN_ISWOW64PROCESS2 = BOOL(WINAPI*)(HANDLE, USHORT*, USHORT*);
+    auto fnIsWow64Process2 = reinterpret_cast<LPFN_ISWOW64PROCESS2>(
+        GetProcAddress(GetModuleHandleW(L"kernel32.dll"), "IsWow64Process2"));
+    if (fnIsWow64Process2)
+        fnIsWow64Process2(GetCurrentProcess(), &o3tl::temporary(USHORT()), &nNativeMachine);
+
+    if (nNativeMachine == IMAGE_FILE_MACHINE_UNKNOWN)
+    {
+#if _WIN64
+        nNativeMachine = IMAGE_FILE_MACHINE_AMD64;
+#else
+        BOOL isWow64 = FALSE;
+        IsWow64Process(GetCurrentProcess(), &isWow64);
+
+        if (isWow64)
+            nNativeMachine = IMAGE_FILE_MACHINE_AMD64; // 32-bit process on 64-bit Windows
+        else
+            nNativeMachine = IMAGE_FILE_MACHINE_I386;
+
+#endif
+    }
+
+    switch (nNativeMachine)
+    {
+        case IMAGE_FILE_MACHINE_I386:
+            return u" X86_32"_ustr;
+        case IMAGE_FILE_MACHINE_R3000:
+            return u" R3000"_ustr;
+        case IMAGE_FILE_MACHINE_R4000:
+            return u" R4000"_ustr;
+        case IMAGE_FILE_MACHINE_R10000:
+            return u" R10000"_ustr;
+        case IMAGE_FILE_MACHINE_WCEMIPSV2:
+            return u" WCEMIPSV2"_ustr;
+        case IMAGE_FILE_MACHINE_ALPHA:
+            return u" ALPHA"_ustr;
+        case IMAGE_FILE_MACHINE_SH3:
+            return u" SH3"_ustr;
+        case IMAGE_FILE_MACHINE_SH3DSP:
+            return u" SH3DSP"_ustr;
+        case IMAGE_FILE_MACHINE_SH3E:
+            return u" SH3E"_ustr;
+        case IMAGE_FILE_MACHINE_SH4:
+            return u" SH4"_ustr;
+        case IMAGE_FILE_MACHINE_SH5:
+            return u" SH5"_ustr;
+        case IMAGE_FILE_MACHINE_ARM:
+            return u" ARM"_ustr;
+        case IMAGE_FILE_MACHINE_THUMB:
+            return u" THUMB"_ustr;
+        case IMAGE_FILE_MACHINE_ARMNT:
+            return u" ARMNT"_ustr;
+        case IMAGE_FILE_MACHINE_AM33:
+            return u" AM33"_ustr;
+        case IMAGE_FILE_MACHINE_POWERPC:
+            return u" POWERPC"_ustr;
+        case IMAGE_FILE_MACHINE_POWERPCFP:
+            return u" POWERPCFP"_ustr;
+        case IMAGE_FILE_MACHINE_IA64:
+            return u" IA64"_ustr;
+        case IMAGE_FILE_MACHINE_MIPS16:
+            return u" MIPS16"_ustr;
+        case IMAGE_FILE_MACHINE_ALPHA64:
+            return u" ALPHA64"_ustr;
+        case IMAGE_FILE_MACHINE_MIPSFPU:
+            return u" MIPSFPU"_ustr;
+        case IMAGE_FILE_MACHINE_MIPSFPU16:
+            return u" MIPSFPU16"_ustr;
+        case IMAGE_FILE_MACHINE_TRICORE:
+            return u" TRICORE"_ustr;
+        case IMAGE_FILE_MACHINE_CEF:
+            return u" CEF"_ustr;
+        case IMAGE_FILE_MACHINE_EBC:
+            return u" EBC"_ustr;
+        case IMAGE_FILE_MACHINE_AMD64:
+            return u" X86_64"_ustr;
+        case IMAGE_FILE_MACHINE_M32R:
+            return u" M32R"_ustr;
+        case IMAGE_FILE_MACHINE_ARM64:
+            return u" ARM64"_ustr;
+        case IMAGE_FILE_MACHINE_CEE:
+            return u" CEE"_ustr;
+        default:
+            assert(!"Yet unhandled case");
+            return OUString();
+    }
+}
+
+OUString WindowsInstance::getOSVersionString(DWORD nBuildNumber)
+{
+    OUStringBuffer result = u"Windows";
+    if (nBuildNumber >= 22000)
+        result.append(" 11");
+    else if (nBuildNumber > 0)
+        result.append(" 10");
+    else // We don't know what Windows it is
+        result.append(" unknown");
+
+    result.append(getWinArch());
+
+    if (nBuildNumber)
+        result.append(" (build " + OUString::number(nBuildNumber) + ")");
+
+    return result.makeStringAndClear();
+}
+
+DWORD WindowsInstance::getWindowsBuildNumber()
+{
+    static const DWORD nResult = [] {
+        DWORD nBuildNumber = 0;
+        // use RtlGetVersion to get build number
+        if (HMODULE h_ntdll = GetModuleHandleW(L"ntdll.dll"))
+        {
+            if (auto RtlGetVersion
+                = reinterpret_cast<RtlGetVersion_t>(GetProcAddress(h_ntdll, "RtlGetVersion")))
+            {
+                RTL_OSVERSIONINFOW vi2{}; // initialize with zeroes - a better alternative to memset
+                vi2.dwOSVersionInfoSize = sizeof(vi2);
+                if (STATUS_SUCCESS == RtlGetVersion(&vi2))
+                {
+                    nBuildNumber = vi2.dwBuildNumber;
+                }
+            }
+        }
+        return nBuildNumber;
+    }();
+    return nResult;
+}
+
+OUString WindowsInstance::getOSVersion() { return getOSVersionString(getWindowsBuildNumber()); }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab cinoptions=b1,g0,N-s cinkeys+=0=break: */

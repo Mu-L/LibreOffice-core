@@ -70,8 +70,6 @@ public:
     virtual OpenGLContext*      CreateOpenGLContext() override;
     virtual void                AddToRecentDocumentList(const OUString& rFileUrl, const OUString& rMimeType, const OUString& rDocumentService) override;
 
-    static DWORD getWindowsBuildNumber();
-    virtual OUString            getOSVersion() override;
     virtual OUString GetToolkitName() const override;
 
     virtual void BeforeAbort(const OUString&, bool) override;

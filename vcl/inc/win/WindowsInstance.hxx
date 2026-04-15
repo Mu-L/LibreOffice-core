@@ -62,7 +62,14 @@ public:
 
     virtual Platform GetPlatform() const override { return Platform::Windows; }
 
+    virtual OUString getOSVersion() override;
+    static DWORD getWindowsBuildNumber();
+
     WindowsInstanceData& GetData() { return m_aData; }
+
+private:
+    static OUString getOSVersionString(DWORD nBuildNumber);
+    static OUString getWinArch();
 };
 
 inline WindowsInstance& GetWindowsInstance()
