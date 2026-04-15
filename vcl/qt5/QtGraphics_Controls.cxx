@@ -484,6 +484,15 @@ bool QtGraphics_Controls::drawNativeControl(ControlType type, ControlPart part,
         draw(QStyle::PE_IndicatorToolBarHandle, option, m_image.get(), rBackgroundColor,
              vclStateValue2StateFlag(nControlState, value), aRect);
     }
+    else if ((type == ControlType::Toolbar)
+             && (part == ControlPart::SeparatorHorz || part == ControlPart::SeparatorVert))
+    {
+        QStyleOption option;
+        if (part == ControlPart::SeparatorVert)
+            option.state = QStyle::State_Horizontal;
+        draw(QStyle::PE_IndicatorToolBarSeparator, option, m_image.get(), rBackgroundColor,
+             vclStateValue2StateFlag(nControlState, value), m_image->rect());
+    }
     else if (type == ControlType::Editbox || type == ControlType::MultilineEditbox)
     {
         drawFrame(QStyle::PE_FrameLineEdit, m_image.get(), rBackgroundColor,
@@ -667,12 +676,12 @@ bool QtGraphics_Controls::drawNativeControl(ControlType type, ControlPart part,
     }
     else if (type == ControlType::Fixedline)
     {
-        QStyleOptionMenuItem option;
-        option.menuItemType = QStyleOptionMenuItem::Separator;
-        option.state = vclStateValue2StateFlag(nControlState, value);
-        option.state |= QStyle::State_Item;
-
-        draw(QStyle::CE_MenuItem, option, m_image.get(), rBackgroundColor);
+        // We use a Qt toolbar separator, since menu item separators are horizontal only.
+        QStyleOption option;
+        if (part == ControlPart::SeparatorVert)
+            option.state = QStyle::State_Horizontal;
+        draw(QStyle::PE_IndicatorToolBarSeparator, option, m_image.get(), rBackgroundColor,
+             vclStateValue2StateFlag(nControlState, value), m_image->rect());
     }
     else if (type == ControlType::Slider
              && (part == ControlPart::TrackHorzArea || part == ControlPart::TrackVertArea))
