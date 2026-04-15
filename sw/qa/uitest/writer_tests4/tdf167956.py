@@ -28,7 +28,7 @@ class tdf167956(UITestCase):
             xStylesView = xWriterDoc.getChild("stylesview")
             self.wait_until_styles_are_displayed(xStylesView)
             self.assertLessEqual("10", get_state_as_dict(xStylesView)["Children"])
-            self.assertEqual("Default Paragraph Style", get_state_as_dict(xStylesView)["SelectEntryText"])
+            self.assertEqual("Default Paragraph Style", get_state_as_dict(xStylesView)["SelectedItemId"])
 
         with self.ui_test.load_file(get_url_for_data_file("tdf167956.docx")):
             xWriterDoc = self.xUITest.getTopFocusWindow()
@@ -37,7 +37,7 @@ class tdf167956(UITestCase):
             # Without the fix in place, this test would have crashed here
             self.wait_until_styles_are_displayed(xStylesView)
             self.assertLessEqual("10", get_state_as_dict(xStylesView)["Children"])
-            self.assertEqual("Intense Quote", get_state_as_dict(xStylesView)["SelectEntryText"])
+            self.assertEqual("Intense Quote", get_state_as_dict(xStylesView)["SelectedItemId"])
 
             # Reset to the default toolbar
             self.xUITest.executeCommand(".uno:ToolbarMode?Mode:string=Default")

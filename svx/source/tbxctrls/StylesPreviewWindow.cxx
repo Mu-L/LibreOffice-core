@@ -451,7 +451,7 @@ StylesPreviewWindow_Base::StylesPreviewWindow_Base(
 
 IMPL_LINK(StylesPreviewWindow_Base, Selected, weld::ItemView&, rIconView, void)
 {
-    OUString sStyleName = rIconView.get_selected_text();
+    OUString sStyleName = rIconView.get_selected_id();
 
     css::uno::Sequence<css::beans::PropertyValue> aArgs{
         comphelper::makePropertyValue(u"Template"_ustr, sStyleName),
@@ -654,11 +654,15 @@ void StylesPreviewWindow_Base::UpdateStylesList()
     // for online we can skip inserting the preview into the IconView and rely
     // on DoJsonProperty to provide the image to clients
     const bool bNeedInsertPreview = !comphelper::LibreOfficeKit::isActive();
+    int nIndex = 0;
     for (const auto& rStyle : m_aAllStyles)
     {
         Bitmap aPreview = GetCachedPreview(rStyle);
         Bitmap* pPreview = bNeedInsertPreview ? &aPreview : nullptr;
-        m_xStylesView->append(rStyle.commonName, rStyle.translatedName, pPreview);
+        m_xStylesView->insert(nIndex, nullptr, &rStyle.translatedName, pPreview, nullptr);
+        m_xStylesView->set_item_tooltip_text(nIndex, rStyle.translatedName);
+        m_xStylesView->set_item_accessible_name(nIndex, rStyle.translatedName);
+        nIndex++;
     }
     m_xStylesView->thaw();
 }
