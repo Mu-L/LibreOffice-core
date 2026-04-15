@@ -2098,7 +2098,7 @@ void SdrHdlList::TravelFocusHdl(bool bForward)
     }
 
     // build new HdlNum
-    sal_uIntPtr nNewHdlNum(nNewHdl);
+    size_t nNewHdlNum(nNewHdl);
 
     // look for old num in sorted array
     if(nNewHdl != SAL_MAX_SIZE)
