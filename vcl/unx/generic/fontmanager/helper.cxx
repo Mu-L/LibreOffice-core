@@ -249,16 +249,4 @@ void psp::normPath( OString& rPath )
     }
 }
 
-void psp::splitPath( OString& rPath, OString& rDir, OString& rBase )
-{
-    normPath( rPath );
-    sal_Int32 nIndex = rPath.lastIndexOf( '/' );
-    if( nIndex > 0 )
-        rDir = rPath.copy( 0, nIndex );
-    else if( nIndex == 0 ) // root dir
-        rDir = rPath.copy( 0, 1 );
-    if( rPath.getLength() > nIndex+1 )
-        rBase = rPath.copy( nIndex+1 );
-}
-
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

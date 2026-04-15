@@ -39,16 +39,6 @@
 using namespace psp;
 
 /*
- *  PrintFont implementations
- */
-PrintFontManager::PrintFont::PrintFont()
-:   m_nDirectory(0)
-,   m_nCollectionEntry(0)
-,   m_nVariationEntry(0)
-{
-}
-
-/*
  *  one instance only
  */
 PrintFontManager& PrintFontManager::get()
@@ -64,7 +54,6 @@ PrintFontManager& PrintFontManager::get()
 
 PrintFontManager::PrintFontManager()
     : m_nNextFontID( 1 )
-    , m_nNextDirAtom( 1 )
     , m_aFontInstallerTimer("PrintFontManager m_aFontInstallerTimer")
 {
     m_aFontInstallerTimer.SetInvokeHandler(LINK(this, PrintFontManager, autoInstallFontLangSupport));
@@ -132,56 +121,20 @@ PrintFontManager::~PrintFontManager()
     deinitFontconfig();
 }
 
-OString PrintFontManager::getDirectory( int nAtom ) const
-{
-    std::unordered_map< int, OString >::const_iterator it( m_aAtomToDir.find( nAtom ) );
-    return it != m_aAtomToDir.end() ? it->second : OString();
-}
-
-int PrintFontManager::getDirectoryAtom( const OString& rDirectory )
-{
-    int nAtom = 0;
-    std::unordered_map< OString, int >::const_iterator it
-          ( m_aDirToAtom.find( rDirectory ) );
-    if( it != m_aDirToAtom.end() )
-        nAtom = it->second;
-    else
-    {
-        nAtom = m_nNextDirAtom++;
-        m_aDirToAtom[ rDirectory ] = nAtom;
-        m_aAtomToDir[ nAtom ] = rDirectory;
-    }
-    return nAtom;
-}
-
 std::vector<fontID> PrintFontManager::findFontFileIDs( std::u16string_view rFileUrl ) const
 {
-    rtl_TextEncoding aEncoding = osl_getThreadTextEncoding();
     INetURLObject aPath( rFileUrl );
-    OString aName(OUStringToOString(aPath.GetLastName(INetURLObject::DecodeMechanism::WithCharset, aEncoding), aEncoding));
-    OString aDir( OUStringToOString(
-        INetURLObject::decode( aPath.GetPath(), INetURLObject::DecodeMechanism::WithCharset, aEncoding ), aEncoding ) );
-
-    auto dirIt = m_aDirToAtom.find(aDir);
-    if (dirIt == m_aDirToAtom.end())
-        return {};
-
-    return findFontFileIDs(dirIt->second, aName);
+    OString aFullPath(OUStringToOString(aPath.GetFull(), osl_getThreadTextEncoding()));
+    return findFontFileIDs(aFullPath);
 }
 
 std::vector<fontID> PrintFontManager::addFontFile( std::u16string_view rFileUrl )
 {
-    rtl_TextEncoding aEncoding = osl_getThreadTextEncoding();
     INetURLObject aPath( rFileUrl );
-    OString aName(OUStringToOString(aPath.GetLastName(INetURLObject::DecodeMechanism::WithCharset, aEncoding), aEncoding));
-    OString aDir( OUStringToOString(
-        INetURLObject::decode( aPath.GetPath(), INetURLObject::DecodeMechanism::WithCharset, aEncoding ), aEncoding ) );
-
-    int nDirID = getDirectoryAtom( aDir );
-    std::vector<fontID> aFontIds = findFontFileIDs( nDirID, aName );
+    OString aFullPath = OUStringToOString(aPath.GetFull(), osl_getThreadTextEncoding());
+    std::vector<fontID> aFontIds = findFontFileIDs(aFullPath);
     if( aFontIds.empty() )
     {
-        OString aFullPath = OUStringToOString(aPath.GetFull(), osl_getThreadTextEncoding());
         addFontconfigFile(aFullPath);
 
         std::vector<PrintFont> aNewFonts = fontsFromFontconfigFile(aFullPath);
@@ -189,7 +142,7 @@ std::vector<fontID> PrintFontManager::addFontFile( std::u16string_view rFileUrl 
         {
             fontID nFontId = m_nNextFontID++;
             m_aFonts[nFontId] = std::move(font);
-            m_aFontFileToFontID[ aName ].insert( nFontId );
+            m_aFontFileToFontID[ aFullPath ].insert( nFontId );
             aFontIds.push_back(nFontId);
         }
     }
@@ -200,22 +153,20 @@ void PrintFontManager::removeFontFile(std::u16string_view rFileUrl)
 {
     INetURLObject aPath(rFileUrl);
     rtl_TextEncoding aEncoding = osl_getThreadTextEncoding();
-    if (auto ids = findFontFileIDs(rFileUrl); !ids.empty())
+    OString aFullPath(OUStringToOString(aPath.GetFull(), aEncoding));
+    if (auto ids = findFontFileIDs(aFullPath); !ids.empty())
     {
-        OString aName(OUStringToOString(
-            aPath.GetLastName(INetURLObject::DecodeMechanism::WithCharset, aEncoding), aEncoding));
-
         for (auto nFontID : ids)
         {
             m_aFonts.erase(nFontID);
-            m_aFontFileToFontID[aName].erase(nFontID);
+            m_aFontFileToFontID[aFullPath].erase(nFontID);
         }
     }
 
-    removeFontconfigFile(OUStringToOString(aPath.GetFull(), aEncoding));
+    removeFontconfigFile(aFullPath);
 }
 
-fontID PrintFontManager::findFontFileID(int nDirID, const OString& rFontFile, int nFaceIndex, int nVariationIndex) const
+fontID PrintFontManager::findFontFileID(const OString& rFontFile, int nFaceIndex, int nVariationIndex) const
 {
     fontID nID = 0;
 
@@ -229,8 +180,7 @@ fontID PrintFontManager::findFontFileID(int nDirID, const OString& rFontFile, in
         if( it == m_aFonts.end() )
             continue;
         const PrintFont& rFont = (*it).second;
-        if (rFont.m_nDirectory == nDirID &&
-            rFont.m_aFontFile == rFontFile &&
+        if (rFont.m_aFontFile == rFontFile &&
             rFont.m_nCollectionEntry == nFaceIndex &&
             rFont.m_nVariationEntry == nVariationIndex)
         {
@@ -243,7 +193,7 @@ fontID PrintFontManager::findFontFileID(int nDirID, const OString& rFontFile, in
     return nID;
 }
 
-std::vector<fontID> PrintFontManager::findFontFileIDs( int nDirID, const OString& rFontFile ) const
+std::vector<fontID> PrintFontManager::findFontFileIDs(const OString& rFontFile) const
 {
     std::vector<fontID> aIds;
 
@@ -256,10 +206,7 @@ std::vector<fontID> PrintFontManager::findFontFileIDs( int nDirID, const OString
         auto it = m_aFonts.find(elem);
         if( it == m_aFonts.end() )
             continue;
-        const PrintFont& rFont = (*it).second;
-        if (rFont.m_nDirectory == nDirID &&
-            rFont.m_aFontFile == rFontFile)
-            aIds.push_back(it->first);
+        aIds.push_back(it->first);
     }
 
     return aIds;
@@ -298,14 +245,6 @@ int PrintFontManager::getFontFaceVariation( fontID nFontID ) const
             nRet = 0;
     }
     return nRet;
-}
-
-OString PrintFontManager::getFontFile(const PrintFont& rFont) const
-{
-    std::unordered_map< int, OString >::const_iterator it = m_aAtomToDir.find(rFont.m_nDirectory);
-    assert(it != m_aAtomToDir.end());
-    OString aPath = it->second + "/" + rFont.m_aFontFile;
-    return aPath;
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

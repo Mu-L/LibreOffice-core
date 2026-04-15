@@ -62,12 +62,9 @@ class VCL_PLUGIN_PUBLIC PrintFontManager
     {
         FontAttributes    m_aFontAttributes;
 
-        int               m_nDirectory;       // atom containing system dependent path
-        OString           m_aFontFile;        // relative to directory
-        int               m_nCollectionEntry; // 0 for regular fonts, 0 to ... for fonts stemming from collections
-        int               m_nVariationEntry;  // 0 for regular fonts, 0 to ... for fonts stemming from font variations
-
-        explicit PrintFont();
+        OString           m_aFontFile;        // system dependent path
+        int               m_nCollectionEntry = 0; // 0 for regular fonts, 0 to ... for fonts stemming from collections
+        int               m_nVariationEntry = 0;  // 0 for regular fonts, 0 to ... for fonts stemming from font variations
     };
 
     fontID                                      m_nNextFontID;
@@ -76,25 +73,16 @@ class VCL_PLUGIN_PUBLIC PrintFontManager
     std::unordered_map< OString, o3tl::sorted_vector< fontID > >
                                                 m_aFontFileToFontID;
 
-    std::unordered_map< OString, int >
-    m_aDirToAtom;
-    std::unordered_map< int, OString >          m_aAtomToDir;
-    int                                         m_nNextDirAtom;
-
-    OString getFontFile(const PrintFont& rFont) const;
-
     // finds the font id for the nFaceIndex face in this font file
     // There may be multiple font ids for font collections
-    fontID findFontFileID(int nDirID, const OString& rFile, int nFaceIndex, int nVariationIndex) const;
+    fontID findFontFileID(const OString& rFile, int nFaceIndex, int nVariationIndex) const;
 
     // There may be multiple font ids for font collections
-    std::vector<fontID> findFontFileIDs( int nDirID, const OString& rFile ) const;
+    std::vector<fontID> findFontFileIDs(const OString& rFile) const;
 
     std::optional<PrintFont> fontFromFcPattern(FcPattern* pPattern);
     std::vector<PrintFont> fontsFromFontconfigFile(std::string_view rFilePath);
 
-    OString getDirectory( int nAtom ) const;
-    int getDirectoryAtom( const OString& rDirectory );
 
     /* try to initialize fonts from libfontconfig
 
@@ -153,7 +141,7 @@ public:
     // get a specific fonts system dependent filename
     OString getFontFileSysPath( fontID nFontID ) const
     {
-        return getFontFile( *getFont( nFontID ) );
+        return getFont( nFontID )->m_aFontFile;
     }
 
     // get the ttc face number

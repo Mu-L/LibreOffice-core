@@ -25,7 +25,6 @@
 
 #include <o3tl/lru_map.hxx>
 #include <unx/fontmanager.hxx>
-#include <unx/helper.hxx>
 #include <comphelper/sequence.hxx>
 #include <vcl/dropcache.hxx>
 #include <vcl/svapp.hxx>
@@ -670,13 +669,8 @@ std::optional<PrintFontManager::PrintFont> PrintFontManager::fontFromFcPattern(F
     if( eScalableRes == FcResultMatch && ! scalable )
         return std::nullopt;
 
-    OString aDir, aBase, aOrgPath( reinterpret_cast<char*>(file) );
-    splitPath( aOrgPath, aDir, aBase );
-    int nDirID = getDirectoryAtom( aDir );
-
     PrintFont aFont;
-    aFont.m_nDirectory = nDirID;
-    aFont.m_aFontFile = aBase;
+    aFont.m_aFontFile = reinterpret_cast<char*>(file);
     if (eIndexRes == FcResultMatch)
     {
         aFont.m_nCollectionEntry = GetCollectionIndex(nEntryId);
@@ -1194,10 +1188,8 @@ void PrintFontManager::Substitute(vcl::font::FontSelectPattern &rPattern, OUStri
                 nEntryId = 0;
             if( eFileRes == FcResultMatch )
             {
-                OString aDir, aBase, aOrgPath( reinterpret_cast<char*>(file) );
-                splitPath( aOrgPath, aDir, aBase );
-                int nDirID = getDirectoryAtom( aDir );
-                fontID nFontID = findFontFileID(nDirID, aBase, GetCollectionIndex(nEntryId), GetVariationIndex(nEntryId));
+                OString aOrgPath( reinterpret_cast<char*>(file) );
+                fontID nFontID = findFontFileID(aOrgPath, GetCollectionIndex(nEntryId), GetVariationIndex(nEntryId));
                 auto const* pFont = getFont(nFontID);
                 if (pFont)
                 {
@@ -1453,10 +1445,8 @@ bool PrintFontManager::matchFont(FontAttributes& rDFA, const css::lang::Locale& 
                 nEntryId = 0;
             if( eFileRes == FcResultMatch )
             {
-                OString aDir, aBase, aOrgPath( reinterpret_cast<char*>(file) );
-                splitPath( aOrgPath, aDir, aBase );
-                int nDirID = getDirectoryAtom( aDir );
-                fontID nFontID = findFontFileID(nDirID, aBase,
+                OString aOrgPath( reinterpret_cast<char*>(file) );
+                fontID nFontID = findFontFileID(aOrgPath,
                                               GetCollectionIndex(nEntryId),
                                               GetVariationIndex(nEntryId));
                 auto const* pFont = getFont(nFontID);
