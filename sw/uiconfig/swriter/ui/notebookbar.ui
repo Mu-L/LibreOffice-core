@@ -2463,7 +2463,7 @@
                                 <child>
                                   <object class="GtkToolButton" id="File-NewDoc1">
                                     <property name="visible">True</property>
-                                    <property name="action-name">.uno:NewDoc</property>
+                                    <property name="action-name">.uno:SearchDialog</property>
                                     <property name="use-underline">True</property>
                                   </object>
                                   <packing>
@@ -4504,7 +4504,7 @@
                               <object class="GtkToolButton" id="Home-FocusToFindbar">
                                 <property name="visible">True</property>
                                 <property name="valign">center</property>
-                                <property name="action-name">vnd.sun.star.findbar:FocusToFindbar</property>
+                                <property name="action-name">.uno:SearchDialog</property>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
