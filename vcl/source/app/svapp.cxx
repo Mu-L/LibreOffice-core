@@ -1206,13 +1206,10 @@ static OUString Localize(TranslateId aId, const bool bLocalize)
 
 OUString Application::GetOSVersion()
 {
-    ImplSVData* pSVData = ImplGetSVData();
-    OUString aVersion;
-    if (pSVData && pSVData->mpDefInst)
-        aVersion = pSVData->mpDefInst->getOSVersion();
-    else
-        aVersion = "-";
-    return aVersion;
+    if (SalInstance* pSalInstance = GetSalInstance())
+        return pSalInstance->getOSVersion();
+
+    return u"-"_ustr;
 }
 
 OUString Application::GetHWOSConfInfo(const int bSelection, const bool bLocalize)
