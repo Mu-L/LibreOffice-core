@@ -59,7 +59,6 @@ namespace vcl
 
     typedef struct TTGlobalFontInfo_ {
         bool  microsoftSymbolEncoded = false;  /**< true: MS symbol encoded */
-        sal_uInt32 typeFlags = 0;     /**< type flags (copyright bits)                             */
     } TTGlobalFontInfo;
 
 
@@ -319,6 +318,7 @@ public:
     FontWidth getFontWidth() const;
     FontItalic getFontItalic() const;
     FontPitch getFontPitch() const;
+    sal_uInt32 getTypeFlags() const;
 };
 
 } // namespace vcl

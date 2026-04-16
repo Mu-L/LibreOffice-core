@@ -160,10 +160,6 @@ TTGlobalFontInfo TrueTypeFont::getGlobalFontInfo() const
     if (!aCmap.empty())
         info.microsoftSymbolEncoded = HasMicrosoftSymbolCmap(aCmap.data(), aCmap.size());
 
-    auto aOS2 = getTable(T_OS2);
-    if (aOS2.size() >= 42)
-        info.typeFlags = GetUInt16(aOS2.data(), OS2_fsType_offset);
-
     return info;
 }
 
@@ -188,6 +184,14 @@ static FontWeight ImplWeightToSal( float nWeight )
         return WEIGHT_ULTRABOLD;
     else
         return WEIGHT_BLACK;
+}
+
+sal_uInt32 TrueTypeFont::getTypeFlags() const
+{
+    auto aOS2 = getTable(T_OS2);
+    if (aOS2.size() >= 42)
+        return GetUInt16(aOS2.data(), OS2_fsType_offset);
+    return 0;
 }
 
 FontPitch TrueTypeFont::getFontPitch() const
