@@ -50,7 +50,6 @@ namespace basegfx {
 namespace vcl
 {
 class FileDefinitionWidgetDraw;
-typedef struct TTGlobalFontInfo_ TTGlobalFontInfo;
 }
 
 typedef sal_Unicode sal_Ucs; // TODO: use sal_UCS4 instead of sal_Unicode

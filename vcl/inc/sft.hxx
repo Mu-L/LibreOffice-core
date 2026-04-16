@@ -55,13 +55,6 @@
 namespace vcl
 {
 
-/** Return value of TrueTypeFont::getGlobalFontInfo() */
-
-    typedef struct TTGlobalFontInfo_ {
-        bool  microsoftSymbolEncoded = false;  /**< true: MS symbol encoded */
-    } TTGlobalFontInfo;
-
-
 
 /*
   Some table OS/2 consts
@@ -312,7 +305,6 @@ public:
 
     OUString getFamilyName() const;
     OUString getSubfamilyName() const;
-    TTGlobalFontInfo getGlobalFontInfo() const;
     sal_uInt32 countNonEmptyGlyphs() const;
     FontWeight getFontWeight() const;
     FontWidth getFontWidth() const;

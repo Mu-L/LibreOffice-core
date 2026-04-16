@@ -31,7 +31,6 @@
 #include <hb-ot.h>
 #include <sft.hxx>
 #include <font/TTFStructure.hxx>
-#include <impfontcharmap.hxx>
 #ifdef SYSTEM_LIBFIXMATH
 #include <libfixmath/fix16.hpp>
 #else
@@ -152,16 +151,6 @@ OUString TrueTypeFont::getSubfamilyName() const
     return getName(HB_OT_NAME_ID_FONT_SUBFAMILY);
 }
 
-TTGlobalFontInfo TrueTypeFont::getGlobalFontInfo() const
-{
-    TTGlobalFontInfo info;
-
-    auto aCmap = getTable(T_cmap);
-    if (!aCmap.empty())
-        info.microsoftSymbolEncoded = HasMicrosoftSymbolCmap(aCmap.data(), aCmap.size());
-
-    return info;
-}
 
 
 static FontWeight ImplWeightToSal( float nWeight )
