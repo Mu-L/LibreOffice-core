@@ -810,7 +810,9 @@ void QtBuilder::applyPackingProperties(QObject* pCurrentChild, QObject* pParent,
     if (QGridLayout* pGrid = qobject_cast<QGridLayout*>(pParent))
         applyGridPackingProperties(pWidget, *pGrid, rPackingProperties);
     else
-        SAL_WARN("vcl.qt", "QtBuilder::applyPackingProperties not yet implemented for this case");
+        SAL_WARN("vcl.qt",
+                 "QtBuilder::applyPackingProperties not yet implemented for Widgets of class "
+                     << pWidget->metaObject()->className());
 }
 
 void QtBuilder::applyTabChildProperties(QObject* pParent, const std::vector<OUString>& rIds,
