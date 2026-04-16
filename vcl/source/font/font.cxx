@@ -729,27 +729,7 @@ namespace
             // set weight
             o_rResult.SetWeight( aFont.getFontWeight() );
             // set width
-            if( aInfo.width )
-            {
-                if( aInfo.width <= 50 )
-                    o_rResult.SetAverageFontWidth( WIDTH_ULTRA_CONDENSED );
-                else if( aInfo.width <= 62.5 )
-                    o_rResult.SetAverageFontWidth( WIDTH_EXTRA_CONDENSED );
-                else if( aInfo.width <= 75 )
-                    o_rResult.SetAverageFontWidth( WIDTH_CONDENSED );
-                else if( aInfo.width <= 87.5 )
-                    o_rResult.SetAverageFontWidth( WIDTH_SEMI_CONDENSED );
-                else if( aInfo.width <= 100 )
-                    o_rResult.SetAverageFontWidth( WIDTH_NORMAL );
-                else if( aInfo.width <= 112.5 )
-                    o_rResult.SetAverageFontWidth( WIDTH_SEMI_EXPANDED );
-                else if( aInfo.width <= 125 )
-                    o_rResult.SetAverageFontWidth( WIDTH_EXPANDED );
-                else if( aInfo.width <= 150 )
-                    o_rResult.SetAverageFontWidth( WIDTH_EXTRA_EXPANDED );
-                else
-                    o_rResult.SetAverageFontWidth( WIDTH_ULTRA_EXPANDED );
-            }
+            o_rResult.SetAverageFontWidth( aFont.getFontWidth() );
             // set italic
             o_rResult.SetItalic( (aInfo.italicAngle != 0) ? ITALIC_NORMAL : ITALIC_NONE );
 

@@ -169,7 +169,6 @@ TTGlobalFontInfo TrueTypeFont::getGlobalFontInfo() const
         info.pitch  = GetUInt32(aPost.data(), POST_isFixedPitch_offset);
 
     hb_font_t* pFont = getFont();
-    info.width = hb_style_get_value(pFont, HB_STYLE_TAG_WIDTH);
     info.italicAngle = hb_style_get_value(pFont, HB_STYLE_TAG_SLANT_ANGLE);
 
     return info;
@@ -196,6 +195,28 @@ static FontWeight ImplWeightToSal( float nWeight )
         return WEIGHT_ULTRABOLD;
     else
         return WEIGHT_BLACK;
+}
+
+FontWidth TrueTypeFont::getFontWidth() const
+{
+    float fWidth = hb_style_get_value(getFont(), HB_STYLE_TAG_WIDTH);
+    if (fWidth <= 50)
+        return WIDTH_ULTRA_CONDENSED;
+    if (fWidth <= 62.5)
+        return WIDTH_EXTRA_CONDENSED;
+    if (fWidth <= 75)
+        return WIDTH_CONDENSED;
+    if (fWidth <= 87.5)
+        return WIDTH_SEMI_CONDENSED;
+    if (fWidth <= 100)
+        return WIDTH_NORMAL;
+    if (fWidth <= 112.5)
+        return WIDTH_SEMI_EXPANDED;
+    if (fWidth <= 125)
+        return WIDTH_EXPANDED;
+    if (fWidth <= 150)
+        return WIDTH_EXTRA_EXPANDED;
+    return WIDTH_ULTRA_EXPANDED;
 }
 
 FontWeight TrueTypeFont::getFontWeight() const

@@ -58,7 +58,6 @@ namespace vcl
 /** Return value of TrueTypeFont::getGlobalFontInfo() */
 
     typedef struct TTGlobalFontInfo_ {
-        float width = 0;              /**< width in percentage (e.g. 100 for normal)               */
         int   pitch = 0;              /**< 0: proportional font, otherwise: monospaced             */
         float italicAngle = 0;        /**< in counter-clockwise degrees                            */
         bool  microsoftSymbolEncoded = false;  /**< true: MS symbol encoded */
@@ -319,6 +318,7 @@ public:
     TTGlobalFontInfo getGlobalFontInfo() const;
     sal_uInt32 countNonEmptyGlyphs() const;
     FontWeight getFontWeight() const;
+    FontWidth getFontWidth() const;
 };
 
 } // namespace vcl
