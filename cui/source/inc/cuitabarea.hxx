@@ -567,6 +567,7 @@ class SvxBitmapTabPage : public SfxTabPage
     void CalculateBitmapPresetSize();
     sal_Int32 SearchBitmapList(std::u16string_view rBitmapName);
     sal_Int32 SearchBitmapList(const GraphicObject& rGraphicObject);
+    void UpdateBitmap();
     tools::Long AddBitmap(const GraphicObject& rGraphicObject, const OUString& rName,
                           bool bOnlyForThisDocument = false);
 

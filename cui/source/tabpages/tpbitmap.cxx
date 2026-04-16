@@ -439,7 +439,7 @@ void SvxBitmapTabPage::Reset( const SfxItemSet* rAttrs )
     m_xBitmapLBWin->set_sensitive(true);
     m_xCtlBitmapPreview->set_sensitive(true);
 
-    ModifyBitmapHdl(m_xBitmapLB.get());
+    UpdateBitmap();
 }
 
 std::unique_ptr<SvxBitmapTabPage> SvxBitmapTabPage::Create(weld::Container* pPage,
@@ -474,7 +474,9 @@ void SvxBitmapTabPage::CalculateBitmapPresetSize()
     }
 }
 
-IMPL_LINK_NOARG(SvxBitmapTabPage, ModifyBitmapHdl, ValueSet*, void)
+IMPL_LINK_NOARG(SvxBitmapTabPage, ModifyBitmapHdl, ValueSet*, void) { UpdateBitmap(); }
+
+void SvxBitmapTabPage::UpdateBitmap()
 {
     std::unique_ptr<GraphicObject> pGraphicObject;
     size_t nPos = m_xBitmapLB->GetSelectItemPos();
@@ -530,7 +532,7 @@ IMPL_LINK_NOARG(SvxBitmapTabPage, ModifyBitmapHdl, ValueSet*, void)
     }
     else
     {
-        SAL_WARN("cui.tabpages", "SvxBitmapTabPage::ModifyBitmapHdl(): null pGraphicObject");
+        SAL_WARN("cui.tabpages", "SvxBitmapTabPage::UpdateBitmap(): null pGraphicObject");
     }
 
 }
@@ -603,7 +605,7 @@ IMPL_LINK(SvxBitmapTabPage, ClickDeleteHdl, sal_uInt16, nId, void)
         m_xBitmapLB->SelectItem(nNextId);
         m_aCtlBitmapPreview.Invalidate();
     }
-    ModifyBitmapHdl(m_xBitmapLB.get());
+    UpdateBitmap();
     m_nBitmapListState |= ChangeType::MODIFIED;
 }
 
@@ -848,7 +850,7 @@ tools::Long SvxBitmapTabPage::AddBitmap(const GraphicObject& rGraphicObject, con
     m_xBitmapLB->SelectItem(nHighestId + 1);
     m_nBitmapListState |= ChangeType::MODIFIED;
 
-    ModifyBitmapHdl(m_xBitmapLB.get());
+    UpdateBitmap();
 
     // inform sidebar, etc. that the list of images has changed.
     SfxViewFrame* pViewFrame = SfxViewFrame::Current();
