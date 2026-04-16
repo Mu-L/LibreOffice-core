@@ -2378,8 +2378,12 @@ static void lcl_PDFExportBookmarkHelper(OutputDevice* pDev, ScDocument& rDoc,
                         // to get the target rectangle in pixels.
                         assert(aLocationPixel.GetWidth() != 0 && aLocationPixel.GetHeight() != 0);
 
-                        double fScaleX = double(aLocationPixel.GetWidth()) / aLocationMM.GetWidth();
-                        double fScaleY = double(aLocationPixel.GetHeight()) / aLocationMM.GetHeight();
+                        double fScaleX(0.0);
+                        if (aLocationMM.GetWidth())
+                            fScaleX = double(aLocationPixel.GetWidth()) / aLocationMM.GetWidth();
+                        double fScaleY(0.0);
+                        if (aLocationMM.GetHeight())
+                            fScaleY = double(aLocationPixel.GetHeight()) / aLocationMM.GetHeight();
 
                         tools::Long nX1
                             = aLocationPixel.Left()
