@@ -717,7 +717,6 @@ private:
     sal_uInt16  ColorToPercent_Impl( sal_uInt16 nColor );
     sal_uInt16  PercentToColor_Impl( sal_uInt16 nPercent );
 
-    void ImpColorCountChanged();
     void FillPaletteLB();
 
     DECL_LINK(ClickAddHdl_Impl, weld::Button&, void);

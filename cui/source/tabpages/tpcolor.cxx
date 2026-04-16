@@ -169,14 +169,6 @@ SvxColorTabPage::~SvxColorTabPage()
     m_xValSetColorList.reset();
 }
 
-void SvxColorTabPage::ImpColorCountChanged()
-{
-    if (!m_pColorList.is())
-        return;
-    m_xValSetColorList->SetColCount(SvxColorValueSet::getColumnCount());
-    m_xValSetRecentList->SetColCount(SvxColorValueSet::getColumnCount());
-}
-
 void SvxColorTabPage::FillPaletteLB()
 {
     m_xSelectPalette->clear();
@@ -196,10 +188,7 @@ void SvxColorTabPage::FillPaletteLB()
 void SvxColorTabPage::Construct()
 {
     if (m_pColorList.is())
-    {
         FillPaletteLB();
-        ImpColorCountChanged();
-    }
 }
 
 void SvxColorTabPage::ActivatePage( const SfxItemSet& )
@@ -375,7 +364,6 @@ IMPL_LINK_NOARG(SvxColorTabPage, ClickAddHdl_Impl, weld::Button&, void)
         m_xValSetColorList->SelectItem( nId + 1 );
         m_xBtnDelete->set_sensitive(false);
         m_xBtnDelete->set_tooltip_text( CuiResId(RID_CUISTR_DELETEUSERCOLOR2) );
-        ImpColorCountChanged();
     }
 
     UpdateModified();
