@@ -728,6 +728,7 @@ private:
     DECL_LINK(SelectPaletteLBHdl, weld::ComboBox&, void);
     DECL_LINK( SelectValSetHdl_Impl, ValueSet*, void );
     DECL_LINK( SelectColorModeHdl_Impl, weld::Toggleable&, void );
+    void UpdateToSelectedColor(const NamedColor& rNamedColor);
     void ChangeColor(const NamedColor &rNewColor, bool bUpdatePreset = true);
     void SetColorModel(ColorModel eModel);
     void ChangeColorModel();

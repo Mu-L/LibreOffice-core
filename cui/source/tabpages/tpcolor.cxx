@@ -516,20 +516,23 @@ IMPL_LINK_NOARG(SvxColorTabPage, SelectPaletteLBHdl, weld::ComboBox&, void)
     }
 }
 
+void SvxColorTabPage::UpdateToSelectedColor(const NamedColor& rNamedColor)
+{
+    m_rXFSet.Put(XFillColorItem(OUString(), rNamedColor.m_aColor));
+    m_aCtlPreviewNew.SetAttributes(m_aXFillAttr.GetItemSet());
+    m_aCtlPreviewNew.Invalidate();
+
+    ChangeColor(rNamedColor, false);
+}
+
 IMPL_LINK(SvxColorTabPage, SelectValSetHdl_Impl, ValueSet*, pValSet, void)
 {
     sal_Int32 nPos = pValSet->GetSelectedItemId();
     if( nPos == 0 )
         return;
 
-    Color aColor = pValSet->GetItemColor( nPos );
-
-    m_rXFSet.Put(XFillColorItem(OUString(), aColor));
-    m_aCtlPreviewNew.SetAttributes(m_aXFillAttr.GetItemSet());
-    m_aCtlPreviewNew.Invalidate();
-
     NamedColor aNamedColor;
-    aNamedColor.m_aColor = aColor;
+    aNamedColor.m_aColor = pValSet->GetItemColor(nPos);
 
     if (pValSet == m_xValSetColorList.get() && maPaletteManager.IsThemePaletteSelected())
     {
@@ -542,7 +545,7 @@ IMPL_LINK(SvxColorTabPage, SelectValSetHdl_Impl, ValueSet*, pValSet, void)
         }
     }
 
-    ChangeColor(aNamedColor, false);
+    UpdateToSelectedColor(aNamedColor);
 
     if (pValSet == m_xValSetColorList.get())
     {
