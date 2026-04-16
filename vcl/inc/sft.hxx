@@ -70,19 +70,6 @@ namespace vcl
     };
 #endif /* FW_THIN */
 
-/** Value of the width member of the TTGlobalFontInfo struct */
-    enum WidthClass {
-        FWIDTH_ULTRA_CONDENSED = 1,         /**< 50% of normal                      */
-        FWIDTH_EXTRA_CONDENSED = 2,         /**< 62.5% of normal                    */
-        FWIDTH_CONDENSED = 3,               /**< 75% of normal                      */
-        FWIDTH_SEMI_CONDENSED = 4,          /**< 87.5% of normal                    */
-        FWIDTH_NORMAL = 5,                  /**< Medium, 100%                       */
-        FWIDTH_SEMI_EXPANDED = 6,           /**< 112.5% of normal                   */
-        FWIDTH_EXPANDED = 7,                /**< 125% of normal                     */
-        FWIDTH_EXTRA_EXPANDED = 8,          /**< 150% of normal                     */
-        FWIDTH_ULTRA_EXPANDED = 9           /**< 200% of normal                     */
-    };
-
 /** Return value of TrueTypeFont::getGlobalFontInfo() */
 
     typedef struct TTGlobalFontInfo_ {
@@ -90,7 +77,7 @@ namespace vcl
         OUString   subfamily;         /**< subfamily name                                          */
         sal_uInt16 macStyle = 0;      /**< macstyle bits from 'HEAD' table */
         int   weight = 0;             /**< value of WeightClass or 0 if can't be determined        */
-        int   width = 0;              /**< value of WidthClass or 0 if can't be determined         */
+        float width = 0;              /**< width in percentage (e.g. 100 for normal)               */
         int   pitch = 0;              /**< 0: proportional font, otherwise: monospaced             */
         int   italicAngle = 0;        /**< in counter-clockwise degrees * 65536                    */
         bool  microsoftSymbolEncoded = false;  /**< true: MS symbol encoded */

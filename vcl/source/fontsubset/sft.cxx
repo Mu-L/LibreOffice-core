@@ -160,10 +160,7 @@ TTGlobalFontInfo TrueTypeFont::getGlobalFontInfo() const
 
     auto aOS2 = getTable(T_OS2);
     if (aOS2.size() >= 42)
-    {
-        info.width  = GetUInt16(aOS2.data(), OS2_usWidthClass_offset);
         info.typeFlags = GetUInt16(aOS2.data(), OS2_fsType_offset);
-    }
 
     auto aPost = getTable(T_post);
     if (aPost.size() >= 12 + sizeof(sal_uInt32))
@@ -178,6 +175,7 @@ TTGlobalFontInfo TrueTypeFont::getGlobalFontInfo() const
 
     hb_font_t* pFont = getFont();
     info.weight = hb_style_get_value(pFont, HB_STYLE_TAG_WEIGHT);
+    info.width = hb_style_get_value(pFont, HB_STYLE_TAG_WIDTH);
 
     return info;
 }
