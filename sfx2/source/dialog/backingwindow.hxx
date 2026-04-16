@@ -123,7 +123,6 @@ class BackingWindow : public InterimItemWindow
     void ApplyStyleSettings();
 
 private:
-    long nRand;
     void applyFilter();
 
 public:
