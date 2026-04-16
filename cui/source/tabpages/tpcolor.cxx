@@ -217,9 +217,9 @@ bool SvxColorTabPage::FillItemSet( SfxItemSet* rSet )
     Color aColor = m_xValSetColorList->GetItemColor( m_xValSetColorList->GetSelectedItemId() );
     OUString sColorName;
     if (m_aCurrentColor.m_aColor == aColor)
-       sColorName = m_xValSetColorList->GetItemText( m_xValSetColorList->GetSelectedItemId() );
+        sColorName = m_xValSetColorList->GetItemText(m_xValSetColorList->GetSelectedItemId());
     else
-       sColorName = "#" + m_aCurrentColor.m_aColor.AsRGBHexString().toAsciiUpperCase();
+        sColorName = "#" + m_aCurrentColor.m_aColor.AsRGBHexString().toAsciiUpperCase();
 
     maPaletteManager.AddRecentColor(m_aCurrentColor.m_aColor, sColorName);
     XFillColorItem aColorItem(sColorName, m_aCurrentColor.m_aColor);
