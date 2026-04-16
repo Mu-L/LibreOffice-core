@@ -32,7 +32,7 @@
 #include <font/PhysicalFontFace.hxx>
 #include <font/LogicalFontInstance.hxx>
 #include <font/FontMetricData.hxx>
-#include <sft.hxx>
+#include <font/TrueTypeFont.hxx>
 
 #include <com/sun/star/uno/Sequence.hxx>
 #include <comphelper/sequence.hxx>

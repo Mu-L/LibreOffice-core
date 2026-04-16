@@ -28,7 +28,7 @@
 
 #include <fontattributes.hxx>
 #include <impfontcharmap.hxx>
-#include <sft.hxx>
+#include <font/TrueTypeFont.hxx>
 #include <salgdi.hxx>
 
 #include <font/FontSelectPattern.hxx>

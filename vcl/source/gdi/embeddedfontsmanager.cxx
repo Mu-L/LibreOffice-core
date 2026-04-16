@@ -37,7 +37,7 @@
 #include <font/PhysicalFontFaceCollection.hxx>
 #include <font/PhysicalFontCollection.hxx>
 #include <salgdi.hxx>
-#include <sft.hxx>
+#include <font/TrueTypeFont.hxx>
 #include <tools/stream.hxx>
 
 #include <com/sun/star/beans/StringPair.hpp>

@@ -25,7 +25,7 @@
 
 #include <win/DWriteTextRenderer.hxx>
 
-#include <sft.hxx>
+#include <font/TrueTypeFont.hxx>
 #include <sallayout.hxx>
 
 #include <shlwapi.h>

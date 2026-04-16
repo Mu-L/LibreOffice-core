@@ -61,7 +61,7 @@
 #include <font/PhysicalFontFaceCollection.hxx>
 #include <font/PhysicalFontFace.hxx>
 #include <font/fontsubstitution.hxx>
-#include <sft.hxx>
+#include <font/TrueTypeFont.hxx>
 #include <win/WindowsInstance.hxx>
 #include <win/saldata.hxx>
 #include <win/salgdi.h>

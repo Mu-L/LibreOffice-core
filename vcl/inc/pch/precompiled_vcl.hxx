@@ -301,7 +301,7 @@
 #include <salusereventlist.hxx>
 #include <salvd.hxx>
 #include <salvtables.hxx>
-#include <sft.hxx>
+#include <font/TrueTypeFont.hxx>
 #include <svdata.hxx>
 #include <vcl/accessibility/AccessibleBrowseBoxObjType.hxx>
 #include <vcl/BinaryDataContainer.hxx>

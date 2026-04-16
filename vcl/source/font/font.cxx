@@ -34,7 +34,7 @@
 #include <impfont.hxx>
 #include <fontattributes.hxx>
 #include <fontsubset.hxx>
-#include <sft.hxx>
+#include <font/TrueTypeFont.hxx>
 
 #include <algorithm>
 #include <string_view>

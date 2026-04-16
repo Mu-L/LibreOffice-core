@@ -29,7 +29,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <hb-ot.h>
-#include <sft.hxx>
+#include <font/TrueTypeFont.hxx>
 #include <font/TTFStructure.hxx>
 #ifdef SYSTEM_LIBFIXMATH
 #include <libfixmath/fix16.hpp>
