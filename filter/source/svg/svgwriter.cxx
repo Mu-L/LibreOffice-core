@@ -3004,8 +3004,13 @@ void SVGActionWriter::ImplWriteBmp( const Bitmap& rBmp,
         Size  aSize;
         ImplMap( rSz, aSize );
 
-        double fFractionX = double(aSize.Width()) / rSourceRect.GetWidth();
-        double fFractionY = double(aSize.Height()) / rSourceRect.GetHeight();
+        double fFractionX(0.0);
+        if (rSourceRect.GetWidth())
+            fFractionX = double(aSize.Width()) / rSourceRect.GetWidth();
+
+        double fFractionY(0.0);
+        if (rSourceRect.GetHeight())
+            fFractionY = double(aSize.Height()) / rSourceRect.GetHeight();
         double scaleX = rtl_math_round( fFractionX, 3, rtl_math_RoundingMode::rtl_math_RoundingMode_Corrected );
         double scaleY = rtl_math_round( fFractionY, 3, rtl_math_RoundingMode::rtl_math_RoundingMode_Corrected );
         if( !rtl_math_approxEqual( scaleX, 1.0 ) || !rtl_math_approxEqual( scaleY, 1.0 ) )
