@@ -334,7 +334,9 @@ constexpr int GLYF_yMax_offset = 8;
 class UNLESS_MERGELIBS(VCL_DLLPUBLIC) TrueTypeFont
 {
     hb_face_t* m_pFace = nullptr;
+    mutable hb_font_t* m_pFont = nullptr;
 
+    hb_font_t* getFont() const;
     font::RawFontData getTable(hb_tag_t tag) const;
 
 public:

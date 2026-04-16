@@ -41,12 +41,9 @@
 #include <rtl/crc.h>
 #include <rtl/ustring.hxx>
 #include <rtl/ustrbuf.hxx>
-#include <sal/log.hxx>
 #include <tools/stream.hxx>
 #include <o3tl/safeint.hxx>
-#include <o3tl/string_view.hxx>
 #include <osl/endian.h>
-#include <osl/thread.h>
 #include <unotools/tempfile.hxx>
 #include <fontsubset.hxx>
 
@@ -101,6 +98,14 @@ TrueTypeFont::TrueTypeFont(const void* pBuffer, sal_uInt32 nLen, sal_uInt32 face
 TrueTypeFont::~TrueTypeFont()
 {
     hb_face_destroy(m_pFace);
+    hb_font_destroy(m_pFont);
+}
+
+hb_font_t* TrueTypeFont::getFont() const
+{
+    if (!m_pFont)
+        m_pFont = hb_font_create(m_pFace);
+    return m_pFont;
 }
 
 font::RawFontData TrueTypeFont::getTable(hb_tag_t tag) const
@@ -110,7 +115,7 @@ font::RawFontData TrueTypeFont::getTable(hb_tag_t tag) const
 
 sal_uInt32 TrueTypeFont::countNonEmptyGlyphs() const
 {
-    hb_font_t* pFont = hb_font_create(m_pFace);
+    hb_font_t* pFont = getFont();
     sal_uInt32 nGlyphs = hb_face_get_glyph_count(m_pFace);
     sal_uInt32 nCount = 0;
     for (sal_uInt32 i = 0; i < nGlyphs; ++i)
@@ -120,7 +125,6 @@ sal_uInt32 TrueTypeFont::countNonEmptyGlyphs() const
             && (aExtents.width || aExtents.height))
             ++nCount;
     }
-    hb_font_destroy(pFont);
     return nCount;
 }
 
@@ -157,7 +161,6 @@ TTGlobalFontInfo TrueTypeFont::getGlobalFontInfo() const
     auto aOS2 = getTable(T_OS2);
     if (aOS2.size() >= 42)
     {
-        info.weight = GetUInt16(aOS2.data(), OS2_usWeightClass_offset);
         info.width  = GetUInt16(aOS2.data(), OS2_usWidthClass_offset);
         info.typeFlags = GetUInt16(aOS2.data(), OS2_fsType_offset);
     }
@@ -173,28 +176,30 @@ TTGlobalFontInfo TrueTypeFont::getGlobalFontInfo() const
     if (aHead.size() >= 46)
         info.macStyle = GetUInt16(aHead.data(), HEAD_macStyle_offset);
 
+    hb_font_t* pFont = getFont();
+    info.weight = hb_style_get_value(pFont, HB_STYLE_TAG_WEIGHT);
+
     return info;
 }
 
 
-
-static FontWeight ImplWeightToSal( int nWeight )
+static FontWeight ImplWeightToSal( float nWeight )
 {
-    if ( nWeight <= FW_THIN )
+    if ( nWeight <= 100 )
         return WEIGHT_THIN;
-    else if ( nWeight <= FW_EXTRALIGHT )
+    else if ( nWeight <= 200 )
         return WEIGHT_ULTRALIGHT;
-    else if ( nWeight <= FW_LIGHT )
+    else if ( nWeight <= 300 )
         return WEIGHT_LIGHT;
-    else if ( nWeight < FW_MEDIUM )
+    else if ( nWeight < 500 )
         return WEIGHT_NORMAL;
-    else if ( nWeight == FW_MEDIUM )
+    else if ( nWeight == 500 )
         return WEIGHT_MEDIUM;
-    else if ( nWeight <= FW_SEMIBOLD )
+    else if ( nWeight <= 600 )
         return WEIGHT_SEMIBOLD;
-    else if ( nWeight <= FW_BOLD )
+    else if ( nWeight <= 700 )
         return WEIGHT_BOLD;
-    else if ( nWeight <= FW_EXTRABOLD )
+    else if ( nWeight <= 800 )
         return WEIGHT_ULTRABOLD;
     else
         return WEIGHT_BLACK;
@@ -202,45 +207,7 @@ static FontWeight ImplWeightToSal( int nWeight )
 
 FontWeight TrueTypeFont::analyzeFontWeight() const
 {
-    if (!isValid())
-        return WEIGHT_DONTKNOW;
-
-    auto aOS2 = getTable(T_OS2);
-    if (aOS2.size() >= 42)
-    {
-        sal_uInt16 weightOS2 = GetUInt16(aOS2.data(), OS2_usWeightClass_offset);
-        return ImplWeightToSal(weightOS2);
-    }
-
-    // Fallback to inferring from the style name (name ID 2).
-    OUString sStyle = getName(HB_OT_NAME_ID_FONT_SUBFAMILY);
-
-    bool bBold(false), bItalic(false);
-    if (o3tl::equalsIgnoreAsciiCase(sStyle, u"Regular"))
-    {
-        bBold = false;
-        bItalic = false;
-    }
-    else if (o3tl::equalsIgnoreAsciiCase(sStyle, u"Bold"))
-        bBold = true;
-    else if (o3tl::equalsIgnoreAsciiCase(sStyle, u"Bold Italic"))
-    {
-        bBold = true;
-        bItalic = true;
-    }
-    else if (o3tl::equalsIgnoreAsciiCase(sStyle, u"Italic"))
-    {
-        bItalic = true;
-    }
-    else
-    {
-        SAL_WARN("vcl.fonts", "Unhandled font style: " << sStyle);
-    }
-
-    (void)bItalic; // we might need to use this in a similar scenario where
-                   // italic cannot be found
-
-    return bBold ? WEIGHT_BOLD : WEIGHT_NORMAL;
+    return ImplWeightToSal(hb_style_get_value(getFont(), HB_STYLE_TAG_WEIGHT));
 }
 
 } // namespace vcl
