@@ -153,28 +153,6 @@ OUString TrueTypeFont::getSubfamilyName() const
 
 
 
-static FontWeight ImplWeightToSal( float nWeight )
-{
-    if ( nWeight <= 100 )
-        return WEIGHT_THIN;
-    else if ( nWeight <= 200 )
-        return WEIGHT_ULTRALIGHT;
-    else if ( nWeight <= 300 )
-        return WEIGHT_LIGHT;
-    else if ( nWeight < 500 )
-        return WEIGHT_NORMAL;
-    else if ( nWeight == 500 )
-        return WEIGHT_MEDIUM;
-    else if ( nWeight <= 600 )
-        return WEIGHT_SEMIBOLD;
-    else if ( nWeight <= 700 )
-        return WEIGHT_BOLD;
-    else if ( nWeight <= 800 )
-        return WEIGHT_ULTRABOLD;
-    else
-        return WEIGHT_BLACK;
-}
-
 sal_uInt32 TrueTypeFont::getTypeFlags() const
 {
     auto aOS2 = getTable(T_OS2);
@@ -221,7 +199,24 @@ FontWidth TrueTypeFont::getFontWidth() const
 
 FontWeight TrueTypeFont::getFontWeight() const
 {
-    return ImplWeightToSal(hb_style_get_value(getFont(), HB_STYLE_TAG_WEIGHT));
+    float fWeight = hb_style_get_value(getFont(), HB_STYLE_TAG_WEIGHT);
+    if (fWeight <= 100)
+        return WEIGHT_THIN;
+    if (fWeight <= 200)
+        return WEIGHT_ULTRALIGHT;
+    if (fWeight <= 300)
+        return WEIGHT_LIGHT;
+    if (fWeight < 500)
+        return WEIGHT_NORMAL;
+    if (fWeight == 500)
+        return WEIGHT_MEDIUM;
+    if (fWeight <= 600)
+        return WEIGHT_SEMIBOLD;
+    if (fWeight <= 700)
+        return WEIGHT_BOLD;
+    if (fWeight <= 800)
+        return WEIGHT_ULTRABOLD;
+    return WEIGHT_BLACK;
 }
 
 } // namespace vcl
