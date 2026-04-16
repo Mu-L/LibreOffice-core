@@ -164,10 +164,6 @@ TTGlobalFontInfo TrueTypeFont::getGlobalFontInfo() const
     if (aOS2.size() >= 42)
         info.typeFlags = GetUInt16(aOS2.data(), OS2_fsType_offset);
 
-    auto aPost = getTable(T_post);
-    if (aPost.size() >= 12 + sizeof(sal_uInt32))
-        info.pitch  = GetUInt32(aPost.data(), POST_isFixedPitch_offset);
-
     return info;
 }
 
@@ -192,6 +188,14 @@ static FontWeight ImplWeightToSal( float nWeight )
         return WEIGHT_ULTRABOLD;
     else
         return WEIGHT_BLACK;
+}
+
+FontPitch TrueTypeFont::getFontPitch() const
+{
+    auto aPost = getTable(T_post);
+    if (aPost.size() >= 12 + sizeof(sal_uInt32))
+        return GetUInt32(aPost.data(), POST_isFixedPitch_offset) ? PITCH_FIXED : PITCH_VARIABLE;
+    return PITCH_VARIABLE;
 }
 
 FontItalic TrueTypeFont::getFontItalic() const

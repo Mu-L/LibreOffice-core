@@ -721,7 +721,6 @@ namespace
         TrueTypeFont aFont(i_pBuffer, i_nSize, 0);
         if( aFont.isValid() )
         {
-            TTGlobalFontInfo aInfo = aFont.getGlobalFontInfo();
             // most importantly: the family name
             OUString aFamily = aFont.getFamilyName();
             if( !aFamily.isEmpty() )
@@ -734,7 +733,7 @@ namespace
             o_rResult.SetItalic( aFont.getFontItalic() );
 
             // set pitch
-            o_rResult.SetPitch( (aInfo.pitch == 0) ? PITCH_VARIABLE : PITCH_FIXED );
+            o_rResult.SetPitch( aFont.getFontPitch() );
 
             // set style name
             OUString aSubfamily = aFont.getSubfamilyName();
