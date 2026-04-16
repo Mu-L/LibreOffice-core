@@ -436,7 +436,10 @@ void SvxBitmapTabPage::Reset( const SfxItemSet* rAttrs )
         }
     }
 
-    ClickBitmapHdl_Impl();
+    m_xBitmapLBWin->set_sensitive(true);
+    m_xCtlBitmapPreview->set_sensitive(true);
+
+    ModifyBitmapHdl(m_xBitmapLB.get());
 }
 
 std::unique_ptr<SvxBitmapTabPage> SvxBitmapTabPage::Create(weld::Container* pPage,
@@ -444,14 +447,6 @@ std::unique_ptr<SvxBitmapTabPage> SvxBitmapTabPage::Create(weld::Container* pPag
                                                            const SfxItemSet& rAttrs)
 {
     return std::make_unique<SvxBitmapTabPage>(pPage, pController, rAttrs);
-}
-
-void SvxBitmapTabPage::ClickBitmapHdl_Impl()
-{
-    m_xBitmapLBWin->set_sensitive(true);
-    m_xCtlBitmapPreview->set_sensitive(true);
-
-    ModifyBitmapHdl(m_xBitmapLB.get());
 }
 
 void SvxBitmapTabPage::CalculateBitmapPresetSize()
