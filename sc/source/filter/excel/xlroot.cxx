@@ -388,7 +388,7 @@ ScHeaderEditEngine& XclRoot::GetHFEditEngine() const
 
         // set Calc header/footer defaults
         SfxItemSet aEditSet( rEE.GetEmptyItemSet() );
-        SfxItemSetFixed<ATTR_PATTERN_START, ATTR_PATTERN_END> aItemSet( *GetDoc().GetPool() );
+        SfxItemSet aItemSet(SfxItemSet::makeFixedSfxItemSet<ATTR_PATTERN_START, ATTR_PATTERN_END>( *GetDoc().GetPool() ));
         ScPatternAttr::FillToEditItemSet( aEditSet, aItemSet );
         // FillToEditItemSet() adjusts font height to 1/100th mm, we need twips
         aEditSet.Put( aItemSet.Get( ATTR_FONT_HEIGHT ).CloneSetWhich(EE_CHAR_FONTHEIGHT) );

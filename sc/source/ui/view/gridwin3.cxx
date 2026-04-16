@@ -390,7 +390,7 @@ void ScGridWindow::UpdateStatusPosSize()
     if (!pPV)
         return; // shouldn't be called in that case either
 
-    SfxItemSetFixed<SID_ATTR_POSITION, SID_ATTR_SIZE> aSet(mrViewData.GetViewShell()->GetPool());
+    SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<SID_ATTR_POSITION, SID_ATTR_SIZE>(mrViewData.GetViewShell()->GetPool()));
 
     //  Fill items for position and size:
     //  show action rectangle during action,

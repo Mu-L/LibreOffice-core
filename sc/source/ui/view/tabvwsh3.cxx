@@ -1126,7 +1126,7 @@ void ScTabViewShell::Execute( SfxRequest& rReq )
                 }
                 else
                 {
-                    SfxItemSetFixed<SID_ATTR_ZOOM, SID_ATTR_ZOOM> aSet( GetPool() );
+                    SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<SID_ATTR_ZOOM, SID_ATTR_ZOOM>( GetPool() ));
                     SvxZoomItem     aZoomItem( eOldZoomType, nOldZoom, SID_ATTR_ZOOM );
                     ScopedVclPtr<AbstractSvxZoomDialog> pDlg;
                     ScMarkData&     rMark = GetViewData().GetMarkData();

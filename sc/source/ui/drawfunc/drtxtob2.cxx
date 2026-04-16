@@ -82,7 +82,7 @@ void ScDrawTextObjectBar::ExecuteGlobal( SfxRequest &rReq )
         case SID_TEXTDIRECTION_LEFT_TO_RIGHT:
         case SID_TEXTDIRECTION_TOP_TO_BOTTOM:
             {
-                SfxItemSetFixed<SDRATTR_TEXTDIRECTION, SDRATTR_TEXTDIRECTION> aAttr(pView->GetModel().GetItemPool());
+                SfxItemSet aAttr(SfxItemSet::makeFixedSfxItemSet<SDRATTR_TEXTDIRECTION, SDRATTR_TEXTDIRECTION>(pView->GetModel().GetItemPool()));
                 aAttr.Put( SvxWritingModeItem(
                     nSlot == SID_TEXTDIRECTION_LEFT_TO_RIGHT ?
                         css::text::WritingMode_LR_TB : css::text::WritingMode_TB_RL,
@@ -98,7 +98,7 @@ void ScDrawTextObjectBar::ExecuteGlobal( SfxRequest &rReq )
                 const SfxBoolItem* pItem = rReq.GetArg<SfxBoolItem>(SID_ENABLE_HYPHENATION);
                 if( pItem )
                 {
-                    SfxItemSetFixed<EE_PARA_HYPHENATE, EE_PARA_HYPHENATE> aSet( GetPool() );
+                    SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<EE_PARA_HYPHENATE, EE_PARA_HYPHENATE>( GetPool() ));
                     bool bValue = pItem->GetValue();
                     aSet.Put( SfxBoolItem( EE_PARA_HYPHENATE, bValue ) );
                     pView->SetAttributes( aSet );

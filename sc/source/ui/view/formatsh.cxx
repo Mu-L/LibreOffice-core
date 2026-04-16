@@ -493,7 +493,7 @@ void ScFormatShell::ExecuteNumFormat( SfxRequest& rReq )
                     const SfxItemSet& rOldSet =
                         pTabViewShell->GetSelectionPattern()->GetItemSet();
                     SfxItemPool* pDocPool = GetViewData().GetDocument().GetPool();
-                    SfxItemSetFixed<ATTR_PATTERN_START, ATTR_PATTERN_END> aNewSet( *pDocPool );
+                    SfxItemSet aNewSet(SfxItemSet::makeFixedSfxItemSet<ATTR_PATTERN_START, ATTR_PATTERN_END>( *pDocPool ));
                     aNewSet.Put( *pItem );
                     pTabViewShell->ApplyAttributes( aNewSet, rOldSet );
                 }
@@ -1166,8 +1166,8 @@ void ScFormatShell::ExecuteAttr( SfxRequest& rReq )
                 {
                     ::editeng::SvxBorderLine*          pDefLine = pTabViewShell->GetDefaultFrameLine();
                     const ScPatternAttr*    pOldAttrs = pTabViewShell->GetSelectionPattern();
-                    SfxItemSetFixed<ATTR_PATTERN_START, ATTR_PATTERN_END> aOldSet( *rDoc.GetPool() );
-                    SfxItemSetFixed<ATTR_PATTERN_START, ATTR_PATTERN_END> aNewSet( *rDoc.GetPool() );
+                    SfxItemSet aOldSet(SfxItemSet::makeFixedSfxItemSet<ATTR_PATTERN_START, ATTR_PATTERN_END>( *rDoc.GetPool() ));
+                    SfxItemSet aNewSet(SfxItemSet::makeFixedSfxItemSet<ATTR_PATTERN_START, ATTR_PATTERN_END>( *rDoc.GetPool() ));
                     const SfxPoolItem& rBorderAttr = pOldAttrs->GetItemSet().Get(ATTR_BORDER);
 
                     // Evaluate border items from controller:

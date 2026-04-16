@@ -822,7 +822,7 @@ void ScDrawTextObjectBar::ExecuteAttr( SfxRequest &rReq )
                 if ( pOutView )
                     pOutView->DrawText_ToEditView( tools::Rectangle() );
 
-                SfxItemSetFixed<EE_ITEMS_START, EE_ITEMS_END> aEmptyAttr( *aEditAttr.GetPool() );
+                SfxItemSet aEmptyAttr(SfxItemSet::makeFixedSfxItemSet<EE_ITEMS_START, EE_ITEMS_END>( *aEditAttr.GetPool() ));
                 SfxItemSetFixed<SDRATTR_TEXT_MINFRAMEHEIGHT, SDRATTR_TEXT_MINFRAMEHEIGHT,
                                 SDRATTR_TEXT_MAXFRAMEHEIGHT, SDRATTR_TEXT_MAXFRAMEWIDTH> aSizeAttr(*aEditAttr.GetPool());
 
@@ -987,7 +987,7 @@ void ScDrawTextObjectBar::ExecuteAttr( SfxRequest &rReq )
         sal_uInt16 nId = SID_ATTR_PARA_LRSPACE;
         const SvxLRSpaceItem& rItem = static_cast<const SvxLRSpaceItem&>(
             pArgs->Get( nId ));
-        SfxItemSetFixed<EE_PARA_LRSPACE, EE_PARA_LRSPACE> aAttr( GetPool() );
+        SfxItemSet aAttr(SfxItemSet::makeFixedSfxItemSet<EE_PARA_LRSPACE, EE_PARA_LRSPACE>( GetPool() ));
         nId = EE_PARA_LRSPACE;
         SvxLRSpaceItem aLRSpaceItem(rItem.GetLeft(), rItem.GetRight(),
                                     rItem.GetTextFirstLineOffset(), nId);
@@ -998,7 +998,7 @@ void ScDrawTextObjectBar::ExecuteAttr( SfxRequest &rReq )
     {
         SvxLineSpacingItem aLineSpaceItem = static_cast<const SvxLineSpacingItem&>(pArgs->Get(
                                                             GetPool().GetWhichIDFromSlotID(nSlot)));
-        SfxItemSetFixed<EE_PARA_SBL, EE_PARA_SBL> aAttr( GetPool() );
+        SfxItemSet aAttr(SfxItemSet::makeFixedSfxItemSet<EE_PARA_SBL, EE_PARA_SBL>( GetPool() ));
         aAttr.Put( aLineSpaceItem );
         pView->SetAttributes( aAttr );
     }
@@ -1006,7 +1006,7 @@ void ScDrawTextObjectBar::ExecuteAttr( SfxRequest &rReq )
     {
         SvxULSpaceItem aULSpaceItem = static_cast<const SvxULSpaceItem&>(pArgs->Get(
                                                             GetPool().GetWhichIDFromSlotID(nSlot)));
-        SfxItemSetFixed<EE_PARA_ULSPACE, EE_PARA_ULSPACE> aAttr( GetPool() );
+        SfxItemSet aAttr(SfxItemSet::makeFixedSfxItemSet<EE_PARA_ULSPACE, EE_PARA_ULSPACE>( GetPool() ));
         aULSpaceItem.SetWhich(EE_PARA_ULSPACE);
         aAttr.Put( aULSpaceItem );
         pView->SetAttributes( aAttr );

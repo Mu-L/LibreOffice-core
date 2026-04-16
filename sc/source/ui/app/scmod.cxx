@@ -375,7 +375,7 @@ void ScModule::Execute( SfxRequest& rReq )
                         bSet = !ScModule::GetAutoSpellProperty();
                 }
 
-                SfxItemSetFixed<SID_AUTOSPELL_CHECK, SID_AUTOSPELL_CHECK> aSet( GetPool() );
+                SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<SID_AUTOSPELL_CHECK, SID_AUTOSPELL_CHECK>( GetPool() ));
                 aSet.Put( SfxBoolItem( SID_AUTOSPELL_CHECK, bSet ) );
                 ModifyOptions( aSet );
                 rReq.Done();
