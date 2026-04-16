@@ -147,11 +147,14 @@ OUString TrueTypeFont::getFamilyName() const
     return sFamily;
 }
 
+OUString TrueTypeFont::getSubfamilyName() const
+{
+    return getName(HB_OT_NAME_ID_FONT_SUBFAMILY);
+}
+
 TTGlobalFontInfo TrueTypeFont::getGlobalFontInfo() const
 {
     TTGlobalFontInfo info;
-
-    info.subfamily = getName(HB_OT_NAME_ID_FONT_SUBFAMILY);
 
     auto aCmap = getTable(T_cmap);
     if (!aCmap.empty())

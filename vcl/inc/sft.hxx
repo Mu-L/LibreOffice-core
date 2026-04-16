@@ -73,7 +73,6 @@ namespace vcl
 /** Return value of TrueTypeFont::getGlobalFontInfo() */
 
     typedef struct TTGlobalFontInfo_ {
-        OUString   subfamily;         /**< subfamily name                                          */
         sal_uInt16 macStyle = 0;      /**< macstyle bits from 'HEAD' table */
         int   weight = 0;             /**< value of WeightClass or 0 if can't be determined        */
         float width = 0;              /**< width in percentage (e.g. 100 for normal)               */
@@ -324,6 +323,7 @@ class UNLESS_MERGELIBS(VCL_DLLPUBLIC) TrueTypeFont
 
     hb_font_t* getFont() const;
     font::RawFontData getTable(hb_tag_t tag) const;
+    OUString getName(hb_ot_name_id_t nNameID, const LanguageTag& rLang = LanguageTag(LANGUAGE_DONTKNOW)) const;
 
 public:
     TrueTypeFont(const void* pBuffer, sal_uInt32 nLen, sal_uInt32 facenum);
@@ -331,9 +331,8 @@ public:
 
     bool isValid() const { return m_pFace != hb_face_get_empty(); }
 
-    OUString getName(hb_ot_name_id_t nNameID, const LanguageTag& rLang = LanguageTag(LANGUAGE_DONTKNOW)) const;
-
     OUString getFamilyName() const;
+    OUString getSubfamilyName() const;
     TTGlobalFontInfo getGlobalFontInfo() const;
     sal_uInt32 countNonEmptyGlyphs() const;
     FontWeight analyzeFontWeight() const;

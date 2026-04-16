@@ -779,8 +779,9 @@ namespace
             o_rResult.SetPitch( (aInfo.pitch == 0) ? PITCH_VARIABLE : PITCH_FIXED );
 
             // set style name
-            if( !aInfo.subfamily.isEmpty() )
-                o_rResult.SetStyleName( aInfo.subfamily );
+            OUString aSubfamily = aFont.getSubfamilyName();
+            if( !aSubfamily.isEmpty() )
+                o_rResult.SetStyleName( aSubfamily );
 
             bResult = true;
         }
