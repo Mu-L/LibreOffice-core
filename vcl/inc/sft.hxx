@@ -341,7 +341,7 @@ public:
     TrueTypeFont(const void* pBuffer, sal_uInt32 nLen, sal_uInt32 facenum);
     ~TrueTypeFont();
 
-    bool isValid() const { return m_pFace != nullptr; }
+    bool isValid() const { return m_pFace != hb_face_get_empty(); }
 
     OUString getName(hb_ot_name_id_t nNameID, const LanguageTag& rLang = LanguageTag(LANGUAGE_DONTKNOW)) const;
 

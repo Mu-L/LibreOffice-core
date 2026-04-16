@@ -94,27 +94,22 @@ TrueTypeFont::TrueTypeFont(const void* pBuffer, sal_uInt32 nLen, sal_uInt32 face
 {
     hb_blob_t* pBlob = hb_blob_create(static_cast<const char*>(pBuffer), nLen,
                                        HB_MEMORY_MODE_READONLY, nullptr, nullptr);
-    m_pFace = hb_face_create_or_fail(pBlob, facenum);
+    m_pFace = hb_face_create(pBlob, facenum);
     hb_blob_destroy(pBlob);
 }
 
 TrueTypeFont::~TrueTypeFont()
 {
-    if (m_pFace)
-        hb_face_destroy(m_pFace);
+    hb_face_destroy(m_pFace);
 }
 
 font::RawFontData TrueTypeFont::getTable(hb_tag_t tag) const
 {
-    if (!m_pFace)
-        return font::RawFontData();
     return font::RawFontData(hb_face_reference_table(m_pFace, tag));
 }
 
 sal_uInt32 TrueTypeFont::countNonEmptyGlyphs() const
 {
-    if (!m_pFace)
-        return 0;
     hb_font_t* pFont = hb_font_create(m_pFace);
     sal_uInt32 nGlyphs = hb_face_get_glyph_count(m_pFace);
     sal_uInt32 nCount = 0;
@@ -131,8 +126,6 @@ sal_uInt32 TrueTypeFont::countNonEmptyGlyphs() const
 
 OUString TrueTypeFont::getName(hb_ot_name_id_t nNameID, const LanguageTag& rLang) const
 {
-    if (!m_pFace)
-        return OUString();
     hb_language_t aHbLang = HB_LANGUAGE_INVALID;
     if (rLang.getLanguageType() != LANGUAGE_DONTKNOW)
     {
@@ -209,7 +202,7 @@ static FontWeight ImplWeightToSal( int nWeight )
 
 FontWeight TrueTypeFont::analyzeFontWeight() const
 {
-    if (!m_pFace)
+    if (!isValid())
         return WEIGHT_DONTKNOW;
 
     auto aOS2 = getTable(T_OS2);
