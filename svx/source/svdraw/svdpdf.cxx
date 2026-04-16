@@ -466,13 +466,13 @@ void ImpSdrPdfImport::SetupPageScale(const double dPageWidth, const double dPage
     maScaleX = 1.0;
     maScaleY = 1.0;
 
-    if (aPageSize.Width() != aScaleRectSize.Width())
+    if (aPageSize.Width() && aPageSize.Width() != aScaleRectSize.Width())
     {
         maScaleX = double(aScaleRectSize.Width()) / aPageSize.Width();
         mbSize = true;
     }
 
-    if (aPageSize.Height() != aScaleRectSize.Height())
+    if (aPageSize.Height() && aPageSize.Height() != aScaleRectSize.Height())
     {
         maScaleY = double(aScaleRectSize.Height()) / aPageSize.Height();
         mbSize = true;
