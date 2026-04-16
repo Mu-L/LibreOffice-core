@@ -106,9 +106,8 @@ SvxColorTabPage::SvxColorTabPage(weld::Container* pPage, weld::DialogController*
 
     // set handler
     m_xSelectPalette->connect_changed(LINK(this, SvxColorTabPage, SelectPaletteLBHdl));
-    Link<ValueSet*, void> aValSelectLink = LINK(this, SvxColorTabPage, SelectValSetHdl_Impl);
-    m_xValSetColorList->SetSelectHdl(aValSelectLink);
-    m_xValSetRecentList->SetSelectHdl(aValSelectLink);
+    m_xValSetColorList->SetSelectHdl(LINK(this, SvxColorTabPage, SelectColorValSetHdl_Impl));
+    m_xValSetRecentList->SetSelectHdl(LINK(this, SvxColorTabPage, SelectRecentValSetHdl_Impl));
 
     Link<weld::SpinButton&,void> aSpinLink = LINK(this, SvxColorTabPage, SpinValueHdl_Impl);
     m_xRcustom->connect_value_changed(aSpinLink);
@@ -213,7 +212,7 @@ void SvxColorTabPage::ActivatePage( const SfxItemSet& )
     m_aCtlPreviewOld.SetAttributes(m_aXFillAttr.GetItemSet());
     m_aCtlPreviewOld.Invalidate();
 
-    SelectValSetHdl_Impl(m_xValSetColorList.get());
+    SelectColorValSetHdl_Impl(m_xValSetColorList.get());
 }
 
 DeactivateRC SvxColorTabPage::DeactivatePage( SfxItemSet* _pSet )
@@ -429,7 +428,7 @@ IMPL_LINK_NOARG(SvxColorTabPage, ClickDeleteHdl_Impl, weld::Button&, void)
     {
         nId = m_xValSetColorList->GetItemId(0);
         m_xValSetColorList->SelectItem(nId);
-        SelectValSetHdl_Impl(m_xValSetColorList.get());
+        SelectColorValSetHdl_Impl(m_xValSetColorList.get());
     }
     else
     {
@@ -525,16 +524,16 @@ void SvxColorTabPage::UpdateToSelectedColor(const NamedColor& rNamedColor)
     ChangeColor(rNamedColor, false);
 }
 
-IMPL_LINK(SvxColorTabPage, SelectValSetHdl_Impl, ValueSet*, pValSet, void)
+IMPL_LINK_NOARG(SvxColorTabPage, SelectColorValSetHdl_Impl, ValueSet*, void)
 {
-    sal_Int32 nPos = pValSet->GetSelectedItemId();
+    sal_Int32 nPos = m_xValSetColorList->GetSelectedItemId();
     if( nPos == 0 )
         return;
 
     NamedColor aNamedColor;
-    aNamedColor.m_aColor = pValSet->GetItemColor(nPos);
+    aNamedColor.m_aColor = m_xValSetColorList->GetItemColor(nPos);
 
-    if (pValSet == m_xValSetColorList.get() && maPaletteManager.IsThemePaletteSelected())
+    if (maPaletteManager.IsThemePaletteSelected())
     {
         sal_uInt16 nThemeIndex;
         sal_uInt16 nEffectIndex;
@@ -547,26 +546,33 @@ IMPL_LINK(SvxColorTabPage, SelectValSetHdl_Impl, ValueSet*, pValSet, void)
 
     UpdateToSelectedColor(aNamedColor);
 
-    if (pValSet == m_xValSetColorList.get())
+    m_xValSetRecentList->SetNoSelection();
+    if (m_xSelectPalette->get_active() == 0 && m_xValSetColorList->GetSelectedItemId() != 0)
     {
-        m_xValSetRecentList->SetNoSelection();
-        if (m_xSelectPalette->get_active() == 0 && m_xValSetColorList->GetSelectedItemId() != 0)
-        {
-            m_xBtnDelete->set_sensitive(true);
-            m_xBtnDelete->set_tooltip_text(u""_ustr);
-        }
-        else
-        {
-            m_xBtnDelete->set_sensitive(false);
-            m_xBtnDelete->set_tooltip_text( CuiResId(RID_CUISTR_DELETEUSERCOLOR1) );
-        }
+        m_xBtnDelete->set_sensitive(true);
+        m_xBtnDelete->set_tooltip_text(u""_ustr);
     }
-    if (pValSet == m_xValSetRecentList.get())
+    else
     {
-        m_xValSetColorList->SetNoSelection();
         m_xBtnDelete->set_sensitive(false);
-        m_xBtnDelete->set_tooltip_text( CuiResId(RID_CUISTR_DELETEUSERCOLOR2) );
+        m_xBtnDelete->set_tooltip_text(CuiResId(RID_CUISTR_DELETEUSERCOLOR1));
     }
+}
+
+IMPL_LINK_NOARG(SvxColorTabPage, SelectRecentValSetHdl_Impl, ValueSet*, void)
+{
+    sal_Int32 nPos = m_xValSetRecentList->GetSelectedItemId();
+    if (nPos == 0)
+        return;
+
+    NamedColor aNamedColor;
+    aNamedColor.m_aColor = m_xValSetRecentList->GetItemColor(nPos);
+
+    UpdateToSelectedColor(aNamedColor);
+
+    m_xValSetColorList->SetNoSelection();
+    m_xBtnDelete->set_sensitive(false);
+    m_xBtnDelete->set_tooltip_text(CuiResId(RID_CUISTR_DELETEUSERCOLOR2));
 }
 
 void SvxColorTabPage::ConvertColorValues (Color& rColor, ColorModel eModell)
