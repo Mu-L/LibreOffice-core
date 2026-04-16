@@ -117,7 +117,8 @@ Bitmap SdVectorizeDlg::GetPreparedBitmap( Bitmap const & rBmp, double& rScale )
     if( aSizePix.Width() > VECTORIZE_MAX_EXTENT || aSizePix.Height() > VECTORIZE_MAX_EXTENT )
     {
         const ::tools::Rectangle aRect( GetRect( Size( VECTORIZE_MAX_EXTENT, VECTORIZE_MAX_EXTENT ), aSizePix ) );
-        rScale = double(aSizePix.Width()) / aRect.GetWidth();
+        if (aRect.GetWidth())
+            rScale = double(aSizePix.Width()) / aRect.GetWidth();
         aNew.Scale( aRect.GetSize() );
     }
     else
