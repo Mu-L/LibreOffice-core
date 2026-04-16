@@ -68,7 +68,7 @@ properties:
         securityContext: elevated
       settings:
         DestinationPath: C:/Users/Public/Downloads
-        Uri: https://dlcdn.apache.org/ant/binaries/apache-ant-1.10.15-bin.zip
+        Uri: https://dlcdn.apache.org/ant/binaries/apache-ant-1.10.17-bin.zip
         ChecksumType: SHA256
         Checksum: e59baf898dc5b6d1aa6cd57544715f7e0060b1fdc9e56f24f9898d56612a9e0b
     - resource: xPSDesiredStateConfiguration/xRemoteFile
