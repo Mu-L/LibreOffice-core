@@ -79,7 +79,7 @@ namespace vcl
         int   weight = 0;             /**< value of WeightClass or 0 if can't be determined        */
         float width = 0;              /**< width in percentage (e.g. 100 for normal)               */
         int   pitch = 0;              /**< 0: proportional font, otherwise: monospaced             */
-        int   italicAngle = 0;        /**< in counter-clockwise degrees * 65536                    */
+        float italicAngle = 0;        /**< in counter-clockwise degrees                            */
         bool  microsoftSymbolEncoded = false;  /**< true: MS symbol encoded */
         sal_uInt32 typeFlags = 0;     /**< type flags (copyright bits)                             */
     } TTGlobalFontInfo;

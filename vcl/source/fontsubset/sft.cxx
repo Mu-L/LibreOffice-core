@@ -79,12 +79,6 @@ static sal_uInt32 GetUInt32(const sal_uInt8 *ptr, size_t offset)
     return t;
 }
 
-static sal_Int32 GetInt32(const sal_uInt8* ptr, size_t offset)
-{
-    return static_cast<sal_Int32>(GetUInt32(ptr, offset));
-}
-
-
 /*- Public functions */
 
 TrueTypeFont::TrueTypeFont(const void* pBuffer, sal_uInt32 nLen, sal_uInt32 facenum)
@@ -164,10 +158,7 @@ TTGlobalFontInfo TrueTypeFont::getGlobalFontInfo() const
 
     auto aPost = getTable(T_post);
     if (aPost.size() >= 12 + sizeof(sal_uInt32))
-    {
         info.pitch  = GetUInt32(aPost.data(), POST_isFixedPitch_offset);
-        info.italicAngle = GetInt32(aPost.data(), POST_italicAngle_offset);
-    }
 
     auto aHead = getTable(T_head);
     if (aHead.size() >= 46)
@@ -176,6 +167,7 @@ TTGlobalFontInfo TrueTypeFont::getGlobalFontInfo() const
     hb_font_t* pFont = getFont();
     info.weight = hb_style_get_value(pFont, HB_STYLE_TAG_WEIGHT);
     info.width = hb_style_get_value(pFont, HB_STYLE_TAG_WIDTH);
+    info.italicAngle = hb_style_get_value(pFont, HB_STYLE_TAG_SLANT_ANGLE);
 
     return info;
 }
