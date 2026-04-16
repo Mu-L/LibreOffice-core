@@ -48,25 +48,24 @@
 
 namespace vcl
 {
-
 /*- Data access methods for data stored in big-endian format */
-static sal_uInt16 GetUInt16(const sal_uInt8 *ptr, size_t offset)
+static sal_uInt16 GetUInt16(const sal_uInt8* ptr, size_t offset)
 {
     sal_uInt16 t;
     assert(ptr != nullptr);
 
-    t = (ptr+offset)[0] << 8 | (ptr+offset)[1];
+    t = (ptr + offset)[0] << 8 | (ptr + offset)[1];
 
     return t;
 }
 
-static sal_uInt32 GetUInt32(const sal_uInt8 *ptr, size_t offset)
+static sal_uInt32 GetUInt32(const sal_uInt8* ptr, size_t offset)
 {
     sal_uInt32 t;
     assert(ptr != nullptr);
 
-    t = (ptr+offset)[0] << 24 | (ptr+offset)[1] << 16 |
-        (ptr+offset)[2] << 8  | (ptr+offset)[3];
+    t = (ptr + offset)[0] << 24 | (ptr + offset)[1] << 16 | (ptr + offset)[2] << 8
+        | (ptr + offset)[3];
 
     return t;
 }
@@ -76,7 +75,7 @@ static sal_uInt32 GetUInt32(const sal_uInt8 *ptr, size_t offset)
 TrueTypeFont::TrueTypeFont(const void* pBuffer, sal_uInt32 nLen, sal_uInt32 facenum)
 {
     hb_blob_t* pBlob = hb_blob_create(static_cast<const char*>(pBuffer), nLen,
-                                       HB_MEMORY_MODE_READONLY, nullptr, nullptr);
+                                      HB_MEMORY_MODE_READONLY, nullptr, nullptr);
     m_pFace = hb_face_create(pBlob, facenum);
     hb_blob_destroy(pBlob);
 }
@@ -107,8 +106,7 @@ sal_uInt32 TrueTypeFont::countNonEmptyGlyphs() const
     for (sal_uInt32 i = 0; i < nGlyphs; ++i)
     {
         hb_glyph_extents_t aExtents;
-        if (hb_font_get_glyph_extents(pFont, i, &aExtents)
-            && (aExtents.width || aExtents.height))
+        if (hb_font_get_glyph_extents(pFont, i, &aExtents) && (aExtents.width || aExtents.height))
             ++nCount;
     }
     return nCount;
@@ -139,12 +137,7 @@ OUString TrueTypeFont::getFamilyName() const
     return sFamily;
 }
 
-OUString TrueTypeFont::getSubfamilyName() const
-{
-    return getName(HB_OT_NAME_ID_FONT_SUBFAMILY);
-}
-
-
+OUString TrueTypeFont::getSubfamilyName() const { return getName(HB_OT_NAME_ID_FONT_SUBFAMILY); }
 
 sal_uInt32 TrueTypeFont::getTypeFlags() const
 {
@@ -164,8 +157,8 @@ FontPitch TrueTypeFont::getFontPitch() const
 
 FontItalic TrueTypeFont::getFontItalic() const
 {
-    return hb_style_get_value(getFont(), HB_STYLE_TAG_SLANT_ANGLE) != 0
-        ? ITALIC_NORMAL : ITALIC_NONE;
+    return hb_style_get_value(getFont(), HB_STYLE_TAG_SLANT_ANGLE) != 0 ? ITALIC_NORMAL
+                                                                        : ITALIC_NONE;
 }
 
 FontWidth TrueTypeFont::getFontWidth() const
@@ -213,6 +206,5 @@ FontWeight TrueTypeFont::getFontWeight() const
 }
 
 } // namespace vcl
-
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
