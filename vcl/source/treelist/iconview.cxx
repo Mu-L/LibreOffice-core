@@ -145,7 +145,7 @@ Size IconView::GetOptimalSize() const
         // calculate size needed for those
         const short nRowCount = std::ceil(double(GetEntryCount()) / GetColumnCount());
         Size aSize(GetColumnCount() * m_nEntryWidth, nRowCount * m_nEntryHeight);
-        if (GetStyle() & WB_VSCROLL)
+        if (m_pImpl->m_aVerSBar->IsVisible())
             aSize.AdjustWidth(GetSettings().GetStyleSettings().GetScrollBarSize());
 
         return aSize;
