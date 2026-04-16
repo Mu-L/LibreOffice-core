@@ -321,7 +321,8 @@ void SvxBitmapTabPage::Reset( const SfxItemSet* rAttrs )
 
     Bitmap aBmp(pGraphicObject->GetGraphic().GetBitmap());
     Size aTempBitmapSize = aBmp.GetSizePixel();
-    rBitmapSize = Application::GetDefaultDevice()->PixelToLogic(aTempBitmapSize, MapMode(MapUnit::Map100thMM));
+    m_aBitmapSize = Application::GetDefaultDevice()->PixelToLogic(aTempBitmapSize,
+                                                                  MapMode(MapUnit::Map100thMM));
     CalculateBitmapPresetSize();
 
     bool bTiled = false; bool bStretched = false;
@@ -355,7 +356,7 @@ void SvxBitmapTabPage::Reset( const SfxItemSet* rAttrs )
     {
         nWidth = static_cast<const XFillBmpSizeXItem&>( rAttrs->Get( XATTR_FILLBMP_SIZEX ) ).GetValue();
         if(nWidth == 0)
-            nWidth = rBitmapSize.Width();
+            nWidth = m_aBitmapSize.Width();
         else if(nWidth < 0)
         {
             m_bLogicalSize = true;
@@ -368,7 +369,7 @@ void SvxBitmapTabPage::Reset( const SfxItemSet* rAttrs )
     {
         nHeight = rAttrs->Get( XATTR_FILLBMP_SIZEY ).GetValue();
         if(nHeight == 0)
-            nHeight = rBitmapSize.Height();
+            nHeight = m_aBitmapSize.Height();
         else if(nHeight < 0)
         {
             m_bLogicalSize = true;
@@ -379,8 +380,7 @@ void SvxBitmapTabPage::Reset( const SfxItemSet* rAttrs )
     m_xTsbScale->set_state(eRelative);
     ClickScaleHdl(*m_xTsbScale);
 
-
-    if(!rBitmapSize.IsEmpty())
+    if (!m_aBitmapSize.IsEmpty())
     {
         if (eRelative == TRISTATE_TRUE)
         {
@@ -451,25 +451,26 @@ std::unique_ptr<SvxBitmapTabPage> SvxBitmapTabPage::Create(weld::Container* pPag
 
 void SvxBitmapTabPage::CalculateBitmapPresetSize()
 {
-    if(rBitmapSize.IsEmpty())
+    if (m_aBitmapSize.IsEmpty())
         return;
 
     tools::Long nObjectWidth = static_cast<tools::Long>(m_fObjectWidth);
     tools::Long nObjectHeight = static_cast<tools::Long>(m_fObjectHeight);
 
-    if(std::abs(rBitmapSize.Width() - nObjectWidth) < std::abs(rBitmapSize.Height() - nObjectHeight))
+    if (std::abs(m_aBitmapSize.Width() - nObjectWidth)
+        < std::abs(m_aBitmapSize.Height() - nObjectHeight))
     {
-        rFilledSize.setWidth( nObjectWidth );
-        rFilledSize.setHeight( rBitmapSize.Height()*nObjectWidth/rBitmapSize.Width() );
-        rZoomedSize.setWidth( rBitmapSize.Width()*nObjectHeight/rBitmapSize.Height() );
-        rZoomedSize.setHeight( nObjectHeight );
+        m_aFilledSize.setWidth(nObjectWidth);
+        m_aFilledSize.setHeight(m_aBitmapSize.Height() * nObjectWidth / m_aBitmapSize.Width());
+        m_aZoomedSize.setWidth(m_aBitmapSize.Width() * nObjectHeight / m_aBitmapSize.Height());
+        m_aZoomedSize.setHeight(nObjectHeight);
     }
     else
     {
-        rFilledSize.setWidth( rBitmapSize.Width()*nObjectHeight/rBitmapSize.Height() );
-        rFilledSize.setHeight( nObjectHeight );
-        rZoomedSize.setWidth( nObjectWidth );
-        rZoomedSize.setHeight( rBitmapSize.Height()*nObjectWidth/rBitmapSize.Width() );
+        m_aFilledSize.setWidth(m_aBitmapSize.Width() * nObjectHeight / m_aBitmapSize.Height());
+        m_aFilledSize.setHeight(nObjectHeight);
+        m_aZoomedSize.setWidth(nObjectWidth);
+        m_aZoomedSize.setHeight(m_aBitmapSize.Height() * nObjectWidth / m_aBitmapSize.Width());
     }
 }
 
@@ -514,8 +515,8 @@ IMPL_LINK_NOARG(SvxBitmapTabPage, ModifyBitmapHdl, ValueSet*, void)
         const double fUIScale = mpView ? mpView->GetModel().GetUIScale() : 1.0;
         Size aBitmapSize100mm = o3tl::convert(aTempBitmapSize, o3tl::Length::pt, o3tl::Length::mm100);
 
-        rBitmapSize.setWidth(aBitmapSize100mm.Width() / fUIScale);
-        rBitmapSize.setHeight(aBitmapSize100mm.Height() / fUIScale);
+        m_aBitmapSize.setWidth(aBitmapSize100mm.Width() / fUIScale);
+        m_aBitmapSize.setHeight(aBitmapSize100mm.Height() / fUIScale);
         CalculateBitmapPresetSize();
         ModifyBitmapStyleHdl( *m_xBitmapStyleLB );
         ModifyBitmapPositionHdl( *m_xPositionLB );

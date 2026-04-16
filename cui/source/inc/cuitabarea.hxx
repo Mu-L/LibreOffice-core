@@ -531,9 +531,9 @@ class SvxBitmapTabPage : public SfxTabPage
     const SdrView*             mpView;
     MapUnit                    mePoolUnit;
     FieldUnit                  meFieldUnit;
-    Size                       rBitmapSize;
-    Size                       rFilledSize;
-    Size                       rZoomedSize;
+    Size m_aBitmapSize;
+    Size m_aFilledSize;
+    Size m_aZoomedSize;
 
     SvxXRectPreview m_aCtlBitmapPreview;
     std::unique_ptr<SvxPresetListBox> m_xBitmapLB;
