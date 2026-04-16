@@ -49,13 +49,6 @@
 namespace vcl
 {
 
-namespace {
-
-/*- In horizontal writing mode right sidebearing is calculated using this formula
- *- rsb = aw - (lsb + xMax - xMin) -*/
-
-}
-
 /*- Data access methods for data stored in big-endian format */
 static sal_uInt16 GetUInt16(const sal_uInt8 *ptr, size_t offset)
 {

@@ -22,21 +22,6 @@
  * @brief Sun Font Tools
  */
 
-/*
- *        Generated fonts contain an XUID entry in the form of:
- *
- *                  103 0 T C1 N C2 C3
- *
- *        103 - Sun's Adobe assigned XUID number. Contact person: Alexander Gelfenbain <gelf@eng.sun.com>
- *
- *        T  - font type. 0: Type 3, 1: Type 42
- *        C1 - CRC-32 of the entire source TrueType font
- *        N  - number of glyphs in the subset
- *        C2 - CRC-32 of the array of glyph IDs used to generate the subset
- *        C3 - CRC-32 of the array of encoding numbers used to generate the subset
- *
- */
-
 #pragma once
 
 #include <config_options.h>
