@@ -127,54 +127,10 @@ namespace vcl
   => length for OS/2 table version 5 = 100 bytes
 
 */
-constexpr int OS2_Legacy_length = 68;
-constexpr int OS2_V1_length = 86;
-
-constexpr int OS2_usWeightClass_offset = 4;
-constexpr int OS2_usWidthClass_offset = 6;
 constexpr int OS2_fsType_offset = 8;
 constexpr int OS2_ulUnicodeRange1_offset = 42;
-constexpr int OS2_ulUnicodeRange2_offset = 46;
-constexpr int OS2_ulUnicodeRange3_offset = 50;
-constexpr int OS2_ulUnicodeRange4_offset = 54;
 constexpr int OS2_fsSelection_offset = 62;
 constexpr int OS2_ulCodePageRange1_offset = 78;
-constexpr int OS2_ulCodePageRange2_offset = 82;
-
-/*
-  Some table hhea consts
-  cf https://docs.microsoft.com/fr-fr/typography/opentype/spec/hhea
-  TYPE       NAME                       FROM BYTE
-  uint16     majorVersion               0
-  uint16     minorVersion               2
-  FWORD      ascender                   4
-  FWORD      descender                  6
-  FWORD      lineGap                    8
-  UFWORD     advanceWidthMax           10
-  FWORD      minLeftSideBearing        12
-  FWORD      minRightSideBearing       14
-  FWORD      xMaxExtent                16
-  int16      caretSlopeRise            18
-  int16      caretSlopeRun             20
-  int16      caretOffset               22
-  int16      (reserved)                24
-  int16      (reserved)                26
-  int16      (reserved)                28
-  int16      (reserved)                30
-  int16      metricDataFormat          32
-  uint16     numberOfHMetrics          34
-  END                                  36
-
-  => length for hhea table = 36 bytes
-
-*/
-constexpr int HHEA_Length = 36;
-
-constexpr int HHEA_ascender_offset = 4;
-constexpr int HHEA_descender_offset = 6;
-constexpr int HHEA_lineGap_offset = 8;
-constexpr int HHEA_caretSlopeRise_offset = 18;
-constexpr int HHEA_caretSlopeRun_offset = 20;
 
 /*
   Some table post consts
@@ -188,9 +144,6 @@ constexpr int HHEA_caretSlopeRun_offset = 20;
   ...
 
 */
-constexpr int POST_italicAngle_offset = 4;
-constexpr int POST_underlinePosition_offset = 8;
-constexpr int POST_underlineThickness_offset = 10;
 constexpr int POST_isFixedPitch_offset = 12;
 
 /*
@@ -220,73 +173,8 @@ constexpr int POST_isFixedPitch_offset = 12;
 
   => length head table = 54 bytes
 */
-constexpr int HEAD_Length = 54;
-
-constexpr int HEAD_majorVersion_offset = 0;
-constexpr int HEAD_fontRevision_offset = 4;
-constexpr int HEAD_magicNumber_offset = 12;
-constexpr int HEAD_flags_offset = 16;
-constexpr int HEAD_unitsPerEm_offset = 18;
-constexpr int HEAD_created_offset = 20;
 constexpr int HEAD_xMin_offset = 36;
-constexpr int HEAD_yMin_offset = 38;
-constexpr int HEAD_xMax_offset = 40;
 constexpr int HEAD_yMax_offset = 42;
-constexpr int HEAD_macStyle_offset = 44;
-constexpr int HEAD_lowestRecPPEM_offset = 46;
-constexpr int HEAD_fontDirectionHint_offset = 48;
-constexpr int HEAD_indexToLocFormat_offset = 50;
-constexpr int HEAD_glyphDataFormat_offset = 52;
-
-/*
-  Some table maxp consts
-  cf https://docs.microsoft.com/fr-fr/typography/opentype/spec/maxp
-  For 0.5 version
-  TYPE       NAME                       FROM BYTE
-  Fixed      version                    0
-  uint16     numGlyphs                  4
-
-  For 1.0 Version
-  Fixed      version                    0
-  uint16     numGlyphs                  4
-  uint16     maxPoints                  6
-  uint16     maxContours                8
-  uint16     maxCompositePoints        10
-  uint16     maxCompositeContours      12
-  ...
-
-*/
-constexpr int MAXP_Version1Length = 32;
-
-constexpr int MAXP_numGlyphs_offset = 4;
-constexpr int MAXP_maxPoints_offset = 6;
-constexpr int MAXP_maxContours_offset = 8;
-constexpr int MAXP_maxCompositePoints_offset = 10;
-constexpr int MAXP_maxCompositeContours_offset = 12;
-
-/*
-  Some table glyf consts
-  cf https://docs.microsoft.com/fr-fr/typography/opentype/spec/glyf
-  For 0.5 version
-  TYPE       NAME                       FROM BYTE
-  int16      numberOfContours           0
-  int16      xMin                       2
-  int16      yMin                       4
-  int16      xMax                       6
-  int16      yMax                       8
-
-  END                                  10
-
-  => length glyf table = 10 bytes
-
-*/
-constexpr int GLYF_Length = 10;
-
-constexpr int GLYF_numberOfContours_offset = 0;
-constexpr int GLYF_xMin_offset = 2;
-constexpr int GLYF_yMin_offset = 4;
-constexpr int GLYF_xMax_offset = 6;
-constexpr int GLYF_yMax_offset = 8;
 
 class UNLESS_MERGELIBS(VCL_DLLPUBLIC) TrueTypeFont
 {
