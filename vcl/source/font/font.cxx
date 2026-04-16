@@ -723,8 +723,9 @@ namespace
         {
             TTGlobalFontInfo aInfo = aFont.getGlobalFontInfo();
             // most importantly: the family name
-            if( !aInfo.family.isEmpty() )
-                o_rResult.SetFamilyName( aInfo.family );
+            OUString aFamily = aFont.getFamilyName();
+            if( !aFamily.isEmpty() )
+                o_rResult.SetFamilyName( aFamily );
             // set weight
             if( aInfo.weight )
             {

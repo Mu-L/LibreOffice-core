@@ -73,7 +73,6 @@ namespace vcl
 /** Return value of TrueTypeFont::getGlobalFontInfo() */
 
     typedef struct TTGlobalFontInfo_ {
-        OUString   family;            /**< family name                                             */
         OUString   subfamily;         /**< subfamily name                                          */
         sal_uInt16 macStyle = 0;      /**< macstyle bits from 'HEAD' table */
         int   weight = 0;             /**< value of WeightClass or 0 if can't be determined        */
@@ -334,6 +333,7 @@ public:
 
     OUString getName(hb_ot_name_id_t nNameID, const LanguageTag& rLang = LanguageTag(LANGUAGE_DONTKNOW)) const;
 
+    OUString getFamilyName() const;
     TTGlobalFontInfo getGlobalFontInfo() const;
     sal_uInt32 countNonEmptyGlyphs() const;
     FontWeight analyzeFontWeight() const;

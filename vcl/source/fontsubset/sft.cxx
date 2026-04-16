@@ -139,13 +139,18 @@ OUString TrueTypeFont::getName(hb_ot_name_id_t nNameID, const LanguageTag& rLang
     return OUString(reinterpret_cast<sal_Unicode*>(aBuf.data()), nName);
 }
 
+OUString TrueTypeFont::getFamilyName() const
+{
+    OUString sFamily = getName(HB_OT_NAME_ID_FONT_FAMILY);
+    if (sFamily.isEmpty())
+        sFamily = getName(HB_OT_NAME_ID_POSTSCRIPT_NAME);
+    return sFamily;
+}
+
 TTGlobalFontInfo TrueTypeFont::getGlobalFontInfo() const
 {
     TTGlobalFontInfo info;
 
-    info.family = getName(HB_OT_NAME_ID_FONT_FAMILY);
-    if (info.family.isEmpty())
-        info.family = getName(HB_OT_NAME_ID_POSTSCRIPT_NAME);
     info.subfamily = getName(HB_OT_NAME_ID_FONT_SUBFAMILY);
 
     auto aCmap = getTable(T_cmap);
