@@ -31,6 +31,7 @@
 #include <vcl/weld/ComboBox.hxx>
 #include <vcl/weld/DrawingArea.hxx>
 #include <vcl/weld/Entry.hxx>
+#include <vcl/weld/IconView.hxx>
 #include <vcl/weld/MetricSpinButton.hxx>
 #include <vcl/weld/SpinButton.hxx>
 
@@ -394,20 +395,20 @@ private:
     std::unique_ptr<weld::MetricSpinButton> m_xMtrColorFrom;
     std::unique_ptr<ColorListBox> m_xLbColorTo;
     std::unique_ptr<weld::MetricSpinButton> m_xMtrColorTo;
+    std::unique_ptr<weld::IconView> m_xGradientPresets;
     std::unique_ptr<SvxPresetListBox> m_xGradientLB;
     std::unique_ptr<weld::SpinButton> m_xMtrIncrement;
     std::unique_ptr<weld::CheckButton> m_xCbIncrement;
     std::unique_ptr<weld::Button> m_xBtnAdd;
     std::unique_ptr<weld::Button> m_xBtnModify;
     std::unique_ptr<weld::CustomWeld> m_xCtlPreview;
-    std::unique_ptr<weld::CustomWeld> m_xGradientLBWin;
 
     DECL_LINK( ClickAddHdl_Impl, weld::Button&, void );
     DECL_LINK( ClickModifyHdl_Impl, weld::Button&, void );
-    DECL_LINK( ChangeGradientHdl, ValueSet*, void );
+    DECL_LINK(ChangeGradientHdl, const weld::TreeIter&, bool);
     void ChangeGradientHdl_Impl();
-    DECL_LINK(ClickRenameHdl_Impl, sal_uInt16, void);
-    DECL_LINK(ClickDeleteHdl_Impl, sal_uInt16, void);
+    DECL_LINK(ClickRenameHdl_Impl, int, void);
+    DECL_LINK(ClickDeleteHdl_Impl, int, void);
     DECL_LINK( ModifiedEditHdl_Impl, weld::SpinButton&, void );
     DECL_LINK( ModifiedMetricHdl_Impl, weld::MetricSpinButton&, void );
     DECL_LINK( ModifiedColorListBoxHdl_Impl, ColorListBox&, void );
@@ -468,13 +469,13 @@ private:
     std::unique_ptr<ColorListBox> m_xLbLineColor;
     std::unique_ptr<weld::CheckButton> m_xCbBackgroundColor;
     std::unique_ptr<ColorListBox> m_xLbBackgroundColor;
+    std::unique_ptr<weld::IconView> m_xHatchPresets;
     std::unique_ptr<SvxPresetListBox> m_xHatchLB;
     std::unique_ptr<weld::Button> m_xBtnAdd;
     std::unique_ptr<weld::Button> m_xBtnModify;
-    std::unique_ptr<weld::CustomWeld> m_xHatchLBWin;
     std::unique_ptr<weld::CustomWeld> m_xCtlPreview;
 
-    DECL_LINK(ChangeHatchHdl, ValueSet*, void);
+    DECL_LINK(ChangeHatchHdl, const weld::TreeIter&, bool);
     void ChangeHatchHdl_Impl();
     DECL_LINK( ModifiedEditHdl_Impl, weld::MetricSpinButton&, void );
     DECL_LINK( ModifiedListBoxHdl_Impl, weld::ComboBox&, void );
@@ -485,8 +486,8 @@ private:
     void ModifiedHdl_Impl(void const *);
     DECL_LINK( ClickAddHdl_Impl, weld::Button&, void );
     DECL_LINK( ClickModifyHdl_Impl, weld::Button&, void );
-    DECL_LINK(ClickRenameHdl_Impl, sal_uInt16, void);
-    DECL_LINK(ClickDeleteHdl_Impl, sal_uInt16, void);
+    DECL_LINK(ClickRenameHdl_Impl, int, void);
+    DECL_LINK(ClickDeleteHdl_Impl, int, void);
 
     sal_Int32 SearchHatchList(std::u16string_view rHatchName);
 
@@ -536,6 +537,7 @@ class SvxBitmapTabPage : public SfxTabPage
     Size m_aZoomedSize;
 
     SvxXRectPreview m_aCtlBitmapPreview;
+    std::unique_ptr<weld::IconView> m_xBitmapsPresets;
     std::unique_ptr<SvxPresetListBox> m_xBitmapLB;
     std::unique_ptr<weld::ComboBox> m_xBitmapStyleLB;
     std::unique_ptr<weld::Container> m_xSizeBox;
@@ -552,17 +554,16 @@ class SvxBitmapTabPage : public SfxTabPage
     std::unique_ptr<weld::MetricSpinButton> m_xTileOffset;
     std::unique_ptr<weld::Button> m_xBtnImport;
     std::unique_ptr<weld::CustomWeld> m_xCtlBitmapPreview;
-    std::unique_ptr<weld::CustomWeld> m_xBitmapLBWin;
 
-    DECL_LINK( ModifyBitmapHdl, ValueSet*, void );
+    DECL_LINK(ModifyBitmapHdl, const weld::TreeIter&, bool);
     DECL_LINK( ClickScaleHdl, weld::Toggleable&, void );
     DECL_LINK( ModifyBitmapStyleHdl, weld::ComboBox&, void );
     DECL_LINK( ModifyBitmapSizeHdl, weld::MetricSpinButton&, void );
     DECL_LINK( ModifyBitmapPositionHdl, weld::ComboBox&, void );
     DECL_LINK( ModifyPositionOffsetHdl, weld::MetricSpinButton&, void );
     DECL_LINK( ModifyTileOffsetHdl, weld::MetricSpinButton&, void );
-    DECL_LINK(ClickRenameHdl, sal_uInt16, void);
-    DECL_LINK(ClickDeleteHdl, sal_uInt16, void);
+    DECL_LINK(ClickRenameHdl, int, void);
+    DECL_LINK(ClickDeleteHdl, int, void);
     DECL_LINK( ClickImportHdl, weld::Button&, void );
     void CalculateBitmapPresetSize();
     sal_Int32 SearchBitmapList(std::u16string_view rBitmapName);
@@ -608,20 +609,20 @@ private:
     std::unique_ptr<SvxPixelCtl> m_xCtlPixel;
     std::unique_ptr<ColorListBox> m_xLbColor;
     std::unique_ptr<ColorListBox> m_xLbBackgroundColor;
+    std::unique_ptr<weld::IconView> m_xPatternPresets;
     std::unique_ptr<SvxPresetListBox> m_xPatternLB;
     std::unique_ptr<weld::Button> m_xBtnAdd;
     std::unique_ptr<weld::Button> m_xBtnModify;
     std::unique_ptr<weld::CustomWeld> m_xCtlPixelWin;
     std::unique_ptr<weld::CustomWeld> m_xCtlPreview;
-    std::unique_ptr<weld::CustomWeld> m_xPatternLBWin;
     std::unique_ptr<SvxBitmapCtl> m_xBitmapCtl;
 
     DECL_LINK( ClickAddHdl_Impl, weld::Button&, void );
     DECL_LINK( ClickModifyHdl_Impl, weld::Button&, void );
-    DECL_LINK( ChangePatternHdl_Impl, ValueSet*, void );
+    DECL_LINK(ChangePatternHdl_Impl, const weld::TreeIter&, bool);
     DECL_LINK( ChangeColorHdl_Impl, ColorListBox&, void );
-    DECL_LINK(ClickRenameHdl_Impl, sal_uInt16, void);
-    DECL_LINK(ClickDeleteHdl_Impl, sal_uInt16, void);
+    DECL_LINK(ClickRenameHdl_Impl, int, void);
+    DECL_LINK(ClickDeleteHdl_Impl, int, void);
 
     void UpdatePattern();
     sal_Int32 SearchPatternList(std::u16string_view rPatternName);

@@ -16,6 +16,16 @@
     <property name="upper">99</property>
     <property name="step-increment">100</property>
   </object>
+  <object class="GtkTreeStore" id="hatchpresets_model">
+    <columns>
+      <!-- column-name pixbuf -->
+      <column type="GdkPixbuf"/>
+      <!-- column-name id -->
+      <column type="gchararray"/>
+      <!-- column-name tooltip -->
+      <column type="gchararray"/>
+    </columns>
+  </object>
   <object class="GtkBox" id="HatchPage">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
@@ -38,25 +48,21 @@
             <property name="orientation">vertical</property>
             <property name="spacing">6</property>
             <child>
-              <object class="GtkScrolledWindow" id="hatchpresetlistwin">
+              <object class="GtkScrolledWindow">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
-                <property name="vexpand">True</property>
                 <property name="hscrollbar-policy">never</property>
-                <property name="vscrollbar-policy">never</property>
                 <property name="shadow-type">in</property>
                 <child>
-                  <object class="GtkViewport">
+                  <object class="GtkIconView" id="hatchpresets">
                     <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <child>
-                      <object class="GtkDrawingArea" id="hatchpresetlist">
-                        <property name="visible">True</property>
-                        <property name="can-focus">True</property>
-                        <property name="events">GDK_BUTTON_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_STRUCTURE_MASK</property>
-                        <property name="vexpand">True</property>
-                      </object>
-                    </child>
+                    <property name="can-focus">True</property>
+                    <property name="margin">6</property>
+                    <property name="model">hatchpresets_model</property>
+                    <property name="columns">3</property>
+                    <property name="pixbuf-column">0</property>
+                    <property name="tooltip-column">2</property>
+                    <property name="activate-on-single-click">True</property>
                   </object>
                 </child>
               </object>

@@ -22,6 +22,7 @@
 #include <vcl/image.hxx>
 #include <vcl/svapp.hxx>
 #include <vcl/weld/Builder.hxx>
+#include <vcl/weld/IconView.hxx>
 #include <vcl/weld/ScrolledWindow.hxx>
 #include <vcl/weld/MessageDialog.hxx>
 #include <vcl/weld/weld.hxx>
@@ -67,16 +68,15 @@ SvxGradientTabPage::SvxGradientTabPage(weld::Container* pPage, weld::DialogContr
     , m_xLbColorTo(new ColorListBox(m_xBuilder->weld_menu_button(u"colortolb"_ustr),
                 [this]{ return GetDialogController()->getDialog(); }))
     , m_xMtrColorTo(m_xBuilder->weld_metric_spin_button(u"colortomtr"_ustr, FieldUnit::PERCENT))
-    , m_xGradientLB(new SvxPresetListBox(m_xBuilder->weld_scrolled_window(u"gradientpresetlistwin"_ustr, true)))
+    , m_xGradientPresets(m_xBuilder->weld_icon_view(u"gradientpresets"_ustr))
+    , m_xGradientLB(new SvxPresetListBox(*m_xGradientPresets))
     , m_xMtrIncrement(m_xBuilder->weld_spin_button(u"incrementmtr"_ustr))
     , m_xCbIncrement(m_xBuilder->weld_check_button(u"autoincrement"_ustr))
     , m_xBtnAdd(m_xBuilder->weld_button(u"add"_ustr))
     , m_xBtnModify(m_xBuilder->weld_button(u"modify"_ustr))
     , m_xCtlPreview(new weld::CustomWeld(*m_xBuilder, u"previewctl"_ustr, m_aCtlPreview))
-    , m_xGradientLBWin(new weld::CustomWeld(*m_xBuilder, u"gradientpresetlist"_ustr, *m_xGradientLB))
 {
     Size aSize = getDrawPreviewOptimalSize(m_aCtlPreview.GetDrawingArea()->get_ref_device());
-    m_xGradientLB->set_size_request(aSize.Width(), aSize.Height());
     m_xCtlPreview->set_size_request(aSize.Width(), aSize.Height());
     // this page needs ExchangeSupport
     SetExchangeSupport();
@@ -92,7 +92,7 @@ SvxGradientTabPage::SvxGradientTabPage(weld::Container* pPage, weld::DialogContr
     m_aCtlPreview.SetAttributes(m_aXFillAttr.GetItemSet());
 
     // set handler
-    m_xGradientLB->SetSelectHdl( LINK( this, SvxGradientTabPage, ChangeGradientHdl ) );
+    m_xGradientPresets->connect_item_activated(LINK(this, SvxGradientTabPage, ChangeGradientHdl));
     m_xGradientLB->SetRenameHdl( LINK( this, SvxGradientTabPage, ClickRenameHdl_Impl ) );
     m_xGradientLB->SetDeleteHdl( LINK( this, SvxGradientTabPage, ClickDeleteHdl_Impl ) );
     m_xBtnAdd->connect_clicked(LINK(this, SvxGradientTabPage, ClickAddHdl_Impl));
@@ -115,8 +115,6 @@ SvxGradientTabPage::SvxGradientTabPage(weld::Container* pPage, weld::DialogContr
     m_xMtrColorTo->connect_value_changed( aLink );
     m_xLbColorTo->SetSelectHdl( aLink3 );
 
-    m_xGradientLB->SetStyle(WB_FLATVALUESET | WB_NO_DIRECTSELECT | WB_TABSTOP);
-
     // #i76307# always paint the preview in LTR, because this is what the document does
     m_aCtlPreview.EnableRTL(false);
 }
@@ -124,7 +122,6 @@ SvxGradientTabPage::SvxGradientTabPage(weld::Container* pPage, weld::DialogContr
 SvxGradientTabPage::~SvxGradientTabPage()
 {
     m_xCtlPreview.reset();
-    m_xGradientLBWin.reset();
     m_xGradientLB.reset();
     m_xLbColorTo.reset();
     m_xLbColorFrom.reset();
@@ -180,10 +177,8 @@ void SvxGradientTabPage::ActivatePage( const SfxItemSet& rSet )
 
     sal_Int32 nPos = SearchGradientList( rSet.Get(XATTR_FILLGRADIENT).GetName() );
     if ( nPos != -1)
-    {
-        sal_uInt16 nId = m_xGradientLB->GetItemId( static_cast<size_t>( nPos ) );
-        m_xGradientLB->SelectItem( nId );
-    }
+        m_xGradientPresets->select(nPos);
+
     // colors could have been deleted
     ChangeGradientHdl_Impl();
 }
@@ -200,16 +195,16 @@ DeactivateRC SvxGradientTabPage::DeactivatePage( SfxItemSet* _pSet )
 bool SvxGradientTabPage::FillItemSet( SfxItemSet* rSet )
 {
     std::unique_ptr<basegfx::BGradient> pBGradient;
-    size_t nPos = m_xGradientLB->IsNoSelection() ? VALUESET_ITEM_NOTFOUND : m_xGradientLB->GetSelectItemPos();
+    int nPos = m_xGradientPresets->get_selected_index();
 
     sal_uInt16 nValue = 0; // automatic step count
     if (!m_xCbIncrement->get_active())
         nValue = m_xMtrIncrement->get_value();
 
-    if( nPos != VALUESET_ITEM_NOTFOUND )
+    if (nPos >= 0)
     {
         pBGradient.reset(new basegfx::BGradient( m_pGradientList->GetGradient( static_cast<sal_uInt16>(nPos) )->GetGradient() ));
-        OUString aString = m_xGradientLB->GetItemText( m_xGradientLB->GetSelectedItemId() );
+        const OUString aString = m_xGradientPresets->get_item_tooltip_text(nPos);
         // update StepCount to current value to be in sync with FillGradientStepCount
         pBGradient->SetSteps(nValue);
         rSet->Put( XFillGradientItem( aString, *pBGradient ) );
@@ -258,31 +253,31 @@ IMPL_LINK( SvxGradientTabPage, ModifiedListBoxHdl_Impl, weld::ComboBox&, rListBo
 {
     ModifiedHdl_Impl(&rListBox);
     // gradient params changed, it is no longer one of the presets
-    m_xGradientLB->SetNoSelection();
+    m_xGradientPresets->unselect_all();
 }
 
 IMPL_LINK( SvxGradientTabPage, ModifiedColorListBoxHdl_Impl, ColorListBox&, rListBox, void )
 {
     ModifiedHdl_Impl(&rListBox);
-    m_xGradientLB->SetNoSelection();
+    m_xGradientPresets->unselect_all();
 }
 
 IMPL_LINK( SvxGradientTabPage, ModifiedEditHdl_Impl, weld::SpinButton&, rBox, void )
 {
     ModifiedHdl_Impl(&rBox);
-    m_xGradientLB->SetNoSelection();
+    m_xGradientPresets->unselect_all();
 }
 
 IMPL_LINK( SvxGradientTabPage, ModifiedMetricHdl_Impl, weld::MetricSpinButton&, rBox, void )
 {
     ModifiedHdl_Impl(&rBox);
-    m_xGradientLB->SetNoSelection();
+    m_xGradientPresets->unselect_all();
 }
 
 IMPL_LINK( SvxGradientTabPage, ModifiedSliderHdl_Impl, weld::Scale&, rSlider, void )
 {
     ModifiedHdl_Impl(&rSlider);
-    m_xGradientLB->SetNoSelection();
+    m_xGradientPresets->unselect_all();
 }
 
 IMPL_LINK_NOARG( SvxGradientTabPage, ChangeAutoStepHdl_Impl, weld::Toggleable&, void )
@@ -393,11 +388,11 @@ IMPL_LINK_NOARG(SvxGradientTabPage, ClickAddHdl_Impl, weld::Button&, void)
 
         m_pGradientList->Insert(std::make_unique<XGradientEntry>(aBGradient, aName), nCount);
 
-        sal_Int32 nId = m_xGradientLB->GetItemId(nCount - 1); //calculate the last ID
         Bitmap aBitmap = m_pGradientList->CreateBitmap(nCount, m_xGradientLB->GetIconSize());
-        m_xGradientLB->InsertItem( nId + 1, Image(aBitmap), aName );
-        m_xGradientLB->SelectItem( nId + 1 );
-        m_xGradientLB->Resize();
+        m_xGradientPresets->insert(nCount, nullptr, nullptr, &aBitmap, nullptr);
+        m_xGradientPresets->set_item_accessible_name(nCount, aName);
+        m_xGradientPresets->set_item_tooltip_text(nCount, aName);
+        m_xGradientPresets->select(nCount);
 
         m_nGradientListState |= ChangeType::MODIFIED;
 
@@ -412,13 +407,12 @@ IMPL_LINK_NOARG(SvxGradientTabPage, ClickAddHdl_Impl, weld::Button&, void)
 
 IMPL_LINK_NOARG(SvxGradientTabPage, ClickModifyHdl_Impl, weld::Button&, void)
 {
-    sal_uInt16 nId = m_xGradientLB->GetSelectedItemId();
-    size_t nPos = m_xGradientLB->GetSelectItemPos();
+    const int nPos = m_xGradientPresets->get_selected_index();
 
-    if ( nPos == VALUESET_ITEM_NOTFOUND )
+    if (nPos < 0)
         return;
 
-    OUString aName( m_pGradientList->GetGradient( static_cast<sal_uInt16>(nPos) )->GetName() );
+    OUString aName(m_pGradientList->GetGradient(nPos)->GetName());
 
     sal_uInt16 nValue = 0; // automatic step count
     if (!m_xCbIncrement->get_active())
@@ -437,34 +431,32 @@ IMPL_LINK_NOARG(SvxGradientTabPage, ClickModifyHdl_Impl, weld::Button&, void)
 
     m_pGradientList->Replace(std::make_unique<XGradientEntry>(aBGradient, aName), nPos);
 
-    Bitmap aBitmap = m_pGradientList->CreateBitmap(static_cast<sal_uInt16>(nPos),
-                                                   m_xGradientLB->GetIconSize());
-    m_xGradientLB->RemoveItem( nId );
-    m_xGradientLB->InsertItem( nId, Image(aBitmap), aName, static_cast<sal_uInt16>(nPos) );
-    m_xGradientLB->SelectItem( nId );
+    Bitmap aBitmap = m_pGradientList->CreateBitmap(nPos, m_xGradientLB->GetIconSize());
+    m_xGradientPresets->remove(nPos);
+    m_xGradientPresets->insert(nPos, nullptr, nullptr, &aBitmap, nullptr);
+    m_xGradientPresets->set_item_accessible_name(nPos, aName);
+    m_xGradientPresets->set_item_tooltip_text(nPos, aName);
+    m_xGradientPresets->select(nPos);
 
     m_nGradientListState |= ChangeType::MODIFIED;
 }
 
-IMPL_LINK(SvxGradientTabPage, ClickDeleteHdl_Impl, sal_uInt16, nId, void)
+IMPL_LINK(SvxGradientTabPage, ClickDeleteHdl_Impl, int, nPos, void)
 {
-    const size_t nPos = m_xGradientLB->GetItemPos(nId);
-
-    if( nPos != VALUESET_ITEM_NOTFOUND )
+    if (nPos >= 0)
     {
         std::unique_ptr<weld::Builder> xBuilder(Application::CreateBuilder(GetFrameWeld(), u"cui/ui/querydeletegradientdialog.ui"_ustr));
         std::unique_ptr<weld::MessageDialog> xQueryBox(xBuilder->weld_message_dialog(u"AskDelGradientDialog"_ustr));
         if (xQueryBox->run() == RET_YES)
         {
-            const bool bDeletingSelectedItem(nId == m_xGradientLB->GetSelectedItemId());
+            const bool bDeletingSelectedItem(nPos == m_xGradientPresets->get_selected_index());
             m_pGradientList->Remove(nPos);
-            m_xGradientLB->RemoveItem( nId );
+            m_xGradientPresets->remove(nPos);
             if (bDeletingSelectedItem)
             {
-                m_xGradientLB->SelectItem(m_xGradientLB->GetItemId(/*Position=*/0));
+                m_xGradientPresets->select(0);
                 m_aCtlPreview.Invalidate();
             }
-            m_xGradientLB->Resize();
 
             ChangeGradientHdl_Impl();
 
@@ -476,15 +468,13 @@ IMPL_LINK(SvxGradientTabPage, ClickDeleteHdl_Impl, sal_uInt16, nId, void)
         m_xBtnModify->set_sensitive(false);
 }
 
-IMPL_LINK(SvxGradientTabPage, ClickRenameHdl_Impl, sal_uInt16, nId, void)
+IMPL_LINK(SvxGradientTabPage, ClickRenameHdl_Impl, int, nPos, void)
 {
-    const size_t nPos = m_xGradientLB->GetItemPos(nId);
-
-    if ( nPos == VALUESET_ITEM_NOTFOUND )
+    if (nPos < 0)
         return;
 
     OUString aDesc( CuiResId( RID_CUISTR_DESC_GRADIENT ) );
-    OUString aName( m_pGradientList->GetGradient( nPos )->GetName() );
+    OUString aName(m_pGradientList->GetGradient(nPos)->GetName());
 
     SvxNameDialog aDlg(GetFrameWeld(), aName, aDesc);
 
@@ -493,14 +483,15 @@ IMPL_LINK(SvxGradientTabPage, ClickRenameHdl_Impl, sal_uInt16, nId, void)
     {
         aName = aDlg.GetName();
         sal_Int32 nGradientPos = SearchGradientList(aName);
-        bool bValidGradientName = (nGradientPos == static_cast<sal_Int32>(nPos) ) || (nGradientPos == -1);
+        bool bValidGradientName = (nGradientPos == nPos) || (nGradientPos == -1);
 
         if( bValidGradientName )
         {
             bLoop = false;
             m_pGradientList->GetGradient(nPos)->SetName(aName);
 
-            m_xGradientLB->SetItemText( nId, aName );
+            m_xGradientPresets->set_item_accessible_name(nPos, aName);
+            m_xGradientPresets->set_item_tooltip_text(nPos, aName);
 
             m_nGradientListState |= ChangeType::MODIFIED;
         }
@@ -513,18 +504,19 @@ IMPL_LINK(SvxGradientTabPage, ClickRenameHdl_Impl, sal_uInt16, nId, void)
     }
 }
 
-IMPL_LINK_NOARG(SvxGradientTabPage, ChangeGradientHdl, ValueSet*, void)
+IMPL_LINK_NOARG(SvxGradientTabPage, ChangeGradientHdl, const weld::TreeIter&, bool)
 {
     ChangeGradientHdl_Impl();
+    return true;
 }
 
 void SvxGradientTabPage::ChangeGradientHdl_Impl()
 {
     std::unique_ptr<basegfx::BGradient> pGradient;
-    size_t nPos = m_xGradientLB->GetSelectItemPos();
+    const int nPos = m_xGradientPresets->get_selected_index();
 
-    if( nPos != VALUESET_ITEM_NOTFOUND )
-        pGradient.reset(new basegfx::BGradient( m_pGradientList->GetGradient( static_cast<sal_uInt16>( nPos ) )->GetGradient() ));
+    if (nPos >= 0)
+        pGradient.reset(new basegfx::BGradient(m_pGradientList->GetGradient(nPos)->GetGradient()));
     else
     {
         if( const XFillStyleItem* pFillStyleItem = m_rOutAttrs.GetItemIfSet( GetWhich( XATTR_FILLSTYLE ) ) )
@@ -536,12 +528,10 @@ void SvxGradientTabPage::ChangeGradientHdl_Impl()
                 pGradient.reset(new basegfx::BGradient( pGradientItem->GetGradientValue() ));
             }
         }
-        if( !pGradient )
+        if (!pGradient && m_xGradientPresets->n_children() > 0)
         {
-            sal_uInt16 nPosition = m_xGradientLB->GetItemId(0);
-            m_xGradientLB->SelectItem( nPosition );
-            if( nPosition != 0 )
-                pGradient.reset(new basegfx::BGradient( m_pGradientList->GetGradient( 0 )->GetGradient() ));
+            m_xGradientPresets->select(0);
+            pGradient.reset(new basegfx::BGradient(m_pGradientList->GetGradient(0)->GetGradient()));
         }
     }
 

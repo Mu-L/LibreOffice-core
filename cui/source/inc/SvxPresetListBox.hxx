@@ -19,30 +19,36 @@
 
 #pragma once
 
-#include <svtools/valueset.hxx>
 #include <svx/xtable.hxx>
 #include <tools/gen.hxx>
+#include <tools/link.hxx>
+#include <vcl/event.hxx>
 
-class SvxPresetListBox final : public ValueSet
+namespace weld
 {
-private:
+class IconView;
+}
+
+class SvxPresetListBox final
+{
+    weld::IconView& m_rIconView;
+
     Size m_aIconSize;
-    Link<sal_uInt16, void> maRenameHdl;
-    Link<sal_uInt16, void> maDeleteHdl;
+    Link<int, void> maRenameHdl;
+    Link<int, void> maDeleteHdl;
+
+    DECL_LINK(CommandHdl, const CommandEvent&, bool);
+    DECL_LINK(KeyPressHdl, const KeyEvent&, bool);
 
     template <typename ListType> void FillPresetListBoxImpl(ListType& rList);
 
 public:
-    SvxPresetListBox(std::unique_ptr<weld::ScrolledWindow> pWindow);
-
-    virtual bool Command(const CommandEvent& rEvent) override;
-    virtual bool KeyInput(const KeyEvent& rKEvt) override;
-    virtual void SetDrawingArea(weld::DrawingArea* pDrawingArea) override;
+    SvxPresetListBox(weld::IconView& rIconView);
 
     Size const& GetIconSize() const { return m_aIconSize; }
 
-    void SetRenameHdl(const Link<sal_uInt16, void>& rLink) { maRenameHdl = rLink; }
-    void SetDeleteHdl(const Link<sal_uInt16, void>& rLink) { maDeleteHdl = rLink; }
+    void SetRenameHdl(const Link<int, void>& rLink) { maRenameHdl = rLink; }
+    void SetDeleteHdl(const Link<int, void>& rLink) { maDeleteHdl = rLink; }
 
     void FillPresetListBox(XGradientList& rList);
     void FillPresetListBox(XHatchList& rList);

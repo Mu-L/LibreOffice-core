@@ -25,83 +25,77 @@
 #include <vcl/image.hxx>
 #include <vcl/svapp.hxx>
 #include <vcl/weld/Builder.hxx>
+#include <vcl/weld/IconView.hxx>
 #include <vcl/weld/Menu.hxx>
-#include <vcl/weld/ScrolledWindow.hxx>
 
-SvxPresetListBox::SvxPresetListBox(std::unique_ptr<weld::ScrolledWindow> pWindow)
-    : ValueSet(std::move(pWindow))
+SvxPresetListBox::SvxPresetListBox(weld::IconView& rIconView)
+    : m_rIconView(rIconView)
     , m_aIconSize(60, 64)
 {
-    SetEdgeBlending(true);
+    m_rIconView.connect_command(LINK(this, SvxPresetListBox, CommandHdl));
+    m_rIconView.connect_key_press(LINK(this, SvxPresetListBox, KeyPressHdl));
 }
 
-void SvxPresetListBox::SetDrawingArea(weld::DrawingArea* pDrawingArea)
-{
-    ValueSet::SetDrawingArea(pDrawingArea);
-    SetStyle(GetStyle() | WB_ITEMBORDER | WB_VSCROLL);
-    SetColCount(3);
-    SetLineCount(5);
-}
-
-bool SvxPresetListBox::Command(const CommandEvent& rEvent)
+IMPL_LINK(SvxPresetListBox, CommandHdl, const CommandEvent&, rEvent, bool)
 {
     if (rEvent.GetCommand() != CommandEventId::ContextMenu)
-        return CustomWidgetController::Command(rEvent);
+        return false;
 
-    sal_uInt16 nContextMenuItemId = 0;
     Point aPos;
+    std::unique_ptr<weld::TreeIter> pItem;
     if (rEvent.IsMouseEvent())
     {
-        nContextMenuItemId = GetHighlightedItemId();
         aPos = rEvent.GetMousePosPixel();
+        pItem = m_rIconView.get_item_at_pos(aPos);
+        if (!pItem)
+            return false;
     }
     else
     {
-        nContextMenuItemId = GetSelectedItemId();
-        aPos = GetItemRect(nContextMenuItemId).Center();
+        pItem = m_rIconView.get_selected();
+        if (!pItem)
+            return false;
+        aPos = m_rIconView.get_rect(*pItem).Center();
     }
 
-    if (nContextMenuItemId > 0)
-    {
-        std::unique_ptr<weld::Builder> xBuilder(
-            Application::CreateBuilder(GetDrawingArea(), u"svx/ui/presetmenu.ui"_ustr));
-        std::unique_ptr<weld::Menu> xMenu(xBuilder->weld_menu(u"menu"_ustr));
-        const OUString sIdent
-            = xMenu->popup_at_rect(GetDrawingArea(), tools::Rectangle(aPos, Size(1, 1)));
-        if (sIdent == u"rename")
-            maRenameHdl.Call(nContextMenuItemId);
-        else if (sIdent == u"delete")
-            maDeleteHdl.Call(nContextMenuItemId);
+    const int nContextMenuItemIndex = m_rIconView.get_iter_index_in_parent(*pItem);
+    std::unique_ptr<weld::Builder> xBuilder(
+        Application::CreateBuilder(&m_rIconView, u"svx/ui/presetmenu.ui"_ustr));
+    std::unique_ptr<weld::Menu> xMenu(xBuilder->weld_menu(u"menu"_ustr));
+    const OUString sIdent = xMenu->popup_at_rect(&m_rIconView, tools::Rectangle(aPos, Size(1, 1)));
+    if (sIdent == u"rename")
+        maRenameHdl.Call(nContextMenuItemIndex);
+    else if (sIdent == u"delete")
+        maDeleteHdl.Call(nContextMenuItemIndex);
 
-        return true;
-    }
-    return false;
+    return true;
 }
 
-bool SvxPresetListBox::SvxPresetListBox::KeyInput(const KeyEvent& rKEvt)
+IMPL_LINK(SvxPresetListBox, KeyPressHdl, const KeyEvent&, rKEvt, bool)
 {
     switch (rKEvt.GetKeyCode().GetCode())
     {
         case KEY_DELETE:
         {
-            maDeleteHdl.Call(GetSelectedItemId());
+            maDeleteHdl.Call(m_rIconView.get_selected_index());
             return true;
         }
-        break;
         default:
-            return ValueSet::KeyInput(rKEvt);
+            return false;
     }
 }
 
 template <typename ListType> void SvxPresetListBox::FillPresetListBoxImpl(ListType& rList)
 {
     const Size aSize(GetIconSize());
-    sal_uInt32 nStartIndex = 1;
-    for (tools::Long nIndex = 0; nIndex < rList.Count(); nIndex++, nStartIndex++)
+    for (tools::Long nIndex = 0; nIndex < rList.Count(); nIndex++)
     {
         Bitmap aBitmap = rList.CreateBitmap(nIndex, aSize);
         XPropertyEntry* pItem = rList.Get(nIndex);
-        InsertItem(nStartIndex, Image(aBitmap), pItem->GetName());
+        const OUString sName = pItem->GetName();
+        m_rIconView.insert(nIndex, nullptr, nullptr, &aBitmap, nullptr);
+        m_rIconView.set_item_accessible_name(nIndex, sName);
+        m_rIconView.set_item_tooltip_text(nIndex, sName);
     }
 }
 
