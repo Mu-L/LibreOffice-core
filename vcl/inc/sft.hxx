@@ -59,7 +59,6 @@ namespace vcl
 
     typedef struct TTGlobalFontInfo_ {
         int   pitch = 0;              /**< 0: proportional font, otherwise: monospaced             */
-        float italicAngle = 0;        /**< in counter-clockwise degrees                            */
         bool  microsoftSymbolEncoded = false;  /**< true: MS symbol encoded */
         sal_uInt32 typeFlags = 0;     /**< type flags (copyright bits)                             */
     } TTGlobalFontInfo;
@@ -319,6 +318,7 @@ public:
     sal_uInt32 countNonEmptyGlyphs() const;
     FontWeight getFontWeight() const;
     FontWidth getFontWidth() const;
+    FontItalic getFontItalic() const;
 };
 
 } // namespace vcl

@@ -731,7 +731,7 @@ namespace
             // set width
             o_rResult.SetAverageFontWidth( aFont.getFontWidth() );
             // set italic
-            o_rResult.SetItalic( (aInfo.italicAngle != 0) ? ITALIC_NORMAL : ITALIC_NONE );
+            o_rResult.SetItalic( aFont.getFontItalic() );
 
             // set pitch
             o_rResult.SetPitch( (aInfo.pitch == 0) ? PITCH_VARIABLE : PITCH_FIXED );

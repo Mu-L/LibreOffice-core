@@ -168,9 +168,6 @@ TTGlobalFontInfo TrueTypeFont::getGlobalFontInfo() const
     if (aPost.size() >= 12 + sizeof(sal_uInt32))
         info.pitch  = GetUInt32(aPost.data(), POST_isFixedPitch_offset);
 
-    hb_font_t* pFont = getFont();
-    info.italicAngle = hb_style_get_value(pFont, HB_STYLE_TAG_SLANT_ANGLE);
-
     return info;
 }
 
@@ -195,6 +192,12 @@ static FontWeight ImplWeightToSal( float nWeight )
         return WEIGHT_ULTRABOLD;
     else
         return WEIGHT_BLACK;
+}
+
+FontItalic TrueTypeFont::getFontItalic() const
+{
+    return hb_style_get_value(getFont(), HB_STYLE_TAG_SLANT_ANGLE) != 0
+        ? ITALIC_NORMAL : ITALIC_NONE;
 }
 
 FontWidth TrueTypeFont::getFontWidth() const
