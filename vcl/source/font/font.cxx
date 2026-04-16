@@ -727,29 +727,7 @@ namespace
             if( !aFamily.isEmpty() )
                 o_rResult.SetFamilyName( aFamily );
             // set weight
-            if( aInfo.weight )
-            {
-                if( aInfo.weight < FW_EXTRALIGHT )
-                    o_rResult.SetWeight( WEIGHT_THIN );
-                else if( aInfo.weight < FW_LIGHT )
-                    o_rResult.SetWeight( WEIGHT_ULTRALIGHT );
-                else if( aInfo.weight < FW_NORMAL )
-                    o_rResult.SetWeight( WEIGHT_LIGHT );
-                else if( aInfo.weight < FW_MEDIUM )
-                    o_rResult.SetWeight( WEIGHT_NORMAL );
-                else if( aInfo.weight < FW_SEMIBOLD )
-                    o_rResult.SetWeight( WEIGHT_MEDIUM );
-                else if( aInfo.weight < FW_BOLD )
-                    o_rResult.SetWeight( WEIGHT_SEMIBOLD );
-                else if( aInfo.weight < FW_EXTRABOLD )
-                    o_rResult.SetWeight( WEIGHT_BOLD );
-                else if( aInfo.weight < FW_BLACK )
-                    o_rResult.SetWeight( WEIGHT_ULTRABOLD );
-                else
-                    o_rResult.SetWeight( WEIGHT_BLACK );
-            }
-            else
-                o_rResult.SetWeight( (aInfo.macStyle & 1) ? WEIGHT_BOLD : WEIGHT_NORMAL );
+            o_rResult.SetWeight( aFont.getFontWeight() );
             // set width
             if( aInfo.width )
             {

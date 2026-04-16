@@ -554,7 +554,7 @@ bool EmbeddedFontsManager::analyzeTTF(const void* data, tools::Long size, FontWe
     if (!font.isValid())
         return false;
 
-    weight = font.analyzeFontWeight();
+    weight = font.getFontWeight();
 
     return true;
 }

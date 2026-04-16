@@ -55,26 +55,9 @@
 namespace vcl
 {
 
-#ifndef FW_THIN /* WIN32 compilation would conflict */
-/** Value of the weight member of the TTGlobalFontInfo struct */
-    enum WeightClass {
-        FW_THIN = 100,                      /**< Thin                               */
-        FW_EXTRALIGHT = 200,                /**< Extra-light (Ultra-light)          */
-        FW_LIGHT = 300,                     /**< Light                              */
-        FW_NORMAL = 400,                    /**< Normal (Regular)                   */
-        FW_MEDIUM = 500,                    /**< Medium                             */
-        FW_SEMIBOLD = 600,                  /**< Semi-bold (Demi-bold)              */
-        FW_BOLD = 700,                      /**< Bold                               */
-        FW_EXTRABOLD = 800,                 /**< Extra-bold (Ultra-bold)            */
-        FW_BLACK = 900                      /**< Black (Heavy)                      */
-    };
-#endif /* FW_THIN */
-
 /** Return value of TrueTypeFont::getGlobalFontInfo() */
 
     typedef struct TTGlobalFontInfo_ {
-        sal_uInt16 macStyle = 0;      /**< macstyle bits from 'HEAD' table */
-        int   weight = 0;             /**< value of WeightClass or 0 if can't be determined        */
         float width = 0;              /**< width in percentage (e.g. 100 for normal)               */
         int   pitch = 0;              /**< 0: proportional font, otherwise: monospaced             */
         float italicAngle = 0;        /**< in counter-clockwise degrees                            */
@@ -335,7 +318,7 @@ public:
     OUString getSubfamilyName() const;
     TTGlobalFontInfo getGlobalFontInfo() const;
     sal_uInt32 countNonEmptyGlyphs() const;
-    FontWeight analyzeFontWeight() const;
+    FontWeight getFontWeight() const;
 };
 
 } // namespace vcl
