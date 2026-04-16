@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?> <!-- -*- Mode: nXML; tab-width: 4; indent-tabs-mode: nil; nxml-child-indent:4 -*- -->
-<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <!--
  * This file is part of the LibreOffice project.
  *
@@ -55,8 +55,9 @@
             <string>OpenDocument Text</string>
             <key>UTTypeConformsTo</key>
             <array>
-                <string>public.data</string>
-                <string>public.content</string>
+                <string>org.oasis-open.opendocument</string>
+                <string>public.composite-content</string>
+                <string>public.zip-archive</string>
             </array>
             <key>UTTypeTagSpecification</key>
             <dict>
@@ -79,8 +80,9 @@
             <string>OpenDocument Text (Flat XML)</string>
             <key>UTTypeConformsTo</key>
             <array>
-                <string>public.data</string>
+                <string>org.oasis-open.opendocument</string>
                 <string>public.content</string>
+                <string>public.xml</string>
             </array>
             <key>UTTypeTagSpecification</key>
             <dict>
@@ -106,7 +108,6 @@
             <key>UTTypeConformsTo</key>
             <array>
                 <string>public.data</string>
-                <string>public.content</string>
                 <string>public.spreadsheet</string>
             </array>
             <key>UTTypeTagSpecification</key>
@@ -130,8 +131,9 @@
             <string>OpenDocument Spreadsheet</string>
             <key>UTTypeConformsTo</key>
             <array>
-                <string>public.data</string>
-                <string>public.content</string>
+                <string>org.oasis-open.opendocument</string>
+                <string>public.composite-content</string>
+                <string>public.zip-archive</string>
                 <string>public.spreadsheet</string>
             </array>
             <key>UTTypeTagSpecification</key>
@@ -155,8 +157,9 @@
             <string>OpenDocument Spreadsheet (Flat XML)</string>
             <key>UTTypeConformsTo</key>
             <array>
-                <string>public.data</string>
+                <string>org.oasis-open.opendocument</string>
                 <string>public.content</string>
+                <string>public.xml</string>
                 <string>public.spreadsheet</string>
             </array>
             <key>UTTypeTagSpecification</key>
@@ -184,6 +187,7 @@
             <array>
                 <string>public.data</string>
                 <string>public.content</string>
+                <string>public.presentation</string>
             </array>
             <key>UTTypeTagSpecification</key>
             <dict>
@@ -206,8 +210,10 @@
             <string>OpenDocument Presentation</string>
             <key>UTTypeConformsTo</key>
             <array>
-                <string>public.data</string>
-                <string>public.content</string>
+                <string>org.oasis-open.opendocument</string>
+                <string>public.composite-content</string>
+                <string>public.zip-archive</string>
+                <string>public.presentation</string>
             </array>
             <key>UTTypeTagSpecification</key>
             <dict>
@@ -232,6 +238,7 @@
             <array>
                 <string>public.data</string>
                 <string>public.content</string>
+                <string>public.xml</string>
             </array>
             <key>UTTypeTagSpecification</key>
             <dict>
@@ -280,8 +287,9 @@
             <string>OpenDocument Drawing</string>
             <key>UTTypeConformsTo</key>
             <array>
-                <string>public.data</string>
-                <string>public.content</string>
+                <string>org.oasis-open.opendocument</string>
+                <string>public.composite-content</string>
+                <string>public.zip-archive</string>
             </array>
             <key>UTTypeTagSpecification</key>
             <dict>
@@ -306,6 +314,7 @@
             <array>
                 <string>public.data</string>
                 <string>public.content</string>
+                <string>public.xml</string>
             </array>
             <key>UTTypeTagSpecification</key>
             <dict>
@@ -330,8 +339,9 @@
             <string>OpenDocument Chart</string>
             <key>UTTypeConformsTo</key>
             <array>
-                <string>public.data</string>
-                <string>public.content</string>
+                <string>org.oasis-open.opendocument</string>
+                <string>public.composite-content</string>
+                <string>public.zip-archive</string>
             </array>
             <key>UTTypeTagSpecification</key>
             <dict>
@@ -378,8 +388,9 @@
             <string>OpenDocument Master</string>
             <key>UTTypeConformsTo</key>
             <array>
-                <string>public.data</string>
-                <string>public.content</string>
+                <string>org.oasis-open.opendocument</string>
+                <string>public.composite-content</string>
+                <string>public.zip-archive</string>
             </array>
             <key>UTTypeTagSpecification</key>
             <dict>
@@ -428,9 +439,10 @@
             <string>OpenDocument Formula</string>
             <key>UTTypeConformsTo</key>
             <array>
-                <string>public.data</string>
-                <string>public.content</string>
-            </array>
+                <string>org.oasis-open.opendocument</string>
+                <string>public.composite-content</string>
+                <string>public.zip-archive</string>
+           </array>
             <key>UTTypeTagSpecification</key>
             <dict>
                 <key>public.filename-extension</key>
@@ -478,8 +490,9 @@
             <string>OpenDocument Text Template</string>
             <key>UTTypeConformsTo</key>
             <array>
-                <string>public.data</string>
-                <string>public.content</string>
+                <string>org.oasis-open.opendocument</string>
+                <string>public.composite-content</string>
+                <string>public.zip-archive</string>
             </array>
             <key>UTTypeTagSpecification</key>
             <dict>
@@ -504,8 +517,9 @@
             <string>OpenDocument Text Master Template</string>
             <key>UTTypeConformsTo</key>
             <array>
-                <string>public.data</string>
-                <string>public.content</string>
+                <string>org.oasis-open.opendocument</string>
+                <string>public.composite-content</string>
+                <string>public.zip-archive</string>
             </array>
             <key>UTTypeTagSpecification</key>
             <dict>
@@ -555,8 +569,9 @@
             <string>OpenDocument Spreadsheet Template</string>
             <key>UTTypeConformsTo</key>
             <array>
-                <string>public.data</string>
-                <string>public.content</string>
+                <string>org.oasis-open.opendocument</string>
+                <string>public.composite-content</string>
+                <string>public.zip-archive</string>
                 <string>public.spreadsheet</string>
             </array>
             <key>UTTypeTagSpecification</key>
@@ -606,8 +621,10 @@
             <string>OpenDocument Presentation Template</string>
             <key>UTTypeConformsTo</key>
             <array>
-                <string>public.data</string>
-                <string>public.content</string>
+                <string>org.oasis-open.opendocument</string>
+                <string>public.composite-content</string>
+                <string>public.zip-archive</string>
+                <string>public.presentation</string>
             </array>
             <key>UTTypeTagSpecification</key>
             <dict>
@@ -656,8 +673,9 @@
             <string>OpenDocument Drawing Template</string>
             <key>UTTypeConformsTo</key>
             <array>
-                <string>public.data</string>
-                <string>public.content</string>
+                <string>org.oasis-open.opendocument</string>
+                <string>public.composite-content</string>
+                <string>public.zip-archive</string>
             </array>
             <key>UTTypeTagSpecification</key>
             <dict>
@@ -684,6 +702,7 @@
             <array>
                 <string>public.data</string>
                 <string>public.content</string>
+                <string>public.database</string>
             </array>
             <key>UTTypeTagSpecification</key>
             <dict>
@@ -1082,6 +1101,17 @@
         </dict>
 
         <!-- Others -->
+        <dict>
+            <key>UTTypeConformsTo</key>
+            <array>
+                <string>public.data</string>
+            </array>
+            <key>UTTypeDescription</key>
+            <string>OpenDocument</string>
+            <key>UTTypeIdentifier</key>
+            <string>org.oasis-open.opendocument</string>
+        </dict>
+
         <dict>
             <key>UTTypeConformsTo</key>
             <array>
