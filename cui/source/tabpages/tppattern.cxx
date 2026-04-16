@@ -240,7 +240,7 @@ void SvxPatternTabPage::Reset( const SfxItemSet*  )
         m_aCtlPreview.Invalidate();
     }
 
-    ChangePatternHdl_Impl(m_xPatternLB.get());
+    UpdatePattern();
 
     // determine button state
     if( m_pPatternList.is() && m_pPatternList->Count() )
@@ -261,7 +261,9 @@ std::unique_ptr<SvxPatternTabPage> SvxPatternTabPage::Create(weld::Container* pP
     return std::make_unique<SvxPatternTabPage>(pPage, pController, rSet);
 }
 
-IMPL_LINK_NOARG(SvxPatternTabPage, ChangePatternHdl_Impl, ValueSet*, void)
+IMPL_LINK_NOARG(SvxPatternTabPage, ChangePatternHdl_Impl, ValueSet*, void) { UpdatePattern(); }
+
+void SvxPatternTabPage::UpdatePattern()
 {
     std::unique_ptr<GraphicObject> pGraphicObject;
     size_t nPos = m_xPatternLB->GetSelectItemPos();
@@ -404,7 +406,7 @@ IMPL_LINK_NOARG(SvxPatternTabPage, ClickAddHdl_Impl, weld::Button&, void)
 
             m_nPatternListState |= ChangeType::MODIFIED;
 
-            ChangePatternHdl_Impl(m_xPatternLB.get());
+            UpdatePattern();
         }
     }
 
@@ -497,7 +499,7 @@ IMPL_LINK(SvxPatternTabPage, ClickDeleteHdl_Impl, sal_uInt16, nId, void)
             }
             m_xPatternLB->Resize();
 
-            ChangePatternHdl_Impl(m_xPatternLB.get());
+            UpdatePattern();
 
             m_nPatternListState |= ChangeType::MODIFIED;
         }

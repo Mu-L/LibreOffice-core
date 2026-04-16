@@ -623,6 +623,7 @@ private:
     DECL_LINK(ClickRenameHdl_Impl, sal_uInt16, void);
     DECL_LINK(ClickDeleteHdl_Impl, sal_uInt16, void);
 
+    void UpdatePattern();
     sal_Int32 SearchPatternList(std::u16string_view rPatternName);
 
 public:
