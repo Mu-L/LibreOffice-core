@@ -162,15 +162,20 @@ public:
         rDevice.SetOutputSizePixel(aOutputSize, /*bErase*/ false);
 
         auto popIt = rDevice.ScopedPush(vcl::PushFlags::MAPMODE);
-        MapMode aDeviceMapMode(rDevice.GetMapMode());
 
-        const double scale = conversionFract(o3tl::Length::px, o3tl::Length::twip);
-        double scaleX = double(aOutputSize.Width()) / rTileRect.GetWidth() * scale;
-        double scaleY = double(aOutputSize.Height()) / rTileRect.GetHeight() * scale;
-        aDeviceMapMode.SetScaleX(scaleX);
-        aDeviceMapMode.SetScaleY(scaleY);
-        aDeviceMapMode.SetMapUnit(MapUnit::MapPixel);
-        rDevice.SetMapMode(aDeviceMapMode);
+        double scaleX(0.0);
+        double scaleY(0.0);
+        if (rTileRect.GetWidth() && rTileRect.GetHeight())
+        {
+            MapMode aDeviceMapMode(rDevice.GetMapMode());
+            const double scale = conversionFract(o3tl::Length::px, o3tl::Length::twip);
+            scaleX = double(aOutputSize.Width()) / rTileRect.GetWidth() * scale;
+            scaleY = double(aOutputSize.Height()) / rTileRect.GetHeight() * scale;
+            aDeviceMapMode.SetScaleX(scaleX);
+            aDeviceMapMode.SetScaleY(scaleY);
+            aDeviceMapMode.SetMapUnit(MapUnit::MapPixel);
+            rDevice.SetMapMode(aDeviceMapMode);
+        }
 
         o3tl::Length eControlUnitLength = MapToO3tlLength(rMainWindow.GetMapMode().GetMapUnit());
         SdrObjListIter aIterator(pPage, SdrIterMode::Flat);
