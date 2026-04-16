@@ -671,9 +671,12 @@ bool GraphicFormatDetector::checkPCX()
             mrStream.ReadUInt16(nDPIy);
 
             // set logical size
-            MapMode aMap(MapUnit::MapInch, Point(), 1.0 / nDPIx, 1.0 / nDPIy);
-            maMetadata.maLogSize = OutputDevice::LogicToLogic(maMetadata.maPixSize, aMap,
-                                                              MapMode(MapUnit::Map100thMM));
+            if (nDPIx && nDPIy)
+            {
+                MapMode aMap(MapUnit::MapInch, Point(), 1.0 / nDPIx, 1.0 / nDPIy);
+                maMetadata.maLogSize = OutputDevice::LogicToLogic(maMetadata.maPixSize, aMap,
+                                                                  MapMode(MapUnit::Map100thMM));
+            }
 
             // number of color planes
             cByte = 5; // Illegal value in case of EOF.
