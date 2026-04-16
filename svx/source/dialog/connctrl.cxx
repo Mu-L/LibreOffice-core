@@ -98,13 +98,16 @@ void SvxXConnectionPreview::AdaptSize()
         aNewSize.setHeight( static_cast<tools::Long>( static_cast<double>(nWidth) / fRectWH ) );
     }
 
-    double fFrac1 = double( aWinSize.Width() ) / aRect.GetWidth();
-    double fFrac2 = double( aWinSize.Height() ) / aRect.GetHeight();
-    double fMinFrac( fFrac1 <= fFrac2 ? fFrac1 : fFrac2 );
+    if (aRect.GetWidth() && aRect.GetHeight())
+    {
+        double fFrac1 = double( aWinSize.Width() ) / aRect.GetWidth();
+        double fFrac2 = double( aWinSize.Height() ) / aRect.GetHeight();
+        double fMinFrac( fFrac1 <= fFrac2 ? fFrac1 : fFrac2 );
 
-    // Implement MapMode
-    aDisplayMap.SetScaleX( fMinFrac );
-    aDisplayMap.SetScaleY( fMinFrac );
+        // Implement MapMode
+        aDisplayMap.SetScaleX( fMinFrac );
+        aDisplayMap.SetScaleY( fMinFrac );
+    }
 
     // Centering
     aNewPos.setX( ( nWidth - aNewSize.Width() )  >> 1 );
