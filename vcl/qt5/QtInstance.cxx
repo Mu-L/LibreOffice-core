@@ -896,10 +896,8 @@ QtInstance::CreateBuilder(weld::Widget* pParent, const OUString& rUIRoot, const 
         QWidget* pQtParent = GetNativeParentFromWeldParent(pParent);
         return std::make_unique<QtInstanceBuilder>(pQtParent, rUIRoot, rUIFile);
     }
-    else
-    {
-        return SalInstance::CreateBuilder(pParent, rUIRoot, rUIFile);
-    }
+
+    return SalInstance::CreateBuilder(pParent, rUIRoot, rUIFile);
 }
 
 std::unique_ptr<weld::Builder> QtInstance::CreateInterimBuilder(vcl::Window* pParent,
