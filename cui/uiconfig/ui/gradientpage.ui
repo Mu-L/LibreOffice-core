@@ -272,19 +272,6 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkSpinButton" id="incrementmtr">
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="halign">end</property>
-                    <property name="truncate-multiline">True</property>
-                    <property name="adjustment">adjustment1</property>
-                  </object>
-                  <packing>
-                    <property name="left-attach">1</property>
-                    <property name="top-attach">1</property>
-                  </packing>
-                </child>
-                <child>
                   <object class="GtkCheckButton" id="autoincrement">
                     <property name="label" translatable="yes" context="gradientpage|autoincrement">A_utomatic</property>
                     <property name="visible">True</property>
@@ -296,6 +283,19 @@
                   </object>
                   <packing>
                     <property name="left-attach">0</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkSpinButton" id="incrementmtr">
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="halign">end</property>
+                    <property name="truncate-multiline">True</property>
+                    <property name="adjustment">adjustment1</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
                     <property name="top-attach">1</property>
                   </packing>
                 </child>
@@ -393,6 +393,52 @@
                 <property name="row-spacing">3</property>
                 <property name="column-spacing">6</property>
                 <child>
+                  <object class="GtkLabel" id="angleft">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="hexpand">True</property>
+                    <property name="label" translatable="yes" context="gradientpage|angleft">A_ngle:</property>
+                    <property name="use-underline">True</property>
+                    <property name="mnemonic-widget">anglemtr</property>
+                    <property name="xalign">0</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">0</property>
+                    <property name="width">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkScale" id="angleslider">
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="hexpand">True</property>
+                    <property name="adjustment">angleadjustmentslider</property>
+                    <property name="draw-value">False</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkSpinButton" id="anglemtr">
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="truncate-multiline">True</property>
+                    <property name="adjustment">angleadjustment</property>
+                    <child internal-child="accessible">
+                      <object class="AtkObject" id="anglemtr-atkobject">
+                        <property name="AtkObject::accessible-description" translatable="yes" context="gradientpage|extended_tip|anglemtr">Enter a rotation angle for the selected gradient.</property>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+                <child>
                   <object class="GtkLabel" id="borderft">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
@@ -440,89 +486,17 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkSpinButton" id="anglemtr">
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="truncate-multiline">True</property>
-                    <property name="adjustment">angleadjustment</property>
-                    <child internal-child="accessible">
-                      <object class="AtkObject" id="anglemtr-atkobject">
-                        <property name="AtkObject::accessible-description" translatable="yes" context="gradientpage|extended_tip|anglemtr">Enter a rotation angle for the selected gradient.</property>
-                      </object>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="left-attach">1</property>
-                    <property name="top-attach">1</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="angleft">
+                  <object class="GtkLabel" id="colorfromft">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="hexpand">True</property>
-                    <property name="label" translatable="yes" context="gradientpage|angleft">A_ngle:</property>
+                    <property name="label" translatable="yes" context="gradientpage|colorfromft">_From Color:</property>
                     <property name="use-underline">True</property>
-                    <property name="mnemonic-widget">anglemtr</property>
+                    <property name="mnemonic-widget">colorfromlb</property>
                     <property name="xalign">0</property>
                   </object>
                   <packing>
                     <property name="left-attach">0</property>
-                    <property name="top-attach">0</property>
-                    <property name="width">2</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkSpinButton" id="colortomtr">
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="truncate-multiline">True</property>
-                    <property name="adjustment">percentadjustment2</property>
-                    <child internal-child="accessible">
-                      <object class="AtkObject" id="colortomtr-atkobject">
-                        <property name="AtkObject::accessible-description" translatable="yes" context="gradientpage|extended_tip|colortomtr">Enter the intensity for the color in the To Color box, where 0% corresponds to black, and 100 % to the selected color.</property>
-                      </object>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="left-attach">1</property>
-                    <property name="top-attach">7</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkMenuButton" id="colortolb">
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">False</property>
-                    <property name="xalign">0</property>
-                    <property name="draw-indicator">True</property>
-                    <property name="label" translatable="no"></property>
-                    <child>
-                      <placeholder/>
-                    </child>
-                    <child internal-child="accessible">
-                      <object class="AtkObject" id="colortolb-atkobject">
-                        <property name="AtkObject::accessible-description" translatable="yes" context="gradientpage|extended_tip|colortolb">Select a color for the endpoint of the gradient.</property>
-                      </object>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="left-attach">0</property>
-                    <property name="top-attach">7</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="colortoft">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="label" translatable="yes" context="gradientpage|colortoft">_To Color:</property>
-                    <property name="use-underline">True</property>
-                    <property name="mnemonic-widget">colortolb</property>
-                    <property name="xalign">0</property>
-                  </object>
-                  <packing>
-                    <property name="left-attach">0</property>
-                    <property name="top-attach">6</property>
+                    <property name="top-attach">4</property>
                     <property name="width">2</property>
                   </packing>
                 </child>
@@ -566,31 +540,57 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkLabel" id="colorfromft">
+                  <object class="GtkLabel" id="colortoft">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="label" translatable="yes" context="gradientpage|colorfromft">_From Color:</property>
+                    <property name="label" translatable="yes" context="gradientpage|colortoft">_To Color:</property>
                     <property name="use-underline">True</property>
-                    <property name="mnemonic-widget">colorfromlb</property>
+                    <property name="mnemonic-widget">colortolb</property>
                     <property name="xalign">0</property>
                   </object>
                   <packing>
                     <property name="left-attach">0</property>
-                    <property name="top-attach">4</property>
+                    <property name="top-attach">6</property>
                     <property name="width">2</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkScale" id="angleslider">
+                  <object class="GtkMenuButton" id="colortolb">
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
-                    <property name="hexpand">True</property>
-                    <property name="adjustment">angleadjustmentslider</property>
-                    <property name="draw-value">False</property>
+                    <property name="receives-default">False</property>
+                    <property name="xalign">0</property>
+                    <property name="draw-indicator">True</property>
+                    <property name="label" translatable="no"></property>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child internal-child="accessible">
+                      <object class="AtkObject" id="colortolb-atkobject">
+                        <property name="AtkObject::accessible-description" translatable="yes" context="gradientpage|extended_tip|colortolb">Select a color for the endpoint of the gradient.</property>
+                      </object>
+                    </child>
                   </object>
                   <packing>
                     <property name="left-attach">0</property>
-                    <property name="top-attach">1</property>
+                    <property name="top-attach">7</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkSpinButton" id="colortomtr">
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="truncate-multiline">True</property>
+                    <property name="adjustment">percentadjustment2</property>
+                    <child internal-child="accessible">
+                      <object class="AtkObject" id="colortomtr-atkobject">
+                        <property name="AtkObject::accessible-description" translatable="yes" context="gradientpage|extended_tip|colortomtr">Enter the intensity for the color in the To Color box, where 0% corresponds to black, and 100 % to the selected color.</property>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">7</property>
                   </packing>
                 </child>
               </object>
