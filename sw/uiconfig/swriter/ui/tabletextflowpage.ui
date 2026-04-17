@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.38.2 -->
+<!-- Generated with glade 3.40.0 -->
 <interface domain="sw">
   <requires lib="gtk+" version="3.24"/>
   <object class="GtkAdjustment" id="adjustment1">
@@ -202,6 +202,25 @@
                   </packing>
                 </child>
                 <child>
+                  <object class="GtkComboBoxText" id="pagestylelb">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <accessibility>
+                      <relation type="labelled-by" target="pagestyle"/>
+                    </accessibility>
+                    <child internal-child="accessible">
+                      <object class="AtkObject" id="pagestylelb-atkobject">
+                        <property name="AtkObject::accessible-name" translatable="yes" context="tabletextflowpage|pagestylelb-atkobject">With Page Style</property>
+                        <property name="AtkObject::accessible-description" translatable="yes" context="tabletextflowpage|extended_tip|pagestylelb">Select the page style that you want to apply to the first page that follows the break.</property>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
                   <object class="GtkCheckButton" id="pagenoft">
                     <property name="label" translatable="yes" context="tabletextflowpage|pagenoft">Page _number</property>
                     <property name="visible">True</property>
@@ -233,25 +252,6 @@
                   </object>
                   <packing>
                     <property name="left-attach">3</property>
-                    <property name="top-attach">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkComboBoxText" id="pagestylelb">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <accessibility>
-                      <relation type="labelled-by" target="pagestyle"/>
-                    </accessibility>
-                    <child internal-child="accessible">
-                      <object class="AtkObject" id="pagestylelb-atkobject">
-                        <property name="AtkObject::accessible-name" translatable="yes" context="tabletextflowpage|pagestylelb-atkobject">With Page Style</property>
-                        <property name="AtkObject::accessible-description" translatable="yes" context="tabletextflowpage|extended_tip|pagestylelb">Select the page style that you want to apply to the first page that follows the break.</property>
-                      </object>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="left-attach">1</property>
                     <property name="top-attach">0</property>
                   </packing>
                 </child>
@@ -318,52 +318,6 @@
               <packing>
                 <property name="left-attach">0</property>
                 <property name="top-attach">4</property>
-              </packing>
-            </child>
-            <child>
-              <!-- n-columns=2 n-rows=1 -->
-              <object class="GtkGrid" id="grid23">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="column-spacing">12</property>
-                <child>
-                  <object class="GtkLabel" id="label40">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="label" translatable="yes" context="tabletextflowpage|label40">Text _orientation</property>
-                    <property name="use-underline">True</property>
-                    <property name="mnemonic-widget">textorientation</property>
-                  </object>
-                  <packing>
-                    <property name="left-attach">0</property>
-                    <property name="top-attach">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkComboBoxText" id="textorientation">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <items>
-                      <item id="0" translatable="yes" context="tabletextflowpage|liststore1">Horizontal</item>
-                      <item id="2" translatable="yes" context="tabletextflowpage|liststore1">Vertical (top to bottom)</item>
-                      <item id="5" translatable="yes" context="tabletextflowpage|liststore1">Vertical (bottom to top)</item>
-                      <item id="4" translatable="yes" context="tabletextflowpage|liststore1">Use superordinate object settings</item>
-                    </items>
-                    <child internal-child="accessible">
-                      <object class="AtkObject" id="textorientation-atkobject">
-                        <property name="AtkObject::accessible-description" translatable="yes" context="tabletextflowpage|extended_tip|textorientation">Select the orientation for the text in the cells.</property>
-                      </object>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="left-attach">1</property>
-                    <property name="top-attach">0</property>
-                  </packing>
-                </child>
-              </object>
-              <packing>
-                <property name="left-attach">0</property>
-                <property name="top-attach">6</property>
               </packing>
             </child>
             <child>
@@ -449,6 +403,52 @@
               <packing>
                 <property name="left-attach">0</property>
                 <property name="top-attach">5</property>
+              </packing>
+            </child>
+            <child>
+              <!-- n-columns=2 n-rows=1 -->
+              <object class="GtkGrid" id="grid23">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="column-spacing">12</property>
+                <child>
+                  <object class="GtkLabel" id="label40">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="label" translatable="yes" context="tabletextflowpage|label40">Text _orientation</property>
+                    <property name="use-underline">True</property>
+                    <property name="mnemonic-widget">textorientation</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkComboBoxText" id="textorientation">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <items>
+                      <item id="0" translatable="yes" context="tabletextflowpage|liststore1">Horizontal</item>
+                      <item id="2" translatable="yes" context="tabletextflowpage|liststore1">Vertical (top to bottom)</item>
+                      <item id="5" translatable="yes" context="tabletextflowpage|liststore1">Vertical (bottom to top)</item>
+                      <item id="4" translatable="yes" context="tabletextflowpage|liststore1">Use superordinate object settings</item>
+                    </items>
+                    <child internal-child="accessible">
+                      <object class="AtkObject" id="textorientation-atkobject">
+                        <property name="AtkObject::accessible-description" translatable="yes" context="tabletextflowpage|extended_tip|textorientation">Select the orientation for the text in the cells.</property>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">6</property>
               </packing>
             </child>
           </object>
