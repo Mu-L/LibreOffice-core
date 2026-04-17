@@ -20,11 +20,10 @@
 
 #include "SvxPresetListBox.hxx"
 
-#include <svtools/valueset.hxx>
+#include <svx/ColorIconView.hxx>
 #include <svx/dlgctrl.hxx>
 #include <svx/xflasit.hxx>
 #include <svx/tabarea.hxx>
-#include <svx/SvxColorValueSet.hxx>
 #include <svx/PaletteManager.hxx>
 #include <svx/svdview.hxx>
 #include <vcl/hexcolorcontrol.hxx>
@@ -677,8 +676,8 @@ private:
     PaletteManager maPaletteManager;
     SvxXRectPreview m_aCtlPreviewOld;
     SvxXRectPreview m_aCtlPreviewNew;
-    std::unique_ptr<SvxColorValueSet> m_xValSetColorList;
-    std::unique_ptr<SvxColorValueSet> m_xValSetRecentList;
+    ColorIconView m_aColorIconView;
+    ColorIconView m_aRecentIconView;
     std::unique_ptr<weld::ComboBox> m_xSelectPalette;
     std::unique_ptr<weld::RadioButton> m_xRbRGB;
     std::unique_ptr<weld::RadioButton> m_xRbCMYK;
@@ -708,8 +707,6 @@ private:
     std::unique_ptr<weld::Button> m_xMoreColors;
     std::unique_ptr<weld::CustomWeld> m_xCtlPreviewOld;
     std::unique_ptr<weld::CustomWeld> m_xCtlPreviewNew;
-    std::unique_ptr<weld::CustomWeld> m_xValSetColorListWin;
-    std::unique_ptr<weld::CustomWeld> m_xValSetRecentListWin;
 
     static void    ConvertColorValues (Color& rColor, ColorModel eModell);
     static void    RgbToCmyk_Impl( Color& rColor, sal_uInt16& rK );
@@ -725,8 +722,8 @@ private:
     DECL_LINK(OnMoreColorsClick, weld::Button&, void);
 
     DECL_LINK(SelectPaletteLBHdl, weld::ComboBox&, void);
-    DECL_LINK(SelectColorValSetHdl_Impl, ValueSet*, void);
-    DECL_LINK(SelectRecentValSetHdl_Impl, ValueSet*, void);
+    DECL_LINK(ActivatePaletteColorHdl, const Color&, void);
+    DECL_LINK(ActivateRecentColorHdl, const Color&, void);
     DECL_LINK( SelectColorModeHdl_Impl, weld::Toggleable&, void );
     void UpdateToSelectedColor(const NamedColor& rNamedColor);
     void ChangeColor(const NamedColor &rNewColor, bool bUpdatePreset = true);

@@ -429,6 +429,7 @@ $(eval $(call gb_Library_add_exception_objects,svxcore,\
     svx/source/table/viewcontactoftableobj \
     svx/source/theme/ThemeColorChangerCommon \
     svx/source/theme/ThemeColorPaletteManager \
+    svx/source/tbxctrls/ColorIconView \
     svx/source/tbxctrls/extrusioncontrols \
     svx/source/tbxctrls/fontworkgallery \
     svx/source/tbxctrls/IColorSet \

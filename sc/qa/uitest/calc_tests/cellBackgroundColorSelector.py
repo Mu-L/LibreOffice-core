@@ -33,108 +33,90 @@ class CalcCellBackgroundColorSelector(UITestCase):
 
                 # Now we have the ColorPage that we can get the color selector from it
                 xColorpage = xDialog.getChild("ColorPage")
-                color_selector = xColorpage.getChild("colorset")
+                color_selector = xColorpage.getChild("coloriconview")
 
                 # For chart-palettes colors
                 select_by_text(xpaletteselector, "Chart Palettes")
-                # Select Color with id 2
-                color_selector.executeAction("CHOOSE", mkPropertyValues({"POS": "2"}))
-                self.assertEqual(get_state_as_dict(color_selector)["CurrColorId"], "2")
-                self.assertEqual(get_state_as_dict(color_selector)["CurrColorPos"], "1")
-                self.assertEqual(get_state_as_dict(color_selector)["ColorsCount"], "12")
-                self.assertEqual(get_state_as_dict(color_selector)["ColCount"], "12")
-                self.assertEqual(get_state_as_dict(color_selector)["ColorText"], "Chart 2")
-                self.assertEqual(get_state_as_dict(color_selector)["RGB"], "(255,66,14)")
+                # Select Color at index 1
+                color_selector.executeAction("SELECT", mkPropertyValues({"POS": "1"}))
+                self.assertEqual(get_state_as_dict(color_selector)["SelectedItemPos"], "1")
+                self.assertEqual(get_state_as_dict(color_selector)["Children"], "12")
+                self.assertEqual(get_state_as_dict(color_selector)["SelectedEntryTooltip"], "Chart 2")
+                # ID is the RGB color value in hex
+                self.assertEqual(get_state_as_dict(color_selector)["SelectedItemId"], "FF420E")
 
-                # Select Color with id 5
-                color_selector.executeAction("CHOOSE", mkPropertyValues({"POS": "5"}))
-                self.assertEqual(get_state_as_dict(color_selector)["CurrColorId"], "5")
-                self.assertEqual(get_state_as_dict(color_selector)["CurrColorPos"], "4")
-                self.assertEqual(get_state_as_dict(color_selector)["ColorText"], "Chart 5")
-                self.assertEqual(get_state_as_dict(color_selector)["RGB"], "(126,0,33)")
+                # Select Color at index 4
+                color_selector.executeAction("SELECT", mkPropertyValues({"POS": "4"}))
+                self.assertEqual(get_state_as_dict(color_selector)["SelectedItemPos"], "4")
+                self.assertEqual(get_state_as_dict(color_selector)["SelectedEntryTooltip"], "Chart 5")
+                self.assertEqual(get_state_as_dict(color_selector)["SelectedItemId"], "7E0021")
 
                 # For libreoffice colors
                 select_by_text(xpaletteselector, "LibreOffice")
-                # Select Color with id 6
-                color_selector.executeAction("CHOOSE", mkPropertyValues({"POS": "6"}))
-                self.assertEqual(get_state_as_dict(color_selector)["CurrColorId"], "6")
-                self.assertEqual(get_state_as_dict(color_selector)["CurrColorPos"], "5")
-                self.assertEqual(get_state_as_dict(color_selector)["ColorsCount"], "32")
-                self.assertEqual(get_state_as_dict(color_selector)["ColCount"], "12")
-                self.assertEqual(get_state_as_dict(color_selector)["ColorText"], "Green Accent")
-                self.assertEqual(get_state_as_dict(color_selector)["RGB"], "(44,238,14)")
+                # Select Color at index 5
+                color_selector.executeAction("SELECT", mkPropertyValues({"POS": "5"}))
+                self.assertEqual(get_state_as_dict(color_selector)["SelectedItemPos"], "5")
+                self.assertEqual(get_state_as_dict(color_selector)["Children"], "32")
+                self.assertEqual(get_state_as_dict(color_selector)["SelectedEntryTooltip"], "Green Accent")
+                self.assertEqual(get_state_as_dict(color_selector)["SelectedItemId"], "2CEE0E")
 
-                # Select Color with id 30
-                color_selector.executeAction("CHOOSE", mkPropertyValues({"POS": "30"}))
-                self.assertEqual(get_state_as_dict(color_selector)["CurrColorId"], "30")
-                self.assertEqual(get_state_as_dict(color_selector)["CurrColorPos"], "29")
-                self.assertEqual(get_state_as_dict(color_selector)["ColorText"], "Yellow Accent")
-                self.assertEqual(get_state_as_dict(color_selector)["RGB"], "(255,215,76)")
+                # Select Color at index 29
+                color_selector.executeAction("SELECT", mkPropertyValues({"POS": "29"}))
+                self.assertEqual(get_state_as_dict(color_selector)["SelectedItemPos"], "29")
+                self.assertEqual(get_state_as_dict(color_selector)["SelectedEntryTooltip"], "Yellow Accent")
+                self.assertEqual(get_state_as_dict(color_selector)["SelectedItemId"], "FFD74C")
 
                 # For html colors
                 select_by_text(xpaletteselector, "HTML")
-                # Select Color with id 1
-                color_selector.executeAction("CHOOSE", mkPropertyValues({"POS": "1"}))
-                self.assertEqual(get_state_as_dict(color_selector)["CurrColorId"], "1")
-                self.assertEqual(get_state_as_dict(color_selector)["CurrColorPos"], "0")
-                self.assertEqual(get_state_as_dict(color_selector)["ColorsCount"], "139")
-                self.assertEqual(get_state_as_dict(color_selector)["ColCount"], "12")
-                self.assertEqual(get_state_as_dict(color_selector)["ColorText"], "White")
-                # Select Color with id 120
-                color_selector.executeAction("CHOOSE", mkPropertyValues({"POS": "120"}))
-                self.assertEqual(get_state_as_dict(color_selector)["CurrColorId"], "120")
-                self.assertEqual(get_state_as_dict(color_selector)["CurrColorPos"], "119")
-                self.assertEqual(get_state_as_dict(color_selector)["ColorText"], "Navy")
+                # Select Color at index 0
+                color_selector.executeAction("SELECT", mkPropertyValues({"POS": "0"}))
+                self.assertEqual(get_state_as_dict(color_selector)["SelectedItemPos"], "0")
+                self.assertEqual(get_state_as_dict(color_selector)["Children"], "139")
+                self.assertEqual(get_state_as_dict(color_selector)["SelectedEntryTooltip"], "White")
+                # Select Color at index 119
+                color_selector.executeAction("SELECT", mkPropertyValues({"POS": "119"}))
+                self.assertEqual(get_state_as_dict(color_selector)["SelectedItemPos"], "119")
+                self.assertEqual(get_state_as_dict(color_selector)["SelectedEntryTooltip"], "Navy")
 
                 # For freecolour-hlc colors
                 select_by_text(xpaletteselector, "Freecolour HLC")
-                # Select Color with id 988
-                color_selector.executeAction("CHOOSE", mkPropertyValues({"POS": "988"}))
-                self.assertEqual(get_state_as_dict(color_selector)["CurrColorId"], "988")
-                self.assertEqual(get_state_as_dict(color_selector)["CurrColorPos"], "987")
-                self.assertEqual(get_state_as_dict(color_selector)["ColorsCount"], "1032")
-                self.assertEqual(get_state_as_dict(color_selector)["ColCount"], "12")
-                self.assertEqual(get_state_as_dict(color_selector)["ColorText"], "HLC 350 60 10")
-                # Select Color with id 575
-                color_selector.executeAction("CHOOSE", mkPropertyValues({"POS": "575"}))
-                self.assertEqual(get_state_as_dict(color_selector)["CurrColorId"], "575")
-                self.assertEqual(get_state_as_dict(color_selector)["CurrColorPos"], "574")
-                self.assertEqual(get_state_as_dict(color_selector)["ColorText"], "HLC 190 50 20")
+                # Select Color at index 987
+                color_selector.executeAction("SELECT", mkPropertyValues({"POS": "987"}))
+                self.assertEqual(get_state_as_dict(color_selector)["SelectedItemPos"], "987")
+                self.assertEqual(get_state_as_dict(color_selector)["Children"], "1032")
+                self.assertEqual(get_state_as_dict(color_selector)["SelectedEntryTooltip"], "HLC 350 60 10")
+                # Select Color at index 574
+                color_selector.executeAction("SELECT", mkPropertyValues({"POS": "574"}))
+                self.assertEqual(get_state_as_dict(color_selector)["SelectedItemPos"], "574")
+                self.assertEqual(get_state_as_dict(color_selector)["SelectedEntryTooltip"], "HLC 190 50 20")
 
                 # For tonal colors
                 select_by_text(xpaletteselector, "Tonal")
-                # Select Color with id 17
-                color_selector.executeAction("CHOOSE", mkPropertyValues({"POS": "17"}))
-                self.assertEqual(get_state_as_dict(color_selector)["CurrColorId"], "17")
-                self.assertEqual(get_state_as_dict(color_selector)["CurrColorPos"], "16")
-                self.assertEqual(get_state_as_dict(color_selector)["ColorsCount"], "120")
-                self.assertEqual(get_state_as_dict(color_selector)["ColCount"], "12")
-                self.assertEqual(get_state_as_dict(color_selector)["ColorText"], "Cyan 82%")
-                # Select Color with id 13
-                color_selector.executeAction("CHOOSE", mkPropertyValues({"POS": "13"}))
-                self.assertEqual(get_state_as_dict(color_selector)["CurrColorId"], "13")
-                self.assertEqual(get_state_as_dict(color_selector)["CurrColorPos"], "12")
-                self.assertEqual(get_state_as_dict(color_selector)["ColorText"], "Magenta 82%")
+                # Select Color at index 16
+                color_selector.executeAction("SELECT", mkPropertyValues({"POS": "16"}))
+                self.assertEqual(get_state_as_dict(color_selector)["SelectedItemPos"], "16")
+                self.assertEqual(get_state_as_dict(color_selector)["Children"], "120")
+                self.assertEqual(get_state_as_dict(color_selector)["SelectedEntryTooltip"], "Cyan 82%")
+                # Select Color at index 12
+                color_selector.executeAction("SELECT", mkPropertyValues({"POS": "12"}))
+                self.assertEqual(get_state_as_dict(color_selector)["SelectedItemPos"], "12")
+                self.assertEqual(get_state_as_dict(color_selector)["SelectedEntryTooltip"], "Magenta 82%")
 
                 # For material colors
                 select_by_text(xpaletteselector, "Material")
-                # Select Color with id 9
-                color_selector.executeAction("CHOOSE", mkPropertyValues({"POS": "9"}))
-                self.assertEqual(get_state_as_dict(color_selector)["CurrColorId"], "9")
-                self.assertEqual(get_state_as_dict(color_selector)["CurrColorPos"], "8")
-                self.assertEqual(get_state_as_dict(color_selector)["ColorsCount"], "228")
-                self.assertEqual(get_state_as_dict(color_selector)["ColCount"], "12")
-                self.assertEqual(get_state_as_dict(color_selector)["ColorText"], "Gray 800")
+                # Select Color at index 8
+                color_selector.executeAction("SELECT", mkPropertyValues({"POS": "8"}))
+                self.assertEqual(get_state_as_dict(color_selector)["SelectedItemPos"], "8")
+                self.assertEqual(get_state_as_dict(color_selector)["Children"], "228")
+                self.assertEqual(get_state_as_dict(color_selector)["SelectedEntryTooltip"], "Gray 800")
 
                 # For standard colors
                 select_by_text(xpaletteselector, "Standard")
-                # Select Color with id 3
-                color_selector.executeAction("CHOOSE", mkPropertyValues({"POS": "3"}))
-                self.assertEqual(get_state_as_dict(color_selector)["CurrColorId"], "3")
-                self.assertEqual(get_state_as_dict(color_selector)["CurrColorPos"], "2")
-                self.assertEqual(get_state_as_dict(color_selector)["ColorsCount"], "120")
-                self.assertEqual(get_state_as_dict(color_selector)["ColCount"], "12")
-                self.assertEqual(get_state_as_dict(color_selector)["ColorText"], "Dark Gray 3")
+                # Select Color at index 2
+                color_selector.executeAction("SELECT", mkPropertyValues({"POS": "2"}))
+                self.assertEqual(get_state_as_dict(color_selector)["SelectedItemPos"], "2")
+                self.assertEqual(get_state_as_dict(color_selector)["Children"], "120")
+                self.assertEqual(get_state_as_dict(color_selector)["SelectedEntryTooltip"], "Dark Gray 3")
 
 
 
@@ -158,18 +140,17 @@ class CalcCellBackgroundColorSelector(UITestCase):
                 # recent color selector
                 xpaletteselector = xDialog.getChild("paletteselector")
                 xColorpage = xDialog.getChild("ColorPage")
-                color_selector = xColorpage.getChild("colorset")
+                color_selector = xColorpage.getChild("coloriconview")
 
                 # For chart-palettes colors
                 select_by_text(xpaletteselector, "Chart Palettes")
-                # Select Color with id 2
-                color_selector.executeAction("CHOOSE", mkPropertyValues({"POS": "2"}))
-                self.assertEqual(get_state_as_dict(color_selector)["CurrColorId"], "2")
-                self.assertEqual(get_state_as_dict(color_selector)["CurrColorPos"], "1")
-                self.assertEqual(get_state_as_dict(color_selector)["ColorsCount"], "12")
-                self.assertEqual(get_state_as_dict(color_selector)["ColCount"], "12")
-                self.assertEqual(get_state_as_dict(color_selector)["ColorText"], "Chart 2")
-                xrgb = get_state_as_dict(color_selector)["RGB"]
+                # Select Color at index 1 and press Enter to activate
+                color_selector.executeAction("SELECT", mkPropertyValues({"POS": "1"}))
+                color_selector.executeAction("TYPE", mkPropertyValues({"KEYCODE": "RETURN"}))
+                self.assertEqual(get_state_as_dict(color_selector)["SelectedItemPos"], "1")
+                self.assertEqual(get_state_as_dict(color_selector)["Children"], "12")
+                self.assertEqual(get_state_as_dict(color_selector)["SelectedEntryTooltip"], "Chart 2")
+                xrgb = get_state_as_dict(color_selector)["SelectedItemId"]
 
                 # close the dialog after selection of the color
 
@@ -184,14 +165,13 @@ class CalcCellBackgroundColorSelector(UITestCase):
                 xbtncolor.executeAction("CLICK",tuple())
 
                 xColorpage = xDialog.getChild("ColorPage")
-                recent_color_selector = xColorpage.getChild("recentcolorset")
+                recent_color_selector = xColorpage.getChild("recentcoloriconview")
 
                 # Select Color with id 1
-                recent_color_selector.executeAction("CHOOSE", mkPropertyValues({"POS": "1"}))
-                self.assertEqual(get_state_as_dict(recent_color_selector)["CurrColorId"], "1")
-                self.assertEqual(get_state_as_dict(recent_color_selector)["CurrColorPos"], "0")
-                self.assertEqual(get_state_as_dict(recent_color_selector)["ColorText"], "Chart 2")
-                self.assertEqual(get_state_as_dict(recent_color_selector)["RGB"], xrgb)
+                recent_color_selector.executeAction("SELECT", mkPropertyValues({"POS": "0"}))
+                self.assertEqual(get_state_as_dict(recent_color_selector)["SelectedItemPos"], "0")
+                self.assertEqual(get_state_as_dict(recent_color_selector)["SelectedEntryTooltip"], "Chart 2")
+                self.assertEqual(get_state_as_dict(recent_color_selector)["SelectedItemId"], xrgb)
 
 
 

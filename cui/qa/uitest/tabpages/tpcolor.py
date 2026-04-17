@@ -55,8 +55,9 @@ class Test(UITestCase):
                 btnColor.executeAction("CLICK", tuple())
                 paletteSelector = xDialog.getChild("paletteselector")
                 select_by_text(paletteSelector, "Theme colors")
-                colorSelector = xDialog.getChild("colorset")
-                colorSelector.executeAction("CHOOSE", mkPropertyValues({"POS": "4"}))
+                colorSelector = xDialog.getChild("coloriconview")
+                colorSelector.executeAction("SELECT", mkPropertyValues({"POS": "3"}))
+                colorSelector.executeAction("TYPE", mkPropertyValues({"KEYCODE": "RETURN"}))
 
             # Then make sure the doc model is updated accordingly:
             shape = drawPage[0]
