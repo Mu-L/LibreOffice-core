@@ -41,6 +41,7 @@ StringMap TreeListUIObject::get_state()
     aMap[u"CheckBoxList"_ustr] = OUString::boolean(isCheckBoxList(mxTreeList));
     SvTreeListEntry* pEntry = mxTreeList->FirstSelected();
     aMap[u"SelectEntryText"_ustr] = pEntry ? mxTreeList->GetEntryText(pEntry) : OUString();
+    aMap[u"SelectedEntryTooltip"_ustr] = pEntry ? mxTreeList->GetEntryTooltip(pEntry) : OUString();
 
     return aMap;
 }
@@ -54,6 +55,11 @@ void TreeListUIObject::execute(const OUString& rAction,
     else if (auto const pEdit = mxTreeList->GetEditWidget())
     {
         std::unique_ptr<UIObject>(new EditUIObject(pEdit))->execute(rAction, rParameters);
+    }
+    else if (rAction == u"SELECT")
+    {
+        const sal_Int32 nPos = rParameters.at("POS").toInt32();
+        mxTreeList->Select(mxTreeList->GetEntry(nPos));
     }
     else
         WindowUIObject::execute(rAction, rParameters);
