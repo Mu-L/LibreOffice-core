@@ -2923,8 +2923,6 @@ bool SwContentTree::RequestingChildren(const weld::TreeIter& rParent)
         else
             InsertContent(rParent);
 
-        m_xTreeView->set_children_on_demand(rParent, false);
-
         return nCount != 0;
     }
 
