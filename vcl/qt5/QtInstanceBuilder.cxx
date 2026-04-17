@@ -238,6 +238,7 @@ constexpr auto SUPPORTED_UI_FILES = frozen::make_unordered_set<std::u16string_vi
     u"modules/swriter/ui/insertbookmark.ui",
     u"modules/swriter/ui/insertbreak.ui",
     u"modules/swriter/ui/insertcaption.ui",
+    u"modules/swriter/ui/insertfootnote.ui",
     u"modules/swriter/ui/inserttable.ui",
     u"modules/swriter/ui/labeldialog.ui",
     u"modules/swriter/ui/linenumbering.ui",
