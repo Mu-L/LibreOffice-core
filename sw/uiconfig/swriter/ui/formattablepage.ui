@@ -122,25 +122,6 @@
                         <property name="can-focus">False</property>
                         <property name="column-spacing">12</property>
                         <child>
-                          <object class="GtkCheckButton" id="relwidth">
-                            <property name="label" translatable="yes" context="formattablepage|relwidth">Relati_ve</property>
-                            <property name="visible">True</property>
-                            <property name="can-focus">True</property>
-                            <property name="receives-default">False</property>
-                            <property name="use-underline">True</property>
-                            <property name="draw-indicator">True</property>
-                            <child internal-child="accessible">
-                              <object class="AtkObject" id="relwidth-atkobject">
-                                <property name="AtkObject::accessible-description" translatable="yes" context="formattablepage|extended_tip|relwidth">Displays the width of the table as a percentage of the page width.</property>
-                              </object>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="left-attach">1</property>
-                            <property name="top-attach">0</property>
-                          </packing>
-                        </child>
-                        <child>
                           <object class="GtkSpinButton" id="widthmf">
                             <property name="visible">True</property>
                             <property name="can-focus">True</property>
@@ -156,6 +137,25 @@
                           </object>
                           <packing>
                             <property name="left-attach">0</property>
+                            <property name="top-attach">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkCheckButton" id="relwidth">
+                            <property name="label" translatable="yes" context="formattablepage|relwidth">Relati_ve</property>
+                            <property name="visible">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">False</property>
+                            <property name="use-underline">True</property>
+                            <property name="draw-indicator">True</property>
+                            <child internal-child="accessible">
+                              <object class="AtkObject" id="relwidth-atkobject">
+                                <property name="AtkObject::accessible-description" translatable="yes" context="formattablepage|extended_tip|relwidth">Displays the width of the table as a percentage of the page width.</property>
+                              </object>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="left-attach">1</property>
                             <property name="top-attach">0</property>
                           </packing>
                         </child>
@@ -214,48 +214,6 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkLabel" id="rightft">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="label" translatable="yes" context="formattablepage|rightft">Ri_ght</property>
-                        <property name="use-underline">True</property>
-                        <property name="mnemonic-widget">rightmf</property>
-                        <property name="xalign">0</property>
-                      </object>
-                      <packing>
-                        <property name="left-attach">0</property>
-                        <property name="top-attach">1</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkLabel" id="aboveft">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="label" translatable="yes" context="formattablepage|aboveft">_Above</property>
-                        <property name="use-underline">True</property>
-                        <property name="mnemonic-widget">abovemf</property>
-                        <property name="xalign">0</property>
-                      </object>
-                      <packing>
-                        <property name="left-attach">0</property>
-                        <property name="top-attach">2</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkLabel" id="belowft">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="label" translatable="yes" context="formattablepage|belowft">_Below</property>
-                        <property name="use-underline">True</property>
-                        <property name="mnemonic-widget">belowmf</property>
-                        <property name="xalign">0</property>
-                      </object>
-                      <packing>
-                        <property name="left-attach">0</property>
-                        <property name="top-attach">3</property>
-                      </packing>
-                    </child>
-                    <child>
                       <object class="GtkSpinButton" id="leftmf">
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
@@ -272,6 +230,20 @@
                       <packing>
                         <property name="left-attach">1</property>
                         <property name="top-attach">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="rightft">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="label" translatable="yes" context="formattablepage|rightft">Ri_ght</property>
+                        <property name="use-underline">True</property>
+                        <property name="mnemonic-widget">rightmf</property>
+                        <property name="xalign">0</property>
+                      </object>
+                      <packing>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">1</property>
                       </packing>
                     </child>
                     <child>
@@ -294,6 +266,20 @@
                       </packing>
                     </child>
                     <child>
+                      <object class="GtkLabel" id="aboveft">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="label" translatable="yes" context="formattablepage|aboveft">_Above</property>
+                        <property name="use-underline">True</property>
+                        <property name="mnemonic-widget">abovemf</property>
+                        <property name="xalign">0</property>
+                      </object>
+                      <packing>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">2</property>
+                      </packing>
+                    </child>
+                    <child>
                       <object class="GtkSpinButton" id="abovemf">
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
@@ -310,6 +296,20 @@
                       <packing>
                         <property name="left-attach">1</property>
                         <property name="top-attach">2</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="belowft">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="label" translatable="yes" context="formattablepage|belowft">_Below</property>
+                        <property name="use-underline">True</property>
+                        <property name="mnemonic-widget">belowmf</property>
+                        <property name="xalign">0</property>
+                      </object>
+                      <packing>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">3</property>
                       </packing>
                     </child>
                     <child>
