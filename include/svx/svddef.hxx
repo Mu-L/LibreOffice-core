@@ -251,29 +251,30 @@ inline constexpr TypedWhichId<SdrMetricItem>             SDRATTR_EDGELINE2DELTA 
 inline constexpr TypedWhichId<SdrMetricItem>             SDRATTR_EDGELINE3DELTA     (SDRATTR_EDGE_FIRST +10);   // 1106
 inline constexpr sal_uInt16                              SDRATTR_EDGE_LAST          (SDRATTR_EDGELINE3DELTA);   // 1106
 
-inline constexpr sal_uInt16                                   SDRATTR_MEASURE_FIRST            (SDRATTR_EDGE_LAST + 1);        // 1107
-inline constexpr TypedWhichId<SdrMeasureKindItem>             SDRATTR_MEASUREKIND              (SDRATTR_MEASURE_FIRST+ 0);     // 1107
-inline constexpr TypedWhichId<SdrMeasureTextHPosItem>         SDRATTR_MEASURETEXTHPOS          (SDRATTR_MEASURE_FIRST+ 1);     // 1108
-inline constexpr TypedWhichId<SdrMeasureTextVPosItem>         SDRATTR_MEASURETEXTVPOS          (SDRATTR_MEASURE_FIRST+ 2);     // 1109
-inline constexpr TypedWhichId<SdrMetricItem>                  SDRATTR_MEASURELINEDIST          (SDRATTR_MEASURE_FIRST+ 3);     // 1110
-inline constexpr TypedWhichId<SdrMetricItem>                  SDRATTR_MEASUREHELPLINEOVERHANG  (SDRATTR_MEASURE_FIRST+ 4);     // 1111
-inline constexpr TypedWhichId<SdrMetricItem>                  SDRATTR_MEASUREHELPLINEDIST      (SDRATTR_MEASURE_FIRST+ 5);     // 1112
-inline constexpr TypedWhichId<SdrMetricItem>                  SDRATTR_MEASUREHELPLINE1LEN      (SDRATTR_MEASURE_FIRST+ 6);     // 1113
-inline constexpr TypedWhichId<SdrMetricItem>                  SDRATTR_MEASUREHELPLINE2LEN      (SDRATTR_MEASURE_FIRST+ 7);     // 1114
-inline constexpr TypedWhichId<SdrMeasureBelowRefEdgeItem>     SDRATTR_MEASUREBELOWREFEDGE      (SDRATTR_MEASURE_FIRST+ 8);     // 1115
-inline constexpr TypedWhichId<SdrMeasureTextRota90Item>       SDRATTR_MEASURETEXTROTA90        (SDRATTR_MEASURE_FIRST+ 9);     // 1116
-inline constexpr TypedWhichId<SdrYesNoItem>                   SDRATTR_MEASURETEXTUPSIDEDOWN    (SDRATTR_MEASURE_FIRST+10);     // 1117
-inline constexpr TypedWhichId<SdrMeasureOverhangItem>         SDRATTR_MEASUREOVERHANG          (SDRATTR_MEASURE_FIRST+11);     // 1118
-inline constexpr TypedWhichId<SdrMeasureUnitItem>             SDRATTR_MEASUREUNIT              (SDRATTR_MEASURE_FIRST+12);     // 1119
-inline constexpr TypedWhichId<SdrMeasureScaleItem>            SDRATTR_MEASURESCALE             (SDRATTR_MEASURE_FIRST+13);     // 1120
-inline constexpr TypedWhichId<SdrYesNoItem>                   SDRATTR_MEASURESHOWUNIT          (SDRATTR_MEASURE_FIRST+14);     // 1121
-inline constexpr TypedWhichId<SdrMeasureFormatStringItem>     SDRATTR_MEASUREFORMATSTRING      (SDRATTR_MEASURE_FIRST+15);     // 1122
-inline constexpr TypedWhichId<SdrMeasureTextAutoAngleItem>    SDRATTR_MEASURETEXTAUTOANGLE     (SDRATTR_MEASURE_FIRST+16);     // 1123
-inline constexpr TypedWhichId<SdrAngleItem>                   SDRATTR_MEASURETEXTAUTOANGLEVIEW (SDRATTR_MEASURE_FIRST+17);     // 1124
-inline constexpr TypedWhichId<SdrMeasureTextIsFixedAngleItem> SDRATTR_MEASURETEXTISFIXEDANGLE  (SDRATTR_MEASURE_FIRST+18);     // 1125
-inline constexpr TypedWhichId<SdrMeasureTextFixedAngleItem>   SDRATTR_MEASURETEXTFIXEDANGLE    (SDRATTR_MEASURE_FIRST+19);     // 1126
-inline constexpr TypedWhichId<SdrMeasureDecimalPlacesItem>    SDRATTR_MEASUREDECIMALPLACES     (SDRATTR_MEASURE_FIRST+20);     // 1127
-inline constexpr sal_uInt16                                   SDRATTR_MEASURE_LAST             (SDRATTR_MEASUREDECIMALPLACES); // 1127
+inline constexpr sal_uInt16                                   SDRATTR_MEASURE_FIRST            (SDRATTR_EDGE_LAST + 1);            // 1107
+inline constexpr TypedWhichId<SdrMeasureKindItem>             SDRATTR_MEASUREKIND              (SDRATTR_MEASURE_FIRST+ 0);         // 1107
+inline constexpr TypedWhichId<SdrMeasureTextHPosItem>         SDRATTR_MEASURETEXTHPOS          (SDRATTR_MEASURE_FIRST+ 1);         // 1108
+inline constexpr TypedWhichId<SdrMeasureTextVPosItem>         SDRATTR_MEASURETEXTVPOS          (SDRATTR_MEASURE_FIRST+ 2);         // 1109
+inline constexpr TypedWhichId<SdrMetricItem>                  SDRATTR_MEASURELINEDIST          (SDRATTR_MEASURE_FIRST+ 3);         // 1110
+inline constexpr TypedWhichId<SdrMetricItem>                  SDRATTR_MEASUREHELPLINEOVERHANG  (SDRATTR_MEASURE_FIRST+ 4);         // 1111
+inline constexpr TypedWhichId<SdrMetricItem>                  SDRATTR_MEASUREHELPLINEDIST      (SDRATTR_MEASURE_FIRST+ 5);         // 1112
+inline constexpr TypedWhichId<SdrMetricItem>                  SDRATTR_MEASUREHELPLINE1LEN      (SDRATTR_MEASURE_FIRST+ 6);         // 1113
+inline constexpr TypedWhichId<SdrMetricItem>                  SDRATTR_MEASUREHELPLINE2LEN      (SDRATTR_MEASURE_FIRST+ 7);         // 1114
+inline constexpr TypedWhichId<SdrMeasureBelowRefEdgeItem>     SDRATTR_MEASUREBELOWREFEDGE      (SDRATTR_MEASURE_FIRST+ 8);         // 1115
+inline constexpr TypedWhichId<SdrMeasureTextRota90Item>       SDRATTR_MEASURETEXTROTA90        (SDRATTR_MEASURE_FIRST+ 9);         // 1116
+inline constexpr TypedWhichId<SdrYesNoItem>                   SDRATTR_MEASURETEXTUPSIDEDOWN    (SDRATTR_MEASURE_FIRST+10);         // 1117
+inline constexpr TypedWhichId<SdrMeasureOverhangItem>         SDRATTR_MEASUREOVERHANG          (SDRATTR_MEASURE_FIRST+11);         // 1118
+inline constexpr TypedWhichId<SdrMeasureUnitItem>             SDRATTR_MEASUREUNIT              (SDRATTR_MEASURE_FIRST+12);         // 1119
+inline constexpr TypedWhichId<SdrMeasureScaleItem>            SDRATTR_MEASURESCALE             (SDRATTR_MEASURE_FIRST+13);         // 1120
+inline constexpr TypedWhichId<SdrYesNoItem>                   SDRATTR_MEASURESHOWUNIT          (SDRATTR_MEASURE_FIRST+14);         // 1121
+inline constexpr TypedWhichId<SdrMeasureFormatStringItem>     SDRATTR_MEASUREFORMATSTRING      (SDRATTR_MEASURE_FIRST+15);         // 1122
+inline constexpr TypedWhichId<SdrMeasureTextAutoAngleItem>    SDRATTR_MEASURETEXTAUTOANGLE     (SDRATTR_MEASURE_FIRST+16);         // 1123
+inline constexpr TypedWhichId<SdrAngleItem>                   SDRATTR_MEASURETEXTAUTOANGLEVIEW (SDRATTR_MEASURE_FIRST+17);         // 1124
+inline constexpr TypedWhichId<SdrMeasureTextIsFixedAngleItem> SDRATTR_MEASURETEXTISFIXEDANGLE  (SDRATTR_MEASURE_FIRST+18);         // 1125
+inline constexpr TypedWhichId<SdrMeasureTextFixedAngleItem>   SDRATTR_MEASURETEXTFIXEDANGLE    (SDRATTR_MEASURE_FIRST+19);         // 1126
+inline constexpr TypedWhichId<SdrMeasureDecimalPlacesItem>    SDRATTR_MEASUREDECIMALPLACES     (SDRATTR_MEASURE_FIRST+20);         // 1127
+inline constexpr TypedWhichId<SdrYesNoItem>                   SDRATTR_MEASUREAUTODECIMALPLACES (SDRATTR_MEASURE_FIRST+21);         // 1128
+inline constexpr sal_uInt16                                   SDRATTR_MEASURE_LAST             (SDRATTR_MEASUREAUTODECIMALPLACES); // 1128
 
 inline constexpr sal_uInt16                    SDRATTR_CIRC_FIRST     (SDRATTR_MEASURE_LAST+ 1); // 1128
 inline constexpr TypedWhichId<SdrCircKindItem> SDRATTR_CIRCKIND       (SDRATTR_CIRC_FIRST+ 0);   // 1128

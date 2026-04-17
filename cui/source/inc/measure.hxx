@@ -49,6 +49,7 @@ private:
     std::unique_ptr<weld::MetricSpinButton> m_xMtrFldHelpline2Len;
     std::unique_ptr<weld::CheckButton> m_xTsbBelowRefEdge;
     std::unique_ptr<weld::SpinButton> m_xMtrFldDecimalPlaces;
+    std::unique_ptr<weld::CheckButton> m_xTsbAutoDecimalPlaces;
     std::unique_ptr<weld::CheckButton> m_xTsbAutoPosV;
     std::unique_ptr<weld::CheckButton> m_xTsbAutoPosH;
     std::unique_ptr<weld::CheckButton> m_xTsbShowUnit;

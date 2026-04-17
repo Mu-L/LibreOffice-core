@@ -116,29 +116,34 @@ OUString SdrMeasureObj::TakeRepresentation(SdrMeasureFieldKind eMeasureFieldKind
 
             aStr = getSdrModelFromSdrObject().GetMetricString(nLen, true, nNumDigits);
 
-            SvtSysLocale aSysLocale;
-            const LocaleDataWrapper& rLocaleDataWrapper = aSysLocale.GetLocaleData();
-            sal_Unicode cDec(rLocaleDataWrapper.getNumDecimalSep()[0]);
-            sal_Unicode cDecAlt(rLocaleDataWrapper.getNumDecimalSepAlt().toChar());
-
-            if(aStr.indexOf(cDec) != -1 || (cDecAlt && aStr.indexOf(cDecAlt) != -1))
+            // tdf#138414 - respect decimal precision for dimension lines
+            const auto bAutoNumDigits = rSet.Get(SDRATTR_MEASUREAUTODECIMALPLACES).GetValue();
+            if (bAutoNumDigits)
             {
-                sal_Int32 nLen2(aStr.getLength() - 1);
+                SvtSysLocale aSysLocale;
+                const LocaleDataWrapper& rLocaleDataWrapper = aSysLocale.GetLocaleData();
+                sal_Unicode cDec(rLocaleDataWrapper.getNumDecimalSep()[0]);
+                sal_Unicode cDecAlt(rLocaleDataWrapper.getNumDecimalSepAlt().toChar());
 
-                while(aStr[nLen2] == '0')
+                if (aStr.indexOf(cDec) != -1 || (cDecAlt && aStr.indexOf(cDecAlt) != -1))
                 {
-                    aStr = aStr.copy(0, nLen2);
-                    nLen2--;
-                }
+                    sal_Int32 nLen2(aStr.getLength() - 1);
 
-                if(aStr[nLen2] == cDec || (cDecAlt && aStr[nLen2] == cDecAlt))
-                {
-                    aStr = aStr.copy(0, nLen2);
-                    nLen2--;
-                }
+                    while (aStr[nLen2] == '0')
+                    {
+                        aStr = aStr.copy(0, nLen2);
+                        nLen2--;
+                    }
 
-                if(aStr.isEmpty())
-                    aStr += "0";
+                    if (aStr[nLen2] == cDec || (cDecAlt && aStr[nLen2] == cDecAlt))
+                    {
+                        aStr = aStr.copy(0, nLen2);
+                        nLen2--;
+                    }
+
+                    if (aStr.isEmpty())
+                        aStr += "0";
+                }
             }
 
             break;

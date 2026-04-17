@@ -81,6 +81,7 @@ SvxMeasurePage::SvxMeasurePage(weld::Container* pPage, weld::DialogController* p
     , m_xMtrFldHelpline2Len(m_xBuilder->weld_metric_spin_button(u"MTR_FLD_HELPLINE2_LEN"_ustr, FieldUnit::MM))
     , m_xTsbBelowRefEdge(m_xBuilder->weld_check_button(u"TSB_BELOW_REF_EDGE"_ustr))
     , m_xMtrFldDecimalPlaces(m_xBuilder->weld_spin_button(u"MTR_FLD_DECIMALPLACES"_ustr))
+    , m_xTsbAutoDecimalPlaces(m_xBuilder->weld_check_button(u"TSB_AUTO_DECIMAL_PLACES"_ustr))
     , m_xTsbAutoPosV(m_xBuilder->weld_check_button(u"TSB_AUTOPOSV"_ustr))
     , m_xTsbAutoPosH(m_xBuilder->weld_check_button(u"TSB_AUTOPOSH"_ustr))
     , m_xTsbShowUnit(m_xBuilder->weld_check_button(u"TSB_SHOW_UNIT"_ustr))
@@ -126,6 +127,7 @@ SvxMeasurePage::SvxMeasurePage(weld::Container* pPage, weld::DialogController* p
     m_xMtrFldDecimalPlaces->connect_value_changed(LINK(this, SvxMeasurePage, ChangeAttrSpinHdl_Impl));
     // tdf#171746 - limit number of decimal places to prevent numeric overflow
     m_xMtrFldDecimalPlaces->set_range(0, 5);
+    m_xTsbAutoDecimalPlaces->connect_toggled(LINK(this, SvxMeasurePage, ChangeAttrClickHdl_Impl));
     m_xTsbBelowRefEdge->connect_toggled(LINK(this, SvxMeasurePage, ChangeAttrClickHdl_Impl));
     m_xTsbParallel->connect_toggled( LINK( this, SvxMeasurePage, ChangeAttrClickHdl_Impl));
     m_xTsbShowUnit->connect_toggled(LINK(this, SvxMeasurePage, ChangeAttrClickHdl_Impl));
@@ -209,6 +211,15 @@ void SvxMeasurePage::Reset( const SfxItemSet* rAttrs )
     m_xMtrFldDecimalPlaces->set_value(
       static_cast<const SdrMeasureDecimalPlacesItem*>(pItem)->GetValue());
     m_xMtrFldDecimalPlaces->save_value();
+
+    // SdrMeasureAutoDecimalPlacesItem
+    if (rAttrs->GetItemState(SDRATTR_MEASUREAUTODECIMALPLACES) != SfxItemState::INVALID)
+        m_xTsbAutoDecimalPlaces->set_state(rAttrs->Get(SDRATTR_MEASUREAUTODECIMALPLACES).GetValue()
+                                               ? TRISTATE_TRUE
+                                               : TRISTATE_FALSE);
+    else
+        m_xTsbAutoDecimalPlaces->set_state(TRISTATE_INDET);
+    m_xTsbAutoDecimalPlaces->save_state();
 
     // SdrMeasureTextRota90Item
     // Attention: negate !
@@ -396,6 +407,13 @@ bool SvxMeasurePage::FillItemSet( SfxItemSet* rAttrs)
         rAttrs->Put(
             SdrMeasureDecimalPlacesItem(
                 sal::static_int_cast< sal_Int16 >( nValue ) ) );
+        bModified = true;
+    }
+
+    eState = m_xTsbAutoDecimalPlaces->get_state();
+    if (m_xTsbAutoDecimalPlaces->get_state_changed_from_saved())
+    {
+        rAttrs->Put(SdrYesNoItem(SDRATTR_MEASUREAUTODECIMALPLACES, TRISTATE_TRUE == eState));
         bModified = true;
     }
 
@@ -639,6 +657,13 @@ void SvxMeasurePage::ChangeAttrHdl_Impl( void const * p )
         sal_Int16 nValue = sal::static_int_cast< sal_Int16 >(
             m_xMtrFldDecimalPlaces->get_value() );
         aAttrSet.Put( SdrMeasureDecimalPlacesItem( nValue ) );
+    }
+
+    if (p == m_xTsbAutoDecimalPlaces.get())
+    {
+        TriState eState = m_xTsbAutoDecimalPlaces->get_state();
+        if (eState != TRISTATE_INDET)
+            aAttrSet.Put(SdrYesNoItem(SDRATTR_MEASUREAUTODECIMALPLACES, TRISTATE_TRUE == eState));
     }
 
     if (p == m_xTsbParallel.get())
