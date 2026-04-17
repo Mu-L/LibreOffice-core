@@ -514,17 +514,18 @@ void SvxColorTabPage::UpdateToSelectedColor(const NamedColor& rNamedColor)
 
 IMPL_LINK_NOARG(SvxColorTabPage, SelectColorValSetHdl_Impl, ValueSet*, void)
 {
-    sal_Int32 nPos = m_xValSetColorList->GetSelectedItemId();
-    if( nPos == 0 )
+    const sal_uInt16 nId = m_xValSetColorList->GetSelectedItemId();
+    if (nId == 0)
         return;
 
     NamedColor aNamedColor;
-    aNamedColor.m_aColor = m_xValSetColorList->GetItemColor(nPos);
+    aNamedColor.m_aColor = m_xValSetColorList->GetItemColor(nId);
 
     if (maPaletteManager.IsThemePaletteSelected())
     {
         sal_uInt16 nThemeIndex;
         sal_uInt16 nEffectIndex;
+        sal_uInt16 nPos = m_xValSetColorList->GetItemPos(nId);
         if (PaletteManager::GetThemeAndEffectIndex(nPos, nThemeIndex, nEffectIndex))
         {
             aNamedColor.m_nThemeIndex = nThemeIndex;

@@ -2267,13 +2267,13 @@ IMPL_LINK(ColorWindow, SelectHdl, ValueSet*, pColorSet, void)
     OUString sCommand(maCommand);
     // Same for querying IsTheme early.
     bool bThemePaletteSelected = mxPaletteManager->IsThemePaletteSelected();
-    sal_uInt16 nSelectedItemId = pColorSet->GetSelectedItemId();
 
     if (bThemePaletteSelected)
     {
+        const sal_uInt16 nSelectedItemPos = pColorSet->GetItemPos(pColorSet->GetSelectedItemId());
         sal_uInt16 nThemeIndex;
         sal_uInt16 nEffectIndex;
-        if (PaletteManager::GetThemeAndEffectIndex(nSelectedItemId, nThemeIndex, nEffectIndex))
+        if (PaletteManager::GetThemeAndEffectIndex(nSelectedItemPos, nThemeIndex, nEffectIndex))
         {
             aNamedColor.m_nThemeIndex = nThemeIndex;
             mxPaletteManager->GetLumModOff(nThemeIndex, nEffectIndex, aNamedColor.m_nLumMod, aNamedColor.m_nLumOff);

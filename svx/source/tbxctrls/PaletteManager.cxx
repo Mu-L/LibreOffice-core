@@ -154,16 +154,12 @@ bool PaletteManager::IsThemePaletteSelected() const
     return mnCurrentPalette == mnNumOfPalettes - 2;
 }
 
-bool PaletteManager::GetThemeAndEffectIndex(sal_uInt16 nItemId, sal_uInt16& rThemeIndex, sal_uInt16& rEffectIndex)
+bool PaletteManager::GetThemeAndEffectIndex(sal_uInt16 nItemIndex, sal_uInt16& rThemeIndex, sal_uInt16& rEffectIndex)
 {
-    // tdf#157034, nItemId begins with 1 but list of themes begin with 0
-    // so decrement nItemId
-    --nItemId;
-
     // Each column is the same color with different effects.
-    rThemeIndex = nItemId % 12;
+    rThemeIndex = nItemIndex % 12;
 
-    rEffectIndex = nItemId / 12;
+    rEffectIndex = nItemIndex / 12;
     if (rEffectIndex > 5)
         return false;
     return true;
