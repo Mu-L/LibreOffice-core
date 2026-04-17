@@ -921,19 +921,12 @@ SfxPoolItemHolder SfxBindings::Execute_Impl( sal_uInt16 nId, const SfxPoolItem**
     if ( pImpl->bMsgDirty )
         UpdateSlotServer_Impl();
 
-    SfxShell *pShell=nullptr;
-    const SfxSlot *pSlot=nullptr;
-
     const SfxSlotServer* pServer = pCache->GetSlotServer( rDispatcher, pImpl->xProv );
-    if ( !pServer )
-    {
+    if (!pServer)
         return SfxPoolItemHolder();
-    }
-    else
-    {
-        pShell = rDispatcher.GetShell( pServer->GetShellLevel() );
-        pSlot = pServer->GetSlot();
-    }
+
+    SfxShell* pShell = rDispatcher.GetShell(pServer->GetShellLevel());
+    const SfxSlot* pSlot = pServer->GetSlot();
 
     if (!pShell)
         return SfxPoolItemHolder();
