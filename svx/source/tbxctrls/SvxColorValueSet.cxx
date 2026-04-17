@@ -51,27 +51,6 @@ sal_uInt32 SvxColorValueSet::getColumnCount()
     return rStyleSettings.GetColorValueSetColumnCount();
 }
 
-void SvxColorValueSet::addEntriesForXColorList(const XColorList& rXColorList)
-{
-    const sal_uInt32 nColorCount(rXColorList.Count());
-
-    sal_uInt32 nId = 1;
-    for (sal_uInt32 nIndex = 0; nIndex < nColorCount; nIndex++)
-    {
-        const XColorEntry* pEntry = rXColorList.GetColor(nIndex);
-
-        if(pEntry)
-        {
-            InsertItem(nId, pEntry->GetColor(), pEntry->GetName());
-            nId++;
-        }
-        else
-        {
-            OSL_ENSURE(false, "OOps, XColorList with empty entries (!)");
-        }
-    }
-}
-
 Size SvxColorValueSet::layoutAllVisible(sal_uInt32 nEntryCount)
 {
     if(!nEntryCount)

@@ -20,6 +20,7 @@
 
 #include <svx/Palette.hxx>
 #include <rtl/ustring.hxx>
+#include <svx/IColorSet.hxx>
 #include <svx/xtable.hxx>
 #include <svx/theme/ThemeColorPaletteManager.hxx>
 #include <vcl/ColorDialog.hxx>
@@ -63,8 +64,8 @@ public:
     PaletteManager(const PaletteManager&) = delete;
     PaletteManager& operator=(const PaletteManager&) = delete;
     void        LoadPalettes();
-    void        ReloadColorSet(SvxColorValueSet& rColorSet);
-    void        ReloadRecentColorSet(SvxColorValueSet& rColorSet);
+    void ReloadColorSet(IColorSet& rColorSet);
+    void ReloadRecentColorSet(IColorSet& rColorSet);
     std::vector<OUString> GetPaletteList();
     void SetPalette(sal_Int32 nPos, bool bPosOnly = false);
     sal_Int32   GetPalette() const;

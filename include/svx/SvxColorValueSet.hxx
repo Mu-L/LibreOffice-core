@@ -20,12 +20,11 @@
 #pragma once
 
 #include <svtools/valueset.hxx>
+#include <svx/IColorSet.hxx>
 #include <svx/svxdllapi.h>
 #include <set>
 
-class XColorList;
-
-class SVXCORE_DLLPUBLIC SvxColorValueSet : public ValueSet
+class SVXCORE_DLLPUBLIC SvxColorValueSet : public ValueSet, public IColorSet
 {
 public:
     SvxColorValueSet(std::unique_ptr<weld::ScrolledWindow> pWindow);
@@ -38,11 +37,17 @@ public:
     static sal_uInt32 getEntryEdgeLength();
     static sal_uInt32 getColumnCount();
 
-    void addEntriesForXColorList(const XColorList& rXColorList);
     Size layoutAllVisible(sal_uInt32 nEntryCount);
     void layoutToGivenHeight(sal_uInt32 nHeight, sal_uInt32 nEntryCount);
 
     virtual FactoryFunction GetUITestFactory() const override;
+
+    virtual void insert(int nId, const Color& rColor, const OUString& rColorName) override
+    {
+        InsertItem(nId, rColor, rColorName);
+    }
+    virtual int getItemCount() const override { return GetItemCount(); };
+    virtual void clear() override { Clear(); }
 };
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

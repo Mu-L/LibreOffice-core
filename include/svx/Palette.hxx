@@ -21,6 +21,7 @@
 
 #include <sal/config.h>
 #include <sfx2/namedcolor.hxx>
+#include <svx/IColorSet.hxx>
 
 #include <functional>
 
@@ -38,7 +39,7 @@ public:
 
     virtual const OUString&     GetName() = 0;
     virtual const OUString&     GetPath() = 0;
-    virtual void                LoadColorSet(SvxColorValueSet& rColorSet) = 0;
+    virtual void LoadColorSet(IColorSet& rColorSet) = 0;
 
     virtual bool                IsValid() = 0;
 };

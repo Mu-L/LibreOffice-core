@@ -44,7 +44,7 @@ public:
 
     virtual const OUString&     GetName() override;
     virtual const OUString&     GetPath() override;
-    virtual void                LoadColorSet(SvxColorValueSet& rColorSet) override;
+    virtual void LoadColorSet(IColorSet& rColorSet) override;
 
     virtual bool                IsValid() override;
 };
@@ -70,7 +70,7 @@ public:
 
     virtual const OUString&     GetName() override;
     virtual const OUString&     GetPath() override;
-    virtual void                LoadColorSet(SvxColorValueSet& rColorSet) override;
+    virtual void LoadColorSet(IColorSet& rColorSet) override;
 
     virtual bool                IsValid() override;
 };
@@ -90,7 +90,7 @@ public:
 
     virtual const OUString&     GetName() override;
     virtual const OUString&     GetPath() override;
-    virtual void                LoadColorSet(SvxColorValueSet& rColorSet) override;
+    virtual void LoadColorSet(IColorSet& rColorSet) override;
 
     virtual bool                IsValid() override;
 };
