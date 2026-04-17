@@ -233,7 +233,7 @@ public:
     bool DoExecute(int& nExitCode) override;
     void DoQuit() override;
 
-    static QWidget* GetNativeParentFromWeldParent(weld::Widget* pParent);
+    static QWidget* GetQWidget(weld::Widget* pWidget);
 
     QtFrame* activePopup() const { return m_pActivePopup; }
     void setActivePopup(QtFrame*);

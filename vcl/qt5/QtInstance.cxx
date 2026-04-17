@@ -867,16 +867,16 @@ bool QtInstance::isQtWeldingEnabled()
     return bUseWeldedWidgets;
 }
 
-QWidget* QtInstance::GetNativeParentFromWeldParent(weld::Widget* pParent)
+QWidget* QtInstance::GetQWidget(weld::Widget* pWidget)
 {
-    if (!pParent)
+    if (!pWidget)
         return nullptr;
 
-    if (QtInstanceWidget* pQtInstanceWidget = dynamic_cast<QtInstanceWidget*>(pParent))
+    if (QtInstanceWidget* pQtInstanceWidget = dynamic_cast<QtInstanceWidget*>(pWidget))
         return pQtInstanceWidget->getQWidget();
 
     // the parent is not welded/not a native Qt widget; get QWidget via frame
-    if (SalInstanceWidget* pSalWidget = dynamic_cast<SalInstanceWidget*>(pParent))
+    if (SalInstanceWidget* pSalWidget = dynamic_cast<SalInstanceWidget*>(pWidget))
     {
         if (vcl::Window* pWindow = pSalWidget->getWidget())
         {
@@ -893,7 +893,7 @@ QtInstance::CreateBuilder(weld::Widget* pParent, const OUString& rUIRoot, const 
 {
     if (isQtWeldingEnabled() && QtInstanceBuilder::IsUIFileSupported(rUIFile, pParent))
     {
-        QWidget* pQtParent = GetNativeParentFromWeldParent(pParent);
+        QWidget* pQtParent = GetQWidget(pParent);
         return std::make_unique<QtInstanceBuilder>(pQtParent, rUIRoot, rUIFile);
     }
 
@@ -953,7 +953,7 @@ weld::MessageDialog* QtInstance::CreateMessageDialog(weld::Widget* pParent,
     }
     else
     {
-        QWidget* pQtParent = GetNativeParentFromWeldParent(pParent);
+        QWidget* pQtParent = GetQWidget(pParent);
         QMessageBox* pMessageBox = new QMessageBox(pQtParent);
         pMessageBox->setText(toQString(rPrimaryMessage));
         pMessageBox->setIcon(vclMessageTypeToQtIcon(eMessageType));
@@ -971,7 +971,7 @@ QtInstance::CreateColorChooserDialog(weld::Window* pParent, vcl::ColorPickerMode
 
     std::unique_ptr<weld::ColorChooserDialog> pColorChooserDialog;
     RunInMainThread([&] {
-        QColorDialog* pDialog = new QColorDialog(GetNativeParentFromWeldParent(pParent));
+        QColorDialog* pDialog = new QColorDialog(GetQWidget(pParent));
         pColorChooserDialog = std::make_unique<QtInstanceColorChooserDialog>(pDialog);
     });
 

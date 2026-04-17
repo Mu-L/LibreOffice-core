@@ -28,7 +28,7 @@ void QtInstancePopover::popup_at_rect(weld::Widget* pParent, const tools::Rectan
     GetQtInstance().RunInMainThread([&] {
         QWidget* pPopoverWidget = getQWidget();
         pPopoverWidget->adjustSize();
-        QWidget* pParentWidget = QtInstance::GetNativeParentFromWeldParent(pParent);
+        QWidget* pParentWidget = QtInstance::GetQWidget(pParent);
         QPoint aPos = pParentWidget->mapToGlobal(toQPoint(rRect.BottomLeft()));
         aPos.setX(aPos.x() + rRect.GetWidth() - pPopoverWidget->width() / 2);
 
