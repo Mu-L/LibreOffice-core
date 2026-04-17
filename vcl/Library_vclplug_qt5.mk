@@ -150,6 +150,7 @@ $(eval $(call gb_Library_add_exception_objects,vclplug_qt5,\
     vcl/qt5/QtPainter \
     vcl/qt5/QtSalFrame \
     vcl/qt5/QtSalInstance \
+    vcl/qt5/QtSalInstanceBuilderWrapper \
     $(if $(USE_HEADLESS_CODE), \
         vcl/qt5/QtSvpGraphics \
         vcl/qt5/QtSvpSalFrame \

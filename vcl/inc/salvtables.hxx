@@ -64,7 +64,7 @@ namespace vcl
 class RoadmapWizard;
 };
 
-class SalInstanceBuilder : public weld::Builder
+class VCL_DLLPUBLIC SalInstanceBuilder : public weld::Builder
 {
 protected:
     std::unique_ptr<VclBuilder> m_xBuilder;

@@ -37,6 +37,7 @@
 #include <QtObject.hxx>
 #include <QtOpenGLContext.hxx>
 #include <QtSalInstance.hxx>
+#include <QtSalInstanceBuilderWrapper.hxx>
 #if USE_HEADLESS_CODE
 #include <QtSvpSalInstance.hxx>
 #endif
@@ -891,13 +892,16 @@ QWidget* QtInstance::GetQWidget(weld::Widget* pWidget)
 std::unique_ptr<weld::Builder>
 QtInstance::CreateBuilder(weld::Widget* pParent, const OUString& rUIRoot, const OUString& rUIFile)
 {
-    if (isQtWeldingEnabled() && QtInstanceBuilder::IsUIFileSupported(rUIFile, pParent))
+    if (!isQtWeldingEnabled())
+        return SalInstance::CreateBuilder(pParent, rUIRoot, rUIFile);
+
+    if (QtInstanceBuilder::IsUIFileSupported(rUIFile, pParent))
     {
         QWidget* pQtParent = GetQWidget(pParent);
         return std::make_unique<QtInstanceBuilder>(pQtParent, rUIRoot, rUIFile);
     }
 
-    return SalInstance::CreateBuilder(pParent, rUIRoot, rUIFile);
+    return std::make_unique<QtSalInstanceBuilderWrapper>(pParent, rUIRoot, rUIFile);
 }
 
 std::unique_ptr<weld::Builder> QtInstance::CreateInterimBuilder(vcl::Window* pParent,
