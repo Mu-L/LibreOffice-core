@@ -202,16 +202,15 @@ bool ScColumn::HasSelectionMatrixFragment(const ScMarkData& rMark, const ScRange
     ScAddress aCurOrigin = aOrigin;
 
     bool bOpen = false;
-    for (size_t i = 0, n = rRangeList.size(); i < n; ++i)
+    for (const ScRange &rRange : rRangeList)
     {
-        const ScRange& r = rRangeList[i];
-        if (nTab < r.aStart.Tab() || r.aEnd.Tab() < nTab)
+        if (nTab < rRange.aStart.Tab() || rRange.aEnd.Tab() < nTab)
             continue;
 
-        if (nCol < r.aStart.Col() || r.aEnd.Col() < nCol)
+        if (nCol < rRange.aStart.Col() || rRange.aEnd.Col() < nCol)
             continue;
 
-        SCROW nTop = r.aStart.Row(), nBottom = r.aEnd.Row();
+        SCROW nTop = rRange.aStart.Row(), nBottom = rRange.aEnd.Row();
         SCROW nRow = nTop;
         std::pair<sc::CellStoreType::const_iterator,size_t> aPos = maCells.position(nRow);
         sc::CellStoreType::const_iterator it = aPos.first;
