@@ -734,7 +734,7 @@ void SfxDispatchController_Impl::dispatch( const css::util::URL& aURL,
                         SfxRequest aReq( GetId(), nCall, pShell->GetPool() );
                         aReq.SetModifier( nModifier );
                         aReq.SetInternalArgs_Impl(aInternalSet);
-                        pDispatcher->GetBindings()->Execute_Impl( aReq, pSlot, pShell );
+                        pDispatcher->GetBindings()->Execute_Impl(aReq, pSlot, *pShell);
                         aItem = aReq.GetReturnValue();
                         bSuccess = aReq.IsDone() || aItem;
                     }

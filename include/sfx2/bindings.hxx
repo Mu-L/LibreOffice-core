@@ -181,7 +181,7 @@ public:
     css::uno::Reference < css::frame::XDispatch >
                     GetDispatch( const SfxSlot*, const css::util::URL& aURL, bool bMasterCommand );
     SAL_DLLPRIVATE void ContextChanged_Impl();
-    SAL_DLLPRIVATE void Execute_Impl( SfxRequest& rReq, const SfxSlot* pSlot, SfxShell* pShell );
+    SAL_DLLPRIVATE void Execute_Impl(SfxRequest& rReq, const SfxSlot* pSlot, SfxShell& rShell);
     SAL_DLLPRIVATE void DeleteControllers_Impl();
     SAL_DLLPRIVATE SfxDispatcher* GetDispatcher_Impl()  { return pDispatcher; }
     SAL_DLLPRIVATE void ClearCache_Impl( sal_uInt16 nSlotId );
