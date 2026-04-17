@@ -128,20 +128,6 @@
               </packing>
             </child>
             <child>
-              <object class="GtkSpinButton" id="spacefmt">
-                <property name="can-focus">True</property>
-                <property name="no-show-all">True</property>
-                <property name="activates-default">True</property>
-                <property name="truncate-multiline">True</property>
-                <property name="adjustment">adjustment1</property>
-                <property name="digits">2</property>
-              </object>
-              <packing>
-                <property name="left-attach">2</property>
-                <property name="top-attach">0</property>
-              </packing>
-            </child>
-            <child>
               <object class="GtkLabel" id="space">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
@@ -158,6 +144,20 @@
               </object>
               <packing>
                 <property name="left-attach">1</property>
+                <property name="top-attach">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkSpinButton" id="spacefmt">
+                <property name="can-focus">True</property>
+                <property name="no-show-all">True</property>
+                <property name="activates-default">True</property>
+                <property name="truncate-multiline">True</property>
+                <property name="adjustment">adjustment1</property>
+                <property name="digits">2</property>
+              </object>
+              <packing>
+                <property name="left-attach">2</property>
                 <property name="top-attach">0</property>
               </packing>
             </child>
@@ -184,6 +184,157 @@
                 <property name="hexpand">True</property>
                 <property name="row-spacing">6</property>
                 <property name="column-spacing">12</property>
+                <child>
+                  <object class="GtkLabel" id="1">
+                    <property name="sensitive">False</property>
+                    <property name="can-focus">False</property>
+                    <property name="hexpand">True</property>
+                    <property name="label">_1</property>
+                    <property name="use-underline">True</property>
+                    <property name="mnemonic-widget">width1</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="2">
+                    <property name="sensitive">False</property>
+                    <property name="can-focus">False</property>
+                    <property name="hexpand">True</property>
+                    <property name="label">_2</property>
+                    <property name="use-underline">True</property>
+                    <property name="mnemonic-widget">width2</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">2</property>
+                    <property name="top-attach">0</property>
+                    <property name="width">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="3">
+                    <property name="sensitive">False</property>
+                    <property name="can-focus">False</property>
+                    <property name="hexpand">True</property>
+                    <property name="label">_3</property>
+                    <property name="use-underline">True</property>
+                    <property name="mnemonic-widget">width3</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">4</property>
+                    <property name="top-attach">0</property>
+                    <property name="width">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="4">
+                    <property name="sensitive">False</property>
+                    <property name="can-focus">False</property>
+                    <property name="hexpand">True</property>
+                    <property name="label">_4</property>
+                    <property name="use-underline">True</property>
+                    <property name="mnemonic-widget">width4</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">6</property>
+                    <property name="top-attach">0</property>
+                    <property name="width">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="5">
+                    <property name="sensitive">False</property>
+                    <property name="can-focus">False</property>
+                    <property name="hexpand">True</property>
+                    <property name="label">_5</property>
+                    <property name="use-underline">True</property>
+                    <property name="mnemonic-widget">width5</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">8</property>
+                    <property name="top-attach">0</property>
+                    <property name="width">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="6">
+                    <property name="sensitive">False</property>
+                    <property name="can-focus">False</property>
+                    <property name="hexpand">True</property>
+                    <property name="label">_6</property>
+                    <property name="use-underline">True</property>
+                    <property name="mnemonic-widget">width6</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">10</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton" id="back">
+                    <property name="visible">True</property>
+                    <property name="sensitive">False</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                    <property name="halign">start</property>
+                    <property name="image">image7</property>
+                    <property name="always-show-image">True</property>
+                    <child internal-child="accessible">
+                      <object class="AtkObject" id="back-atkobject">
+                        <property name="AtkObject::accessible-description" translatable="yes" context="tablecolumnpage|extended_tip|back">Displays the table columns found to the left of the current column.</property>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton" id="next">
+                    <property name="visible">True</property>
+                    <property name="sensitive">False</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                    <property name="halign">end</property>
+                    <property name="image">image8</property>
+                    <property name="always-show-image">True</property>
+                    <child internal-child="accessible">
+                      <object class="AtkObject" id="next-atkobject">
+                        <property name="AtkObject::accessible-description" translatable="yes" context="tablecolumnpage|extended_tip|next">Displays the table columns found to the right of the current column.</property>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="left-attach">11</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkSpinButton" id="width1">
+                    <property name="sensitive">False</property>
+                    <property name="can-focus">True</property>
+                    <property name="halign">center</property>
+                    <property name="hexpand">True</property>
+                    <property name="activates-default">True</property>
+                    <property name="truncate-multiline">True</property>
+                    <property name="adjustment">adjustment2</property>
+                    <property name="digits">2</property>
+                    <child internal-child="accessible">
+                      <object class="AtkObject" id="width1-atkobject">
+                        <property name="AtkObject::accessible-name" translatable="yes" context="tablecolumnpage|width1-atkobject">Column 1 Width</property>
+                        <property name="AtkObject::accessible-description" translatable="yes" context="tablecolumnpage|extended_tip|width1">Enter the width that you want for the column.</property>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">1</property>
+                    <property name="width">2</property>
+                  </packing>
+                </child>
                 <child>
                   <object class="GtkSpinButton" id="width2">
                     <property name="sensitive">False</property>
@@ -297,157 +448,6 @@
                     <property name="left-attach">10</property>
                     <property name="top-attach">1</property>
                     <property name="width">2</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="6">
-                    <property name="sensitive">False</property>
-                    <property name="can-focus">False</property>
-                    <property name="hexpand">True</property>
-                    <property name="label">_6</property>
-                    <property name="use-underline">True</property>
-                    <property name="mnemonic-widget">width6</property>
-                  </object>
-                  <packing>
-                    <property name="left-attach">10</property>
-                    <property name="top-attach">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="1">
-                    <property name="sensitive">False</property>
-                    <property name="can-focus">False</property>
-                    <property name="hexpand">True</property>
-                    <property name="label">_1</property>
-                    <property name="use-underline">True</property>
-                    <property name="mnemonic-widget">width1</property>
-                  </object>
-                  <packing>
-                    <property name="left-attach">1</property>
-                    <property name="top-attach">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="2">
-                    <property name="sensitive">False</property>
-                    <property name="can-focus">False</property>
-                    <property name="hexpand">True</property>
-                    <property name="label">_2</property>
-                    <property name="use-underline">True</property>
-                    <property name="mnemonic-widget">width2</property>
-                  </object>
-                  <packing>
-                    <property name="left-attach">2</property>
-                    <property name="top-attach">0</property>
-                    <property name="width">2</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="3">
-                    <property name="sensitive">False</property>
-                    <property name="can-focus">False</property>
-                    <property name="hexpand">True</property>
-                    <property name="label">_3</property>
-                    <property name="use-underline">True</property>
-                    <property name="mnemonic-widget">width3</property>
-                  </object>
-                  <packing>
-                    <property name="left-attach">4</property>
-                    <property name="top-attach">0</property>
-                    <property name="width">2</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="5">
-                    <property name="sensitive">False</property>
-                    <property name="can-focus">False</property>
-                    <property name="hexpand">True</property>
-                    <property name="label">_5</property>
-                    <property name="use-underline">True</property>
-                    <property name="mnemonic-widget">width5</property>
-                  </object>
-                  <packing>
-                    <property name="left-attach">8</property>
-                    <property name="top-attach">0</property>
-                    <property name="width">2</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="4">
-                    <property name="sensitive">False</property>
-                    <property name="can-focus">False</property>
-                    <property name="hexpand">True</property>
-                    <property name="label">_4</property>
-                    <property name="use-underline">True</property>
-                    <property name="mnemonic-widget">width4</property>
-                  </object>
-                  <packing>
-                    <property name="left-attach">6</property>
-                    <property name="top-attach">0</property>
-                    <property name="width">2</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkSpinButton" id="width1">
-                    <property name="sensitive">False</property>
-                    <property name="can-focus">True</property>
-                    <property name="halign">center</property>
-                    <property name="hexpand">True</property>
-                    <property name="activates-default">True</property>
-                    <property name="truncate-multiline">True</property>
-                    <property name="adjustment">adjustment2</property>
-                    <property name="digits">2</property>
-                    <child internal-child="accessible">
-                      <object class="AtkObject" id="width1-atkobject">
-                        <property name="AtkObject::accessible-name" translatable="yes" context="tablecolumnpage|width1-atkobject">Column 1 Width</property>
-                        <property name="AtkObject::accessible-description" translatable="yes" context="tablecolumnpage|extended_tip|width1">Enter the width that you want for the column.</property>
-                      </object>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="left-attach">0</property>
-                    <property name="top-attach">1</property>
-                    <property name="width">2</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkButton" id="back">
-                    <property name="visible">True</property>
-                    <property name="sensitive">False</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">True</property>
-                    <property name="halign">start</property>
-                    <property name="image">image7</property>
-                    <property name="always-show-image">True</property>
-                    <child internal-child="accessible">
-                      <object class="AtkObject" id="back-atkobject">
-                        <property name="AtkObject::accessible-description" translatable="yes" context="tablecolumnpage|extended_tip|back">Displays the table columns found to the left of the current column.</property>
-                      </object>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="left-attach">0</property>
-                    <property name="top-attach">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkButton" id="next">
-                    <property name="visible">True</property>
-                    <property name="sensitive">False</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">True</property>
-                    <property name="halign">end</property>
-                    <property name="image">image8</property>
-                    <property name="always-show-image">True</property>
-                    <child internal-child="accessible">
-                      <object class="AtkObject" id="next-atkobject">
-                        <property name="AtkObject::accessible-description" translatable="yes" context="tablecolumnpage|extended_tip|next">Displays the table columns found to the right of the current column.</property>
-                      </object>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="left-attach">11</property>
-                    <property name="top-attach">0</property>
                   </packing>
                 </child>
               </object>
