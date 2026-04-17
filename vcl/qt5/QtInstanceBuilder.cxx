@@ -422,6 +422,7 @@ constexpr auto SUPPORTED_WITH_QT_PARENT = frozen::make_unordered_set<std::u16str
     u"svx/ui/dockingfontwork.ui",
     u"svx/ui/formnavigator.ui",
     u"svx/ui/formnavimenu.ui",
+    u"svx/ui/presetmenu.ui",
     u"vcl/ui/editmenu.ui",
     u"vcl/ui/screenshotmenu.ui",
     u"xmlsec/ui/certdetails.ui",
