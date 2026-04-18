@@ -696,7 +696,7 @@ void DrawViewShell::GetAttrState( SfxItemSet& rSet )
                 SfxItemSet aEditAttr( GetDoc()->GetPool() );
                 mpDrawView->GetAttributes( aEditAttr );
 
-                SfxItemSetFixed<EE_ITEMS_START, EE_ITEMS_END> aNewAttr( GetPool() );
+                SfxItemSet aNewAttr(SfxItemSet::makeFixedSfxItemSet<EE_ITEMS_START, EE_ITEMS_END>( GetPool() ));
                 aNewAttr.Put( aEditAttr, false );
 
                 std::unique_ptr<SvxNumRule> pNumRule;

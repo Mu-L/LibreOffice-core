@@ -1169,7 +1169,8 @@ void SdMiscTest::testPageBackgroundImages()
         CPPUNIT_ASSERT_EQUAL(true, pDrawViewShell->SwitchPage(0));
         SdPage* pPage = pViewShell->GetActualPage();
 
-        SfxItemSetFixed<XATTR_FILL_FIRST, XATTR_FILL_LAST> aMergedAttr(pDocument->GetPool());
+        SfxItemSet aMergedAttr(SfxItemSet::makeFixedSfxItemSet<XATTR_FILL_FIRST, XATTR_FILL_LAST>(
+            pDocument->GetPool()));
         SdStyleSheet* pStyleSheet = pPage->getPresentationStyle(HID_PSEUDOSHEET_BACKGROUND);
         sd::MergePageBackgroundFilling(pPage, pStyleSheet, false, aMergedAttr);
 
@@ -1186,7 +1187,8 @@ void SdMiscTest::testPageBackgroundImages()
         SdPage* pPage = pViewShell->GetActualPage();
 
         // Style should be "BITMAP"
-        SfxItemSetFixed<XATTR_FILL_FIRST, XATTR_FILL_LAST> aMergedAttr(pDocument->GetPool());
+        SfxItemSet aMergedAttr(SfxItemSet::makeFixedSfxItemSet<XATTR_FILL_FIRST, XATTR_FILL_LAST>(
+            pDocument->GetPool()));
         SdStyleSheet* pStyleSheet = pPage->getPresentationStyle(HID_PSEUDOSHEET_BACKGROUND);
         sd::MergePageBackgroundFilling(pPage, pStyleSheet, false, aMergedAttr);
 
@@ -1202,7 +1204,8 @@ void SdMiscTest::testPageBackgroundImages()
         SdPage* pPage = pViewShell->GetActualPage();
 
         // Style should be "BITMAP"
-        SfxItemSetFixed<XATTR_FILL_FIRST, XATTR_FILL_LAST> aMergedAttr(pDocument->GetPool());
+        SfxItemSet aMergedAttr(SfxItemSet::makeFixedSfxItemSet<XATTR_FILL_FIRST, XATTR_FILL_LAST>(
+            pDocument->GetPool()));
         SdStyleSheet* pStyleSheet = pPage->getPresentationStyle(HID_PSEUDOSHEET_BACKGROUND);
         sd::MergePageBackgroundFilling(pPage, pStyleSheet, false, aMergedAttr);
 
@@ -1217,7 +1220,8 @@ void SdMiscTest::testPageBackgroundImages()
         CPPUNIT_ASSERT_EQUAL(true, pDrawViewShell->SwitchPage(3));
         SdPage* pPage = pViewShell->GetActualPage();
 
-        SfxItemSetFixed<XATTR_FILL_FIRST, XATTR_FILL_LAST> aMergedAttr(pDocument->GetPool());
+        SfxItemSet aMergedAttr(SfxItemSet::makeFixedSfxItemSet<XATTR_FILL_FIRST, XATTR_FILL_LAST>(
+            pDocument->GetPool()));
         SdStyleSheet* pStyleSheet = pPage->getPresentationStyle(HID_PSEUDOSHEET_BACKGROUND);
         sd::MergePageBackgroundFilling(pPage, pStyleSheet, false, aMergedAttr);
 

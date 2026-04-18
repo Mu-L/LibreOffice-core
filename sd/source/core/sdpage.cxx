@@ -2232,7 +2232,7 @@ static rtl::Reference<SdrObject> convertPresentationObjectImpl(SdPage& rPage, Sd
             }
 
             // Remove LRSpace item
-            SfxItemSetFixed<EE_PARA_LRSPACE, EE_PARA_LRSPACE> aSet(rModel.GetPool());
+            SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<EE_PARA_LRSPACE, EE_PARA_LRSPACE>(rModel.GetPool()));
 
             aSet.Put(pNewObj->GetMergedItemSet());
 
@@ -2266,7 +2266,7 @@ static rtl::Reference<SdrObject> convertPresentationObjectImpl(SdPage& rPage, Sd
             pNewObj->SetEmptyPresObj(false);
 
             // reset left indent
-            SfxItemSetFixed<EE_PARA_LRSPACE, EE_PARA_LRSPACE> aSet(rModel.GetPool());
+            SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<EE_PARA_LRSPACE, EE_PARA_LRSPACE>(rModel.GetPool()));
 
             aSet.Put(pNewObj->GetMergedItemSet());
 

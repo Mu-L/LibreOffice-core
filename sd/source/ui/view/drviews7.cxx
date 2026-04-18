@@ -1613,7 +1613,7 @@ void DrawViewShell::GetMenuState( SfxItemSet &rSet )
         SdPage* pPage = GetActualPage();
         if (pPage != nullptr && GetDoc() != nullptr)
         {
-            SfxItemSetFixed<XATTR_FILL_FIRST, XATTR_FILL_LAST> aMergedAttr(GetDoc()->GetPool());
+            SfxItemSet aMergedAttr(SfxItemSet::makeFixedSfxItemSet<XATTR_FILL_FIRST, XATTR_FILL_LAST>(GetDoc()->GetPool()));
             SdStyleSheet* pStyleSheet = pPage->getPresentationStyle(HID_PSEUDOSHEET_BACKGROUND);
             MergePageBackgroundFilling(pPage, pStyleSheet, meEditMode == EditMode::MasterPage, aMergedAttr);
             if (drawing::FillStyle_BITMAP == aMergedAttr.Get(XATTR_FILLSTYLE).GetValue())
@@ -1850,7 +1850,7 @@ void DrawViewShell::SetPageProperties (SfxRequest& rReq)
                     XFillGradientItem aGradientItem( basegfx::BGradient::fromJSON(pJSON->GetValue()) );
 
                     // MigrateItemSet guarantees unique gradient names
-                    SfxItemSetFixed<XATTR_FILLGRADIENT, XATTR_FILLGRADIENT> aMigrateSet(mpDrawView->GetModel().GetItemPool());
+                    SfxItemSet aMigrateSet(SfxItemSet::makeFixedSfxItemSet<XATTR_FILLGRADIENT, XATTR_FILLGRADIENT>(mpDrawView->GetModel().GetItemPool()));
                     aMigrateSet.Put( aGradientItem );
                     SdrModel::MigrateItemSet(&aMigrateSet, &aTempSet, mpDrawView->GetModel());
 
@@ -1862,7 +1862,7 @@ void DrawViewShell::SetPageProperties (SfxRequest& rReq)
                     XFillGradientItem aGradientItem( pArgs->Get( XATTR_FILLGRADIENT ) );
 
                     // MigrateItemSet guarantees unique gradient names
-                    SfxItemSetFixed<XATTR_FILLGRADIENT, XATTR_FILLGRADIENT> aMigrateSet(mpDrawView->GetModel().GetItemPool());
+                    SfxItemSet aMigrateSet(SfxItemSet::makeFixedSfxItemSet<XATTR_FILLGRADIENT, XATTR_FILLGRADIENT>(mpDrawView->GetModel().GetItemPool()));
                     aMigrateSet.Put( aGradientItem );
                     SdrModel::MigrateItemSet(&aMigrateSet, &aTempSet, mpDrawView->GetModel());
 

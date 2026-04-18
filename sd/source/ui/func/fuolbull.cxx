@@ -79,7 +79,7 @@ void FuBulletAndPosition::DoExecute( SfxRequest& rReq )
     SfxItemSet aEditAttr( mrDoc.GetPool() );
     mpView->GetAttributes( aEditAttr );
 
-    SfxItemSetFixed<EE_PARA_NUMBULLET, EE_PARA_BULLET> aNewAttr( mrViewShell.GetPool() );
+    SfxItemSet aNewAttr(SfxItemSet::makeFixedSfxItemSet<EE_PARA_NUMBULLET, EE_PARA_BULLET>( mrViewShell.GetPool() ));
     aNewAttr.Put( aEditAttr, false );
 
     auto pView = mpView;
@@ -132,7 +132,7 @@ void FuBulletAndPosition::SetCurrentBulletsNumbering(SfxRequest& rReq)
         return;
     }
 
-    SfxItemSetFixed<EE_ITEMS_START, EE_ITEMS_END> aNewAttr( mrViewShell.GetPool() );
+    SfxItemSet aNewAttr(SfxItemSet::makeFixedSfxItemSet<EE_ITEMS_START, EE_ITEMS_END>( mrViewShell.GetPool() ));
     {
         SfxItemSet aEditAttr( mrDoc.GetPool() );
         mpView->GetAttributes( aEditAttr );
@@ -253,7 +253,7 @@ void FuBulletAndPosition::SetCurrentBulletsNumbering(SfxRequest& rReq)
 
     if (bInMasterView && pNumRule)
     {
-        SfxItemSetFixed<EE_ITEMS_START, EE_ITEMS_END> aSetAttr( mrViewShell.GetPool() );
+        SfxItemSet aSetAttr(SfxItemSet::makeFixedSfxItemSet<EE_ITEMS_START, EE_ITEMS_END>( mrViewShell.GetPool() ));
         aSetAttr.Put(SvxNumBulletItem( *pNumRule, nNumItemId ));
         mpView->SetAttributes(aSetAttr);
     }

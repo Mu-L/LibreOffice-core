@@ -131,7 +131,7 @@ void TextObjectBar::GetCharStateImpl(const ViewShell& rViewShell, const ::sd::Vi
     SfxItemSet  aCharAttrSet( pView->GetDoc().GetPool() );
     pView->GetAttributes( aCharAttrSet );
 
-    SfxItemSetFixed<EE_ITEMS_START,EE_ITEMS_END> aNewAttr( rViewShell.GetPool() );
+    SfxItemSet aNewAttr(SfxItemSet::makeFixedSfxItemSet<EE_ITEMS_START,EE_ITEMS_END>( rViewShell.GetPool() ));
 
     aNewAttr.Put(aCharAttrSet, false);
     rSet.Put(aNewAttr, false);

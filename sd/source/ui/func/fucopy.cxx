@@ -75,7 +75,7 @@ void FuCopy::DoExecute( SfxRequest& rReq )
 
     if( !pArgs )
     {
-        SfxItemSetFixed<ATTR_COPY_START, ATTR_COPY_END> aSet( mrViewShell.GetPool() );
+        SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<ATTR_COPY_START, ATTR_COPY_END>( mrViewShell.GetPool() ));
 
         // indicate color attribute
         SfxItemSet aAttr( mrDoc.GetPool() );
@@ -202,7 +202,7 @@ void FuCopy::DoExecute( SfxRequest& rReq )
 
         if( ( 1 == i ) && bColor )
         {
-            SfxItemSetFixed<XATTR_FILLSTYLE, XATTR_FILLCOLOR> aNewSet( mrViewShell.GetPool() );
+            SfxItemSet aNewSet(SfxItemSet::makeFixedSfxItemSet<XATTR_FILLSTYLE, XATTR_FILLCOLOR>( mrViewShell.GetPool() ));
             aNewSet.Put( XFillStyleItem( drawing::FillStyle_SOLID ) );
             aNewSet.Put( XFillColorItem( OUString(), aStartColor ) );
             mpView->SetAttributes( aNewSet );
@@ -264,7 +264,7 @@ void FuCopy::DoExecute( SfxRequest& rReq )
             sal_uInt8 nGreen = aStartColor.GetGreen() + static_cast<sal_uInt8>( ( static_cast<::tools::Long>(aEndColor.GetGreen()) - static_cast<::tools::Long>(aStartColor.GetGreen()) ) *  static_cast<::tools::Long>(i) / static_cast<::tools::Long>(nNumber) );
             sal_uInt8 nBlue = aStartColor.GetBlue() + static_cast<sal_uInt8>( ( static_cast<::tools::Long>(aEndColor.GetBlue()) - static_cast<::tools::Long>(aStartColor.GetBlue()) ) * static_cast<::tools::Long>(i) / static_cast<::tools::Long>(nNumber) );
             Color aNewColor( nRed, nGreen, nBlue );
-            SfxItemSetFixed<XATTR_FILLSTYLE, XATTR_FILLCOLOR> aNewSet( mrViewShell.GetPool() );
+            SfxItemSet aNewSet(SfxItemSet::makeFixedSfxItemSet<XATTR_FILLSTYLE, XATTR_FILLCOLOR>( mrViewShell.GetPool() ));
             aNewSet.Put( XFillStyleItem( drawing::FillStyle_SOLID ) );
             aNewSet.Put( XFillColorItem( OUString(), aNewColor ) );
             mpView->SetAttributes( aNewSet );

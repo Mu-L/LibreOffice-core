@@ -193,7 +193,7 @@ void FuSummaryPage::DoExecute( SfxRequest& )
         return;
 
     // remove hard break- and character attributes
-    SfxItemSetFixed<EE_ITEMS_START, EE_ITEMS_END> aEmptyEEAttr(mrDoc.GetPool());
+    SfxItemSet aEmptyEEAttr(SfxItemSet::makeFixedSfxItemSet<EE_ITEMS_START, EE_ITEMS_END>(mrDoc.GetPool()));
     sal_Int32 nParaCount = pOutl->GetParagraphCount();
 
     for (sal_Int32 nPara = 0; nPara < nParaCount; nPara++)

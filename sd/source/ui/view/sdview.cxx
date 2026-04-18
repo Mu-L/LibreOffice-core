@@ -1012,8 +1012,8 @@ bool View::IsMorphingAllowed() const
              ( nKind1 != SdrObjKind::Caption && nKind2 !=  SdrObjKind::Caption ) &&
              DynCastE3dObject( pObj1 ) == nullptr && DynCastE3dObject( pObj2 ) ==  nullptr )
         {
-            SfxItemSetFixed<XATTR_FILLSTYLE, XATTR_FILLSTYLE> aSet1( mrDoc.GetPool() );
-            SfxItemSetFixed<XATTR_FILLSTYLE, XATTR_FILLSTYLE> aSet2( mrDoc.GetPool() );
+            SfxItemSet aSet1(SfxItemSet::makeFixedSfxItemSet<XATTR_FILLSTYLE, XATTR_FILLSTYLE>( mrDoc.GetPool() ));
+            SfxItemSet aSet2(SfxItemSet::makeFixedSfxItemSet<XATTR_FILLSTYLE, XATTR_FILLSTYLE>( mrDoc.GetPool() ));
 
             aSet1.Put(pObj1->GetMergedItemSet());
             aSet2.Put(pObj2->GetMergedItemSet());

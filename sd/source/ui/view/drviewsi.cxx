@@ -109,7 +109,7 @@ void DrawViewShell::AssignFrom3DWindow()
 
     if(!GetView()->IsPresObjSelected())
     {
-        SfxItemSetFixed<SDRATTR_START, SDRATTR_END> aSet( GetDoc()->GetPool() );
+        SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<SDRATTR_START, SDRATTR_END>( GetDoc()->GetPool() ));
         p3DWin->GetAttr( aSet );
 
         // own UNDO-compounding also around transformation in 3D
@@ -118,7 +118,7 @@ void DrawViewShell::AssignFrom3DWindow()
         if(GetView()->IsConvertTo3DObjPossible())
         {
             // assign only text-attribute
-            SfxItemSetFixed<EE_ITEMS_START, EE_ITEMS_END> aTextSet( GetDoc()->GetPool() );
+            SfxItemSet aTextSet(SfxItemSet::makeFixedSfxItemSet<EE_ITEMS_START, EE_ITEMS_END>( GetDoc()->GetPool() ));
             aTextSet.Put( aSet, false );
             GetView()->SetAttributes( aTextSet );
 

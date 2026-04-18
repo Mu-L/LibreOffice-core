@@ -841,8 +841,8 @@ bool View::InsertData( const TransferableDataHelper& rDataHelper,
                             if( DynCastE3dObject( pPickObj2 ) && DynCastE3dObject( pObj ) )
                             {
                                 // handle 3D attribute in addition
-                                SfxItemSetFixed<SID_ATTR_3D_START, SID_ATTR_3D_END> aNewSet( mrDoc.GetPool() );
-                                SfxItemSetFixed<SID_ATTR_3D_START, SID_ATTR_3D_END> aOldSet( mrDoc.GetPool() );
+                                SfxItemSet aNewSet(SfxItemSet::makeFixedSfxItemSet<SID_ATTR_3D_START, SID_ATTR_3D_END>( mrDoc.GetPool() ));
+                                SfxItemSet aOldSet(SfxItemSet::makeFixedSfxItemSet<SID_ATTR_3D_START, SID_ATTR_3D_END>( mrDoc.GetPool() ));
 
                                 aOldSet.Put(pPickObj2->GetMergedItemSet());
                                 aNewSet.Put( pObj->GetMergedItemSet() );

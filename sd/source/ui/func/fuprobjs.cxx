@@ -71,7 +71,7 @@ void FuPresentationObjects::DoExecute( SfxRequest& )
 
     /* does the selections end in a unique presentation layout?
        if not, it is not allowed to edit the templates */
-    SfxItemSetFixed<SID_STATUS_LAYOUT, SID_STATUS_LAYOUT> aSet(mrDoc.GetItemPool() );
+    SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<SID_STATUS_LAYOUT, SID_STATUS_LAYOUT>(mrDoc.GetItemPool() ));
     pOutlineViewShell->GetStatusBarState( aSet );
     OUString aLayoutName = aSet.Get(SID_STATUS_LAYOUT).GetValue();
     DBG_ASSERT(!aLayoutName.isEmpty(), "Layout not defined");
