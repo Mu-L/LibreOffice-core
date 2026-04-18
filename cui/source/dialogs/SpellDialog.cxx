@@ -499,7 +499,7 @@ IMPL_LINK_NOARG(SpellDialog, CheckGrammarHdl, weld::Toggleable&, void)
 
 void SpellDialog::StartSpellOptDlg_Impl()
 {
-    auto xSet = std::make_shared<SfxItemSetFixed<SID_AUTOSPELL_CHECK,SID_AUTOSPELL_CHECK>>( SfxGetpApp()->GetPool() );
+    auto xSet = std::make_shared<SfxItemSet>(SfxItemSet::makeFixedSfxItemSet<SID_AUTOSPELL_CHECK,SID_AUTOSPELL_CHECK>( SfxGetpApp()->GetPool() ));
     m_xOptionsDlg = std::make_shared<SfxSingleTabDialogController>(
         m_xDialog.get(), xSet.get(), "content", "cui/ui/spelloptionsdialog.ui", "SpellOptionsDialog");
 

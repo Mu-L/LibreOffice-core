@@ -265,8 +265,9 @@ IMPL_LINK_NOARG(HyperlinkTabPageBase, ClickScriptHdl, weld::Button&, void)
     if (!m_aMacroTable.empty())
         aItem.SetMacroTable(m_aMacroTable);
 
-    auto xItemSet = std::make_unique<SfxItemSetFixed<SID_ATTR_MACROITEM, SID_ATTR_MACROITEM>>(
-        SfxGetpApp()->GetPool());
+    auto xItemSet = std::make_unique<SfxItemSet>(
+        SfxItemSet::makeFixedSfxItemSet<SID_ATTR_MACROITEM, SID_ATTR_MACROITEM>(
+            SfxGetpApp()->GetPool()));
     xItemSet->Put(aItem);
 
     weld::Window* pWin = GetFrameWeld();

@@ -43,8 +43,9 @@ HyperlinkDialog::HyperlinkDialog(weld::Window* pParent, SfxChildWindow* /*pChild
 
 SfxItemSet* HyperlinkDialog::CreateInputItemSet(const OUString&)
 {
-    m_pInputSet = std::make_unique<SfxItemSetFixed<SID_HYPERLINK_GETLINK, SID_HYPERLINK_SETLINK>>(
-        SfxGetpApp()->GetPool());
+    m_pInputSet = std::make_unique<SfxItemSet>(
+        SfxItemSet::makeFixedSfxItemSet<SID_HYPERLINK_GETLINK, SID_HYPERLINK_SETLINK>(
+            SfxGetpApp()->GetPool()));
     return m_pInputSet.get();
 }
 

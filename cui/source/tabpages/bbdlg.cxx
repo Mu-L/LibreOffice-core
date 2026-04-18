@@ -75,9 +75,9 @@ void SvxBorderBackgroundDlg::PageCreated(const OUString& rPageId, SfxTabPage& rT
     // demand, but could also be directly added from the DrawModel.
     else if (rPageId == "area")
     {
-        SfxItemSetFixed<SID_COLOR_TABLE, SID_PATTERN_LIST,
+        SfxItemSet aNew(SfxItemSet::makeFixedSfxItemSet<SID_COLOR_TABLE, SID_PATTERN_LIST,
             SID_OFFER_IMPORT, SID_OFFER_IMPORT>
-            aNew(*GetInputSetImpl()->GetPool());
+            (*GetInputSetImpl()->GetPool()));
 
         aNew.Put(*GetInputSetImpl());
 
