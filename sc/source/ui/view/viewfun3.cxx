@@ -112,10 +112,9 @@ MatrixOverlapInfo lcl_DetectMatrixOverlap(ScDocument& rDoc, const ScRange& rRang
     };
 
     auto isInsideKnownMatrix = [&aAllMatrices](const ScAddress& rPos) {
-        for (const auto& rMat : aAllMatrices)
-            if (rMat.Contains(rPos))
-                return true;
-        return false;
+        return std::any_of(aAllMatrices.begin(), aAllMatrices.end(), [&rPos](const auto& rMat) {
+            return rMat.Contains(rPos);
+        });
     };
 
     // Single pass: scan the original selection for matrix cells.

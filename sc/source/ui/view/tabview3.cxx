@@ -3608,12 +3608,9 @@ void ScTabView::CheckNeedsRepaint()
 
 bool ScTabView::NeedsRepaint()
 {
-    for (VclPtr<ScGridWindow> & pWin : pGridWin)
-    {
-        if (pWin && pWin->IsVisible() && pWin->NeedsRepaint())
-            return true;
-    }
-    return false;
+    return std::any_of(pGridWin.begin(), pGridWin.end(), [](const VclPtr<ScGridWindow>& pWin) {
+        return pWin && pWin->IsVisible() && pWin->NeedsRepaint();
+    });
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
