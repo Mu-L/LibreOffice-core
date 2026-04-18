@@ -62,8 +62,8 @@ DocShell::~DocShell()
 SfxPrinter* DocShell::GetPrinter( bool bCreate )
 {
     if ( !pPrinter && bCreate )
-        pPrinter.disposeAndReset(VclPtr<SfxPrinter>::Create(std::make_unique<SfxItemSetFixed
-            <SID_PRINTER_NOTFOUND_WARN, SID_PRINTER_NOTFOUND_WARN>>(GetPool())
+        pPrinter.disposeAndReset(VclPtr<SfxPrinter>::Create(std::make_unique<SfxItemSet>(SfxItemSet::makeFixedSfxItemSet
+            <SID_PRINTER_NOTFOUND_WARN, SID_PRINTER_NOTFOUND_WARN>(GetPool()))
         ));
 
     return pPrinter.get();

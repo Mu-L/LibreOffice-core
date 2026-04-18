@@ -4231,7 +4231,7 @@ void OReportController::openZoomDialog()
 
     try
     {
-        SfxItemSetFixed<SID_ATTR_ZOOM,SID_ATTR_ZOOM> aDescriptor(*pPool);
+        SfxItemSet aDescriptor(SfxItemSet::makeFixedSfxItemSet<SID_ATTR_ZOOM,SID_ATTR_ZOOM> (*pPool));
         // fill it
         SvxZoomItem aZoomItem( m_eZoomType, m_nZoomValue, SID_ATTR_ZOOM );
         aZoomItem.SetValueSet(SvxZoomEnableFlags::N100|SvxZoomEnableFlags::WHOLEPAGE|SvxZoomEnableFlags::PAGEWIDTH);

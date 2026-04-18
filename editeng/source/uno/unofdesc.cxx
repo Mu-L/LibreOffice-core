@@ -193,10 +193,10 @@ void SvxUnoFontDescriptor::setPropertyToDefault( SfxItemSet& rSet )
 
 uno::Any SvxUnoFontDescriptor::getPropertyDefault( SfxItemPool* pPool )
 {
-    SfxItemSetFixed<
+    SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<
             EE_CHAR_FONTINFO, EE_CHAR_FONTHEIGHT,
             EE_CHAR_WEIGHT, EE_CHAR_ITALIC,
-            EE_CHAR_WLM, EE_CHAR_WLM>  aSet(*pPool);
+            EE_CHAR_WLM, EE_CHAR_WLM> (*pPool));
 
     uno::Any aAny;
 
