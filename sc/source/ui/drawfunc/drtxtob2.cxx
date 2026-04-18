@@ -153,8 +153,8 @@ void ScDrawTextObjectBar::ExecuteExtra( SfxRequest &rReq )
         case SID_ATTR_PARA_LEFT_TO_RIGHT:
         case SID_ATTR_PARA_RIGHT_TO_LEFT:
             {
-                SfxItemSetFixed<EE_PARA_WRITINGDIR, EE_PARA_WRITINGDIR,
-                                    EE_PARA_JUST, EE_PARA_JUST>  aAttr(pView->GetModel().GetItemPool());
+                SfxItemSet aAttr(SfxItemSet::makeFixedSfxItemSet< EE_PARA_WRITINGDIR, EE_PARA_WRITINGDIR,
+                                    EE_PARA_JUST, EE_PARA_JUST>(pView->GetModel().GetItemPool()));
                 bool bLeft = ( nSlot == SID_ATTR_PARA_LEFT_TO_RIGHT );
                 aAttr.Put( SvxFrameDirectionItem(
                                 bLeft ? SvxFrameDirection::Horizontal_LR_TB : SvxFrameDirection::Horizontal_RL_TB,

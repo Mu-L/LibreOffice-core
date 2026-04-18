@@ -245,11 +245,11 @@ void SAL_CALL ScDocumentConfiguration::setPropertyValue(
             {
                 SvMemoryStream aStream (aSequence.getArray(), nSize, StreamMode::READ );
                 aStream.Seek ( STREAM_SEEK_TO_BEGIN );
-                auto pSet = std::make_unique<SfxItemSetFixed
+                auto pSet = std::make_unique<SfxItemSet>(SfxItemSet::makeFixedSfxItemSet
                         <SID_PRINTER_NOTFOUND_WARN, SID_PRINTER_NOTFOUND_WARN,
                         SID_PRINTER_CHANGESTODOC,  SID_PRINTER_CHANGESTODOC,
                         SID_PRINT_SELECTEDSHEET,   SID_PRINT_SELECTEDSHEET,
-                        SID_SCPRINTOPTIONS,        SID_SCPRINTOPTIONS>>( *rDoc.GetPool());
+                        SID_SCPRINTOPTIONS,        SID_SCPRINTOPTIONS>( *rDoc.GetPool()));
 
                 SfxPrinter* pPrinter = pDocShell->GetPrinter();
                 bool bPreferPrinterPapersize = false;

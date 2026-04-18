@@ -823,9 +823,8 @@ void ScDrawTextObjectBar::ExecuteAttr( SfxRequest &rReq )
                     pOutView->DrawText_ToEditView( tools::Rectangle() );
 
                 SfxItemSet aEmptyAttr(SfxItemSet::makeFixedSfxItemSet<EE_ITEMS_START, EE_ITEMS_END>( *aEditAttr.GetPool() ));
-                SfxItemSetFixed<SDRATTR_TEXT_MINFRAMEHEIGHT, SDRATTR_TEXT_MINFRAMEHEIGHT,
-                                SDRATTR_TEXT_MAXFRAMEHEIGHT, SDRATTR_TEXT_MAXFRAMEWIDTH> aSizeAttr(*aEditAttr.GetPool());
-
+                SfxItemSet aSizeAttr(SfxItemSet::makeFixedSfxItemSet<SDRATTR_TEXT_MINFRAMEHEIGHT, SDRATTR_TEXT_MINFRAMEHEIGHT,
+                                        SDRATTR_TEXT_MAXFRAMEHEIGHT, SDRATTR_TEXT_MAXFRAMEWIDTH>( *aEditAttr.GetPool() ));
                 aSizeAttr.Put(pView->GetAttrFromMarked(true));
                 pView->SetAttributes( aEmptyAttr, true );
 
