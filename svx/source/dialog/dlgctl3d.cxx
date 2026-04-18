@@ -183,7 +183,7 @@ void Svx3DPreviewControl::SetObjectType(SvxPreviewObjectType nType)
     if(mnObjectType == nType && mp3DObj)
         return;
 
-    SfxItemSetFixed<SDRATTR_START, SDRATTR_END> aSet(mpModel->GetItemPool());
+    SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<SDRATTR_START, SDRATTR_END>(mpModel->GetItemPool()));
     mnObjectType = nType;
 
     if( mp3DObj )

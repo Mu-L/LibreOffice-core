@@ -32,7 +32,7 @@ namespace svx
     {
         sal_uInt16 nResult = RET_CANCEL;
 
-        SfxItemSetFixed<SID_SB_DB_REGISTER, SID_SB_DB_REGISTER> aRegistrationItems( SfxGetpApp()->GetPool() );
+        SfxItemSet aRegistrationItems(SfxItemSet::makeFixedSfxItemSet<SID_SB_DB_REGISTER, SID_SB_DB_REGISTER>( SfxGetpApp()->GetPool() ));
 
         SvxAbstractDialogFactory* pDialogFactory = SvxAbstractDialogFactory::Create();
         ScopedVclPtr<SfxAbstractDialog> pDialog(pDialogFactory->CreateSfxDialog(parentWindow, aRegistrationItems, nullptr, RID_SFXPAGE_DBREGISTER));

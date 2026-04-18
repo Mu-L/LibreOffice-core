@@ -491,7 +491,7 @@ namespace sdr::properties
 
                                 if(bHasURL)
                                 {
-                                    SfxItemSetFixed<EE_CHAR_COLOR, EE_CHAR_COLOR> aColorSet(*aSet.GetPool());
+                                    SfxItemSet aColorSet(SfxItemSet::makeFixedSfxItemSet<EE_CHAR_COLOR, EE_CHAR_COLOR>(*aSet.GetPool()));
                                     aColorSet.Put(aSet, false);
 
                                     ESelection aSel(nPara, 0);

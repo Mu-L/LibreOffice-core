@@ -2370,7 +2370,7 @@ void Svx3DWin::UpdatePreview()
     }
 
     // Get Itemset
-    SfxItemSetFixed<SDRATTR_START, SDRATTR_END> aSet( pModel->GetItemPool() );
+    SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<SDRATTR_START, SDRATTR_END>( pModel->GetItemPool() ));
 
     // Get Attributes and set the preview
     GetAttr( aSet );

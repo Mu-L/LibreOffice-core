@@ -718,7 +718,7 @@ void ImpSdrGDIMetaFileImport::DoAction(MetaRoundRectAction const & rAct)
     SetAttributes(pRect.get());
     tools::Long nRad=(rAct.GetHorzRound()+rAct.GetVertRound())/2;
     if (nRad!=0) {
-        SfxItemSetFixed<SDRATTR_CORNER_RADIUS, SDRATTR_CORNER_RADIUS> aSet(*mpLineAttr->GetPool());
+        SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<SDRATTR_CORNER_RADIUS, SDRATTR_CORNER_RADIUS>(*mpLineAttr->GetPool()));
         aSet.Put(SdrMetricItem(SDRATTR_CORNER_RADIUS, nRad));
         pRect->SetMergedItemSet(aSet);
     }
@@ -1069,7 +1069,7 @@ void ImpSdrGDIMetaFileImport::ImportText( const Point& rPos, const OUString& rSt
 
     if (!aFnt.IsTransparent())
     {
-        SfxItemSetFixed<XATTR_FILL_FIRST, XATTR_FILL_LAST> aAttr(*mpFillAttr->GetPool());
+        SfxItemSet aAttr(SfxItemSet::makeFixedSfxItemSet<XATTR_FILL_FIRST, XATTR_FILL_LAST>(*mpFillAttr->GetPool()));
         aAttr.Put(XFillStyleItem(drawing::FillStyle_SOLID));
         aAttr.Put(XFillColorItem(OUString(), aFnt.GetFillColor()));
         pText->SetMergedItemSet(aAttr);

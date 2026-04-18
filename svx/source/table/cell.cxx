@@ -312,7 +312,7 @@ SdrText* CellTextProvider::getText(sal_Int32 nIndex) const
                 bool bAutoGrowHeight = rSet.Get(SDRATTR_TEXT_AUTOGROWHEIGHT).GetValue();
 
                 // prepare ItemSet to set exchanged width and height items
-                SfxItemSetFixed<SDRATTR_TEXT_AUTOGROWHEIGHT, SDRATTR_TEXT_AUTOGROWHEIGHT> aNewSet(*rSet.GetPool());
+                SfxItemSet aNewSet(SfxItemSet::makeFixedSfxItemSet<SDRATTR_TEXT_AUTOGROWHEIGHT, SDRATTR_TEXT_AUTOGROWHEIGHT>(*rSet.GetPool()));
 
                 aNewSet.Put(rSet);
                 aNewSet.Put(makeSdrTextAutoGrowWidthItem(bAutoGrowHeight));

@@ -53,7 +53,7 @@ namespace sdr::properties
             if(moItemSet)
             {
                 // filter for SDRATTR_3DSCENE_ items, only keep those items
-                SfxItemSetFixed<SDRATTR_3DSCENE_FIRST, SDRATTR_3DSCENE_LAST> aNew(*moItemSet->GetPool());
+                SfxItemSet aNew(SfxItemSet::makeFixedSfxItemSet<SDRATTR_3DSCENE_FIRST, SDRATTR_3DSCENE_LAST>(*moItemSet->GetPool()));
                 aNew.Put(*moItemSet);
                 moItemSet->ClearItem();
                 moItemSet->Put(aNew);

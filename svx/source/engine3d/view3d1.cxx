@@ -119,7 +119,7 @@ SfxItemSet E3dView::Get3DAttributes() const
     if(!nSelectedItems)
     {
         // Get defaults and apply
-        SfxItemSetFixed<SDRATTR_3D_FIRST, SDRATTR_3D_LAST> aDefaultSet(GetModel().GetItemPool());
+        SfxItemSet aDefaultSet(SfxItemSet::makeFixedSfxItemSet<SDRATTR_3D_FIRST, SDRATTR_3D_LAST>(GetModel().GetItemPool()));
         GetAttributes(aDefaultSet);
         aSet.Put(aDefaultSet);
 
@@ -159,7 +159,7 @@ void E3dView::Set3DAttributes( const SfxItemSet& rAttr)
     if(!nSelectedItems)
     {
         // Set defaults
-        SfxItemSetFixed<SDRATTR_3D_FIRST, SDRATTR_3D_LAST> aDefaultSet(GetModel().GetItemPool());
+        SfxItemSet aDefaultSet(SfxItemSet::makeFixedSfxItemSet<SDRATTR_3D_FIRST, SDRATTR_3D_LAST>(GetModel().GetItemPool()));
         aDefaultSet.Put(rAttr);
         SetAttributes(aDefaultSet);
     }
