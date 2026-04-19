@@ -336,7 +336,7 @@ std::optional<OString> SwVisibleCursor::getLOKPayload(int nType, int nViewId) co
             SwWrtShell* pShell = m_pCursorShell->GetDoc()->GetDocShell()->GetWrtShell();
             if (SfxViewShell* pNotifySh = pShell ? m_pCursorShell->GetSfxViewShell() : nullptr)
             {
-                SfxItemSetFixed<RES_TXTATR_INETFMT, RES_TXTATR_INETFMT> aSet(pNotifySh->GetPool());
+                SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_TXTATR_INETFMT, RES_TXTATR_INETFMT>(pNotifySh->GetPool()));
                 pShell->GetCurAttr(aSet);
                 const SwFormatINetFormat* pItem = nullptr;
                 if(SfxItemState::SET <= aSet.GetItemState( RES_TXTATR_INETFMT, true, &pItem ))

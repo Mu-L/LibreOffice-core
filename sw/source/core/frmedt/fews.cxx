@@ -473,7 +473,7 @@ void SwFEShell::InsertLabel( const SwLabelType eType, const OUString &rText, con
                 // a floating table anymore, disable the "can split" bit, it'll be hidden on the UI
                 // anyway.
                 SwFrameFormat* pFormat = pFly->GetFrameFormat();
-                SfxItemSetFixed<RES_FLY_SPLIT, RES_FLY_SPLIT> aSet(GetDoc()->GetAttrPool());
+                SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_FLY_SPLIT, RES_FLY_SPLIT>(GetDoc()->GetAttrPool()));
                 SwFormatFlySplit aSplit(false);
                 aSet.Put(aSplit);
                 // SwUndoFormatAttr is created for us.

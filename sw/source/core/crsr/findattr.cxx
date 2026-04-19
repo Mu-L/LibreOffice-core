@@ -1067,7 +1067,7 @@ static bool FindAttrsImpl(SwPaM & rSearchPam,
 
     // check which text/char attributes are searched
     SwAttrCheckArr aCmpArr( rSet, bSrchForward, bNoColls );
-    SfxItemSetFixed<RES_PARATR_BEGIN, RES_GRFATR_END-1> aOtherSet( rSearchPam.GetDoc().GetAttrPool() );
+    SfxItemSet aOtherSet(SfxItemSet::makeFixedSfxItemSet<RES_PARATR_BEGIN, RES_GRFATR_END-1>( rSearchPam.GetDoc().GetAttrPool() ));
     aOtherSet.Put( rSet, false );   // got all invalid items
 
     FnSearchAttr fnSearch = bSrchForward

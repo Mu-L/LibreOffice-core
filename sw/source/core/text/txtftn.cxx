@@ -1010,7 +1010,7 @@ SwNumberPortion *SwTextFormatter::NewFootnoteNumPortion( SwTextFormatInfo const 
         if (pRedline)
         {
             SwAttrPool& rPool = pDoc->GetAttrPool();
-            SfxItemSetFixed<RES_CHRATR_BEGIN, RES_CHRATR_END-1> aSet(rPool);
+            SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_CHRATR_BEGIN, RES_CHRATR_END-1>(rPool));
 
             std::size_t aAuthor = (1 < pRedline->GetStackCount())
                     ? pRedline->GetAuthor( 1 )

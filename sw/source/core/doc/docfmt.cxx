@@ -130,7 +130,7 @@ static bool lcl_RstAttr( SwNode* pNd, void* pArgs )
         std::vector<sal_uInt16> aClearWhichIds;
         // restoring all paragraph list attributes
         {
-            SfxItemSetFixed<RES_PARATR_LIST_BEGIN, RES_PARATR_LIST_AUTOFMT - 1> aListAttrSet( rDoc.GetAttrPool() );
+            SfxItemSet aListAttrSet(SfxItemSet::makeFixedSfxItemSet<RES_PARATR_LIST_BEGIN, RES_PARATR_LIST_AUTOFMT - 1>( rDoc.GetAttrPool() ));
             aListAttrSet.Set(*pAttrSetOfNode);
             if ( aListAttrSet.Count() )
             {
@@ -440,7 +440,7 @@ void SwDoc::UpdateRsid( const SwPaM &rRg, const sal_Int32 nLen )
     const sal_Int32 nStart(rRg.GetPoint()->GetContentIndex() - nLen);
     SvxRsidItem aRsid( mnRsid, RES_CHRATR_RSID );
 
-    SfxItemSetFixed<RES_CHRATR_RSID, RES_CHRATR_RSID> aSet(GetAttrPool());
+    SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_CHRATR_RSID, RES_CHRATR_RSID>(GetAttrPool()));
     aSet.Put(aRsid);
     bool const bRet(pTextNode->SetAttr(aSet, nStart,
         rRg.GetPoint()->GetContentIndex()));

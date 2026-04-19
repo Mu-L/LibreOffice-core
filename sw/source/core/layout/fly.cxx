@@ -1395,7 +1395,7 @@ void SwFlyFrame::ChgRelPos( const Point &rNewPos )
     SwTwips nTmpY = nNewY == LONG_MAX ? 0 : nNewY;
     if( bVert )
         nTmpY = -nTmpY;
-    SfxItemSetFixed<RES_VERT_ORIENT, RES_HORI_ORIENT> aSet( pFormat->GetDoc().GetAttrPool() );
+    SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_VERT_ORIENT, RES_HORI_ORIENT>( pFormat->GetDoc().GetAttrPool() ));
 
     SwFormatVertOrient aVert( pFormat->GetVertOrient() );
     const SwTextFrame *pAutoFrame = nullptr;

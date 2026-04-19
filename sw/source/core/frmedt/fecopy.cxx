@@ -1477,7 +1477,7 @@ SwPasteSdr SwFEShell::PasteStream(SvStream & rStrm, SwPasteSdr nAction, const Po
                     assert(pAnchor);
 
                     // store attributes, then set SdrObject
-                    SfxItemSetFixed<RES_SURROUND, RES_ANCHOR> aFrameSet( mxDoc->GetAttrPool() );
+                    SfxItemSet aFrameSet(SfxItemSet::makeFixedSfxItemSet<RES_SURROUND, RES_ANCHOR>( mxDoc->GetAttrPool() ));
                     aFrameSet.Set( pFormat->GetAttrSet() );
 
                     Point aNullPt;
@@ -1660,7 +1660,7 @@ bool SwFEShell::Paste(const Graphic &rGrf, const OUString& rURL)
         {
             pView->AddUndo(std::make_unique<SdrUndoAttrObj>(*pObj));
 
-            SfxItemSetFixed<XATTR_FILLSTYLE, XATTR_FILLBITMAP> aSet(pView->GetModel().GetItemPool());
+            SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<XATTR_FILLSTYLE, XATTR_FILLBITMAP>(pView->GetModel().GetItemPool()));
 
             aSet.Put(XFillStyleItem(drawing::FillStyle_BITMAP));
             aSet.Put(XFillBitmapItem(OUString(), rGrf));

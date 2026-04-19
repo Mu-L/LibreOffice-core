@@ -482,7 +482,7 @@ static bool lcl_setRedlineAttr( SwTextFormatInfo &rInf, const SwTextNode& rTextN
     }
 
     SwAttrPool& rPool = rInf.GetVsh()->GetDoc()->GetAttrPool();
-    SfxItemSetFixed<RES_CHRATR_BEGIN, RES_CHRATR_END-1> aSet(rPool);
+    SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_CHRATR_BEGIN, RES_CHRATR_END-1>(rPool));
 
     std::size_t aAuthor = (1 < pRedlineNum->GetStackCount())
             ? pRedlineNum->GetAuthor( 1 )

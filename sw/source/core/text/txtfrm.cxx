@@ -382,7 +382,7 @@ namespace sw {
                     rFormatSet.ClearItem(RES_BREAK);
                     static_assert(RES_PAGEDESC + 1 == sal_uInt16(RES_BREAK),
                             "first-node items must be adjacent");
-                    SfxItemSetFixed<RES_PAGEDESC, RES_BREAK> firstSet(*rFormatSet.GetPool());
+                    SfxItemSet firstSet(SfxItemSet::makeFixedSfxItemSet<RES_PAGEDESC, RES_BREAK>(*rFormatSet.GetPool()));
                     pMerged->pFirstNode->SwContentNode::GetAttr(firstSet);
                     rFormatSet.Put(firstSet);
 

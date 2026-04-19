@@ -789,7 +789,7 @@ void DocumentFieldsManager::UpdateTableFields(const SwTable* pTable)
         }
 
         SwFrameFormat* pFormat = pBox->ClaimFrameFormat();
-        SfxItemSetFixed<RES_BOXATR_BEGIN,RES_BOXATR_END-1> aTmp( m_rDoc.GetAttrPool() );
+        SfxItemSet aTmp(SfxItemSet::makeFixedSfxItemSet<RES_BOXATR_BEGIN,RES_BOXATR_END-1>( m_rDoc.GetAttrPool() ));
 
         if( oCalc->IsCalcError() )
             nValue = DBL_MAX;

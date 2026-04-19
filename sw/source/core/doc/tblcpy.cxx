@@ -617,7 +617,7 @@ static void lcl_CpyBox( const SwTable& rCpyTable, const SwTableBox* pCpyBox,
     if( !pCpyBox )
         return;
 
-    SfxItemSetFixed<RES_BOXATR_FORMAT, RES_BOXATR_VALUE> aBoxAttrSet( rCpyDoc.GetAttrPool() );
+    SfxItemSet aBoxAttrSet(SfxItemSet::makeFixedSfxItemSet<RES_BOXATR_FORMAT, RES_BOXATR_VALUE>( rCpyDoc.GetAttrPool() ));
     aBoxAttrSet.Put( pCpyBox->GetFrameFormat()->GetAttrSet() );
     if( !aBoxAttrSet.Count() )
         return;

@@ -1086,7 +1086,7 @@ static void lcl_textBoxSizeNotify(SwFrameFormat* pFormat)
     if (SwTextBoxHelper::isTextBox(pFormat, RES_DRAWFRMFMT))
     {
         // Just notify the textbox that the size has changed, the actual object size is not interesting.
-        SfxItemSetFixed<RES_FRM_SIZE, RES_FRM_SIZE> aResizeSet(pFormat->GetDoc().GetAttrPool());
+        SfxItemSet aResizeSet(SfxItemSet::makeFixedSfxItemSet<RES_FRM_SIZE, RES_FRM_SIZE>(pFormat->GetDoc().GetAttrPool()));
         SwFormatFrameSize aSize;
         aResizeSet.Put(aSize);
         SwTextBoxHelper::syncFlyFrameAttr(*pFormat, aResizeSet, pFormat->FindRealSdrObject());
@@ -1279,7 +1279,7 @@ void SwDrawContact::Changed_( const SdrObject& rObj,
                         assert(!"<SwDrawContact::Changed_(..)> - unsupported layout direction");
                     }
                 }
-                SfxItemSetFixed<RES_VERT_ORIENT, RES_HORI_ORIENT> aSet( GetFormat()->GetDoc().GetAttrPool() );
+                SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_VERT_ORIENT, RES_HORI_ORIENT>( GetFormat()->GetDoc().GetAttrPool() ));
                 const SwFormatVertOrient& rVert = GetFormat()->GetVertOrient();
                 if ( nYPosDiff != 0 )
                 {
@@ -1362,7 +1362,7 @@ void SwDrawContact::Changed_( const SdrObject& rObj,
                 auto pSdrObj = const_cast<SdrObject*>(&rObj);
                 if (pSdrObj != GetFormat()->FindRealSdrObject())
                 {
-                    SfxItemSetFixed<RES_FRM_SIZE, RES_FRM_SIZE>  aSet( rDoc.GetAttrPool() );
+                    SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_FRM_SIZE, RES_FRM_SIZE>( rDoc.GetAttrPool() ));
 
                     aSet.Put(aSyncSet);
                     aSet.Put(pSdrObj->GetMergedItem(RES_FRM_SIZE));

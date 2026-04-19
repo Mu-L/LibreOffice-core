@@ -2128,7 +2128,7 @@ bool SwCursorShell::GetContentAtPos( const Point& rPt,
         if( !bRet && IsAttrAtPos::CurrAttrs & rContentAtPos.eContentAtPos )
         {
             const sal_Int32 n = aPos.GetContentIndex();
-            SfxItemSetFixed<POOLATTR_BEGIN, POOLATTR_END - 1>  aSet( GetDoc()->GetAttrPool() );
+            SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<POOLATTR_BEGIN, POOLATTR_END - 1>( GetDoc()->GetAttrPool() ));
             if( pTextNd->GetpSwpHints() )
             {
                 for( size_t i = 0; i < pTextNd->GetSwpHints().Count(); ++i )

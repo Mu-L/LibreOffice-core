@@ -5566,7 +5566,7 @@ void SwTextNode::dumpAsXml(xmlTextWriterPtr pWriter) const
 
 sal_uInt32 SwTextNode::GetRsid( sal_Int32 nStt, sal_Int32 nEnd ) const
 {
-    SfxItemSetFixed<RES_CHRATR_RSID, RES_CHRATR_RSID> aSet( const_cast<SwAttrPool&>((GetDoc().GetAttrPool())) );
+    SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_CHRATR_RSID, RES_CHRATR_RSID>( const_cast<SwAttrPool&>((GetDoc().GetAttrPool())) ));
     if (GetParaAttr(aSet, nStt, nEnd))
     {
         const SvxRsidItem* pRsid = aSet.GetItem<SvxRsidItem>(RES_CHRATR_RSID);

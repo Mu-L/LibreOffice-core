@@ -1039,7 +1039,7 @@ SwTextAttr* MakeTextAttr(
         // Somebody wants to build a SwTextAttr for a character attribute.
         // Sorry, this is not allowed any longer.
         // You'll get a brand new autostyle attribute:
-        SfxItemSetFixed<RES_CHRATR_BEGIN, RES_CHRATR_END> aItemSet( rDoc.GetAttrPool() );
+        SfxItemSet aItemSet(SfxItemSet::makeFixedSfxItemSet<RES_CHRATR_BEGIN, RES_CHRATR_END>( rDoc.GetAttrPool() ));
         aItemSet.Put( rAttr );
         return MakeTextAttr( rDoc, aItemSet, nStt, nEnd );
     }
@@ -1935,7 +1935,7 @@ bool SwTextNode::SetAttr(
 
     // split sets (for selection in nodes)
     const SfxItemSet* pSet = &rSet;
-    SfxItemSetFixed<RES_TXTATR_BEGIN, RES_TXTATR_END-1> aTextSet( *rSet.GetPool() );
+    SfxItemSet aTextSet(SfxItemSet::makeFixedSfxItemSet<RES_TXTATR_BEGIN, RES_TXTATR_END-1>( *rSet.GetPool() ));
 
     // entire paragraph
     if ( !nStt && (nEnd == m_Text.getLength()) &&

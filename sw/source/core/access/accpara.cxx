@@ -1477,7 +1477,7 @@ void SwAccessibleParagraph::_getRunAttributesImpl(
     }
 
     // retrieve character attributes for the created PaM <pPaM>
-    SfxItemSetFixed<RES_CHRATR_BEGIN, RES_CHRATR_END -1> aSet( pPaM->GetDoc().GetAttrPool() );
+    SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_CHRATR_BEGIN, RES_CHRATR_END -1>( pPaM->GetDoc().GetAttrPool() ));
     // #i82637#
     // From the perspective of the a11y API the character attributes, which
     // are set at the automatic paragraph style of the paragraph, are treated
@@ -1486,13 +1486,13 @@ void SwAccessibleParagraph::_getRunAttributesImpl(
     // get character attributes from automatic paragraph style and merge these into <aSet>
     if ( pTextNode->HasSwAttrSet() )
     {
-        SfxItemSetFixed<RES_CHRATR_BEGIN, RES_CHRATR_END -1> aAutomaticParaStyleCharAttrs( pPaM->GetDoc().GetAttrPool());
+        SfxItemSet aAutomaticParaStyleCharAttrs(SfxItemSet::makeFixedSfxItemSet<RES_CHRATR_BEGIN, RES_CHRATR_END -1>( pPaM->GetDoc().GetAttrPool()));
         aAutomaticParaStyleCharAttrs.Put( *(pTextNode->GetpSwAttrSet()), false );
         aSet.Put( aAutomaticParaStyleCharAttrs );
     }
     // get character attributes at <pPaM> and merge these into <aSet>
     {
-        SfxItemSetFixed<RES_CHRATR_BEGIN, RES_CHRATR_END -1> aCharAttrsAtPaM( pPaM->GetDoc().GetAttrPool() );
+        SfxItemSet aCharAttrsAtPaM(SfxItemSet::makeFixedSfxItemSet<RES_CHRATR_BEGIN, RES_CHRATR_END -1>( pPaM->GetDoc().GetAttrPool() ));
         SwUnoCursorHelper::GetCursorAttr(*pPaM, aCharAttrsAtPaM, true);
         aSet.Put( aCharAttrsAtPaM );
     }

@@ -705,7 +705,7 @@ void sw_setValue( SwXCell &rCell, double nVal )
     SwDoc* pDoc = rCell.GetDoc();
     UnoActionContext aAction(pDoc);
     SwFrameFormat* pBoxFormat = rCell.m_pBox->ClaimFrameFormat();
-    SfxItemSetFixed<RES_BOXATR_FORMAT, RES_BOXATR_VALUE> aSet(pDoc->GetAttrPool());
+    SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_BOXATR_FORMAT, RES_BOXATR_VALUE>(pDoc->GetAttrPool()));
 
     //!! do we need to set a new number format? Yes, if
     // - there is no current number format
@@ -845,7 +845,7 @@ void SwXCell::setFormula(const OUString& rFormula)
     SwTableBoxFormula aFormula( sFormula );
     SwDoc* pMyDoc = GetDoc();
     UnoActionContext aAction(pMyDoc);
-    SfxItemSetFixed<RES_BOXATR_FORMAT, RES_BOXATR_FORMULA> aSet(pMyDoc->GetAttrPool());
+    SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_BOXATR_FORMAT, RES_BOXATR_FORMULA>(pMyDoc->GetAttrPool()));
     SwFrameFormat* pBoxFormat = m_pBox->GetFrameFormat();
     const SwTableBoxNumFormat* pNumFormat =
         pBoxFormat->GetAttrSet().GetItemIfSet(RES_BOXATR_FORMAT);
