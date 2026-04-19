@@ -215,7 +215,8 @@ CPPUNIT_TEST_FIXTURE(Test, testCenteredTableCSSExport)
     SwInsertTableOptions aTableOptions(SwInsertTableFlags::NONE, 0);
     pWrtShell->InsertTable(aTableOptions, 1, 1);
     pWrtShell->MoveTable(GotoPrevTable, fnTableStart);
-    SfxItemSetFixed<RES_FRMATR_BEGIN, RES_FRMATR_END - 1> aSet(pWrtShell->GetAttrPool());
+    SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_FRMATR_BEGIN, RES_FRMATR_END - 1>(
+        pWrtShell->GetAttrPool()));
     SwFormatHoriOrient aHoriOrientItem(/*nX=*/0, text::HoriOrientation::CENTER);
     aSet.Put(aHoriOrientItem);
     pWrtShell->SetTableAttr(aSet);

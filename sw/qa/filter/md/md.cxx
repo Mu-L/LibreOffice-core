@@ -256,7 +256,8 @@ CPPUNIT_TEST_FIXTURE(Test, testExportingCodeSpan)
     pWrtShell->Left(SwCursorSkipMode::Chars, /*bSelect=*/true, 1, /*bBasicCall=*/false);
     SwView& rView = pWrtShell->GetView();
     SwTextFormatColl* pColl = rIDSPA.GetTextCollFromPool(SwPoolFormatId::COLL_HTML_PRE);
-    SfxItemSetFixed<RES_CHRATR_BEGIN, RES_CHRATR_END> aSet(rView.GetPool());
+    SfxItemSet aSet(
+        SfxItemSet::makeFixedSfxItemSet<RES_CHRATR_BEGIN, RES_CHRATR_END>(rView.GetPool()));
     aSet.Put(pColl->GetFont());
     pWrtShell->SetAttrSet(aSet);
 

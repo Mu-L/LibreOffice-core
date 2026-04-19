@@ -282,7 +282,8 @@ CPPUNIT_TEST_FIXTURE(Test, testRedlineReinstateSingleRichDelete)
     SwView& rView = pWrtShell->GetView();
     {
         SvxWeightItem aWeightItem(WEIGHT_BOLD, RES_CHRATR_WEIGHT);
-        SfxItemSetFixed<RES_CHRATR_BEGIN, RES_CHRATR_END> aSet(rView.GetPool());
+        SfxItemSet aSet(
+            SfxItemSet::makeFixedSfxItemSet<RES_CHRATR_BEGIN, RES_CHRATR_END>(rView.GetPool()));
         aSet.Put(aWeightItem);
         pWrtShell->SetAttrSet(aSet);
     }
@@ -321,7 +322,8 @@ CPPUNIT_TEST_FIXTURE(Test, testRedlineReinstateSingleRichDelete)
     // Check if formatting was copied correctly.
     pWrtShell->Up(/*bSelect=*/false);
     pWrtShell->EndPara(/*bSelect=*/false);
-    SfxItemSetFixed<RES_CHRATR_BEGIN, RES_CHRATR_END> aSet(rView.GetPool());
+    SfxItemSet aSet(
+        SfxItemSet::makeFixedSfxItemSet<RES_CHRATR_BEGIN, RES_CHRATR_END>(rView.GetPool()));
     pWrtShell->GetCurAttr(aSet);
     CPPUNIT_ASSERT(aSet.HasItem(RES_CHRATR_WEIGHT));
     // Check the redline table: now the insert redline should be multi-paragraph.

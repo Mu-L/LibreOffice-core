@@ -49,7 +49,8 @@ CPPUNIT_TEST_FIXTURE(Test, testRedlineIns)
     SwView& rView = pWrtShell->GetView();
     {
         SvxWeightItem aWeightItem(WEIGHT_BOLD, RES_CHRATR_WEIGHT);
-        SfxItemSetFixed<RES_CHRATR_BEGIN, RES_CHRATR_END> aSet(rView.GetPool());
+        SfxItemSet aSet(
+            SfxItemSet::makeFixedSfxItemSet<RES_CHRATR_BEGIN, RES_CHRATR_END>(rView.GetPool()));
         aSet.Put(aWeightItem);
         pWrtShell->SetAttrSet(aSet);
     }
@@ -202,7 +203,8 @@ CPPUNIT_TEST_FIXTURE(Test, testDelThenFormatDirect)
         // After first char inside the redline: bold.
         pWrtShell->SttEndDoc(/*bStt=*/true);
         pWrtShell->Right(SwCursorSkipMode::Chars, /*bSelect=*/false, 4, /*bBasicCall=*/false);
-        SfxItemSetFixed<RES_CHRATR_WEIGHT, RES_CHRATR_WEIGHT> aSet(pDoc->GetAttrPool());
+        SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_CHRATR_WEIGHT, RES_CHRATR_WEIGHT>(
+            pDoc->GetAttrPool()));
         pWrtShell->GetCurAttr(aSet);
         const SvxWeightItem& rWeightItem = aSet.Get(RES_CHRATR_WEIGHT);
         CPPUNIT_ASSERT_EQUAL(WEIGHT_BOLD, rWeightItem.GetValue());
@@ -243,7 +245,8 @@ CPPUNIT_TEST_FIXTURE(Test, testDelThenFormatDirect)
         // After first char inside the redline: not bold anymore.
         pWrtShell->SttEndDoc(/*bStt=*/true);
         pWrtShell->Right(SwCursorSkipMode::Chars, /*bSelect=*/false, 4, /*bBasicCall=*/false);
-        SfxItemSetFixed<RES_CHRATR_WEIGHT, RES_CHRATR_WEIGHT> aSet(pDoc->GetAttrPool());
+        SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_CHRATR_WEIGHT, RES_CHRATR_WEIGHT>(
+            pDoc->GetAttrPool()));
         pWrtShell->GetCurAttr(aSet);
         const SvxWeightItem& rWeightItem = aSet.Get(RES_CHRATR_WEIGHT);
         CPPUNIT_ASSERT_EQUAL(WEIGHT_NORMAL, rWeightItem.GetValue());
@@ -291,7 +294,8 @@ CPPUNIT_TEST_FIXTURE(Test, testInsThenFormatDirect)
         // After first char inside the redline: bold.
         pWrtShell->SttEndDoc(/*bStt=*/true);
         pWrtShell->Right(SwCursorSkipMode::Chars, /*bSelect=*/false, 4, /*bBasicCall=*/false);
-        SfxItemSetFixed<RES_CHRATR_WEIGHT, RES_CHRATR_WEIGHT> aSet(pDoc->GetAttrPool());
+        SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_CHRATR_WEIGHT, RES_CHRATR_WEIGHT>(
+            pDoc->GetAttrPool()));
         pWrtShell->GetCurAttr(aSet);
         const SvxWeightItem& rWeightItem = aSet.Get(RES_CHRATR_WEIGHT);
         CPPUNIT_ASSERT_EQUAL(WEIGHT_BOLD, rWeightItem.GetValue());
@@ -334,7 +338,8 @@ CPPUNIT_TEST_FIXTURE(Test, testInsThenFormatDirect)
         // After first char inside the redline: not bold anymore.
         pWrtShell->SttEndDoc(/*bStt=*/true);
         pWrtShell->Right(SwCursorSkipMode::Chars, /*bSelect=*/false, 4, /*bBasicCall=*/false);
-        SfxItemSetFixed<RES_CHRATR_WEIGHT, RES_CHRATR_WEIGHT> aSet(pDoc->GetAttrPool());
+        SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_CHRATR_WEIGHT, RES_CHRATR_WEIGHT>(
+            pDoc->GetAttrPool()));
         pWrtShell->GetCurAttr(aSet);
         const SvxWeightItem& rWeightItem = aSet.Get(RES_CHRATR_WEIGHT);
         CPPUNIT_ASSERT_EQUAL(WEIGHT_NORMAL, rWeightItem.GetValue());

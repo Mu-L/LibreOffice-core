@@ -225,7 +225,8 @@ CPPUNIT_TEST_FIXTURE(SwUiWriterTest7, testTdf99672SearchReplaceEmptyStringUsingF
     // Apply bold formatting to the selected text
     SwView& rView = pWrtShell->GetView();
     SvxWeightItem aWeightItem(WEIGHT_BOLD, RES_CHRATR_WEIGHT);
-    SfxItemSetFixed<RES_CHRATR_BEGIN, RES_CHRATR_END> aSet(rView.GetPool());
+    SfxItemSet aSet(
+        SfxItemSet::makeFixedSfxItemSet<RES_CHRATR_BEGIN, RES_CHRATR_END>(rView.GetPool()));
     aSet.Put(aWeightItem);
     pWrtShell->SetAttrSet(aSet);
 

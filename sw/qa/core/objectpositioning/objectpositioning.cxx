@@ -425,7 +425,8 @@ CPPUNIT_TEST_FIXTURE(Test, testDoNotMirrorRtlDrawObjsLayout)
     rIDSA.set(DocumentSettingId::DO_NOT_MIRROR_RTL_DRAW_OBJS, true);
     SwWrtShell* pWrtShell = getSwDocShell()->GetWrtShell();
     SwView& rView = pWrtShell->GetView();
-    SfxItemSetFixed<RES_FRMATR_BEGIN, RES_FRMATR_END> aSet(rView.GetPool());
+    SfxItemSet aSet(
+        SfxItemSet::makeFixedSfxItemSet<RES_FRMATR_BEGIN, RES_FRMATR_END>(rView.GetPool()));
     SvxFrameDirectionItem aDirection(SvxFrameDirection::Horizontal_RL_TB, RES_FRAMEDIR);
     aSet.Put(aDirection);
     pWrtShell->SetAttrSet(aSet, SetAttrMode::DEFAULT, nullptr, /*bParagraphSetting=*/true);

@@ -250,7 +250,7 @@ CPPUNIT_TEST_FIXTURE(Test, testEndnotesAtSectEndDOC)
         pWrtShell->Left(SwCursorSkipMode::Chars, /*bSelect=*/true, 1, /*bBasicCall=*/false);
         SwSectionData aSection(SectionType::Content, UIName(pWrtShell->GetUniqueSectionName()));
         pWrtShell->StartAction();
-        SfxItemSetFixed<RES_FTN_AT_TXTEND, RES_FRAMEDIR> aSet(pWrtShell->GetAttrPool());
+        SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_FTN_AT_TXTEND, RES_FRAMEDIR>(pWrtShell->GetAttrPool()));
         aSet.Put(SwFormatEndAtTextEnd(FTNEND_ATTXTEND));
         pWrtShell->InsertSection(aSection, &aSet);
         pWrtShell->EndAction();

@@ -77,7 +77,8 @@ CPPUNIT_TEST_FIXTURE(SwUibaseFrmdlgTest, testInsertFrameWidth)
     pWrtShell->MoveTable(GotoPrevTable, fnTableStart);
     SwTwips nExpectedWidth = 6000;
     {
-        SfxItemSetFixed<RES_FRMATR_BEGIN, RES_FRMATR_END - 1> aSet(pWrtShell->GetAttrPool());
+        SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_FRMATR_BEGIN, RES_FRMATR_END - 1>(
+            pWrtShell->GetAttrPool()));
         SwFormatFrameSize aSize(SwFrameSize::Variable, nExpectedWidth);
         aSet.Put(aSize);
         pWrtShell->SetTableAttr(aSet);

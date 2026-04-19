@@ -1235,7 +1235,8 @@ CPPUNIT_TEST_FIXTURE(SwCoreTextTest, testContentControlPDFFont)
     // Given a document with a custom 24pt font size and a content control:
     createSwDoc();
     SwWrtShell* pWrtShell = getSwDocShell()->GetWrtShell();
-    SfxItemSetFixed<RES_CHRATR_FONTSIZE, RES_CHRATR_FONTSIZE> aSet(pWrtShell->GetAttrPool());
+    SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_CHRATR_FONTSIZE, RES_CHRATR_FONTSIZE>(
+        pWrtShell->GetAttrPool()));
     SvxFontHeightItem aItem(480, 100, RES_CHRATR_FONTSIZE);
     aSet.Put(aItem);
     pWrtShell->SetAttrSet(aSet);
@@ -1306,7 +1307,8 @@ CPPUNIT_TEST_FIXTURE(SwCoreTextTest, testRichContentControlPDF)
                      /*bBasicCall=*/false);
     pWrtShell->Insert(u"xxxyyy"_ustr);
     pWrtShell->Left(SwCursorSkipMode::Chars, /*bSelect=*/true, 3, /*bBasicCall=*/false);
-    SfxItemSetFixed<RES_CHRATR_WEIGHT, RES_CHRATR_WEIGHT> aSet(pWrtShell->GetAttrPool());
+    SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_CHRATR_WEIGHT, RES_CHRATR_WEIGHT>(
+        pWrtShell->GetAttrPool()));
     SvxWeightItem aItem(WEIGHT_BOLD, RES_CHRATR_WEIGHT);
     aSet.Put(aItem);
     pWrtShell->SetAttrSet(aSet);

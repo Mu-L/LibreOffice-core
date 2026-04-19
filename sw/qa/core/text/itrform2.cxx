@@ -250,7 +250,8 @@ CPPUNIT_TEST_FIXTURE(Test, testContentControlPDFFontColor)
     // Given a document with a custom orange font color and a content control:
     createSwDoc();
     SwWrtShell* pWrtShell = getSwDocShell()->GetWrtShell();
-    SfxItemSetFixed<RES_CHRATR_COLOR, RES_CHRATR_COLOR> aSet(pWrtShell->GetAttrPool());
+    SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_CHRATR_COLOR, RES_CHRATR_COLOR>(
+        pWrtShell->GetAttrPool()));
     Color nOrange(0xff6b00);
     SvxColorItem aItem(nOrange, RES_CHRATR_COLOR);
     aSet.Put(aItem);

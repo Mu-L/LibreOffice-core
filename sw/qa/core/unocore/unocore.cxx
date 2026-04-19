@@ -730,7 +730,8 @@ CPPUNIT_TEST_FIXTURE(SwCoreUnocoreTest, testContentControlPlainText)
     // Select "es" from "<dummy>test<dummy>".
     pWrtShell->Right(SwCursorSkipMode::Chars, /*bSelect=*/false, 2, /*bBasicCall=*/false);
     pWrtShell->Right(SwCursorSkipMode::Chars, /*bSelect=*/true, 2, /*bBasicCall=*/false);
-    SfxItemSetFixed<RES_CHRATR_WEIGHT, RES_CHRATR_WEIGHT> aSet(pWrtShell->GetAttrPool());
+    SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_CHRATR_WEIGHT, RES_CHRATR_WEIGHT>(
+        pWrtShell->GetAttrPool()));
     SvxWeightItem aItem(WEIGHT_BOLD, RES_CHRATR_WEIGHT);
     aSet.Put(aItem);
     pWrtShell->SetAttrSet(aSet);

@@ -40,7 +40,8 @@ CPPUNIT_TEST_FIXTURE(Test, testFormatCharStyleChangeDocxImport)
     SwDoc* pDoc = pDocShell->GetDoc();
     SwWrtShell* pWrtShell = pDocShell->GetWrtShell();
     pWrtShell->SttEndDoc(/*bStt=*/false);
-    SfxItemSetFixed<RES_TXTATR_CHARFMT, RES_TXTATR_CHARFMT> aSet(pDoc->GetAttrPool());
+    SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_TXTATR_CHARFMT, RES_TXTATR_CHARFMT>(
+        pDoc->GetAttrPool()));
     pWrtShell->GetCurAttr(aSet);
     const SwFormatCharFormat& rNewCharFormat = aSet.Get(RES_TXTATR_CHARFMT);
     CPPUNIT_ASSERT_EQUAL(u"Quote Char"_ustr, rNewCharFormat.GetCharFormat()->GetName().toString());
