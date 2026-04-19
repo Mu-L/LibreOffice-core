@@ -784,7 +784,7 @@ void AutoFilter::finalizeImport(const rtl::Reference<ScDatabaseRangeObj>& rxData
             drawn on non-overlapped cells.
 
             So, here if a column belongs to a merged cells, and it's the merge master
-            we skip hidding the button. */
+            we skip hiding the button. */
 
             const ScMergeAttr& rMerge = rDoc.GetAttr(nCol, nRow, nTab, ATTR_MERGE);
             SCCOL nColSpan = rMerge.GetColMerge();
