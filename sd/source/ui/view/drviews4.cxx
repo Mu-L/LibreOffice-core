@@ -899,9 +899,9 @@ void DrawViewShell::ShowMousePosInfo(const ::tools::Rectangle& rRect,
     if ( GetViewShell()->GetUIActiveClient() )
         return;
 
-    SfxItemSetFixed<
+    SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet <
             SID_CONTEXT, SID_CONTEXT,
-            SID_ATTR_POSITION, SID_ATTR_SIZE>  aSet(GetPool());
+            SID_ATTR_POSITION, SID_ATTR_SIZE>  (GetPool()));
 
     GetStatusBarState(aSet);
 

@@ -54,7 +54,7 @@ SdUnoPageBackground::SdUnoPageBackground(
     if( pDoc )
     {
         StartListening( *pDoc );
-        mpSet = std::make_unique<SfxItemSetFixed<XATTR_FILL_FIRST, XATTR_FILL_LAST>>( pDoc->GetPool() );
+        mpSet = std::make_unique<SfxItemSet>(SfxItemSet::makeFixedSfxItemSet<XATTR_FILL_FIRST, XATTR_FILL_LAST>( pDoc->GetPool() ));
 
         if( pSet )
             mpSet->Put(*pSet);
@@ -93,7 +93,7 @@ void SdUnoPageBackground::fillItemSet( SdDrawDocument* pDoc, SfxItemSet& rSet )
         StartListening( *pDoc );
         mpDoc = pDoc;
 
-        mpSet = std::make_unique<SfxItemSetFixed<XATTR_FILL_FIRST, XATTR_FILL_LAST>>( *rSet.GetPool() );
+        mpSet = std::make_unique<SfxItemSet>(SfxItemSet::makeFixedSfxItemSet<XATTR_FILL_FIRST, XATTR_FILL_LAST>( *rSet.GetPool() ));
 
         if( maUsrAnys.AreThereOwnUsrAnys() )
         {

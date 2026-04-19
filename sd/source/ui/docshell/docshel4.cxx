@@ -103,10 +103,10 @@ SfxPrinter* DrawDocShell::GetPrinter(bool bCreate)
     if (bCreate && !mpPrinter)
     {
         // create ItemSet with special pool area
-        auto pSet = std::make_unique<SfxItemSetFixed<
+        auto pSet = std::make_unique<SfxItemSet>(SfxItemSet::makeFixedSfxItemSet<
                             SID_PRINTER_NOTFOUND_WARN,  SID_PRINTER_NOTFOUND_WARN,
                             SID_PRINTER_CHANGESTODOC,   SID_PRINTER_CHANGESTODOC,
-                            ATTR_OPTIONS_PRINT,         ATTR_OPTIONS_PRINT>>( GetPool() );
+                            ATTR_OPTIONS_PRINT,         ATTR_OPTIONS_PRINT>( GetPool() ));
         // set PrintOptionsSet
         SdOptionsPrintItem aPrintItem(SdModule::get()->GetSdOptions(mpDoc->GetDocumentType()));
         SfxFlagItem aFlagItem( SID_PRINTER_CHANGESTODOC );

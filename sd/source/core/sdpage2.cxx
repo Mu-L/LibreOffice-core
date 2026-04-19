@@ -428,7 +428,7 @@ SfxStyleSheet* SdPage::GetTextStyleSheetForObject( SdrObject* pObj ) const
 SfxItemSet* SdPage::getOrCreateItems()
 {
     if( mpItems == nullptr )
-        mpItems = std::make_unique<SfxItemSetFixed<SDRATTR_XMLATTRIBUTES, SDRATTR_XMLATTRIBUTES>>( getSdrModelFromSdrPage().GetItemPool());
+        mpItems = std::make_unique<SfxItemSet>(SfxItemSet::makeFixedSfxItemSet<SDRATTR_XMLATTRIBUTES, SDRATTR_XMLATTRIBUTES>( getSdrModelFromSdrPage().GetItemPool()));
 
     return mpItems.get();
 }

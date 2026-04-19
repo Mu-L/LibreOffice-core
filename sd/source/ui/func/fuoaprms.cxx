@@ -335,7 +335,7 @@ void FuObjectAnimationParameters::DoExecute( SfxRequest& rReq )
     if(!pArgs)
     {
         // fill ItemSet for dialog
-        std::shared_ptr<SfxItemSet> aSet = std::make_shared<SfxItemSetFixed<ATTR_ANIMATION_START, ATTR_ACTION_END>>(mrDoc.GetPool());
+        std::shared_ptr<SfxItemSet> aSet = std::make_shared<SfxItemSet>(SfxItemSet::makeFixedSfxItemSet<ATTR_ANIMATION_START, ATTR_ACTION_END>(mrDoc.GetPool()));
 
         // fill the set
         if (nAnimationSet == ATTR_SET)

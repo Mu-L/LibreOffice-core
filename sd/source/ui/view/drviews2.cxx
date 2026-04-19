@@ -1897,7 +1897,7 @@ void DrawViewShell::FuTemporary(SfxRequest& rReq)
 
                     if( pPresPage->IsPresObj( pObj ) )
                     {
-                        auto pNewSet = std::make_unique<SfxItemSetFixed<SDRATTR_TEXT_MINFRAMEHEIGHT, SDRATTR_TEXT_AUTOGROWHEIGHT>>( GetDoc()->GetPool() );
+                        auto pNewSet = std::make_unique<SfxItemSet>(SfxItemSet::makeFixedSfxItemSet<SDRATTR_TEXT_MINFRAMEHEIGHT, SDRATTR_TEXT_AUTOGROWHEIGHT>( GetDoc()->GetPool() ));
                         pNewSet->Put(pObj->GetMergedItemSet());
                         aAttrList.emplace_back(std::move(pNewSet), pObj->GetUserCall());
                     }

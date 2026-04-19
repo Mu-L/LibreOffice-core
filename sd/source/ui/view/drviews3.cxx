@@ -838,10 +838,10 @@ void  DrawViewShell::ExecRuler(SfxRequest& rReq)
                 const SvxLRSpaceItem& rItem = static_cast<const SvxLRSpaceItem&>(
                             pArgs->Get( nId ));
 
-                SfxItemSetFixed<
+                SfxItemSet aEditAttr(SfxItemSet::makeFixedSfxItemSet<
                     EE_PARA_NUMBULLET, EE_PARA_NUMBULLET,
                     EE_PARA_OUTLLEVEL, EE_PARA_OUTLLEVEL,
-                    EE_PARA_LRSPACE, EE_PARA_LRSPACE> aEditAttr( GetDoc()->GetPool() );
+                    EE_PARA_LRSPACE, EE_PARA_LRSPACE> ( GetDoc()->GetPool() ));
                 mpDrawView->GetAttributes( aEditAttr );
 
                 nId = EE_PARA_LRSPACE;
