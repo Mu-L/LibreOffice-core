@@ -1803,14 +1803,13 @@ void SwTableProperties_Impl::AddItemToSet(SfxItemSet& rSet,
 }
 void SwTableProperties_Impl::ApplyTableAttr(const SwTable& rTable, SwDoc& rDoc)
 {
-    SfxItemSetFixed<
+    SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<
             RES_FRM_SIZE, RES_BREAK,
             RES_HORI_ORIENT, RES_HORI_ORIENT,
             RES_BACKGROUND, RES_BACKGROUND,
             RES_SHADOW, RES_SHADOW,
             RES_KEEP, RES_KEEP,
-            RES_LAYOUT_SPLIT, RES_LAYOUT_SPLIT>
-        aSet(rDoc.GetAttrPool());
+            RES_LAYOUT_SPLIT, RES_LAYOUT_SPLIT>(rDoc.GetAttrPool()));
     const SwFrameFormat &rFrameFormat = *rTable.GetFrameFormat();
     if (const uno::Any* pRepHead = GetProperty(FN_TABLE_HEADLINE_REPEAT, 0xff))
     {
@@ -2600,9 +2599,8 @@ void SwXTextTable::setPropertyValue(const OUString& rPropertyName, const uno::An
                     UnoActionRemoveContext aRemoveContext(rCursor);
                     rCursor.MakeBoxSels();
 
-                    SfxItemSetFixed<RES_BOX, RES_BOX,
-                                    SID_ATTR_BORDER_INNER, SID_ATTR_BORDER_INNER>
-                         aSet(rDoc.GetAttrPool());
+                    SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_BOX, RES_BOX,
+                                    SID_ATTR_BORDER_INNER, SID_ATTR_BORDER_INNER>(rDoc.GetAttrPool()));
 
                     SvxBoxItem aBox( RES_BOX );
                     SvxBoxInfoItem aBoxInfo( SID_ATTR_BORDER_INNER );
@@ -2801,9 +2799,8 @@ uno::Any SwXTextTable::getPropertyValue(const OUString& rPropertyName)
                     UnoActionRemoveContext aRemoveContext(rCursor);
                     rCursor.MakeBoxSels();
 
-                    SfxItemSetFixed<RES_BOX, RES_BOX,
-                                    SID_ATTR_BORDER_INNER, SID_ATTR_BORDER_INNER>
-                        aSet(rDoc.GetAttrPool());
+                    SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_BOX, RES_BOX,
+                                    SID_ATTR_BORDER_INNER, SID_ATTR_BORDER_INNER>(rDoc.GetAttrPool()));
                     aSet.Put(SvxBoxInfoItem( SID_ATTR_BORDER_INNER ));
                     SwDoc::GetTabBorders(rCursor, aSet);
                     const SvxBoxInfoItem& rBoxInfoItem = aSet.Get(SID_ATTR_BORDER_INNER);
@@ -3366,9 +3363,8 @@ SwXCellRange::setPropertyValue(const OUString& rPropertyName, const uno::Any& aV
         break;
         case RES_BOX :
         {
-            SfxItemSetFixed<RES_BOX, RES_BOX,
-                            SID_ATTR_BORDER_INNER, SID_ATTR_BORDER_INNER>
-                aSet(rDoc.GetAttrPool());
+            SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_BOX, RES_BOX,
+                            SID_ATTR_BORDER_INNER, SID_ATTR_BORDER_INNER>(rDoc.GetAttrPool()));
             SvxBoxInfoItem aBoxInfo( SID_ATTR_BORDER_INNER );
             aBoxInfo.SetValid(SvxBoxInfoItemValidFlags::ALL, false);
             SvxBoxInfoItemValidFlags nValid = SvxBoxInfoItemValidFlags::NONE;
@@ -3474,9 +3470,8 @@ uno::Any SAL_CALL SwXCellRange::getPropertyValue(const OUString& rPropertyName)
             case RES_BOX :
             {
                 SwDoc& rDoc = m_pImpl->m_pTableCursor->GetDoc();
-                SfxItemSetFixed<RES_BOX, RES_BOX,
-                                SID_ATTR_BORDER_INNER, SID_ATTR_BORDER_INNER>
-                    aSet(rDoc.GetAttrPool());
+                SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_BOX, RES_BOX,
+                                SID_ATTR_BORDER_INNER, SID_ATTR_BORDER_INNER>(rDoc.GetAttrPool()));
                 aSet.Put(SvxBoxInfoItem( SID_ATTR_BORDER_INNER ));
                 SwDoc::GetTabBorders(*m_pImpl->m_pTableCursor, aSet);
                 const SvxBoxItem& rBoxItem = aSet.Get(RES_BOX);
@@ -3516,11 +3511,10 @@ uno::Any SAL_CALL SwXCellRange::getPropertyValue(const OUString& rPropertyName)
             break;
             default:
             {
-                SfxItemSetFixed<
+                SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<
                         RES_CHRATR_BEGIN, RES_FRMATR_END - 1,
                         RES_UNKNOWNATR_CONTAINER,
-                            RES_UNKNOWNATR_CONTAINER>
-                    aSet(m_pImpl->m_pTableCursor->GetDoc().GetAttrPool());
+                            RES_UNKNOWNATR_CONTAINER>(m_pImpl->m_pTableCursor->GetDoc().GetAttrPool()));
                 // first look at the attributes of the cursor
                 SwUnoTableCursor& rCursor =
                     dynamic_cast<SwUnoTableCursor&>(*m_pImpl->m_pTableCursor);

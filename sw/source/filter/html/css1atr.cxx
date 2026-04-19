@@ -1214,14 +1214,13 @@ bool SwHTMLWriter::HasScriptDependentItems( const SfxItemSet& rItemSet,
         {
             //sequence of (start, end) property ranges we want to
             //query
-            SfxItemSetFixed<
+            SfxItemSet aTstItemSet(SfxItemSet::makeFixedSfxItemSet<
                     RES_CHRATR_FONT, RES_CHRATR_FONT,
                     RES_CHRATR_POSTURE, RES_CHRATR_POSTURE,
                     RES_CHRATR_WEIGHT, RES_CHRATR_WEIGHT,
                     RES_CHRATR_CJK_FONT, RES_CHRATR_CJK_FONT,
                     RES_CHRATR_CJK_POSTURE, RES_CHRATR_CTL_FONT,
-                    RES_CHRATR_CTL_POSTURE, RES_CHRATR_CTL_WEIGHT>
-                 aTstItemSet(*pDCCharFormat->GetAttrSet().GetPool());
+                    RES_CHRATR_CTL_POSTURE, RES_CHRATR_CTL_WEIGHT>(*pDCCharFormat->GetAttrSet().GetPool()));
             aTstItemSet.Set( pDCCharFormat->GetAttrSet() );
             return HasScriptDependentItems( aTstItemSet, false );
         }
@@ -1264,11 +1263,10 @@ static bool OutCSS1Rule( SwHTMLWriter& rWrt, const OUString& rSelector,
 
             //sequence of (start, end) property ranges we want to
             //query
-            SfxItemSetFixed<RES_CHRATR_FONT, RES_CHRATR_FONTSIZE,
+            SfxItemSet aScriptItemSet(SfxItemSet::makeFixedSfxItemSet<RES_CHRATR_FONT, RES_CHRATR_FONTSIZE,
                                        RES_CHRATR_LANGUAGE, RES_CHRATR_POSTURE,
                                        RES_CHRATR_WEIGHT, RES_CHRATR_WEIGHT,
-                                       RES_CHRATR_CJK_FONT, RES_CHRATR_CTL_WEIGHT>
-                aScriptItemSet( *rItemSet.GetPool() );
+                                       RES_CHRATR_CJK_FONT, RES_CHRATR_CTL_WEIGHT>( *rItemSet.GetPool() ));
             aScriptItemSet.Put( rItemSet );
 
             OUString aNewSelector = OUString::Concat(aSelector) + ".western" + aPseudo;
@@ -1364,11 +1362,10 @@ static void OutCSS1DropCapRule(
                 OutCSS1_SwFormatDropAttrs( rWrt, rDrop );
             }
 
-            SfxItemSetFixed<RES_CHRATR_FONT, RES_CHRATR_FONTSIZE,
+            SfxItemSet aScriptItemSet(SfxItemSet::makeFixedSfxItemSet<RES_CHRATR_FONT, RES_CHRATR_FONTSIZE,
                            RES_CHRATR_LANGUAGE, RES_CHRATR_POSTURE,
                            RES_CHRATR_WEIGHT, RES_CHRATR_WEIGHT,
-                           RES_CHRATR_CJK_FONT, RES_CHRATR_CTL_WEIGHT>
-                aScriptItemSet( rWrt.m_pDoc->GetAttrPool() );
+                           RES_CHRATR_CJK_FONT, RES_CHRATR_CTL_WEIGHT>( rWrt.m_pDoc->GetAttrPool() ));
             if( pDCCharFormat )
                 aScriptItemSet.Set( pDCCharFormat->GetAttrSet() );
 

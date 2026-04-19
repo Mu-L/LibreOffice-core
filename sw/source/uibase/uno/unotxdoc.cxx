@@ -757,12 +757,12 @@ sal_Int32 SwXTextDocument::replaceAll(const Reference< util::XSearchDescriptor >
     if(pSearch->HasSearchAttributes()||pSearch->HasReplaceAttributes())
     {
         auto& pool = GetDocOrThrow().GetAttrPool();
-        SfxItemSetFixed<RES_CHRATR_BEGIN, RES_CHRATR_END-1,
+        SfxItemSet aSearch(SfxItemSet::makeFixedSfxItemSet<RES_CHRATR_BEGIN, RES_CHRATR_END-1,
                             RES_PARATR_BEGIN, RES_PARATR_END-1,
-                            RES_FRMATR_BEGIN, RES_FRMATR_END-1>  aSearch(pool);
-        SfxItemSetFixed<RES_CHRATR_BEGIN, RES_CHRATR_END-1,
+                            RES_FRMATR_BEGIN, RES_FRMATR_END-1>(pool));
+        SfxItemSet aReplace(SfxItemSet::makeFixedSfxItemSet<RES_CHRATR_BEGIN, RES_CHRATR_END-1,
                             RES_PARATR_BEGIN, RES_PARATR_END-1,
-                            RES_FRMATR_BEGIN, RES_FRMATR_END-1>  aReplace(pool);
+                            RES_FRMATR_BEGIN, RES_FRMATR_END-1>(pool));
         pSearch->FillSearchItemSet(aSearch);
         pSearch->FillReplaceItemSet(aReplace);
         bool bCancel;
@@ -870,12 +870,11 @@ SwUnoCursor* SwXTextDocument::FindAny(const Reference< util::XSearchDescriptor >
         //try attribute search first
         if(pSearch->HasSearchAttributes())
         {
-            SfxItemSetFixed<
+            SfxItemSet aSearch(SfxItemSet::makeFixedSfxItemSet<
                     RES_CHRATR_BEGIN, RES_CHRATR_END - 1,
                     RES_TXTATR_INETFMT, RES_TXTATR_CHARFMT,
                     RES_PARATR_BEGIN, RES_PARATR_END - 1,
-                    RES_FRMATR_BEGIN, RES_FRMATR_END - 1>
-                 aSearch( GetDocOrThrow().GetAttrPool() );
+                    RES_FRMATR_BEGIN, RES_FRMATR_END - 1>( GetDocOrThrow().GetAttrPool() ));
             pSearch->FillSearchItemSet(aSearch);
             bool bCancel;
             nResult = pUnoCursor->FindAttrs(aSearch, !pSearch->m_bStyles,

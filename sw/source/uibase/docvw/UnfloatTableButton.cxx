@@ -159,8 +159,8 @@ IMPL_LINK_NOARG(UnfloatTableButton, ClickHdl, weld::Button&, void)
         if (pPageDesc)
         {
             // First set the existing page desc for the table node
-            SfxItemSetFixed<RES_PAGEDESC, RES_PAGEDESC> aSet(
-                GetEditWin()->GetView().GetWrtShell().GetAttrPool());
+            SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_PAGEDESC, RES_PAGEDESC>(
+                GetEditWin()->GetView().GetWrtShell().GetAttrPool()));
             aSet.Put(SwFormatPageDesc(pPageDesc));
             SwPaM aPaMTable(*pTableNode);
             rDoc.getIDocumentContentOperations().InsertItemSet(

@@ -1221,8 +1221,7 @@ void SwWW8ImplReader::InsertTxbxText(SdrTextObj* pTextObj,
             {
                 if( pFlyFormat && pRecord )
                 {
-                    SfxItemSetFixed<RES_FRMATR_BEGIN, RES_FRMATR_END-1, XATTR_START, XATTR_END>
-                        aFlySet( m_rDoc.GetAttrPool() );
+                    SfxItemSet aFlySet(SfxItemSet::makeFixedSfxItemSet<RES_FRMATR_BEGIN, RES_FRMATR_END-1, XATTR_START, XATTR_END>( m_rDoc.GetAttrPool() ));
 
                     tools::Rectangle aInnerDist(   pRecord->nDxTextLeft,
                                              pRecord->nDyTextTop,
@@ -3030,8 +3029,7 @@ SwFrameFormat* SwWW8ImplReader::MungeTextIntoDrawBox(SvxMSDffImportRec& rRecord,
         else
         {
             // use ww8-default border distance
-            SfxItemSetFixed<SDRATTR_TEXT_LEFTDIST, SDRATTR_TEXT_LOWERDIST>
-                 aItemSet(m_pDrawModel->GetItemPool());
+            SfxItemSet aItemSet(SfxItemSet::makeFixedSfxItemSet<SDRATTR_TEXT_LEFTDIST, SDRATTR_TEXT_LOWERDIST>(m_pDrawModel->GetItemPool()));
             aItemSet.Put(makeSdrTextLeftDistItem(rRecord.nDxTextLeft));
             aItemSet.Put(makeSdrTextRightDistItem(rRecord.nDxTextRight));
             aItemSet.Put(makeSdrTextUpperDistItem(rRecord.nDyTextTop));

@@ -141,8 +141,7 @@ void lcl_getTableAttributes( SfxItemSet& rSet, SwWrtShell &rSh, bool bAllCellAtt
             rSet.Put(std::move(pSplit));
     }
 
-    SfxItemSetFixed<RES_BOXATR_FORMAT, RES_BOXATR_FORMAT, RES_BOXATR_VALUE, RES_BOXATR_VALUE>
-        aBoxSet(*rSet.GetPool());
+    SfxItemSet aBoxSet(SfxItemSet::makeFixedSfxItemSet<RES_BOXATR_FORMAT, RES_BOXATR_FORMAT, RES_BOXATR_VALUE, RES_BOXATR_VALUE>(*rSet.GetPool()));
     rSh.GetTableBoxFormulaAttrs(aBoxSet);
     rSet.Put(aBoxSet);
 }

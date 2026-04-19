@@ -373,13 +373,13 @@ void SwNumFormatBase::CallSelectHdl()
     SwWrtShell &rSh = pView->GetWrtShell();
     SvNumberFormatter* pFormatter = rSh.GetNumberFormatter();
 
-    SfxItemSetFixed<
+    SfxItemSet aCoreSet(SfxItemSet::makeFixedSfxItemSet<
             SID_ATTR_NUMBERFORMAT_VALUE, SID_ATTR_NUMBERFORMAT_INFO,
             SID_ATTR_NUMBERFORMAT_ONE_AREA, SID_ATTR_NUMBERFORMAT_ONE_AREA,
             SID_ATTR_NUMBERFORMAT_NOLANGUAGE,
                 SID_ATTR_NUMBERFORMAT_NOLANGUAGE,
             SID_ATTR_NUMBERFORMAT_ADD_AUTO,
-                SID_ATTR_NUMBERFORMAT_ADD_AUTO>  aCoreSet( rSh.GetAttrPool() );
+                SID_ATTR_NUMBERFORMAT_ADD_AUTO>( rSh.GetAttrPool() ));
 
     double fValue = SwNumFormatBase::GetDefValue(m_nCurrFormatType);
 

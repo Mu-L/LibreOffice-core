@@ -118,13 +118,13 @@ static bool lcl_RstAttr( SwNode* pNd, void* pArgs )
         // add list attributes, except RES_PARATR_LIST_AUTOFMT
         // tdf#151857: Frame direction is conceptually an aspect of language, rather than text
         // formatting. Preserve paragraph direction across resets.
-        SfxItemSetFixed<
+        SfxItemSet aSavedAttrsSet(SfxItemSet::makeFixedSfxItemSet<
                 RES_PARATR_NUMRULE, RES_PARATR_NUMRULE,
                 RES_PARATR_AUTOFRAMEDIR, RES_PARATR_AUTOFRAMEDIR,
                 RES_PARATR_LIST_BEGIN, RES_PARATR_LIST_AUTOFMT - 1,
                 RES_PAGEDESC, RES_BREAK,
                 RES_FRAMEDIR, RES_FRAMEDIR,
-                RES_FRMATR_STYLE_NAME, RES_FRMATR_CONDITIONAL_STYLE_NAME> aSavedAttrsSet(rDoc.GetAttrPool());
+                RES_FRMATR_STYLE_NAME, RES_FRMATR_CONDITIONAL_STYLE_NAME>(rDoc.GetAttrPool()));
         const SfxItemSet* pAttrSetOfNode = pNode->GetpSwAttrSet();
 
         std::vector<sal_uInt16> aClearWhichIds;
@@ -346,11 +346,10 @@ void SwDoc::ResetAttrs( const SwPaM &rRg,
             pStart, pEnd, pHst, nullptr, pLayout);
 
     // mst: not including META here; it seems attrs with CH_TXTATR are omitted
-    SfxItemSetFixed<RES_CHRATR_BEGIN, RES_CHRATR_END - 1,
+    SfxItemSet aDelSet(SfxItemSet::makeFixedSfxItemSet<RES_CHRATR_BEGIN, RES_CHRATR_END - 1,
                      RES_TXTATR_INETFMT, RES_TXTATR_UNKNOWN_CONTAINER,
                      RES_PARATR_BEGIN, RES_FRMATR_END - 1,
-                     RES_UNKNOWNATR_BEGIN, RES_UNKNOWNATR_END - 1>
-        aDelSet(GetAttrPool());
+                     RES_UNKNOWNATR_BEGIN, RES_UNKNOWNATR_END - 1>(GetAttrPool()));
     for( auto it = rAttrs.rbegin(); it != rAttrs.rend(); ++it )
     {
         if( POOLATTR_END > *it )

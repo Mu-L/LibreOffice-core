@@ -343,8 +343,8 @@ void SwBreakDashedLine::execute(std::u16string_view rIdent)
 
         rNd.GetDoc().GetIDocumentUndoRedo( ).StartUndo( SwUndoId::UI_DELETE_PAGE_BREAK, nullptr );
 
-        SfxItemSetFixed<RES_PAGEDESC, RES_BREAK> aSet(
-            m_pEditWin->GetView().GetWrtShell().GetAttrPool());
+        SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_PAGEDESC, RES_BREAK>(
+            m_pEditWin->GetView().GetWrtShell().GetAttrPool()));
 
         aSet.Put( SwFormatPageDesc( nullptr ) );
         // This break could be from the current paragraph, if it has a PageBefore break.

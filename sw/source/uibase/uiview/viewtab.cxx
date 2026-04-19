@@ -281,9 +281,9 @@ void SwView::ExecTabWin( SfxRequest const & rReq )
                     rRect.Right() - rPageRect.Right() + aLongLR.GetRight() :
                     rPageRect.Left() + aLongLR.GetLeft() - rRect.Left();
 
-                SfxItemSetFixed<RES_FRM_SIZE, RES_FRM_SIZE,
+                SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_FRM_SIZE, RES_FRM_SIZE,
                                 RES_VERT_ORIENT, RES_HORI_ORIENT,
-                                RES_COL, RES_COL>  aSet( GetPool() );
+                                RES_COL, RES_COL>( GetPool() ));
 
                 if(bVerticalFrame)
                 {
@@ -429,8 +429,8 @@ void SwView::ExecTabWin( SfxRequest const & rReq )
                 const tools::Long nDeltaY = rPageRect.Top() + aLongULSpace.GetUpper() - rRect.Top();
                 const tools::Long nHeight = nPageHeight - (aLongULSpace.GetUpper() + aLongULSpace.GetLower());
 
-                SfxItemSetFixed<RES_FRM_SIZE, RES_FRM_SIZE,
-                                RES_VERT_ORIENT, RES_HORI_ORIENT>  aSet( GetPool() );
+                SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_FRM_SIZE, RES_FRM_SIZE,
+                                RES_VERT_ORIENT, RES_HORI_ORIENT>( GetPool() ));
                 //which of the orientation attributes is to be put depends on the frame's environment
                 bool bRTL;
                 bool bVertL2R;
@@ -1423,9 +1423,9 @@ void SwView::StateTabWin(SfxItemSet& rSet)
     SvxLRSpaceItem aPageLRSpace( rDesc.GetMaster().GetLRSpace() );
     SwapPageMargin( rDesc, aPageLRSpace );
 
-    SfxItemSetFixed<RES_PARATR_TABSTOP, RES_PARATR_TABSTOP,
+    SfxItemSet aCoreSet(SfxItemSet::makeFixedSfxItemSet<RES_PARATR_TABSTOP, RES_PARATR_TABSTOP,
                     RES_MARGIN_FIRSTLINE, RES_MARGIN_RIGHT,
-                    RES_UL_SPACE, RES_UL_SPACE>  aCoreSet( GetPool() );
+                    RES_UL_SPACE, RES_UL_SPACE>( GetPool() ));
     // get also the list level indent values, if needed.
     rSh.GetCurAttr( aCoreSet, true );
     const SelectionType nSelType = rSh.GetSelectionType();
@@ -1743,8 +1743,8 @@ void SwView::StateTabWin(SfxItemSet& rSet)
         {
             m_nLeftBorderDistance = 0;
             m_nRightBorderDistance = 0;
-            SfxItemSetFixed<RES_BOX, RES_BOX,
-                            SID_ATTR_BORDER_INNER, SID_ATTR_BORDER_INNER> aCoreSet2(GetPool());
+            SfxItemSet aCoreSet2(SfxItemSet::makeFixedSfxItemSet<RES_BOX, RES_BOX,
+                            SID_ATTR_BORDER_INNER, SID_ATTR_BORDER_INNER>(GetPool()));
             if ( nSelType & SelectionType::Graphic ||
                     nSelType & SelectionType::Frame ||
                     nSelType & SelectionType::Ole ||

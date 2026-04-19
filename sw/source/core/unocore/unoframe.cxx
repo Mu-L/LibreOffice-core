@@ -2699,15 +2699,14 @@ void SwXFrame::attachToRange(uno::Reference<text::XTextRange> const& xTextRange,
 
     SfxItemSet aGrSet(SfxItemSet::makeFixedSfxItemSet<RES_GRFATR_BEGIN, RES_GRFATR_END-1>(pDoc->GetAttrPool()));
 
-    SfxItemSetFixed<
+    SfxItemSet aFrameSet(SfxItemSet::makeFixedSfxItemSet<
         RES_FRMATR_BEGIN,       RES_FRMATR_END-1,
         RES_UNKNOWNATR_CONTAINER, RES_UNKNOWNATR_CONTAINER,
 
         // FillAttribute support
         XATTR_FILL_FIRST, XATTR_FILL_LAST,
 
-        SID_ATTR_BORDER_INNER,  SID_ATTR_BORDER_INNER>
-            aFrameSet(pDoc->GetAttrPool() );
+        SID_ATTR_BORDER_INNER,  SID_ATTR_BORDER_INNER>(pDoc->GetAttrPool() ));
 
     // set correct parent to get the XFILL_NONE FillStyle as needed
     aFrameSet.SetParent(&pDoc->GetDfltFrameFormat()->GetAttrSet());

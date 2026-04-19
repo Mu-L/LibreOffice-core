@@ -1424,8 +1424,7 @@ void HTMLTable::FixFrameFormat( SwTableBox *pBox,
             {
                 bool bLock = pFrameFormat->GetDoc().GetNumberFormatter()
                                      ->IsTextFormat( nNumFormat );
-                SfxItemSetFixed<RES_BOXATR_FORMAT, RES_BOXATR_VALUE>
-                    aItemSet( *pFrameFormat->GetAttrSet().GetPool() );
+                SfxItemSet aItemSet(SfxItemSet::makeFixedSfxItemSet<RES_BOXATR_FORMAT, RES_BOXATR_VALUE>( *pFrameFormat->GetAttrSet().GetPool() ));
                 SvxAdjust eAdjust = SvxAdjust::End;
                 SwContentNode *pCNd = nullptr;
                 if( !bLock )
@@ -3245,7 +3244,7 @@ void SwHTMLParser::BuildTableCell( HTMLTable *pCurTable, bool bReadOptions,
             // the table has no content yet, this means the actual table needs
             // to be created first
 
-            SfxItemSetFixed<
+            SfxItemSet aItemSet(SfxItemSet::makeFixedSfxItemSet<
                 RES_PARATR_SPLIT,   RES_PARATR_SPLIT,
                 RES_PAGEDESC,       RES_PAGEDESC,
                 RES_BREAK,          RES_BREAK,
@@ -3253,7 +3252,7 @@ void SwHTMLParser::BuildTableCell( HTMLTable *pCurTable, bool bReadOptions,
                 RES_KEEP,           RES_KEEP,
                 RES_LAYOUT_SPLIT,   RES_LAYOUT_SPLIT,
                 RES_FRAMEDIR,       RES_FRAMEDIR
-            > aItemSet( m_xDoc->GetAttrPool() );
+            >( m_xDoc->GetAttrPool() ));
             SvxCSS1PropertyInfo aPropInfo;
 
             bool bStyleParsed = ParseStyleOptions( pCurTable->GetStyle(),
@@ -3423,8 +3422,7 @@ void SwHTMLParser::BuildTableCell( HTMLTable *pCurTable, bool bReadOptions,
                 {
                     // the table should be put in a text frame
 
-                    SfxItemSetFixed<RES_FRMATR_BEGIN, RES_FRMATR_END-1>
-                        aFrameSet( m_xDoc->GetAttrPool() );
+                    SfxItemSet aFrameSet(SfxItemSet::makeFixedSfxItemSet<RES_FRMATR_BEGIN, RES_FRMATR_END-1>( m_xDoc->GetAttrPool() ));
                     if( !pCurTable->IsNewDoc() )
                         Reader::ResetFrameFormatAttrs( aFrameSet );
 

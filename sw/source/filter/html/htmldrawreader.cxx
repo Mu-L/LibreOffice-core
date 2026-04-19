@@ -363,11 +363,10 @@ void SwHTMLParser::NewMarquee( HTMLTable *pCurTable )
         eAniDir = SdrTextAniDirection::Right;
 
     // re set the attributes needed for scrolling
-    SfxItemSetFixed<
+    SfxItemSet aItemSet(SfxItemSet::makeFixedSfxItemSet<
             XATTR_FILL_FIRST,   XATTR_FILL_LAST,
             SDRATTR_MISC_FIRST, SDRATTR_MISC_LAST,
-            EE_CHAR_START,      EE_CHAR_END>
-        aItemSet( rModel.GetItemPool() );
+            EE_CHAR_START,      EE_CHAR_END>( rModel.GetItemPool() ));
     aItemSet.Put( makeSdrTextAutoGrowWidthItem( false ) );
     aItemSet.Put( makeSdrTextAutoGrowHeightItem( true ) );
     aItemSet.Put( SdrTextAniKindItem( eAniKind ) );

@@ -505,9 +505,8 @@ void SwTableShell::Execute(SfxRequest &rReq)
                 break;
             // Create items, because we have to rework anyway.
             std::shared_ptr<SvxBoxItem> aBox(std::make_shared<SvxBoxItem>(RES_BOX));
-            SfxItemSetFixed<RES_BOX, RES_BOX,
-                            SID_ATTR_BORDER_INNER, SID_ATTR_BORDER_INNER>
-                aCoreSet( GetPool() );
+            SfxItemSet aCoreSet(SfxItemSet::makeFixedSfxItemSet<RES_BOX, RES_BOX,
+                            SID_ATTR_BORDER_INNER, SID_ATTR_BORDER_INNER>( GetPool() ));
             SvxBoxInfoItem aCoreInfo( SID_ATTR_BORDER_INNER );
             aCoreSet.Put(aCoreInfo);
             rSh.GetTabBorders( aCoreSet );
@@ -705,9 +704,8 @@ void SwTableShell::Execute(SfxRequest &rReq)
                 SvNumberFormatter* pFormatter = rSh.GetNumberFormatter();
                 auto pCoreSet = std::make_shared<SfxItemSetFixed<SID_ATTR_NUMBERFORMAT_VALUE, SID_ATTR_NUMBERFORMAT_INFO>>( GetPool() );
 
-                SfxItemSetFixed<RES_BOXATR_FORMAT, RES_BOXATR_FORMAT,
-                                RES_BOXATR_VALUE, RES_BOXATR_VALUE>
-                     aBoxSet( *pCoreSet->GetPool() );
+                SfxItemSet aBoxSet(SfxItemSet::makeFixedSfxItemSet<RES_BOXATR_FORMAT, RES_BOXATR_FORMAT,
+                                RES_BOXATR_VALUE, RES_BOXATR_VALUE>( *pCoreSet->GetPool() ));
                 rSh.GetTableBoxFormulaAttrs( aBoxSet );
 
                 // tdf#132111: if RES_BOXATR_FORMAT state is DEFAULT (no number format set to cell
@@ -743,8 +741,7 @@ void SwTableShell::Execute(SfxRequest &rReq)
                                 SID_ATTR_NUMBERFORMAT_VALUE, false);
                         if( pNumberFormatValueItem )
                         {
-                            SfxItemSetFixed<RES_BOXATR_FORMAT, RES_BOXATR_FORMAT>
-                                    aBoxFormatSet( *pCoreSet->GetPool() );
+                            SfxItemSet aBoxFormatSet(SfxItemSet::makeFixedSfxItemSet<RES_BOXATR_FORMAT, RES_BOXATR_FORMAT>( *pCoreSet->GetPool() ));
                             aBoxFormatSet.Put( SwTableBoxNumFormat(
                                     static_cast<const SfxUInt32Item*>(pNumberFormatValueItem)->GetValue() ));
                             pSh->SetTableBoxFormulaAttrs( aBoxFormatSet );
@@ -1366,8 +1363,8 @@ void SwTableShell::Execute(SfxRequest &rReq)
         case SID_ATTR_LRSPACE:
             if(pItem)
             {
-                SfxItemSetFixed<RES_LR_SPACE, RES_LR_SPACE,
-                                RES_HORI_ORIENT, RES_HORI_ORIENT>  aSet( GetPool() );
+                SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_LR_SPACE, RES_LR_SPACE,
+                                RES_HORI_ORIENT, RES_HORI_ORIENT>( GetPool() ));
                 SvxLRSpaceItem aLRSpace( *static_cast<const SvxLRSpaceItem*>(pItem) );
                 aLRSpace.SetWhich( RES_LR_SPACE );
                 aSet.Put( aLRSpace );
@@ -1778,8 +1775,8 @@ SwTableShell::SwTableShell(SwView &_rView) :
 
 void SwTableShell::GetFrameBorderState(SfxItemSet &rSet)
 {
-    SfxItemSetFixed<RES_BOX, RES_BOX,
-                 SID_ATTR_BORDER_INNER, SID_ATTR_BORDER_INNER>  aCoreSet( GetPool() );
+    SfxItemSet aCoreSet(SfxItemSet::makeFixedSfxItemSet<RES_BOX, RES_BOX,
+                 SID_ATTR_BORDER_INNER, SID_ATTR_BORDER_INNER>( GetPool() ));
     SvxBoxInfoItem aBoxInfo( SID_ATTR_BORDER_INNER );
     aCoreSet.Put( aBoxInfo );
     GetShell().GetTabBorders( aCoreSet );
@@ -1843,8 +1840,8 @@ void SwTableShell::ExecTableStyle(SfxRequest& rReq)
 
 void SwTableShell::GetLineStyleState(SfxItemSet &rSet)
 {
-    SfxItemSetFixed<RES_BOX, RES_BOX,
-                    SID_ATTR_BORDER_INNER, SID_ATTR_BORDER_INNER>  aCoreSet( GetPool() );
+    SfxItemSet aCoreSet(SfxItemSet::makeFixedSfxItemSet<RES_BOX, RES_BOX,
+                    SID_ATTR_BORDER_INNER, SID_ATTR_BORDER_INNER>( GetPool() ));
     SvxBoxInfoItem aCoreInfo( SID_ATTR_BORDER_INNER );
     aCoreSet.Put(aCoreInfo);
     GetShell().GetTabBorders( aCoreSet );

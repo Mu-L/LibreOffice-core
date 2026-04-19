@@ -264,7 +264,7 @@ void SwGrfShell::Execute(SfxRequest &rReq)
             const SwViewOption* pVOpt = rSh.GetViewOptions();
             SwViewOption aUsrPref( *pVOpt );
 
-            SfxItemSetFixed<
+            SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<
                     RES_FRMATR_BEGIN, RES_GRFATR_CROPGRF,
                     // FillAttribute support:
                     XATTR_FILL_FIRST, XATTR_FILL_LAST,
@@ -286,7 +286,7 @@ void SwGrfShell::Execute(SfxRequest &rReq)
                     FN_PARAM_GRF_CONNECT, FN_PARAM_GRF_CONNECT,
                     FN_SET_FRM_NAME, FN_KEEP_ASPECT_RATIO,
                     FN_SET_FRM_ALT_NAME, FN_SET_FRM_ALT_NAME,
-                    FN_UNO_DESCRIPTION, FN_UNO_DESCRIPTION>  aSet( GetPool() );
+                    FN_UNO_DESCRIPTION, FN_UNO_DESCRIPTION>( GetPool() ));
 
             // create needed items for XPropertyList entries from the DrawModel so that
             // the Area TabPage can access them
@@ -452,9 +452,9 @@ void SwGrfShell::Execute(SfxRequest &rReq)
                 if(pFormat && pFormat->IsAutoUpdateOnDirectFormat())
                 {
                     pFormat->SetFormatAttr(*pSet);
-                    SfxItemSetFixed<
+                    SfxItemSet aShellSet(SfxItemSet::makeFixedSfxItemSet<
                             RES_FRM_SIZE, RES_FRM_SIZE,
-                            RES_SURROUND, RES_ANCHOR>  aShellSet( GetPool() );
+                            RES_SURROUND, RES_ANCHOR>( GetPool() ));
                     aShellSet.Put(*pSet);
                     aMgr.SetAttrSet(aShellSet);
                 }

@@ -1874,10 +1874,9 @@ uno::Any SwUnoCursorHelper::GetPropertyValue(
 
     if (!bDone)
     {
-        SfxItemSetFixed<
+        SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<
                 RES_CHRATR_BEGIN, RES_FRMATR_END - 1,
-                RES_UNKNOWNATR_CONTAINER, RES_UNKNOWNATR_CONTAINER>
-            aSet(rPaM.GetDoc().GetAttrPool());
+                RES_UNKNOWNATR_CONTAINER, RES_UNKNOWNATR_CONTAINER>(rPaM.GetDoc().GetAttrPool()));
 
         SwUnoCursorHelper::GetCursorAttr(rPaM, aSet);
 

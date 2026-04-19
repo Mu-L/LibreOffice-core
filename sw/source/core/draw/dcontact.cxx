@@ -1350,8 +1350,7 @@ void SwDrawContact::Changed_( const SdrObject& rObj,
                 const bool bEnableSetModified = rDoc.getIDocumentState().IsEnableSetModified();
                 rDoc.getIDocumentState().SetEnableSetModified(false);
 
-                SfxItemSetFixed<RES_VERT_ORIENT, RES_HORI_ORIENT, RES_ANCHOR, RES_ANCHOR>
-                    aSyncSet( rDoc.GetAttrPool() );
+                SfxItemSet aSyncSet(SfxItemSet::makeFixedSfxItemSet<RES_VERT_ORIENT, RES_HORI_ORIENT, RES_ANCHOR, RES_ANCHOR>( rDoc.GetAttrPool() ));
                 aSyncSet.Put(GetFormat()->GetHoriOrient());
                 bool bRelToTableCell(false);
                 aSyncSet.Put(SwFormatVertOrient(pAnchoredDrawObj->GetRelPosToPageFrame(false, bRelToTableCell).getY(),

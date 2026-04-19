@@ -359,11 +359,11 @@ void SetAppPrintOptions( SwViewShell* pSh, bool bWeb )
 
     // Close application own printing options in SfxPrinter.
     SwAddPrinterItem aAddPrinterItem(aPrtData);
-    SfxItemSetFixed<
+    SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<
             SID_PRINTER_NOTFOUND_WARN, SID_PRINTER_NOTFOUND_WARN,
             SID_PRINTER_CHANGESTODOC, SID_PRINTER_CHANGESTODOC,
             SID_HTML_MODE, SID_HTML_MODE,
-            FN_PARAM_ADDPRINTER, FN_PARAM_ADDPRINTER>  aSet( pSh->GetAttrPool() );
+            FN_PARAM_ADDPRINTER, FN_PARAM_ADDPRINTER>( pSh->GetAttrPool() ));
 
     if(bWeb)
         aSet.Put(SfxUInt16Item(SID_HTML_MODE,

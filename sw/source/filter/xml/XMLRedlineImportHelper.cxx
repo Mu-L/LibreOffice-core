@@ -799,9 +799,8 @@ void XMLRedlineImportHelper::InsertIntoDocument(RedlineInfo* pRedlineInfo)
 
         // Create the redline's extra data if we have a matching autostyle.
         IStyleAccess& rStyleAccess = pDoc->GetIStyleAccess();
-        SfxItemSetFixed<RES_CHRATR_BEGIN, RES_TXTATR_WITHEND_END - 1, RES_UNKNOWNATR_BEGIN,
-                        RES_UNKNOWNATR_END - 1>
-            aItemSet(pDoc->GetAttrPool());
+        SfxItemSet aItemSet(SfxItemSet::makeFixedSfxItemSet<RES_CHRATR_BEGIN, RES_TXTATR_WITHEND_END - 1, RES_UNKNOWNATR_BEGIN,
+                        RES_UNKNOWNATR_END - 1>(pDoc->GetAttrPool()));
         if (!pRedlineInfo->m_aStyleName.isEmpty())
         {
             // Named character style.

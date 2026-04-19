@@ -41,15 +41,14 @@ void SwBaseShell::InsertRegionDialog(SfxRequest& rReq)
     SwWrtShell& rSh = GetShell();
     const SfxItemSet *pSet = rReq.GetArgs();
 
-    SfxItemSetFixed<
+    SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<
             RES_FRM_SIZE, RES_FRM_SIZE,
             RES_LR_SPACE, RES_LR_SPACE,
             RES_BACKGROUND, RES_BACKGROUND,
             RES_COL, RES_COL,
             RES_FTN_AT_TXTEND, RES_FRAMEDIR,
             XATTR_FILL_FIRST, XATTR_FILL_LAST,
-            SID_ATTR_PAGE_SIZE, SID_ATTR_PAGE_SIZE>
-        aSet( GetPool() );
+            SID_ATTR_PAGE_SIZE, SID_ATTR_PAGE_SIZE>( GetPool() ));
 
     if (!pSet || pSet->Count()==0)
     {
@@ -180,13 +179,12 @@ void SwBaseShell::InsertRegionDialog(SfxRequest& rReq)
 
 void SwWrtShell::StartInsertRegionDialog(const SwSectionData& rSectionData)
 {
-    SfxItemSetFixed<
+    SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<
             RES_FRM_SIZE, RES_FRM_SIZE,
             RES_BACKGROUND, RES_BACKGROUND,
             RES_COL, RES_COL,
             XATTR_FILL_FIRST, XATTR_FILL_LAST,
-            SID_ATTR_PAGE_SIZE, SID_ATTR_PAGE_SIZE>
-        aSet( GetView().GetPool() );
+            SID_ATTR_PAGE_SIZE, SID_ATTR_PAGE_SIZE>( GetView().GetPool() ));
     SwRect aRect;
     CalcBoundRect(aRect, RndStdIds::FLY_AS_CHAR);
     tools::Long nWidth = aRect.Width();

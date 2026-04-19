@@ -441,7 +441,7 @@ void SwFrameShell::Execute(SfxRequest &rReq)
             }
             else
             {
-                SfxItemSetFixed<
+                SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<
                         RES_FRMATR_BEGIN, RES_FRMATR_END - 1,
                         // FillAttribute support:
                         XATTR_FILL_FIRST, XATTR_FILL_LAST,
@@ -460,7 +460,7 @@ void SwFrameShell::Execute(SfxRequest &rReq)
                         FN_SET_FRM_ALT_NAME, FN_SET_FRM_ALT_NAME,
                         FN_UNO_DESCRIPTION, FN_UNO_DESCRIPTION,
                         FN_OLE_IS_MATH, FN_MATH_BASELINE_ALIGNMENT,
-                        FN_PARAM_CHAIN_PREVIOUS, FN_PARAM_CHAIN_NEXT>  aSet( GetPool() );
+                        FN_PARAM_CHAIN_PREVIOUS, FN_PARAM_CHAIN_NEXT>( GetPool() ));
 
                 // create needed items for XPropertyList entries from the DrawModel so that
                 // the Area TabPage can access them
@@ -564,9 +564,9 @@ void SwFrameShell::Execute(SfxRequest &rReq)
                             // Anything which is not supported by the format must be set hard.
                             if(const SfxStringItem* pFrameName = pOutSet->GetItemIfSet(FN_SET_FRM_NAME, false))
                                 rSh.SetFlyName(UIName(pFrameName->GetValue()));
-                            SfxItemSetFixed<
+                            SfxItemSet aShellSet(SfxItemSet::makeFixedSfxItemSet<
                                     RES_FRM_SIZE, RES_FRM_SIZE,
-                                    RES_SURROUND, RES_ANCHOR>  aShellSet( GetPool() );
+                                    RES_SURROUND, RES_ANCHOR>( GetPool() ));
                             aShellSet.Put(*pOutSet);
                             aMgr.SetAttrSet(aShellSet);
                             if(const SfxStringItem* pFrameName = pOutSet->GetItemIfSet(FN_SET_FRM_NAME, false))
@@ -740,9 +740,9 @@ void SwFrameShell::GetState(SfxItemSet& rSet)
     if (!rSh.IsFrameSelected())
         return;
 
-    SfxItemSetFixed<
+    SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<
             RES_LR_SPACE, RES_UL_SPACE,
-            RES_PRINT, RES_HORI_ORIENT>  aSet(rSh.GetAttrPool() );
+            RES_PRINT, RES_HORI_ORIENT>(rSh.GetAttrPool() ));
     rSh.GetFlyFrameAttr( aSet );
 
     bool bProtect = rSh.IsSelObjProtected(FlyProtectFlags::Pos) != FlyProtectFlags::NONE;

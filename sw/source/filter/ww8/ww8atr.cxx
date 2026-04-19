@@ -958,8 +958,8 @@ void MSWordExportBase::OutputFormat( const SwFormat& rFormat, bool bPapFormat, b
             {
                 const SwFrameFormat &rFrameFormat = m_pParentFrame->GetFrameFormat();
 
-                SfxItemSetFixed<RES_FRMATR_BEGIN, RES_FRMATR_END-1,
-                    XATTR_FILL_FIRST, XATTR_FILL_LAST>  aSet(m_rDoc.GetAttrPool());
+                SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_FRMATR_BEGIN, RES_FRMATR_END-1,
+                    XATTR_FILL_FIRST, XATTR_FILL_LAST>(m_rDoc.GetAttrPool()));
                 aSet.Set(rFrameFormat.GetAttrSet());
 
                 // Fly as character becomes a paragraph bound

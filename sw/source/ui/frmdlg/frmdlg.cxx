@@ -191,9 +191,8 @@ void SwFrameDlg::PageCreated(const OUString& rId, SfxTabPage &rPage)
     // FN_DRAW_WRAP_DLG), but could also be directly added from the DrawModel.
     else if (rId == "area")
     {
-        SfxItemSetFixed<SID_COLOR_TABLE, SID_PATTERN_LIST,
-                        SID_OFFER_IMPORT, SID_OFFER_IMPORT>
-            aNew(*GetInputSetImpl()->GetPool());
+        SfxItemSet aNew(SfxItemSet::makeFixedSfxItemSet<SID_COLOR_TABLE, SID_PATTERN_LIST,
+                        SID_OFFER_IMPORT, SID_OFFER_IMPORT>(*GetInputSetImpl()->GetPool()));
 
         aNew.Put(m_rSet);
 

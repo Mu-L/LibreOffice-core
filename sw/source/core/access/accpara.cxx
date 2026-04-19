@@ -1298,9 +1298,8 @@ void SwAccessibleParagraph::_getDefaultAttributesImpl(
     // get default paragraph attributes, if needed, and merge these into <pSet>
     if ( !bOnlyCharAttrs )
     {
-        SfxItemSetFixed<RES_PARATR_BEGIN, RES_PARATR_END - 1,
-                        RES_FRMATR_BEGIN, RES_FRMATR_END - 1>
-             aParaSet( const_cast<SwAttrPool&>(pTextNode->GetDoc().GetAttrPool()) );
+        SfxItemSet aParaSet(SfxItemSet::makeFixedSfxItemSet<RES_PARATR_BEGIN, RES_PARATR_END - 1,
+                        RES_FRMATR_BEGIN, RES_FRMATR_END - 1>( const_cast<SwAttrPool&>(pTextNode->GetDoc().GetAttrPool()) ));
         pTextNode->SwContentNode::GetAttr( aParaSet );
         pSet->Put( aParaSet );
     }
@@ -1309,8 +1308,7 @@ void SwAccessibleParagraph::_getDefaultAttributesImpl(
             "<SwAccessibleParagraph::_getDefaultAttributesImpl(..)> - missing paragraph style. Serious defect!" );
     if ( pTextNode->GetTextColl() )
     {
-        SfxItemSetFixed<RES_CHRATR_BEGIN, RES_CHRATR_END - 1>
-            aCharSet( const_cast<SwAttrPool&>(pTextNode->GetDoc().GetAttrPool()) );
+        SfxItemSet aCharSet(SfxItemSet::makeFixedSfxItemSet<RES_CHRATR_BEGIN, RES_CHRATR_END - 1>( const_cast<SwAttrPool&>(pTextNode->GetDoc().GetAttrPool()) ));
         SetPutRecursive( aCharSet, pTextNode->GetTextColl()->GetAttrSet() );
         pSet->Put( aCharSet );
     }
@@ -1580,14 +1578,13 @@ void SwAccessibleParagraph::_getSupplementalAttributesImpl(
 {
     const SwTextFrame* const pFrame = GetTextFrame();
     const SwTextNode *const pTextNode(pFrame->GetTextNodeForParaProps());
-    SfxItemSetFixed<
+    SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<
                 RES_PARATR_LINESPACING, RES_PARATR_ADJUST,
                 RES_PARATR_TABSTOP, RES_PARATR_TABSTOP,
                 RES_PARATR_NUMRULE, RES_PARATR_NUMRULE,
                 RES_PARATR_LIST_BEGIN, RES_PARATR_LIST_END - 1,
                 RES_MARGIN_FIRSTLINE, RES_MARGIN_RIGHT,
-                RES_UL_SPACE, RES_UL_SPACE>
-        aSet( const_cast<SwAttrPool&>(pTextNode->GetDoc().GetAttrPool()) );
+                RES_UL_SPACE, RES_UL_SPACE>( const_cast<SwAttrPool&>(pTextNode->GetDoc().GetAttrPool()) ));
 
     if ( pTextNode->HasBullet() || pTextNode->HasNumber() )
     {

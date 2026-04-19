@@ -1089,11 +1089,10 @@ void SwTextShell::Execute(SfxRequest &rReq)
                     static constexpr OUString aParagraphLangPrefix(u"Paragraph_"_ustr);
                     static constexpr OUString aDocumentLangPrefix(u"Default_"_ustr);
 
-                    SfxItemSetFixed<RES_CHRATR_LANGUAGE, RES_CHRATR_LANGUAGE,
+                    SfxItemSet aCoreSet(SfxItemSet::makeFixedSfxItemSet<RES_CHRATR_LANGUAGE, RES_CHRATR_LANGUAGE,
                                     RES_CHRATR_CJK_LANGUAGE, RES_CHRATR_CJK_LANGUAGE,
                                     RES_CHRATR_CTL_LANGUAGE, RES_CHRATR_CTL_LANGUAGE,
-                                    RES_CHRATR_SCRIPT_HINT, RES_CHRATR_SCRIPT_HINT>
-                        aCoreSet(GetPool());
+                                    RES_CHRATR_SCRIPT_HINT, RES_CHRATR_SCRIPT_HINT>(GetPool()));
 
                     sal_Int32 nPos = 0;
                     bool bForSelection = true;
@@ -1749,7 +1748,7 @@ void SwTextShell::Execute(SfxRequest &rReq)
             bool bApplyCharUnit = ::HasCharUnit( dynamic_cast<SwWebView*>( &GetView()) != nullptr  );
             mod->PutItem(SfxBoolItem(SID_ATTR_APPLYCHARUNIT, bApplyCharUnit));
 
-            SfxItemSetFixed<
+            SfxItemSet aCoreSet(SfxItemSet::makeFixedSfxItemSet<
                     RES_PARATR_BEGIN, RES_FRMATR_END - 1,
                     // FillAttribute support:
                     XATTR_FILL_FIRST, XATTR_FILL_LAST,
@@ -1765,7 +1764,7 @@ void SwTextShell::Execute(SfxRequest &rReq)
                     SID_ATTR_PARA_PAGENUM, SID_ATTR_PARA_PAGENUM,
                     FN_PARAM_1, FN_PARAM_1,
                     FN_NUMBER_NEWSTART, FN_NUMBER_NEWSTART_AT,
-                    FN_DROP_TEXT, FN_DROP_CHAR_STYLE_NAME>  aCoreSet( GetPool() );
+                    FN_DROP_TEXT, FN_DROP_CHAR_STYLE_NAME>( GetPool() ));
 
             // get also the list level indent values merged as LR-SPACE item, if needed.
             rWrtSh.GetPaMAttr( pPaM, aCoreSet, true );

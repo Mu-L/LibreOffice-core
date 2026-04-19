@@ -2572,9 +2572,8 @@ void SwWW8ImplReader::FinalizeTextNode(SwPosition& rPos, bool bAddNew)
     // This is only being used for numbering currently, so limiting to that context.
     if (pRule)
     {
-        SfxItemSetFixed<RES_CHRATR_BEGIN, RES_CHRATR_END - 1, RES_TXTATR_CHARFMT,
-                        RES_TXTATR_CHARFMT, RES_UNKNOWNATR_BEGIN, RES_UNKNOWNATR_END - 1>
-            items(m_pPaM->GetDoc().GetAttrPool());
+        SfxItemSet items(SfxItemSet::makeFixedSfxItemSet<RES_CHRATR_BEGIN, RES_CHRATR_END - 1, RES_TXTATR_CHARFMT,
+                        RES_TXTATR_CHARFMT, RES_UNKNOWNATR_BEGIN, RES_UNKNOWNATR_END - 1>(m_pPaM->GetDoc().GetAttrPool()));
 
         SfxWhichIter aIter(items);
         for (sal_uInt16 nWhich = aIter.FirstWhich(); nWhich; nWhich = aIter.NextWhich())
@@ -4246,8 +4245,7 @@ void wwSectionManager::SetSegmentToPageDesc(const wwSection &rSection,
             // Only handle shape if it is a background shape
             if (aData.begin()->get()->nFlags & ShapeFlag::Background)
             {
-                SfxItemSetFixed<RES_BACKGROUND, RES_BACKGROUND,XATTR_START, XATTR_END>
-                    aSet(rFormat.GetDoc().GetAttrPool());
+                SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_BACKGROUND, RES_BACKGROUND,XATTR_START, XATTR_END>(rFormat.GetDoc().GetAttrPool()));
                 mrReader.MatchSdrItemsIntoFlySet(pObject.get(), aSet, mso_lineSimple,
                                                  mso_lineSolid, mso_sptRectangle, aRect);
                 if ( aSet.HasItem(RES_BACKGROUND) )

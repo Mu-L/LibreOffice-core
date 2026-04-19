@@ -468,9 +468,9 @@ void SwDrawTextShell::Execute( SfxRequest &rReq )
                 SwView& rView = GetView();
                 FieldUnit eMetric = ::GetDfltMetric(dynamic_cast<SwWebView*>(&rView) !=  nullptr);
                 SwModule::get()->PutItem(SfxUInt16Item(SID_ATTR_METRIC, static_cast< sal_uInt16 >(eMetric)) );
-                SfxItemSetFixed<
+                SfxItemSet aDlgAttr(SfxItemSet::makeFixedSfxItemSet<
                         EE_ITEMS_START, EE_ITEMS_END,
-                        SID_ATTR_PARA_HYPHENZONE, SID_ATTR_PARA_WIDOWS>  aDlgAttr( GetPool() );
+                        SID_ATTR_PARA_HYPHENZONE, SID_ATTR_PARA_WIDOWS>( GetPool() ));
 
                 aDlgAttr.Put(aEditAttr);
 
@@ -590,8 +590,8 @@ void SwDrawTextShell::Execute( SfxRequest &rReq )
 
                 m_pSdrView->SdrEndTextEdit(true);
 
-                SfxItemSetFixed<SDRATTR_TEXTDIRECTION,
-                            SDRATTR_TEXTDIRECTION>  aAttr( *aNewAttr.GetPool() );
+                SfxItemSet aAttr(SfxItemSet::makeFixedSfxItemSet<SDRATTR_TEXTDIRECTION,
+                            SDRATTR_TEXTDIRECTION>( *aNewAttr.GetPool() ));
 
                 aAttr.Put( SvxWritingModeItem(
                     nSlot == SID_TEXTDIRECTION_LEFT_TO_RIGHT ?
@@ -620,9 +620,9 @@ void SwDrawTextShell::Execute( SfxRequest &rReq )
                 if( !static_cast<const SfxBoolItem*>(pPoolItem)->GetValue() )
                     bLeftToRight = !bLeftToRight;
             }
-            SfxItemSetFixed<
+            SfxItemSet aAttr(SfxItemSet::makeFixedSfxItemSet<
                     EE_PARA_WRITINGDIR, EE_PARA_WRITINGDIR,
-                    EE_PARA_AUTOWRITINGDIR, EE_PARA_AUTOWRITINGDIR>  aAttr( *aNewAttr.GetPool() );
+                    EE_PARA_AUTOWRITINGDIR, EE_PARA_AUTOWRITINGDIR>( *aNewAttr.GetPool() ));
 
             auto eFrameDirection = bLeftToRight ? SvxFrameDirection::Horizontal_LR_TB
                                                 : SvxFrameDirection::Horizontal_RL_TB;

@@ -122,8 +122,8 @@ void SwTextShell::ExecEnterNum(SfxRequest &rReq)
     case FN_NUMBER_BULLETS:
     case SID_OUTLINE_BULLET:
     {
-        SfxItemSetFixed<EE_CHAR_LANGUAGE, EE_CHAR_LANGUAGE, SID_HTML_MODE, SID_HTML_MODE,
-                     SID_ATTR_NUMBERING_RULE, SID_PARAM_CUR_NUM_LEVEL>  aSet( GetPool() );
+        SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<EE_CHAR_LANGUAGE, EE_CHAR_LANGUAGE, SID_HTML_MODE, SID_HTML_MODE,
+                     SID_ATTR_NUMBERING_RULE, SID_PARAM_CUR_NUM_LEVEL>( GetPool() ));
         SwDocShell* pDocSh = GetView().GetDocShell();
         const bool bHtml = dynamic_cast<SwWebDocShell*>( pDocSh  ) !=  nullptr;
         const SwNumRule* pNumRuleAtCurrentSelection = GetShell().GetNumRuleAtCurrentSelection();
