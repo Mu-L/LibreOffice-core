@@ -730,7 +730,7 @@ void  SwPagePreview::Execute( SfxRequest &rReq )
             ScopedVclPtr<AbstractSvxZoomDialog> pDlg;
             if(!pArgs)
             {
-                SfxItemSetFixed<SID_ATTR_ZOOM, SID_ATTR_ZOOM> aCoreSet(GetPool());
+                SfxItemSet aCoreSet(SfxItemSet::makeFixedSfxItemSet<SID_ATTR_ZOOM, SID_ATTR_ZOOM>(GetPool()));
                 const SwViewOption* pVOpt = GetViewShell()->GetViewOptions();
                 SvxZoomItem aZoom( pVOpt->GetZoomType(), pVOpt->GetZoom() );
                 aZoom.SetValueSet(
@@ -1047,7 +1047,7 @@ void  SwPagePreview::GetState( SfxItemSet& rSet )
             // has the same status like the normal printing
             {
                 const SfxPoolItem* pItem;
-                SfxItemSetFixed<SID_PRINTDOC, SID_PRINTDOC> aSet( *rSet.GetPool() );
+                SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<SID_PRINTDOC, SID_PRINTDOC>( *rSet.GetPool() ));
                 GetSlotState( SID_PRINTDOC, SfxViewShell::GetInterface(), &aSet );
                 if( SfxItemState::DISABLED == aSet.GetItemState( SID_PRINTDOC, false ))
                     rSet.DisableItem( nWhich );

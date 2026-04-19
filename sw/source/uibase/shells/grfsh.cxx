@@ -192,7 +192,7 @@ void SwGrfShell::Execute(SfxRequest &rReq)
                 Size aSize (
                     convertTwipToMm100(rSh.GetAnyCurRect(CurRectType::FlyEmbedded).SSize()));
 
-                SfxItemSetFixed<RES_GRFATR_MIRRORGRF, RES_GRFATR_CROPGRF> aSet( rSh.GetAttrPool() );
+                SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_GRFATR_MIRRORGRF, RES_GRFATR_CROPGRF>( rSh.GetAttrPool() ));
                 rSh.GetCurAttr( aSet );
                 SwMirrorGrf aMirror( aSet.Get(RES_GRFATR_MIRRORGRF) );
                 SwCropGrf aCrop( aSet.Get(RES_GRFATR_CROPGRF) );
@@ -379,7 +379,7 @@ void SwGrfShell::Execute(SfxRequest &rReq)
 
             // get Mirror and Crop
             {
-                SfxItemSetFixed<RES_GRFATR_MIRRORGRF, RES_GRFATR_CROPGRF>  aTmpSet( rSh.GetAttrPool() );
+                SfxItemSet aTmpSet(SfxItemSet::makeFixedSfxItemSet<RES_GRFATR_MIRRORGRF, RES_GRFATR_CROPGRF>( rSh.GetAttrPool() ));
 
                 rSh.GetCurAttr( aTmpSet );
                 aSet.Put( aTmpSet );
@@ -402,7 +402,7 @@ void SwGrfShell::Execute(SfxRequest &rReq)
             {   // RotGrfFlyFrame: Add current RotationAngle value, convert from
                 // RES_GRFATR_ROTATION to SID_ATTR_TRANSFORM_ANGLE. Do not forget to
                 // convert from 10th degrees to 100th degrees
-                SfxItemSetFixed<RES_GRFATR_ROTATION, RES_GRFATR_ROTATION> aTmpSet( rSh.GetAttrPool() );
+                SfxItemSet aTmpSet(SfxItemSet::makeFixedSfxItemSet<RES_GRFATR_ROTATION, RES_GRFATR_ROTATION>( rSh.GetAttrPool() ));
                 rSh.GetCurAttr( aTmpSet );
                 const SwRotationGrf& rRotation = aTmpSet.Get(RES_GRFATR_ROTATION);
                 nCurrentRotation = rRotation.GetValue();
@@ -529,7 +529,7 @@ void SwGrfShell::Execute(SfxRequest &rReq)
                     aMgr.SetRotation(nCurrentRotation, aNewRotation, aUnrotatedSize);
                 }
 
-                SfxItemSetFixed<RES_GRFATR_BEGIN, RES_GRFATR_END-1> aGrfSet( rSh.GetAttrPool() );
+                SfxItemSet aGrfSet(SfxItemSet::makeFixedSfxItemSet<RES_GRFATR_BEGIN, RES_GRFATR_END-1>( rSh.GetAttrPool() ));
                 aGrfSet.Put( *pSet );
                 if( aGrfSet.Count() )
                     rSh.SetAttrSet( aGrfSet );
@@ -542,7 +542,7 @@ void SwGrfShell::Execute(SfxRequest &rReq)
 
         case FN_GRAPHIC_MIRROR_ON_EVEN_PAGES:
         {
-            SfxItemSetFixed<RES_GRFATR_MIRRORGRF, RES_GRFATR_MIRRORGRF> aSet(rSh.GetAttrPool());
+            SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_GRFATR_MIRRORGRF, RES_GRFATR_MIRRORGRF>(rSh.GetAttrPool()));
             rSh.GetCurAttr( aSet );
             SwMirrorGrf aGrf(aSet.Get(RES_GRFATR_MIRRORGRF));
             aGrf.SetGrfToggle(!aGrf.IsGrfToggle());
@@ -573,7 +573,7 @@ void SwGrfShell::ExecAttr( SfxRequest const &rReq )
     if (GraphicType::Bitmap == nGrfType ||
         GraphicType::GdiMetafile == nGrfType)
     {
-        SfxItemSetFixed<RES_GRFATR_BEGIN, RES_GRFATR_END -1> aGrfSet( GetShell().GetAttrPool() );
+        SfxItemSet aGrfSet(SfxItemSet::makeFixedSfxItemSet<RES_GRFATR_BEGIN, RES_GRFATR_END -1>( GetShell().GetAttrPool() ));
         const SfxItemSet *pArgs = rReq.GetArgs();
         const SfxPoolItem* pItem;
         sal_uInt16 nSlot = rReq.GetSlot();
@@ -943,7 +943,7 @@ void SwGrfShell::ExecuteRotation(SfxRequest const &rReq)
         return;
 
     SwWrtShell& rShell = GetShell();
-    SfxItemSetFixed<RES_GRFATR_ROTATION, RES_GRFATR_ROTATION> aSet( rShell.GetAttrPool() );
+    SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_GRFATR_ROTATION, RES_GRFATR_ROTATION>( rShell.GetAttrPool() ));
     rShell.GetCurAttr( aSet );
     const SwRotationGrf& rRotation = aSet.Get(RES_GRFATR_ROTATION);
     SwFlyFrameAttrMgr aMgr(false, &rShell, rShell.IsFrameSelected() ? Frmmgr_Type::NONE : Frmmgr_Type::GRF, nullptr);
@@ -988,7 +988,7 @@ void SwGrfShell::GetAttrStateForRotation(SfxItemSet &rSet)
             case SID_ROTATE_GRAPHIC_RESET:
             {
                 // RotGrfFlyFrame: disable when already no rotation
-                SfxItemSetFixed<RES_GRFATR_ROTATION, RES_GRFATR_ROTATION> aSet( rShell.GetAttrPool() );
+                SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_GRFATR_ROTATION, RES_GRFATR_ROTATION>( rShell.GetAttrPool() ));
                 rShell.GetCurAttr( aSet );
                 const SwRotationGrf& rRotation = aSet.Get(RES_GRFATR_ROTATION);
                 bDisable = (0_deg10 == rRotation.GetValue());
@@ -998,7 +998,7 @@ void SwGrfShell::GetAttrStateForRotation(SfxItemSet &rSet)
             {
                 // RotGrfFlyFrame: get rotation value from RES_GRFATR_ROTATION and copy to rSet as
                 // SID_ATTR_TRANSFORM_ANGLE, convert from 10th degrees to 100th degrees
-                SfxItemSetFixed<RES_GRFATR_ROTATION, RES_GRFATR_ROTATION> aSet( rShell.GetAttrPool() );
+                SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_GRFATR_ROTATION, RES_GRFATR_ROTATION>( rShell.GetAttrPool() ));
                 rShell.GetCurAttr( aSet );
                 const SwRotationGrf& rRotation = aSet.Get(RES_GRFATR_ROTATION);
                 rSet.Put(SdrAngleItem(SID_ATTR_TRANSFORM_ANGLE, to<Degree100>(rRotation.GetValue())));

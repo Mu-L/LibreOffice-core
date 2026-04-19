@@ -426,7 +426,7 @@ void SwDocShell::Execute(SfxRequest& rReq)
 
             pAFlags->pSmartTagMgr = &SwSmartTagMgr::Get();
 
-            SfxItemSetFixed<SID_AUTO_CORRECT_DLG, SID_AUTO_CORRECT_DLG, SID_OPEN_SMARTTAGOPTIONS, SID_OPEN_SMARTTAGOPTIONS> aSet( pApp->GetPool() );
+            SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<SID_AUTO_CORRECT_DLG, SID_AUTO_CORRECT_DLG, SID_OPEN_SMARTTAGOPTIONS, SID_OPEN_SMARTTAGOPTIONS>( pApp->GetPool() ));
             aSet.Put( aSwOptions );
 
             const SfxBoolItem* pOpenSmartTagOptionsItem = nullptr;

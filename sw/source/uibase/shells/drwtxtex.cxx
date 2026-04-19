@@ -391,7 +391,7 @@ void SwDrawTextShell::Execute( SfxRequest &rReq )
                 SwView& rView = GetView();
                 FieldUnit eMetric = ::GetDfltMetric(dynamic_cast<SwWebView*>(&rView) != nullptr);
                 SwModule::get()->PutItem(SfxUInt16Item(SID_ATTR_METRIC, static_cast< sal_uInt16 >(eMetric)) );
-                SfxItemSetFixed<XATTR_FILLSTYLE, XATTR_FILLCOLOR, EE_ITEMS_START, EE_ITEMS_END> aDlgAttr(GetPool());
+                SfxItemSet aDlgAttr(SfxItemSet::makeFixedSfxItemSet<XATTR_FILLSTYLE, XATTR_FILLCOLOR, EE_ITEMS_START, EE_ITEMS_END>(GetPool()));
 
                 // util::Language does not exists in the EditEngine! That is why not in set.
 

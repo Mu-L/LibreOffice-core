@@ -259,7 +259,7 @@ void SwInputWindow::ShowWin()
             }
             m_pWrtShell->DoUndo(false);
 
-            SfxItemSetFixed<RES_BOXATR_FORMULA, RES_BOXATR_FORMULA> aSet( m_pWrtShell->GetAttrPool() );
+            SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_BOXATR_FORMULA, RES_BOXATR_FORMULA>( m_pWrtShell->GetAttrPool() ));
             if( m_pWrtShell->GetTableBoxFormulaAttrs( aSet ))
             {
                 SwTableBoxFormula& rFormula

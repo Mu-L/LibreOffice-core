@@ -153,7 +153,7 @@ void SwDrawShell::InsertPictureFromFile(SdrObject& rObject)
     {
         pSdrView->AddUndo(std::make_unique<SdrUndoAttrObj>(rObject));
 
-        SfxItemSetFixed<XATTR_FILLSTYLE, XATTR_FILLBITMAP> aSet(pSdrView->GetModel().GetItemPool());
+        SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<XATTR_FILLSTYLE, XATTR_FILLBITMAP>(pSdrView->GetModel().GetItemPool()));
 
         aSet.Put(XFillStyleItem(drawing::FillStyle_BITMAP));
         aSet.Put(XFillBitmapItem(OUString(), std::move(aGraphic)));

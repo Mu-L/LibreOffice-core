@@ -1308,7 +1308,7 @@ bool SwDocShell::MakeInlineHeading(SwWrtShell *pSh, SwTextFormatColl* pColl, con
             pSh->SetTextFormatColl(pColl, true, bResetAllCharAttrs);
 
             // zero the upper and lower margins of the paragraph (also an interoperability issue)
-            SfxItemSetFixed<RES_UL_SPACE, RES_UL_SPACE> aSet2(pSh->GetAttrPool());
+            SfxItemSet aSet2(SfxItemSet::makeFixedSfxItemSet<RES_UL_SPACE, RES_UL_SPACE>(pSh->GetAttrPool()));
             pSh->GetCurAttr( aSet2 );
             SvxULSpaceItem aUL( 0, 0, RES_UL_SPACE );
             pSh->SetAttrItem( aUL );

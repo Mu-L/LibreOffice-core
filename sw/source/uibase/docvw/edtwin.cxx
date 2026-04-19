@@ -2383,7 +2383,7 @@ KEYINPUT_CHECKTABLE_INSDEL:
                             eKeyState = SwKeyState::GoIntoFly;
                         else
                         {
-                            SfxItemSetFixed<RES_TXTATR_INETFMT, RES_TXTATR_INETFMT> aSet(rSh.GetAttrPool());
+                            SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_TXTATR_INETFMT, RES_TXTATR_INETFMT>(rSh.GetAttrPool()));
                             rSh.GetCurAttr(aSet);
                             if(SfxItemState::SET == aSet.GetItemState(RES_TXTATR_INETFMT, false))
                             {

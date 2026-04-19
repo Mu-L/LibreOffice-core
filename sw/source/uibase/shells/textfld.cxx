@@ -1845,7 +1845,7 @@ void SwTextShell::InsertHyperlink(const SvxHyperlinkItem& rHlnkItem)
         return;
 
     rSh.StartAction();
-    SfxItemSetFixed<RES_TXTATR_INETFMT, RES_TXTATR_INETFMT> aSet(GetPool());
+    SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_TXTATR_INETFMT, RES_TXTATR_INETFMT>(GetPool()));
     rSh.GetCurAttr( aSet );
 
     if(SfxItemState::SET == aSet.GetItemState(RES_TXTATR_INETFMT, false))

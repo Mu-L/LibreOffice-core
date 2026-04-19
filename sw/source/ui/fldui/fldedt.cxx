@@ -312,7 +312,7 @@ IMPL_LINK_NOARG(SwFieldEditDlg, AddressHdl, weld::Button&, void)
         comphelper::dispatchCommand(u".uno:SetDocumentProperties"_ustr, {});
     else
     {
-        SfxItemSetFixed<SID_FIELD_GRABFOCUS, SID_FIELD_GRABFOCUS> aSet( m_pSh->GetAttrPool() );
+        SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<SID_FIELD_GRABFOCUS, SID_FIELD_GRABFOCUS>( m_pSh->GetAttrPool() ));
 
         EditPosition nEditPos = EditPosition::UNKNOWN;
 

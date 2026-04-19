@@ -298,7 +298,7 @@ IMPL_LINK_NOARG(SwColumnDlg, OkHdl, weld::Button&, void)
     }
     if(m_pFrameSet && SfxItemState::SET == m_pFrameSet->GetItemState(RES_COL) && m_bFrameChanged)
     {
-        SfxItemSetFixed<RES_COL, RES_COL> aTmp(*m_pFrameSet->GetPool());
+        SfxItemSet aTmp(SfxItemSet::makeFixedSfxItemSet<RES_COL, RES_COL>(*m_pFrameSet->GetPool()));
         aTmp.Put(*m_pFrameSet);
         m_rWrtShell.StartAction();
         m_rWrtShell.Push();

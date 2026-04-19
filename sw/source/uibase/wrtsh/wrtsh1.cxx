@@ -1237,7 +1237,7 @@ void SwWrtShell::InsertContentControl(SwContentControlType eType)
             InsertGraphic(OUString(), OUString(), aBitmap, nullptr, RndStdIds::FLY_AS_CHAR);
 
             // Set properties on the bitmap.
-            SfxItemSetFixed<RES_FRM_SIZE, RES_FRM_SIZE> aSet(GetDoc()->GetAttrPool());
+            SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_FRM_SIZE, RES_FRM_SIZE>(GetDoc()->GetAttrPool()));
             GetFlyFrameAttr(aSet);
             SwFormatFrameSize aSize(SwFrameSize::Fixed, 3000, 3000);
             aSet.Put(aSize);

@@ -284,7 +284,7 @@ void SwDrawBaseShell::Execute(SfxRequest& rReq)
                                     SfxItemState::SET != pOutSet->GetItemState(
                                         SID_ATTR_TRANSFORM_POS_Y, false );
 
-                                SfxItemSetFixed<RES_FRMATR_BEGIN, RES_FRMATR_END - 1> aFrameAttrSet(GetPool());
+                                SfxItemSet aFrameAttrSet(SfxItemSet::makeFixedSfxItemSet<RES_FRMATR_BEGIN, RES_FRMATR_END - 1>(GetPool()));
 
                                 bool bSingleSelection = rMarkList.GetMarkCount() == 1;
 

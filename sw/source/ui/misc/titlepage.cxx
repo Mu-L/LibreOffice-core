@@ -25,7 +25,7 @@ namespace
     bool lcl_GetPageDesc(SwWrtShell& rSh, sal_uInt16 &rPageNo, std::unique_ptr<const SwFormatPageDesc>* ppPageFormatDesc)
     {
         bool bRet = false;
-        SfxItemSetFixed<RES_PAGEDESC, RES_PAGEDESC> aSet(rSh.GetAttrPool());
+        SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_PAGEDESC, RES_PAGEDESC>(rSh.GetAttrPool()));
         if (rSh.GetCurAttr(aSet))
         {
             if (const SwFormatPageDesc* pDescItem = aSet.GetItemIfSet( RES_PAGEDESC ))

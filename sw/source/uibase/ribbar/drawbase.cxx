@@ -291,7 +291,7 @@ bool SwDrawBase::MouseButtonUp(const MouseEvent& rMEvt)
                 bAutoCap = true;
                 if(m_pWin->GetFrameColCount() > 1)
                 {
-                    SfxItemSetFixed<RES_COL,RES_COL> aSet(m_rView.GetPool());
+                    SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_COL,RES_COL>(m_rView.GetPool()));
                     SwFormatCol aCol(aSet.Get(RES_COL));
                     aCol.Init(m_pWin->GetFrameColCount(), aCol.GetGutterWidth(), aCol.GetWishWidth());
                     aSet.Put(aCol);

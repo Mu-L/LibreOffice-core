@@ -198,7 +198,7 @@ void ApplyCharBackground(Color const& rBackgroundColor, model::ComplexColor cons
 {
     rShell.StartUndo(SwUndoId::INSATTR);
 
-    SfxItemSetFixed<RES_CHRATR_GRABBAG, RES_CHRATR_GRABBAG> aCoreSet(rShell.GetView().GetPool());
+    SfxItemSet aCoreSet(SfxItemSet::makeFixedSfxItemSet<RES_CHRATR_GRABBAG, RES_CHRATR_GRABBAG>(rShell.GetView().GetPool()));
 
     rShell.GetCurAttr(aCoreSet);
 
@@ -745,7 +745,7 @@ void SfxToSwPageDescAttr( const SwWrtShell& rShell, SfxItemSet& rSet )
     }
     else
     {
-        SfxItemSetFixed<RES_PAGEDESC, RES_PAGEDESC> aCoreSet(rShell.GetView().GetPool());
+        SfxItemSet aCoreSet(SfxItemSet::makeFixedSfxItemSet<RES_PAGEDESC, RES_PAGEDESC>(rShell.GetView().GetPool()));
         rShell.GetCurAttr( aCoreSet );
         if(const SwFormatPageDesc* pPageDescItem = aCoreSet.GetItemIfSet( RES_PAGEDESC ) )
         {

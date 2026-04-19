@@ -170,7 +170,7 @@ void SwFrameShell::Execute(SfxRequest &rReq)
                 if(const SfxUInt16Item* pColsItem = pArgs->GetItemIfSet(SID_ATTR_COLUMNS, false))
                     nCols = pColsItem->GetValue();
 
-                SfxItemSetFixed<RES_COL,RES_COL> aSet(GetPool());
+                SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_COL,RES_COL>(GetPool()));
                 rSh.GetFlyFrameAttr( aSet );
                 SwFormatCol aCol(aSet.Get(RES_COL));
                 // GutterWidth will not always passed, hence get firstly
@@ -205,7 +205,7 @@ void SwFrameShell::Execute(SfxRequest &rReq)
                 const OUString& rURL = rHLinkItem.GetURL();
                 const OUString& rTarget = rHLinkItem.GetTargetFrame();
 
-                SfxItemSetFixed<RES_URL, RES_URL> aSet( rSh.GetAttrPool() );
+                SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_URL, RES_URL>( rSh.GetAttrPool() ));
                 rSh.GetFlyFrameAttr( aSet );
                 SwFormatURL aURL( aSet.Get( RES_URL ) );
 
@@ -390,7 +390,7 @@ void SwFrameShell::Execute(SfxRequest &rReq)
 
             if (pArgs && (pArgs->HasItem(SID_ATTR_TRANSFORM_ANGLE) || pArgs->HasItem(SID_ATTR_TRANSFORM_DELTA_ANGLE)))
             {
-                SfxItemSetFixed<RES_GRFATR_ROTATION, RES_GRFATR_ROTATION> aSet(rSh.GetAttrPool() );
+                SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_GRFATR_ROTATION, RES_GRFATR_ROTATION>(rSh.GetAttrPool() ));
                 rSh.GetCurAttr(aSet);
                 const SwRotationGrf& rRotation = aSet.Get(RES_GRFATR_ROTATION);
                 const Degree10 nOldRot(rRotation.GetValue());
@@ -652,7 +652,7 @@ void SwFrameShell::Execute(SfxRequest &rReq)
             SwFormatHoriOrient aHori(aMgr.GetHoriOrient());
             bool bMirror = !aHori.IsPosToggle();
             aHori.SetPosToggle(bMirror);
-            SfxItemSetFixed<RES_HORI_ORIENT, RES_HORI_ORIENT> aSet(GetPool());
+            SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_HORI_ORIENT, RES_HORI_ORIENT>(GetPool()));
             aSet.Put(aHori);
             aMgr.SetAttrSet(aSet);
             bCopyToFormat = true;
@@ -924,7 +924,7 @@ void SwFrameShell::GetState(SfxItemSet& rSet)
                 aHLinkItem.SetShowName(false);
                 aHLinkItem.SetShowText(false);
 
-                SfxItemSetFixed<RES_URL, RES_URL> aURLSet(GetPool());
+                SfxItemSet aURLSet(SfxItemSet::makeFixedSfxItemSet<RES_URL, RES_URL>(GetPool()));
                 rSh.GetFlyFrameAttr( aURLSet );
 
                 if(const SwFormatURL* pFormatURL = aURLSet.GetItemIfSet(RES_URL))
@@ -1097,7 +1097,7 @@ void SwFrameShell::ExecFrameStyle(SfxRequest const & rReq)
     const SvxBoxItem* pPoolBoxItem = ::GetDfltAttr(RES_BOX);
 
     const SfxItemSet *pArgs = rReq.GetArgs();
-    SfxItemSetFixed<RES_BOX, RES_BOX> aFrameSet(rSh.GetAttrPool());
+    SfxItemSet aFrameSet(SfxItemSet::makeFixedSfxItemSet<RES_BOX, RES_BOX>(rSh.GetAttrPool()));
 
     rSh.GetFlyFrameAttr( aFrameSet );
     const SvxBoxItem& rBoxItem = aFrameSet.Get(RES_BOX);
@@ -1291,7 +1291,7 @@ void SwFrameShell::GetLineStyleState(SfxItemSet &rSet)
     {
         if (rSh.IsFrameSelected())
         {
-            SfxItemSetFixed<RES_BOX, RES_BOX> aFrameSet( rSh.GetAttrPool() );
+            SfxItemSet aFrameSet(SfxItemSet::makeFixedSfxItemSet<RES_BOX, RES_BOX>( rSh.GetAttrPool() ));
 
             rSh.GetFlyFrameAttr(aFrameSet);
 

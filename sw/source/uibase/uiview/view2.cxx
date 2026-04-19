@@ -378,7 +378,7 @@ ErrCode SwView::InsertGraphic( const OUString &rPath, const OUString &rFilter,
 
             if (aRotation)
             {
-                SfxItemSetFixed<RES_GRFATR_ROTATION, RES_GRFATR_ROTATION> aSet( rShell.GetAttrPool() );
+                SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_GRFATR_ROTATION, RES_GRFATR_ROTATION>( rShell.GetAttrPool() ));
                 rShell.GetCurAttr( aSet );
                 const SwRotationGrf& rRotation = aSet.Get(RES_GRFATR_ROTATION);
                 aFrameManager.SetRotation(rRotation.GetValue(), aRotation, rRotation.GetUnrotatedSize());
@@ -2162,7 +2162,7 @@ void SwView::StateStatusLine(SfxItemSet &rSet)
                     {
                         if(!pNumRule->IsAutoRule())
                         {
-                            SfxItemSetFixed<RES_PARATR_NUMRULE, RES_PARATR_NUMRULE> aSet(GetPool());
+                            SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_PARATR_NUMRULE, RES_PARATR_NUMRULE>(GetPool()));
                             rShell.GetCurAttr(aSet);
                             if(SfxItemState::DEFAULT <=
                                aSet.GetItemState(RES_PARATR_NUMRULE))
@@ -2317,7 +2317,7 @@ void SwView::ExecuteStatusLine(SfxRequest &rReq)
                 else
                 {
                     const SwViewOption& rViewOptions = *rSh.GetViewOptions();
-                    SfxItemSetFixed<SID_ATTR_ZOOM, SID_ATTR_ZOOM, SID_ATTR_VIEWLAYOUT, SID_ATTR_VIEWLAYOUT> aCoreSet(m_pShell->GetPool());
+                    SfxItemSet aCoreSet(SfxItemSet::makeFixedSfxItemSet<SID_ATTR_ZOOM, SID_ATTR_ZOOM, SID_ATTR_VIEWLAYOUT, SID_ATTR_VIEWLAYOUT>(m_pShell->GetPool()));
                     SvxZoomItem aZoom( rViewOptions.GetZoomType(), rViewOptions.GetZoom() );
 
                     const bool bBrowseMode = rSh.GetViewOptions()->getBrowseMode();
