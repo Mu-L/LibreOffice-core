@@ -510,11 +510,11 @@ Printer* SmDocShell::GetPrt()
     }
     else if (!mpPrinter)
     {
-        auto pOptions = std::make_unique<SfxItemSetFixed<
+        auto pOptions = std::make_unique<SfxItemSet>(SfxItemSet::makeFixedSfxItemSet<
                 SID_PRINTTITLE, SID_PRINTZOOM,
                 SID_NO_RIGHT_SPACES, SID_SAVE_ONLY_USED_SYMBOLS,
                 SID_AUTO_CLOSE_BRACKETS, SID_SMEDITWINDOWZOOM,
-                SID_INLINE_EDIT_ENABLE, SID_INLINE_EDIT_ENABLE>>(GetPool());
+                SID_INLINE_EDIT_ENABLE, SID_INLINE_EDIT_ENABLE>(GetPool()));
         SmModule::get()->GetConfig()->ConfigToItemSet(*pOptions);
         mpPrinter = VclPtr<SfxPrinter>::Create(std::move(pOptions));
         mpPrinter->SetMapMode(MapMode(SmMapUnit()));
