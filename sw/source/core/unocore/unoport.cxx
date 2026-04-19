@@ -395,10 +395,10 @@ void SwXTextPortion::GetPropertyValue(
             {
                 if(!pSet)
                 {
-                    pSet = std::make_unique<SfxItemSetFixed<
+                    pSet = std::make_unique<SfxItemSet>(SfxItemSet::makeFixedSfxItemSet<
                             RES_CHRATR_BEGIN, RES_FRMATR_END - 1,
                             RES_UNKNOWNATR_CONTAINER,
-                                RES_UNKNOWNATR_CONTAINER>>(pUnoCursor->GetDoc().GetAttrPool());
+                                RES_UNKNOWNATR_CONTAINER>(pUnoCursor->GetDoc().GetAttrPool()));
                     SwUnoCursorHelper::GetCursorAttr(*pUnoCursor, *pSet);
                 }
                 SfxItemPropertySet::getPropertyValue(rEntry, *pSet, rVal);

@@ -178,14 +178,14 @@ static void sw_CharDialog(SwWrtShell& rWrtSh, bool bUseDialog, bool bApplyToPara
 {
     FieldUnit eMetric = ::GetDfltMetric(dynamic_cast<SwWebView*>( &rWrtSh.GetView()) != nullptr );
     SwModule::get()->PutItem(SfxUInt16Item(SID_ATTR_METRIC, static_cast<sal_uInt16>(eMetric)));
-    auto pCoreSet = std::make_shared<SfxItemSetFixed<
+    auto pCoreSet = std::make_shared<SfxItemSet>(SfxItemSet::makeFixedSfxItemSet<
             RES_CHRATR_BEGIN, RES_CHRATR_END - 1,
             RES_TXTATR_INETFMT, RES_TXTATR_INETFMT,
             RES_BACKGROUND, RES_SHADOW,
             SID_ATTR_BORDER_INNER, SID_ATTR_BORDER_INNER,
             SID_HTML_MODE, SID_HTML_MODE,
             SID_ATTR_CHAR_WIDTH_FIT_TO_LINE, SID_ATTR_CHAR_WIDTH_FIT_TO_LINE,
-            FN_PARAM_SELECTION, FN_PARAM_SELECTION>> ( rWrtSh.GetView().GetPool() );
+            FN_PARAM_SELECTION, FN_PARAM_SELECTION> ( rWrtSh.GetView().GetPool() ));
     rWrtSh.GetCurAttr(*pCoreSet);
 
     bool bSel = rWrtSh.HasSelection();

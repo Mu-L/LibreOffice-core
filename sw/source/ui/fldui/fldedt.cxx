@@ -196,7 +196,7 @@ SfxTabPage* SwFieldEditDlg::CreatePage(SwFieldGroup nGroup)
         case SwFieldGroup::DocInfos:
             if (SfxObjectShell* pDocSh = SfxObjectShell::Current())
             {
-                auto pSet = new SfxItemSetFixed<FN_FIELD_DIALOG_DOC_PROPS, FN_FIELD_DIALOG_DOC_PROPS>( pDocSh->GetPool() );
+                auto pSet = new SfxItemSet(SfxItemSet::makeFixedSfxItemSet<FN_FIELD_DIALOG_DOC_PROPS, FN_FIELD_DIALOG_DOC_PROPS>( pDocSh->GetPool() ));
                 using namespace ::com::sun::star;
                 uno::Reference<document::XDocumentPropertiesSupplier> xDPS(
                     pDocSh->GetModel(), uno::UNO_QUERY_THROW);

@@ -519,11 +519,11 @@ SwUnoCursorHelper::SetCursorPropertyValue(
                     // TODO create own map for this, it contains UNO_NAME_DISPLAY_NAME? or make property readable so ODF export can map it to a automatic style?
                     SfxItemPropertySet const& rPropSet(*aSwMapProvider.GetPropertySet(PROPERTY_MAP_CHAR_AUTO_STYLE));
                     SfxItemPropertyMap const& rMap(rPropSet.getPropertyMap());
-                    SfxItemSetFixed
+                    SfxItemSet items(SfxItemSet::makeFixedSfxItemSet
                         <RES_CHRATR_BEGIN, RES_CHRATR_END-1,
                             RES_TXTATR_CHARFMT, RES_TXTATR_CHARFMT,
                             RES_UNKNOWNATR_BEGIN, RES_UNKNOWNATR_END-1>
-                         items( rPam.GetDoc().GetAttrPool() );
+                         ( rPam.GetDoc().GetAttrPool() ));
 
                     for (beans::NamedValue const& prop : props)
                     {

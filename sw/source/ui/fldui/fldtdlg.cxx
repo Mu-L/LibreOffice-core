@@ -137,7 +137,7 @@ SfxItemSet* SwFieldDlg::CreateInputItemSet(const OUString& rID)
     SwDocShell *const pDocSh(static_cast<SwDocShell*>(SfxObjectShell::Current()));
     if (rID == "docinfo" && pDocSh) // might not have a shell if the dialog is restored on startup
     {
-        mxInputItemSet = std::make_unique<SfxItemSetFixed<FN_FIELD_DIALOG_DOC_PROPS, FN_FIELD_DIALOG_DOC_PROPS>>( pDocSh->GetPool() );
+        mxInputItemSet = std::make_unique<SfxItemSet>(SfxItemSet::makeFixedSfxItemSet<FN_FIELD_DIALOG_DOC_PROPS, FN_FIELD_DIALOG_DOC_PROPS>( pDocSh->GetPool() ));
         using namespace ::com::sun::star;
         uno::Reference<document::XDocumentPropertiesSupplier> xDPS(
             pDocSh->GetModel(), uno::UNO_QUERY_THROW);

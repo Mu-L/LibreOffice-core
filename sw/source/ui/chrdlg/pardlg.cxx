@@ -231,9 +231,9 @@ void SwParaDlg::PageCreated(const OUString& rId, SfxTabPage& rPage)
     // demand, but could also be directly added from the DrawModel.
     else if (rId == "area")
     {
-        SfxItemSetFixed
+        SfxItemSet aNew(SfxItemSet::makeFixedSfxItemSet
             <SID_COLOR_TABLE, SID_PATTERN_LIST,
-            SID_OFFER_IMPORT, SID_OFFER_IMPORT>  aNew(*aSet.GetPool());
+            SID_OFFER_IMPORT, SID_OFFER_IMPORT>  (*aSet.GetPool()));
 
         aNew.Put(*GetInputSetImpl());
 

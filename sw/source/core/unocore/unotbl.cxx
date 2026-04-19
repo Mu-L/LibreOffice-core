@@ -1718,10 +1718,10 @@ uno::Any SwXTextTableCursor::getPropertyValue(const OUString& rPropertyName)
         break;
         default:
         {
-            SfxItemSetFixed
+            SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet
                 <RES_CHRATR_BEGIN, RES_FRMATR_END-1,
                 RES_UNKNOWNATR_CONTAINER, RES_UNKNOWNATR_CONTAINER>
-                    aSet(rTableCursor.GetDoc().GetAttrPool());
+                    (rTableCursor.GetDoc().GetAttrPool()));
             SwUnoCursorHelper::GetCursorAttr(rTableCursor.GetSelRing(), aSet);
             SfxItemPropertySet::getPropertyValue(*pEntry, aSet, aResult);
         }

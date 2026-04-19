@@ -818,7 +818,7 @@ bool WW8ListManager::ReadLVL(SwNumFormat& rNumFormat, std::unique_ptr<SfxItemSet
         }
 
         // create new Itemset for character attributes
-        rpItemSet.reset(new SfxItemSetFixed<RES_CHRATR_BEGIN, RES_CHRATR_END - 1>( m_rDoc.GetAttrPool() ));
+        rpItemSet.reset(new SfxItemSet(SfxItemSet::makeFixedSfxItemSet<RES_CHRATR_BEGIN, RES_CHRATR_END - 1>( m_rDoc.GetAttrPool() )));
 
         // Set Reader-ItemSet-Pointer to the newly created set
         m_rReader.SetCurrentItemSet(std::move(rpItemSet));

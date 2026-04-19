@@ -138,10 +138,10 @@ SwColumnDlg::SwColumnDlg(weld::Window* pParent, SwWrtShell& rSh)
     const SwPageDesc* pPageDesc = m_rWrtShell.GetSelectedPageDescs();
     if( pPageDesc )
     {
-        m_pPageSet = std::make_unique<SfxItemSetFixed<
+        m_pPageSet = std::make_unique<SfxItemSet>(SfxItemSet::makeFixedSfxItemSet<
                 RES_FRM_SIZE, RES_FRM_SIZE,
                 RES_LR_SPACE, RES_LR_SPACE,
-                RES_COL, RES_COL>>(m_rWrtShell.GetAttrPool());
+                RES_COL, RES_COL>(m_rWrtShell.GetAttrPool()));
 
         const SwFrameFormat &rFormat = pPageDesc->GetMaster();
         m_nPageWidth = rFormat.GetFrameSize().GetSize().Width();

@@ -645,7 +645,7 @@ IMPL_LINK(SwGlossaryDlg, MenuHdl, const OUString&, rItemIdent, void)
     }
     else if (rItemIdent == "macro")
     {
-        auto xSet = std::make_unique<SfxItemSetFixed<RES_FRMMACRO, RES_FRMMACRO, SID_EVENTCONFIG, SID_EVENTCONFIG>>( m_pShell->GetAttrPool() );
+        auto xSet = std::make_unique<SfxItemSet>(SfxItemSet::makeFixedSfxItemSet<RES_FRMMACRO, RES_FRMMACRO, SID_EVENTCONFIG, SID_EVENTCONFIG>( m_pShell->GetAttrPool() ));
 
         SvxMacro aStart(OUString(), OUString(), STARBASIC);
         SvxMacro aEnd(OUString(), OUString(), STARBASIC);

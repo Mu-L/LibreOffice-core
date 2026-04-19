@@ -3048,7 +3048,7 @@ void SwXPageStyle::SetPropertyValues_Impl(const uno::Sequence<OUString>& rProper
                     else if(pEntry->nWID == SID_ATTR_PAGE_ON && rValues[nProp].get<bool>())
                     {
                         // Header/footer gets switched on, create defaults and the needed SfxSetItem
-                        SfxItemSetFixed
+                        SfxItemSet aTempSet(SfxItemSet::makeFixedSfxItemSet
                             <RES_FRMATR_BEGIN,RES_FRMATR_END - 1,            // [82
 
                             // FillAttribute support
@@ -3058,7 +3058,7 @@ void SwXPageStyle::SetPropertyValues_Impl(const uno::Sequence<OUString>& rProper
                             SID_ATTR_PAGE_SIZE,SID_ATTR_PAGE_SIZE,          // [10051
                             SID_ATTR_PAGE_ON,SID_ATTR_PAGE_SHARED,          // [10060
                             SID_ATTR_PAGE_SHARED_FIRST,SID_ATTR_PAGE_SHARED_FIRST>
-                                aTempSet(*aBaseImpl.GetItemSet().GetPool());
+                                (*aBaseImpl.GetItemSet().GetPool()));
 
                         // set correct parent to get the XFILL_NONE FillStyle as needed
                         aTempSet.SetParent(&GetDoc()->GetDfltFrameFormat()->GetAttrSet());
@@ -3934,7 +3934,7 @@ SwAutoStylesEnumImpl::SwAutoStylesEnumImpl( SwDoc& rInitDoc, IStyleAccess::SwAut
                 std::pair< sal_uInt16, text::RubyAdjust > aPair( rRubyItem.GetPosition(), rRubyItem.GetAdjustment() );
                 if ( aRubyMap.insert( aPair ).second )
                 {
-                    auto pItemSet = std::make_shared<SfxItemSetFixed<RES_TXTATR_CJK_RUBY, RES_TXTATR_CJK_RUBY>>( rAttrPool );
+                    auto pItemSet = std::make_shared<SfxItemSet>(SfxItemSet::makeFixedSfxItemSet<RES_TXTATR_CJK_RUBY, RES_TXTATR_CJK_RUBY>( rAttrPool ));
                     pItemSet->Put( rRubyItem );
                     mAutoStyles.push_back( pItemSet );
                 }
