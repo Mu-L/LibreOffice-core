@@ -3415,7 +3415,7 @@ bool SwWW8ImplReader::StartTable(WW8_CP nStartCp)
             && !m_aTableStack.empty() && !InEqualApo(nNewInTable) )
         {
             m_xTableDesc->m_pParentPos = new SwPosition(*m_pPaM->GetPoint());
-            SfxItemSetFixed<RES_FRMATR_BEGIN, RES_FRMATR_END-1> aItemSet(m_rDoc.GetAttrPool());
+            SfxItemSet aItemSet(SfxItemSet::makeFixedSfxItemSet<RES_FRMATR_BEGIN, RES_FRMATR_END-1>(m_rDoc.GetAttrPool()));
             // #i33818# - anchor the Writer fly frame for the nested table at-character.
             // #i45301#
             SwFormatAnchor aAnchor( eAnchor );

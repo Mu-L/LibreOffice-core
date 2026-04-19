@@ -568,7 +568,7 @@ IMAGE_SETEVENT:
     if( HasStyleOptions( aStyle, aId, aClass ) )
         (void)ParseStyleOptions( aStyle, aId, aClass, aItemSet, aPropInfo );
 
-    SfxItemSetFixed<RES_FRMATR_BEGIN, RES_FRMATR_END-1> aFrameSet( m_xDoc->GetAttrPool() );
+    SfxItemSet aFrameSet(SfxItemSet::makeFixedSfxItemSet<RES_FRMATR_BEGIN, RES_FRMATR_END-1>( m_xDoc->GetAttrPool() ));
     if( !IsNewDoc() )
         Reader::ResetFrameFormatAttrs( aFrameSet );
 

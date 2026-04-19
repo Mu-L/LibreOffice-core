@@ -1151,7 +1151,7 @@ const SwFormatCol& MSWordSections::GetFormatCol(const SwDoc &rDoc, const WW8_Sep
         pPd = &rDoc.GetPageDesc( 0 );
 
     const SfxItemSet &rSet = pPd->GetMaster().GetAttrSet();
-    SfxItemSetFixed<RES_COL, RES_COL> aSet( *rSet.GetPool() );
+    SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_COL, RES_COL>( *rSet.GetPool() ));
     aSet.SetParent( &rSet );
 
     //0xffffffff, what the hell is going on with that!, fixme most terribly

@@ -1672,7 +1672,7 @@ static SwHTMLWriter& OutCSS1_SwPageDesc( SwHTMLWriter& rWrt, const SwPageDesc& r
 
     // Export the distance-Attributes as normally
     const SwFrameFormat &rMaster = rPageDesc.GetMaster();
-    SfxItemSetFixed<RES_LR_SPACE, RES_UL_SPACE> aItemSet( *rMaster.GetAttrSet().GetPool() );
+    SfxItemSet aItemSet(SfxItemSet::makeFixedSfxItemSet<RES_LR_SPACE, RES_UL_SPACE>( *rMaster.GetAttrSet().GetPool() ));
     aItemSet.Set( rMaster.GetAttrSet() );
 
     if( pRefPageDesc )

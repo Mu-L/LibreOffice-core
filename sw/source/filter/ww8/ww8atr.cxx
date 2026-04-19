@@ -3726,7 +3726,7 @@ void WW8Export::WriteFootnoteBegin( const SwFormatFootnote& rFootnote, ww::bytes
         {
             std::unique_ptr<ww::bytes> pOld = std::move(m_pO);
             m_pO = std::move(pOwnOutArr);
-            SfxItemSetFixed<RES_CHRATR_FONT, RES_CHRATR_FONT> aSet( m_rDoc.GetAttrPool() );
+            SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_CHRATR_FONT, RES_CHRATR_FONT>( m_rDoc.GetAttrPool() ));
 
             pCFormat = pInfo->GetCharFormat( m_rDoc );
 

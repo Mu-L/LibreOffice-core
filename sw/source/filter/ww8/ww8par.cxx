@@ -2350,7 +2350,7 @@ void SwWW8ImplReader::Read_HdFtTextAsHackedFrame(WW8_CP nStart, WW8_CP nLen,
     m_pPaM->GetPoint()->Assign( pSttIdx->GetIndex() + 1 );
 
     // tdf#122425: Explicitly remove borders and spacing
-    SfxItemSetFixed<RES_FRMATR_BEGIN, RES_FRMATR_END - 1> aFlySet(m_rDoc.GetAttrPool());
+    SfxItemSet aFlySet(SfxItemSet::makeFixedSfxItemSet<RES_FRMATR_BEGIN, RES_FRMATR_END - 1>(m_rDoc.GetAttrPool()));
     Reader::ResetFrameFormatAttrs(aFlySet);
 
     SwFlyFrameFormat* pFrame

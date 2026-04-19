@@ -554,7 +554,7 @@ SwFrameFormat* SwWW8ImplReader::ImportGraf(SdrTextObj const * pTextObj,
             if (pObject)
             {
                 // for the frame
-                SfxItemSetFixed<RES_FRMATR_BEGIN, RES_FRMATR_END-1> aAttrSet( m_rDoc.GetAttrPool() );
+                SfxItemSet aAttrSet(SfxItemSet::makeFixedSfxItemSet<RES_FRMATR_BEGIN, RES_FRMATR_END-1>( m_rDoc.GetAttrPool() ));
 
                 SvxMSDffImportRec const*const pRecord = (1 == aData.size())
                     ? aData.begin()->get() : nullptr;
@@ -619,7 +619,7 @@ SwFrameFormat* SwWW8ImplReader::ImportGraf(SdrTextObj const * pTextObj,
                 }
 
                 // for the graphic
-                SfxItemSetFixed<RES_GRFATR_BEGIN, RES_GRFATR_END-1> aGrSet( m_rDoc.GetAttrPool() );
+                SfxItemSet aGrSet(SfxItemSet::makeFixedSfxItemSet<RES_GRFATR_BEGIN, RES_GRFATR_END-1>( m_rDoc.GetAttrPool() ));
 
                 if( aPD.nCL || aPD.nCR || aPD.nCT || aPD.nCB )
                 {

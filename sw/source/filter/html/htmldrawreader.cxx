@@ -82,7 +82,7 @@ void SwHTMLParser::InsertDrawObject( SdrObject* pNewDrawObj,
     // to the visible layer.
     pNewDrawObj->SetLayer( m_xDoc->getIDocumentDrawModelAccess().GetInvisibleHeavenId() );
 
-    SfxItemSetFixed<RES_FRMATR_BEGIN, RES_FRMATR_END-1> aFrameSet( m_xDoc->GetAttrPool() );
+    SfxItemSet aFrameSet(SfxItemSet::makeFixedSfxItemSet<RES_FRMATR_BEGIN, RES_FRMATR_END-1>( m_xDoc->GetAttrPool() ));
     if( !IsNewDoc() )
         Reader::ResetFrameFormatAttrs( aFrameSet );
 

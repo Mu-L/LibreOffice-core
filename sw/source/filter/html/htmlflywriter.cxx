@@ -2082,7 +2082,7 @@ static SwHTMLWriter& OutHTML_FrameFormatAsMarquee( SwHTMLWriter& rWrt, const SwF
     // get the edit engine attributes of the object as SW attributes and
     // sort them as Hints
     const SfxItemSet& rFormatItemSet = rFrameFormat.GetAttrSet();
-    SfxItemSetFixed<RES_CHRATR_BEGIN, RES_CHRATR_END> aItemSet( *rFormatItemSet.GetPool() );
+    SfxItemSet aItemSet(SfxItemSet::makeFixedSfxItemSet<RES_CHRATR_BEGIN, RES_CHRATR_END>( *rFormatItemSet.GetPool() ));
     SwHTMLWriter::GetEEAttrsFromDrwObj( aItemSet, &rSdrObj );
     bool bCfgOutStylesOld = rWrt.m_bCfgOutStyles;
     rWrt.m_bCfgOutStyles = false;

@@ -504,7 +504,7 @@ void MSWordExportBase::NumberingLevel(
     const SfxItemSet* pOutSet = nullptr;
 
     // cbGrpprlChpx
-    SfxItemSetFixed<RES_CHRATR_BEGIN, RES_CHRATR_END> aSet( m_rDoc.GetAttrPool() );
+    SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_CHRATR_BEGIN, RES_CHRATR_END>( m_rDoc.GetAttrPool() ));
 
     if (SVX_NUM_CHAR_SPECIAL == rFormat.GetNumberingType() ||
         SVX_NUM_BITMAP == rFormat.GetNumberingType())

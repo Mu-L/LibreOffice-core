@@ -416,7 +416,7 @@ void SwWW8AttrIter::OutAttr(sal_Int32 nSwPos, bool bWriteCombChars)
     const SvxFontItem *pFont = &rParentFont;
     const SfxPoolItem *pGrabBag = nullptr;
 
-    SfxItemSetFixed<RES_CHRATR_BEGIN, RES_TXTATR_END - 1> aExportSet(*m_rNode.GetSwAttrSet().GetPool());
+    SfxItemSet aExportSet(SfxItemSet::makeFixedSfxItemSet<RES_CHRATR_BEGIN, RES_TXTATR_END - 1>(*m_rNode.GetSwAttrSet().GetPool()));
 
     //The hard formatting properties that affect the entire paragraph
     if (m_rNode.HasSwAttrSet())
@@ -2300,7 +2300,7 @@ bool MSWordExportBase::NeedTextNodeSplit( const SwTextNode& rNd, SwSoftPageBreak
 namespace {
 OUString lcl_GetSymbolFont(SwAttrPool& rPool, const SwTextNode& rTextNode, int nStart, int nEnd)
 {
-    SfxItemSetFixed<RES_CHRATR_FONT, RES_CHRATR_FONT> aSet( rPool );
+    SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<RES_CHRATR_FONT, RES_CHRATR_FONT>( rPool ));
     if (rTextNode.GetParaAttr(aSet, nStart, nEnd))
     {
         SvxFontItem const* pFontItem = aSet.GetItem(RES_CHRATR_FONT);
@@ -3268,7 +3268,7 @@ void MSWordExportBase::OutputTextNode( SwTextNode& rNode )
         // Exception: if there is a character style hint at the end of the
         // paragraph only, then still go with 2), as RES_TXTATR_CHARFMT is always
         // set as a hint.
-        SfxItemSetFixed<RES_CHRATR_BEGIN, RES_TXTATR_END> aParagraphMarkerProperties(m_rDoc.GetAttrPool());
+        SfxItemSet aParagraphMarkerProperties(SfxItemSet::makeFixedSfxItemSet<RES_CHRATR_BEGIN, RES_TXTATR_END>(m_rDoc.GetAttrPool()));
         bool bCharFormatOnly = true;
 
         SwFormatAutoFormat const& rListAutoFormat(rNode.GetAttr(RES_PARATR_LIST_AUTOFMT));

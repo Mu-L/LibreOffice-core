@@ -2728,7 +2728,7 @@ SvxBrushItem* SwHTMLParser::CreateBrushItem( const Color *pColor,
 
     if( !rStyle.isEmpty() || !rId.isEmpty() || !rClass.isEmpty() )
     {
-        SfxItemSetFixed<RES_BACKGROUND, RES_BACKGROUND> aItemSet( m_xDoc->GetAttrPool() );
+        SfxItemSet aItemSet(SfxItemSet::makeFixedSfxItemSet<RES_BACKGROUND, RES_BACKGROUND>( m_xDoc->GetAttrPool() ));
         SvxCSS1PropertyInfo aPropInfo;
 
         if( !rClass.isEmpty() )
