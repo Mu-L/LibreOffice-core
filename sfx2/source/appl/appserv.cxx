@@ -464,7 +464,7 @@ void SfxApplication::MiscExec_Impl( SfxRequest& rReq )
 
             const SfxStringItem* pStringItem = rReq.GetArg(SID_CONFIG);
 
-            SfxItemSetFixed<SID_CONFIG, SID_CONFIG, SID_MACROINFO, SID_MACROINFO> aSet( GetPool() );
+            SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<SID_CONFIG, SID_CONFIG, SID_MACROINFO, SID_MACROINFO>( GetPool() ));
 
             // SID_CONFIG property will determine the default page shown
             if ( pStringItem )
@@ -1966,7 +1966,7 @@ void SfxApplication::OfaExec_Impl( SfxRequest& rReq )
         case SID_AUTO_CORRECT_DLG:
         {
             SfxAbstractDialogFactory* pFact = SfxAbstractDialogFactory::Create();
-            SfxItemSetFixed<SID_AUTO_CORRECT_DLG, SID_AUTO_CORRECT_DLG> aSet(GetPool());
+            SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<SID_AUTO_CORRECT_DLG, SID_AUTO_CORRECT_DLG>(GetPool()));
             const SfxPoolItem* pItem=nullptr;
             const SfxItemSet* pSet = rReq.GetArgs();
             if ( pSet && pSet->GetItemState( SID_AUTO_CORRECT_DLG, false, &pItem ) == SfxItemState::SET )

@@ -2050,8 +2050,8 @@ IMPL_LINK_NOARG(SfxViewFrame, DontShowAgainHdl, weld::Button&, void)
 IMPL_LINK_NOARG(SfxViewFrame, ChangeOptionsHdl, weld::Button&, void)
 {
     SfxApplication* pApp = SfxGetpApp();
-    SfxItemSetFixed<SID_AUTO_CORRECT_DLG, SID_OPEN_AUTOCORROPTIONS>
-        aSet(pApp->GetPool());
+    SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<SID_AUTO_CORRECT_DLG, SID_OPEN_AUTOCORROPTIONS>
+        (pApp->GetPool()));
     // show dialog with same tabs as opened via SID_AUTO_CORRECT_DLG
     SfxBoolItem aDlg(SID_AUTO_CORRECT_DLG, true);
     aSet.Put(aDlg);
