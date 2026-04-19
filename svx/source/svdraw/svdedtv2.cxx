@@ -571,9 +571,9 @@ void SdrEditView::ImpCopyAttributes(const SdrObject* pSource, SdrObject* pDest) 
     if(!(pSource && pDest))
         return;
 
-    SfxItemSetFixed<SDRATTR_START, SDRATTR_NOTPERSIST_FIRST-1,
+    SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<SDRATTR_START, SDRATTR_NOTPERSIST_FIRST-1,
         SDRATTR_NOTPERSIST_LAST+1, SDRATTR_END,
-        EE_ITEMS_START, EE_ITEMS_END> aSet(GetModel().GetItemPool());
+        EE_ITEMS_START, EE_ITEMS_END> (GetModel().GetItemPool()));
 
     aSet.Put(pSource->GetMergedItemSet());
 

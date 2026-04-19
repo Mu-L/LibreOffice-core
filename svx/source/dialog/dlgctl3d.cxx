@@ -126,8 +126,8 @@ void Svx3DPreviewControl::Construct()
     // invalidate SnapRects of objects
     mpScene->SetBoundAndSnapRectsDirty();
 
-    SfxItemSetFixed<XATTR_LINESTYLE, XATTR_LINESTYLE,
-        XATTR_FILL_FIRST, XATTR_FILLBITMAP> aSet( mpModel->GetItemPool() );
+    SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<XATTR_LINESTYLE, XATTR_LINESTYLE,
+        XATTR_FILL_FIRST, XATTR_FILLBITMAP> ( mpModel->GetItemPool() ));
     aSet.Put( XLineStyleItem( drawing::LineStyle_NONE ) );
     aSet.Put( XFillStyleItem( drawing::FillStyle_SOLID ) );
     aSet.Put( XFillColorItem( u""_ustr, COL_WHITE ) );

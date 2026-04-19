@@ -468,10 +468,10 @@ static ItemInfoPackage& getItemInfoPackageSdr()
                 return rRetval;
 
             if (XATTRSET_LINE == rRetval.getWhich())
-                return *new ItemInfoDynamic(rRetval, new XLineAttrSetItem(SfxItemSetFixed<XATTR_LINE_FIRST, XATTR_LINE_LAST>(rPool)));
+                return *new ItemInfoDynamic(rRetval, new XLineAttrSetItem(SfxItemSet(rPool, WhichRangesContainer(svl::Items<XATTR_LINE_FIRST, XATTR_LINE_LAST>))));
 
             if (XATTRSET_FILL == rRetval.getWhich())
-                return *new ItemInfoDynamic(rRetval, new XFillAttrSetItem(SfxItemSetFixed<XATTR_FILL_FIRST, XATTR_FILL_LAST>(rPool)));
+                return *new ItemInfoDynamic(rRetval, new XFillAttrSetItem(SfxItemSet(rPool, WhichRangesContainer(svl::Items<XATTR_FILL_FIRST, XATTR_FILL_LAST>))));
 
             if (XATTR_FILLBITMAP == rRetval.getWhich())
                 return *new ItemInfoDynamic(rRetval, new XFillBitmapItem(Graphic()));

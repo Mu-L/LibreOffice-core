@@ -543,9 +543,9 @@ void Svx3DWin::Update( SfxItemSet const & rAttrs )
     if(mpRemember2DAttributes)
         mpRemember2DAttributes->ClearItem();
     else
-        mpRemember2DAttributes = std::make_unique<SfxItemSetFixed
+        mpRemember2DAttributes = std::make_unique<SfxItemSet>(SfxItemSet::makeFixedSfxItemSet
             <SDRATTR_START, SDRATTR_SHADOW_LAST,
-            SDRATTR_3D_FIRST, SDRATTR_3D_LAST>>(*rAttrs.GetPool());
+            SDRATTR_3D_FIRST, SDRATTR_3D_LAST>(*rAttrs.GetPool()));
 
     SfxWhichIter aIter(*mpRemember2DAttributes);
     sal_uInt16 nWhich(aIter.FirstWhich());

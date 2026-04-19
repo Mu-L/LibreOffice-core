@@ -107,9 +107,9 @@ ImpSdrGDIMetaFileImport::ImpSdrGDIMetaFileImport(
     mpVD->SetLineColor();
     mpVD->SetFillColor();
     maOldLineColor.SetRed( mpVD->GetLineColor().GetRed() + 1 );
-    mpLineAttr = std::make_unique<SfxItemSetFixed<XATTR_LINE_FIRST, XATTR_LINE_LAST>>(rModel.GetItemPool());
-    mpFillAttr = std::make_unique<SfxItemSetFixed<XATTR_FILL_FIRST, XATTR_FILL_LAST>>(rModel.GetItemPool());
-    mpTextAttr = std::make_unique<SfxItemSetFixed<EE_ITEMS_START, EE_ITEMS_END>>(rModel.GetItemPool());
+    mpLineAttr = std::make_unique<SfxItemSet>(SfxItemSet::makeFixedSfxItemSet<XATTR_LINE_FIRST, XATTR_LINE_LAST>(rModel.GetItemPool()));
+    mpFillAttr = std::make_unique<SfxItemSet>(SfxItemSet::makeFixedSfxItemSet<XATTR_FILL_FIRST, XATTR_FILL_LAST>(rModel.GetItemPool()));
+    mpTextAttr = std::make_unique<SfxItemSet>(SfxItemSet::makeFixedSfxItemSet<EE_ITEMS_START, EE_ITEMS_END>(rModel.GetItemPool()));
     checkClip();
 }
 

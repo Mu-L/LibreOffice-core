@@ -1382,9 +1382,9 @@ void SdrObjCustomShape::AdaptTextMinSize()
     if (!bChanged)
        return;
 
-    SfxItemSetFixed<SDRATTR_TEXT_MINFRAMEHEIGHT, SDRATTR_TEXT_AUTOGROWHEIGHT,
+    SfxItemSet aSet(SfxItemSet::makeFixedSfxItemSet<SDRATTR_TEXT_MINFRAMEHEIGHT, SDRATTR_TEXT_AUTOGROWHEIGHT,
         SDRATTR_TEXT_MINFRAMEWIDTH, SDRATTR_TEXT_AUTOGROWWIDTH> // contains SDRATTR_TEXT_MAXFRAMEWIDTH
-        aSet(*GetObjectItemSet().GetPool());
+        (*GetObjectItemSet().GetPool()));
 
     if(bResizeShapeToFitText)
     {
@@ -2209,10 +2209,10 @@ void SdrObjCustomShape::SetVerticalWriting( bool bVertical )
     tools::Rectangle aObjectRect = GetLogicRect();
 
     // prepare ItemSet to set exchanged width and height items
-    SfxItemSetFixed<SDRATTR_TEXT_AUTOGROWHEIGHT, SDRATTR_TEXT_AUTOGROWHEIGHT,
+    SfxItemSet aNewSet(SfxItemSet::makeFixedSfxItemSet<SDRATTR_TEXT_AUTOGROWHEIGHT, SDRATTR_TEXT_AUTOGROWHEIGHT,
         // Expanded item ranges to also support horizontal and vertical adjust.
         SDRATTR_TEXT_VERTADJUST, SDRATTR_TEXT_VERTADJUST,
-        SDRATTR_TEXT_AUTOGROWWIDTH, SDRATTR_TEXT_HORZADJUST> aNewSet(*rSet.GetPool());
+        SDRATTR_TEXT_AUTOGROWWIDTH, SDRATTR_TEXT_HORZADJUST> (*rSet.GetPool()));
 
     aNewSet.Put(rSet);
 
