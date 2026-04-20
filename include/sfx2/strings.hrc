@@ -272,6 +272,7 @@
 #define STR_QUERY_OPENASTEMPLATE_ALLOW_IGNORE   NC_("STR_QUERY_OPENASTEMPLATE_ALLOW_IGNORE", "You can also try to ignore the lock and open the file for editing.")
 #define STR_QUERY_OPENASTEMPLATE_OPENCOPY_BTN   NC_("STR_QUERY_OPENASTEMPLATE_OPENCOPY_BTN", "Open ~Copy")
 #define STR_QUERY_OPENASTEMPLATE_OPEN_BTN       NC_("STR_QUERY_OPENASTEMPLATE_OPEN_BTN", "~Open")
+#define STR_NEW_FROM_TEMPLATE                   NC_("STR_NEW_FROM_TEMPLATE", "New From Template")
 #define STR_REPAIREDDOCUMENT                    NC_("STR_REPAIREDDOCUMENT", " (repaired document)")
 #define STR_NONCHECKEDOUT_DOCUMENT              NC_("STR_NONCHECKEDOUT_DOCUMENT", "This document is not checked out on the server.")
 #define STR_GET_INVOLVED_TEXT                   NC_("STR_GET_INVOLVED_TEXT", "Help us make %PRODUCTNAME even better!")

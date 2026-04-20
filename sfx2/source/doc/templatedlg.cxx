@@ -234,7 +234,7 @@ SfxTemplateManagerDlg::SfxTemplateManagerDlg(weld::Window *pParent)
     mxActionBar->set_item_visible(MNI_ACTION_IMPORT, true);
     mxActionBar->set_item_visible(MNI_ACTION_NEW_FOLDER, true);
 
-    mxOKButton->set_label(SfxResId(STR_OPEN));
+    mxOKButton->set_label(SfxResId(STR_NEW_FROM_TEMPLATE));
 
     mxCBApp->connect_changed(LINK(this, SfxTemplateManagerDlg, SelectApplicationHdl));
     mxCBFolder->connect_changed(LINK(this, SfxTemplateManagerDlg, SelectRegionHdl));
