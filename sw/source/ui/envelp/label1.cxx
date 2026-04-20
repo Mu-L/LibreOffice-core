@@ -71,8 +71,8 @@ void SwLabRec::FillItem( SwLabItem& rItem ) const
 void SwLabDlg::ReplaceGroup_( const OUString &rMake )
 {
     // Remove old entries
-    m_pRecs->erase(m_pRecs->begin() + 1, m_pRecs->end());
-    m_aLabelsCfg.FillLabels(rMake, *m_pRecs);
+    m_aRecs.erase(m_aRecs.begin() + 1, m_aRecs.end());
+    m_aLabelsCfg.FillLabels(rMake, m_aRecs);
     m_aLstGroup = rMake;
 }
 
@@ -95,7 +95,6 @@ SwLabDlg::SwLabDlg(weld::Window* pParent, const SfxItemSet& rSet,
     , m_pDBManager(pDBManager_)
     , m_pPrtPage(nullptr)
     , m_aTypeIds(50, 10)
-    , m_pRecs(new SwLabRecs)
     , m_bLabel(bLabel)
 {
     weld::WaitObject aWait(pParent);
@@ -108,7 +107,7 @@ SwLabDlg::SwLabDlg(weld::Window* pParent, const SfxItemSet& rSet,
 
     bool bDouble = false;
 
-    for (const std::unique_ptr<SwLabRec> & i : *m_pRecs)
+    for (const std::unique_ptr<SwLabRec>& i : m_aRecs)
     {
         if (pRec->m_aMake == i->m_aMake &&
             pRec->m_aType == i->m_aType)
@@ -119,7 +118,7 @@ SwLabDlg::SwLabDlg(weld::Window* pParent, const SfxItemSet& rSet,
     }
 
     if (!bDouble)
-        m_pRecs->insert( m_pRecs->begin(), std::move(pRec));
+        m_aRecs.insert(m_aRecs.begin(), std::move(pRec));
 
     size_t nLstGroup = 0;
     const std::vector<OUString>& rMan = m_aLabelsCfg.GetManufacturers();
@@ -153,10 +152,7 @@ SwLabDlg::SwLabDlg(weld::Window* pParent, const SfxItemSet& rSet,
     m_sBusinessCardDlg = SwResId(STR_BUSINESS_CARDS);
 }
 
-SwLabDlg::~SwLabDlg()
-{
-    m_pRecs.reset();
-}
+SwLabDlg::~SwLabDlg() {}
 
 void SwLabDlg::GetLabItem(SwLabItem &rItem)
 {
