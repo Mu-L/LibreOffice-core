@@ -216,7 +216,7 @@
                     <property name="label" translatable="yes" context="paraindentspacing|labelST_LINEDIST_ABS">Fixed</property>
                     <child internal-child="accessible">
                       <object class="AtkObject" id="labelST_LINEDIST_ABS-atkobject">
-                        <property name="AtkObject::accessible-role" translatable="no">static</property>
+                        <property name="AtkObject::accessible-role">static</property>
                       </object>
                     </child>
                   </object>
@@ -418,7 +418,7 @@
                             <property name="label" translatable="yes" context="paraindentspacing|labelFT_LINEDIST">of</property>
                             <child internal-child="accessible">
                               <object class="AtkObject" id="labelFT_LINEDIST-atkobject">
-                                <property name="AtkObject::accessible-role" translatable="no">static</property>
+                                <property name="AtkObject::accessible-role">static</property>
                               </object>
                             </child>
                           </object>
