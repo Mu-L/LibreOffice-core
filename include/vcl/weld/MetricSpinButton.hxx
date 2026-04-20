@@ -33,17 +33,7 @@ class VCL_DLLPUBLIC MetricSpinButton final
     void update_width_chars();
 
 public:
-    MetricSpinButton(std::unique_ptr<SpinButton> pSpinButton, FieldUnit eSrcUnit)
-        : m_eSrcUnit(eSrcUnit)
-        , m_xSpinButton(std::move(pSpinButton))
-    {
-        update_width_chars();
-        m_xSpinButton->set_value_formatter(LINK(this, MetricSpinButton, spin_button_output));
-        m_xSpinButton->set_text_parser(LINK(this, MetricSpinButton, spin_button_input));
-        m_xSpinButton->connect_value_changed(
-            LINK(this, MetricSpinButton, spin_button_value_changed));
-        m_xSpinButton->set_text(format_number(m_xSpinButton->get_value()));
-    }
+    MetricSpinButton(std::unique_ptr<SpinButton> pSpinButton, FieldUnit eSrcUnit);
 
     static OUString MetricToString(FieldUnit rUnit);
 
