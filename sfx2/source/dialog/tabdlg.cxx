@@ -33,6 +33,7 @@
 #include <vcl/virdev.hxx>
 #include <vcl/weld/Builder.hxx>
 #include <vcl/weld/Notebook.hxx>
+#include <vcl/weld/SizeGroup.hxx>
 #include <vcl/weld/Dialog.hxx>
 #include <sal/log.hxx>
 #include <tools/debug.hxx>

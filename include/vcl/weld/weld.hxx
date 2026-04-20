@@ -505,15 +505,6 @@ enum class Placement
     Under,
     End
 };
-
-class VCL_DLLPUBLIC SizeGroup
-{
-public:
-    virtual void add_widget(weld::Widget* pWidget) = 0;
-    // the default mode is VclSizeGroupMode::Horizontal
-    virtual void set_mode(VclSizeGroupMode eMode) = 0;
-    virtual ~SizeGroup() {}
-};
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

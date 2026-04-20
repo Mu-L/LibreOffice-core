@@ -42,7 +42,11 @@ typedef const WhichRangesContainer & (*GetTabPageRanges)(); // provides internat
 
 struct TabDlg_Impl;
 
-namespace weld { class Notebook; }
+namespace weld
+{
+class Notebook;
+class SizeGroup;
+}
 
 #define RET_USER        100
 
