@@ -39,6 +39,7 @@
 #include <QtInstanceScale.hxx>
 #include <QtInstanceScrollbar.hxx>
 #include <QtInstanceScrolledWindow.hxx>
+#include <QtInstanceSizeGroup.hxx>
 #include <QtInstanceSpinButton.hxx>
 #include <QtInstanceSpinner.hxx>
 #include <QtInstanceTextView.hxx>
@@ -962,10 +963,9 @@ std::unique_ptr<weld::Scrollbar> QtInstanceBuilder::weld_scrollbar(const OUStrin
     return xRet;
 }
 
-std::unique_ptr<weld::SizeGroup> QtInstanceBuilder::create_size_group(VclSizeGroupMode)
+std::unique_ptr<weld::SizeGroup> QtInstanceBuilder::create_size_group(VclSizeGroupMode eMode)
 {
-    assert(false && "Not implemented yet");
-    return nullptr;
+    return std::make_unique<QtInstanceSizeGroup>(eMode);
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab cinoptions=b1,g0,N-s cinkeys+=0=break: */

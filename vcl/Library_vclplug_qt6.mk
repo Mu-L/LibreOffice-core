@@ -133,6 +133,7 @@ $(eval $(call gb_Library_add_exception_objects,vclplug_qt6,\
     vcl/qt6/QtInstanceScale \
     vcl/qt6/QtInstanceScrollbar \
     vcl/qt6/QtInstanceScrolledWindow \
+    vcl/qt6/QtInstanceSizeGroup \
     vcl/qt6/QtInstanceSpinButton \
     vcl/qt6/QtInstanceSpinner \
     vcl/qt6/QtInstanceTextView \
