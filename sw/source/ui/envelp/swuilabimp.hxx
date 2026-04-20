@@ -26,7 +26,7 @@
 #include <vcl/weld/Entry.hxx>
 #include <vcl/weld/TextView.hxx>
 
-class SwLabPage : public SfxTabPage
+class SwLabelPage : public SfxTabPage
 {
     SwDBManager* m_pDBManager;
     OUString m_sActDBName;
@@ -57,9 +57,10 @@ class SwLabPage : public SfxTabPage
     SwLabRec* GetSelectedEntryPos();
 
 public:
-    SwLabPage(weld::Container* pPage, weld::DialogController* pController, const SfxItemSet& rSet);
+    SwLabelPage(weld::Container* pPage, weld::DialogController* pController,
+                const SfxItemSet& rSet);
 
-    virtual ~SwLabPage() override;
+    virtual ~SwLabelPage() override;
 
     static std::unique_ptr<SfxTabPage>
     Create(weld::Container* pPage, weld::DialogController* pController, const SfxItemSet* rSet);
