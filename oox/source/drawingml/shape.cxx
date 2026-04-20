@@ -1348,6 +1348,10 @@ Reference< XShape > const & Shape::createAndInsert(
         {
             putPropertyToGrabBag(u"mso-sp-macro"_ustr, Any(msMacro));
         }
+        if (!msMacroExtUrl.isEmpty())
+        {
+            putPropertyToGrabBag(u"mso-sp-macro-url"_ustr, Any(msMacroExtUrl));
+        }
         if (!msTextLink.isEmpty())
         {
             putPropertyToGrabBag(u"mso-sp-textlink"_ustr, Any(msTextLink));
