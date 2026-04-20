@@ -389,11 +389,9 @@ void SwLabelPage::DisplayFormat()
     SwLabRec* pRec = GetSelectedEntryPos();
     m_aItem.m_aLstType = pRec->m_aType;
     setfldval(*xField, pRec->m_nWidth);
-    xField->reformat();
     const OUString aWString = xField->get_text();
 
     setfldval(*xField, pRec->m_nHeight);
-    xField->reformat();
 
     OUString aText = pRec->m_aType + ": " + aWString +
            " x " + xField->get_text() +
