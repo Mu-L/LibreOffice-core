@@ -303,18 +303,4 @@ private:
     virtual const SfxPoolItem*  PutImpl( const SfxPoolItem&, bool bPassingOwnership ) override;
 };
 
-
-// Was: Allocate the items array inside the object, to reduce allocation cost.
-// NOTE: No longer needed with unordered_set, but there are 560+ places to
-// replace/adapt, so keep it for now.
-// To adapt, there is the static makeFixedSfxItemSet member in SfxItemSet. Did
-// that in one place to check functionality (easy hack...?)
-template<sal_uInt16... WIDs>
-class SfxItemSetFixed final : public SfxItemSet
-{
-public:
-    SfxItemSetFixed( SfxItemPool& rPool)
-        : SfxItemSet(rPool, WhichRangesContainer(svl::Items_t<WIDs...>{})){}//,
-};
-
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
