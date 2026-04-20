@@ -962,7 +962,7 @@ std::unique_ptr<weld::Scrollbar> QtInstanceBuilder::weld_scrollbar(const OUStrin
     return xRet;
 }
 
-std::unique_ptr<weld::SizeGroup> QtInstanceBuilder::create_size_group()
+std::unique_ptr<weld::SizeGroup> QtInstanceBuilder::create_size_group(VclSizeGroupMode)
 {
     assert(false && "Not implemented yet");
     return nullptr;

@@ -5705,17 +5705,20 @@ class GtkInstanceSizeGroup : public weld::SizeGroup
 private:
     GtkSizeGroup* m_pGroup;
 public:
-    GtkInstanceSizeGroup()
+    GtkInstanceSizeGroup(VclSizeGroupMode eMode)
         : m_pGroup(gtk_size_group_new(GTK_SIZE_GROUP_HORIZONTAL))
     {
+        set_mode(eMode);
     }
+
     virtual void add_widget(weld::Widget* pWidget) override
     {
         GtkInstanceWidget* pVclWidget = dynamic_cast<GtkInstanceWidget*>(pWidget);
         assert(pVclWidget);
         gtk_size_group_add_widget(m_pGroup, pVclWidget->getWidget());
     }
-    virtual void set_mode(VclSizeGroupMode eVclMode) override
+
+    void set_mode(VclSizeGroupMode eVclMode)
     {
         GtkSizeGroupMode eGtkMode(GTK_SIZE_GROUP_NONE);
         switch (eVclMode)
@@ -24181,9 +24184,9 @@ public:
         return std::make_unique<GtkInstanceScrollbar>(pScrollbar, this, false);
     }
 
-    virtual std::unique_ptr<weld::SizeGroup> create_size_group() override
+    virtual std::unique_ptr<weld::SizeGroup> create_size_group(VclSizeGroupMode eMode) override
     {
-        return std::make_unique<GtkInstanceSizeGroup>();
+        return std::make_unique<GtkInstanceSizeGroup>(eMode);
     }
 };
 

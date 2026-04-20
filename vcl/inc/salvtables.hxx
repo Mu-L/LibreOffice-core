@@ -162,7 +162,7 @@ public:
 
     virtual std::unique_ptr<weld::Scrollbar> weld_scrollbar(const OUString& id) override;
 
-    virtual std::unique_ptr<weld::SizeGroup> create_size_group() override;
+    virtual std::unique_ptr<weld::SizeGroup> create_size_group(VclSizeGroupMode eMode) override;
 
     OUString get_current_page_help_id() const;
 
