@@ -38,7 +38,6 @@
 
 #include <svx/dlgctrl.hxx>
 #include <cuitabline.hxx>
-#include <defdlgname.hxx>
 #include <dialmgr.hxx>
 #include <svx/dlgutil.hxx>
 #include <svx/dialmgr.hxx>
@@ -50,6 +49,8 @@
 
 using namespace com::sun::star;
 
+constexpr int RET_BTN_1  = 100;
+constexpr int RET_BTN_2  = 101;
 
 SvxLineDefTabPage::SvxLineDefTabPage(weld::Container* pPage, weld::DialogController* pController, const SfxItemSet& rInAttrs)
     : SfxTabPage(pPage, pController, u"cui/ui/linestyletabpage.ui"_ustr, u"LineStylePage"_ustr, &rInAttrs)
