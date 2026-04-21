@@ -41,6 +41,46 @@
               </packing>
             </child>
             <child>
+              <object class="GtkEntry" id="name">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="valign">center</property>
+                <property name="hexpand">True</property>
+                <property name="editable">False</property>
+                <property name="width-chars">52</property>
+                <property name="truncate-multiline">True</property>
+                <child internal-child="accessible">
+                  <object class="AtkObject" id="name-atkobject">
+                    <property name="AtkObject::accessible-description" translatable="yes" context="managestylepage|extended_tip|name">Enter a name for the style.</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkCheckButton" id="autoupdate">
+                <property name="label" translatable="yes" context="managestylepage|autoupdate">_Automatic update from document</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">False</property>
+                <property name="no-show-all">True</property>
+                <property name="tooltip-text" translatable="yes" context="managestylepage|autoupdate|tooltip_text">Any paragraph formatting changes in the document to a paragraph with this style are applied automatically to modify the paragraph style.</property>
+                <property name="use-underline">True</property>
+                <property name="draw-indicator">True</property>
+                <child internal-child="accessible">
+                  <object class="AtkObject" id="autoupdate-atkobject">
+                    <property name="AtkObject::accessible-description" translatable="yes" context="managestylepage|extended_tip|autoupdate">Updates the style when you apply direct formatting to a paragraph using this style in your document. The formatting of all paragraphs using this style is automatically updated.</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">1</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkLabel" id="nextstyleft">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
@@ -52,34 +92,6 @@
               <packing>
                 <property name="left-attach">0</property>
                 <property name="top-attach">2</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel" id="linkedwithft">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="label" translatable="yes" context="managestylepage|linkedwithft">Inherit from:</property>
-                <property name="use-underline">True</property>
-                <property name="mnemonic-widget">linkedwith</property>
-                <property name="xalign">0</property>
-              </object>
-              <packing>
-                <property name="left-attach">0</property>
-                <property name="top-attach">3</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel" id="categoryft">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="label" translatable="yes" context="managestylepage|categoryft">_Category:</property>
-                <property name="use-underline">True</property>
-                <property name="mnemonic-widget">category</property>
-                <property name="xalign">0</property>
-              </object>
-              <packing>
-                <property name="left-attach">0</property>
-                <property name="top-attach">4</property>
               </packing>
             </child>
             <child>
@@ -117,6 +129,20 @@
               </packing>
             </child>
             <child>
+              <object class="GtkLabel" id="linkedwithft">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes" context="managestylepage|linkedwithft">Inherit from:</property>
+                <property name="use-underline">True</property>
+                <property name="mnemonic-widget">linkedwith</property>
+                <property name="xalign">0</property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">3</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkComboBoxText" id="linkedwith">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
@@ -151,6 +177,20 @@
               </packing>
             </child>
             <child>
+              <object class="GtkLabel" id="categoryft">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes" context="managestylepage|categoryft">_Category:</property>
+                <property name="use-underline">True</property>
+                <property name="mnemonic-widget">category</property>
+                <property name="xalign">0</property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">4</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkComboBoxText" id="category">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
@@ -165,46 +205,6 @@
               <packing>
                 <property name="left-attach">1</property>
                 <property name="top-attach">4</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkCheckButton" id="autoupdate">
-                <property name="label" translatable="yes" context="managestylepage|autoupdate">_Automatic update from document</property>
-                <property name="can-focus">True</property>
-                <property name="receives-default">False</property>
-                <property name="no-show-all">True</property>
-                <property name="tooltip-text" translatable="yes" context="managestylepage|autoupdate|tooltip_text">Any paragraph formatting changes in the document to a paragraph with this style are applied automatically to modify the paragraph style.</property>
-                <property name="use-underline">True</property>
-                <property name="draw-indicator">True</property>
-                <child internal-child="accessible">
-                  <object class="AtkObject" id="autoupdate-atkobject">
-                    <property name="AtkObject::accessible-description" translatable="yes" context="managestylepage|extended_tip|autoupdate">Updates the style when you apply direct formatting to a paragraph using this style in your document. The formatting of all paragraphs using this style is automatically updated.</property>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="left-attach">1</property>
-                <property name="top-attach">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkEntry" id="name">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="valign">center</property>
-                <property name="hexpand">True</property>
-                <property name="editable">False</property>
-                <property name="width-chars">52</property>
-                <property name="truncate-multiline">True</property>
-                <child internal-child="accessible">
-                  <object class="AtkObject" id="name-atkobject">
-                    <property name="AtkObject::accessible-description" translatable="yes" context="managestylepage|extended_tip|name">Enter a name for the style.</property>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="left-attach">1</property>
-                <property name="top-attach">0</property>
               </packing>
             </child>
             <child>
