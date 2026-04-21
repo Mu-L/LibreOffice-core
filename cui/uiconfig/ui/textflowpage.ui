@@ -130,106 +130,6 @@
               </packing>
             </child>
             <child>
-              <object class="GtkSpinButton" id="spinMinLen">
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">start</property>
-                <property name="margin-start">25</property>
-                <property name="activates-default">True</property>
-                <property name="truncate-multiline">True</property>
-                <property name="adjustment">adjustment7</property>
-                <child internal-child="accessible">
-                  <object class="AtkObject" id="spinMinLen-atkobject">
-                    <property name="AtkObject::accessible-description" translatable="yes" context="textflowpage|extended_tip|spinMinLen">Enter the minimum word length in characters that can be hyphenated.</property>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="left-attach">0</property>
-                <property name="top-attach">6</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkSpinButton" id="spinMaxNum">
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">start</property>
-                <property name="margin-start">25</property>
-                <property name="activates-default">True</property>
-                <property name="truncate-multiline">True</property>
-                <property name="adjustment">adjustment2</property>
-                <child internal-child="accessible">
-                  <object class="AtkObject" id="spinMaxNum-atkobject">
-                    <property name="AtkObject::accessible-description" translatable="yes" context="textflowpage|extended_tip|spinMaxNum">Enter the maximum number of consecutive lines that can be hyphenated.</property>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="left-attach">0</property>
-                <property name="top-attach">5</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkSpinButton" id="spinCompoundLineEnd">
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">start</property>
-                <property name="margin-start">25</property>
-                <property name="activates-default">True</property>
-                <property name="truncate-multiline">True</property>
-                <property name="adjustment">adjustment9</property>
-                <child internal-child="accessible">
-                  <object class="AtkObject" id="spinCompoundLineEnd-atkobject">
-                    <property name="AtkObject::accessible-description" translatable="yes" context="textflowpage|extended_tip|spinCompoundLineEnd">Enter the minimum number of characters of a compound word constituent to leave at the end of the line before a hyphen is inserted.</property>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="left-attach">0</property>
-                <property name="top-attach">3</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkSpinButton" id="spinCompoundLineBegin">
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">start</property>
-                <property name="margin-start">25</property>
-                <property name="activates-default">True</property>
-                <property name="truncate-multiline">True</property>
-                <property name="adjustment">adjustment14</property>
-                <child internal-child="accessible">
-                  <object class="AtkObject" id="spinCompoundLineBegin-atkobject">
-                    <property name="AtkObject::accessible-description" translatable="yes" context="textflowpage|extended_tip|spinCompoundLineBegin">Enter the minimum number of characters of a compound word constituent that must appear at the beginning of the line after the hyphen.</property>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="left-attach">0</property>
-                <property name="top-attach">4</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkSpinButton" id="spinLineBegin">
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">start</property>
-                <property name="margin-start">25</property>
-                <property name="activates-default">True</property>
-                <property name="truncate-multiline">True</property>
-                <property name="adjustment">adjustment4</property>
-                <child internal-child="accessible">
-                  <object class="AtkObject" id="spinLineBegin-atkobject">
-                    <property name="AtkObject::accessible-description" translatable="yes" context="textflowpage|extended_tip|spinLineBegin">Enter the minimum number of characters that must appear at the beginning of the line after the hyphen.</property>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="left-attach">0</property>
-                <property name="top-attach">2</property>
-              </packing>
-            </child>
-            <child>
               <object class="GtkSpinButton" id="spinLineEnd">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
@@ -264,6 +164,26 @@
               </packing>
             </child>
             <child>
+              <object class="GtkSpinButton" id="spinLineBegin">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="halign">start</property>
+                <property name="margin-start">25</property>
+                <property name="activates-default">True</property>
+                <property name="truncate-multiline">True</property>
+                <property name="adjustment">adjustment4</property>
+                <child internal-child="accessible">
+                  <object class="AtkObject" id="spinLineBegin-atkobject">
+                    <property name="AtkObject::accessible-description" translatable="yes" context="textflowpage|extended_tip|spinLineBegin">Enter the minimum number of characters that must appear at the beginning of the line after the hyphen.</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">2</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkLabel" id="labelLineBegin">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
@@ -275,6 +195,26 @@
               <packing>
                 <property name="left-attach">1</property>
                 <property name="top-attach">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkSpinButton" id="spinCompoundLineEnd">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="halign">start</property>
+                <property name="margin-start">25</property>
+                <property name="activates-default">True</property>
+                <property name="truncate-multiline">True</property>
+                <property name="adjustment">adjustment9</property>
+                <child internal-child="accessible">
+                  <object class="AtkObject" id="spinCompoundLineEnd-atkobject">
+                    <property name="AtkObject::accessible-description" translatable="yes" context="textflowpage|extended_tip|spinCompoundLineEnd">Enter the minimum number of characters of a compound word constituent to leave at the end of the line before a hyphen is inserted.</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">3</property>
               </packing>
             </child>
             <child>
@@ -292,6 +232,26 @@
               </packing>
             </child>
             <child>
+              <object class="GtkSpinButton" id="spinCompoundLineBegin">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="halign">start</property>
+                <property name="margin-start">25</property>
+                <property name="activates-default">True</property>
+                <property name="truncate-multiline">True</property>
+                <property name="adjustment">adjustment14</property>
+                <child internal-child="accessible">
+                  <object class="AtkObject" id="spinCompoundLineBegin-atkobject">
+                    <property name="AtkObject::accessible-description" translatable="yes" context="textflowpage|extended_tip|spinCompoundLineBegin">Enter the minimum number of characters of a compound word constituent that must appear at the beginning of the line after the hyphen.</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">4</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkLabel" id="labelCompoundLineBegin">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
@@ -306,6 +266,26 @@
               </packing>
             </child>
             <child>
+              <object class="GtkSpinButton" id="spinMaxNum">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="halign">start</property>
+                <property name="margin-start">25</property>
+                <property name="activates-default">True</property>
+                <property name="truncate-multiline">True</property>
+                <property name="adjustment">adjustment2</property>
+                <child internal-child="accessible">
+                  <object class="AtkObject" id="spinMaxNum-atkobject">
+                    <property name="AtkObject::accessible-description" translatable="yes" context="textflowpage|extended_tip|spinMaxNum">Enter the maximum number of consecutive lines that can be hyphenated.</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">5</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkLabel" id="labelMaxNum">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
@@ -317,6 +297,26 @@
               <packing>
                 <property name="left-attach">1</property>
                 <property name="top-attach">5</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkSpinButton" id="spinMinLen">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="halign">start</property>
+                <property name="margin-start">25</property>
+                <property name="activates-default">True</property>
+                <property name="truncate-multiline">True</property>
+                <property name="adjustment">adjustment7</property>
+                <child internal-child="accessible">
+                  <object class="AtkObject" id="spinMinLen-atkobject">
+                    <property name="AtkObject::accessible-description" translatable="yes" context="textflowpage|extended_tip|spinMinLen">Enter the minimum word length in characters that can be hyphenated.</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">6</property>
               </packing>
             </child>
             <child>
@@ -343,19 +343,6 @@
                 <property name="row-spacing">6</property>
                 <property name="column-spacing">12</property>
                 <child>
-                  <object class="GtkSpinButton" id="spinHyphenZone">
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="activates-default">True</property>
-                    <property name="truncate-multiline">True</property>
-                    <property name="adjustment">adjustment8</property>
-                  </object>
-                  <packing>
-                    <property name="left-attach">1</property>
-                    <property name="top-attach">0</property>
-                  </packing>
-                </child>
-                <child>
                   <object class="GtkLabel" id="labelHyphenZone">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
@@ -366,6 +353,19 @@
                   </object>
                   <packing>
                     <property name="left-attach">0</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkSpinButton" id="spinHyphenZone">
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="activates-default">True</property>
+                    <property name="truncate-multiline">True</property>
+                    <property name="adjustment">adjustment8</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
                     <property name="top-attach">0</property>
                   </packing>
                 </child>
@@ -462,6 +462,33 @@
               </packing>
             </child>
             <child>
+              <object class="GtkLabel" id="labelParagraphEndZone">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes" context="textflowpage|labelParagraphEndZone">Paragraph end _zone:</property>
+                <property name="use-underline">True</property>
+                <property name="mnemonic-widget">spinParagraphEndZone</property>
+                <property name="xalign">0</property>
+              </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkSpinButton" id="spinParagraphEndZone">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="activates-default">True</property>
+                <property name="truncate-multiline">True</property>
+                <property name="adjustment">adjustment10</property>
+              </object>
+              <packing>
+                <property name="left-attach">2</property>
+                <property name="top-attach">0</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkCheckButton" id="checkAcrossColumn">
                 <property name="label" translatable="yes" context="textflowpage|checkAcrossColumn">Column</property>
                 <property name="visible">True</property>
@@ -478,6 +505,33 @@
               </object>
               <packing>
                 <property name="left-attach">0</property>
+                <property name="top-attach">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="labelColumnEndZone">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes" context="textflowpage|labelColumnEndZone">Column end _zone:</property>
+                <property name="use-underline">True</property>
+                <property name="mnemonic-widget">spinColumnEndZone</property>
+                <property name="xalign">0</property>
+              </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkSpinButton" id="spinColumnEndZone">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="activates-default">True</property>
+                <property name="truncate-multiline">True</property>
+                <property name="adjustment">adjustment11</property>
+              </object>
+              <packing>
+                <property name="left-attach">2</property>
                 <property name="top-attach">1</property>
               </packing>
             </child>
@@ -502,6 +556,33 @@
               </packing>
             </child>
             <child>
+              <object class="GtkLabel" id="labelPageEndZone">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes" context="textflowpage|labelPageEndZone">Page end _zone:</property>
+                <property name="use-underline">True</property>
+                <property name="mnemonic-widget">spinPageEndZone</property>
+                <property name="xalign">0</property>
+              </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkSpinButton" id="spinPageEndZone">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="activates-default">True</property>
+                <property name="truncate-multiline">True</property>
+                <property name="adjustment">adjustment12</property>
+              </object>
+              <packing>
+                <property name="left-attach">2</property>
+                <property name="top-attach">2</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkCheckButton" id="checkAcrossSpread">
                 <property name="label" translatable="yes" context="textflowpage|checkAcrossSpread">Spread</property>
                 <property name="visible">True</property>
@@ -522,84 +603,17 @@
               </packing>
             </child>
             <child>
-              <object class="GtkSpinButton" id="spinParagraphEndZone">
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="activates-default">True</property>
-                <property name="truncate-multiline">True</property>
-                <property name="adjustment">adjustment10</property>
-              </object>
-              <packing>
-                <property name="left-attach">2</property>
-                <property name="top-attach">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel" id="labelParagraphEndZone">
+              <object class="GtkLabel" id="labelSpreadEndZone">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="label" translatable="yes" context="textflowpage|labelParagraphEndZone">Paragraph end _zone:</property>
+                <property name="label" translatable="yes" context="textflowpage|labelSpreadEndZone">Spread end _zone:</property>
                 <property name="use-underline">True</property>
-                <property name="mnemonic-widget">spinParagraphEndZone</property>
+                <property name="mnemonic-widget">spinSpreadEndZone</property>
                 <property name="xalign">0</property>
               </object>
               <packing>
                 <property name="left-attach">1</property>
-                <property name="top-attach">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkSpinButton" id="spinColumnEndZone">
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="activates-default">True</property>
-                <property name="truncate-multiline">True</property>
-                <property name="adjustment">adjustment11</property>
-              </object>
-              <packing>
-                <property name="left-attach">2</property>
-                <property name="top-attach">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel" id="labelColumnEndZone">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="label" translatable="yes" context="textflowpage|labelColumnEndZone">Column end _zone:</property>
-                <property name="use-underline">True</property>
-                <property name="mnemonic-widget">spinColumnEndZone</property>
-                <property name="xalign">0</property>
-              </object>
-              <packing>
-                <property name="left-attach">1</property>
-                <property name="top-attach">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkSpinButton" id="spinPageEndZone">
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="activates-default">True</property>
-                <property name="truncate-multiline">True</property>
-                <property name="adjustment">adjustment12</property>
-              </object>
-              <packing>
-                <property name="left-attach">2</property>
-                <property name="top-attach">2</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel" id="labelPageEndZone">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="label" translatable="yes" context="textflowpage|labelPageEndZone">Page end _zone:</property>
-                <property name="use-underline">True</property>
-                <property name="mnemonic-widget">spinPageEndZone</property>
-                <property name="xalign">0</property>
-              </object>
-              <packing>
-                <property name="left-attach">1</property>
-                <property name="top-attach">2</property>
+                <property name="top-attach">3</property>
               </packing>
             </child>
             <child>
@@ -612,20 +626,6 @@
               </object>
               <packing>
                 <property name="left-attach">2</property>
-                <property name="top-attach">3</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel" id="labelSpreadEndZone">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="label" translatable="yes" context="textflowpage|labelSpreadEndZone">Spread end _zone:</property>
-                <property name="use-underline">True</property>
-                <property name="mnemonic-widget">spinSpreadEndZone</property>
-                <property name="xalign">0</property>
-              </object>
-              <packing>
-                <property name="left-attach">1</property>
                 <property name="top-attach">3</property>
               </packing>
             </child>
@@ -713,6 +713,73 @@
               </packing>
             </child>
             <child>
+              <object class="GtkLabel" id="labelType">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes" context="textflowpage|labelType">_Type:</property>
+                <property name="use-underline">True</property>
+                <property name="mnemonic-widget">comboBreakType</property>
+                <property name="xalign">1</property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkComboBoxText" id="comboBreakType">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <items>
+                  <item translatable="yes" context="textflowpage|comboBreakType">Page</item>
+                  <item translatable="yes" context="textflowpage|comboBreakType">Column</item>
+                </items>
+                <child internal-child="accessible">
+                  <object class="AtkObject" id="comboBreakType-atkobject">
+                    <property name="AtkObject::accessible-description" translatable="yes" context="textflowpage|extended_tip|comboBreakType">Select the break type that you want to insert.</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="labelPosition">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes" context="textflowpage|labelPosition">Position:</property>
+                <property name="use-underline">True</property>
+                <property name="justify">right</property>
+                <property name="mnemonic-widget">comboBreakPosition</property>
+                <property name="xalign">1</property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkComboBoxText" id="comboBreakPosition">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <items>
+                  <item translatable="yes" context="textflowpage|comboBreakPosition">Before</item>
+                  <item translatable="yes" context="textflowpage|comboBreakPosition">After</item>
+                </items>
+                <child internal-child="accessible">
+                  <object class="AtkObject" id="comboBreakPosition-atkobject">
+                    <property name="AtkObject::accessible-description" translatable="yes" context="textflowpage|extended_tip|comboBreakPosition">Select where you want to insert the break.</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">2</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkCheckButton" id="checkPageStyle">
                 <property name="label" translatable="yes" context="textflowpage|checkPageStyle">With page st_yle:</property>
                 <property name="visible">True</property>
@@ -736,38 +803,22 @@
               </packing>
             </child>
             <child>
-              <object class="GtkLabel" id="labelType">
+              <object class="GtkComboBoxText" id="comboPageStyle">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="label" translatable="yes" context="textflowpage|labelType">_Type:</property>
-                <property name="use-underline">True</property>
-                <property name="mnemonic-widget">comboBreakType</property>
-                <property name="xalign">1</property>
-              </object>
-              <packing>
-                <property name="left-attach">0</property>
-                <property name="top-attach">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkSpinButton" id="spinPageNumber">
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="activates-default">True</property>
-                <property name="truncate-multiline">True</property>
-                <property name="adjustment">adjustment3</property>
                 <accessibility>
-                  <relation type="labelled-by" target="labelPageNum"/>
+                  <relation type="labelled-by" target="checkPageStyle"/>
                 </accessibility>
                 <child internal-child="accessible">
-                  <object class="AtkObject" id="spinPageNumber-atkobject">
-                    <property name="AtkObject::accessible-description" translatable="yes" context="textflowpage|extended_tip|spinPageNumber">Enter the page number for the first page that follows the break. If you want to continue the current page numbering, leave the checkbox unchecked.</property>
+                  <object class="AtkObject" id="comboPageStyle-atkobject">
+                    <property name="AtkObject::accessible-name" translatable="yes" context="textflowpage|comboPageStyle-atkobject">Page Style</property>
+                    <property name="AtkObject::accessible-description" translatable="yes" context="textflowpage|extended_tip|comboPageStyle">Select the formatting style to use for the first page after the break.</property>
                   </object>
                 </child>
               </object>
               <packing>
                 <property name="left-attach">1</property>
-                <property name="top-attach">4</property>
+                <property name="top-attach">3</property>
               </packing>
             </child>
             <child>
@@ -794,75 +845,24 @@
               </packing>
             </child>
             <child>
-              <object class="GtkLabel" id="labelPosition">
+              <object class="GtkSpinButton" id="spinPageNumber">
                 <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="label" translatable="yes" context="textflowpage|labelPosition">Position:</property>
-                <property name="use-underline">True</property>
-                <property name="justify">right</property>
-                <property name="mnemonic-widget">comboBreakPosition</property>
-                <property name="xalign">1</property>
-              </object>
-              <packing>
-                <property name="left-attach">0</property>
-                <property name="top-attach">2</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkComboBoxText" id="comboPageStyle">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
+                <property name="can-focus">True</property>
+                <property name="activates-default">True</property>
+                <property name="truncate-multiline">True</property>
+                <property name="adjustment">adjustment3</property>
                 <accessibility>
-                  <relation type="labelled-by" target="checkPageStyle"/>
+                  <relation type="labelled-by" target="labelPageNum"/>
                 </accessibility>
                 <child internal-child="accessible">
-                  <object class="AtkObject" id="comboPageStyle-atkobject">
-                    <property name="AtkObject::accessible-name" translatable="yes" context="textflowpage|comboPageStyle-atkobject">Page Style</property>
-                    <property name="AtkObject::accessible-description" translatable="yes" context="textflowpage|extended_tip|comboPageStyle">Select the formatting style to use for the first page after the break.</property>
+                  <object class="AtkObject" id="spinPageNumber-atkobject">
+                    <property name="AtkObject::accessible-description" translatable="yes" context="textflowpage|extended_tip|spinPageNumber">Enter the page number for the first page that follows the break. If you want to continue the current page numbering, leave the checkbox unchecked.</property>
                   </object>
                 </child>
               </object>
               <packing>
                 <property name="left-attach">1</property>
-                <property name="top-attach">3</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkComboBoxText" id="comboBreakType">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <items>
-                  <item translatable="yes" context="textflowpage|comboBreakType">Page</item>
-                  <item translatable="yes" context="textflowpage|comboBreakType">Column</item>
-                </items>
-                <child internal-child="accessible">
-                  <object class="AtkObject" id="comboBreakType-atkobject">
-                    <property name="AtkObject::accessible-description" translatable="yes" context="textflowpage|extended_tip|comboBreakType">Select the break type that you want to insert.</property>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="left-attach">1</property>
-                <property name="top-attach">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkComboBoxText" id="comboBreakPosition">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <items>
-                  <item translatable="yes" context="textflowpage|comboBreakPosition">Before</item>
-                  <item translatable="yes" context="textflowpage|comboBreakPosition">After</item>
-                </items>
-                <child internal-child="accessible">
-                  <object class="AtkObject" id="comboBreakPosition-atkobject">
-                    <property name="AtkObject::accessible-description" translatable="yes" context="textflowpage|extended_tip|comboBreakPosition">Select where you want to insert the break.</property>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="left-attach">1</property>
-                <property name="top-attach">2</property>
+                <property name="top-attach">4</property>
               </packing>
             </child>
             <child>
@@ -902,27 +902,6 @@
             <property name="row-spacing">6</property>
             <property name="column-spacing">12</property>
             <child>
-              <object class="GtkCheckButton" id="checkSplitPara">
-                <property name="label" translatable="yes" context="textflowpage|checkSplitPara">_Allow to split paragraph</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="receives-default">False</property>
-                <property name="use-underline">True</property>
-                <property name="inconsistent">True</property>
-                <property name="draw-indicator">True</property>
-                <child internal-child="accessible">
-                  <object class="AtkObject" id="checkSplitPara-atkobject">
-                    <property name="AtkObject::accessible-description" translatable="yes" context="textflowpage|extended_tip|checkSplitPara">Shifts the entire paragraph to the next page or column after a break is inserted.</property>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="left-attach">0</property>
-                <property name="top-attach">1</property>
-                <property name="width">3</property>
-              </packing>
-            </child>
-            <child>
               <object class="GtkCheckButton" id="checkKeepPara">
                 <property name="label" translatable="yes" context="textflowpage|checkKeepPara">_Keep with next paragraph</property>
                 <property name="visible">True</property>
@@ -940,6 +919,27 @@
               <packing>
                 <property name="left-attach">0</property>
                 <property name="top-attach">0</property>
+                <property name="width">3</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkCheckButton" id="checkSplitPara">
+                <property name="label" translatable="yes" context="textflowpage|checkSplitPara">_Allow to split paragraph</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">False</property>
+                <property name="use-underline">True</property>
+                <property name="inconsistent">True</property>
+                <property name="draw-indicator">True</property>
+                <child internal-child="accessible">
+                  <object class="AtkObject" id="checkSplitPara-atkobject">
+                    <property name="AtkObject::accessible-description" translatable="yes" context="textflowpage|extended_tip|checkSplitPara">Shifts the entire paragraph to the next page or column after a break is inserted.</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">1</property>
                 <property name="width">3</property>
               </packing>
             </child>
@@ -969,6 +969,39 @@
               </packing>
             </child>
             <child>
+              <object class="GtkSpinButton" id="spinOrphan">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="activates-default">True</property>
+                <property name="truncate-multiline">True</property>
+                <property name="adjustment">adjustment5</property>
+                <accessibility>
+                  <relation type="labelled-by" target="checkOrphan"/>
+                </accessibility>
+                <child internal-child="accessible">
+                  <object class="AtkObject" id="spinOrphan-atkobject">
+                    <property name="AtkObject::accessible-description" translatable="yes" context="textflowpage|extended_tip|spinOrphan">Specifies the minimum number of lines in a paragraph before a page break. Select this check box, and then enter a number in the Lines box.</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="labelOrphan">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes" context="textflowpage|labelOrphan">lines</property>
+                <property name="xalign">0</property>
+              </object>
+              <packing>
+                <property name="left-attach">2</property>
+                <property name="top-attach">2</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkCheckButton" id="checkWidow">
                 <property name="label" translatable="yes" context="textflowpage|checkWidow">Don’t split at _end of paragraph</property>
                 <property name="visible">True</property>
@@ -994,27 +1027,6 @@
               </packing>
             </child>
             <child>
-              <object class="GtkSpinButton" id="spinOrphan">
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="activates-default">True</property>
-                <property name="truncate-multiline">True</property>
-                <property name="adjustment">adjustment5</property>
-                <accessibility>
-                  <relation type="labelled-by" target="checkOrphan"/>
-                </accessibility>
-                <child internal-child="accessible">
-                  <object class="AtkObject" id="spinOrphan-atkobject">
-                    <property name="AtkObject::accessible-description" translatable="yes" context="textflowpage|extended_tip|spinOrphan">Specifies the minimum number of lines in a paragraph before a page break. Select this check box, and then enter a number in the Lines box.</property>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="left-attach">1</property>
-                <property name="top-attach">2</property>
-              </packing>
-            </child>
-            <child>
               <object class="GtkSpinButton" id="spinWidow">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
@@ -1034,18 +1046,6 @@
               <packing>
                 <property name="left-attach">1</property>
                 <property name="top-attach">3</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel" id="labelOrphan">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="label" translatable="yes" context="textflowpage|labelOrphan">lines</property>
-                <property name="xalign">0</property>
-              </object>
-              <packing>
-                <property name="left-attach">2</property>
-                <property name="top-attach">2</property>
               </packing>
             </child>
             <child>
