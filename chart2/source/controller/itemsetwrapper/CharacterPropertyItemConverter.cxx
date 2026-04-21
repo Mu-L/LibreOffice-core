@@ -322,9 +322,7 @@ bool CharacterPropertyItemConverter::ApplySpecialItem(
             else if( nWhichId == EE_CHAR_FONTINFO_CTL )
                 aPostfix = "Complex";
 
-            const SvxFontItem & rItem =
-                static_cast< const SvxFontItem & >(
-                    rItemSet.Get( nWhichId ));
+            const SvxFontItem & rItem = rItemSet.Get( nWhichId ).StaticWhichCast(EE_CHAR_FONTINFO);
 
             if( rItem.QueryValue( aValue, MID_FONT_FAMILY_NAME ))
             {
@@ -371,9 +369,7 @@ bool CharacterPropertyItemConverter::ApplySpecialItem(
 
         case EE_CHAR_UNDERLINE:
         {
-            const SvxUnderlineItem & rItem =
-               static_cast< const SvxUnderlineItem & >(
-                    rItemSet.Get( nWhichId ));
+            const SvxUnderlineItem & rItem = rItemSet.Get( nWhichId ).StaticWhichCast(EE_CHAR_UNDERLINE);
 
             if( rItem.QueryValue( aValue, MID_TL_STYLE ))
             {
@@ -406,7 +402,7 @@ bool CharacterPropertyItemConverter::ApplySpecialItem(
 
         case EE_CHAR_OVERLINE:
         {
-            const SvxOverlineItem& rItem = static_cast< const SvxOverlineItem & >( rItemSet.Get( nWhichId ) );
+            const SvxOverlineItem & rItem = rItemSet.Get( nWhichId ).StaticWhichCast(EE_CHAR_OVERLINE);
 
             if ( rItem.QueryValue( aValue, MID_TL_STYLE ) )
             {
@@ -447,9 +443,7 @@ bool CharacterPropertyItemConverter::ApplySpecialItem(
             else if( nWhichId == EE_CHAR_ITALIC_CTL )
                 aPostfix = "Complex";
 
-            const SvxPostureItem & rItem =
-                static_cast< const SvxPostureItem & >(
-                    rItemSet.Get( nWhichId ));
+            const SvxPostureItem & rItem = rItemSet.Get( nWhichId ).StaticWhichCast(EE_CHAR_ITALIC);
 
             if( rItem.QueryValue( aValue, MID_POSTURE ))
             {
@@ -472,9 +466,7 @@ bool CharacterPropertyItemConverter::ApplySpecialItem(
             else if( nWhichId == EE_CHAR_WEIGHT_CTL )
                 aPostfix = "Complex";
 
-            const SvxWeightItem & rItem =
-                static_cast< const SvxWeightItem & >(
-                    rItemSet.Get( nWhichId ));
+            const SvxWeightItem & rItem = rItemSet.Get( nWhichId ).StaticWhichCast(EE_CHAR_WEIGHT);
 
             if( rItem.QueryValue( aValue, MID_WEIGHT ))
             {
@@ -497,9 +489,7 @@ bool CharacterPropertyItemConverter::ApplySpecialItem(
             else if( nWhichId == EE_CHAR_FONTHEIGHT_CTL )
                 aPostfix = "Complex";
 
-            const SvxFontHeightItem & rItem =
-                static_cast< const SvxFontHeightItem & >(
-                    rItemSet.Get( nWhichId ));
+            const SvxFontHeightItem & rItem = rItemSet.Get( nWhichId ).StaticWhichCast(EE_CHAR_FONTHEIGHT);
 
             try
             {

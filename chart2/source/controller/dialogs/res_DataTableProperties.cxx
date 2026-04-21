@@ -46,7 +46,7 @@ void DataTablePropertiesResources::initFromItemSet(const SfxItemSet& rInAttrs)
     {
         if (aState == SfxItemState::SET)
             m_xCbHorizontalBorder->set_active(
-                static_cast<const SfxBoolItem*>(pPoolItem)->GetValue());
+                pPoolItem->StaticWhichCast(SCHATTR_DATA_TABLE_HORIZONTAL_BORDER).GetValue());
     }
 
     aState = rInAttrs.GetItemState(SCHATTR_DATA_TABLE_VERTICAL_BORDER, false, &pPoolItem);
@@ -57,7 +57,8 @@ void DataTablePropertiesResources::initFromItemSet(const SfxItemSet& rInAttrs)
     else
     {
         if (aState == SfxItemState::SET)
-            m_xCbVerticalBorder->set_active(static_cast<const SfxBoolItem*>(pPoolItem)->GetValue());
+            m_xCbVerticalBorder->set_active(
+                pPoolItem->StaticWhichCast(SCHATTR_DATA_TABLE_VERTICAL_BORDER).GetValue());
     }
 
     aState = rInAttrs.GetItemState(SCHATTR_DATA_TABLE_OUTLINE, false, &pPoolItem);
@@ -68,7 +69,8 @@ void DataTablePropertiesResources::initFromItemSet(const SfxItemSet& rInAttrs)
     else
     {
         if (aState == SfxItemState::SET)
-            m_xCbOutilne->set_active(static_cast<const SfxBoolItem*>(pPoolItem)->GetValue());
+            m_xCbOutilne->set_active(
+                pPoolItem->StaticWhichCast(SCHATTR_DATA_TABLE_OUTLINE).GetValue());
     }
 
     aState = rInAttrs.GetItemState(SCHATTR_DATA_TABLE_KEYS, false, &pPoolItem);
@@ -79,7 +81,7 @@ void DataTablePropertiesResources::initFromItemSet(const SfxItemSet& rInAttrs)
     else
     {
         if (aState == SfxItemState::SET)
-            m_xCbKeys->set_active(static_cast<const SfxBoolItem*>(pPoolItem)->GetValue());
+            m_xCbKeys->set_active(pPoolItem->StaticWhichCast(SCHATTR_DATA_TABLE_KEYS).GetValue());
     }
 }
 
