@@ -51,6 +51,15 @@ QtInstanceSpinButton::~QtInstanceSpinButton()
 
 QWidget* QtInstanceSpinButton::getQWidget() const { return m_pSpinBox; }
 
+void QtInstanceSpinButton::do_set_text(const OUString& rText)
+{
+    double fValue = 0.0;
+    if (parse_text(rText, &fValue) == TRISTATE_TRUE)
+        m_pSpinBox->setValue(fValue);
+
+    QtInstanceEntry::do_set_text(rText);
+}
+
 void QtInstanceSpinButton::set_floating_point_value(double fValue)
 {
     SolarMutexGuard g;

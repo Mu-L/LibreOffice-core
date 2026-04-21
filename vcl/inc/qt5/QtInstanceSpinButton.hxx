@@ -32,6 +32,8 @@ public:
 
     virtual QWidget* getQWidget() const override;
 
+    virtual void do_set_text(const OUString& rText) override;
+
     virtual void set_floating_point_value(double fValue) override;
     virtual double get_floating_point_value() const override;
     virtual void set_floating_point_range(double fMin, double fMax) override;
