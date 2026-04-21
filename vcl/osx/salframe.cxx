@@ -52,6 +52,7 @@
 const int nMinBlinkCursorDelay = 500;
 
 AquaSalFrame* AquaSalFrame::s_pCaptureFrame = nullptr;
+AquaSalFrame* AquaSalFrame::s_pHeadlessFocusFrame = nullptr;
 
 AquaSalFrame::AquaSalFrame( SalFrame* pParent, SalFrameStyleFlags salFrameStyle ) :
     mpNSWindow(nil),
@@ -86,7 +87,8 @@ AquaSalFrame::AquaSalFrame( SalFrame* pParent, SalFrameStyleFlags salFrameStyle 
     maInternalFullScreenRestoreRect( NSZeroRect ),
     maInternalFullScreenExpectedRect( NSZeroRect ),
     mbNativeFullScreen( false ),
-    maNativeFullScreenRestoreRect( NSZeroRect )
+    maNativeFullScreenRestoreRect( NSZeroRect ),
+    mbHeadlessMode(Application::IsBitmapRendering())
 {
     mpParent = dynamic_cast<AquaSalFrame*>(pParent);
 
@@ -218,10 +220,10 @@ void AquaSalFrame::initWindowAndView()
             mnStyleMask |= NSWindowStyleMaskTitled;
     }
 
-    if (Application::IsBitmapRendering())
+    // #i91990# headless mode returns early with out creating windowing system resources
+    if (mbHeadlessMode)
         return;
 
-    // #i91990# support GUI-less (daemon) execution
     @try
     {
         mpNSWindow = [[SalFrameWindow alloc] initWithSalFrame: this];
@@ -330,7 +332,7 @@ bool AquaSalFrame::PostEvent(std::unique_ptr<ImplSVEvent> pData)
 
 void AquaSalFrame::SetTitle(const OUString& rTitle)
 {
-    if ( !mpNSWindow )
+    if (mbHeadlessMode)
         return;
 
     OSX_SALDATA_RUNINMAIN( SetTitle(rTitle) )
@@ -450,10 +452,36 @@ void AquaSalFrame::SendPaintEvent( const tools::Rectangle* pRect )
     CallCallback(SalEvent::Paint, &aPaintEvt);
 }
 
+void AquaSalFrame::headlessShow(bool bVisible, bool bNoActivate)
+{
+    if (bVisible == mbShown)
+    {
+        if (mbShown && !bNoActivate)
+            headlessGetFocus();
+        return;
+    }
+
+    if (bVisible)
+    {
+        mbShown = true;
+        GetSalData()->mpInstance->PostEvent(this, nullptr, SalEvent::Resize);
+        if( ! bNoActivate )
+            headlessGetFocus();
+    }
+    else
+    {
+        mbShown = false;
+        headlessLoseFocus();
+    }
+}
+
 void AquaSalFrame::Show(bool bVisible, bool bNoActivate)
 {
-    if ( !mpNSWindow )
+    if (mbHeadlessMode)
+    {
+        headlessShow(bVisible, bNoActivate);
         return;
+    }
 
     OSX_SALDATA_RUNINMAIN( Show(bVisible, bNoActivate) )
 
@@ -613,7 +641,7 @@ void AquaSalFrame::SetMaxClientSize( tools::Long nWidth, tools::Long nHeight )
 
 void AquaSalFrame::GetClientSize( tools::Long& rWidth, tools::Long& rHeight )
 {
-    if (mbShown || mbInitShow || Application::IsBitmapRendering())
+    if (mbShown || mbInitShow || mbHeadlessMode)
     {
         rWidth = maGeometry.width();
         rHeight = maGeometry.height();
@@ -628,7 +656,6 @@ void AquaSalFrame::GetClientSize( tools::Long& rWidth, tools::Long& rHeight )
 SalEvent AquaSalFrame::PreparePosSize(tools::Long nX, tools::Long nY, tools::Long nWidth, tools::Long nHeight, sal_uInt16 nFlags)
 {
     SalEvent nEvent = SalEvent::NONE;
-    assert(mpNSWindow || Application::IsBitmapRendering());
 
     if (nFlags & (SAL_FRAME_POSSIZE_X | SAL_FRAME_POSSIZE_Y))
     {
@@ -642,7 +669,7 @@ SalEvent AquaSalFrame::PreparePosSize(tools::Long nX, tools::Long nY, tools::Lon
         nEvent = (nEvent == SalEvent::Move) ? SalEvent::MoveResize : SalEvent::Resize;
     }
 
-    if (Application::IsBitmapRendering())
+    if (mbHeadlessMode)
     {
         if (nFlags & SAL_FRAME_POSSIZE_X)
             maGeometry.setX(nX);
@@ -673,9 +700,6 @@ SalEvent AquaSalFrame::PreparePosSize(tools::Long nX, tools::Long nY, tools::Lon
 
 void AquaSalFrame::SetWindowState(const vcl::WindowData* pState)
 {
-    if (!mpNSWindow && !Application::IsBitmapRendering())
-        return;
-
     OSX_SALDATA_RUNINMAIN( SetWindowState( pState ) )
 
     sal_uInt16 nFlags = 0;
@@ -685,7 +709,7 @@ void AquaSalFrame::SetWindowState(const vcl::WindowData* pState)
     nFlags |= ((pState->mask() & vcl::WindowDataMask::Height) ? SAL_FRAME_POSSIZE_HEIGHT : 0);
 
     SalEvent nEvent = PreparePosSize(pState->x(), pState->y(), pState->width(), pState->height(), nFlags);
-    if (Application::IsBitmapRendering())
+    if (mbHeadlessMode)
         return;
 
     // set normal state
@@ -751,16 +775,12 @@ void AquaSalFrame::SetWindowState(const vcl::WindowData* pState)
 
 bool AquaSalFrame::GetWindowState(vcl::WindowData* pState)
 {
-    if (!mpNSWindow)
+    if (mbHeadlessMode)
     {
-        if (Application::IsBitmapRendering())
-        {
-            pState->setMask(vcl::WindowDataMask::PosSizeState);
-            pState->setPosSize(maGeometry.posSize());
-            pState->setState(vcl::WindowState::Normal);
-            return true;
-        }
-        return false;
+        pState->setMask(vcl::WindowDataMask::PosSizeState);
+        pState->setPosSize(maGeometry.posSize());
+        pState->setState(vcl::WindowState::Normal);
+        return true;
     }
 
     OSX_SALDATA_RUNINMAIN_UNION( GetWindowState( pState ), boolean )
@@ -822,7 +842,7 @@ bool AquaSalFrame::GetWindowState(vcl::WindowData* pState)
 
 void AquaSalFrame::SetScreenNumber(unsigned int nScreen)
 {
-    if ( !mpNSWindow )
+    if (mbHeadlessMode)
         return;
 
     OSX_SALDATA_RUNINMAIN( SetScreenNumber( nScreen ) )
@@ -864,9 +884,9 @@ void AquaSalFrame::ShowFullScreen( bool bFullScreen, sal_Int32 nDisplay )
 
 void AquaSalFrame::doShowFullScreen( bool bFullScreen, sal_Int32 nDisplay )
 {
-    if (!mpNSWindow)
+    if (mbHeadlessMode)
     {
-        if (Application::IsBitmapRendering() && bFullScreen)
+        if (bFullScreen)
             SetPosSize(0, 0, 1024, 768, SAL_FRAME_POSSIZE_WIDTH | SAL_FRAME_POSSIZE_HEIGHT);
         return;
     }
@@ -1030,7 +1050,7 @@ void AquaSalFrame::doShowFullScreen( bool bFullScreen, sal_Int32 nDisplay )
 
 void AquaSalFrame::StartPresentation( bool bStart )
 {
-    if ( !mpNSWindow )
+    if (mbHeadlessMode)
         return;
 
     OSX_SALDATA_RUNINMAIN( StartPresentation( bStart ) )
@@ -1058,10 +1078,47 @@ void AquaSalFrame::SetAlwaysOnTop( bool )
 {
 }
 
+void AquaSalFrame::headlessGetFocus()
+{
+    if (mnStyle == SalFrameStyleFlags::NONE)
+        return;
+    if( s_pHeadlessFocusFrame == this )
+        return;
+
+    if( (mnStyle & (SalFrameStyleFlags::OWNERDRAWDECORATION | SalFrameStyleFlags::FLOAT)) == SalFrameStyleFlags::NONE )
+    {
+        if( s_pHeadlessFocusFrame )
+            s_pHeadlessFocusFrame->headlessLoseFocus();
+        s_pHeadlessFocusFrame = this;
+        GetSalData()->mpInstance->PostEvent(this, nullptr, SalEvent::GetFocus);
+    }
+}
+
+void AquaSalFrame::headlessLoseFocus()
+{
+    if( s_pHeadlessFocusFrame == this )
+    {
+        GetSalData()->mpInstance->PostEvent(this, nullptr, SalEvent::LoseFocus);
+        s_pHeadlessFocusFrame = nullptr;
+    }
+}
+
+void AquaSalFrame::headlessToTop(SalFrameToTop nFlags)
+{
+    if (nFlags & SalFrameToTop::RestoreWhenMin)
+        Show(true, false);
+    else
+        headlessGetFocus();
+    return;
+}
+
 void AquaSalFrame::ToTop(SalFrameToTop nFlags)
 {
-    if ( !mpNSWindow )
+    if (mbHeadlessMode)
+    {
+        headlessToTop(nFlags);
         return;
+    }
 
     OSX_SALDATA_RUNINMAIN( ToTop( nFlags ) )
 
@@ -1118,7 +1175,7 @@ NSCursor* AquaSalFrame::getCurrentCursor()
 
 void AquaSalFrame::SetPointer( PointerStyle ePointerStyle )
 {
-    if ( !mpNSWindow )
+    if (mbHeadlessMode)
         return;
     if( ePointerStyle == mePointerStyle )
         return;
@@ -1557,7 +1614,7 @@ static void lcl_LoadColorsFromTheme(StyleSettings& rStyleSet)
 // doesn't make the anything cleaner for now
 void AquaSalFrame::UpdateSettings( AllSettings& rSettings )
 {
-    if ( !mpNSWindow )
+    if (mbHeadlessMode)
         return;
 
     OSX_SALDATA_RUNINMAIN( UpdateSettings( rSettings ) )
@@ -1810,13 +1867,10 @@ void AquaSalFrame::Beep()
 void AquaSalFrame::SetPosSize(
     tools::Long nX, tools::Long nY, tools::Long nWidth, tools::Long nHeight, sal_uInt16 nFlags)
 {
-    if (!mpNSWindow && !Application::IsBitmapRendering())
-        return;
-
     OSX_SALDATA_RUNINMAIN( SetPosSize( nX, nY, nWidth, nHeight, nFlags ) )
 
     SalEvent nEvent = PreparePosSize(nX, nY, nWidth, nHeight, nFlags);
-    if (Application::IsBitmapRendering())
+    if (mbHeadlessMode)
         return;
 
     if( [mpNSWindow isMiniaturized] )
@@ -1896,10 +1950,9 @@ void AquaSalFrame::SetPosSize(
 
 void AquaSalFrame::GetWorkArea( AbsoluteScreenPixelRectangle& rRect )
 {
-    if (!mpNSWindow)
+    if (mbHeadlessMode)
     {
-        if (Application::IsBitmapRendering())
-            rRect = AbsoluteScreenPixelRectangle(AbsoluteScreenPixelPoint(0, 0), AbsoluteScreenPixelSize(1024, 768));
+        rRect = AbsoluteScreenPixelRectangle(AbsoluteScreenPixelPoint(0, 0), AbsoluteScreenPixelSize(1024, 768));
         return;
     }
 
@@ -1997,7 +2050,7 @@ void AquaSalFrame::SetMenu( SalMenu* pSalMenu )
 
 void AquaSalFrame::SetExtendedFrameStyle( SalExtStyle nStyle )
 {
-    if ( !mpNSWindow )
+    if (mbHeadlessMode)
     {
         mnExtStyle = nStyle;
         return;
@@ -2031,7 +2084,7 @@ void AquaSalFrame::UpdateFrameGeometry()
 {
     mbGeometryDidChange = false;
 
-    if ( !mpNSWindow )
+    if (mbHeadlessMode)
         return;
 
     OSX_SALDATA_RUNINMAIN( UpdateFrameGeometry() )
@@ -2131,7 +2184,7 @@ void AquaSalFrame::ResetClipRegion()
 
 void AquaSalFrame::doResetClipRegion()
 {
-    if ( !mpNSWindow )
+    if (mbHeadlessMode)
         return;
 
     OSX_SALDATA_RUNINMAIN( ResetClipRegion() )
@@ -2148,7 +2201,7 @@ void AquaSalFrame::doResetClipRegion()
 
 void AquaSalFrame::BeginSetClipRegion( sal_uInt32 nRects )
 {
-    if ( !mpNSWindow )
+    if (mbHeadlessMode)
         return;
 
     OSX_SALDATA_RUNINMAIN( BeginSetClipRegion( nRects ) )
@@ -2184,7 +2237,7 @@ void AquaSalFrame::UnionClipRegion(
 
 void AquaSalFrame::EndSetClipRegion()
 {
-    if ( !mpNSWindow )
+    if (mbHeadlessMode)
         return;
 
     OSX_SALDATA_RUNINMAIN( EndSetClipRegion() )
