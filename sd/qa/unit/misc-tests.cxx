@@ -75,15 +75,15 @@ public:
     void testTableObjectUndoTest();
     void testFillColor();
     void testFillGradient();
-    void testTdf44774();
-    void testTdf38225();
+    void testTdf44774_KeepStyleLinksOnSave();
+    void testTdf38225_ChangeCustomStyleName();
     void testTdf101242_ODF_no_settings();
     void testTdf101242_ODF_add_settings();
     void testTdf101242_settings_keep();
     void testTdf101242_settings_remove();
-    void testTdf119392();
-    void testTdf67248();
-    void testTdf119956();
+    void testTdf119392_VerifyLayerProperties();
+    void testTdf67248_LayerNamesIndependentFromLocalization();
+    void testTdf119956_AdaptLayerTabFocusOnAltClick();
     void testTdf120527();
     void testTextColumns();
     void testTdf98839_ShearVFlipH();
@@ -104,15 +104,15 @@ public:
     CPPUNIT_TEST(testTableObjectUndoTest);
     CPPUNIT_TEST(testFillColor);
     CPPUNIT_TEST(testFillGradient);
-    CPPUNIT_TEST(testTdf44774);
-    CPPUNIT_TEST(testTdf38225);
+    CPPUNIT_TEST(testTdf44774_KeepStyleLinksOnSave);
+    CPPUNIT_TEST(testTdf38225_ChangeCustomStyleName);
     CPPUNIT_TEST(testTdf101242_ODF_no_settings);
     CPPUNIT_TEST(testTdf101242_ODF_add_settings);
     CPPUNIT_TEST(testTdf101242_settings_keep);
     CPPUNIT_TEST(testTdf101242_settings_remove);
-    CPPUNIT_TEST(testTdf119392);
-    CPPUNIT_TEST(testTdf67248);
-    CPPUNIT_TEST(testTdf119956);
+    CPPUNIT_TEST(testTdf119392_VerifyLayerProperties);
+    CPPUNIT_TEST(testTdf67248_LayerNamesIndependentFromLocalization);
+    CPPUNIT_TEST(testTdf119956_AdaptLayerTabFocusOnAltClick);
     CPPUNIT_TEST(testTdf120527);
     CPPUNIT_TEST(testTextColumns);
     CPPUNIT_TEST(testTdf98839_ShearVFlipH);
@@ -381,7 +381,7 @@ void SdMiscTest::testFillGradient()
     CPPUNIT_ASSERT_EQUAL(COL_LIGHTGREEN, Color(aColorStops.getStopColor(1)));
 }
 
-void SdMiscTest::testTdf44774()
+void SdMiscTest::testTdf44774_KeepStyleLinksOnSave()
 {
     createSdDrawDoc();
     SdXImpressDocument* pXImpressDocument = dynamic_cast<SdXImpressDocument*>(mxComponent.get());
@@ -414,7 +414,7 @@ void SdMiscTest::testTdf44774()
     CPPUNIT_ASSERT_EQUAL(u"StyleA"_ustr, pStyle->GetParent());
 }
 
-void SdMiscTest::testTdf38225()
+void SdMiscTest::testTdf38225_ChangeCustomStyleName()
 {
     createSdImpressDoc();
     SdXImpressDocument* pXImpressDocument = dynamic_cast<SdXImpressDocument*>(mxComponent.get());
@@ -714,7 +714,7 @@ void SdMiscTest::testTdf101242_settings_remove()
     assertXPath(pXmlDoc2, sPathStart2 + "/config:config-item[@config:name='LockedLayers']", 0);
 }
 
-void SdMiscTest::testTdf119392()
+void SdMiscTest::testTdf119392_VerifyLayerProperties()
 {
     // Loads a document which has two user layers "V--" and "V-L". Inserts a new layer "-P-" between them.
     // Checks, that the bitfields in the saved file have the bits in the correct order, in case
@@ -768,7 +768,7 @@ void SdMiscTest::testTdf119392()
     CPPUNIT_ASSERT_EQUAL(0x80, static_cast<sal_uInt8>(aDecodedSeq[0]) & 0xff);
 }
 
-void SdMiscTest::testTdf67248()
+void SdMiscTest::testTdf67248_LayerNamesIndependentFromLocalization()
 {
     // The document tdf67248.odg has been created with a German UI. It has a user layer named "Background".
     // On opening the user layer must still exists. The error was, that it was merged into the standard
@@ -781,7 +781,7 @@ void SdMiscTest::testTdf67248()
     CPPUNIT_ASSERT_EQUAL(sal_uInt16(6), rLayerAdmin.GetLayerCount());
 }
 
-void SdMiscTest::testTdf119956()
+void SdMiscTest::testTdf119956_AdaptLayerTabFocusOnAltClick()
 {
     createSdDrawDoc("tdf119956.odg");
     SdXImpressDocument* pXImpressDocument = dynamic_cast<SdXImpressDocument*>(mxComponent.get());
