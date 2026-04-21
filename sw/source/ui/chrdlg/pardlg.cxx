@@ -66,15 +66,18 @@ SwParaDlg::SwParaDlg(weld::Window *pParent,
     // tabs common to paragraph and draw paragraphs (paragraphs inside a text box)
     SvxAbstractDialogFactory* pFact = SvxAbstractDialogFactory::Create();
 
-    OSL_ENSURE(pFact->GetTabPageCreatorFunc(RID_SVXPAGE_STD_PARAGRAPH), "GetTabPageCreatorFunc fail!");
-    OSL_ENSURE(pFact->GetTabPageRangesFunc(RID_SVXPAGE_STD_PARAGRAPH), "GetTabPageRangesFunc fail!");
+    assert(pFact->GetTabPageCreatorFunc(RID_SVXPAGE_STD_PARAGRAPH)
+           && "GetTabPageCreatorFunc fail!");
+    assert(pFact->GetTabPageRangesFunc(RID_SVXPAGE_STD_PARAGRAPH) && "GetTabPageRangesFunc fail!");
     AddTabPage(u"indents"_ustr, TabResId(RID_TAB_INDENTS.aLabel),
                pFact->GetTabPageCreatorFunc(RID_SVXPAGE_STD_PARAGRAPH),
                pFact->GetTabPageRangesFunc(RID_SVXPAGE_STD_PARAGRAPH),
                RID_M + RID_TAB_INDENTS.sIconName);
 
-    OSL_ENSURE(pFact->GetTabPageCreatorFunc(RID_SVXPAGE_ALIGN_PARAGRAPH), "GetTabPageCreatorFunc fail!");
-    OSL_ENSURE(pFact->GetTabPageRangesFunc(RID_SVXPAGE_ALIGN_PARAGRAPH), "GetTabPageRangesFunc fail!");
+    assert(pFact->GetTabPageCreatorFunc(RID_SVXPAGE_ALIGN_PARAGRAPH)
+           && "GetTabPageCreatorFunc fail!");
+    assert(pFact->GetTabPageRangesFunc(RID_SVXPAGE_ALIGN_PARAGRAPH)
+           && "GetTabPageRangesFunc fail!");
     AddTabPage(u"alignment"_ustr, TabResId(RID_TAB_ALIGNMENT.aLabel),
                pFact->GetTabPageCreatorFunc(RID_SVXPAGE_ALIGN_PARAGRAPH),
                pFact->GetTabPageRangesFunc(RID_SVXPAGE_ALIGN_PARAGRAPH),
@@ -82,8 +85,10 @@ SwParaDlg::SwParaDlg(weld::Window *pParent,
 
     if (!m_bDrawParaDlg && (!bHtmlMode || officecfg::Office::Common::Filter::HTML::Export::PrintLayout::get()))
     {
-        OSL_ENSURE(pFact->GetTabPageCreatorFunc(RID_SVXPAGE_EXT_PARAGRAPH), "GetTabPageCreatorFunc fail!");
-        OSL_ENSURE(pFact->GetTabPageRangesFunc(RID_SVXPAGE_EXT_PARAGRAPH), "GetTabPageRangesFunc fail!");
+        assert(pFact->GetTabPageCreatorFunc(RID_SVXPAGE_EXT_PARAGRAPH)
+               && "GetTabPageCreatorFunc fail!");
+        assert(pFact->GetTabPageRangesFunc(RID_SVXPAGE_EXT_PARAGRAPH)
+               && "GetTabPageRangesFunc fail!");
         AddTabPage(u"textflow"_ustr, TabResId(RID_TAB_TEXTFLOW.aLabel),
                    pFact->GetTabPageCreatorFunc(RID_SVXPAGE_EXT_PARAGRAPH),
                    pFact->GetTabPageRangesFunc(RID_SVXPAGE_EXT_PARAGRAPH),
@@ -92,8 +97,9 @@ SwParaDlg::SwParaDlg(weld::Window *pParent,
 
     if(!bHtmlMode && SvtCJKOptions::IsAsianTypographyEnabled())
     {
-        OSL_ENSURE(pFact->GetTabPageCreatorFunc(RID_SVXPAGE_PARA_ASIAN), "GetTabPageCreatorFunc fail!");
-        OSL_ENSURE(pFact->GetTabPageRangesFunc(RID_SVXPAGE_PARA_ASIAN), "GetTabPageRangesFunc fail!");
+        assert(pFact->GetTabPageCreatorFunc(RID_SVXPAGE_PARA_ASIAN)
+               && "GetTabPageCreatorFunc fail!");
+        assert(pFact->GetTabPageRangesFunc(RID_SVXPAGE_PARA_ASIAN) && "GetTabPageRangesFunc fail!");
         AddTabPage(u"asiantypo"_ustr, TabResId(RID_TAB_ASIANTYPO.aLabel),
                    pFact->GetTabPageCreatorFunc(RID_SVXPAGE_PARA_ASIAN),
                    pFact->GetTabPageRangesFunc(RID_SVXPAGE_PARA_ASIAN),
@@ -110,8 +116,9 @@ SwParaDlg::SwParaDlg(weld::Window *pParent,
 
     if(!bHtmlMode)
     {
-        OSL_ENSURE(pFact->GetTabPageCreatorFunc(RID_SVXPAGE_TABULATOR), "GetTabPageCreatorFunc fail!");
-        OSL_ENSURE(pFact->GetTabPageRangesFunc(RID_SVXPAGE_TABULATOR), "GetTabPageRangesFunc fail!");
+        assert(pFact->GetTabPageCreatorFunc(RID_SVXPAGE_TABULATOR)
+               && "GetTabPageCreatorFunc fail!");
+        assert(pFact->GetTabPageRangesFunc(RID_SVXPAGE_TABULATOR) && "GetTabPageRangesFunc fail!");
         AddTabPage(u"tabs"_ustr, TabResId(RID_TAB_TABS.aLabel),
                    pFact->GetTabPageCreatorFunc(RID_SVXPAGE_TABULATOR),
                    pFact->GetTabPageRangesFunc(RID_SVXPAGE_TABULATOR),
@@ -123,8 +130,8 @@ SwParaDlg::SwParaDlg(weld::Window *pParent,
         AddTabPage(u"dropcaps"_ustr, TabResId(RID_TAB_DROPCAPS.aLabel), SwDropCapsPage::Create,
                    SwDropCapsPage::GetRanges, RID_M + RID_TAB_DROPCAPS.sIconName);
 
-        OSL_ENSURE(pFact->GetTabPageCreatorFunc( RID_SVXPAGE_BORDER ), "GetTabPageCreatorFunc fail!");
-        OSL_ENSURE(pFact->GetTabPageRangesFunc( RID_SVXPAGE_BORDER ), "GetTabPageRangesFunc fail!");
+        assert(pFact->GetTabPageCreatorFunc(RID_SVXPAGE_BORDER) && "GetTabPageCreatorFunc fail!");
+        assert(pFact->GetTabPageRangesFunc(RID_SVXPAGE_BORDER) && "GetTabPageRangesFunc fail!");
         AddTabPage(u"borders"_ustr, TabResId(RID_TAB_BORDER.aLabel),
                    pFact->GetTabPageCreatorFunc(RID_SVXPAGE_BORDER),
                    pFact->GetTabPageRangesFunc(RID_SVXPAGE_BORDER),
