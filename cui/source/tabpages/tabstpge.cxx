@@ -640,9 +640,7 @@ sal_Int64 SvxTabulatorTabPage::GetCurrentValue()
 
 OUString SvxTabulatorTabPage::FormatTab()
 {
-    m_xTabSpin->set_text(m_xTabBox->get_active_text());
-    m_xTabSpin->reformat();
-    return m_xTabSpin->get_text();
+    return FormatValue(GetCurrentValue());
 }
 
 IMPL_LINK_NOARG(SvxTabulatorTabPage, ReformatHdl_Impl, weld::Widget&, void)
