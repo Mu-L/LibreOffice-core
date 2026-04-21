@@ -2219,12 +2219,6 @@ namespace weld
     void DateFormatter::SetDate(const Date& rDate)
     {
         auto nDate = rDate.GetDate();
-        bool bForceOutput = GetEntryText().isEmpty() && rDate == GetDate();
-        if (bForceOutput)
-        {
-            ImplSetValue(nDate);
-            return;
-        }
         SetValue(nDate);
     }
 
@@ -3117,12 +3111,6 @@ namespace weld
     void TimeFormatter::SetTime(const tools::Time& rTime)
     {
         auto nTime = ConvertValue(rTime);
-        bool bForceOutput = GetEntryText().isEmpty() && rTime == GetTime();
-        if (bForceOutput)
-        {
-            ImplSetValue(nTime);
-            return;
-        }
         SetValue(nTime);
     }
 

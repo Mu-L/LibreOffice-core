@@ -670,7 +670,7 @@ void Formatter::EntryLostFocus()
         {
             if (TreatingAsNumber())
             {
-                ImplSetValue(m_dCurrentValue);
+                SetValue(m_dCurrentValue);
                 Modify();
                 m_ValueState = valueDouble;
             }
@@ -719,7 +719,7 @@ void Formatter::ReFormat()
             double dValue = GetValue();
             if ( m_bEnableNaN && std::isnan( dValue ) )
                 return;
-            ImplSetValue(dValue);
+            SetValue(dValue);
         }
         else
             SetTextFormatted(GetTextValue());
@@ -732,7 +732,7 @@ void Formatter::SetMinValue(double dMin)
 
     m_dMinValue = dMin;
     m_bHasMin = true;
-    // for checking the current value at the new border -> ImplSetValue
+    // for checking the current value at the new border -> SetValue
     ReFormat();
 }
 
@@ -742,7 +742,7 @@ void Formatter::SetMaxValue(double dMax)
 
     m_dMaxValue = dMax;
     m_bHasMax = true;
-    // for checking the current value at the new border -> ImplSetValue
+    // for checking the current value at the new border -> SetValue
     ReFormat();
 }
 
@@ -759,30 +759,7 @@ void Formatter::EnableEmptyField(bool bEnable)
 
     m_bEnableEmptyField = bEnable;
     if (!m_bEnableEmptyField && GetEntryText().isEmpty())
-        ImplSetValue(m_dCurrentValue);
-}
-
-void Formatter::ImplSetValue(double dVal)
-{
-    if (m_bHasMin && (dVal<m_dMinValue))
-    {
-        dVal = m_bWrapOnLimits ? fmod(dVal + m_dMaxValue + 1 - m_dMinValue, m_dMaxValue + 1) + m_dMinValue
-                               : m_dMinValue;
-    }
-    if (m_bHasMax && (dVal>m_dMaxValue))
-    {
-        dVal = m_bWrapOnLimits ? fmod(dVal - m_dMinValue, m_dMaxValue + 1) + m_dMinValue
-                               : m_dMaxValue;
-    }
-
-    m_ValueState = valueDouble;
-    UpdateCurrentValue(dVal);
-
-    const OUString sNewText = FormatValue(dVal);
-    ImplSetTextImpl(sNewText, nullptr);
-    DBG_ASSERT(CheckText(sNewText), "FormattedField::ImplSetValue : formatted string doesn't match the criteria !");
-
-    m_ValueState = valueDouble;
+        SetValue(m_dCurrentValue);
 }
 
 std::optional<double> Formatter::ParseText(const OUString& rText)
@@ -867,7 +844,25 @@ bool Formatter::ImplGetValue(double& dNewVal)
 
 void Formatter::SetValue(double dVal)
 {
-    ImplSetValue(dVal);
+    if (m_bHasMin && (dVal<m_dMinValue))
+    {
+        dVal = m_bWrapOnLimits ? fmod(dVal + m_dMaxValue + 1 - m_dMinValue, m_dMaxValue + 1) + m_dMinValue
+                               : m_dMinValue;
+    }
+    if (m_bHasMax && (dVal>m_dMaxValue))
+    {
+        dVal = m_bWrapOnLimits ? fmod(dVal - m_dMinValue, m_dMaxValue + 1) + m_dMinValue
+                               : m_dMaxValue;
+    }
+
+    m_ValueState = valueDouble;
+    UpdateCurrentValue(dVal);
+
+    const OUString sNewText = FormatValue(dVal);
+    ImplSetTextImpl(sNewText, nullptr);
+    DBG_ASSERT(CheckText(sNewText), "FormattedField::SetValue : formatted string doesn't match the criteria !");
+
+    m_ValueState = valueDouble;
 }
 
 double Formatter::GetValue()
