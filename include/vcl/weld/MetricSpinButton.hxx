@@ -61,15 +61,6 @@ public:
         return convert_value_to(m_xSpinButton->get_value(), eDestUnit);
     }
 
-    // typically you only need to call this if set_text (e.g. with "") was
-    // previously called to display some arbitrary text instead of the
-    // formatted value and now you want to show it as formatted again
-    void reformat()
-    {
-        const OUString sText = format_number(m_xSpinButton->get_value());
-        m_xSpinButton->set_text(sText);
-    }
-
     void set_range(sal_Int64 min, sal_Int64 max, FieldUnit eValueUnit)
     {
         min = convert_value_from(min, eValueUnit);
