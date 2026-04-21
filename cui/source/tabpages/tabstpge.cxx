@@ -333,8 +333,7 @@ void SvxTabulatorTabPage::InitTabPos_Impl( sal_uInt16 nTabPos )
     {
         if ( (*aNewTabs)[i].GetAdjustment() != SvxTabAdjust::Default )
         {
-            m_xTabSpin->set_value(m_xTabSpin->normalize((*aNewTabs)[i].GetTabPos() + nOffset ), eDefUnit);
-            m_xTabBox->append_text(m_xTabSpin->get_text());
+            m_xTabBox->append_text(FormatValue((*aNewTabs)[i].GetTabPos() + nOffset));
         }
         else
         {
@@ -365,8 +364,7 @@ void SvxTabulatorTabPage::InitTabPos_Impl( sal_uInt16 nTabPos )
     }
     else
     {   // If no entry, 0 is the default value
-        m_xTabSpin->set_value(0, eDefUnit);
-        m_xTabBox->set_entry_text(m_xTabSpin->get_text());
+        m_xTabBox->set_entry_text(FormatValue(0));
 
         m_xNewBtn->set_sensitive(true);
         m_xDelBtn->set_sensitive(false);
@@ -428,8 +426,7 @@ void SvxTabulatorTabPage::NewHdl_Impl(const weld::Button* pBtn)
     // Add a new one and select it
     // Get the value from the display
     ReformatHdl_Impl(*m_xTabBox);
-    m_xTabSpin->set_text(m_xTabBox->get_active_text());
-    auto nVal = m_xTabSpin->denormalize(m_xTabSpin->get_value(eDefUnit));
+    auto nVal = GetCurrentValue();
 
     // If the pBtn == 0 && the value == 0 then do not create a tab, because we create via OK
     if (nVal == 0 && pBtn == nullptr)
@@ -454,8 +451,7 @@ void SvxTabulatorTabPage::NewHdl_Impl(const weld::Button* pBtn)
     }
 
     // Make ListBox entry
-    m_xTabSpin->set_value(m_xTabSpin->normalize(nVal), eDefUnit);
-    m_xTabBox->insert_text(i, m_xTabSpin->get_text());
+    m_xTabBox->insert_text(i, FormatValue(nVal));
 
     aCurrentTab.GetTabPos() = nReal;
     SvxTabAdjust eAdj = SvxTabAdjust::Left;
@@ -630,6 +626,18 @@ IMPL_LINK_NOARG(SvxTabulatorTabPage, SelectHdl_Impl, const weld::TreeIter&, bool
     return true;
 }
 
+OUString SvxTabulatorTabPage::FormatValue(sal_Int64 nValue)
+{
+    m_xTabSpin->set_value(m_xTabSpin->normalize(nValue), eDefUnit);
+    return m_xTabSpin->get_text();
+}
+
+sal_Int64 SvxTabulatorTabPage::GetCurrentValue()
+{
+    m_xTabSpin->set_text(m_xTabBox->get_active_text());
+    return m_xTabSpin->denormalize(m_xTabSpin->get_value(eDefUnit));
+}
+
 OUString SvxTabulatorTabPage::FormatTab()
 {
     m_xTabSpin->set_text(m_xTabBox->get_active_text());
@@ -650,8 +658,7 @@ IMPL_LINK_NOARG(SvxTabulatorTabPage, ModifyHdl_Impl, weld::ComboBox&, void)
         aCurrentTab = (*aNewTabs)[nPos];
         SetFillAndTabType_Impl();
 
-        m_xTabSpin->set_text(m_xTabBox->get_active_text());
-        aCurrentTab.GetTabPos() = m_xTabSpin->denormalize(m_xTabSpin->get_value(eDefUnit));
+        aCurrentTab.GetTabPos() = GetCurrentValue();
         m_xNewBtn->set_sensitive(false);
         m_xDelBtn->set_sensitive(true);
         return;

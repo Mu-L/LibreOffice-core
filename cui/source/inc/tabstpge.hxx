@@ -124,6 +124,9 @@ private:
     void            SetFillAndTabType_Impl();
     void            NewHdl_Impl(const weld::Button*);
 
+    OUString FormatValue(sal_Int64 nValue);
+    sal_Int64 GetCurrentValue();
+
     OUString        FormatTab();
 
     // Handler
