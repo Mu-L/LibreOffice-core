@@ -2222,7 +2222,7 @@ namespace weld
         bool bForceOutput = GetEntryText().isEmpty() && rDate == GetDate();
         if (bForceOutput)
         {
-            ImplSetValue(nDate, true);
+            ImplSetValue(nDate);
             return;
         }
         SetValue(nDate);
@@ -3120,7 +3120,7 @@ namespace weld
         bool bForceOutput = GetEntryText().isEmpty() && rTime == GetTime();
         if (bForceOutput)
         {
-            ImplSetValue(nTime, true);
+            ImplSetValue(nTime);
             return;
         }
         SetValue(nTime);

@@ -338,7 +338,7 @@ protected:
     virtual bool CheckText(const OUString&) const { return true; }
 
     void ImplSetTextImpl(const OUString& rNew, Selection const * pNewSel);
-    void ImplSetValue(double dValue, bool bForce);
+    void ImplSetValue(double dValue);
     bool ImplGetValue(double& dNewVal);
 
     void ImplSetFormatKey(sal_uLong nFormatKey);

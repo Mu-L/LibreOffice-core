@@ -670,7 +670,7 @@ void Formatter::EntryLostFocus()
         {
             if (TreatingAsNumber())
             {
-                ImplSetValue(m_dCurrentValue, true);
+                ImplSetValue(m_dCurrentValue);
                 Modify();
                 m_ValueState = valueDouble;
             }
@@ -719,7 +719,7 @@ void Formatter::ReFormat()
             double dValue = GetValue();
             if ( m_bEnableNaN && std::isnan( dValue ) )
                 return;
-            ImplSetValue( dValue, true );
+            ImplSetValue(dValue);
         }
         else
             SetTextFormatted(GetTextValue());
@@ -759,10 +759,10 @@ void Formatter::EnableEmptyField(bool bEnable)
 
     m_bEnableEmptyField = bEnable;
     if (!m_bEnableEmptyField && GetEntryText().isEmpty())
-        ImplSetValue(m_dCurrentValue, true);
+        ImplSetValue(m_dCurrentValue);
 }
 
-void Formatter::ImplSetValue(double dVal, bool bForce)
+void Formatter::ImplSetValue(double dVal)
 {
     if (m_bHasMin && (dVal<m_dMinValue))
     {
@@ -774,8 +774,6 @@ void Formatter::ImplSetValue(double dVal, bool bForce)
         dVal = m_bWrapOnLimits ? fmod(dVal - m_dMinValue, m_dMaxValue + 1) + m_dMinValue
                                : m_dMaxValue;
     }
-    if (!bForce && (dVal == GetValue()))
-        return;
 
     m_ValueState = valueDouble;
     UpdateCurrentValue(dVal);
@@ -869,7 +867,7 @@ bool Formatter::ImplGetValue(double& dNewVal)
 
 void Formatter::SetValue(double dVal)
 {
-    ImplSetValue(dVal, true);
+    ImplSetValue(dVal);
 }
 
 double Formatter::GetValue()
