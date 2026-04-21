@@ -869,7 +869,7 @@ bool Formatter::ImplGetValue(double& dNewVal)
 
 void Formatter::SetValue(double dVal)
 {
-    ImplSetValue(dVal, m_ValueState != valueDouble);
+    ImplSetValue(dVal, true);
 }
 
 double Formatter::GetValue()
