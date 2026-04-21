@@ -4420,7 +4420,8 @@ bool ScDocFunc::AutoFormat( const ScRange& rRange, const ScMarkData* pTabMark,
 
 bool ScDocFunc::EnterMatrix( const ScRange& rRange, const ScMarkData* pTabMark,
         const ScTokenArray* pTokenArray, const OUString& rString, bool bApi, bool bEnglish,
-        const OUString& rFormulaNmsp, const formula::FormulaGrammar::Grammar eGrammar )
+        const OUString& rFormulaNmsp, const formula::FormulaGrammar::Grammar eGrammar,
+        bool bCheckForSpill)
 {
     if (ScViewData::SelectionFillDOOM( rRange ))
         return false;
@@ -4468,7 +4469,7 @@ bool ScDocFunc::EnterMatrix( const ScRange& rRange, const ScMarkData* pTabMark,
         if ( pTokenArray )
         {
             rDoc.InsertMatrixFormula( nStartCol, nStartRow, nEndCol, nEndRow,
-                    aMark, OUString(), pTokenArray, eGrammar);
+                    aMark, OUString(), pTokenArray, eGrammar, bCheckForSpill);
         }
         else if ( rDoc.IsImportingXML() )
         {
@@ -4484,11 +4485,11 @@ bool ScDocFunc::EnterMatrix( const ScRange& rRange, const ScMarkData* pTabMark,
             ScCompiler aComp( rDoc, rRange.aStart, eGrammar);
             std::unique_ptr<ScTokenArray> pCode = aComp.CompileString( rString );
             rDoc.InsertMatrixFormula( nStartCol, nStartRow, nEndCol, nEndRow,
-                    aMark, OUString(), pCode.get(), eGrammar);
+                    aMark, OUString(), pCode.get(), eGrammar, bCheckForSpill);
         }
         else
             rDoc.InsertMatrixFormula( nStartCol, nStartRow, nEndCol, nEndRow,
-                    aMark, rString, nullptr, eGrammar);
+                    aMark, rString, nullptr, eGrammar, bCheckForSpill);
 
         if (bUndo)
         {

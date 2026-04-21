@@ -184,7 +184,8 @@ public:
                                          const ScTokenArray* pTokenArray,
                                          const OUString& rString, bool bApi, bool bEnglish,
                                          const OUString& rFormulaNmsp,
-                                         const formula::FormulaGrammar::Grammar );
+                                         const formula::FormulaGrammar::Grammar,
+                                         bool bCheckForSpill = false);
 
     bool            TabOp( const ScRange& rRange, const ScMarkData* pTabMark,
                                    const ScTabOpParam& rParam, bool bRecord, bool bApi );
