@@ -126,6 +126,20 @@
                   </packing>
                 </child>
                 <child>
+                  <object class="GtkSpinButton" id="spinED_LEFTINDENT">
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="activates-default">True</property>
+                    <property name="truncate-multiline">True</property>
+                    <property name="adjustment">adjustmentspinED_INDENT</property>
+                    <property name="digits">2</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
                   <object class="GtkLabel" id="labelFT_RIGHTINDENT">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
@@ -136,6 +150,20 @@
                   </object>
                   <packing>
                     <property name="left-attach">0</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkSpinButton" id="spinED_RIGHTINDENT">
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="activates-default">True</property>
+                    <property name="truncate-multiline">True</property>
+                    <property name="adjustment">adjustmentspinED_INDENT1</property>
+                    <property name="digits">2</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
                     <property name="top-attach">1</property>
                   </packing>
                 </child>
@@ -154,6 +182,20 @@
                   </packing>
                 </child>
                 <child>
+                  <object class="GtkSpinButton" id="spinED_FLINEINDENT">
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="activates-default">True</property>
+                    <property name="truncate-multiline">True</property>
+                    <property name="adjustment">adjustmentspinED_INDENT2</property>
+                    <property name="digits">2</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">2</property>
+                  </packing>
+                </child>
+                <child>
                   <object class="GtkCheckButton" id="checkCB_AUTO">
                     <property name="label" translatable="yes" context="paraindentspacing|checkCB_AUTO">_Automatic</property>
                     <property name="visible">True</property>
@@ -166,48 +208,6 @@
                   <packing>
                     <property name="left-attach">0</property>
                     <property name="top-attach">3</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkSpinButton" id="spinED_LEFTINDENT">
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="activates-default">True</property>
-                    <property name="truncate-multiline">True</property>
-                    <property name="adjustment">adjustmentspinED_INDENT</property>
-                    <property name="digits">2</property>
-                  </object>
-                  <packing>
-                    <property name="left-attach">1</property>
-                    <property name="top-attach">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkSpinButton" id="spinED_RIGHTINDENT">
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="activates-default">True</property>
-                    <property name="truncate-multiline">True</property>
-                    <property name="adjustment">adjustmentspinED_INDENT1</property>
-                    <property name="digits">2</property>
-                  </object>
-                  <packing>
-                    <property name="left-attach">1</property>
-                    <property name="top-attach">1</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkSpinButton" id="spinED_FLINEINDENT">
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="activates-default">True</property>
-                    <property name="truncate-multiline">True</property>
-                    <property name="adjustment">adjustmentspinED_INDENT2</property>
-                    <property name="digits">2</property>
-                  </object>
-                  <packing>
-                    <property name="left-attach">1</property>
-                    <property name="top-attach">2</property>
                   </packing>
                 </child>
                 <child>
