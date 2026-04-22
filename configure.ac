@@ -102,8 +102,7 @@ PathFormat()
     # or shell metacharacters).
     #
     # $formatted_path_unix is the argument in a form usable in Cygwin or WSL, using 8.3 components if
-    # necessary. On Cygwin, it is the same as $formatted_path, but on WSL it is $formatted_path as a
-    # Unix pathname.
+    # necessary.
     #
     # Errors out if 8.3 names are needed but aren't present for some of the path components.
 
@@ -134,6 +133,7 @@ PathFormat()
     fi
 
     formatted_path="$1"
+    formatted_path_unix="$1"
     if test "$build_os" = "cygwin" -o "$build_os" = "wsl"; then
         if test "$build_os" = "wsl"; then
             formatted_path=$(echo "$formatted_path" | tr -d '\r')
@@ -210,9 +210,6 @@ PathFormat()
     if test "$build_os" = "wsl"; then
         # WSL can't run Windows binaries from Windows pathnames so we need a separate return value in Unix format
         formatted_path_unix=$(wslpath "$formatted_path")
-    else
-        # But Cygwin can
-        formatted_path_unix="$formatted_path"
     fi
     if test -n "$WSL_ONLY_AS_HELPER"; then
         # if already in unix format, switch to windows format to create shortened path
@@ -226,17 +223,11 @@ PathFormat()
         formatted_path_unix=$(wslpath -u "$(cd /mnt/c; cmd.exe /c $shortpath_cmd "$formatted_path" | tr -d '\r')")
         # WSL can't run Windows binaries from Windows pathnames so we need a separate return value in Unix format
         formatted_path=$(wslpath -m "$formatted_path_unix")
-    fi
-}
-
-PathFormatUnix()
-{
-    # Like PathFormat, but also sets $formatted_path_unix to a Unix path in case of Cygwin,
-    # instead of setting it to the same as $formatted_path (which is a Windows path).
-
-    PathFormat "$1"
-    if test "$build_os" = "cygwin"; then
-        formatted_path_unix=$(cygpath -u ${formatted_path_unix})
+    elif test "$build_os" = "cygwin"; then
+        # while for cygwin there's no difference between the different realms during configure and
+        # during the build, AC_PATH_PROG still only accepts a path starting with / as valid, so also
+        # convert it to unix for that use case (and consistency)
+        formatted_path_unix=$(cygpath -u "$formatted_path")
     fi
 }
 
@@ -14129,7 +14120,7 @@ then
 
     dnl Check for qmake6
     if test -n "$QT6DIR"; then
-        PathFormatUnix "$QT6DIR"
+        PathFormat "$QT6DIR"
         QT6DIR="${formatted_path_unix}"
         AC_PATH_PROG(QMAKE6, [qmake${qt6_executable_suffix}], no, [$QT6DIR/bin])
     else
@@ -14154,7 +14145,7 @@ then
     AC_MSG_CHECKING([for Qt6 headers])
     qt6_incdir="no"
     for inc_dir in $qt6_incdirs; do
-        PathFormatUnix "$inc_dir"
+        PathFormat "$inc_dir"
         if test -r "${formatted_path_unix}/${qt6_test_include}"; then
             qt6_incdir="$inc_dir"
             break
@@ -14191,7 +14182,7 @@ then
     qt6_libdir="no"
     for lib_dir in $qt6_libdirs; do
         for suffix in $qt6_library_suffixes; do
-            PathFormatUnix "$lib_dir"
+            PathFormat "$lib_dir"
             if test -r ${formatted_path_unix}/${qt6_library_prefix}${qt6_test_library}${suffix}; then
                 qt6_libdir="$lib_dir"
                 qt6_library_suffix="$suffix"
@@ -14225,7 +14216,7 @@ then
         QT6_LIBS="$QT6_LIBS -lQt6BundledPcre2 -lQt6BundledZLIB -L${qt6_platformsdir} -lqwasm -sGL_ENABLE_GET_PROC_ADDRESS"
     else
         if ! test "$enable_qt6_multimedia" = "no"; then
-            PathFormatUnix "${qt6_incdir}"
+            PathFormat "${qt6_incdir}"
             if ! test -r "${formatted_path_unix}/QtMultimediaWidgets/QVideoWidget"; then
                 AC_MSG_ERROR([Qt 6 QMultimedia not found.])
                 break
