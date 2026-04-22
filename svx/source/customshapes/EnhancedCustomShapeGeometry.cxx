@@ -20,6 +20,7 @@
 #include <sal/config.h>
 
 #include <cmath>
+#include <limits>
 
 #include <svx/EnhancedCustomShapeGeometry.hxx>
 #include <com/sun/star/drawing/EnhancedCustomShapeGluePointType.hpp>
