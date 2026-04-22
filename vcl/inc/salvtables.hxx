@@ -1636,6 +1636,7 @@ public:
 
     virtual void set_column_title(int nColumn, const OUString& rTitle) override;
 
+    virtual bool get_column_visible(int nColumn) const override;
     virtual void set_column_visible(int nColumn, bool bVisible) override;
 
     virtual void set_column_custom_renderer(int nColumn, bool bEnable) override;

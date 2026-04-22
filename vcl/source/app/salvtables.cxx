@@ -3996,6 +3996,11 @@ void SalInstanceTreeView::set_column_title(int nColumn, const OUString& rTitle)
     }
 }
 
+bool SalInstanceTreeView::get_column_visible(int nColumn) const
+{
+    return m_xTreeView->GetTabVisible(nColumn);
+}
+
 void SalInstanceTreeView::set_column_visible(int nColumn, const bool bVisible)
 {
     tools::Long width = bVisible ? m_xTreeView->GetEntryWidth() : 0;

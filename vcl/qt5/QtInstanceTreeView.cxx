@@ -743,6 +743,16 @@ void QtInstanceTreeView::set_column_title(int nColumn, const OUString& rTitle)
         [&] { m_pModel->setHeaderData(nColumn, Qt::Horizontal, toQString(rTitle)); });
 }
 
+bool QtInstanceTreeView::get_column_visible(int nColumn) const
+{
+    SolarMutexGuard g;
+
+    bool bVisible = false;
+    GetQtInstance().RunInMainThread([&] { bVisible = !m_pTreeView->isColumnHidden(nColumn); });
+
+    return bVisible;
+}
+
 void QtInstanceTreeView::set_column_visible(int nColumn, const bool bVisible)
 {
     SolarMutexGuard g;

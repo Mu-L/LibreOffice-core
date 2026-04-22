@@ -136,6 +136,8 @@ public:
     virtual void set_centered_column(int nCol) override;
     virtual OUString get_column_title(int nColumn) const override;
     virtual void set_column_title(int nColumn, const OUString& rTitle) override;
+
+    virtual bool get_column_visible(int nColumn) const override;
     virtual void set_column_visible(int nColumn, bool bVisible) override;
 
     virtual void set_selection_mode(SelectionMode eMode) override;
