@@ -208,6 +208,7 @@ constexpr auto SUPPORTED_UI_FILES = frozen::make_unordered_set<std::u16string_vi
     u"modules/smath/ui/fontdialog.ui",
     u"modules/smath/ui/fontsizedialog.ui",
     u"modules/smath/ui/fonttypedialog.ui",
+    u"modules/smath/ui/matrixeditor.ui",
     u"modules/smath/ui/savedefaultsdialog.ui",
     u"modules/smath/ui/smathsettings.ui",
     u"modules/smath/ui/spacingdialog.ui",
