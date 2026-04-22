@@ -727,5 +727,7 @@ sw/uiconfig/swriter/ui/notebookbar.ui://GtkToolButton[@id='Tools-ShowFmExplorer'
 sw/uiconfig/swriter/ui/notebookbar.ui://GtkToolButton[@id='Tools-OpenReadOnly'] button-no-label
 sw/uiconfig/swriter/ui/notebookbar.ui://GtkToolButton[@id='Tools-AutoControlFocus'] button-no-label
 sw/uiconfig/swriter/ui/notebookbar.ui://GtkToolButton[@id='Tools-OptionsTreeDialog'] button-no-label
+sw/uiconfig/swriter/ui/notebookbar.ui://GtkMenuItem[@id='MenuView-BaselineGridVisible'] button-no-label
+sw/uiconfig/swriter/ui/notebookbar.ui://GtkToolButton[@id='Insert-ConnectorToolbox'] button-no-label
 
 sw/uiconfig/swriter/ui/optfonttabpage.ui://GtkLabel[@id='font_label'] orphan-label
