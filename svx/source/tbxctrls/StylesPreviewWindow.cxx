@@ -464,7 +464,7 @@ IMPL_LINK(StylesPreviewWindow_Base, Selected, weld::ItemView&, rIconView, void)
 
 IMPL_LINK_NOARG(StylesPreviewWindow_Base, DoubleClick, const weld::TreeIter&, bool)
 {
-    OUString sStyleName = m_xStylesView->get_selected_text();
+    OUString sStyleName = m_xStylesView->get_selected_id();
 
     css::uno::Sequence<css::beans::PropertyValue> aArgs{
         comphelper::makePropertyValue(u"Param"_ustr, sStyleName),
@@ -558,7 +558,7 @@ IMPL_LINK(StylesPreviewWindow_Base, GetPreviewImage, const weld::encoded_image_q
 {
     const weld::TreeIter& rIter = std::get<1>(rQuery);
     OUString sStyleId(m_xStylesView->get_id(rIter));
-    OUString sStyleName(m_xStylesView->get_text(rIter));
+    OUString sStyleName(m_xStylesView->get_id(rIter));
     OString sBase64Png(GetCachedPreviewJson({ sStyleId, sStyleName }));
     if (sBase64Png.isEmpty())
         return false;
