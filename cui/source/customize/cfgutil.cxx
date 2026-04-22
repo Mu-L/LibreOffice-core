@@ -1380,12 +1380,16 @@ SvxScriptSelectorDialog::LoadLastUsedMacro()
             xCategories.expand_row(*xIter);
             nOpenedNodes++;
         }
-        if (xCategories.iter_has_child(*xIter))
+        if (nOpenedNodes < nInfoParts - 1)
+        {
+            if (!xCategories.iter_has_child(*xIter))
+            {
+                // If the number of levels in the tree is smaller than the number of parts in the
+                // macro info string, then return
+                return;
+            }
             (void)xCategories.iter_children(*xIter);
-        else if (nOpenedNodes < nInfoParts - 1)
-            // If the number of levels in the tree is smaller than the
-            // number of parts in the macro info string, then return
-            return;
+        }
     }
     xCategories.select(*xIter);
     xCategories.scroll_to_row(*xIter);
