@@ -1615,9 +1615,9 @@ public:
         m_xEntry->set_text(rText);
     }
 
-    void get_selection_bounds(int& rStartPos, int& rEndPos)
+    bool get_selection_bounds(int& rStartPos, int& rEndPos)
     {
-        m_xEntry->get_selection_bounds(rStartPos, rEndPos);
+        return m_xEntry->get_selection_bounds(rStartPos, rEndPos);
     }
 
     void select_region(int nStartPos, int nEndPos)
@@ -3122,12 +3122,16 @@ void SwTokenWindow::InsertAtSelection(const SwFormToken& rToken)
     {
         ++iterActive;
 
-        int nStartPos, nEndPos;
-        static_cast<SwTOXEdit*>(m_pActiveCtrl)->get_selection_bounds(nStartPos, nEndPos);
+        OUString sLeft;
+        OUString sRight;
 
-        const OUString sEditText = static_cast<SwTOXEdit*>(m_pActiveCtrl)->GetText();
-        const OUString sLeft = sEditText.copy( 0, std::min(nStartPos, nEndPos) );
-        const OUString sRight = sEditText.copy( std::max(nStartPos, nEndPos) );
+        int nStartPos, nEndPos;
+        if (static_cast<SwTOXEdit*>(m_pActiveCtrl)->get_selection_bounds(nStartPos, nEndPos))
+        {
+            const OUString sEditText = static_cast<SwTOXEdit*>(m_pActiveCtrl)->GetText();
+            sLeft = sEditText.copy(0, std::min(nStartPos, nEndPos));
+            sRight = sEditText.copy(std::max(nStartPos, nEndPos));
+        }
 
         static_cast<SwTOXEdit*>(m_pActiveCtrl)->SetText(sLeft);
         static_cast<SwTOXEdit*>(m_pActiveCtrl)->AdjustSize();
