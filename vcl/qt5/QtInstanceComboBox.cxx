@@ -248,7 +248,15 @@ void QtInstanceComboBox::set_entry_width_chars(int)
     SAL_WARN("vcl.qt", "QtInstanceComboBox::set_entry_width_chars not implemented yet");
 }
 
-void QtInstanceComboBox::set_entry_max_length(int) { assert(false && "Not implemented yet"); }
+void QtInstanceComboBox::set_entry_max_length(int nChars)
+{
+    SolarMutexGuard g;
+
+    GetQtInstance().RunInMainThread([&] {
+        if (QLineEdit* pEdit = m_pComboBox->lineEdit())
+            pEdit->setMaxLength(nChars);
+    });
+}
 
 void QtInstanceComboBox::select_entry_region(int nStartPos, int nEndPos)
 {
