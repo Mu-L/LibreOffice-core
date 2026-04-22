@@ -2256,11 +2256,8 @@ void MatrixCreatorDialog::resizeMatrix()
     int oldrows = mxMatrix->n_children();
     int oldcols = 0;
 
-    if (oldrows > 0)
-    {
-        while (oldcols < mMaxCols && mxMatrix->get_sensitive(0, oldcols))
-            ++oldcols;
-    }
+    while (oldcols < mMaxCols && mxMatrix->get_column_visible(oldcols))
+        ++oldcols;
 
     auto xIter = mxMatrix->make_iterator();
     if (oldrows > 0 && !mxMatrix->get_iter_first(*xIter))
