@@ -20,6 +20,7 @@
 #undef SC_DLLIMPLEMENTATION
 
 #include <svx/drawitem.hxx>
+#include <svx/flagsdef.hxx>
 #include <svx/ofaitem.hxx>
 #include <svx/svdview.hxx>
 #include <svx/numinf.hxx>
@@ -135,7 +136,9 @@ void ScStyleDlg::PageCreated(const OUString& rPageId, SfxTabPage& rTabPage)
 
             assert(pInfoItem && "FontListItem not found!");
 
-            aSet.Put (SvxFontListItem(pInfoItem->GetFontList(), SID_ATTR_CHAR_FONTLIST));
+            aSet.Put(SvxFontListItem(pInfoItem->GetFontList(), SID_ATTR_CHAR_FONTLIST));
+            if (rTabPage.GetItemSet().GetParent())
+                aSet.Put(SfxUInt32Item(SID_FLAG_TYPE, SVX_RELATIVE_MODE));
             rTabPage.PageCreated(aSet);
         }
         else if (rPageId == "background")

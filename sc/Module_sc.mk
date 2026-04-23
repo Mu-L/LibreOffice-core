@@ -304,6 +304,7 @@ $(eval $(call gb_Module_add_uicheck_targets,sc,\
 	UITest_calc_tests9 \
 	UITest_function_wizard \
 	UITest_manual_tests \
+	UITest_sc_styleui \
 ))
 
 ifneq ($(or $(ENABLE_LPSOLVE),$(ENABLE_COINMP)),)
