@@ -23,6 +23,7 @@
     <property name="can-focus">False</property>
     <property name="margin-top">4</property>
     <property name="margin-bottom">4</property>
+    <property name="vexpand">True</property>
     <property name="spacing">16</property>
     <child>
       <object class="GtkFrame" id="FL_COLORFUL">
@@ -31,20 +32,21 @@
         <property name="margin-start">4</property>
         <property name="margin-end">4</property>
         <property name="margin-top">3</property>
+        <property name="vexpand">True</property>
         <property name="label-xalign">0</property>
         <property name="shadow-type">none</property>
         <child>
           <object class="GtkScrolledWindow" id="colorfulwin">
             <property name="visible">True</property>
             <property name="can-focus">True</property>
-            <property name="valign">start</property>
+            <property name="vexpand">True</property>
             <property name="shadow-type">in</property>
+            <property name="propagate-natural-width">True</property>
             <child>
               <object class="GtkIconView" id="colorful_palettes">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="margin">0</property>
-                <property name="hexpand">True</property>
                 <property name="vexpand">True</property>
                 <property name="model">liststore1</property>
                 <property name="pixbuf-column">0</property>
@@ -83,20 +85,21 @@
         <property name="margin-start">4</property>
         <property name="margin-end">4</property>
         <property name="margin-top">3</property>
+        <property name="vexpand">True</property>
         <property name="label-xalign">0</property>
         <property name="shadow-type">none</property>
         <child>
           <object class="GtkScrolledWindow" id="monochromaticwin">
             <property name="visible">True</property>
             <property name="can-focus">True</property>
-            <property name="valign">start</property>
+            <property name="vexpand">True</property>
             <property name="shadow-type">in</property>
+            <property name="propagate-natural-width">True</property>
             <child>
               <object class="GtkIconView" id="monochromatic_palettes">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="margin">0</property>
-                <property name="hexpand">True</property>
                 <property name="vexpand">True</property>
                 <property name="model">liststore2</property>
                 <property name="pixbuf-column">0</property>

@@ -67,13 +67,7 @@ void ChartColorPalettes::setMouseMoveHdl(const Link<const OUString&, bool>& rLin
 
 void ChartColorPalettes::Fill()
 {
-    const sal_uInt32 nColumns = 2;
     const Size aSize(BORDER * 6 + SIZE * ChartColorPaletteSize / 2, BORDER * 5 + SIZE * 2);
-
-    const sal_uInt32 nRows = maColorSets.size() / nColumns;
-    mxIconView->set_item_width(aSize.getWidth());
-    mxIconView->set_size_request(nColumns * (aSize.getWidth() + 8),
-                                 nRows * (aSize.getHeight() + 8));
 
     mxIconView->clear();
 
