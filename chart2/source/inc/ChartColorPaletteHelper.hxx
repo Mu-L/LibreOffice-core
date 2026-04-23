@@ -26,7 +26,7 @@ public:
     explicit ChartColorPaletteHelper(const std::shared_ptr<model::Theme>& pTheme);
 
     ChartColorPalette getColorPalette(ChartColorPaletteType eType, sal_uInt32 nIndex) const;
-    static void renderColorPalette(OutputDevice* pDev, const tools::Rectangle& rDrawArea,
+    static void renderColorPalette(OutputDevice& rDev, const tools::Rectangle& rDrawArea,
                                    const ChartColorPalette& rColorSet,
                                    bool bDrawItemBorder = false);
     static void renderNoPalette(OutputDevice* pDev, const tools::Rectangle& rDrawArea);

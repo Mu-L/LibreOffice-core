@@ -147,7 +147,7 @@ ChartColorPalette ChartColorPaletteHelper::createMonotonicPalette(sal_uInt32 nIn
     return colorPalette;
 }
 
-void ChartColorPaletteHelper::renderColorPalette(OutputDevice* pDev,
+void ChartColorPaletteHelper::renderColorPalette(OutputDevice& rDev,
                                                  const tools::Rectangle& rDrawArea,
                                                  const ChartColorPalette& rColorSet,
                                                  const bool bDrawItemBorder)
@@ -164,22 +164,22 @@ void ChartColorPaletteHelper::renderColorPalette(OutputDevice* pDev,
     static constexpr tools::Long y1 = BORDER;
     static constexpr tools::Long y2 = y1 + SIZE + BORDER;
 
-    pDev->SetFillColor();
+    rDev.SetFillColor();
 
     if (bDrawItemBorder)
     {
-        pDev->SetLineColor(COL_BLACK);
-        pDev->DrawRect(tools::Rectangle(aPosition, aSize));
+        rDev.SetLineColor(COL_BLACK);
+        rDev.DrawRect(tools::Rectangle(aPosition, aSize));
     }
 
     for (sal_uInt32 i = 0; i < ChartColorPaletteSize / 2; i += 1)
     {
-        pDev->SetFillColor(rColorSet[i]);
-        pDev->DrawRect(tools::Rectangle(
+        rDev.SetFillColor(rColorSet[i]);
+        rDev.DrawRect(tools::Rectangle(
             Point(aPosition.X() + x + startX, aPosition.Y() + startY + y1), Size(SIZE, SIZE)));
 
-        pDev->SetFillColor(rColorSet[i + ChartColorPaletteSize / 2]);
-        pDev->DrawRect(tools::Rectangle(
+        rDev.SetFillColor(rColorSet[i + ChartColorPaletteSize / 2]);
+        rDev.DrawRect(tools::Rectangle(
             Point(aPosition.X() + x + startX, aPosition.Y() + startY + y2), Size(SIZE, SIZE)));
 
         x += SIZE + BORDER;

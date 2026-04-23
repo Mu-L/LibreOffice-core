@@ -162,7 +162,7 @@ void ChartColorPaletteControl::renderSelectedColorPalette(const VclPtr<VirtualDe
 
     const ChartColorPalette aColorPalette
         = pHelper->getColorPalette(getColorPaletteType(), getColorPaletteIndex());
-    ChartColorPaletteHelper::renderColorPalette(pDev, aDrawArea, aColorPalette, true);
+    ChartColorPaletteHelper::renderColorPalette(*pDev, aDrawArea, aColorPalette, true);
 }
 
 void ChartColorPaletteControl::setColorPaletteHandler(

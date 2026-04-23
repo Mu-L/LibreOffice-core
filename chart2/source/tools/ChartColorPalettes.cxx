@@ -87,7 +87,7 @@ void ChartColorPalettes::Fill()
     {
         const ChartColorPalette& rColorSet = maColorSets[i];
         pVDev->Erase();
-        ChartColorPaletteHelper::renderColorPalette(pVDev, aDrawArea, rColorSet, false);
+        ChartColorPaletteHelper::renderColorPalette(*pVDev, aDrawArea, rColorSet, false);
         OUString sId = OUString::number(i + 1);
         OUString sName = "Palette " + OUString::number(i + 1);
 
