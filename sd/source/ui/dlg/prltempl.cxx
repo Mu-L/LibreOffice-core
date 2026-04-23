@@ -40,7 +40,13 @@
 #include <vcl/tabs.hrc>
 #include <vcl/weld/Dialog.hxx>
 
-#define IS_OUTLINE(x) (x >= PresentationObjects::Outline_1 && x <= PresentationObjects::Outline_9)
+namespace
+{
+bool lcl_isOutline(PresentationObjects eType)
+{
+    return eType >= PresentationObjects::Outline_1 && eType <= PresentationObjects::Outline_9;
+}
+}
 
 /**
  * Constructor of Tab dialog: appends pages to the dialog
@@ -58,7 +64,7 @@ SdPresLayoutTemplateDlg::SdPresLayoutTemplateDlg(SfxObjectShell const * pDocSh,
 {
     const SfxItemSet* pOrgSet(&rStyleBase.GetItemSet());
 
-    if( IS_OUTLINE(ePO))
+    if (lcl_isOutline(ePO))
     {
         // Unfortunately, the Itemsets of our style sheets are not discrete...
         const WhichRangesContainer& pPtr = pOrgSet->GetRanges();
