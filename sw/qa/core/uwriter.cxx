@@ -1115,6 +1115,26 @@ CPPUNIT_TEST_FIXTURE(SwDocTest, testFormulas)
     CPPUNIT_ASSERT_EQUAL(sal_Int32(0), val.GetLong());
 }
 
+// tdf#83196
+CPPUNIT_TEST_FIXTURE(SwDocTest, testRenameTableReference)
+{
+    SwInsertTableOptions aOpt(SwInsertTableFlags::DefaultBorder, 0);
+    SwNodeIndex aIdx(m_pDoc->GetNodes().GetEndOfContent(), -1);
+    SwPosition aPos(aIdx);
+    const SwTable* pTable1 = m_pDoc->InsertTable(aOpt, aPos, 1, 1, 0);
+
+    aIdx.Assign(m_pDoc->GetNodes().GetEndOfContent(), -1);
+    aPos.Assign(aIdx.GetNode(), 0);
+    m_pDoc->InsertTable(aOpt, aPos, 1, 2, 0);
+
+    SwTableFormulaTest aFormula("", pTable1->GetTableNode());
+    aFormula.SetFormula(u"=<Table2.A1> * <Table1.A1> + <Table2.B1>"_ustr);
+    aFormula.BoxNmToPtr(pTable1);
+
+    aFormula.RenameTableReference(u"Table2", u"NewTable");
+    CPPUNIT_ASSERT_EQUAL(u"=<NewTable.A1> * <Table1.A1> + <NewTable.B1>"_ustr, aFormula.GetFormula());
+}
+
 CPPUNIT_TEST_FIXTURE(SwDocTest, testMarkMove)
 {
     IDocumentMarkAccess* pMarksAccess = m_pDoc->getIDocumentMarkAccess();
