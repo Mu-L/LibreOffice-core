@@ -127,9 +127,9 @@ public:
 
     void testTransliterate();
 
-    void testTdf147196();
+    void testTdf147196TitleCaseMultilineTransliteration();
 
-    void testTdf148148();
+    void testTdf148148CaseWhitespaceOnlyTransliteration();
 
     void testSingleLine();
     void testMoveParagraph();
@@ -165,8 +165,8 @@ public:
     CPPUNIT_TEST(testSectionAttributes);
     CPPUNIT_TEST(testLargeParaCopyPaste);
     CPPUNIT_TEST(testTransliterate);
-    CPPUNIT_TEST(testTdf147196);
-    CPPUNIT_TEST(testTdf148148);
+    CPPUNIT_TEST(testTdf147196TitleCaseMultilineTransliteration);
+    CPPUNIT_TEST(testTdf148148CaseWhitespaceOnlyTransliteration);
     CPPUNIT_TEST(testSingleLine);
     CPPUNIT_TEST(testMoveParagraph);
     CPPUNIT_TEST(testCreateLines);
@@ -1934,7 +1934,7 @@ void Test::testTransliterate()
 
 }
 
-void Test::testTdf147196()
+void Test::testTdf147196TitleCaseMultilineTransliteration()
 {
     EditEngine editEng( mpItemPool.get() );
     editEng.SetText(u"2.2 Publication of information - CAA\nSection 4.2 of a CA\'s Certificate Policy and/or Certification Practice Statement SHALL state the CA\'s policy or practice on processing CAA Records for Fully Qualified Domain Names; that policy shall be consistent with these Requirements. \n\nIt shall clearly specify the set of Issuer Domain Names that the CA recognises in CAA \"issue\" or \"issuewild\" records as permitting it to issue. The CA SHALL log all actions taken, if any, consistent with its processing practice."_ustr);
@@ -1942,7 +1942,7 @@ void Test::testTdf147196()
     CPPUNIT_ASSERT_EQUAL(u"2.2 Publication Of Information - Caa\nSection 4.2 Of A Ca\'s Certificate Policy And/Or Certification Practice Statement Shall State The Ca\'s Policy Or Practice On Processing Caa Records For Fully Qualified Domain Names; That Policy Shall Be Consistent With These Requirements. \n\nIt Shall Clearly Specify The Set Of Issuer Domain Names That The Ca Recognises In Caa \"Issue\" Or \"Issuewild\" Records As Permitting It To Issue. The Ca Shall Log All Actions Taken, If Any, Consistent With Its Processing Practice."_ustr, editEng.GetText());
 }
 
-void Test::testTdf148148()
+void Test::testTdf148148CaseWhitespaceOnlyTransliteration()
 {
     using TF = TransliterationFlags;
     EditEngine editEng(mpItemPool.get());
