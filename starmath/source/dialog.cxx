@@ -2259,6 +2259,7 @@ void MatrixCreatorDialog::resizeMatrix()
     while (oldcols < mMaxCols && mxMatrix->get_column_visible(oldcols))
         ++oldcols;
 
+    // Get xIter for first row, if there is one
     auto xIter = mxMatrix->make_iterator();
     if (oldrows > 0 && !mxMatrix->get_iter_first(*xIter))
         return;
@@ -2269,6 +2270,7 @@ void MatrixCreatorDialog::resizeMatrix()
 
         if (row >= oldrows)
         {
+            // Create xIter for new row
             auto xIterAppend = mxMatrix->make_iterator();
             mxMatrix->append(xIterAppend.get());
             mxMatrix->copy_iterator(*xIterAppend, *xIter);
@@ -2276,6 +2278,7 @@ void MatrixCreatorDialog::resizeMatrix()
         }
         else if (row >= rows && row < oldrows)
         {
+            // Remove remaining rows. Move xIter to next row and remove current row
             auto xIterRemove = mxMatrix->make_iterator();
             mxMatrix->copy_iterator(*xIter, *xIterRemove);
             (void)mxMatrix->iter_next(*xIter);
@@ -2299,8 +2302,9 @@ void MatrixCreatorDialog::resizeMatrix()
             }
         }
 
-        if (!mxMatrix->iter_next(*xIter))
-            break;
+        // Move xIter to next row if there is one
+        if (row < oldrows)
+            (void)mxMatrix->iter_next(*xIter);
     }
 
     mxMatrix->columns_autosize();
