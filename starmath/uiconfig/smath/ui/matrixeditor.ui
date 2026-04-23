@@ -385,6 +385,9 @@
                     <property name="show-expanders">False</property>
                     <property name="enable-grid-lines">both</property>
                     <property name="enable-tree-lines">True</property>
+                    <child internal-child="selection">
+                      <object class="GtkTreeSelection"/>
+                    </child>
                     <child>
                       <object class="GtkTreeViewColumn" id="col1">
                         <property name="sizing">autosize</property>
@@ -600,9 +603,6 @@
             <property name="fill">True</property>
             <property name="position">0</property>
           </packing>
-        </child>
-        <child>
-          <placeholder/>
         </child>
       </object>
     </child>
