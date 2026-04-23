@@ -22,11 +22,6 @@ QtInstanceScrollbar::QtInstanceScrollbar(QScrollBar* pScrollBar)
             &QtInstanceScrollbar::signalValueChanged);
 }
 
-void QtInstanceScrollbar::adjustment_configure(int, int, int, int, int, int)
-{
-    assert(false && "not implemented yet");
-}
-
 int QtInstanceScrollbar::adjustment_get_value() const
 {
     SolarMutexGuard g;

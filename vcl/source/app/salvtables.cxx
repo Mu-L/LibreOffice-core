@@ -2454,17 +2454,6 @@ public:
         m_xScrollBar->EnableDrag();
     }
 
-    virtual void adjustment_configure(int value, int lower, int upper, int step_increment,
-                                      int page_increment, int page_size) override
-    {
-        m_xScrollBar->SetRangeMin(lower);
-        m_xScrollBar->SetRangeMax(upper);
-        m_xScrollBar->SetLineSize(step_increment);
-        m_xScrollBar->SetPageSize(page_increment);
-        m_xScrollBar->SetThumbPos(value);
-        m_xScrollBar->SetVisibleSize(page_size);
-    }
-
     virtual int adjustment_get_value() const override { return m_xScrollBar->GetThumbPos(); }
 
     virtual void adjustment_set_value(int value) override { m_xScrollBar->SetThumbPos(value); }

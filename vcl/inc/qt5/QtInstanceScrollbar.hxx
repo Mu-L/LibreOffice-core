@@ -26,8 +26,6 @@ class QtInstanceScrollbar : public QtInstanceWidget, public virtual weld::Scroll
 public:
     QtInstanceScrollbar(QScrollBar* pScrollBar);
 
-    virtual void adjustment_configure(int nValue, int nLower, int nUpper, int nStepIncrement,
-                                      int nPageIncrement, int nPageSize) override;
     virtual int adjustment_get_value() const override;
     virtual void adjustment_set_value(int nValue) override;
     virtual int adjustment_get_upper() const override;

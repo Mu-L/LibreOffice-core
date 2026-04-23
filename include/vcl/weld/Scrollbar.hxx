@@ -24,9 +24,6 @@ protected:
     void signal_adjustment_value_changed() { m_aValueChangeHdl.Call(*this); }
 
 public:
-    virtual void adjustment_configure(int value, int lower, int upper, int step_increment,
-                                      int page_increment, int page_size)
-        = 0;
     virtual int adjustment_get_value() const = 0;
     virtual void adjustment_set_value(int value) = 0;
     virtual int adjustment_get_upper() const = 0;

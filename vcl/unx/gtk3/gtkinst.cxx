@@ -8609,15 +8609,6 @@ public:
 #endif
     }
 
-    virtual void adjustment_configure(int value, int lower, int upper,
-                                       int step_increment, int page_increment,
-                                       int page_size) override
-    {
-        disable_notify_events();
-        gtk_adjustment_configure(m_pAdjustment, value, lower, upper, step_increment, page_increment, page_size);
-        enable_notify_events();
-    }
-
     virtual int adjustment_get_value() const override
     {
         return gtk_adjustment_get_value(m_pAdjustment);
