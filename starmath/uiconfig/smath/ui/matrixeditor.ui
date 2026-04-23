@@ -172,38 +172,36 @@
                     <property name="row-spacing">3</property>
                     <property name="column-spacing">6</property>
                     <child>
-                      <object class="GtkLabel" id="label_columns">
+                      <object class="GtkLabel" id="label_name">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <property name="halign">start</property>
-                        <property name="label" translatable="yes" context="matrixeditor|Columns">Columns:</property>
+                        <property name="label" translatable="yes" context="matrixeditor|Name">Name:</property>
                         <accessibility>
-                          <relation type="label-for" target="num_cols"/>
+                          <relation type="label-for" target="matrixname"/>
                         </accessibility>
                       </object>
                       <packing>
                         <property name="left-attach">0</property>
-                        <property name="top-attach">2</property>
+                        <property name="top-attach">0</property>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkSpinButton" id="num_cols">
+                      <object class="GtkEntry" id="matrixname">
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
                         <property name="halign">start</property>
                         <property name="valign">start</property>
-                        <property name="max-width-chars">2</property>
-                        <property name="text">2</property>
-                        <property name="adjustment">adjustment_cols</property>
-                        <property name="climb-rate">1</property>
-                        <property name="value">1</property>
+                        <property name="hexpand">True</property>
+                        <property name="width-chars">5</property>
+                        <property name="text">x</property>
                         <accessibility>
-                          <relation type="labelled-by" target="label_columns"/>
+                          <relation type="labelled-by" target="label_name"/>
                         </accessibility>
                       </object>
                       <packing>
                         <property name="left-attach">1</property>
-                        <property name="top-attach">2</property>
+                        <property name="top-attach">0</property>
                       </packing>
                     </child>
                     <child>
@@ -243,36 +241,38 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkLabel" id="label_name">
+                      <object class="GtkLabel" id="label_columns">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <property name="halign">start</property>
-                        <property name="label" translatable="yes" context="matrixeditor|Name">Name:</property>
+                        <property name="label" translatable="yes" context="matrixeditor|Columns">Columns:</property>
                         <accessibility>
-                          <relation type="label-for" target="matrixname"/>
+                          <relation type="label-for" target="num_cols"/>
                         </accessibility>
                       </object>
                       <packing>
                         <property name="left-attach">0</property>
-                        <property name="top-attach">0</property>
+                        <property name="top-attach">2</property>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkEntry" id="matrixname">
+                      <object class="GtkSpinButton" id="num_cols">
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
                         <property name="halign">start</property>
                         <property name="valign">start</property>
-                        <property name="hexpand">True</property>
-                        <property name="width-chars">5</property>
-                        <property name="text">x</property>
+                        <property name="max-width-chars">2</property>
+                        <property name="text">2</property>
+                        <property name="adjustment">adjustment_cols</property>
+                        <property name="climb-rate">1</property>
+                        <property name="value">1</property>
                         <accessibility>
-                          <relation type="labelled-by" target="label_name"/>
+                          <relation type="labelled-by" target="label_columns"/>
                         </accessibility>
                       </object>
                       <packing>
                         <property name="left-attach">1</property>
-                        <property name="top-attach">0</property>
+                        <property name="top-attach">2</property>
                       </packing>
                     </child>
                     <child>
