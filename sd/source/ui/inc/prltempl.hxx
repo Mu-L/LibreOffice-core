@@ -36,21 +36,21 @@ class SdPresLayoutTemplateDlg final : public SfxTabDialogController
 private:
     const SfxObjectShell*   mpDocShell;
 
-    XColorListRef         pColorTab;
-    XGradientListRef      pGradientList;
-    XHatchListRef         pHatchingList;
-    XBitmapListRef        pBitmapList;
-    XPatternListRef       pPatternList;
-    XDashListRef          pDashList;
-    XLineEndListRef       pLineEndList;
+    XColorListRef m_pColorTab;
+    XGradientListRef m_pGradientList;
+    XHatchListRef m_pHatchingList;
+    XBitmapListRef m_pBitmapList;
+    XPatternListRef m_pPatternList;
+    XDashListRef m_pDashList;
+    XLineEndListRef m_pLineEndList;
 
-    PresentationObjects   ePO;
+    PresentationObjects m_ePO;
 
     virtual void        PageCreated(const OUString& rId, SfxTabPage &rPage) override;
 
     // for mapping with the new SvxNumBulletItem
-    SfxItemSet aInputSet;
-    std::unique_ptr<SfxItemSet> pOutSet;
+    SfxItemSet m_aInputSet;
+    std::unique_ptr<SfxItemSet> m_pOutSet;
 
     sal_uInt16 GetOutlineLevel() const;
 

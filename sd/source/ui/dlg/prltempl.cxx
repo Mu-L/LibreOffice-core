@@ -51,20 +51,21 @@ bool lcl_isOutline(PresentationObjects eType)
 /**
  * Constructor of Tab dialog: appends pages to the dialog
  */
-SdPresLayoutTemplateDlg::SdPresLayoutTemplateDlg(SfxObjectShell const * pDocSh,
-                                weld::Window* pParent,
-                                bool bBackground,
-                                SfxStyleSheetBase& rStyleBase,
-                                PresentationObjects _ePO,
-                                SfxStyleSheetBasePool* pSSPool)
-    : SfxTabDialogController(pParent, u"modules/sdraw/ui/drawprtldialog.ui"_ustr, u"DrawPRTLDialog"_ustr)
+SdPresLayoutTemplateDlg::SdPresLayoutTemplateDlg(SfxObjectShell const* pDocSh,
+                                                 weld::Window* pParent, bool bBackground,
+                                                 SfxStyleSheetBase& rStyleBase,
+                                                 PresentationObjects _ePO,
+                                                 SfxStyleSheetBasePool* pSSPool)
+    : SfxTabDialogController(pParent, u"modules/sdraw/ui/drawprtldialog.ui"_ustr,
+                             u"DrawPRTLDialog"_ustr)
     , mpDocShell(pDocSh)
-    , ePO(_ePO)
-    , aInputSet(*rStyleBase.GetItemSet().GetPool(), svl::Items<SID_PARAM_NUM_PRESET, SID_PARAM_CUR_NUM_LEVEL>)
+    , m_ePO(_ePO)
+    , m_aInputSet(*rStyleBase.GetItemSet().GetPool(),
+                  svl::Items<SID_PARAM_NUM_PRESET, SID_PARAM_CUR_NUM_LEVEL>)
 {
     const SfxItemSet* pOrgSet(&rStyleBase.GetItemSet());
 
-    if (lcl_isOutline(ePO))
+    if (lcl_isOutline(m_ePO))
     {
         // Unfortunately, the Itemsets of our style sheets are not discrete...
         const WhichRangesContainer& pPtr = pOrgSet->GetRanges();
@@ -80,36 +81,36 @@ SdPresLayoutTemplateDlg::SdPresLayoutTemplateDlg(SfxObjectShell const * pDocSh,
                 p2 = pPtr[i+1].second;
                 ++i;
             }
-            aInputSet.MergeRange( p1, p2 );
+            m_aInputSet.MergeRange(p1, p2);
         }
 
-        aInputSet.Put( rStyleBase.GetItemSet() );
+        m_aInputSet.Put(rStyleBase.GetItemSet());
 
         // need parent-relationship
         const SfxItemSet* pParentItemSet = rStyleBase.GetItemSet().GetParent();
         if( pParentItemSet )
-            aInputSet.SetParent( pParentItemSet );
+            m_aInputSet.SetParent(pParentItemSet);
 
-        pOutSet.reset( new SfxItemSet( rStyleBase.GetItemSet() ) );
-        pOutSet->ClearItem();
+        m_pOutSet.reset(new SfxItemSet(rStyleBase.GetItemSet()));
+        m_pOutSet->ClearItem();
 
         // If there is no bullet item in this stylesheet, we get it
         // from 'Outline 1' style sheet.
         const SfxPoolItem *pItem = nullptr;
-        if( SfxItemState::SET != aInputSet.GetItemState(EE_PARA_NUMBULLET, false, &pItem ))
+        if (SfxItemState::SET != m_aInputSet.GetItemState(EE_PARA_NUMBULLET, false, &pItem))
         {
             OUString aStyleName(SdResId(STR_PSEUDOSHEET_OUTLINE) + " 1");
             SfxStyleSheetBase* pFirstStyleSheet = pSSPool->Find( aStyleName, SfxStyleFamily::Pseudo);
 
             if(pFirstStyleSheet)
                 if( SfxItemState::SET == pFirstStyleSheet->GetItemSet().GetItemState(EE_PARA_NUMBULLET, false, &pItem) )
-                    aInputSet.Put( *pItem );
+                    m_aInputSet.Put(*pItem);
         }
 
         // preselect selected layer in dialog
-        aInputSet.Put( SfxUInt16Item( SID_PARAM_CUR_NUM_LEVEL, 1<<GetOutlineLevel()));
+        m_aInputSet.Put(SfxUInt16Item(SID_PARAM_CUR_NUM_LEVEL, 1 << GetOutlineLevel()));
 
-        SetInputSet(&aInputSet);
+        SetInputSet(&m_aInputSet);
     }
     else {
         SetInputSet(pOrgSet);
@@ -123,13 +124,13 @@ SdPresLayoutTemplateDlg::SdPresLayoutTemplateDlg(SfxObjectShell const * pDocSh,
     SvxDashListItem const *pDashListItem = mpDocShell->GetItem( SID_DASH_LIST );
     SvxLineEndListItem const *pLineEndListItem = mpDocShell->GetItem( SID_LINEEND_LIST );
 
-    pColorTab = pColorListItem->GetColorList();
-    pDashList = pDashListItem->GetDashList();
-    pLineEndList = pLineEndListItem->GetLineEndList();
-    pGradientList = pGradientListItem->GetGradientList();
-    pHatchingList = pHatchListItem->GetHatchList();
-    pBitmapList = pBitmapListItem->GetBitmapList();
-    pPatternList = pPatternListItem->GetPatternList();
+    m_pColorTab = pColorListItem->GetColorList();
+    m_pDashList = pDashListItem->GetDashList();
+    m_pLineEndList = pLineEndListItem->GetLineEndList();
+    m_pGradientList = pGradientListItem->GetGradientList();
+    m_pHatchingList = pHatchListItem->GetHatchList();
+    m_pBitmapList = pBitmapListItem->GetBitmapList();
+    m_pPatternList = pPatternListItem->GetPatternList();
 
     SfxAbstractDialogFactory* pFact = SfxAbstractDialogFactory::Create();
 
@@ -188,7 +189,7 @@ SdPresLayoutTemplateDlg::SdPresLayoutTemplateDlg(SfxObjectShell const * pDocSh,
     // set title and add corresponding pages to dialog
     OUString aTitle;
 
-    switch( ePO )
+    switch (m_ePO)
     {
         case PresentationObjects::Title:
             aTitle = SdResId(STR_PSEUDOSHEET_TITLE);
@@ -215,9 +216,10 @@ SdPresLayoutTemplateDlg::SdPresLayoutTemplateDlg(SfxObjectShell const * pDocSh,
         case PresentationObjects::Outline_7:
         case PresentationObjects::Outline_8:
         case PresentationObjects::Outline_9:
-            aTitle = SdResId(STR_PSEUDOSHEET_OUTLINE) + " " +
-                OUString::number( static_cast<int>(ePO) - static_cast<int>(PresentationObjects::Outline_1) + 1 );
-        break;
+            aTitle = SdResId(STR_PSEUDOSHEET_OUTLINE) + " "
+                     + OUString::number(static_cast<int>(m_ePO)
+                                        - static_cast<int>(PresentationObjects::Outline_1) + 1);
+            break;
 
         case PresentationObjects::Notes:
             aTitle = SdResId(STR_PSEUDOSHEET_NOTES);
@@ -232,23 +234,23 @@ SdPresLayoutTemplateDlg::~SdPresLayoutTemplateDlg()
 
 void SdPresLayoutTemplateDlg::PageCreated(const OUString& rId, SfxTabPage &rPage)
 {
-    SfxAllItemSet aSet(*(aInputSet.GetPool()));
+    SfxAllItemSet aSet(*(m_aInputSet.GetPool()));
 
     if (rId == "line")
     {
-        aSet.Put (SvxColorListItem(pColorTab,SID_COLOR_TABLE));
-        aSet.Put (SvxDashListItem(pDashList,SID_DASH_LIST));
-        aSet.Put (SvxLineEndListItem(pLineEndList,SID_LINEEND_LIST));
+        aSet.Put(SvxColorListItem(m_pColorTab, SID_COLOR_TABLE));
+        aSet.Put(SvxDashListItem(m_pDashList, SID_DASH_LIST));
+        aSet.Put(SvxLineEndListItem(m_pLineEndList, SID_LINEEND_LIST));
         aSet.Put (SfxUInt16Item(SID_DLG_TYPE,1));
         rPage.PageCreated(aSet);
     }
     else if (rId == "area")
     {
-        aSet.Put (SvxColorListItem(pColorTab,SID_COLOR_TABLE));
-        aSet.Put (SvxGradientListItem(pGradientList,SID_GRADIENT_LIST));
-        aSet.Put (SvxHatchListItem(pHatchingList,SID_HATCH_LIST));
-        aSet.Put (SvxBitmapListItem(pBitmapList,SID_BITMAP_LIST));
-        aSet.Put (SvxPatternListItem(pPatternList,SID_PATTERN_LIST));
+        aSet.Put(SvxColorListItem(m_pColorTab, SID_COLOR_TABLE));
+        aSet.Put(SvxGradientListItem(m_pGradientList, SID_GRADIENT_LIST));
+        aSet.Put(SvxHatchListItem(m_pHatchingList, SID_HATCH_LIST));
+        aSet.Put(SvxBitmapListItem(m_pBitmapList, SID_BITMAP_LIST));
+        aSet.Put(SvxPatternListItem(m_pPatternList, SID_PATTERN_LIST));
         aSet.Put (SfxUInt16Item(SID_PAGE_TYPE,0));
         aSet.Put (SfxUInt16Item(SID_DLG_TYPE,1));
         aSet.Put (SfxUInt16Item(SID_TABPAGE_POS,0));
@@ -256,7 +258,7 @@ void SdPresLayoutTemplateDlg::PageCreated(const OUString& rId, SfxTabPage &rPage
     }
     else if (rId == "shadowing")
     {
-        aSet.Put (SvxColorListItem(pColorTab,SID_COLOR_TABLE));
+        aSet.Put(SvxColorListItem(m_pColorTab, SID_COLOR_TABLE));
         aSet.Put (SfxUInt16Item(SID_PAGE_TYPE,0));
         aSet.Put (SfxUInt16Item(SID_DLG_TYPE,1));
         rPage.PageCreated(aSet);
@@ -291,14 +293,16 @@ void SdPresLayoutTemplateDlg::PageCreated(const OUString& rId, SfxTabPage &rPage
 
 const SfxItemSet* SdPresLayoutTemplateDlg::GetOutputItemSet() const
 {
-    if (pOutSet)
+    if (m_pOutSet)
     {
-        pOutSet->Put(*SfxTabDialogController::GetOutputItemSet());
+        m_pOutSet->Put(*SfxTabDialogController::GetOutputItemSet());
 
-        const SvxNumBulletItem *pSvxNumBulletItem = pOutSet->GetItemIfSet(EE_PARA_NUMBULLET, false);
+        const SvxNumBulletItem* pSvxNumBulletItem
+            = m_pOutSet->GetItemIfSet(EE_PARA_NUMBULLET, false);
         if (pSvxNumBulletItem)
-            SdBulletMapper::MapFontsInNumRule( const_cast<SvxNumRule&>(pSvxNumBulletItem->GetNumRule()), *pOutSet );
-        return pOutSet.get();
+            SdBulletMapper::MapFontsInNumRule(
+                const_cast<SvxNumRule&>(pSvxNumBulletItem->GetNumRule()), *m_pOutSet);
+        return m_pOutSet.get();
     }
     else
         return SfxTabDialogController::GetOutputItemSet();
@@ -306,7 +310,7 @@ const SfxItemSet* SdPresLayoutTemplateDlg::GetOutputItemSet() const
 
 sal_uInt16 SdPresLayoutTemplateDlg::GetOutlineLevel() const
 {
-    switch( ePO )
+    switch (m_ePO)
     {
     case PresentationObjects::Outline_1: return 0;
     case PresentationObjects::Outline_2: return 1;
