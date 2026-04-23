@@ -97,9 +97,10 @@ using namespace css::container;
 
 static bool bLastRelative =         false;
 
-static SvxNumSettings_Impl* lcl_CreateNumSettingsPtr(const Sequence<PropertyValue>& rLevelProps)
+static std::unique_ptr<SvxNumSettings_Impl>
+lcl_CreateNumSettingsPtr(const Sequence<PropertyValue>& rLevelProps)
 {
-    SvxNumSettings_Impl* pNew = new SvxNumSettings_Impl;
+    std::unique_ptr<SvxNumSettings_Impl> pNew = std::make_unique<SvxNumSettings_Impl>();
     for (auto& prop : rLevelProps)
     {
         if (prop.Name == "NumberingType")
@@ -178,10 +179,7 @@ SvxSingleNumPickTabPage::SvxSingleNumPickTabPage(weld::Container* pPage, weld::D
 
         sal_Int32 nLength = std::min<sal_Int32>(aNumberings.getLength(), NUM_VALUSET_COUNT);
         for(sal_Int32 i = 0; i < nLength; i++)
-        {
-            SvxNumSettings_Impl* pNew = lcl_CreateNumSettingsPtr(aNumberings[i]);
-            aNumSettingsArr.push_back(std::unique_ptr<SvxNumSettings_Impl>(pNew));
-        }
+            aNumSettingsArr.push_back(lcl_CreateNumSettingsPtr(aNumberings[i]));
     }
     catch(const Exception&)
     {
@@ -627,8 +625,7 @@ SvxNumPickTabPage::SvxNumPickTabPage(weld::Container* pPage, weld::DialogControl
                 if (nLocaleLevel >= 0)
                     xLevel->getByIndex(nLocaleLevel) >>= aLevelProps;
 
-                SvxNumSettings_Impl* pNew = lcl_CreateNumSettingsPtr(aLevelProps);
-                rItemArr.push_back( std::unique_ptr<SvxNumSettings_Impl>(pNew) );
+                rItemArr.push_back(lcl_CreateNumSettingsPtr(aLevelProps));
             }
         }
     }
