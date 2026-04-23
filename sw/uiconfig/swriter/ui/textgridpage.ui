@@ -217,50 +217,6 @@
                     <property name="column-spacing">12</property>
                     <property name="row-homogeneous">True</property>
                     <child>
-                      <object class="GtkLabel" id="labelFT_CHARSPERLINE">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="halign">start</property>
-                        <property name="label" translatable="yes" context="textgridpage|labelFT_CHARSPERLINE">Characters per line:</property>
-                        <property name="use-underline">True</property>
-                        <property name="mnemonic-widget">spinNF_CHARSPERLINE</property>
-                      </object>
-                      <packing>
-                        <property name="left-attach">0</property>
-                        <property name="top-attach">1</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkSpinButton" id="spinNF_CHARSPERLINE">
-                        <property name="visible">True</property>
-                        <property name="can-focus">True</property>
-                        <property name="truncate-multiline">True</property>
-                        <property name="adjustment">adjustmentCHARSPERLINE</property>
-                        <child internal-child="accessible">
-                          <object class="AtkObject" id="spinNF_CHARSPERLINE-atkobject">
-                            <property name="AtkObject::accessible-description" translatable="yes" context="textgridpage|extended_tip|spinNF_CHARSPERLINE">Enter the maximum number of characters that you want on a line.</property>
-                          </object>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="left-attach">1</property>
-                        <property name="top-attach">1</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkLabel" id="labelFT_CHARRANGE">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="halign">start</property>
-                        <property name="label" context="textgridpage|labelFT_CHARRANGE">(1-45)</property>
-                        <property name="use-underline">True</property>
-                      </object>
-                      <packing>
-                        <property name="left-attach">2</property>
-                        <property name="top-attach">1</property>
-                      </packing>
-                    </child>
-                    <child>
                       <object class="GtkLabel" id="labelFT_LINESPERPAGE">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
@@ -304,6 +260,50 @@
                         <property name="top-attach">0</property>
                       </packing>
                     </child>
+                    <child>
+                      <object class="GtkLabel" id="labelFT_CHARSPERLINE">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="halign">start</property>
+                        <property name="label" translatable="yes" context="textgridpage|labelFT_CHARSPERLINE">Characters per line:</property>
+                        <property name="use-underline">True</property>
+                        <property name="mnemonic-widget">spinNF_CHARSPERLINE</property>
+                      </object>
+                      <packing>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkSpinButton" id="spinNF_CHARSPERLINE">
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="truncate-multiline">True</property>
+                        <property name="adjustment">adjustmentCHARSPERLINE</property>
+                        <child internal-child="accessible">
+                          <object class="AtkObject" id="spinNF_CHARSPERLINE-atkobject">
+                            <property name="AtkObject::accessible-description" translatable="yes" context="textgridpage|extended_tip|spinNF_CHARSPERLINE">Enter the maximum number of characters that you want on a line.</property>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="left-attach">1</property>
+                        <property name="top-attach">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="labelFT_CHARRANGE">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="halign">start</property>
+                        <property name="label" context="textgridpage|labelFT_CHARRANGE">(1-45)</property>
+                        <property name="use-underline">True</property>
+                      </object>
+                      <packing>
+                        <property name="left-attach">2</property>
+                        <property name="top-attach">1</property>
+                      </packing>
+                    </child>
                   </object>
                   <packing>
                     <property name="left-attach">0</property>
@@ -319,36 +319,36 @@
                     <property name="row-spacing">6</property>
                     <property name="column-spacing">12</property>
                     <child>
-                      <object class="GtkSpinButton" id="spinMF_CHARWIDTH">
+                      <object class="GtkLabel" id="labelFT_TEXTSIZE">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="halign">start</property>
+                        <property name="label" translatable="yes" context="textgridpage|labelFT_TEXTSIZE">Max. base text size:</property>
+                        <property name="use-underline">True</property>
+                        <property name="mnemonic-widget">spinMF_TEXTSIZE</property>
+                      </object>
+                      <packing>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkSpinButton" id="spinMF_TEXTSIZE">
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
                         <property name="activates-default">True</property>
                         <property name="truncate-multiline">True</property>
-                        <property name="adjustment">adjustmentMetric2</property>
+                        <property name="adjustment">adjustmentMetric</property>
                         <property name="digits">2</property>
                         <child internal-child="accessible">
-                          <object class="AtkObject" id="spinMF_CHARWIDTH-atkobject">
-                            <property name="AtkObject::accessible-description" translatable="yes" context="textgridpage|extended_tip|spinMF_CHARWIDTH">Enter the character width for the grid with lines and characters.</property>
+                          <object class="AtkObject" id="spinMF_TEXTSIZE-atkobject">
+                            <property name="AtkObject::accessible-description" translatable="yes" context="textgridpage|extended_tip|spinMF_TEXTSIZE">Enter the maximum base text size. A large value results in less characters per line.</property>
                           </object>
                         </child>
                       </object>
                       <packing>
                         <property name="left-attach">1</property>
-                        <property name="top-attach">2</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkLabel" id="labelFT_CHARWIDTH">
-                        <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="halign">start</property>
-                        <property name="label" translatable="yes" context="textgridpage|labelFT_CHARWIDTH">Character _width:</property>
-                        <property name="use-underline">True</property>
-                        <property name="mnemonic-widget">spinMF_CHARWIDTH</property>
-                      </object>
-                      <packing>
-                        <property name="left-attach">0</property>
-                        <property name="top-attach">2</property>
+                        <property name="top-attach">0</property>
                       </packing>
                     </child>
                     <child>
@@ -385,36 +385,36 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkLabel" id="labelFT_TEXTSIZE">
+                      <object class="GtkLabel" id="labelFT_CHARWIDTH">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <property name="halign">start</property>
-                        <property name="label" translatable="yes" context="textgridpage|labelFT_TEXTSIZE">Max. base text size:</property>
+                        <property name="label" translatable="yes" context="textgridpage|labelFT_CHARWIDTH">Character _width:</property>
                         <property name="use-underline">True</property>
-                        <property name="mnemonic-widget">spinMF_TEXTSIZE</property>
+                        <property name="mnemonic-widget">spinMF_CHARWIDTH</property>
                       </object>
                       <packing>
                         <property name="left-attach">0</property>
-                        <property name="top-attach">0</property>
+                        <property name="top-attach">2</property>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkSpinButton" id="spinMF_TEXTSIZE">
+                      <object class="GtkSpinButton" id="spinMF_CHARWIDTH">
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
                         <property name="activates-default">True</property>
                         <property name="truncate-multiline">True</property>
-                        <property name="adjustment">adjustmentMetric</property>
+                        <property name="adjustment">adjustmentMetric2</property>
                         <property name="digits">2</property>
                         <child internal-child="accessible">
-                          <object class="AtkObject" id="spinMF_TEXTSIZE-atkobject">
-                            <property name="AtkObject::accessible-description" translatable="yes" context="textgridpage|extended_tip|spinMF_TEXTSIZE">Enter the maximum base text size. A large value results in less characters per line.</property>
+                          <object class="AtkObject" id="spinMF_CHARWIDTH-atkobject">
+                            <property name="AtkObject::accessible-description" translatable="yes" context="textgridpage|extended_tip|spinMF_CHARWIDTH">Enter the character width for the grid with lines and characters.</property>
                           </object>
                         </child>
                       </object>
                       <packing>
                         <property name="left-attach">1</property>
-                        <property name="top-attach">0</property>
+                        <property name="top-attach">2</property>
                       </packing>
                     </child>
                   </object>
