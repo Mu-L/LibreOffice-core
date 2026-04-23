@@ -99,6 +99,29 @@
               </packing>
             </child>
             <child>
+              <object class="GtkSpinButton" id="maxheightsb">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="halign">start</property>
+                <property name="activates-default">True</property>
+                <property name="truncate-multiline">True</property>
+                <property name="adjustment">adjustment1</property>
+                <property name="digits">2</property>
+                <accessibility>
+                  <relation type="labelled-by" target="maxheight"/>
+                </accessibility>
+                <child internal-child="accessible">
+                  <object class="AtkObject" id="maxheightsb-atkobject">
+                    <property name="AtkObject::accessible-description" translatable="yes" context="footnoteareapage|extended_tip|maxheightsb">Enter the maximum height for the footnote area.</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">1</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkLabel" id="spacetotextlabel">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
@@ -130,29 +153,6 @@
               <packing>
                 <property name="left-attach">1</property>
                 <property name="top-attach">2</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkSpinButton" id="maxheightsb">
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">start</property>
-                <property name="activates-default">True</property>
-                <property name="truncate-multiline">True</property>
-                <property name="adjustment">adjustment1</property>
-                <property name="digits">2</property>
-                <accessibility>
-                  <relation type="labelled-by" target="maxheight"/>
-                </accessibility>
-                <child internal-child="accessible">
-                  <object class="AtkObject" id="maxheightsb-atkobject">
-                    <property name="AtkObject::accessible-description" translatable="yes" context="footnoteareapage|extended_tip|maxheightsb">Enter the maximum height for the footnote area.</property>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="left-attach">1</property>
-                <property name="top-attach">1</property>
               </packing>
             </child>
           </object>
@@ -204,76 +204,6 @@
               </packing>
             </child>
             <child>
-              <object class="GtkLabel" id="label5">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="label" translatable="yes" context="footnoteareapage|label5">_Style</property>
-                <property name="use-underline">True</property>
-                <property name="mnemonic-widget">style</property>
-                <property name="xalign">0</property>
-              </object>
-              <packing>
-                <property name="left-attach">0</property>
-                <property name="top-attach">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel" id="label6">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="label" translatable="yes" context="footnoteareapage|label6">_Thickness</property>
-                <property name="use-underline">True</property>
-                <property name="mnemonic-widget">thickness</property>
-                <property name="xalign">0</property>
-              </object>
-              <packing>
-                <property name="left-attach">0</property>
-                <property name="top-attach">2</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel" id="label7">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="label" translatable="yes" context="footnoteareapage|label7">_Color</property>
-                <property name="use-underline">True</property>
-                <property name="mnemonic-widget">color</property>
-                <property name="xalign">0</property>
-              </object>
-              <packing>
-                <property name="left-attach">0</property>
-                <property name="top-attach">3</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel" id="lengthlabel">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="label" translatable="yes" context="footnoteareapage|label8">_Length</property>
-                <property name="use-underline">True</property>
-                <property name="mnemonic-widget">length</property>
-                <property name="xalign">0</property>
-              </object>
-              <packing>
-                <property name="left-attach">0</property>
-                <property name="top-attach">4</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel" id="spacingtocontentslabel">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="label" translatable="yes" context="footnoteareapage|label9">_Spacing to footnote contents</property>
-                <property name="use-underline">True</property>
-                <property name="mnemonic-widget">spacingtocontents</property>
-                <property name="xalign">0</property>
-              </object>
-              <packing>
-                <property name="left-attach">0</property>
-                <property name="top-attach">5</property>
-              </packing>
-            </child>
-            <child>
               <object class="GtkComboBoxText" id="position">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
@@ -292,6 +222,20 @@
               <packing>
                 <property name="left-attach">1</property>
                 <property name="top-attach">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="label5">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes" context="footnoteareapage|label5">_Style</property>
+                <property name="use-underline">True</property>
+                <property name="mnemonic-widget">style</property>
+                <property name="xalign">0</property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">1</property>
               </packing>
             </child>
             <child>
@@ -318,6 +262,54 @@
               </packing>
             </child>
             <child>
+              <object class="GtkLabel" id="label6">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes" context="footnoteareapage|label6">_Thickness</property>
+                <property name="use-underline">True</property>
+                <property name="mnemonic-widget">thickness</property>
+                <property name="xalign">0</property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkSpinButton" id="thickness">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="halign">start</property>
+                <property name="activates-default">True</property>
+                <property name="truncate-multiline">True</property>
+                <property name="adjustment">adjustment3</property>
+                <property name="digits">2</property>
+                <child internal-child="accessible">
+                  <object class="AtkObject" id="thickness-atkobject">
+                    <property name="AtkObject::accessible-description" translatable="yes" context="footnoteareapage|extended_tip|thickness">Select the thickness of the separator line.</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="label7">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes" context="footnoteareapage|label7">_Color</property>
+                <property name="use-underline">True</property>
+                <property name="mnemonic-widget">color</property>
+                <property name="xalign">0</property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">3</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkMenuButton" id="color">
                 <property name="label" translatable="no"></property>
                 <property name="visible">True</property>
@@ -341,6 +333,20 @@
               </packing>
             </child>
             <child>
+              <object class="GtkLabel" id="lengthlabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes" context="footnoteareapage|label8">_Length</property>
+                <property name="use-underline">True</property>
+                <property name="mnemonic-widget">length</property>
+                <property name="xalign">0</property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">4</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkSpinButton" id="length">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
@@ -357,6 +363,20 @@
               <packing>
                 <property name="left-attach">1</property>
                 <property name="top-attach">4</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="spacingtocontentslabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes" context="footnoteareapage|label9">_Spacing to footnote contents</property>
+                <property name="use-underline">True</property>
+                <property name="mnemonic-widget">spacingtocontents</property>
+                <property name="xalign">0</property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">5</property>
               </packing>
             </child>
             <child>
@@ -377,26 +397,6 @@
               <packing>
                 <property name="left-attach">1</property>
                 <property name="top-attach">5</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkSpinButton" id="thickness">
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">start</property>
-                <property name="activates-default">True</property>
-                <property name="truncate-multiline">True</property>
-                <property name="adjustment">adjustment3</property>
-                <property name="digits">2</property>
-                <child internal-child="accessible">
-                  <object class="AtkObject" id="thickness-atkobject">
-                    <property name="AtkObject::accessible-description" translatable="yes" context="footnoteareapage|extended_tip|thickness">Select the thickness of the separator line.</property>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="left-attach">1</property>
-                <property name="top-attach">2</property>
               </packing>
             </child>
           </object>
