@@ -29,25 +29,6 @@ QtInstanceScrolledWindow::QtInstanceScrolledWindow(QScrollArea* pScrollArea)
                 &QtInstanceScrolledWindow::handleVerticalScrollValueChanged);
 }
 
-void QtInstanceScrolledWindow::hadjustment_configure(int nValue, int nUpper, int nStepIncrement,
-                                                     int nPageIncrement, int nPageSize)
-{
-    SolarMutexGuard g;
-
-    GetQtInstance().RunInMainThread([&] {
-        QScrollBar* pScrollBar = m_pScrollArea->horizontalScrollBar();
-        if (!pScrollBar)
-            return;
-
-        pScrollBar->setValue(nValue);
-        pScrollBar->setMaximum(nUpper);
-        pScrollBar->setSingleStep(nStepIncrement);
-        pScrollBar->setPageStep(nPageIncrement);
-        if (QWidget* pWidget = m_pScrollArea->widget())
-            pWidget->resize(nPageSize, pWidget->height());
-    });
-}
-
 int QtInstanceScrolledWindow::hadjustment_get_value() const
 {
     SolarMutexGuard g;
@@ -154,25 +135,6 @@ VclPolicyType QtInstanceScrolledWindow::get_hpolicy() const
         [&] { ePolicy = toVclPolicy(m_pScrollArea->horizontalScrollBarPolicy()); });
 
     return ePolicy;
-}
-
-void QtInstanceScrolledWindow::vadjustment_configure(int nValue, int nUpper, int nStepIncrement,
-                                                     int nPageIncrement, int nPageSize)
-{
-    SolarMutexGuard g;
-
-    GetQtInstance().RunInMainThread([&] {
-        QScrollBar* pScrollBar = m_pScrollArea->verticalScrollBar();
-        if (!pScrollBar)
-            return;
-
-        pScrollBar->setValue(nValue);
-        pScrollBar->setMaximum(nUpper);
-        pScrollBar->setSingleStep(nStepIncrement);
-        pScrollBar->setPageStep(nPageIncrement);
-        if (QWidget* pWidget = m_pScrollArea->widget())
-            pWidget->resize(pWidget->width(), nPageSize);
-    });
 }
 
 int QtInstanceScrolledWindow::vadjustment_get_value() const
