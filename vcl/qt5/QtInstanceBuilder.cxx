@@ -407,6 +407,7 @@ constexpr auto SUPPORTED_WITH_QT_PARENT = frozen::make_unordered_set<std::u16str
     u"modules/scalc/ui/statisticsinfopage.ui",
     u"modules/scalc/ui/subtotalgrppage.ui",
     u"modules/scalc/ui/subtotaloptionspage.ui",
+    u"modules/schart/ui/titlerotationtabpage.ui",
     u"modules/schart/ui/tp_AxisPositions.ui",
     u"modules/schart/ui/tp_ChartColorPalette.ui",
     u"modules/schart/ui/tp_ChartType.ui",
