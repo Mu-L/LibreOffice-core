@@ -966,11 +966,8 @@ cmd/sc_removefilter.png cmd/sc_removefiltersort.png
 
 # Bullets
 cmd/32/bulletliststyle.png cmd/32/defaultbullet.png
-cmd/32/defaultparastyle.png cmd/32/controlcodes.png
 cmd/lc_bulletliststyle.png cmd/lc_defaultbullet.png
-cmd/lc_defaultparastyle.png cmd/lc_controlcodes.png
 cmd/sc_bulletliststyle.png cmd/sc_defaultbullet.png
-cmd/sc_defaultparastyle.png cmd/sc_controlcodes.png
 
 # Group
 cmd/32/groupmenu.png cmd/32/formatgroup.png
