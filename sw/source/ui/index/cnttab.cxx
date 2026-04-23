@@ -1559,6 +1559,7 @@ public:
         , m_pParent(pTokenWin)
         , m_xEntry(m_xBuilder->weld_entry(u"entry"_ustr))
     {
+        pTokenWin->get_child_container().set_child_top_attach(*m_xEntry, 0);
         m_xEntry->connect_changed(LINK(this, SwTOXEdit, ModifyHdl));
         m_xEntry->connect_key_press(LINK(this, SwTOXEdit, KeyInputHdl));
         m_xEntry->connect_focus_in(LINK(this, SwTOXEdit, FocusInHdl));
@@ -1721,6 +1722,7 @@ public:
         , m_pParent(pTokenWin)
         , m_xButton(m_xBuilder->weld_toggle_button(u"button"_ustr))
     {
+        pTokenWin->get_child_container().set_child_top_attach(*m_xButton, 0);
         m_xButton->connect_key_press(LINK(this, SwTOXButton, KeyInputHdl));
         m_xButton->connect_focus_in(LINK(this, SwTOXButton, FocusInHdl));
         m_xButton->set_tooltip_text(m_pParent->CreateQuickHelp(rToken));
