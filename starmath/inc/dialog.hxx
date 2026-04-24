@@ -525,7 +525,7 @@ class MatrixCreatorDialog final : public weld::GenericDialogController
     int mClickedColumn;
     int mEditedColumn;
     DECL_LINK(EditingEntryHdl, const weld::TreeIter&, bool);
-    DECL_LINK(EditedEntryHdl, const weld::TreeView::iter_string&, bool);
+    DECL_LINK(EditedEntryHdl, const weld::TreeView::IterColText&, bool);
 
 public:
     MatrixCreatorDialog(weld::Window *pParent);

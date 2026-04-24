@@ -447,7 +447,7 @@ namespace svxform
         DECL_LINK( PopupMenuHdl, const CommandEvent&, bool );
 
         DECL_LINK(EditingEntryHdl, const weld::TreeIter&, bool);
-        DECL_LINK(EditedEntryHdl, const weld::TreeView::iter_string&, bool);
+        DECL_LINK(EditedEntryHdl, const weld::TreeView::IterColText&, bool);
 
         DECL_LINK( OnEdit, void*, void );
 

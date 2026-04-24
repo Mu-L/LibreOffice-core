@@ -69,7 +69,7 @@ public:
         m_xControl->connect_column_clicked(rLink);
     }
     void connect_editing(const Link<const weld::TreeIter&, bool>& rStartLink,
-                         const Link<const weld::TreeView::iter_string&, bool>& rEndLink)
+                         const Link<const weld::TreeView::IterColText&, bool>& rEndLink)
     {
         m_xControl->connect_editing(rStartLink, rEndLink);
     }
@@ -120,7 +120,7 @@ class SwInsertBookmarkDlg final : public SfxDialogController
     DECL_LINK(HeaderBarClick, int, void);
     DECL_LINK(ChangeHideHdl, weld::Toggleable&, void);
     DECL_LINK(EditingHdl, weld::TreeIter const&, bool);
-    DECL_LINK(EditedHdl, weld::TreeView::iter_string const&, bool);
+    DECL_LINK(EditedHdl, weld::TreeView::IterColText const&, bool);
 
     // Fill table with bookmarks
     void PopulateTable();

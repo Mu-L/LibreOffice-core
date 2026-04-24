@@ -676,8 +676,8 @@ bool ExecuteAction(const OUString& nWindowId, const OUString& rWidget, const Str
                     pTreeView->set_text(nRow, sValue, nColumn);
 
                     SalInstanceTreeIter pEntry(*pTreeView, pTreeView->getTreeView().GetEntry(nRow));
-                    LOKTrigger::trigger_editing_done(*pTreeView,
-                                                     weld::TreeView::iter_string(pEntry, sValue));
+                    LOKTrigger::trigger_editing_done(
+                        *pTreeView, weld::TreeView::IterColText(pEntry, nColumn, sValue));
 
                     return true;
                 }

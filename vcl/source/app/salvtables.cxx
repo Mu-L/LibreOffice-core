@@ -4372,7 +4372,7 @@ void SalInstanceTreeView::set_text_align(const weld::TreeIter& rIter, TxtAlign e
 }
 
 void SalInstanceTreeView::connect_editing(const Link<const weld::TreeIter&, bool>& rStartLink,
-                                          const Link<const iter_string&, bool>& rEndLink)
+                                          const Link<const IterColText&, bool>& rEndLink)
 {
     m_xTreeView->EnableInplaceEditing(rStartLink.IsSet() || rEndLink.IsSet());
     weld::TreeView::connect_editing(rStartLink, rEndLink);
@@ -5085,8 +5085,10 @@ IMPL_LINK(SalInstanceTreeView, EditingEntryHdl, SvTreeListEntry*, pEntry, bool)
 
 IMPL_LINK(SalInstanceTreeView, EditedEntryHdl, const EntryItemText&, rEntryItemString, bool)
 {
-    return signal_editing_done(iter_string(SalInstanceTreeIter(*this, &rEntryItemString.m_rEntry),
-                                           rEntryItemString.m_sText));
+    const int nColumn
+        = to_external_model(rEntryItemString.m_rEntry.GetPos(rEntryItemString.m_pItem));
+    return signal_editing_done(IterColText(SalInstanceTreeIter(*this, &rEntryItemString.m_rEntry),
+                                           nColumn, rEntryItemString.m_sText));
 }
 
 SalInstanceIconView::SalInstanceIconView(::IconView* pIconView, SalInstanceBuilder* pBuilder,

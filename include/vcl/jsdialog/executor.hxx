@@ -42,9 +42,9 @@ public:
     static void trigger_changed(weld::TreeView& rTreeView) { rTreeView.signal_selection_changed(); }
 
     static void trigger_editing_done(weld::TreeView& rTreeView,
-                                     const weld::TreeView::iter_string& rIterText)
+                                     const weld::TreeView::IterColText& rIterColText)
     {
-        rTreeView.signal_editing_done(rIterText);
+        rTreeView.signal_editing_done(rIterColText);
     }
 
     static void trigger_changed(weld::IconView& rIconView) { rIconView.signal_selection_changed(); }

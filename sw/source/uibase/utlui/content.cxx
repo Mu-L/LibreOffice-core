@@ -3241,18 +3241,18 @@ IMPL_LINK(SwContentTree, EditingEntryHdl, const weld::TreeIter&, rIter, bool)
     return m_bEditing;
 }
 
-IMPL_LINK(SwContentTree, EditedEntryHdl, const weld::TreeView::iter_string&, rIterString, bool)
+IMPL_LINK(SwContentTree, EditedEntryHdl, const weld::TreeView::IterColText&, rIterColText, bool)
 {
-    SwContent* pCnt = weld::fromId<SwContent*>(m_xTreeView->get_id(rIterString.first));
+    SwContent* pCnt = weld::fromId<SwContent*>(m_xTreeView->get_id(rIterColText.m_rIter));
     const ContentTypeId nType = pCnt->GetParent()->GetType();
-    const OUString& sNewName = rIterString.second;
+    const OUString& sNewName = rIterColText.m_sText;
 
     rtl::Reference<SwXTextDocument> xModel
         = m_pActiveShell->GetView().GetDocShell()->GetBaseModel();
     uno::Reference<container::XNameAccess> xNameAccess, xSecond, xThird;
 
     // Empty or unchanged name
-    if (sNewName.isEmpty() || (pCnt->GetName() == rIterString.second))
+    if (sNewName.isEmpty() || (pCnt->GetName() == rIterColText.m_sText))
     {
         m_bEditing = false;
         return false;

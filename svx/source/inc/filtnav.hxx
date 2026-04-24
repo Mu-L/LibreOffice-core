@@ -266,7 +266,7 @@ private:
 
     DECL_LINK(SelectHdl, weld::ItemView&, void);
     DECL_LINK(EditingEntryHdl, const weld::TreeIter&, bool);
-    DECL_LINK(EditedEntryHdl, const weld::TreeView::iter_string&, bool);
+    DECL_LINK(EditedEntryHdl, const weld::TreeView::IterColText&, bool);
 
     DECL_LINK(DragBeginHdl, bool&, bool);
 

@@ -518,12 +518,12 @@ IMPL_LINK_NOARG(DbaIndexDialog, OnEntryEditing, const weld::TreeIter&, bool)
     return true;
 }
 
-IMPL_LINK(DbaIndexDialog, OnEntryEdited, const weld::TreeView::iter_string&, rIterString, bool)
+IMPL_LINK(DbaIndexDialog, OnEntryEdited, const weld::TreeView::IterColText&, rIterColText, bool)
 {
     m_bEditingActive = false;
 
-    const weld::TreeIter& rEntry = rIterString.first;
-    OUString sNewName = rIterString.second;
+    const weld::TreeIter& rEntry = rIterColText.m_rIter;
+    OUString sNewName = rIterColText.m_sText;
 
     Indexes::iterator aPosition = m_xIndexes->begin() + m_xIndexList->get_id(rEntry).toUInt32();
 

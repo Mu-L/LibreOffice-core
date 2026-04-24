@@ -1117,10 +1117,10 @@ IMPL_LINK(FmFilterNavigator, EditingEntryHdl, const weld::TreeIter&, rIter, bool
     return false;
 }
 
-IMPL_LINK(FmFilterNavigator, EditedEntryHdl, const weld::TreeView::iter_string&, rIterString, bool)
+IMPL_LINK(FmFilterNavigator, EditedEntryHdl, const weld::TreeView::IterColText&, rIterString, bool)
 {
-    const weld::TreeIter& rIter = rIterString.first;
-    const OUString& rNewText = rIterString.second;
+    const weld::TreeIter& rIter = rIterString.m_rIter;
+    const OUString& rNewText = rIterString.m_sText;
 
     assert(m_xEditingCurrently && rIter.equal(*m_xEditingCurrently) &&
                "FmFilterNavigator::EditedEntry: suspicious entry!");

@@ -81,10 +81,10 @@ IMPL_LINK(ObjectPage, EditingEntryHdl, const weld::TreeIter&, rEntry, bool)
     return bRet;
 }
 
-IMPL_LINK(ObjectPage, EditedEntryHdl, const weld::TreeView::iter_string&, rIterString, bool)
+IMPL_LINK(ObjectPage, EditedEntryHdl, const weld::TreeView::IterColText&, rIterColText, bool)
 {
-    const weld::TreeIter& rEntry = rIterString.first;
-    OUString sNewText = rIterString.second;
+    const weld::TreeIter& rEntry = rIterColText.m_rIter;
+    OUString sNewText = rIterColText.m_sText;
 
     if ( !IsValidSbxName(sNewText) )
     {

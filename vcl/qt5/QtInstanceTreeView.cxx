@@ -891,7 +891,7 @@ bool QtInstanceTreeView::signalEditingDone(const QModelIndex& rIndex, const QStr
 {
     SolarMutexGuard g;
 
-    return signal_editing_done({ treeIter(rIndex), toOUString(rNewText) });
+    return signal_editing_done({ treeIter(rIndex), rIndex.column(), toOUString(rNewText) });
 }
 
 QList<QList<Qt::ItemDataRole>> QtInstanceTreeView::columnRoles(const QTreeView& rTreeView)

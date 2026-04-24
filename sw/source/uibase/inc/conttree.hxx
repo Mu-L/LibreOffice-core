@@ -231,7 +231,7 @@ class SwContentTree final : public SfxListener
     DECL_LINK(MousePressHdl, const MouseEvent&, bool);
 
     DECL_LINK(EditingEntryHdl, const weld::TreeIter&, bool);
-    DECL_LINK(EditedEntryHdl, const weld::TreeView::iter_string&, bool);
+    DECL_LINK(EditedEntryHdl, const weld::TreeView::IterColText&, bool);
 
 public:
     SwContentTree(std::unique_ptr<weld::TreeView> xTreeView, SwNavigationPI* pDialog);

@@ -805,25 +805,25 @@ IMPL_LINK_NOARG(SdPageObjsTLV, EditingEntryHdl, const weld::TreeIter&, bool)
     return true;
 }
 
-IMPL_LINK(SdPageObjsTLV, EditedEntryHdl, const weld::TreeView::iter_string&, rIterString, bool)
+IMPL_LINK(SdPageObjsTLV, EditedEntryHdl, const weld::TreeView::IterColText&, rIterColText, bool)
 {
     m_bEditing = false;
 
     // Did the name change?
-    if (m_xTreeView->get_text(rIterString.first) == rIterString.second)
+    if (m_xTreeView->get_text(rIterColText.m_rIter) == rIterColText.m_sText)
         return true;
 
     // If the new name is empty or not unique, start editing again.
-    if (rIterString.second.isEmpty() || m_pDoc->GetObj(rIterString.second)
-        || m_pDoc->IsPageNameUnique(rIterString.second))
+    if (rIterColText.m_sText.isEmpty() || m_pDoc->GetObj(rIterColText.m_sText)
+        || m_pDoc->IsPageNameUnique(rIterColText.m_sText))
     {
-        std::unique_ptr<weld::TreeIter> xEntry(m_xTreeView->make_iterator(&rIterString.first));
+        std::unique_ptr<weld::TreeIter> xEntry(m_xTreeView->make_iterator(&rIterColText.m_rIter));
         Application::PostUserEvent(LINK(this, SdPageObjsTLV, EditEntryAgain), xEntry.release());
         return false;
     }
 
     // set the new name
-    const auto aEntryId = m_xTreeView->get_id(rIterString.first);
+    const auto aEntryId = m_xTreeView->get_id(rIterColText.m_rIter);
     if (::sd::DrawDocShell* pDocShell = m_pDoc->GetDocSh())
     {
         if (::sd::ViewShell* pViewShell = GetViewShellForDocShell(*pDocShell))
@@ -832,12 +832,12 @@ IMPL_LINK(SdPageObjsTLV, EditedEntryHdl, const weld::TreeView::iter_string&, rIt
             if (aEntryId.toInt64() == 1)
             {
                 // page name
-                pPage->SetName(rIterString.second);
+                pPage->SetName(rIterColText.m_sText);
             }
             else if (SdrObject* pCursorEntryObject = weld::fromId<SdrObject*>(aEntryId))
             {
                 // object name
-                pCursorEntryObject->SetName(rIterString.second);
+                pCursorEntryObject->SetName(rIterColText.m_sText);
                 pPage->notifyObjectRenamed(pCursorEntryObject);
             }
         }

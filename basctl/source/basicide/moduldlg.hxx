@@ -148,7 +148,7 @@ class ObjectPage final : public OrganizePage
     DECL_LINK(BasicBoxHighlightHdl, weld::ItemView&, void);
     DECL_LINK( ButtonHdl, weld::Button&, void );
     DECL_LINK( EditingEntryHdl, const weld::TreeIter&, bool );
-    DECL_LINK(EditedEntryHdl, const weld::TreeView::iter_string&, bool);
+    DECL_LINK(EditedEntryHdl, const weld::TreeView::IterColText&, bool);
 
     void                CheckButtons();
     bool                GetSelection( ScriptDocument& rDocument, OUString& rLibName );
@@ -185,7 +185,7 @@ class LibPage final : public OrganizePage
     DECL_LINK( ButtonHdl, weld::Button&, void );
     DECL_LINK( CheckPasswordHdl, SvxPasswordDialog *, bool );
     DECL_LINK( EditingEntryHdl, const weld::TreeIter&, bool );
-    DECL_LINK(EditedEntryHdl, const weld::TreeView::iter_string&, bool);
+    DECL_LINK(EditedEntryHdl, const weld::TreeView::IterColText&, bool);
 
     void                CheckButtons();
     void                DeleteCurrent();

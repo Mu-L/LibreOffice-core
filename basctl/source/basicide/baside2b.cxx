@@ -2359,10 +2359,10 @@ IMPL_LINK(WatchWindow, EditingEntryHdl, const weld::TreeIter&, rIter, bool)
     return bEdit;
 }
 
-IMPL_LINK(WatchWindow, EditedEntryHdl, const weld::TreeView::iter_string&, rIterString, bool)
+IMPL_LINK(WatchWindow, EditedEntryHdl, const weld::TreeView::IterColText&, rIterColText, bool)
 {
-    const weld::TreeIter& rIter = rIterString.first;
-    OUString aResult = comphelper::string::strip(rIterString.second, ' ');
+    const weld::TreeIter& rIter = rIterColText.m_rIter;
+    OUString aResult = comphelper::string::strip(rIterColText.m_sText, ' ');
 
     sal_uInt16 nResultLen = aResult.getLength();
     sal_Unicode cFirst = aResult[0];

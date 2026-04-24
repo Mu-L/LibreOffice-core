@@ -1397,14 +1397,14 @@ namespace svxform
         return aNewName;
     }
 
-    IMPL_LINK(NavigatorTree, EditedEntryHdl, const weld::TreeView::iter_string&, rIterString, bool)
+    IMPL_LINK(NavigatorTree, EditedEntryHdl, const weld::TreeView::IterColText&, rIterColText, bool)
     {
         m_bEditing = false;
 
-        const weld::TreeIter& rIter = rIterString.first;
+        const weld::TreeIter& rIter = rIterColText.m_rIter;
 
         FmEntryData* pEntryData = weld::fromId<FmEntryData*>(m_xTreeView->get_id(rIter));
-        bool bRes = NavigatorTreeModel::Rename(pEntryData, rIterString.second);
+        bool bRes = NavigatorTreeModel::Rename(pEntryData, rIterColText.m_sText);
         if (!bRes)
         {
             m_xEditEntry = m_xTreeView->make_iterator(&rIter);

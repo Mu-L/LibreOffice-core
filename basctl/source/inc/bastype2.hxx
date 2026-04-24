@@ -267,7 +267,7 @@ public:
     int get_height_rows(int nRows) const { return m_xControl->get_height_rows(nRows); }
     int get_iter_index_in_parent(const weld::TreeIter& rIter) const { return m_xControl->get_iter_index_in_parent(rIter); }
     void connect_editing(const Link<const weld::TreeIter&, bool>& rStartLink,
-                         const Link<const weld::TreeView::iter_string&, bool>& rEndLink)
+                         const Link<const weld::TreeView::IterColText&, bool>& rEndLink)
     {
         m_xControl->connect_editing(rStartLink, rEndLink);
     }

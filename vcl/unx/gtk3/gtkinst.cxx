@@ -14254,11 +14254,11 @@ private:
         gtk_tree_path_free(tree_path);
 
         OUString sText(pNewText, pNewText ? strlen(pNewText) : 0, RTL_TEXTENCODING_UTF8);
-        if (signal_editing_done(iter_string(aGtkIter, sText)))
-        {
-            void* pData = g_object_get_data(G_OBJECT(pCell), "g-lo-CellIndex");
-            set(aGtkIter.iter, reinterpret_cast<sal_IntPtr>(pData), sText);
-        }
+        void* pData = g_object_get_data(G_OBJECT(pCell), "g-lo-CellIndex");
+        const int nCol = reinterpret_cast<sal_IntPtr>(pData);
+
+        if (signal_editing_done(IterColText(aGtkIter, to_external_model(nCol), sText)))
+            set(aGtkIter.iter, nCol, sText);
 
         restoreNonEditable(G_OBJECT(pCell));
     }

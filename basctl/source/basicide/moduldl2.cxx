@@ -308,10 +308,10 @@ IMPL_LINK(LibPage, EditingEntryHdl, const weld::TreeIter&, rIter, bool)
     return true;
 }
 
-IMPL_LINK(LibPage, EditedEntryHdl, const weld::TreeView::iter_string&, rIterString, bool)
+IMPL_LINK(LibPage, EditedEntryHdl, const weld::TreeView::IterColText&, rIterColText, bool)
 {
-    const weld::TreeIter& rIter = rIterString.first;
-    OUString sNewName = rIterString.second;
+    const weld::TreeIter& rIter = rIterColText.m_rIter;
+    OUString sNewName = rIterColText.m_sText;
 
     bool bValid = sNewName.getLength() <= 30 && IsValidSbxName(sNewName);
     OUString aOldName(m_xLibBox->get_text(rIter, 0));

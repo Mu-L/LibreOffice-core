@@ -34,7 +34,22 @@ class VCL_DLLPUBLIC TreeView : virtual public ItemView
 
 public:
     typedef std::pair<const TreeIter&, int> iter_col;
-    typedef std::pair<const TreeIter&, OUString> iter_string;
+
+    struct IterColText
+    {
+        const weld::TreeIter& m_rIter;
+        int m_nColumn;
+        OUString m_sText;
+
+    public:
+        IterColText(const weld::TreeIter& rIter, int nColumn, const OUString& rText)
+            : m_rIter(rIter)
+            , m_nColumn(nColumn)
+            , m_sText(rText)
+        {
+        }
+    };
+
     // OUString is the id of the row, it may be null to measure the height of a generic line
     typedef std::pair<vcl::RenderContext&, const OUString&> get_size_args;
     typedef std::tuple<vcl::RenderContext&, const tools::Rectangle&, bool, const OUString&>
@@ -44,7 +59,7 @@ private:
     Link<int, void> m_aColumnClickedHdl;
     Link<const iter_col&, void> m_aRadioToggleHdl;
     Link<const TreeIter&, bool> m_aEditingStartedHdl;
-    Link<const iter_string&, bool> m_aEditingDoneHdl;
+    Link<const IterColText&, bool> m_aEditingDoneHdl;
     // if handler returns false, the expansion of the row is refused
     Link<const TreeIter&, bool> m_aExpandingHdl;
     // if handler returns false, the collapse of the row is refused
@@ -86,7 +101,7 @@ protected:
 
     bool signal_editing_started(const TreeIter& rIter) { return m_aEditingStartedHdl.Call(rIter); }
 
-    bool signal_editing_done(const iter_string& rIterText)
+    bool signal_editing_done(const IterColText& rIterText)
     {
         return m_aEditingDoneHdl.Call(rIterText);
     }
@@ -399,7 +414,7 @@ public:
     // rStartLink returns true to allow editing, false to disallow
     // rEndLink returns true to accept the edit, false to reject
     virtual void connect_editing(const Link<const TreeIter&, bool>& rStartLink,
-                                 const Link<const iter_string&, bool>& rEndLink)
+                                 const Link<const IterColText&, bool>& rEndLink)
     {
         assert(rStartLink.IsSet() == rEndLink.IsSet() && "should be both on or both off");
         m_aEditingStartedHdl = rStartLink;

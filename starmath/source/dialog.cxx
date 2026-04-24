@@ -2500,7 +2500,7 @@ IMPL_LINK_NOARG(MatrixCreatorDialog, EditingEntryHdl, const weld::TreeIter&, boo
     return true;
 }
 
-IMPL_LINK(MatrixCreatorDialog, EditedEntryHdl, const weld::TreeView::iter_string&, rIterString,
+IMPL_LINK(MatrixCreatorDialog, EditedEntryHdl, const weld::TreeView::IterColText&, rIterColText,
           bool)
 {
     if (mEditedColumn < 0)
@@ -2514,7 +2514,7 @@ IMPL_LINK(MatrixCreatorDialog, EditedEntryHdl, const weld::TreeView::iter_string
             return true;
 
         // Which row number did the click occur in?
-        while (mxMatrix->iter_compare(*xIter, rIterString.first) != 0)
+        while (mxMatrix->iter_compare(*xIter, rIterColText.m_rIter) != 0)
         {
             ++clickedRow;
             if (!mxMatrix->iter_next(*xIter))
@@ -2527,10 +2527,10 @@ IMPL_LINK(MatrixCreatorDialog, EditedEntryHdl, const weld::TreeView::iter_string
             bValidIter = mxMatrix->iter_next(*xIter);
 
         if (bValidIter)
-            mxMatrix->set_text(*xIter, rIterString.second, clickedRow);
+            mxMatrix->set_text(*xIter, rIterColText.m_sText, clickedRow);
     }
 
-    mxMatrix->set_text(rIterString.first, rIterString.second, mEditedColumn); // Required for EditingCanceledHdl()
+    mxMatrix->set_text(rIterColText.m_rIter, rIterColText.m_sText, mEditedColumn); // Required for EditingCanceledHdl()
 
     mEditedColumn = -1;
     return true;

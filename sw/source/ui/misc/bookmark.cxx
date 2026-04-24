@@ -261,10 +261,10 @@ IMPL_LINK(SwInsertBookmarkDlg, EditingHdl, weld::TreeIter const&, rIter, bool)
            && !m_xBookmarksBox->get_text(rIter).endsWith(u"…");
 }
 
-IMPL_LINK(SwInsertBookmarkDlg, EditedHdl, weld::TreeView::iter_string const&, rIterString, bool)
+IMPL_LINK(SwInsertBookmarkDlg, EditedHdl, weld::TreeView::IterColText const&, rIterColText, bool)
 {
     sw::mark::MarkBase const* const pBookmark(
-        weld::fromId<sw::mark::MarkBase*>(m_xBookmarksBox->get_id(rIterString.first)));
+        weld::fromId<sw::mark::MarkBase*>(m_xBookmarksBox->get_id(rIterColText.m_rIter)));
     assert(pBookmark);
     bool bRet(false);
     if (pBookmark->GetMarkPos() != pBookmark->GetOtherMarkPos())
@@ -276,15 +276,15 @@ IMPL_LINK(SwInsertBookmarkDlg, EditedHdl, weld::TreeView::iter_string const&, rI
         m_rSh.Push();
         m_rSh.GotoMark(pBookmark);
         // GetSelText only works for 1 paragraph, but it's checked above
-        if (m_rSh.GetSelText() != rIterString.second)
+        if (m_rSh.GetSelText() != rIterColText.m_sText)
         {
-            bRet = m_rSh.Replace(rIterString.second, false);
+            bRet = m_rSh.Replace(rIterColText.m_sText, false);
         }
         m_rSh.Pop(SwEditShell::PopMode::DeleteCurrent);
     }
-    else if (pBookmark->IsExpanded() && !rIterString.second.isEmpty())
+    else if (pBookmark->IsExpanded() && !rIterColText.m_sText.isEmpty())
     { // SwEditShell::Replace does nothing for empty selection
-        m_rSh.Insert(rIterString.second);
+        m_rSh.Insert(rIterColText.m_sText);
         bRet = true;
     }
     return bRet;
