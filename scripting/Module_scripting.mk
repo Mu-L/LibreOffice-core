@@ -47,6 +47,10 @@ $(eval $(call gb_Module_add_targets,scripting,\
 	Library_vbaevents \
 ))
 
+$(eval $(call gb_Module_add_check_targets,scripting,\
+    $(if $(ENABLE_QUICKJS),CppunitTest_scripting_jsprov) \
+))
+
 endif
 
 # vim: set noet sw=4 ts=4:
