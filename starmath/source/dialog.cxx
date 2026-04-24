@@ -2200,8 +2200,6 @@ MatrixCreatorDialog::MatrixCreatorDialog(weld::Window* pParent)
     , mxFullMatrix(m_xBuilder->weld_radio_button("fullmatrix"))
     , mxMatrix(m_xBuilder->weld_tree_view("matrix"))
     , mOldName("x")
-    , mClickedColumn(-1)
-    , mEditedColumn(-1)
     , mMatrixText("MATRIX{ x_11 # x_12 # x_13 ## x_21 # x_22 # x_23 ## x_31 # x_32 # x_33}")
 {
     mxOk->connect_clicked(LINK(this, MatrixCreatorDialog, ButtonOkHdl));
@@ -2213,7 +2211,6 @@ MatrixCreatorDialog::MatrixCreatorDialog(weld::Window* pParent)
     mxDiagMatrix->connect_toggled(LINK(this, MatrixCreatorDialog, RadioButtonModifyHdl));
     mxSymmetricMatrix->connect_toggled(LINK(this, MatrixCreatorDialog, RadioButtonModifyHdl));
     mxFullMatrix->connect_toggled(LINK(this, MatrixCreatorDialog, RadioButtonModifyHdl));
-    mxMatrix->connect_mouse_press(LINK(this, MatrixCreatorDialog, MousePressHdl));
     mxMatrix->connect_editing(LINK(this, MatrixCreatorDialog, EditingEntryHdl), LINK(this, MatrixCreatorDialog, EditedEntryHdl));
 
     mxCols->set_value(3);
@@ -2448,70 +2445,21 @@ IMPL_LINK_NOARG(MatrixCreatorDialog, RadioButtonModifyHdl, weld::Toggleable&, vo
     shapeMatrix();
 }
 
-namespace {
-// Note: The mouse event coordinates are relative to the treeview
-int getClickedCell(std::unique_ptr<weld::TreeView>& treeview, const MouseEvent& rMEvt, weld::TreeIter& rIter, const int lastColumn) {
-    Point mousePos = rMEvt.GetPosPixel();
-    int column = -1;
-    bool found = false;
-
-    if (treeview->get_iter_first(rIter))
-    {
-        do
-        {
-            tools::Rectangle rowArea = treeview->get_row_area(rIter);
-            if ((found = rowArea.Contains(mousePos)))
-                break;
-        } while (treeview->iter_next(rIter));
-    }
-    else
-        return -1; // User clicked somewhere else
-    if (!found)
-        return -1;
-
-    for (int col = 0; col < lastColumn; ++col)
-    {
-        tools::Rectangle cellArea = treeview->get_cell_area(rIter, col);
-        if (cellArea.Contains(mousePos))
-        {
-            column = col;
-            break;
-        }
-    }
-
-    return column;
-}
-}
-
-IMPL_LINK(MatrixCreatorDialog, MousePressHdl, const MouseEvent&, rMEvt, bool)
+IMPL_STATIC_LINK_NOARG(MatrixCreatorDialog, EditingEntryHdl, const weld::TreeIter&, bool)
 {
-    if (mEditedColumn > 0)
-        return false; // Ignore mouse clicks when a cell is being edited
-
-    auto xIter = mxMatrix->make_iterator();
-    mClickedColumn = getClickedCell(mxMatrix, rMEvt, *xIter, mxCols->get_value());
-
-    return false; // We don't handle the mouse click, just find the column
-}
-
-IMPL_LINK_NOARG(MatrixCreatorDialog, EditingEntryHdl, const weld::TreeIter&, bool)
-{
-    mEditedColumn = mClickedColumn;
     return true;
 }
 
 IMPL_LINK(MatrixCreatorDialog, EditedEntryHdl, const weld::TreeView::IterColText&, rIterColText,
           bool)
 {
-    if (mEditedColumn < 0)
-        return false; // Sometimes there is a double call and since we set mEditedColumn to -1 at the end we can avoid that
-
-    if (mxSymmetricMatrix->get_active() && mClickedColumn >= 0 && mClickedColumn < mxCols->get_value())
+    if (mxSymmetricMatrix->get_active() && rIterColText.m_nColumn >= 0
+        && rIterColText.m_nColumn < mxCols->get_value())
     {
         // Sort of complicated, because set_text(row, column, value) seems to have no effect
         auto xIter = mxMatrix->make_iterator();
         bool bValidIter = mxMatrix->get_iter_first(*xIter);
-        for (int row = 0; row < mClickedColumn && bValidIter; ++row)
+        for (int row = 0; row < rIterColText.m_nColumn && bValidIter; ++row)
             bValidIter = mxMatrix->iter_next(*xIter);
 
         if (bValidIter)
@@ -2521,9 +2469,9 @@ IMPL_LINK(MatrixCreatorDialog, EditedEntryHdl, const weld::TreeView::IterColText
         }
     }
 
-    mxMatrix->set_text(rIterColText.m_rIter, rIterColText.m_sText, mEditedColumn); // Required for EditingCanceledHdl()
+    // Required for EditingCanceledHdl()
+    mxMatrix->set_text(rIterColText.m_rIter, rIterColText.m_sText, rIterColText.m_nColumn);
 
-    mEditedColumn = -1;
     return true;
 }
 

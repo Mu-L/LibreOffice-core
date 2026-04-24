@@ -521,10 +521,7 @@ class MatrixCreatorDialog final : public weld::GenericDialogController
     OUString mOldName;
     DECL_LINK(SpinButtonModifyHdl, weld::SpinButton&, void);
     DECL_LINK(RadioButtonModifyHdl, weld::Toggleable&, void);
-    DECL_LINK(MousePressHdl, const MouseEvent&, bool);
-    int mClickedColumn;
-    int mEditedColumn;
-    DECL_LINK(EditingEntryHdl, const weld::TreeIter&, bool);
+    DECL_STATIC_LINK(MatrixCreatorDialog, EditingEntryHdl, const weld::TreeIter&, bool);
     DECL_LINK(EditedEntryHdl, const weld::TreeView::IterColText&, bool);
 
 public:
