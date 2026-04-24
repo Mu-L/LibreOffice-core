@@ -581,8 +581,7 @@ protected:
     SAL_DLLPRIVATE void         ImplInitStyle();
 
     void            SetupDragOrigin();
-    void            EditItemText( SvTreeListEntry* pEntry, SvLBoxString* pItem,
-                        const Selection& );
+    void EditItemText(SvTreeListEntry& rEntry, SvLBoxString& rItem, const Selection&);
     void            EditedText(const OUString&);
 
     // Recalculate all tabs depending on TreeListStyle and Bitmap sizes

@@ -2695,26 +2695,26 @@ void SvTreeListBox::ModelHasEntryInvalidated( SvTreeListEntry* pEntry )
     m_pImpl->InvalidateEntry(pEntry);
 }
 
-void SvTreeListBox::EditItemText(SvTreeListEntry* pEntry, SvLBoxString* pItem, const Selection& rSelection)
+void SvTreeListBox::EditItemText(SvTreeListEntry& rEntry, SvLBoxString& rItem,
+                                 const Selection& rSelection)
 {
-    assert(pEntry && pItem);
-    if( IsSelected( pEntry ))
+    if (IsSelected(&rEntry))
     {
         m_pImpl->ShowCursor(false);
-        SelectListEntry( pEntry, false );
-        m_pImpl->InvalidateEntry(pEntry);
-        SelectListEntry( pEntry, true );
+        SelectListEntry(&rEntry, false);
+        m_pImpl->InvalidateEntry(&rEntry);
+        SelectListEntry(&rEntry, true);
         m_pImpl->ShowCursor(true);
     }
-    m_pEdEntry = pEntry;
-    m_pEdItem = pItem;
-    SvLBoxTab* pTab = GetTab( pEntry, pItem );
+    m_pEdEntry = &rEntry;
+    m_pEdItem = &rItem;
+    SvLBoxTab* pTab = GetTab(&rEntry, &rItem);
     DBG_ASSERT(pTab,"EditItemText:Tab not found");
 
-    auto nItemHeight(pItem->GetHeight(*this, pEntry));
-    Point aPos = GetEntryPosition( pEntry );
+    auto nItemHeight(rItem.GetHeight(*this, &rEntry));
+    Point aPos = GetEntryPosition(&rEntry);
     aPos.AdjustY((m_nEntryHeight - nItemHeight) / 2);
-    aPos.setX( GetTabPos( pEntry, pTab ) );
+    aPos.setX(GetTabPos(&rEntry, pTab));
     tools::Long nOutputWidth = m_pImpl->GetOutputSize().Width();
     Size aSize( nOutputWidth - aPos.X(), nItemHeight );
     sal_uInt16 nPos = std::find_if( m_aTabs.begin(), m_aTabs.end(),
@@ -2723,7 +2723,7 @@ void SvTreeListBox::EditItemText(SvTreeListEntry* pEntry, SvLBoxString* pItem, c
     if( nPos+1 < static_cast<sal_uInt16>(m_aTabs.size()) )
     {
         SvLBoxTab* pRightTab = m_aTabs[nPos + 1].get();
-        tools::Long nRight = GetTabPos( pEntry, pRightTab );
+        tools::Long nRight = GetTabPos(&rEntry, pRightTab);
         if( nRight <= nOutputWidth )
             aSize.setWidth( nRight - aPos.X() );
     }
@@ -2731,7 +2731,7 @@ void SvTreeListBox::EditItemText(SvTreeListEntry* pEntry, SvLBoxString* pItem, c
     aPos += aOrigin; // convert to win coordinates
     aSize.AdjustWidth( -(aOrigin.X()) );
     tools::Rectangle aRect( aPos, aSize );
-    EditText( pItem->GetText(), aRect, rSelection );
+    EditText(rItem.GetText(), aRect, rSelection);
 }
 
 void SvTreeListBox::EditEntry( SvTreeListEntry* pEntry )
@@ -2786,7 +2786,7 @@ void SvTreeListBox::ImplEditEntry( SvTreeListEntry* pEntry )
         Selection aSel( SELECTION_MIN, SELECTION_MAX );
         SelectAll( false );
         MakeVisible( pEntry );
-        EditItemText( pEntry, pItem, aSel );
+        EditItemText(*pEntry, *pItem, aSel);
     }
 }
 
