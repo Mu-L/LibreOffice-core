@@ -2461,9 +2461,6 @@ IMPL_LINK(MatrixCreatorDialog, EditedEntryHdl, const weld::TreeView::IterColText
         mxMatrix->set_text(rIterColText.m_nColumn, rIterColText.m_sText, nEditedRow);
     }
 
-    // Required for EditingCanceledHdl()
-    mxMatrix->set_text(rIterColText.m_rIter, rIterColText.m_sText, rIterColText.m_nColumn);
-
     return true;
 }
 
