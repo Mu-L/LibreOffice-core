@@ -5083,10 +5083,10 @@ IMPL_LINK(SalInstanceTreeView, EditingEntryHdl, SvTreeListEntry*, pEntry, bool)
     return signal_editing_started(SalInstanceTreeIter(*this, pEntry));
 }
 
-IMPL_LINK(SalInstanceTreeView, EditedEntryHdl, const IterString&, rIterString, bool)
+IMPL_LINK(SalInstanceTreeView, EditedEntryHdl, const EntryItemText&, rEntryItemString, bool)
 {
-    return signal_editing_done(
-        iter_string(SalInstanceTreeIter(*this, &rIterString.first), rIterString.second));
+    return signal_editing_done(iter_string(SalInstanceTreeIter(*this, &rEntryItemString.m_rEntry),
+                                           rEntryItemString.m_sText));
 }
 
 SalInstanceIconView::SalInstanceIconView(::IconView* pIconView, SalInstanceBuilder* pBuilder,

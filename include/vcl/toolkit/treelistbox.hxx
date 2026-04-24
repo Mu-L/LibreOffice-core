@@ -176,7 +176,20 @@ struct SvTreeListBoxImpl;
 
 typedef std::pair<vcl::RenderContext&, const SvTreeListEntry&> svtree_measure_args;
 typedef std::tuple<vcl::RenderContext&, const tools::Rectangle&, const SvTreeListEntry&> svtree_render_args;
-typedef std::pair<SvTreeListEntry&, OUString> IterString;
+
+struct EntryItemText
+{
+    SvTreeListEntry& m_rEntry;
+    const SvLBoxItem* m_pItem;
+    OUString m_sText;
+
+    EntryItemText(SvTreeListEntry& rEntry, const SvLBoxItem* pItem, const OUString& rText)
+        : m_rEntry(rEntry)
+        , m_pItem(pItem)
+        , m_sText(rText)
+    {
+    }
+};
 
 class UNLESS_MERGELIBS_MORE(VCL_DLLPUBLIC) SvTreeListBox : public Control,
                                                            public DropTargetHelper,
@@ -669,7 +682,8 @@ public:
     // Edits the Entry's first StringItem, 0 == Cursor
     void            EditEntry( SvTreeListEntry* pEntry );
     virtual bool    EditingEntry( SvTreeListEntry* pEntry );
-    virtual bool EditedEntry(SvTreeListEntry& rEntry, const OUString& rNewText);
+    virtual bool EditedEntry(SvTreeListEntry& rEntry, const SvLBoxItem* pItem,
+                             const OUString& rNewText);
 
     virtual void    Paint( vcl::RenderContext& rRenderContext, const tools::Rectangle& rRect ) override;
     virtual void    MouseButtonDown( const MouseEvent& rMEvt ) override;

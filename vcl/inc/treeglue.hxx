@@ -21,7 +21,7 @@ class LclTabListBox final : public SvTabListBox
     Link<SvTreeListBox*, bool> m_aStartDragHdl;
     Link<SvTreeListBox*, void> m_aEndDragHdl;
     Link<SvTreeListEntry*, bool> m_aEditingEntryHdl;
-    Link<const IterString&, bool> m_aEditedEntryHdl;
+    Link<const EntryItemText&, bool> m_aEditedEntryHdl;
 
 public:
     LclTabListBox(vcl::Window* pParent, WinBits nWinStyle)
@@ -36,7 +36,7 @@ public:
     {
         m_aEditingEntryHdl = rLink;
     }
-    void SetEditedEntryHdl(const Link<const IterString&, bool>& rLink)
+    void SetEditedEntryHdl(const Link<const EntryItemText&, bool>& rLink)
     {
         m_aEditedEntryHdl = rLink;
     }
@@ -127,9 +127,10 @@ public:
         return m_aEditingEntryHdl.Call(pEntry);
     }
 
-    virtual bool EditedEntry(SvTreeListEntry& rEntry, const OUString& rNewText) override
+    virtual bool EditedEntry(SvTreeListEntry& rEntry, const SvLBoxItem* pItem,
+                             const OUString& rNewText) override
     {
-        return m_aEditedEntryHdl.Call(IterString(rEntry, rNewText));
+        return m_aEditedEntryHdl.Call(EntryItemText(rEntry, pItem, rNewText));
     }
 };
 

@@ -111,7 +111,7 @@ private:
     std::vector<rtl::Reference<AccessibleBrowseBoxHeaderCell>> m_aAccessibleChildren;
 
     Link<SvTreeListEntry*, bool> m_aEditingEntryHdl;
-    Link<const IterString&, bool> m_aEditedEntryHdl;
+    Link<const EntryItemText&, bool> m_aEditedEntryHdl;
 
     DECL_DLLPRIVATE_LINK( ScrollHdl_Impl, SvTreeListBox*, void );
     DECL_DLLPRIVATE_LINK( CreateAccessibleHdl_Impl, HeaderBar*, void );
@@ -223,7 +223,7 @@ public:
         m_aEditingEntryHdl = rLink;
     }
 
-    void SetEditedEntryHdl(const Link<const IterString&, bool>& rLink)
+    void SetEditedEntryHdl(const Link<const EntryItemText&, bool>& rLink)
     {
         m_aEditedEntryHdl = rLink;
     }
@@ -239,9 +239,10 @@ public:
         return m_aEditingEntryHdl.Call(pEntry);
     }
 
-    virtual bool EditedEntry(SvTreeListEntry& rEntry, const OUString& rNewText) override
+    virtual bool EditedEntry(SvTreeListEntry& rEntry, const SvLBoxItem* pItem,
+                             const OUString& rNewText) override
     {
-        return m_aEditedEntryHdl.Call(IterString(rEntry, rNewText));
+        return m_aEditedEntryHdl.Call(EntryItemText(rEntry, pItem, rNewText));
     }
 };
 
