@@ -46,9 +46,11 @@ void QtInstanceDrawingArea::queue_draw()
     GetQtInstance().RunInMainThread([&] { getQWidget()->update(); });
 }
 
-void QtInstanceDrawingArea::queue_draw_area(int, int, int, int)
+void QtInstanceDrawingArea::queue_draw_area(int x, int y, int width, int height)
 {
-    assert(false && "Not implemented yet");
+    SolarMutexGuard g;
+
+    GetQtInstance().RunInMainThread([&] { getQWidget()->update(x, y, width, height); });
 }
 
 void QtInstanceDrawingArea::enable_drag_source(rtl::Reference<TransferDataContainer>&, sal_uInt8)
