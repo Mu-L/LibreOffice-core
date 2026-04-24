@@ -38,7 +38,6 @@
 #include <svx/dialogs.hrc>
 #include <svl/intitem.hxx>
 #include <editeng/flstitem.hxx>
-#include <svx/flagsdef.hxx>
 
 #include <vcl/tabs.hrc>
 
