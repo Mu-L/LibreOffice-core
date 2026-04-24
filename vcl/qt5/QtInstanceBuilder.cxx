@@ -76,6 +76,7 @@ constexpr auto SUPPORTED_UI_FILES = frozen::make_unordered_set<std::u16string_vi
     u"cui/ui/fontfragment.ui",
     u"cui/ui/gallerythemedialog.ui",
     u"cui/ui/gallerytitledialog.ui",
+    u"cui/ui/galleryupdateprogress.ui",
     u"cui/ui/graphictestdlg.ui",
     u"cui/ui/hyperlinkdlg.ui",
     u"cui/ui/hyperlinkmarkdialog.ui",
