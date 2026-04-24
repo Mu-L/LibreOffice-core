@@ -25,9 +25,11 @@ class TestUno : public CppUnit::TestFixture
 
 public:
     void test() { executeScript(u"test.js"); }
+    void testMissingParams() { executeScript(u"testmissingparams.js"); }
 
     CPPUNIT_TEST_SUITE(TestUno);
     CPPUNIT_TEST(test);
+    CPPUNIT_TEST(testMissingParams);
     CPPUNIT_TEST_SUITE_END();
 };
 

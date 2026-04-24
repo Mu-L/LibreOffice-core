@@ -271,10 +271,11 @@ template <typename F> JSValue callFromJs(JSContext* ctx, F&& f)
 // A stripped-down and modified version of <https://console.spec.whatwg.org/#assert> (which only
 // takes a single argument and aborts when the assertion is not met), just enough for using it in
 // jsunit/qa/unit/testuno.cxx:
-JSValue consoleAssert(JSContext* ctx, JSValueConst, [[maybe_unused]] int argc, JSValueConst* argv)
+JSValue consoleAssert(JSContext* ctx, JSValueConst, int argc, JSValueConst* argv)
 {
-    assert(argc >= 1);
-    return callFromJs(ctx, [ctx, argv] {
+    return callFromJs(ctx, [ctx, argc, argv] {
+        if (argc < 1)
+            return JS_ThrowPlainError(ctx, "missing argument to console.assert");
         auto const ok = JS_ToBool(ctx, argv[0]);
         if (ok == -1)
         {
@@ -548,10 +549,11 @@ void setTypeProperty(JSContext* ctx, JSValueConst obj, char const* prop, css::un
     JS_SetPropertyStr(ctx, obj, prop, val.release());
 }
 
-JSValue unoTypeSequence(JSContext* ctx, JSValueConst, [[maybe_unused]] int argc, JSValueConst* argv)
+JSValue unoTypeSequence(JSContext* ctx, JSValueConst, int argc, JSValueConst* argv)
 {
-    assert(argc >= 1);
-    return callFromJs(ctx, [ctx, argv] {
+    return callFromJs(ctx, [ctx, argc, argv] {
+        if (argc < 1)
+            return JS_ThrowPlainError(ctx, "missing argument to uno.type.sequence");
         if (JS_GetClassID(argv[0]) != getRuntimeData(ctx)->typeClassId)
         {
             JS_ThrowTypeError(ctx, "TODO: BAD UNO TYPE VALUE");
@@ -576,10 +578,11 @@ JSValue unoTypeSequence(JSContext* ctx, JSValueConst, [[maybe_unused]] int argc,
     });
 }
 
-JSValue unoTypeEnum(JSContext* ctx, JSValueConst, [[maybe_unused]] int argc, JSValueConst* argv)
+JSValue unoTypeEnum(JSContext* ctx, JSValueConst, int argc, JSValueConst* argv)
 {
-    assert(argc >= 1);
-    return callFromJs(ctx, [ctx, argv] {
+    return callFromJs(ctx, [ctx, argc, argv] {
+        if (argc < 1)
+            return JS_ThrowPlainError(ctx, "missing argument to uno.type.enum");
         if (JS_GetClassID(argv[0]) != getRuntimeData(ctx)->enumClassId)
         {
             JS_ThrowTypeError(ctx, "TODO: BAD UNO TYPE VALUE");
@@ -603,7 +606,8 @@ JSValue unoTypeEnum(JSContext* ctx, JSValueConst, [[maybe_unused]] int argc, JSV
 JSValue unoTypeStruct(JSContext* ctx, JSValueConst, int argc, JSValueConst* argv)
 {
     return callFromJs(ctx, [ctx, argc, argv] {
-        assert(argc >= 1);
+        if (argc < 1)
+            return JS_ThrowPlainError(ctx, "missing argument to uno.type.struct");
         ValueRef data(ctx, JS_GetPropertyStr(ctx, argv[0], "'data"));
         if (JS_IsException(data))
         {
@@ -695,11 +699,11 @@ JSValue unoTypeStruct(JSContext* ctx, JSValueConst, int argc, JSValueConst* argv
     });
 }
 
-JSValue unoTypeException(JSContext* ctx, JSValueConst, [[maybe_unused]] int argc,
-                         JSValueConst* argv)
+JSValue unoTypeException(JSContext* ctx, JSValueConst, int argc, JSValueConst* argv)
 {
-    assert(argc >= 1);
-    return callFromJs(ctx, [ctx, argv] {
+    return callFromJs(ctx, [ctx, argc, argv] {
+        if (argc < 1)
+            return JS_ThrowPlainError(ctx, "missing argument to uno.type.exception");
         ValueRef data(ctx, JS_GetPropertyStr(ctx, argv[0], "'data"));
         if (JS_IsException(data))
         {
@@ -725,11 +729,11 @@ JSValue unoTypeException(JSContext* ctx, JSValueConst, [[maybe_unused]] int argc
     });
 }
 
-JSValue unoTypeInterface(JSContext* ctx, JSValueConst, [[maybe_unused]] int argc,
-                         JSValueConst* argv)
+JSValue unoTypeInterface(JSContext* ctx, JSValueConst, int argc, JSValueConst* argv)
 {
-    assert(argc >= 1);
-    return callFromJs(ctx, [ctx, argv] {
+    return callFromJs(ctx, [ctx, argc, argv] {
+        if (argc < 1)
+            return JS_ThrowPlainError(ctx, "missing argument to uno.type.interface");
         if (JS_GetClassID(argv[0]) != getRuntimeData(ctx)->interfaceClassId)
         {
             JS_ThrowTypeError(ctx, "TODO: BAD UNO TYPE VALUE");
@@ -1090,11 +1094,12 @@ void singletonFinalizer(JSRuntime* rt, JSValueConst val)
         static_cast<rtl_uString*>(JS_GetOpaque(val, getRuntimeData(rt)->singletonClassId)));
 }
 
-JSValue getSingleton(JSContext* ctx, JSValueConst, [[maybe_unused]] int argc, JSValueConst* argv,
-                     int, JSValueConst* func_data)
+JSValue getSingleton(JSContext* ctx, JSValueConst, int argc, JSValueConst* argv, int,
+                     JSValueConst* func_data)
 {
-    assert(argc >= 1);
-    return callFromJs(ctx, [ctx, argv, func_data] {
+    return callFromJs(ctx, [ctx, argc, argv, func_data] {
+        if (argc < 1)
+            return JS_ThrowPlainError(ctx, "missing argument to getSingleton");
         auto const s = static_cast<rtl_uString*>(
             JS_GetOpaque(func_data[0], getRuntimeData(ctx)->singletonClassId));
         css::uno::Reference<css::uno::XComponentContext> context(
@@ -1451,7 +1456,8 @@ ValueRef createDefaultValue(JSContext* ctx, css::uno::Type const& type)
 JSValue unoAny(JSContext* ctx, JSValueConst new_target, int argc, JSValueConst* argv)
 {
     return callFromJs(ctx, [ctx, new_target, argc, argv] {
-        assert(argc >= 1);
+        if (argc < 1)
+            return JS_ThrowPlainError(ctx, "missing argument to uno.Any constructor");
         ValueRef proto(ctx, JS_GetPropertyStr(ctx, new_target, "prototype"));
         if (JS_IsException(proto))
         {
@@ -2268,10 +2274,11 @@ ValueRef toJs(JSContext* ctx, css::uno::Any const& value)
     return toJs(ctx, value.getValueType(), value.getValue());
 }
 
-JSValue sameUnoObject(JSContext* ctx, JSValueConst, [[maybe_unused]] int argc, JSValueConst* argv)
+JSValue sameUnoObject(JSContext* ctx, JSValueConst, int argc, JSValueConst* argv)
 {
-    assert(argc >= 2);
-    return callFromJs(ctx, [ctx, argv] {
+    return callFromJs(ctx, [ctx, argc, argv] {
+        if (argc < 2)
+            return JS_ThrowPlainError(ctx, "missing argument to uno.sameUnoObject");
         return JS_NewBool(
             ctx,
             *o3tl::forceAccess<css::uno::Reference<css::uno::XInterface>>(
