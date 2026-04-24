@@ -144,7 +144,7 @@ void SchAxisLabelTabPage::Reset( const SfxItemSet* rInAttrs )
     {
         bool bCheck = false;
         if( aState == SfxItemState::SET )
-            bCheck = static_cast< const SfxBoolItem * >( pPoolItem )->GetValue();
+            bCheck = pPoolItem->StaticWhichCast(SCHATTR_AXIS_SHOWDESCR).GetValue();
         m_xCbShowDescription->set_active( bCheck );
 
         if( aState != SfxItemState::DEFAULT && aState != SfxItemState::SET )
@@ -157,7 +157,7 @@ void SchAxisLabelTabPage::Reset( const SfxItemSet* rInAttrs )
     m_nInitialDegrees = 0_deg100;
     aState = rInAttrs->GetItemState( SCHATTR_TEXT_DEGREES, false, &pPoolItem );
     if( aState == SfxItemState::SET )
-        m_nInitialDegrees = static_cast< const SdrAngleItem * >( pPoolItem )->GetValue();
+        m_nInitialDegrees = pPoolItem->StaticWhichCast(SCHATTR_TEXT_DEGREES).GetValue();
 
     m_bHasInitialDegrees = aState != SfxItemState::INVALID;
     if( m_bHasInitialDegrees )
@@ -169,7 +169,7 @@ void SchAxisLabelTabPage::Reset( const SfxItemSet* rInAttrs )
     m_bInitialStacking = false;
     aState = rInAttrs->GetItemState( SCHATTR_TEXT_STACKED, false, &pPoolItem );
     if( aState == SfxItemState::SET )
-        m_bInitialStacking = static_cast< const SfxBoolItem * >( pPoolItem )->GetValue();
+        m_bInitialStacking = pPoolItem->StaticWhichCast(SCHATTR_TEXT_STACKED).GetValue();
 
     m_bHasInitialStacking = aState != SfxItemState::INVALID;
     if( m_bHasInitialDegrees )
@@ -191,7 +191,7 @@ void SchAxisLabelTabPage::Reset( const SfxItemSet* rInAttrs )
     {
         bool bCheck = false;
         if( aState == SfxItemState::SET )
-            bCheck = static_cast< const SfxBoolItem * >( pPoolItem )->GetValue();
+            bCheck = pPoolItem->StaticWhichCast(SCHATTR_AXIS_LABEL_OVERLAP).GetValue();
         m_xCbTextOverlap->set_active( bCheck );
 
         if( aState != SfxItemState::DEFAULT && aState != SfxItemState::SET )
@@ -208,7 +208,7 @@ void SchAxisLabelTabPage::Reset( const SfxItemSet* rInAttrs )
     {
         bool bCheck = false;
         if( aState == SfxItemState::SET )
-            bCheck = static_cast< const SfxBoolItem * >( pPoolItem )->GetValue();
+            bCheck = pPoolItem->StaticWhichCast(SCHATTR_AXIS_LABEL_BREAK).GetValue();
         m_xCbTextBreak->set_active( bCheck );
 
         if( aState != SfxItemState::DEFAULT && aState != SfxItemState::SET )

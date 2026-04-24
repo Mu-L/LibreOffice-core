@@ -373,7 +373,7 @@ bool DataPointItemConverter::ApplySpecialItem(
 
         case SCHATTR_DATADESCR_SEPARATOR:
         {
-            OUString aNewValue = static_cast< const SfxStringItem & >( rItemSet.Get( nWhichId )).GetValue();
+            OUString aNewValue = rItemSet.Get( SCHATTR_DATADESCR_SEPARATOR ).GetValue();
             try
             {
                 OUString aOldValue;
@@ -406,7 +406,7 @@ bool DataPointItemConverter::ApplySpecialItem(
 
             try
             {
-                bool bNew = static_cast< const SfxBoolItem & >( rItemSet.Get( nWhichId )).GetValue();
+                bool bNew = rItemSet.Get( SCHATTR_DATADESCR_WRAP_TEXT ).GetValue();
                 bool bOld = false;
                 GetPropertySet()->getPropertyValue( u"TextWordWrap"_ustr ) >>= bOld;
                 if( m_bOverwriteLabelsForAttributedDataPointsAlso )
@@ -437,7 +437,7 @@ bool DataPointItemConverter::ApplySpecialItem(
 
             try
             {
-                sal_Int32 nNew = static_cast< const SfxInt32Item & >( rItemSet.Get( nWhichId )).GetValue();
+                sal_Int32 nNew = rItemSet.Get( SCHATTR_DATADESCR_PLACEMENT ).GetValue();
                 sal_Int32 nOld = -1;
                 RelativePosition aCustomLabelPosition;
                 GetPropertySet()->getPropertyValue(u"LabelPlacement"_ustr) >>= nOld;
@@ -468,9 +468,7 @@ bool DataPointItemConverter::ApplySpecialItem(
 
         case SCHATTR_STYLE_SYMBOL:
         {
-            sal_Int32 nStyle =
-                static_cast< const SfxInt32Item & >(
-                    rItemSet.Get( nWhichId )).GetValue();
+            sal_Int32 nStyle = rItemSet.Get( SCHATTR_STYLE_SYMBOL ).GetValue();
             chart2::Symbol aSymbol;
 
             GetPropertySet()->getPropertyValue( u"Symbol"_ustr ) >>= aSymbol;
@@ -510,8 +508,7 @@ bool DataPointItemConverter::ApplySpecialItem(
 
         case SCHATTR_SYMBOL_SIZE:
         {
-            Size aSize = static_cast< const SvxSizeItem & >(
-                rItemSet.Get( nWhichId )).GetSize();
+            Size aSize = rItemSet.Get( SCHATTR_SYMBOL_SIZE ).GetSize();
             chart2::Symbol aSymbol;
 
             GetPropertySet()->getPropertyValue( u"Symbol"_ustr ) >>= aSymbol;

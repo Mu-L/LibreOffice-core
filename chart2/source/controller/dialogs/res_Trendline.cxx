@@ -222,7 +222,7 @@ void TrendlineResources::Reset( const SfxItemSet& rInAttrs )
     else
     {
         if( aState == SfxItemState::SET )
-            m_xCB_SetIntercept->set_active( static_cast< const SfxBoolItem * >( pPoolItem )->GetValue());
+            m_xCB_SetIntercept->set_active(pPoolItem->StaticWhichCast(SCHATTR_REGRESSION_SET_INTERCEPT).GetValue());
     }
 
     aState = rInAttrs.GetItemState( SCHATTR_REGRESSION_SHOW_EQUATION, true, &pPoolItem );
@@ -233,7 +233,7 @@ void TrendlineResources::Reset( const SfxItemSet& rInAttrs )
     else
     {
         if( aState == SfxItemState::SET )
-            m_xCB_ShowEquation->set_active( static_cast< const SfxBoolItem * >( pPoolItem )->GetValue());
+            m_xCB_ShowEquation->set_active(pPoolItem->StaticWhichCast(SCHATTR_REGRESSION_SHOW_EQUATION).GetValue());
     }
 
     aState = rInAttrs.GetItemState( SCHATTR_REGRESSION_SHOW_COEFF, true, &pPoolItem );
@@ -244,7 +244,7 @@ void TrendlineResources::Reset( const SfxItemSet& rInAttrs )
     else
     {
         if( aState == SfxItemState::SET )
-            m_xCB_ShowCorrelationCoeff->set_active( static_cast< const SfxBoolItem * >( pPoolItem )->GetValue());
+            m_xCB_ShowCorrelationCoeff->set_active(pPoolItem->StaticWhichCast(SCHATTR_REGRESSION_SHOW_COEFF).GetValue());
     }
 
     if( const SfxInt32Item* pMovingTypeItem = rInAttrs.GetItemIfSet( SCHATTR_REGRESSION_MOVING_TYPE ) )

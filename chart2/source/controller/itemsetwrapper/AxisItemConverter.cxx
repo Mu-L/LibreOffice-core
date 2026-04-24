@@ -475,7 +475,7 @@ bool AxisItemConverter::ApplySpecialItem( sal_uInt16 nWhichId, const SfxItemSet 
     switch( nWhichId )
     {
         case SCHATTR_AXIS_AUTO_MAX:
-            if( static_cast< const SfxBoolItem & >(rItemSet.Get( nWhichId )).GetValue() )
+            if( rItemSet.Get( SCHATTR_AXIS_AUTO_MAX ).GetValue() )
             {
                 aScale.Maximum.clear();
                 bSetScale = true;
@@ -498,7 +498,7 @@ bool AxisItemConverter::ApplySpecialItem( sal_uInt16 nWhichId, const SfxItemSet 
             break;
 
         case SCHATTR_AXIS_AUTO_MIN:
-            if( static_cast< const SfxBoolItem & >(rItemSet.Get( nWhichId )).GetValue() )
+            if( rItemSet.Get( SCHATTR_AXIS_AUTO_MIN ).GetValue() )
             {
                 aScale.Minimum.clear();
                 bSetScale = true;
@@ -524,7 +524,7 @@ bool AxisItemConverter::ApplySpecialItem( sal_uInt16 nWhichId, const SfxItemSet 
         {
             bool bWasLogarithm = AxisHelper::isLogarithmic( aScale.Scaling );
 
-            if( static_cast< const SfxBoolItem & >(rItemSet.Get( nWhichId )).GetValue() )
+            if( rItemSet.Get( SCHATTR_AXIS_LOGARITHM ).GetValue() )
             {
                 // logarithm is true
                 if( ! bWasLogarithm )
@@ -548,8 +548,7 @@ bool AxisItemConverter::ApplySpecialItem( sal_uInt16 nWhichId, const SfxItemSet 
         case SCHATTR_AXIS_REVERSE:
         {
             bool bWasReverse = ( aScale.Orientation == AxisOrientation_REVERSE );
-            bool bNewReverse = static_cast< const SfxBoolItem & >(
-                     rItemSet.Get( nWhichId )).GetValue();
+            bool bNewReverse = rItemSet.Get( SCHATTR_AXIS_REVERSE ).GetValue();
             if( bWasReverse != bNewReverse )
             {
                 aScale.Orientation = bNewReverse ? AxisOrientation_REVERSE : AxisOrientation_MATHEMATICAL;
@@ -668,7 +667,7 @@ bool AxisItemConverter::ApplySpecialItem( sal_uInt16 nWhichId, const SfxItemSet 
             break;
 
         case SCHATTR_AXIS_AUTO_TIME_RESOLUTION:
-            if( static_cast< const SfxBoolItem & >( rItemSet.Get( nWhichId )).GetValue() )
+            if( rItemSet.Get(SCHATTR_AXIS_AUTO_TIME_RESOLUTION).GetValue() )
             {
                 aScale.TimeIncrement.TimeResolution.clear();
                 bSetScale = true;
@@ -690,7 +689,7 @@ bool AxisItemConverter::ApplySpecialItem( sal_uInt16 nWhichId, const SfxItemSet 
 
         case SCHATTR_AXIS_AUTO_ORIGIN:
         {
-            if( static_cast< const SfxBoolItem & >(rItemSet.Get( nWhichId )).GetValue() )
+            if( rItemSet.Get( SCHATTR_AXIS_AUTO_ORIGIN ).GetValue() )
             {
                 aScale.Origin.clear();
                 bSetScale = true;
@@ -742,7 +741,7 @@ bool AxisItemConverter::ApplySpecialItem( sal_uInt16 nWhichId, const SfxItemSet 
         case SCHATTR_AXIS_POSITION:
         {
             css::chart::ChartAxisPosition eAxisPos =
-                static_cast<css::chart::ChartAxisPosition>(static_cast< const SfxInt32Item & >( rItemSet.Get( nWhichId )).GetValue());
+                static_cast<css::chart::ChartAxisPosition>( rItemSet.Get( SCHATTR_AXIS_POSITION ).GetValue());
 
             css::chart::ChartAxisPosition eOldAxisPos( css::chart::ChartAxisPosition_ZERO );
             bool bPropExisted = ( GetPropertySet()->getPropertyValue( u"CrossoverPosition"_ustr ) >>= eOldAxisPos );
@@ -779,7 +778,7 @@ bool AxisItemConverter::ApplySpecialItem( sal_uInt16 nWhichId, const SfxItemSet 
 
         case SCHATTR_AXIS_POSITION_VALUE:
         {
-            double fValue = static_cast< const SvxDoubleItem & >( rItemSet.Get( nWhichId )).GetValue();
+            double fValue = rItemSet.Get( SCHATTR_AXIS_POSITION_VALUE ).GetValue();
 
             double fOldValue = 0.0;
             bool bPropExisted = ( GetPropertySet()->getPropertyValue( u"CrossoverValue"_ustr ) >>= fOldValue );
@@ -813,7 +812,7 @@ bool AxisItemConverter::ApplySpecialItem( sal_uInt16 nWhichId, const SfxItemSet 
 
         case SCHATTR_AXIS_SHIFTED_CATEGORY_POSITION:
         {
-            bool bNewValue = static_cast<const SfxBoolItem &> (rItemSet.Get(nWhichId)).GetValue();
+            bool bNewValue = rItemSet.Get(SCHATTR_AXIS_SHIFTED_CATEGORY_POSITION).GetValue();
             bool bOldValue = aScale.ShiftedCategoryPosition;
             if (bOldValue != bNewValue)
             {
@@ -826,7 +825,7 @@ bool AxisItemConverter::ApplySpecialItem( sal_uInt16 nWhichId, const SfxItemSet 
         case SCHATTR_AXIS_LABEL_POSITION:
         {
             css::chart::ChartAxisLabelPosition ePos =
-                static_cast<css::chart::ChartAxisLabelPosition>(static_cast< const SfxInt32Item & >( rItemSet.Get( nWhichId )).GetValue());
+                static_cast<css::chart::ChartAxisLabelPosition>(rItemSet.Get( SCHATTR_AXIS_LABEL_POSITION ).GetValue());
 
             css::chart::ChartAxisLabelPosition eOldPos( css::chart::ChartAxisLabelPosition_NEAR_AXIS );
             bool bPropExisted = ( GetPropertySet()->getPropertyValue( u"LabelPosition"_ustr ) >>= eOldPos );
@@ -864,7 +863,7 @@ bool AxisItemConverter::ApplySpecialItem( sal_uInt16 nWhichId, const SfxItemSet 
         case SCHATTR_AXIS_MARK_POSITION:
         {
             css::chart::ChartAxisMarkPosition ePos =
-                static_cast<css::chart::ChartAxisMarkPosition>(static_cast< const SfxInt32Item & >( rItemSet.Get( nWhichId )).GetValue());
+                static_cast<css::chart::ChartAxisMarkPosition>( rItemSet.Get( SCHATTR_AXIS_MARK_POSITION ).GetValue());
 
             css::chart::ChartAxisMarkPosition eOldPos( css::chart::ChartAxisMarkPosition_AT_LABELS_AND_AXIS );
             bool bPropExisted = ( GetPropertySet()->getPropertyValue( u"MarkPosition"_ustr ) >>= eOldPos );
@@ -901,9 +900,7 @@ bool AxisItemConverter::ApplySpecialItem( sal_uInt16 nWhichId, const SfxItemSet 
 
                 if( ! bUseSourceFormat )
                 {
-                    sal_Int32 nFmt = static_cast< sal_Int32 >(
-                        static_cast< const SfxUInt32Item & >(
-                            rItemSet.Get( nWhichId )).GetValue());
+                    sal_Int32 nFmt = static_cast< sal_Int32 >( rItemSet.Get( SID_ATTR_NUMBERFORMAT_VALUE ).GetValue());
 
                     aValue <<= nFmt;
                     if (GetPropertySet()->getPropertyValue(CHART_UNONAME_NUMFMT) != aValue)
@@ -918,9 +915,7 @@ bool AxisItemConverter::ApplySpecialItem( sal_uInt16 nWhichId, const SfxItemSet 
 
         case SID_ATTR_NUMBERFORMAT_SOURCE:
         {
-            bool bUseSourceFormat =
-                static_cast< const SfxBoolItem & >(
-                    rItemSet.Get( nWhichId )).GetValue();
+            bool bUseSourceFormat = rItemSet.Get( SID_ATTR_NUMBERFORMAT_SOURCE ).GetValue();
             GetPropertySet()->setPropertyValue(CHART_UNONAME_LINK_TO_SRC_NUMFMT, uno::Any(bUseSourceFormat));
 
             bool bNumberFormatIsSet = GetPropertySet()->getPropertyValue(CHART_UNONAME_NUMFMT).hasValue();
@@ -957,7 +952,7 @@ bool AxisItemConverter::ApplySpecialItem( sal_uInt16 nWhichId, const SfxItemSet 
 
         case SCHATTR_AXISTYPE:
         {
-            sal_Int32 nNewAxisType = static_cast< const SfxInt32Item & >( rItemSet.Get( nWhichId )).GetValue();//css::chart2::AxisType
+            sal_Int32 nNewAxisType = rItemSet.Get( SCHATTR_AXISTYPE ).GetValue();//css::chart2::AxisType
             aScale.AxisType = nNewAxisType;
             bSetScale = true;
         }
@@ -965,7 +960,7 @@ bool AxisItemConverter::ApplySpecialItem( sal_uInt16 nWhichId, const SfxItemSet 
 
         case SCHATTR_AXIS_AUTO_DATEAXIS:
         {
-            bool bNewValue = static_cast< const SfxBoolItem & >( rItemSet.Get( nWhichId )).GetValue();
+            bool bNewValue = rItemSet.Get( SCHATTR_AXIS_AUTO_DATEAXIS ).GetValue();
             bool bOldValue = aScale.AutoDateAxis;
             if( bOldValue != bNewValue )
             {
