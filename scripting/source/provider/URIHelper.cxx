@@ -145,8 +145,7 @@ ScriptingFrameworkURIHelper::initBaseURI()
         m_xSimpleFileAccess->getFolderContents( uri, true );
 
     auto pChild = std::find_if(children.begin(), children.end(), [&test](const OUString& child) {
-        sal_Int32 idx = child.lastIndexOf(test);
-        return idx != -1 && (idx + test.getLength()) == child.getLength();
+        return child.endsWith(test);
     });
     if (pChild != children.end())
     {
