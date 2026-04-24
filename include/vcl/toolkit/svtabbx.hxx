@@ -239,9 +239,9 @@ public:
         return m_aEditingEntryHdl.Call(pEntry);
     }
 
-    virtual bool EditedEntry(SvTreeListEntry* pEntry, const OUString& rNewText) override
+    virtual bool EditedEntry(SvTreeListEntry& rEntry, const OUString& rNewText) override
     {
-        return m_aEditedEntryHdl.Call(IterString(pEntry, rNewText));
+        return m_aEditedEntryHdl.Call(IterString(rEntry, rNewText));
     }
 };
 

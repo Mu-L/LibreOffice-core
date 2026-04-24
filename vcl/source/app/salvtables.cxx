@@ -5086,7 +5086,7 @@ IMPL_LINK(SalInstanceTreeView, EditingEntryHdl, SvTreeListEntry*, pEntry, bool)
 IMPL_LINK(SalInstanceTreeView, EditedEntryHdl, const IterString&, rIterString, bool)
 {
     return signal_editing_done(
-        iter_string(SalInstanceTreeIter(*this, rIterString.first), rIterString.second));
+        iter_string(SalInstanceTreeIter(*this, &rIterString.first), rIterString.second));
 }
 
 SalInstanceIconView::SalInstanceIconView(::IconView* pIconView, SalInstanceBuilder* pBuilder,
