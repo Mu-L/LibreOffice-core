@@ -350,20 +350,20 @@ SvLBoxItem::~SvLBoxItem()
 
 int SvLBoxItem::GetWidth(const SvTreeListBox& rView, const SvTreeListEntry* pEntry) const
 {
-    const SvViewDataItem* pViewData = rView.GetViewDataItem(pEntry, this);
-    int nWidth = pViewData->mnWidth;
+    const SvViewDataItem& rViewData = rView.GetViewDataItem(pEntry, this);
+    int nWidth = rViewData.mnWidth;
     if (nWidth == -1)
     {
         nWidth = CalcWidth(rView);
-        const_cast<SvViewDataItem*>(pViewData)->mnWidth = nWidth;
+        const_cast<SvViewDataItem&>(rViewData).mnWidth = nWidth;
     }
     return nWidth;
 }
 
 int SvLBoxItem::GetHeight(const SvTreeListBox& rView, const SvTreeListEntry* pEntry) const
 {
-    const SvViewDataItem* pViewData = rView.GetViewDataItem(pEntry, this);
-    return pViewData->mnHeight;
+    const SvViewDataItem& rViewData = rView.GetViewDataItem(pEntry, this);
+    return rViewData.mnHeight;
 }
 
 int SvLBoxItem::GetWidth(const SvTreeListBox& rView, const SvViewDataEntry* pData,
@@ -1106,15 +1106,17 @@ SvViewDataEntry* SvTreeListBox::GetViewDataEntry( SvTreeListEntry const * pEntry
 
 SvViewDataItem* SvTreeListBox::GetViewDataItem(SvTreeListEntry const * pEntry, SvLBoxItem const * pItem)
 {
-    return const_cast<SvViewDataItem*>(static_cast<const SvTreeListBox*>(this)->GetViewDataItem(pEntry, pItem));
+    return const_cast<SvViewDataItem*>(
+        &static_cast<const SvTreeListBox*>(this)->GetViewDataItem(pEntry, pItem));
 }
 
-const SvViewDataItem* SvTreeListBox::GetViewDataItem(const SvTreeListEntry* pEntry, const SvLBoxItem* pItem) const
+const SvViewDataItem& SvTreeListBox::GetViewDataItem(const SvTreeListEntry* pEntry,
+                                                     const SvLBoxItem* pItem) const
 {
     const SvViewDataEntry* pEntryData = GetViewData(pEntry);
     assert(pEntryData && "Entry not in View");
     sal_uInt16 nItemPos = pEntry->GetPos(pItem);
-    return &pEntryData->GetItem(nItemPos);
+    return pEntryData->GetItem(nItemPos);
 }
 
 OUString SvTreeListBox::GetEntryTooltip(SvTreeListEntry* pEntry) const
