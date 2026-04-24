@@ -81,7 +81,7 @@ IMPL_LINK(ObjectPage, EditingEntryHdl, const weld::TreeIter&, rEntry, bool)
     return bRet;
 }
 
-IMPL_LINK(ObjectPage, EditedEntryHdl, const IterString&, rIterString, bool)
+IMPL_LINK(ObjectPage, EditedEntryHdl, const weld::TreeView::iter_string&, rIterString, bool)
 {
     const weld::TreeIter& rEntry = rIterString.first;
     OUString sNewText = rIterString.second;
