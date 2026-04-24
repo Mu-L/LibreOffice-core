@@ -268,7 +268,7 @@ void SvLBoxString::InitViewData(SvTreeListBox& rView, SvTreeListEntry* pEntry,
                                 SvViewDataItem* pViewData)
 {
     if( !pViewData )
-        pViewData = rView.GetViewDataItem(pEntry, this);
+        pViewData = &rView.GetViewDataItem(pEntry, this);
 
     if (pEntry->IsSeparator())
     {
@@ -425,7 +425,7 @@ void SvLBoxButton::InitViewData(SvTreeListBox& rView, SvTreeListEntry* pEntry,
                                 SvViewDataItem* pViewData)
 {
     if( !pViewData )
-        pViewData = rView.GetViewDataItem(pEntry, this);
+        pViewData = &rView.GetViewDataItem(pEntry, this);
     Size aSize = pData->GetSize();
 
     ControlType eCtrlType = (pData->IsRadio())? ControlType::Radiobutton : ControlType::Checkbox;
@@ -463,7 +463,7 @@ void SvLBoxContextBmp::InitViewData(SvTreeListBox& rView, SvTreeListEntry* pEntr
                                     SvViewDataItem* pViewData)
 {
     if( !pViewData )
-        pViewData = rView.GetViewDataItem(pEntry, this);
+        pViewData = &rView.GetViewDataItem(pEntry, this);
     Size aSize = m_aImage1.GetSizePixel();
     pViewData->mnWidth = aSize.Width();
     pViewData->mnHeight = aSize.Height();

@@ -1104,10 +1104,11 @@ SvViewDataEntry* SvTreeListBox::GetViewDataEntry( SvTreeListEntry const * pEntry
     return const_cast<SvViewDataEntry*>(GetViewData(pEntry));
 }
 
-SvViewDataItem* SvTreeListBox::GetViewDataItem(SvTreeListEntry const * pEntry, SvLBoxItem const * pItem)
+SvViewDataItem& SvTreeListBox::GetViewDataItem(SvTreeListEntry const* pEntry,
+                                               SvLBoxItem const* pItem)
 {
-    return const_cast<SvViewDataItem*>(
-        &static_cast<const SvTreeListBox*>(this)->GetViewDataItem(pEntry, pItem));
+    return const_cast<SvViewDataItem&>(
+        static_cast<const SvTreeListBox*>(this)->GetViewDataItem(pEntry, pItem));
 }
 
 const SvViewDataItem& SvTreeListBox::GetViewDataItem(const SvTreeListEntry* pEntry,
