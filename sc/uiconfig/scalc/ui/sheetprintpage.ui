@@ -442,6 +442,26 @@
               </packing>
             </child>
             <child>
+              <object class="GtkComboBoxText" id="comboLB_SCALEMODE">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <items>
+                  <item translatable="yes" context="sheetprintpage|comboLB_SCALEMODE">Reduce/enlarge printout</item>
+                  <item translatable="yes" context="sheetprintpage|comboLB_SCALEMODE">Shrink print range(s) to width/height</item>
+                  <item translatable="yes" context="sheetprintpage|comboLB_SCALEMODE">Shrink print range(s) on number of pages</item>
+                </items>
+                <child internal-child="accessible">
+                  <object class="AtkObject" id="comboLB_SCALEMODE-atkobject">
+                    <property name="AtkObject::accessible-description" translatable="yes" context="sheetprintpage|extended_tip|comboLB_SCALEMODE">Select a scaling mode from the list box. Appropriate controls will be shown below the list box.</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">0</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkBox" id="box4">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
@@ -519,23 +539,6 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkCheckButton" id="labelHP">
-                        <property name="label" translatable="yes" context="sheetprintpage|labelHP">_Height in pages:</property>
-                        <property name="visible">True</property>
-                        <property name="can-focus">True</property>
-                        <property name="receives-default">False</property>
-                        <property name="use-underline">True</property>
-                        <property name="draw-indicator">True</property>
-                        <accessibility>
-                          <relation type="label-for" target="spinED_SCALEPAGEHEIGHT"/>
-                        </accessibility>
-                      </object>
-                      <packing>
-                        <property name="left-attach">0</property>
-                        <property name="top-attach">1</property>
-                      </packing>
-                    </child>
-                    <child>
                       <object class="GtkSpinButton" id="spinED_SCALEPAGEWIDTH">
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
@@ -554,6 +557,23 @@
                       <packing>
                         <property name="left-attach">1</property>
                         <property name="top-attach">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkCheckButton" id="labelHP">
+                        <property name="label" translatable="yes" context="sheetprintpage|labelHP">_Height in pages:</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">False</property>
+                        <property name="use-underline">True</property>
+                        <property name="draw-indicator">True</property>
+                        <accessibility>
+                          <relation type="label-for" target="spinED_SCALEPAGEHEIGHT"/>
+                        </accessibility>
+                      </object>
+                      <packing>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">1</property>
                       </packing>
                     </child>
                     <child>
@@ -634,26 +654,6 @@
               <packing>
                 <property name="left-attach">1</property>
                 <property name="top-attach">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkComboBoxText" id="comboLB_SCALEMODE">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <items>
-                  <item translatable="yes" context="sheetprintpage|comboLB_SCALEMODE">Reduce/enlarge printout</item>
-                  <item translatable="yes" context="sheetprintpage|comboLB_SCALEMODE">Shrink print range(s) to width/height</item>
-                  <item translatable="yes" context="sheetprintpage|comboLB_SCALEMODE">Shrink print range(s) on number of pages</item>
-                </items>
-                <child internal-child="accessible">
-                  <object class="AtkObject" id="comboLB_SCALEMODE-atkobject">
-                    <property name="AtkObject::accessible-description" translatable="yes" context="sheetprintpage|extended_tip|comboLB_SCALEMODE">Select a scaling mode from the list box. Appropriate controls will be shown below the list box.</property>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="left-attach">1</property>
-                <property name="top-attach">0</property>
               </packing>
             </child>
             <child>
