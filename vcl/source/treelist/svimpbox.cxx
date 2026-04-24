@@ -1948,7 +1948,7 @@ void SvImpLBox::MouseButtonDown( const MouseEvent& rMEvt )
     SvLBoxItem* pXItem = m_rView.GetItem(pEntry, aPos.X());
     if( pXItem )
     {
-        SvLBoxTab* pXTab = m_rView.GetTab(pEntry, pXItem);
+        SvLBoxTab* pXTab = m_rView.GetTab(*pEntry, pXItem);
         if (!rMEvt.IsMod1() && !rMEvt.IsMod2() && rMEvt.IsLeft() && pXTab->IsEditable()
             && pEntry == m_rView.FirstSelected() && nullptr == m_rView.NextSelected(pEntry))
             // #i8234# FirstSelected() and NextSelected() ensures, that inplace editing is only triggered, when only one entry is selected

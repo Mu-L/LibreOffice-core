@@ -593,7 +593,7 @@ protected:
     SvLBoxTab*      GetFirstDynamicTab( sal_uInt16& rTabPos ) const;
     SvLBoxTab*      GetFirstTab( SvLBoxTabFlags nFlagMask, sal_uInt16& rTabPos );
     void            GetLastTab( SvLBoxTabFlags nFlagMask, sal_uInt16& rTabPos );
-    SvLBoxTab*      GetTab( SvTreeListEntry const *, SvLBoxItem const * ) const;
+    SvLBoxTab* GetTab(const SvTreeListEntry&, SvLBoxItem const*) const;
     void            ClearTabList();
 
     virtual void    InitEntry(SvTreeListEntry*, const OUString&, const Image&, const Image&);

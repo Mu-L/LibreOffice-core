@@ -100,7 +100,7 @@ static void lcl_DumpEntryAndSiblings(tools::JsonWriter& rJsonWriter,
                         auto aColumn = rJsonWriter.startStruct();
                         rJsonWriter.put("text", pStringItem->GetText());
 
-                        SvLBoxTab* pTab = pTabListBox->GetTab( pEntry, &rItem );
+                        SvLBoxTab* pTab = pTabListBox->GetTab(*pEntry, &rItem);
                         if ( pTab )
                             rJsonWriter.put("editable", pTab->IsEditable());
 
