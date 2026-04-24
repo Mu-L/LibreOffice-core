@@ -108,7 +108,6 @@
             <property name="vexpand">True</property>
             <property name="tab-pos">left</property>
             <property name="scrollable">True</property>
-            <property name="tab-pos">left</property>
           </object>
           <packing>
             <property name="expand">False</property>
