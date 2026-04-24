@@ -2508,26 +2508,17 @@ IMPL_LINK(MatrixCreatorDialog, EditedEntryHdl, const weld::TreeView::IterColText
 
     if (mxSymmetricMatrix->get_active() && mClickedColumn >= 0 && mClickedColumn < mxCols->get_value())
     {
-        auto xIter = mxMatrix->make_iterator();
-        int clickedRow = 0;
-        if (!mxMatrix->get_iter_first(*xIter))
-            return true;
-
-        // Which row number did the click occur in?
-        while (mxMatrix->iter_compare(*xIter, rIterColText.m_rIter) != 0)
-        {
-            ++clickedRow;
-            if (!mxMatrix->iter_next(*xIter))
-                break;
-        }
-
         // Sort of complicated, because set_text(row, column, value) seems to have no effect
+        auto xIter = mxMatrix->make_iterator();
         bool bValidIter = mxMatrix->get_iter_first(*xIter);
         for (int row = 0; row < mClickedColumn && bValidIter; ++row)
             bValidIter = mxMatrix->iter_next(*xIter);
 
         if (bValidIter)
-            mxMatrix->set_text(*xIter, rIterColText.m_sText, clickedRow);
+        {
+            const int nEditedRow = mxMatrix->get_iter_index_in_parent(rIterColText.m_rIter);
+            mxMatrix->set_text(*xIter, rIterColText.m_sText, nEditedRow);
+        }
     }
 
     mxMatrix->set_text(rIterColText.m_rIter, rIterColText.m_sText, mEditedColumn); // Required for EditingCanceledHdl()
