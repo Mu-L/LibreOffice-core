@@ -28,6 +28,26 @@
             <property name="row-spacing">6</property>
             <property name="column-spacing">12</property>
             <child>
+              <object class="GtkCheckButton" id="checkHideAll">
+                <property name="label" translatable="yes" context="cellprotectionpage|checkHideAll">Hide _all</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">False</property>
+                <property name="use-underline">True</property>
+                <property name="inconsistent">True</property>
+                <property name="draw-indicator">True</property>
+                <child internal-child="accessible">
+                  <object class="AtkObject" id="checkHideAll-atkobject">
+                    <property name="AtkObject::accessible-description" translatable="yes" context="cellprotectionpage|extended_tip|checkHideAll">Hides formulas and contents of the selected cells.</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">0</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkCheckButton" id="checkProtected">
                 <property name="label" translatable="yes" context="cellprotectionpage|checkProtected">_Protected</property>
                 <property name="visible">True</property>
@@ -68,26 +88,6 @@
               <packing>
                 <property name="left-attach">0</property>
                 <property name="top-attach">2</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkCheckButton" id="checkHideAll">
-                <property name="label" translatable="yes" context="cellprotectionpage|checkHideAll">Hide _all</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="receives-default">False</property>
-                <property name="use-underline">True</property>
-                <property name="inconsistent">True</property>
-                <property name="draw-indicator">True</property>
-                <child internal-child="accessible">
-                  <object class="AtkObject" id="checkHideAll-atkobject">
-                    <property name="AtkObject::accessible-description" translatable="yes" context="cellprotectionpage|extended_tip|checkHideAll">Hides formulas and contents of the selected cells.</property>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="left-attach">0</property>
-                <property name="top-attach">0</property>
               </packing>
             </child>
             <child>
