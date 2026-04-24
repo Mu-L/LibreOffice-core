@@ -63,13 +63,13 @@ static VclPtr<SvTreeListBox> g_pDDTarget;
 
 class SvInplaceEdit2
 {
-    Link<SvInplaceEdit2&,void> aCallBackHdl;
-    Accelerator   aAccReturn;
-    Accelerator   aAccEscape;
-    Idle          aIdle { "svtools::SvInplaceEdit2 aIdle" };
-    VclPtr<Edit>  pEdit;
-    bool          bCanceled;
-    bool          bAlreadyInCallBack;
+    Link<SvInplaceEdit2&, void> m_aCallBackHdl;
+    Accelerator m_aAccReturn;
+    Accelerator m_aAccEscape;
+    Idle m_aIdle{ "svtools::SvInplaceEdit2 aIdle" };
+    VclPtr<Edit> m_pEdit;
+    bool m_bCanceled;
+    bool m_bAlreadyInCallBack;
 
     void        CallCallBackHdl_Impl();
     DECL_LINK( Timeout_Impl, Timer *, void );
@@ -83,15 +83,15 @@ public:
                ~SvInplaceEdit2();
     bool        KeyInput( const KeyEvent& rKEvt );
     void        LoseFocus();
-    bool        EditingCanceled() const { return bCanceled; }
+    bool EditingCanceled() const { return m_bCanceled; }
     OUString    GetText() const;
     OUString const & GetSavedValue() const;
     void        StopEditing( bool bCancel );
     void        Hide();
-    const VclPtr<Edit> & GetEditWidget() const { return pEdit; };
+    const VclPtr<Edit>& GetEditWidget() const { return m_pEdit; };
 
-    void RemoveEscapeAccel() { Application::RemoveAccel(&aAccEscape); }
-    void InsertEscapeAccel() { Application::InsertAccel(&aAccEscape); }
+    void RemoveEscapeAccel() { Application::RemoveAccel(&m_aAccEscape); }
+    void InsertEscapeAccel() { Application::InsertAccel(&m_aAccEscape); }
 };
 // ***************************************************************
 
@@ -144,77 +144,63 @@ void MyEdit_Impl::Command(const CommandEvent& rCEvt)
         Edit::Command(rCEvt);
 }
 
-SvInplaceEdit2::SvInplaceEdit2
-(
-    vcl::Window* pParent, const Point& rPos,
-    const Size& rSize,
-    const OUString& rData,
-    const Link<SvInplaceEdit2&,void>& rNotifyEditEnd,
-    const Selection& rSelection
-) :
-
-    aCallBackHdl       ( rNotifyEditEnd ),
-    bCanceled           ( false ),
-    bAlreadyInCallBack  ( false )
-
+SvInplaceEdit2::SvInplaceEdit2(vcl::Window* pParent, const Point& rPos, const Size& rSize,
+                               const OUString& rData,
+                               const Link<SvInplaceEdit2&, void>& rNotifyEditEnd,
+                               const Selection& rSelection)
+    : m_aCallBackHdl(rNotifyEditEnd)
+    , m_bCanceled(false)
+    , m_bAlreadyInCallBack(false)
 {
-
-    pEdit = VclPtr<MyEdit_Impl>::Create( pParent, this );
+    m_pEdit = VclPtr<MyEdit_Impl>::Create(pParent, this);
 
     vcl::Font aFont( pParent->GetFont() );
     aFont.SetTransparent( false );
     Color aColor( pParent->GetBackground().GetColor() );
     aFont.SetFillColor(aColor );
-    pEdit->SetFont( aFont );
-    pEdit->SetBackground( pParent->GetBackground() );
-    pEdit->SetPosPixel( rPos );
-    pEdit->SetSizePixel( rSize );
-    pEdit->SetText( rData );
-    pEdit->SetSelection( rSelection );
-    pEdit->SaveValue();
+    m_pEdit->SetFont(aFont);
+    m_pEdit->SetBackground(pParent->GetBackground());
+    m_pEdit->SetPosPixel(rPos);
+    m_pEdit->SetSizePixel(rSize);
+    m_pEdit->SetText(rData);
+    m_pEdit->SetSelection(rSelection);
+    m_pEdit->SaveValue();
 
-    aAccReturn.InsertItem( SVLBOX_ACC_RETURN, vcl::KeyCode(KEY_RETURN) );
-    aAccEscape.InsertItem( SVLBOX_ACC_ESCAPE, vcl::KeyCode(KEY_ESCAPE) );
+    m_aAccReturn.InsertItem(SVLBOX_ACC_RETURN, vcl::KeyCode(KEY_RETURN));
+    m_aAccEscape.InsertItem(SVLBOX_ACC_ESCAPE, vcl::KeyCode(KEY_ESCAPE));
 
-    aAccReturn.SetActivateHdl( LINK( this, SvInplaceEdit2, ReturnHdl_Impl) );
-    aAccEscape.SetActivateHdl( LINK( this, SvInplaceEdit2, EscapeHdl_Impl) );
-    Application::InsertAccel( &aAccReturn );
-    Application::InsertAccel( &aAccEscape );
+    m_aAccReturn.SetActivateHdl(LINK(this, SvInplaceEdit2, ReturnHdl_Impl));
+    m_aAccEscape.SetActivateHdl(LINK(this, SvInplaceEdit2, EscapeHdl_Impl));
+    Application::InsertAccel(&m_aAccReturn);
+    Application::InsertAccel(&m_aAccEscape);
 
-    pEdit->Show();
-    pEdit->GrabFocus();
+    m_pEdit->Show();
+    m_pEdit->GrabFocus();
 }
 
 SvInplaceEdit2::~SvInplaceEdit2()
 {
-    if( !bAlreadyInCallBack )
+    if (!m_bAlreadyInCallBack)
     {
-        Application::RemoveAccel( &aAccReturn );
-        Application::RemoveAccel( &aAccEscape );
+        Application::RemoveAccel(&m_aAccReturn);
+        Application::RemoveAccel(&m_aAccEscape);
     }
-    pEdit.disposeAndClear();
+    m_pEdit.disposeAndClear();
 }
 
-OUString const & SvInplaceEdit2::GetSavedValue() const
-{
-    return pEdit->GetSavedValue();
-}
+OUString const& SvInplaceEdit2::GetSavedValue() const { return m_pEdit->GetSavedValue(); }
 
-void SvInplaceEdit2::Hide()
-{
-    pEdit->Hide();
-}
-
+void SvInplaceEdit2::Hide() { m_pEdit->Hide(); }
 
 IMPL_LINK_NOARG(SvInplaceEdit2, ReturnHdl_Impl, Accelerator&, void)
 {
-    bCanceled = false;
+    m_bCanceled = false;
     CallCallBackHdl_Impl();
 }
 
 IMPL_LINK_NOARG(SvInplaceEdit2, EscapeHdl_Impl, Accelerator&, void)
 {
-    bCanceled = true;
+    m_bCanceled = true;
     CallCallBackHdl_Impl();
 }
 
@@ -226,12 +212,12 @@ bool SvInplaceEdit2::KeyInput( const KeyEvent& rKEvt )
     switch ( nCode )
     {
         case KEY_ESCAPE:
-            bCanceled = true;
+            m_bCanceled = true;
             CallCallBackHdl_Impl();
             return true;
 
         case KEY_RETURN:
-            bCanceled = false;
+            m_bCanceled = false;
             CallCallBackHdl_Impl();
             return true;
     }
@@ -240,22 +226,22 @@ bool SvInplaceEdit2::KeyInput( const KeyEvent& rKEvt )
 
 void SvInplaceEdit2::StopEditing( bool bCancel )
 {
-    if ( !bAlreadyInCallBack )
+    if (!m_bAlreadyInCallBack)
     {
-        bCanceled = bCancel;
+        m_bCanceled = bCancel;
         CallCallBackHdl_Impl();
     }
 }
 
 void SvInplaceEdit2::LoseFocus()
 {
-    if (!bAlreadyInCallBack && !pEdit->IsActivePopup()
-        && ((!Application::GetFocusWindow()) || !pEdit->IsChild(Application::GetFocusWindow())))
+    if (!m_bAlreadyInCallBack && !m_pEdit->IsActivePopup()
+        && ((!Application::GetFocusWindow()) || !m_pEdit->IsChild(Application::GetFocusWindow())))
     {
-        bCanceled = false;
-        aIdle.SetPriority(TaskPriority::REPAINT);
-        aIdle.SetInvokeHandler(LINK(this,SvInplaceEdit2,Timeout_Impl));
-        aIdle.Start();
+        m_bCanceled = false;
+        m_aIdle.SetPriority(TaskPriority::REPAINT);
+        m_aIdle.SetInvokeHandler(LINK(this, SvInplaceEdit2, Timeout_Impl));
+        m_aIdle.Start();
     }
 }
 
@@ -266,21 +252,18 @@ IMPL_LINK_NOARG(SvInplaceEdit2, Timeout_Impl, Timer *, void)
 
 void SvInplaceEdit2::CallCallBackHdl_Impl()
 {
-    aIdle.Stop();
-    if ( !bAlreadyInCallBack )
+    m_aIdle.Stop();
+    if (!m_bAlreadyInCallBack)
     {
-        bAlreadyInCallBack = true;
-        Application::RemoveAccel( &aAccReturn );
-        Application::RemoveAccel( &aAccEscape );
-        pEdit->Hide();
-        aCallBackHdl.Call( *this );
+        m_bAlreadyInCallBack = true;
+        Application::RemoveAccel(&m_aAccReturn);
+        Application::RemoveAccel(&m_aAccEscape);
+        m_pEdit->Hide();
+        m_aCallBackHdl.Call(*this);
     }
 }
 
-OUString SvInplaceEdit2::GetText() const
-{
-    return pEdit->GetText();
-}
+OUString SvInplaceEdit2::GetText() const { return m_pEdit->GetText(); }
 
 // ***************************************************************
 // class SvLBoxTab
