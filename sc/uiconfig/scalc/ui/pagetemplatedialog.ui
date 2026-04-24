@@ -108,7 +108,6 @@
             <property name="hexpand">True</property>
             <property name="vexpand">True</property>
             <property name="tab-pos">left</property>
-            <property name="tab-pos">left</property>
             <property name="enable-popup">True</property>
           </object>
           <packing>
