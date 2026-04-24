@@ -285,6 +285,15 @@ CPPUNIT_TEST_FIXTURE(ScFiltersTest5, testTdf168589)
     ASSERT_DOUBLES_EQUAL(6.0, pDoc->GetValue(4, 5, 0));
 }
 
+CPPUNIT_TEST_FIXTURE(ScFiltersTest5, testTdf171828_fail_to_import_file)
+{
+    // Open xlsx document, failing without the fix
+    createScDoc("xlsx/tdf171828_fail_to_import_file.xlsx");
+    ScDocument* pDoc = getScDoc();
+    CPPUNIT_ASSERT(pDoc);
+    CPPUNIT_ASSERT_EQUAL(u"950"_ustr, pDoc->GetString(6, 6, 0).trim());
+}
+
 CPPUNIT_PLUGIN_IMPLEMENT();
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
