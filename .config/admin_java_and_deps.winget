@@ -70,7 +70,7 @@ properties:
         DestinationPath: C:/Users/Public/Downloads
         Uri: https://dlcdn.apache.org/ant/binaries/apache-ant-1.10.17-bin.zip
         ChecksumType: SHA256
-        Checksum: e59baf898dc5b6d1aa6cd57544715f7e0060b1fdc9e56f24f9898d56612a9e0b
+        Checksum: 70608b7401dec8f51ce749b453eaf7d168e5eb2e00c8d541a64f247763567567
     - resource: xPSDesiredStateConfiguration/xRemoteFile
       id: junit
       directives:
