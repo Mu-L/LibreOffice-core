@@ -384,6 +384,8 @@ struct SvTreeListBoxImpl
         m_aQuickSelectionEngine(_rBox) {}
 };
 
+#define SV_LBOX_DEFAULT_INDENT_PIXEL 20
+
 SvTreeListBox::SvTreeListBox(vcl::Window* pParent, WinBits nWinStyle) :
     Control(pParent, nWinStyle | WB_CLIPCHILDREN),
     DropTargetHelper(this),
@@ -422,7 +424,33 @@ SvTreeListBox::SvTreeListBox(vcl::Window* pParent, WinBits nWinStyle) :
     m_nDragDropMode = DragDropMode::NONE;
     SetType(WindowType::TREELISTBOX);
 
-    InitTreeView();
+    m_pCheckButtonData = nullptr;
+    m_pEdEntry = nullptr;
+    m_pEdItem = nullptr;
+    m_nEntryHeight = 0;
+    m_pEdCtrl = nullptr;
+    m_nFirstSelTab = 0;
+    m_nLastSelTab = 0;
+    m_nFocusWidth = -1;
+    mnCheckboxItemWidth = 0;
+
+    m_nTreeFlags = SvTreeFlags::RECALCTABS;
+    m_nIndent = SV_LBOX_DEFAULT_INDENT_PIXEL;
+    m_nEntryHeightOffs = SV_ENTRYHEIGHTOFFS_PIXEL;
+    m_pImpl.reset(new SvImpLBox(*this, GetModel(), GetStyle()));
+
+    mbContextBmpExpanded = true;
+    m_nContextBmpWidthMax = 0;
+
+    SetFont( GetFont() );
+    AdjustEntryHeightAndRecalc();
+
+    SetSpaceBetweenEntries( 0 );
+    GetOutDev()->SetLineColor();
+    InitSettings();
+    ImplInitStyle();
+    SetTabs();
+
     m_pImpl->SetModel(m_pModel.get());
 
     SetSublistOpenWithLeftRight();
@@ -1539,38 +1567,6 @@ Link<sal_Int8,void> SvTreeListBox::GetDragFinishedHdl() const
     - calculate rectangle when editing in-place (bug with some fonts)
     - SetSpaceBetweenEntries: offset is not taken into account in SetEntryHeight
 */
-
-#define SV_LBOX_DEFAULT_INDENT_PIXEL 20
-
-void SvTreeListBox::InitTreeView()
-{
-    m_pCheckButtonData = nullptr;
-    m_pEdEntry = nullptr;
-    m_pEdItem = nullptr;
-    m_nEntryHeight = 0;
-    m_pEdCtrl = nullptr;
-    m_nFirstSelTab = 0;
-    m_nLastSelTab = 0;
-    m_nFocusWidth = -1;
-    mnCheckboxItemWidth = 0;
-
-    m_nTreeFlags = SvTreeFlags::RECALCTABS;
-    m_nIndent = SV_LBOX_DEFAULT_INDENT_PIXEL;
-    m_nEntryHeightOffs = SV_ENTRYHEIGHTOFFS_PIXEL;
-    m_pImpl.reset(new SvImpLBox(*this, GetModel(), GetStyle()));
-
-    mbContextBmpExpanded = true;
-    m_nContextBmpWidthMax = 0;
-
-    SetFont( GetFont() );
-    AdjustEntryHeightAndRecalc();
-
-    SetSpaceBetweenEntries( 0 );
-    GetOutDev()->SetLineColor();
-    InitSettings();
-    ImplInitStyle();
-    SetTabs();
-}
 
 OUString SvTreeListBox::SearchEntryTextWithHeadTitle( SvTreeListEntry* pEntry )
 {

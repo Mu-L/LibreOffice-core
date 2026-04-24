@@ -577,7 +577,6 @@ protected:
     SAL_DLLPRIVATE void         ImpEntryInserted( SvTreeListEntry* pEntry );
     SAL_DLLPRIVATE void         PaintEntry1( SvTreeListEntry&, tools::Long nLine, vcl::RenderContext& rRenderContext );
 
-    SAL_DLLPRIVATE void         InitTreeView();
     SAL_DLLPRIVATE void         ImplInitStyle();
 
     void            SetupDragOrigin();
