@@ -26,20 +26,6 @@
       </packing>
     </child>
     <child>
-      <object class="GtkLabel" id="valueft">
-        <property name="can-focus">False</property>
-        <property name="no-show-all">True</property>
-        <property name="label" translatable="yes" context="validationcriteriapage|valueft">_Data:</property>
-        <property name="use-underline">True</property>
-        <property name="mnemonic-widget">data</property>
-        <property name="xalign">0</property>
-      </object>
-      <packing>
-        <property name="left-attach">0</property>
-        <property name="top-attach">5</property>
-      </packing>
-    </child>
-    <child>
       <object class="GtkComboBoxText" id="allow">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
@@ -63,6 +49,98 @@
       <packing>
         <property name="left-attach">1</property>
         <property name="top-attach">0</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkCheckButton" id="allowempty">
+        <property name="label" translatable="yes" context="validationcriteriapage|allowempty">Allow _empty cells</property>
+        <property name="visible">True</property>
+        <property name="can-focus">True</property>
+        <property name="receives-default">False</property>
+        <property name="use-underline">True</property>
+        <property name="draw-indicator">True</property>
+        <child internal-child="accessible">
+          <object class="AtkObject" id="allowempty-atkobject">
+            <property name="AtkObject::accessible-description" translatable="yes" context="validationcriteriapage|extended_tip|allowempty">In conjunction with Tools - Detective - Mark invalid Data, this defines that blank cells are shown as invalid data (disabled) or not (enabled).</property>
+          </object>
+        </child>
+      </object>
+      <packing>
+        <property name="left-attach">1</property>
+        <property name="top-attach">1</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkCheckButton" id="casesens">
+        <property name="label" translatable="yes" context="validationcriteriapage|allowempty">Case _sensitive</property>
+        <property name="visible">True</property>
+        <property name="can-focus">True</property>
+        <property name="receives-default">False</property>
+        <property name="use-underline">True</property>
+        <property name="draw-indicator">True</property>
+        <child internal-child="accessible">
+          <object class="AtkObject" id="casesens-atkobject">
+            <property name="AtkObject::accessible-description" translatable="yes" context="validationcriteriapage|extended_tip|allowempty">In conjunction with Tools - Detective - Mark invalid Data, this defines that blank cells are shown as invalid data (disabled) or not (enabled).</property>
+          </object>
+        </child>
+      </object>
+      <packing>
+        <property name="left-attach">1</property>
+        <property name="top-attach">2</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkCheckButton" id="showlist">
+        <property name="label" translatable="yes" context="validationcriteriapage|showlist">Show selection _list</property>
+        <property name="visible">True</property>
+        <property name="can-focus">True</property>
+        <property name="receives-default">False</property>
+        <property name="use-underline">True</property>
+        <property name="draw-indicator">True</property>
+        <child internal-child="accessible">
+          <object class="AtkObject" id="showlist-atkobject">
+            <property name="AtkObject::accessible-description" translatable="yes" context="validationcriteriapage|extended_tip|showlist">Shows a list of all valid strings or values to select from.</property>
+          </object>
+        </child>
+      </object>
+      <packing>
+        <property name="left-attach">1</property>
+        <property name="top-attach">3</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkCheckButton" id="sortascend">
+        <property name="label" translatable="yes" context="validationcriteriapage|sortascend">Sor_t entries ascending</property>
+        <property name="visible">True</property>
+        <property name="can-focus">True</property>
+        <property name="receives-default">False</property>
+        <property name="margin-start">12</property>
+        <property name="use-underline">True</property>
+        <property name="active">True</property>
+        <property name="draw-indicator">True</property>
+        <child internal-child="accessible">
+          <object class="AtkObject" id="sortascend-atkobject">
+            <property name="AtkObject::accessible-description" translatable="yes" context="validationcriteriapage|extended_tip|sortascend">Sorts the selection list in ascending order and filters duplicates from the list. If not checked, the order from the data source is taken.</property>
+          </object>
+        </child>
+      </object>
+      <packing>
+        <property name="left-attach">1</property>
+        <property name="top-attach">4</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkLabel" id="valueft">
+        <property name="can-focus">False</property>
+        <property name="no-show-all">True</property>
+        <property name="label" translatable="yes" context="validationcriteriapage|valueft">_Data:</property>
+        <property name="use-underline">True</property>
+        <property name="mnemonic-widget">data</property>
+        <property name="xalign">0</property>
+      </object>
+      <packing>
+        <property name="left-attach">0</property>
+        <property name="top-attach">5</property>
       </packing>
     </child>
     <child>
@@ -187,79 +265,6 @@
       </packing>
     </child>
     <child>
-      <object class="GtkLabel" id="maxft">
-        <property name="can-focus">False</property>
-        <property name="no-show-all">True</property>
-        <property name="label" translatable="yes" context="validationcriteriapage|maxft">Ma_ximum:</property>
-        <property name="use-underline">True</property>
-        <property name="mnemonic-widget">max</property>
-        <property name="xalign">0</property>
-      </object>
-      <packing>
-        <property name="left-attach">0</property>
-        <property name="top-attach">8</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkCheckButton" id="allowempty">
-        <property name="label" translatable="yes" context="validationcriteriapage|allowempty">Allow _empty cells</property>
-        <property name="visible">True</property>
-        <property name="can-focus">True</property>
-        <property name="receives-default">False</property>
-        <property name="use-underline">True</property>
-        <property name="draw-indicator">True</property>
-        <child internal-child="accessible">
-          <object class="AtkObject" id="allowempty-atkobject">
-            <property name="AtkObject::accessible-description" translatable="yes" context="validationcriteriapage|extended_tip|allowempty">In conjunction with Tools - Detective - Mark invalid Data, this defines that blank cells are shown as invalid data (disabled) or not (enabled).</property>
-          </object>
-        </child>
-      </object>
-      <packing>
-        <property name="left-attach">1</property>
-        <property name="top-attach">1</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkCheckButton" id="showlist">
-        <property name="label" translatable="yes" context="validationcriteriapage|showlist">Show selection _list</property>
-        <property name="visible">True</property>
-        <property name="can-focus">True</property>
-        <property name="receives-default">False</property>
-        <property name="use-underline">True</property>
-        <property name="draw-indicator">True</property>
-        <child internal-child="accessible">
-          <object class="AtkObject" id="showlist-atkobject">
-            <property name="AtkObject::accessible-description" translatable="yes" context="validationcriteriapage|extended_tip|showlist">Shows a list of all valid strings or values to select from.</property>
-          </object>
-        </child>
-      </object>
-      <packing>
-        <property name="left-attach">1</property>
-        <property name="top-attach">3</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkCheckButton" id="sortascend">
-        <property name="label" translatable="yes" context="validationcriteriapage|sortascend">Sor_t entries ascending</property>
-        <property name="visible">True</property>
-        <property name="can-focus">True</property>
-        <property name="receives-default">False</property>
-        <property name="margin-start">12</property>
-        <property name="use-underline">True</property>
-        <property name="active">True</property>
-        <property name="draw-indicator">True</property>
-        <child internal-child="accessible">
-          <object class="AtkObject" id="sortascend-atkobject">
-            <property name="AtkObject::accessible-description" translatable="yes" context="validationcriteriapage|extended_tip|sortascend">Sorts the selection list in ascending order and filters duplicates from the list. If not checked, the order from the data source is taken.</property>
-          </object>
-        </child>
-      </object>
-      <packing>
-        <property name="left-attach">1</property>
-        <property name="top-attach">4</property>
-      </packing>
-    </child>
-    <child>
       <object class="GtkLabel" id="hintft">
         <property name="can-focus">False</property>
         <property name="no-show-all">True</property>
@@ -278,6 +283,20 @@
       </packing>
     </child>
     <child>
+      <object class="GtkLabel" id="maxft">
+        <property name="can-focus">False</property>
+        <property name="no-show-all">True</property>
+        <property name="label" translatable="yes" context="validationcriteriapage|maxft">Ma_ximum:</property>
+        <property name="use-underline">True</property>
+        <property name="mnemonic-widget">max</property>
+        <property name="xalign">0</property>
+      </object>
+      <packing>
+        <property name="left-attach">0</property>
+        <property name="top-attach">8</property>
+      </packing>
+    </child>
+    <child>
       <object class="GtkEntry" id="max">
         <property name="can-focus">True</property>
         <property name="no-show-all">True</property>
@@ -293,25 +312,6 @@
       <packing>
         <property name="left-attach">1</property>
         <property name="top-attach">8</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkCheckButton" id="casesens">
-        <property name="label" translatable="yes" context="validationcriteriapage|allowempty">Case _sensitive</property>
-        <property name="visible">True</property>
-        <property name="can-focus">True</property>
-        <property name="receives-default">False</property>
-        <property name="use-underline">True</property>
-        <property name="draw-indicator">True</property>
-        <child internal-child="accessible">
-          <object class="AtkObject" id="casesens-atkobject">
-            <property name="AtkObject::accessible-description" translatable="yes" context="validationcriteriapage|extended_tip|allowempty">In conjunction with Tools - Detective - Mark invalid Data, this defines that blank cells are shown as invalid data (disabled) or not (enabled).</property>
-          </object>
-        </child>
-      </object>
-      <packing>
-        <property name="left-attach">1</property>
-        <property name="top-attach">2</property>
       </packing>
     </child>
     <child>
