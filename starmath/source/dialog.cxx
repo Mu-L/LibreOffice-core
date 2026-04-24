@@ -2454,19 +2454,11 @@ IMPL_LINK(MatrixCreatorDialog, EditedEntryHdl, const weld::TreeView::IterColText
           bool)
 {
     if (mxSymmetricMatrix->get_active() && rIterColText.m_nColumn >= 0
-        && rIterColText.m_nColumn < mxCols->get_value())
+        && rIterColText.m_nColumn < mxCols->get_value()
+        && mxMatrix->n_children() > rIterColText.m_nColumn)
     {
-        // Sort of complicated, because set_text(row, column, value) seems to have no effect
-        auto xIter = mxMatrix->make_iterator();
-        bool bValidIter = mxMatrix->get_iter_first(*xIter);
-        for (int row = 0; row < rIterColText.m_nColumn && bValidIter; ++row)
-            bValidIter = mxMatrix->iter_next(*xIter);
-
-        if (bValidIter)
-        {
-            const int nEditedRow = mxMatrix->get_iter_index_in_parent(rIterColText.m_rIter);
-            mxMatrix->set_text(*xIter, rIterColText.m_sText, nEditedRow);
-        }
+        const int nEditedRow = mxMatrix->get_iter_index_in_parent(rIterColText.m_rIter);
+        mxMatrix->set_text(rIterColText.m_nColumn, rIterColText.m_sText, nEditedRow);
     }
 
     // Required for EditingCanceledHdl()
