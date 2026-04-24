@@ -208,7 +208,8 @@ public:
     void end_editing()
     {
         mxTreeView->end_editing();
-        mxTreeView->connect_editing(Link<const weld::TreeIter&, bool>(), Link<const IterString&, bool>());
+        mxTreeView->connect_editing(Link<const weld::TreeIter&, bool>(),
+                                    Link<const weld::TreeView::iter_string&, bool>());
         mbEditing = false;
     }
 
@@ -232,8 +233,7 @@ public:
     DECL_LINK(ResetQuickSearch_Impl, Timer *, void);
     DECL_LINK(CommandHdl, const CommandEvent&, bool);
     DECL_LINK(EditingEntryHdl, const weld::TreeIter&, bool);
-    typedef std::pair<const weld::TreeIter&, OUString> IterString;
-    DECL_LINK(EditedEntryHdl, const IterString&, bool);
+    DECL_LINK(EditedEntryHdl, const weld::TreeView::iter_string&, bool);
     DECL_LINK(KeyInputHdl, const KeyEvent&, bool);
 
     void            ExecuteContextMenuAction(std::u16string_view rSelectedPopentry);
@@ -670,11 +670,13 @@ void ViewTabListBox_Impl::DeleteEntries()
     mxTreeView->remove_selection();
 }
 
-IMPL_LINK(ViewTabListBox_Impl, EditedEntryHdl, const IterString&, rIterString, bool)
+IMPL_LINK(ViewTabListBox_Impl, EditedEntryHdl, const weld::TreeView::iter_string&, rIterString,
+          bool)
 {
     mbEditing = false;
 
-    mxTreeView->connect_editing(Link<const weld::TreeIter&, bool>(), Link<const IterString&, bool>());
+    mxTreeView->connect_editing(Link<const weld::TreeIter&, bool>(),
+                                Link<const weld::TreeView::iter_string&, bool>());
 
     const weld::TreeIter& rEntry = rIterString.first;
     OUString sNewText = rIterString.second;

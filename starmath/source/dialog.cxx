@@ -2500,7 +2500,8 @@ IMPL_LINK_NOARG(MatrixCreatorDialog, EditingEntryHdl, const weld::TreeIter&, boo
     return true;
 }
 
-IMPL_LINK(MatrixCreatorDialog, EditedEntryHdl, const IterString&, rIterString, bool)
+IMPL_LINK(MatrixCreatorDialog, EditedEntryHdl, const weld::TreeView::iter_string&, rIterString,
+          bool)
 {
     if (mEditedColumn < 0)
         return false; // Sometimes there is a double call and since we set mEditedColumn to -1 at the end we can avoid that

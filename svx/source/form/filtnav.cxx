@@ -1117,7 +1117,7 @@ IMPL_LINK(FmFilterNavigator, EditingEntryHdl, const weld::TreeIter&, rIter, bool
     return false;
 }
 
-IMPL_LINK(FmFilterNavigator, EditedEntryHdl, const IterString&, rIterString, bool)
+IMPL_LINK(FmFilterNavigator, EditedEntryHdl, const weld::TreeView::iter_string&, rIterString, bool)
 {
     const weld::TreeIter& rIter = rIterString.first;
     const OUString& rNewText = rIterString.second;

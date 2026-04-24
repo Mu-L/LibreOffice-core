@@ -1397,7 +1397,7 @@ namespace svxform
         return aNewName;
     }
 
-    IMPL_LINK(NavigatorTree, EditedEntryHdl, const IterString&, rIterString, bool)
+    IMPL_LINK(NavigatorTree, EditedEntryHdl, const weld::TreeView::iter_string&, rIterString, bool)
     {
         m_bEditing = false;
 

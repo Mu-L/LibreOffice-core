@@ -308,7 +308,7 @@ IMPL_LINK(LibPage, EditingEntryHdl, const weld::TreeIter&, rIter, bool)
     return true;
 }
 
-IMPL_LINK(LibPage, EditedEntryHdl, const IterString&, rIterString, bool)
+IMPL_LINK(LibPage, EditedEntryHdl, const weld::TreeView::iter_string&, rIterString, bool)
 {
     const weld::TreeIter& rIter = rIterString.first;
     OUString sNewName = rIterString.second;

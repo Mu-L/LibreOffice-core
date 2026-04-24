@@ -518,7 +518,7 @@ IMPL_LINK_NOARG(DbaIndexDialog, OnEntryEditing, const weld::TreeIter&, bool)
     return true;
 }
 
-IMPL_LINK(DbaIndexDialog, OnEntryEdited, const IterString&, rIterString, bool)
+IMPL_LINK(DbaIndexDialog, OnEntryEdited, const weld::TreeView::iter_string&, rIterString, bool)
 {
     m_bEditingActive = false;
 

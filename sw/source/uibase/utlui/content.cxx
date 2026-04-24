@@ -3241,7 +3241,7 @@ IMPL_LINK(SwContentTree, EditingEntryHdl, const weld::TreeIter&, rIter, bool)
     return m_bEditing;
 }
 
-IMPL_LINK(SwContentTree, EditedEntryHdl, const IterString&, rIterString, bool)
+IMPL_LINK(SwContentTree, EditedEntryHdl, const weld::TreeView::iter_string&, rIterString, bool)
 {
     SwContent* pCnt = weld::fromId<SwContent*>(m_xTreeView->get_id(rIterString.first));
     const ContentTypeId nType = pCnt->GetParent()->GetType();

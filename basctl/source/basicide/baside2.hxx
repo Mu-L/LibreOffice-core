@@ -229,8 +229,7 @@ private:
     DECL_LINK(ActivateHdl, weld::Entry&, bool);
     DECL_LINK(KeyInputHdl, const KeyEvent&, bool);
     DECL_LINK(EditingEntryHdl, const weld::TreeIter&, bool);
-    typedef std::pair<const weld::TreeIter&, OUString> IterString;
-    DECL_LINK(EditedEntryHdl, const IterString&, bool);
+    DECL_LINK(EditedEntryHdl, const weld::TreeView::iter_string&, bool);
     DECL_LINK(ExecuteUpdateWatches, void*, void);
 
 public:

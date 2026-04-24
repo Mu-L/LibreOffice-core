@@ -805,7 +805,7 @@ IMPL_LINK_NOARG(SdPageObjsTLV, EditingEntryHdl, const weld::TreeIter&, bool)
     return true;
 }
 
-IMPL_LINK(SdPageObjsTLV, EditedEntryHdl, const IterString&, rIterString, bool)
+IMPL_LINK(SdPageObjsTLV, EditedEntryHdl, const weld::TreeView::iter_string&, rIterString, bool)
 {
     m_bEditing = false;
 

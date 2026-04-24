@@ -186,8 +186,7 @@ class LibPage final : public OrganizePage
     DECL_LINK( ButtonHdl, weld::Button&, void );
     DECL_LINK( CheckPasswordHdl, SvxPasswordDialog *, bool );
     DECL_LINK( EditingEntryHdl, const weld::TreeIter&, bool );
-    typedef std::pair<const weld::TreeIter&, OUString> IterString;
-    DECL_LINK( EditedEntryHdl, const IterString&, bool );
+    DECL_LINK(EditedEntryHdl, const weld::TreeView::iter_string&, bool);
 
     void                CheckButtons();
     void                DeleteCurrent();

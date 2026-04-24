@@ -2359,7 +2359,7 @@ IMPL_LINK(WatchWindow, EditingEntryHdl, const weld::TreeIter&, rIter, bool)
     return bEdit;
 }
 
-IMPL_LINK(WatchWindow, EditedEntryHdl, const IterString&, rIterString, bool)
+IMPL_LINK(WatchWindow, EditedEntryHdl, const weld::TreeView::iter_string&, rIterString, bool)
 {
     const weld::TreeIter& rIter = rIterString.first;
     OUString aResult = comphelper::string::strip(rIterString.second, ' ');
