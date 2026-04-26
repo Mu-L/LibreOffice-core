@@ -78,6 +78,7 @@
 #include <o3tl/sorted_vector.hxx>
 #include <osl/diagnose.h>
 #include <comphelper/string.hxx>
+#include <algorithm>
 #include <cstddef>
 #include <memory>
 
@@ -4990,7 +4991,7 @@ void ImpEditEngine::ImplExpandCompressedPortions(EditLine& rLine, ParaPortion& r
             DBG_ASSERT( nTxtPortionStart >= rLine.GetStart(), "Portion doesn't belong to the line!!!" );
             double* pDXArray = rLine.GetCharPosArray().data() + (nTxtPortionStart - rLine.GetStart());
             if ( pTP->GetExtraInfos()->pOrgDXArray )
-                memcpy( pDXArray, pTP->GetExtraInfos()->pOrgDXArray.get(), (pTP->GetLen()-1)*sizeof(double) );
+                std::copy_n( pTP->GetExtraInfos()->pOrgDXArray.get(), pTP->GetLen()-1, pDXArray );
             ImplCalcAsianCompression( rParaPortion.GetNode(), pTP, nTxtPortionStart, pDXArray, static_cast<sal_uInt16>(nCompressPercent), true );
         }
     }
