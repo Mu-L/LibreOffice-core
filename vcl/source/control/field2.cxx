@@ -76,7 +76,7 @@ uno::Reference< i18n::XCharacterClassification > const & ImplGetCharClass()
 
 static sal_Unicode* ImplAddString( sal_Unicode* pBuf, const OUString& rStr )
 {
-    memcpy( pBuf, rStr.getStr(), rStr.getLength() * sizeof(sal_Unicode) );
+    std::copy_n( rStr.getStr(), rStr.getLength(), pBuf );
     pBuf += rStr.getLength();
     return pBuf;
 }

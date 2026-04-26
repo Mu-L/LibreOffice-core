@@ -17,6 +17,8 @@
  *   the License at http://www.apache.org/licenses/LICENSE-2.0 .
  */
 
+#include <algorithm>
+
 #include <sal/log.hxx>
 #include <vcl/BitmapReadAccess.hxx>
 #include <tools/link.hxx>
@@ -311,7 +313,7 @@ void ImplChain::ImplGetSpace()
 
     mnArraySize = mnArraySize << 1;
     pNewCodes = new sal_uInt8[ mnArraySize ];
-    memcpy( pNewCodes, mpCodes.get(), nOldArraySize );
+    std::copy_n( mpCodes.get(), nOldArraySize, pNewCodes );
     mpCodes.reset( pNewCodes );
 }
 

@@ -17,6 +17,8 @@
  *   the License at http://www.apache.org/licenses/LICENSE-2.0 .
  */
 
+#include <algorithm>
+
 #include "imivctl.hxx"
 #include <sal/log.hxx>
 
@@ -422,7 +424,7 @@ void IcnGridMap_Impl::Expand()
         size_t nNewCellCount = static_cast<size_t>(nNewGridRows) * nNewGridCols;
         bool* pNewGridMap = new bool[nNewCellCount];
         size_t nOldCellCount = static_cast<size_t>(_nGridRows) * _nGridCols;
-        memcpy(pNewGridMap, _pGridMap.get(), nOldCellCount * sizeof(bool));
+        std::copy_n(_pGridMap.get(), nOldCellCount, pNewGridMap);
         memset(pNewGridMap + nOldCellCount, 0, (nNewCellCount-nOldCellCount) * sizeof(bool));
         _pGridMap.reset( pNewGridMap );
         _nGridRows = nNewGridRows;

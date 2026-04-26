@@ -120,7 +120,7 @@ void Impl_IMEInfos::CopyAttribs(const ExtTextInputAttr* pA, sal_Int32 nL)
 {
     nLen = nL;
     pAttribs.reset(new ExtTextInputAttr[ nL ]);
-    memcpy( pAttribs.get(), pA, nL*sizeof(ExtTextInputAttr) );
+    std::copy_n( pA, nL, pAttribs.get() );
 }
 
 void Impl_IMEInfos::DestroyAttribs()
