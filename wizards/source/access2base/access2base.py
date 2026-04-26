@@ -4,7 +4,7 @@
 
 # =====================================================================================================================
 # ===                   The Access2Base library is a part of the LibreOffice project.                               ===
-# ===                   Full documentation is available on http://www.access2base.com                               ===
+# ===                   Full documentation is available on https://access2base.libreoffice.org                      ===
 # =====================================================================================================================
 
 # Access2Base is distributed in the hope that it will be useful,
@@ -33,7 +33,7 @@ Additionally, if Python and LibreOffice are started in separate processes:
         A2BConnect(hostname = 'localhost', port = 2019)
 
 Specific documentation about Access2Base and Python:
-    http://www.access2base.com/access2base.html#%5B%5BAccess2Base%20and%20Python%5D%5D
+    https://access2base.libreoffice.org/index.html#%5B%5BAccess2Base%20and%20Python%5D%5D
 """
 
 import uno

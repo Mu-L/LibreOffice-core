@@ -3,7 +3,7 @@
 <script:module xmlns:script="http://openoffice.org/2000/script" script:name="Field" script:language="StarBasic">
 REM =======================================================================================================================
 REM ===					The Access2Base library is a part of the LibreOffice project.									===
-REM ===					Full documentation is available on http://www.access2base.com									===
+REM ===					Full documentation is available on https://access2base.libreoffice.org								===
 REM =======================================================================================================================
 
 Option Compatible
