@@ -936,7 +936,7 @@ class XFillGradientItem;
 // 1092 is used out of order below
 #define SID_OBJECT_MIRROR                               ( SID_SVX_START + 1093 )
 
-#define SID_DELETE_POSTIT                               ( SID_SVX_START + 1094 )
+#define SID_DELETE_POSTIT                               TypedWhichId<SfxUnoAnyItem>( SID_SVX_START + 1094 )
 #define SID_NEXT_POSTIT                                 ( SID_SVX_START + 1095 )
 #define SID_PREVIOUS_POSTIT                             ( SID_SVX_START + 1096 )
 #define SID_DELETEALL_POSTIT                            ( SID_SVX_START + 1097 )

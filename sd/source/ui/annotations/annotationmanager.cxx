@@ -381,7 +381,7 @@ void AnnotationManagerImpl::ExecuteDeleteAnnotation(SfxRequest const & rReq)
             const SfxPoolItem*  pPoolItem = nullptr;
             if( SfxItemState::SET == pArgs->GetItemState( SID_DELETEALLBYAUTHOR_POSTIT, true, &pPoolItem ) )
             {
-                OUString sAuthor( static_cast<const SfxStringItem*>( pPoolItem )->GetValue() );
+                OUString sAuthor( pPoolItem->StaticWhichCast(SID_DELETEALLBYAUTHOR_POSTIT).GetValue() );
                 DeleteAnnotationsByAuthor( sAuthor );
             }
         }
@@ -396,14 +396,14 @@ void AnnotationManagerImpl::ExecuteDeleteAnnotation(SfxRequest const & rReq)
                 if( SfxItemState::SET == pArgs->GetItemState( SID_DELETE_POSTIT, true, &pPoolItem ) )
                 {
                     uno::Reference<office::XAnnotation> xTmpAnnotation;
-                    if (static_cast<const SfxUnoAnyItem*>(pPoolItem)->GetValue() >>= xTmpAnnotation)
+                    if (pPoolItem->StaticWhichCast(SID_DELETE_POSTIT).GetValue() >>= xTmpAnnotation)
                     {
                         xAnnotation = dynamic_cast<sdr::annotation::Annotation*>(xTmpAnnotation.get());
                         assert(bool(xAnnotation) == bool(xTmpAnnotation) && "must be of concrete type sd::Annotation");
                     }
                 }
                 if( SfxItemState::SET == pArgs->GetItemState( SID_ATTR_POSTIT_ID, true, &pPoolItem ) )
-                    nId = static_cast<const SvxPostItIdItem*>(pPoolItem)->GetValue().toUInt32();
+                    nId = pPoolItem->StaticWhichCast(SID_ATTR_POSTIT_ID).GetValue().toUInt32();
             }
 
             if (nId != 0)
@@ -585,7 +585,7 @@ void AnnotationManagerImpl::ExecuteReplyToAnnotation( SfxRequest const & rReq )
         if( SfxItemState::SET == pArgs->GetItemState( SID_ATTR_POSTIT_ID, true, &pPoolItem ) )
         {
             sal_uInt32 nReplyId = 0; // Id of the comment to reply to
-            nReplyId = static_cast<const SvxPostItIdItem*>(pPoolItem)->GetValue().toUInt32();
+            nReplyId = pPoolItem->StaticWhichCast(SID_ATTR_POSTIT_ID).GetValue().toUInt32();
             xAnnotation = GetAnnotationById(nReplyId);
         }
         else if( SfxItemState::SET == pArgs->GetItemState( rReq.GetSlot(), true, &pPoolItem ) )
@@ -599,7 +599,7 @@ void AnnotationManagerImpl::ExecuteReplyToAnnotation( SfxRequest const & rReq )
         }
 
         if( SfxItemState::SET == pArgs->GetItemState( SID_ATTR_POSTIT_TEXT, true, &pPoolItem ) )
-            sReplyText = static_cast<const SvxPostItTextItem*>( pPoolItem )->GetValue();
+            sReplyText = pPoolItem->StaticWhichCast(SID_ATTR_POSTIT_TEXT).GetValue();
     }
 
     auto* pTextApi = getTextApiObject( xAnnotation );
