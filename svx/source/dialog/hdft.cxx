@@ -947,7 +947,7 @@ void SvxHFPage::ActivatePage( const SfxItemSet& rSet )
     m_xCntSharedFirstBox->set_active(
         oNonActivatedFirstShared.has_value() ? *oNonActivatedFirstShared : bActivatedFirstShared);
 
-    if (auto pBoolItem = dynamic_cast<const SfxBoolItem*>(GetItem( rSet, SID_ATTR_PAGE_EXT1 )))
+    if (const SfxBoolItem* pBoolItem = GetItem( rSet, SID_ATTR_PAGE_EXT1 ))
     {
         m_aBspWin.SetTable( true );
         m_aBspWin.SetHorz( pBoolItem->GetValue() );

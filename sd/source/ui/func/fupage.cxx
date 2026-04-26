@@ -311,7 +311,7 @@ void FuPage::ExecuteAsyncDialog(weld::Window* pParent, const SfxRequest& rReq)
 
         if (pArgs && pArgs->GetItemState(SID_SELECT_BACKGROUND, true, &pItem) == SfxItemState::SET)
         {
-            OUString aFileName(static_cast<const SfxStringItem*>(pItem)->GetValue());
+            OUString aFileName(pItem->StaticWhichCast(SID_SELECT_BACKGROUND).GetValue());
             OUString aFilterName;
 
             if (const SfxStringItem* pFilterItem = pArgs->GetItemIfSet(FN_PARAM_FILTER))
@@ -506,9 +506,9 @@ void FuPage::ApplyItemSet( const SfxItemSet* pArgs )
 
     if( pArgs->GetItemState(SID_ATTR_PAGE, true, &pPoolItem) == SfxItemState::SET )
     {
-        mrDoc.SetPageNumType(static_cast<const SvxPageItem*>(pPoolItem)->GetNumType());
+        mrDoc.SetPageNumType(pPoolItem->StaticWhichCast(SID_ATTR_PAGE).GetNumType());
 
-        eOrientation = static_cast<const SvxPageItem*>(pPoolItem)->IsLandscape() ?
+        eOrientation = pPoolItem->StaticWhichCast(SID_ATTR_PAGE).IsLandscape() ?
             Orientation::Landscape : Orientation::Portrait;
 
         if( mpPage->GetOrientation() != eOrientation )
@@ -520,12 +520,12 @@ void FuPage::ApplyItemSet( const SfxItemSet* pArgs )
     if ( pArgs->GetItemState(SID_ATTR_RESIZE_ALL_PAGES, true, &pPoolItem) == SfxItemState::SET)
     {
         SdDrawDocument* pDrawDoc = mpDrawViewShell->GetDoc();
-        pDrawDoc->SetResizeAllPages(static_cast<const SfxBoolItem*>(pPoolItem)->GetValue());
+        pDrawDoc->SetResizeAllPages(pPoolItem->StaticWhichCast(SID_ATTR_RESIZE_ALL_PAGES).GetValue());
     }
 
     if( pArgs->GetItemState(SID_ATTR_PAGE_SIZE, true, &pPoolItem) == SfxItemState::SET )
     {
-        aNewSize = static_cast<const SvxSizeItem*>(pPoolItem)->GetSize();
+        aNewSize = pPoolItem->StaticWhichCast(SID_ATTR_PAGE_SIZE).GetSize();
 
         if( mpPage->GetSize() != aNewSize )
             bSetPageSizeAndBorder = true;
@@ -534,6 +534,8 @@ void FuPage::ApplyItemSet( const SfxItemSet* pArgs )
     if( pArgs->GetItemState(mrDoc.GetPool().GetWhichIDFromSlotID(SID_ATTR_LRSPACE),
                             true, &pPoolItem) == SfxItemState::SET )
     {
+        // FIXME for tdf#140226: using static_cast<const SvxULSpaceItem*>(pPoolItem)
+        // makes UITest_impress_tests fail
         nLeft = static_cast<const SvxLRSpaceItem*>(pPoolItem)->ResolveLeft();
         nRight = static_cast<const SvxLRSpaceItem*>(pPoolItem)->ResolveRight({});
 
@@ -545,6 +547,8 @@ void FuPage::ApplyItemSet( const SfxItemSet* pArgs )
     if( pArgs->GetItemState(mrDoc.GetPool().GetWhichIDFromSlotID(SID_ATTR_ULSPACE),
                             true, &pPoolItem) == SfxItemState::SET )
     {
+        // FIXME for tdf#140226: using static_cast<const SvxULSpaceItem*>(pPoolItem)
+        // makes UITest_impress_tests fail
         nUpper = static_cast<const SvxULSpaceItem*>(pPoolItem)->GetUpper();
         nLower = static_cast<const SvxULSpaceItem*>(pPoolItem)->GetLower();
 
@@ -554,13 +558,13 @@ void FuPage::ApplyItemSet( const SfxItemSet* pArgs )
 
     if( pArgs->GetItemState(mrDoc.GetPool().GetWhichIDFromSlotID(SID_ATTR_PAGE_EXT1), true, &pPoolItem) == SfxItemState::SET )
     {
-        bScaleAll = static_cast<const SfxBoolItem*>(pPoolItem)->GetValue();
+        bScaleAll = pPoolItem->StaticWhichCast(SID_ATTR_PAGE_EXT1).GetValue();
     }
 
     if (SfxItemState::SET == pArgs->GetItemState(SID_ATTR_CHAR_GRABBAG, true, &pPoolItem))
     {
-        SfxGrabBagItem const*const pGrabBag(static_cast<SfxGrabBagItem const*>(pPoolItem));
-        const auto& rGrabBagInner = pGrabBag->GetGrabBag();
+        SfxGrabBagItem const pGrabBag(pPoolItem->StaticWhichCast(SID_ATTR_CHAR_GRABBAG));
+        const auto& rGrabBagInner = pGrabBag.GetGrabBag();
         const auto iter = rGrabBagInner.find(u"BackgroundFullSize"_ustr);
         assert(iter != rGrabBagInner.end());
         if (iter->second >>= bFullSize)
@@ -575,7 +579,7 @@ void FuPage::ApplyItemSet( const SfxItemSet* pArgs )
     // Paper Bin
     if( pArgs->GetItemState(mrDoc.GetPool().GetWhichIDFromSlotID(SID_ATTR_PAGE_PAPERBIN), true, &pPoolItem) == SfxItemState::SET )
     {
-        nPaperBin = static_cast<const SvxPaperBinItem*>(pPoolItem)->GetValue();
+        nPaperBin = pPoolItem->StaticWhichCast(SID_ATTR_PAGE_PAPERBIN).GetValue();
 
         if( mpPage->GetPaperBin() != nPaperBin )
             bSetPageSizeAndBorder = true;
