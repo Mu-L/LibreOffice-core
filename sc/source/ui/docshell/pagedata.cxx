@@ -17,6 +17,7 @@
  *   the License at http://www.apache.org/licenses/LICENSE-2.0 .
  */
 
+#include <algorithm>
 #include <string.h>
 
 #include <pagedata.hxx>
@@ -36,13 +37,13 @@ ScPrintRangeData::~ScPrintRangeData()
 void ScPrintRangeData::SetPagesX( size_t nCount, const SCCOL* pData )
 {
     mvPageEndX.resize( nCount );
-    memcpy( mvPageEndX.data(), pData, nCount * sizeof(SCCOL) );
+    std::copy_n( pData, nCount, mvPageEndX.data() );
 }
 
 void ScPrintRangeData::SetPagesY( size_t nCount, const SCROW* pData )
 {
     mvPageEndY.resize(nCount);
-    memcpy( mvPageEndY.data(), pData, nCount * sizeof(SCROW) );
+    std::copy_n( pData, nCount, mvPageEndY.data() );
 }
 
 ScPageBreakData::ScPageBreakData(size_t nMax)

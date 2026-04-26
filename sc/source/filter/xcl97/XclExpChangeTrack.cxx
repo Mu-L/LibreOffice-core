@@ -17,6 +17,7 @@
  *   the License at http://www.apache.org/licenses/LICENSE-2.0 .
  */
 
+#include <algorithm>
 #include <memory>
 #include <numeric>
 #include <stdio.h>
@@ -548,7 +549,7 @@ XclExpChTrTabIdBuffer::XclExpChTrTabIdBuffer( const XclExpChTrTabIdBuffer& rCopy
     nLastId( rCopy.nLastId )
 {
     pBuffer.reset( new sal_uInt16[ nBufSize ] );
-    memcpy( pBuffer.get(), rCopy.pBuffer.get(), sizeof(sal_uInt16) * nBufSize );
+    std::copy_n( rCopy.pBuffer.get(), nBufSize, pBuffer.get() );
     pLast = pBuffer.get() + nBufSize - 1;
 }
 

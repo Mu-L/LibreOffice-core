@@ -17,6 +17,8 @@
  *   the License at http://www.apache.org/licenses/LICENSE-2.0 .
  */
 
+#include <algorithm>
+
 #include <compressedarray.hxx>
 #include <global.hxx>
 
@@ -82,7 +84,7 @@ void ScCompressedArray<A,D>::SetValue( A nStart, A nEnd, const D& rValue )
             if (nLimit < nNeeded)
                 nLimit = nNeeded;
             std::unique_ptr<DataEntry[]> pNewData(new DataEntry[nLimit]);
-            memcpy( pNewData.get(), pData.get(), nCount*sizeof(DataEntry));
+            std::copy_n( pData.get(), nCount, pNewData.get());
             pData = std::move(pNewData);
         }
 
