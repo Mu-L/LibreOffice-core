@@ -17,9 +17,11 @@ class StartsWith: public CppUnit::TestFixture
 {
 private:
     void startsWith();
+    void startsWithChar();
 
     CPPUNIT_TEST_SUITE(StartsWith);
     CPPUNIT_TEST(startsWith);
+    CPPUNIT_TEST(startsWithChar);
     CPPUNIT_TEST_SUITE_END();
 };
 
@@ -32,6 +34,41 @@ void test::oustring::StartsWith::startsWith()
     CPPUNIT_ASSERT( u"foobar"_ustr.startsWith( "foo" ));
     CPPUNIT_ASSERT( !u"foo"_ustr.startsWith( "foobar" ));
     CPPUNIT_ASSERT( !u"foobar"_ustr.startsWith( "oo" ));
+}
+
+void test::oustring::StartsWith::startsWithChar()
+{
+    CPPUNIT_ASSERT(!u""_ustr.startsWith('.'));
+    CPPUNIT_ASSERT(u"."_ustr.startsWith('.'));
+    CPPUNIT_ASSERT(u".foo"_ustr.startsWith('.'));
+    CPPUNIT_ASSERT(u"ĉu?"_ustr.startsWith(u'ĉ'));
+    CPPUNIT_ASSERT(!u"."_ustr.startsWith('?'));
+    CPPUNIT_ASSERT(!u".foo"_ustr.startsWith('?'));
+    CPPUNIT_ASSERT(!u"ĉu?"_ustr.startsWith(u'ĥ'));
+
+    {
+        OUString rest = u"not_changed"_ustr;
+        CPPUNIT_ASSERT(!u"foo"_ustr.startsWith('p', &rest));
+        CPPUNIT_ASSERT_EQUAL(u"not_changed"_ustr, rest);
+    }
+
+    {
+        OUString rest = u"must_change"_ustr;
+        CPPUNIT_ASSERT(u"/removed_slash"_ustr.startsWith('/', &rest));
+        CPPUNIT_ASSERT_EQUAL(u"removed_slash"_ustr, rest);
+    }
+
+    {
+        std::u16string_view rest = u"not_changed";
+        CPPUNIT_ASSERT(!u"foo"_ustr.startsWith('p', &rest));
+        CPPUNIT_ASSERT_EQUAL(u"not_changed"_ustr, OUString(rest));
+    }
+
+    {
+        std::u16string_view rest = u"must_change";
+        CPPUNIT_ASSERT(u"/removed_slash"_ustr.startsWith('/', &rest));
+        CPPUNIT_ASSERT_EQUAL(u"removed_slash"_ustr, OUString(rest));
+    }
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

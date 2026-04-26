@@ -33,9 +33,11 @@ class EndsWith: public CppUnit::TestFixture
 {
 private:
     void endsWith();
+    void endsWithChar();
 
     CPPUNIT_TEST_SUITE(EndsWith);
     CPPUNIT_TEST(endsWith);
+    CPPUNIT_TEST(endsWithChar);
     CPPUNIT_TEST_SUITE_END();
 };
 
@@ -104,6 +106,41 @@ void test::oustring::EndsWith::endsWith()
         CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.getStr(), bEndsWith,
                                      OUString(pStr1, nStr1Len, RTL_TEXTENCODING_ASCII_US)
                                          .endsWithIgnoreAsciiCaseAsciiL(pStr2, nStr2Len));
+    }
+}
+
+void test::oustring::EndsWith::endsWithChar()
+{
+    CPPUNIT_ASSERT(!u""_ustr.endsWith('.'));
+    CPPUNIT_ASSERT(u"."_ustr.endsWith('.'));
+    CPPUNIT_ASSERT(u"foo."_ustr.endsWith('.'));
+    CPPUNIT_ASSERT(u"aĥ"_ustr.endsWith(u'ĥ'));
+    CPPUNIT_ASSERT(!u"."_ustr.endsWith('?'));
+    CPPUNIT_ASSERT(!u"foo."_ustr.endsWith('?'));
+    CPPUNIT_ASSERT(!u"aĥ"_ustr.endsWith(u'ĉ'));
+
+    {
+        OUString rest = u"not_changed"_ustr;
+        CPPUNIT_ASSERT(!u"foo"_ustr.endsWith('p', &rest));
+        CPPUNIT_ASSERT_EQUAL(u"not_changed"_ustr, rest);
+    }
+
+    {
+        OUString rest = u"must_change"_ustr;
+        CPPUNIT_ASSERT(u"removed_slash/"_ustr.endsWith('/', &rest));
+        CPPUNIT_ASSERT_EQUAL(u"removed_slash"_ustr, rest);
+    }
+
+    {
+        std::u16string_view rest = u"not_changed";
+        CPPUNIT_ASSERT(!u"foo"_ustr.endsWith('p', &rest));
+        CPPUNIT_ASSERT_EQUAL(u"not_changed"_ustr, OUString(rest));
+    }
+
+    {
+        std::u16string_view rest = u"must_change";
+        CPPUNIT_ASSERT(u"removed_slash/"_ustr.endsWith('/', &rest));
+        CPPUNIT_ASSERT_EQUAL(u"removed_slash"_ustr, OUString(rest));
     }
 }
 

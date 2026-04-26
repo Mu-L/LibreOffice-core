@@ -21,11 +21,15 @@ private:
     void testStartsWithIgnoreAsciiCase();
     void testCompareTo();
     void testUtf8StringLiterals();
+    void testStartsWithChar();
+    void testEndsWithChar();
 
     CPPUNIT_TEST_SUITE(Test);
     CPPUNIT_TEST(testStartsWithIgnoreAsciiCase);
     CPPUNIT_TEST(testCompareTo);
     CPPUNIT_TEST(testUtf8StringLiterals);
+    CPPUNIT_TEST(testStartsWithChar);
+    CPPUNIT_TEST(testEndsWithChar);
     CPPUNIT_TEST_SUITE_END();
 };
 
@@ -114,6 +118,72 @@ void Test::testUtf8StringLiterals()
     CPPUNIT_ASSERT_EQUAL(195, int(static_cast<unsigned char>(sIn[0])));
     CPPUNIT_ASSERT_EQUAL(159, int(static_cast<unsigned char>(sIn[1])));
     CPPUNIT_ASSERT_EQUAL(97, int(static_cast<unsigned char>(sIn[2])));
+}
+
+void Test::testStartsWithChar()
+{
+    CPPUNIT_ASSERT(!""_ostr.startsWith('.'));
+    CPPUNIT_ASSERT("."_ostr.startsWith('.'));
+    CPPUNIT_ASSERT(".foo"_ostr.startsWith('.'));
+    CPPUNIT_ASSERT(!"."_ostr.startsWith('?'));
+    CPPUNIT_ASSERT(!".foo"_ostr.startsWith('?'));
+
+    {
+        OString rest = "not_changed"_ostr;
+        CPPUNIT_ASSERT(!"foo"_ostr.startsWith('p', &rest));
+        CPPUNIT_ASSERT_EQUAL("not_changed"_ostr, rest);
+    }
+
+    {
+        OString rest = "must_change"_ostr;
+        CPPUNIT_ASSERT("/removed_slash"_ostr.startsWith('/', &rest));
+        CPPUNIT_ASSERT_EQUAL("removed_slash"_ostr, rest);
+    }
+
+    {
+        std::string_view rest = "not_changed";
+        CPPUNIT_ASSERT(!"foo"_ostr.startsWith('p', &rest));
+        CPPUNIT_ASSERT_EQUAL("not_changed"_ostr, OString(rest));
+    }
+
+    {
+        std::string_view rest = "must_change";
+        CPPUNIT_ASSERT("/removed_slash"_ostr.startsWith('/', &rest));
+        CPPUNIT_ASSERT_EQUAL("removed_slash"_ostr, OString(rest));
+    }
+}
+
+void Test::testEndsWithChar()
+{
+    CPPUNIT_ASSERT(!""_ostr.endsWith('.'));
+    CPPUNIT_ASSERT("."_ostr.endsWith('.'));
+    CPPUNIT_ASSERT("foo."_ostr.endsWith('.'));
+    CPPUNIT_ASSERT(!"."_ostr.endsWith('?'));
+    CPPUNIT_ASSERT(!"foo."_ostr.endsWith('?'));
+
+    {
+        OString rest = "not_changed"_ostr;
+        CPPUNIT_ASSERT(!"foo"_ostr.endsWith('p', &rest));
+        CPPUNIT_ASSERT_EQUAL("not_changed"_ostr, rest);
+    }
+
+    {
+        OString rest = "must_change"_ostr;
+        CPPUNIT_ASSERT("removed_slash/"_ostr.endsWith('/', &rest));
+        CPPUNIT_ASSERT_EQUAL("removed_slash"_ostr, rest);
+    }
+
+    {
+        std::string_view rest = "not_changed";
+        CPPUNIT_ASSERT(!"foo"_ostr.endsWith('p', &rest));
+        CPPUNIT_ASSERT_EQUAL("not_changed"_ostr, OString(rest));
+    }
+
+    {
+        std::string_view rest = "must_change";
+        CPPUNIT_ASSERT("removed_slash/"_ostr.endsWith('/', &rest));
+        CPPUNIT_ASSERT_EQUAL("removed_slash"_ostr, OString(rest));
+    }
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION(Test);

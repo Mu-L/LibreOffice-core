@@ -1221,6 +1221,66 @@ public:
     }
 #endif
 
+    /**
+      Check whether this string starts with a given character.
+
+      @param ch the character to be compared
+
+      @return true if and only if the given character appears at the start of this string
+
+      @since LibreOffice 26.8
+    */
+    bool startsWith(char ch) const
+    {
+        return !isEmpty() && pData->buffer[0] == ch;
+    }
+
+    /**
+      Check whether this string starts with a given character.
+
+      @param str the character to be compared
+
+      @param rest if this function returns true, then assign a
+      copy of the remainder of this string to *rest.
+
+      @return true if and only if the given character appears at the start of this string
+
+      @since LibreOffice 26.8
+    */
+    bool startsWith(char ch, OString* rest) const {
+        assert(rest);
+        bool b = startsWith(ch);
+
+        if (b)
+            *rest = copy(1);
+
+        return b;
+    }
+
+#if defined LIBO_INTERNAL_ONLY
+    /**
+      Check whether this string starts with a given character.
+
+      @param str the character to be compared
+
+      @param rest if this function returns true, then assign a
+      copy of the remainder of this string to *rest.
+
+      @return true if and only if the given character appears at the start of this string
+
+      @since LibreOffice 26.8
+    */
+    bool startsWith(char ch, std::string_view* rest) const {
+        assert(rest);
+        bool b = startsWith(ch);
+
+        if (b)
+            *rest = subView(1);
+
+        return b;
+    }
+#endif
+
 #if defined LIBO_INTERNAL_ONLY
     /**
       Check whether this string starts with a given string, ignoring the case of
@@ -1594,6 +1654,66 @@ public:
         return strLength <= getLength()
             && matchL(str, strLength, getLength() - strLength);
     }
+
+    /**
+      Check whether this string ends with a given character.
+
+      @param ch the character to be compared
+
+      @return true if and only if the given character appears at the end of this string
+
+      @since LibreOffice 26.8
+    */
+    bool endsWith(char ch) const
+    {
+        return !isEmpty() && pData->buffer[pData->length - 1] == ch;
+    }
+
+    /**
+      Check whether this string ends with a given character.
+
+      @param str the character to be compared
+
+      @param rest if this function returns true, then assign a
+      copy of the remainder of this string to *rest.
+
+      @return true if and only if the given character appears at the end of this string
+
+      @since LibreOffice 26.8
+    */
+    bool endsWith(char ch, OString* rest) const {
+        assert(rest);
+        bool b = endsWith(ch);
+
+        if (b)
+            *rest = copy(0, pData->length - 1);
+
+        return b;
+    }
+
+#if defined LIBO_INTERNAL_ONLY
+    /**
+      Check whether this string ends with a given character.
+
+      @param str the character to be compared
+
+      @param rest if this function returns true, then assign a
+      copy of the remainder of this string to *rest.
+
+      @return true if and only if the given character appears at the end of this string
+
+      @since LibreOffice 26.8
+    */
+    bool endsWith(char ch, std::string_view* rest) const {
+        assert(rest);
+        bool b = endsWith(ch);
+
+        if (b)
+            *rest = subView(0, pData->length - 1);
+
+        return b;
+    }
+#endif
 
     friend bool     operator == ( const OString& rStr1, const OString& rStr2 )
                         { return rStr1.equals(rStr2); }
