@@ -609,7 +609,7 @@ void ConvertItem( std::unique_ptr<SfxPoolItem>& rPoolItem, MapUnit eSourceUnit, 
         case EE_PARA_LRSPACE:
         {
             assert(dynamic_cast<const SvxLRSpaceItem *>(rPoolItem.get()) != nullptr);
-            SvxLRSpaceItem& rItem = static_cast<SvxLRSpaceItem&>(*rPoolItem);
+            SvxLRSpaceItem& rItem = rPoolItem->StaticWhichCast(EE_PARA_LRSPACE);
             if (rItem.GetTextFirstLineOffset().m_nUnit == css::util::MeasureUnit::TWIP)
             {
                 rItem.SetTextFirstLineOffset(
@@ -628,7 +628,7 @@ void ConvertItem( std::unique_ptr<SfxPoolItem>& rPoolItem, MapUnit eSourceUnit, 
         case EE_PARA_ULSPACE:
         {
             assert(dynamic_cast<const SvxULSpaceItem *>(rPoolItem.get()) != nullptr);
-            SvxULSpaceItem& rItem = static_cast<SvxULSpaceItem&>(*rPoolItem);
+            SvxULSpaceItem& rItem = rPoolItem->StaticWhichCast(EE_PARA_ULSPACE);
             rItem.SetUpper( sal::static_int_cast< sal_uInt16 >( OutputDevice::LogicToLogic( rItem.GetUpper(), eSourceUnit, eDestUnit ) ) );
             rItem.SetLower( sal::static_int_cast< sal_uInt16 >( OutputDevice::LogicToLogic( rItem.GetLower(), eSourceUnit, eDestUnit ) ) );
         }
@@ -636,7 +636,7 @@ void ConvertItem( std::unique_ptr<SfxPoolItem>& rPoolItem, MapUnit eSourceUnit, 
         case EE_PARA_SBL:
         {
             assert(dynamic_cast<const SvxLineSpacingItem *>(rPoolItem.get()) != nullptr);
-            SvxLineSpacingItem& rItem = static_cast<SvxLineSpacingItem&>(*rPoolItem);
+            SvxLineSpacingItem& rItem = rPoolItem->StaticWhichCast(EE_PARA_SBL);
             // SetLineHeight changes also eLineSpace!
             if ( rItem.GetLineSpaceRule() == SvxLineSpaceRule::Min )
                 rItem.SetLineHeight( sal::static_int_cast< sal_uInt16 >( OutputDevice::LogicToLogic( rItem.GetLineHeight(), eSourceUnit, eDestUnit ) ) );
@@ -645,7 +645,7 @@ void ConvertItem( std::unique_ptr<SfxPoolItem>& rPoolItem, MapUnit eSourceUnit, 
         case EE_PARA_TABS:
         {
             assert(dynamic_cast<const SvxTabStopItem *>(rPoolItem.get()) != nullptr);
-            SvxTabStopItem& rItem = static_cast<SvxTabStopItem&>(*rPoolItem);
+            SvxTabStopItem& rItem = rPoolItem->StaticWhichCast(EE_PARA_TABS);
             SvxTabStopItem* pNewItem(new SvxTabStopItem(EE_PARA_TABS));
 
             if (sal_Int32 nDefTabDistance = rItem.GetDefaultDistance())
