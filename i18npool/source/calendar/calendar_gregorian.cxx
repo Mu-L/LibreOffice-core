@@ -565,7 +565,7 @@ void Calendar_gregorian::submitFields()
 void Calendar_gregorian::setValue()
 {
     // Copy fields before calling submitFields() directly or indirectly below.
-    memcpy(fieldSetValue, fieldValue, sizeof(fieldSetValue));
+    std::copy(std::begin(fieldValue), std::end(fieldValue), std::begin(fieldSetValue));
     // Possibly setup ERA and YEAR in fieldSetValue.
     mapToGregorian();
 
@@ -662,7 +662,7 @@ Calendar_gregorian::isValid()
     if (fieldSet) {
         sal_Int32 tmp = fieldSet;
         setValue();
-        memcpy(fieldSetValue, fieldValue, sizeof(fieldSetValue));
+        std::copy(std::begin(fieldValue), std::end(fieldValue), std::begin(fieldSetValue));
         getValue();
         for ( sal_Int16 fieldIndex = 0; fieldIndex < FIELD_INDEX_COUNT; fieldIndex++ ) {
             // compare only with fields that are set and reset fieldSet[]

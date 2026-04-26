@@ -18,6 +18,8 @@
  */
 
 
+#include <algorithm>
+
 #include <cclass_unicode.hxx>
 #include <unicode/uchar.h>
 #include <rtl/character.hxx>
@@ -415,7 +417,7 @@ void cclass_Unicode::initParserTable( const Locale& rLocale, sal_Int32 startChar
     // Memory of pTable is reused.
     if ( !pTable )
         pTable.reset(new ParserFlags[nDefCnt]);
-    memcpy( pTable.get(), pDefaultParserTable, sizeof(ParserFlags) * nDefCnt );
+    std::copy_n( pDefaultParserTable, nDefCnt, pTable.get() );
     // Start and cont tables only need reallocation if different length.
     if ( pStart && userDefinedCharactersStart.getLength() != aStartChars.getLength() )
     {
