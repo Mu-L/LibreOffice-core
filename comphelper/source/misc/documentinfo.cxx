@@ -120,12 +120,8 @@ namespace comphelper {
                 Reference< XStorable > xDocStorable( _rxDocument, UNO_QUERY_THROW );
                 sDocURL = xDocStorable->getLocation();
             }
+            sDocURL.endsWith(u"/", &sDocURL);
             sal_Int32 nLastSepPos = sDocURL.lastIndexOf( '/' );
-            if ( ( nLastSepPos != -1 ) && ( nLastSepPos == sDocURL.getLength() - 1 ) )
-            {
-                sDocURL = sDocURL.copy( 0, nLastSepPos );
-                nLastSepPos = sDocURL.lastIndexOf( '/' );
-            }
             sTitle = sDocURL.copy( nLastSepPos + 1 );
 
             if ( !sTitle.isEmpty() )
