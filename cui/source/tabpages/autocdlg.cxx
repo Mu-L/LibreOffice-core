@@ -994,14 +994,10 @@ IMPL_LINK_NOARG(OfaAutocorrReplacePage, SelectHdl, weld::ItemView&, void)
 void OfaAutocorrReplacePage::NewEntry(const OUString& sShort, const OUString& sLong, bool bKeepSourceFormatting)
 {
     DoubleStringArray& rNewArray = aChangesTable[eLang].aNewEntries;
-    for (size_t i = 0; i < rNewArray.size(); i++)
-    {
-        if (rNewArray[i].sShort == sShort)
-        {
-            rNewArray.erase(rNewArray.begin() + i);
-            break;
-        }
-    }
+    auto it = std::find_if(rNewArray.begin(), rNewArray.end(),
+        [&sShort](const DoubleString& rEntry) { return rEntry.sShort == sShort; });
+    if (it != rNewArray.end())
+        rNewArray.erase(it);
 
     DoubleStringArray& rDeletedArray = aChangesTable[eLang].aDeletedEntries;
     for (size_t i = 0; i < rDeletedArray.size(); i++)
