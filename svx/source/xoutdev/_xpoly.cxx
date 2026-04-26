@@ -56,8 +56,8 @@ ImpXPolygon::ImpXPolygon( const ImpXPolygon& rImpXPoly )
 
     // copy
     nPoints = rImpXPoly.nPoints;
-    memcpy( pPointAry.get(), rImpXPoly.pPointAry.get(), nSize*sizeof( Point ) );
-    memcpy( pFlagAry.get(), rImpXPoly.pFlagAry.get(), nSize );
+    std::copy_n( rImpXPoly.pPointAry.get(), nSize, pPointAry.get() );
+    std::copy_n( rImpXPoly.pFlagAry.get(), nSize, pFlagAry.get() );
 }
 
 ImpXPolygon::~ImpXPolygon()
@@ -117,13 +117,13 @@ void ImpXPolygon::Resize( sal_uInt16 nNewSize, bool bDeletePoints )
     {
         if( nOldSize < nSize )
         {
-            memcpy( pPointAry.get(), pOldPointAry, nOldSize*sizeof( Point ) );
-            memcpy( pFlagAry.get(),  pOldFlagAry, nOldSize );
+            std::copy_n( pOldPointAry, nOldSize, pPointAry.get() );
+            std::copy_n( pOldFlagAry, nOldSize, pFlagAry.get() );
         }
         else
         {
-            memcpy( pPointAry.get(), pOldPointAry, nSize*sizeof( Point ) );
-            memcpy( pFlagAry.get(), pOldFlagAry, nSize );
+            std::copy_n( pOldPointAry, nSize, pPointAry.get() );
+            std::copy_n( pOldFlagAry, nSize, pFlagAry.get() );
 
             // adjust number of valid points
             if( nPoints > nSize )
@@ -365,12 +365,12 @@ void XPolygon::Insert( sal_uInt16 nPos, const XPolygon& rXPoly )
 
     m_pImpXPolygon->InsertSpace( nPos, nPoints );
 
-    memcpy( &(m_pImpXPolygon->pPointAry[nPos]),
-            rXPoly.m_pImpXPolygon->pPointAry.get(),
-            nPoints*sizeof( Point ) );
-    memcpy( &(m_pImpXPolygon->pFlagAry[nPos]),
-            rXPoly.m_pImpXPolygon->pFlagAry.get(),
-            nPoints );
+    std::copy_n( rXPoly.m_pImpXPolygon->pPointAry.get(),
+            nPoints,
+            &(m_pImpXPolygon->pPointAry[nPos]) );
+    std::copy_n( rXPoly.m_pImpXPolygon->pFlagAry.get(),
+            nPoints,
+            &(m_pImpXPolygon->pFlagAry[nPos]) );
 }
 
 void XPolygon::Remove( sal_uInt16 nPos, sal_uInt16 nCount )
