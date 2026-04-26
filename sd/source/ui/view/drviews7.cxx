@@ -1912,8 +1912,8 @@ void DrawViewShell::SetPageProperties (SfxRequest& rReq)
                 if( pArgs->GetItemState(SID_ATTR_PAGE_LRSPACE,
                                         true,&pPoolItem) == SfxItemState::SET )
                 {
-                    nLeft = static_cast<const SvxLongLRSpaceItem*>(pPoolItem)->GetLeft();
-                    nRight = static_cast<const SvxLongLRSpaceItem*>(pPoolItem)->GetRight();
+                    nLeft = pPoolItem->StaticWhichCast(SID_ATTR_PAGE_LRSPACE).GetLeft();
+                    nRight = pPoolItem->StaticWhichCast(SID_ATTR_PAGE_LRSPACE).GetRight();
                     if (nLeft != -1)
                     {
                         nUpper  = pPage->GetUpperBorder();
@@ -1927,8 +1927,8 @@ void DrawViewShell::SetPageProperties (SfxRequest& rReq)
                 if( pArgs->GetItemState(SID_ATTR_PAGE_ULSPACE,
                                         true,&pPoolItem) == SfxItemState::SET )
                 {
-                    nUpper = static_cast<const SvxLongULSpaceItem*>(pPoolItem)->GetUpper();
-                    nLower = static_cast<const SvxLongULSpaceItem*>(pPoolItem)->GetLower();
+                    nUpper = pPoolItem->StaticWhichCast(SID_ATTR_PAGE_ULSPACE).GetUpper();
+                    nLower = pPoolItem->StaticWhichCast(SID_ATTR_PAGE_ULSPACE).GetLower();
                     if (nUpper != -1)
                     {
                         nLeft   = pPage->GetLeftBorder();
