@@ -966,12 +966,12 @@ namespace svt
         void clearActiveCell();
 
     protected:
-        VclPtr<BrowserHeader>  pHeader;
+        VclPtr<EditBrowserHeader> pHeader;
 
         BrowserMouseEventPtr& getMouseEvent() { return aMouseEvent; }
 
     protected:
-        BrowserHeader*  GetHeaderBar() const {return pHeader;}
+        EditBrowserHeader* GetHeaderBar() const { return pHeader; }
 
         virtual VclPtr<BrowserHeader> CreateHeaderBar(BrowseBox* pParent) override;
 
