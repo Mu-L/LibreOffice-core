@@ -202,9 +202,6 @@ public:
     virtual void                    FillAccessibleStateSetForCell( sal_Int64& _rStateSet, sal_Int32 _nRow, sal_uInt16 _nColumn ) const override;
     virtual void                    GrabTableFocus() override;
 
-    bool GetGlyphBoundRects(const Point& rOrigin, const OUString& rStr, int nIndex, int nLen,
-                            std::vector<tools::Rectangle>& rVector);
-
     // Window
     virtual tools::Rectangle        GetWindowExtentsRelative(const vcl::Window& rRelativeWindow) const override;
     virtual void                    GrabFocus() override;
