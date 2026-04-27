@@ -292,7 +292,7 @@ namespace
     }
 }
 
-VclPtr<BrowserHeader> OSelectionBrowseBox::imp_CreateHeaderBar(BrowseBox* /*pParent*/)
+VclPtr<EditBrowserHeader> OSelectionBrowseBox::imp_CreateHeaderBar(BrowseBox* /*pParent*/)
 {
     return VclPtr<OSelectionBrwBoxHeader>::Create(this);
 }

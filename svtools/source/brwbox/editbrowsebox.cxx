@@ -169,7 +169,7 @@ VclPtr<BrowserHeader> EditBrowseBox::CreateHeaderBar(BrowseBox* pParent)
     return pHeader;
 }
 
-VclPtr<BrowserHeader> EditBrowseBox::imp_CreateHeaderBar(BrowseBox* pParent)
+VclPtr<EditBrowserHeader> EditBrowseBox::imp_CreateHeaderBar(BrowseBox* pParent)
 {
     return VclPtr<EditBrowserHeader>::Create(pParent);
 }

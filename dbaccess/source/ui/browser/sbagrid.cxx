@@ -626,7 +626,7 @@ void SbaGridControl::dispose()
     FmGridControl::dispose();
 }
 
-VclPtr<BrowserHeader> SbaGridControl::imp_CreateHeaderBar(BrowseBox* pParent)
+VclPtr<svt::EditBrowserHeader> SbaGridControl::imp_CreateHeaderBar(BrowseBox* pParent)
 {
     return VclPtr<SbaGridHeader>::Create(pParent);
 }

@@ -243,7 +243,7 @@ namespace dbaui
         virtual void    MouseButtonDown( const BrowserMouseEvent& rMEvt) override;
 
         // EditBrowseBox overridables
-        virtual VclPtr<BrowserHeader> imp_CreateHeaderBar(BrowseBox* pParent) override;
+        virtual VclPtr<svt::EditBrowserHeader> imp_CreateHeaderBar(BrowseBox* pParent) override;
         virtual ::svt::CellController* GetController(sal_Int32 nRow, sal_uInt16 nCol) override;
 
         // DbGridControl overridables

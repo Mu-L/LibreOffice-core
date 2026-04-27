@@ -1460,7 +1460,7 @@ void FmGridControl::inserted()
 
 }
 
-VclPtr<BrowserHeader> FmGridControl::imp_CreateHeaderBar(BrowseBox* pParent)
+VclPtr<svt::EditBrowserHeader> FmGridControl::imp_CreateHeaderBar(BrowseBox* pParent)
 {
     DBG_ASSERT( pParent == this, "FmGridControl::imp_CreateHeaderBar: parent?" );
     return VclPtr<FmGridHeader>::Create( pParent );

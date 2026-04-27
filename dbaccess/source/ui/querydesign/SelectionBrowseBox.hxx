@@ -206,7 +206,7 @@ namespace dbaui
         virtual sal_uInt32          GetTotalCellWidth(sal_Int32 nRow, sal_uInt16 nColId) override;
 
         // if you want to have an own header ...
-        virtual VclPtr<BrowserHeader> imp_CreateHeaderBar(BrowseBox* pParent) override;
+        virtual VclPtr<svt::EditBrowserHeader> imp_CreateHeaderBar(BrowseBox* pParent) override;
 
         void                        stopTimer();
         void                        startTimer();
