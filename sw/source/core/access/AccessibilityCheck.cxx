@@ -1085,7 +1085,7 @@ public:
                             RES_CHRATR_SHADOWED);
                     }
 
-                    if (!SfxPoolItem::areSame(static_cast<const SvxShadowedItem*>(pItem),
+                    if (!SfxPoolItem::areSame(&pItem->StaticWhichCast(RES_CHRATR_SHADOWED),
                                               pStyleItem))
                     {
                         sFormattingType = "Shadowed";
@@ -1112,7 +1112,8 @@ public:
                             RES_CHRATR_COLOR);
                     }
 
-                    if (!SfxPoolItem::areSame(static_cast<const SvxColorItem*>(pItem), pStyleItem))
+                    if (!SfxPoolItem::areSame(&pItem->StaticWhichCast(RES_CHRATR_COLOR),
+                                              pStyleItem))
                         sFormattingType = "Font Color";
                 }
                 break;
@@ -1142,7 +1143,7 @@ public:
                             TypedWhichId<SvxFontHeightItem>(pItem->Which()));
                     }
 
-                    if (!SfxPoolItem::areSame(static_cast<const SvxFontHeightItem*>(pItem),
+                    if (!SfxPoolItem::areSame(&pItem->StaticWhichCast(RES_CHRATR_FONTSIZE),
                                               pStyleItem))
                     {
                         sFormattingType = "Font Size";
@@ -1199,7 +1200,7 @@ public:
                             RES_CHRATR_EMPHASIS_MARK);
                     }
 
-                    if (!SfxPoolItem::areSame(static_cast<const SvxEmphasisMarkItem*>(pItem),
+                    if (!SfxPoolItem::areSame(&pItem->StaticWhichCast(RES_CHRATR_EMPHASIS_MARK),
                                               pStyleItem))
                     {
                         sFormattingType = "Emphasis Mark";
@@ -1226,7 +1227,7 @@ public:
                             RES_CHRATR_UNDERLINE);
                     }
 
-                    if (!SfxPoolItem::areSame(static_cast<const SvxUnderlineItem*>(pItem),
+                    if (!SfxPoolItem::areSame(&pItem->StaticWhichCast(RES_CHRATR_UNDERLINE),
                                               pStyleItem))
                     {
                         sFormattingType = "Underline";
@@ -1253,7 +1254,7 @@ public:
                             RES_CHRATR_OVERLINE);
                     }
 
-                    if (!SfxPoolItem::areSame(static_cast<const SvxOverlineItem*>(pItem),
+                    if (!SfxPoolItem::areSame(&pItem->StaticWhichCast(RES_CHRATR_OVERLINE),
                                               pStyleItem))
                     {
                         sFormattingType = "Overline";
@@ -1280,7 +1281,7 @@ public:
                             RES_CHRATR_CROSSEDOUT);
                     }
 
-                    if (!SfxPoolItem::areSame(static_cast<const SvxCrossedOutItem*>(pItem),
+                    if (!SfxPoolItem::areSame(&pItem->StaticWhichCast(RES_CHRATR_CROSSEDOUT),
                                               pStyleItem))
                     {
                         sFormattingType = "Strikethrough";
@@ -1307,7 +1308,7 @@ public:
                             RES_CHRATR_RELIEF);
                     }
 
-                    if (!SfxPoolItem::areSame(static_cast<const SvxCharReliefItem*>(pItem),
+                    if (!SfxPoolItem::areSame(&pItem->StaticWhichCast(RES_CHRATR_RELIEF),
                                               pStyleItem))
                     {
                         sFormattingType = "Relief";
@@ -1334,7 +1335,7 @@ public:
                             RES_CHRATR_CONTOUR);
                     }
 
-                    if (!SfxPoolItem::areSame(static_cast<const SvxContourItem*>(pItem),
+                    if (!SfxPoolItem::areSame(&pItem->StaticWhichCast(RES_CHRATR_CONTOUR),
                                               pStyleItem))
                     {
                         sFormattingType = "Outline";
@@ -1361,7 +1362,7 @@ public:
                             RES_CHRATR_NOHYPHEN);
                     }
 
-                    if (!SfxPoolItem::areSame(static_cast<const SvxNoHyphenItem*>(pItem),
+                    if (!SfxPoolItem::areSame(&pItem->StaticWhichCast(RES_CHRATR_NOHYPHEN),
                                               pStyleItem))
                     {
                         sFormattingType = "No Hyphenation";
@@ -1457,7 +1458,7 @@ public:
                     RES_CHRATR_SHADOWED);
             }
 
-            if (!SfxPoolItem::areSame(static_cast<const SvxShadowedItem*>(pItem), pStyleItem))
+            if (!SfxPoolItem::areSame(&pItem->StaticWhichCast(RES_CHRATR_SHADOWED), pStyleItem))
                 return true;
             else
                 pItem = nullptr;
@@ -1476,7 +1477,7 @@ public:
                     = &pTextNode->GetDoc().GetAttrPool().GetUserOrPoolDefaultItem(RES_CHRATR_COLOR);
             }
 
-            if (!SfxPoolItem::areSame(static_cast<const SvxColorItem*>(pItem), pStyleItem))
+            if (!SfxPoolItem::areSame(&pItem->StaticWhichCast(RES_CHRATR_COLOR), pStyleItem))
                 return true;
             else
                 pItem = nullptr;
@@ -1547,7 +1548,8 @@ public:
                     RES_CHRATR_EMPHASIS_MARK);
             }
 
-            if (!SfxPoolItem::areSame(static_cast<const SvxEmphasisMarkItem*>(pItem), pStyleItem))
+            if (!SfxPoolItem::areSame(&pItem->StaticWhichCast(RES_CHRATR_EMPHASIS_MARK),
+                                      pStyleItem))
                 return true;
             else
                 pItem = nullptr;
@@ -1566,7 +1568,7 @@ public:
                     RES_CHRATR_UNDERLINE);
             }
 
-            if (!SfxPoolItem::areSame(static_cast<const SvxUnderlineItem*>(pItem), pStyleItem))
+            if (!SfxPoolItem::areSame(&pItem->StaticWhichCast(RES_CHRATR_UNDERLINE), pStyleItem))
                 return true;
             else
                 pItem = nullptr;
@@ -1585,7 +1587,7 @@ public:
                     RES_CHRATR_OVERLINE);
             }
 
-            if (!SfxPoolItem::areSame(static_cast<const SvxOverlineItem*>(pItem), pStyleItem))
+            if (!SfxPoolItem::areSame(&pItem->StaticWhichCast(RES_CHRATR_OVERLINE), pStyleItem))
                 return true;
             else
                 pItem = nullptr;
@@ -1604,7 +1606,7 @@ public:
                     RES_CHRATR_CROSSEDOUT);
             }
 
-            if (!SfxPoolItem::areSame(static_cast<const SvxCrossedOutItem*>(pItem), pStyleItem))
+            if (!SfxPoolItem::areSame(&pItem->StaticWhichCast(RES_CHRATR_CROSSEDOUT), pStyleItem))
                 return true;
             else
                 pItem = nullptr;
@@ -1623,7 +1625,7 @@ public:
                     RES_CHRATR_RELIEF);
             }
 
-            if (!SfxPoolItem::areSame(static_cast<const SvxCharReliefItem*>(pItem), pStyleItem))
+            if (!SfxPoolItem::areSame(&pItem->StaticWhichCast(RES_CHRATR_RELIEF), pStyleItem))
                 return true;
             else
                 pItem = nullptr;
@@ -1642,7 +1644,7 @@ public:
                     RES_CHRATR_NOHYPHEN);
             }
 
-            if (!SfxPoolItem::areSame(static_cast<const SvxNoHyphenItem*>(pItem), pStyleItem))
+            if (!SfxPoolItem::areSame(&pItem->StaticWhichCast(RES_CHRATR_NOHYPHEN), pStyleItem))
                 return true;
             else
                 pItem = nullptr;
@@ -1661,7 +1663,7 @@ public:
                     RES_CHRATR_CONTOUR);
             }
 
-            if (!SfxPoolItem::areSame(static_cast<const SvxContourItem*>(pItem), pStyleItem))
+            if (!SfxPoolItem::areSame(&pItem->StaticWhichCast(RES_CHRATR_CONTOUR), pStyleItem))
                 return true;
             else
                 pItem = nullptr;
@@ -1961,7 +1963,7 @@ private:
             const SfxPoolItem* pItem = aIter.GetCurItem();
             if (pItem->Which() == RES_CHRATR_ESCAPEMENT)
             {
-                auto pEscapementItem = static_cast<const SvxEscapementItem*>(pItem);
+                auto pEscapementItem = &pItem->StaticWhichCast(RES_CHRATR_ESCAPEMENT);
                 if (pEscapementItem->GetEscapement() == SvxEscapement::Superscript
                     && pTextAttr->GetStart() == 0 && pTextAttr->GetAnyEnd() == 1)
                 {
