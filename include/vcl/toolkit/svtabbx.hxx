@@ -105,7 +105,6 @@ class AccessibleBrowseBoxHeaderCell;
 class UNLESS_MERGELIBS_MORE(VCL_DLLPUBLIC) SvHeaderTabListBox final : public SvTabListBox, public vcl::IAccessibleTableProvider
 {
 private:
-    bool                            m_bFirstPaint;
     VclPtr<HeaderBar> m_xHeaderBar;
     rtl::Reference<AccessibleTabListBox>  m_xAccessible;
     std::vector<rtl::Reference<AccessibleBrowseBoxHeaderCell>> m_aAccessibleChildren;
@@ -122,8 +121,6 @@ public:
     SvHeaderTabListBox(vcl::Window* pParent, WinBits nBits, HeaderBar* pHeaderBar);
     virtual ~SvHeaderTabListBox() override;
     virtual void dispose() override;
-
-    virtual void    Paint( vcl::RenderContext& rRenderContext, const tools::Rectangle& ) override;
 
     HeaderBar*      GetHeaderBar();
     static bool     IsItemChecked( SvTreeListEntry* pEntry, sal_uInt16 nCol );

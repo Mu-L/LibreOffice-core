@@ -581,7 +581,6 @@ tools::Long SvTabListBox::GetLogicTab( sal_uInt16 nTab )
 
 SvHeaderTabListBox::SvHeaderTabListBox(vcl::Window* pParent, WinBits nWinStyle, HeaderBar* pHeaderBar)
     : SvTabListBox(pParent, nWinStyle)
-    , m_bFirstPaint(true)
 {
 
     assert(pHeaderBar);
@@ -604,15 +603,6 @@ void SvHeaderTabListBox::dispose()
 
     m_xHeaderBar.reset();
     SvTabListBox::dispose();
-}
-
-void SvHeaderTabListBox::Paint( vcl::RenderContext& rRenderContext, const tools::Rectangle& rRect )
-{
-    if (m_bFirstPaint)
-    {
-        m_bFirstPaint = false;
-    }
-    SvTabListBox::Paint(rRenderContext, rRect);
 }
 
 HeaderBar* SvHeaderTabListBox::GetHeaderBar()
