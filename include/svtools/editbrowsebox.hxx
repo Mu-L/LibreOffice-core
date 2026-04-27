@@ -859,11 +859,12 @@ private:
     EditBrowseBoxFlags m_nBrowserFlags;
 
     rtl::Reference<comphelper::OAccessible> m_pActiveCell;
+
+    VclPtr<EditBrowserHeader> pHeader;
+
     void clearActiveCell();
 
 protected:
-    VclPtr<EditBrowserHeader> pHeader;
-
     BrowserMouseEventPtr& getMouseEvent() { return aMouseEvent; }
 
 protected:
