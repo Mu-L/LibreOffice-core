@@ -1510,11 +1510,10 @@ void BreakPointWindow::Paint(vcl::RenderContext& rRenderContext, const tools::Re
     Point const aBmpOff((aOutSz.Width() - aBmpSz.Width()) / 2,
                         (nLineHeight - aBmpSz.Height()) / 2);
 
-    for (size_t i = 0, n = GetBreakPoints().size(); i < n; ++i)
+    for (const BreakPoint& rBrk : GetBreakPoints())
     {
-        BreakPoint& rBrk = GetBreakPoints().at(i);
         sal_uInt16 const nLine = rBrk.nLine - 1;
-        size_t const nY = nLine*nLineHeight - nCurYOffset;
+        size_t const nY = nLine * nLineHeight - nCurYOffset;
         rRenderContext.DrawImage(Point(0, nY) + aBmpOff, aBrk[rBrk.bEnabled]);
     }
 
@@ -1572,11 +1571,10 @@ BreakPoint* BreakPointWindow::FindBreakPoint( const Point& rMousePos )
     nLineHeight = nLineHeight > 0 ? nLineHeight : 1;
     size_t nYPos = rMousePos.Y() + nCurYOffset;
 
-    for ( size_t i = 0, n = GetBreakPoints().size(); i < n ; ++i )
+    for (BreakPoint& rBrk : GetBreakPoints())
     {
-        BreakPoint& rBrk = GetBreakPoints().at( i );
-        sal_uInt16 nLine = rBrk.nLine-1;
-        size_t nY = nLine*nLineHeight;
+        sal_uInt16 nLine = rBrk.nLine - 1;
+        size_t nY = nLine * nLineHeight;
         if ( ( nYPos > nY ) && ( nYPos < ( nY + nLineHeight ) ) )
             return &rBrk;
     }

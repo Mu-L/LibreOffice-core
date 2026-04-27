@@ -70,6 +70,13 @@ public:
     size_t size() const;
     BreakPoint& at(size_t i);
     const BreakPoint& at(size_t i) const;
+
+    // Iterator support
+    auto begin() { return maBreakPoints.begin(); }
+    auto end() { return maBreakPoints.end(); }
+    auto cbegin() const { return maBreakPoints.cbegin(); }
+    auto cend() const { return maBreakPoints.cend(); }
+
     void remove(const BreakPoint* ptr);
     void remove(size_t i);
 };
