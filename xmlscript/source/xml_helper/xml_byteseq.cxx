@@ -18,6 +18,7 @@
  */
 
 #include <string.h>
+#include <algorithm>
 
 #include <cppuhelper/implbase.hxx>
 #include <xmlscript/xml_helper.hxx>
@@ -68,7 +69,7 @@ sal_Int32 BSeqInputStream::readBytes(
     if (rData.getLength() != nBytesToRead)
         rData.realloc( nBytesToRead );
     if (nBytesToRead != 0) {
-        memcpy(rData.getArray(), &_seq[_nPos], nBytesToRead);
+        std::copy_n(_seq.data() + _nPos, nBytesToRead, rData.getArray());
     }
     _nPos += nBytesToRead;
     return nBytesToRead;
@@ -142,7 +143,7 @@ Reference< io::XInputStream > createInputStream( const sal_Int8* pData, int len 
 {
     std::vector<sal_Int8> rInData(len);
     if (len != 0) {
-        memcpy( rInData.data(), pData, len);
+        std::copy_n(pData, len, rInData.data());
     }
     return new BSeqInputStream( std::move(rInData) );
 }

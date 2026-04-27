@@ -9,6 +9,8 @@
 
 #include "XBufferedThreadedStream.hxx"
 
+#include <algorithm>
+
 using namespace css::uno;
 
 namespace {
@@ -147,7 +149,7 @@ sal_Int32 SAL_CALL XBufferedThreadedStream::readBytes( Sequence< sal_Int8 >& rDa
         }
         const sal_Int32 limit = std::min<sal_Int32>( nPendingBytes, pBuffer.getLength() - mnOffset );
 
-        memcpy( &pData[i], &pBuffer[mnOffset], limit );
+        std::copy_n(&pBuffer[mnOffset], limit, &pData[i]);
 
         nPendingBytes -= limit;
         mnOffset += limit;
@@ -173,7 +175,7 @@ sal_Int32 XBufferedThreadedStream::readSomeBytes( sal_Int8* pData, sal_Int32 nBy
             return nAvailableSize - nPendingBytes;
         const sal_Int32 limit = std::min<sal_Int32>( nPendingBytes, pBuffer.getLength() - mnOffset );
 
-        memcpy( &pData[i], &pBuffer[mnOffset], limit );
+        std::copy_n(&pBuffer[mnOffset], limit, &pData[i]);
 
         nPendingBytes -= limit;
         mnOffset += limit;

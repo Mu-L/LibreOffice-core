@@ -186,7 +186,8 @@ sal_Int32 SAL_CALL XUnbufferedStream::readBytes( Sequence< sal_Int8 >& aData, sa
             {
                 sal_Int16 nHeadRead = static_cast< sal_Int16 >(( nRequestedBytes > mnHeaderToRead ?
                                                                                  mnHeaderToRead : nRequestedBytes ));
-                memcpy ( aData.getArray(), maHeader.getConstArray() + maHeader.getLength() - mnHeaderToRead, nHeadRead );
+                std::copy_n(maHeader.getConstArray() + maHeader.getLength() - mnHeaderToRead,
+                            nHeadRead, aData.getArray());
                 mnHeaderToRead = mnHeaderToRead - nHeadRead;
 
                 if ( nHeadRead < nRequestedBytes )

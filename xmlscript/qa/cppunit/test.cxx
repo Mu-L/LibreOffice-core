@@ -7,6 +7,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <algorithm>
+
 #include <test/bootstrapfixture.hxx>
 #include <test/xmltesttools.hxx>
 #include <unotest/macros_test.hxx>
@@ -121,7 +123,7 @@ void XmlScriptTest::exportToFile(std::u16string_view sURL,
 
         sal_Int32 nPos = bytes.getLength();
         bytes.realloc(nPos + nRead);
-        memcpy(bytes.getArray() + nPos, readBytes.getConstArray(), static_cast<sal_uInt32>(nRead));
+        std::copy_n(readBytes.getConstArray(), nRead, bytes.getArray() + nPos);
     }
 
     osl::File aFile(OUString{ sURL });

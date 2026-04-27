@@ -19,6 +19,7 @@
 
 #include <ZipPackageBuffer.hxx>
 #include <PackageConstants.hxx>
+#include <algorithm>
 #include <string.h>
 #include <sal/log.hxx>
 
@@ -50,7 +51,7 @@ sal_Int32 SAL_CALL ZipPackageBuffer::readBytes( Sequence< sal_Int8 >& aData, sal
         nBytesToRead = static_cast < sal_Int32 > (m_nEnd - m_nCurrent);
 
     aData.realloc ( nBytesToRead );
-    memcpy(aData.getArray(), m_aBuffer.getConstArray() + m_nCurrent, nBytesToRead);
+    std::copy_n(m_aBuffer.getConstArray() + m_nCurrent, nBytesToRead, aData.getArray());
     m_nCurrent +=nBytesToRead;
     return nBytesToRead;
 }
@@ -93,7 +94,8 @@ void SAL_CALL ZipPackageBuffer::writeBytes( const Sequence< sal_Int8 >& aData )
         m_aBuffer.realloc ( static_cast < sal_Int32 > ( m_nBufferSize ) );
         m_bMustInitBuffer = false;
     }
-    memcpy( m_aBuffer.getArray() + m_nCurrent, aData.getConstArray(), static_cast < sal_Int32 > (nDataLen));
+    std::copy_n(aData.getConstArray(), static_cast<sal_Int32>(nDataLen),
+                m_aBuffer.getArray() + m_nCurrent);
     m_nCurrent+=nDataLen;
     if (m_nCurrent>m_nEnd)
         m_nEnd = m_nCurrent;
