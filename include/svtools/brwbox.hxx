@@ -798,9 +798,6 @@ public:
     /** Sets focus to current cell of the data table. */
     virtual void GrabTableFocus() override;
 
-    bool GetGlyphBoundRects(const Point& rOrigin, const OUString& rStr, int nIndex, int nLen,
-                            std::vector<tools::Rectangle>& rVector);
-
     // IAccessibleTableProvider
     virtual sal_Int32               GetCurrRow() const override;
     virtual sal_uInt16              GetCurrColumn() const override;

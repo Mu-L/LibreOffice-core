@@ -460,12 +460,6 @@ OUString BrowseBox::GetAccessibleCellText(sal_Int32 _nRow, sal_uInt16 _nColPos) 
     return GetCellText( _nRow, GetColumnId( _nColPos ) );
 }
 
-
-bool BrowseBox::GetGlyphBoundRects( const Point& rOrigin, const OUString& rStr, int nIndex, int nLen, std::vector< tools::Rectangle >& rVector )
-{
-    return GetOutDev()->GetGlyphBoundRects( rOrigin, rStr, nIndex, nLen, rVector );
-}
-
 tools::Rectangle BrowseBox::GetWindowExtentsRelative(const vcl::Window& rRelativeWindow) const
 {
     return Control::GetWindowExtentsRelative( rRelativeWindow );
