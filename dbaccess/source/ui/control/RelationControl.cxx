@@ -51,8 +51,7 @@ namespace dbaui
     using namespace ::com::sun::star::container;
     using namespace svt;
 
-    typedef ::svt::EditBrowseBox ORelationControl_Base;
-    class ORelationControl : public ORelationControl_Base
+    class ORelationControl : public svt::EditBrowseBox
     {
         friend class OTableListBoxControl;
 
@@ -99,7 +98,11 @@ namespace dbaui
 
     protected:
         virtual ~ORelationControl() override { disposeOnce(); }
-        virtual void dispose() override { m_pListCell.disposeAndClear(); ORelationControl_Base::dispose(); }
+        virtual void dispose() override
+        {
+            m_pListCell.disposeAndClear();
+            svt::EditBrowseBox::dispose();
+        }
         virtual void Resize() override;
         virtual Size GetOptimalSize() const override;
         virtual bool PreNotify(NotifyEvent& rNEvt ) override;
@@ -107,7 +110,7 @@ namespace dbaui
         virtual bool IsTabAllowed(bool bForward) const override;
 
         void Init(const TTableConnectionData::value_type& _pConnData);
-        using ORelationControl_Base::Init;
+        using svt::EditBrowseBox::Init;
         virtual void InitController( ::svt::CellControllerRef& rController, sal_Int32 nRow, sal_uInt16 nCol ) override;
         virtual ::svt::CellController* GetController( sal_Int32 nRow, sal_uInt16 nCol ) override;
         virtual void PaintCell( OutputDevice& rDev, const tools::Rectangle& rRect, sal_uInt16 nColId ) const override;
