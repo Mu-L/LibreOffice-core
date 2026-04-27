@@ -802,18 +802,18 @@ class SVT_DLLPUBLIC EditBrowseBox : public BrowseBox
     };
 
 public:
-    enum RowStatus
+    enum class RowStatus
     {
-        CLEAN = 0,
-        CURRENT = 1,
-        CURRENTNEW = 2,
-        MODIFIED = 3,
-        NEW = 4,
-        DELETED = 5,
-        PRIMARYKEY = 6,
-        CURRENT_PRIMARYKEY = 7,
-        FILTER = 8,
-        HEADERFOOTER = 9
+        CLEAN,
+        CURRENT,
+        CURRENTNEW,
+        MODIFIED,
+        NEW,
+        DELETED,
+        PRIMARYKEY,
+        CURRENT_PRIMARYKEY,
+        FILTER,
+        HEADERFOOTER,
     };
 
 private:

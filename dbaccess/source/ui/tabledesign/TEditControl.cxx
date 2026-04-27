@@ -404,18 +404,18 @@ EditBrowseBox::RowStatus OTableEditorCtrl::GetRowStatus(sal_Int32 nRow) const
 {
     const_cast<OTableEditorCtrl*>(this)->SetDataPtr( nRow );
     if( !pActRow )
-        return EditBrowseBox::CLEAN;
+        return RowStatus::CLEAN;
     if (nRow >= 0 && nRow == m_nDataPos)
     {
         if( pActRow->IsPrimaryKey() )
-            return EditBrowseBox::CURRENT_PRIMARYKEY;
-        return EditBrowseBox::CURRENT;
+            return RowStatus::CURRENT_PRIMARYKEY;
+        return RowStatus::CURRENT;
     }
     else
     {
         if( pActRow->IsPrimaryKey() )
-            return EditBrowseBox::PRIMARYKEY;
-        return EditBrowseBox::CLEAN;
+            return RowStatus::PRIMARYKEY;
+        return RowStatus::CLEAN;
     }
 }
 

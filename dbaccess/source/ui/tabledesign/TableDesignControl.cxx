@@ -167,9 +167,9 @@ void OTableRowView::Paste( sal_Int32 nRow )
 EditBrowseBox::RowStatus OTableRowView::GetRowStatus(sal_Int32 nRow) const
 {
     if (nRow >= 0 && m_nDataPos == nRow)
-        return CURRENT;
+        return RowStatus::CURRENT;
     else
-        return CLEAN;
+        return RowStatus::CLEAN;
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

@@ -237,35 +237,35 @@ Image EditBrowseBox::GetImage(RowStatus eStatus) const
     bool bNeedMirror = IsRTLEnabled();
     switch (eStatus)
     {
-        case CURRENT:
+        case RowStatus::CURRENT:
             aBitmap = Bitmap(BMP_CURRENT);
             break;
-        case CURRENTNEW:
+        case RowStatus::CURRENTNEW:
             aBitmap = Bitmap(BMP_CURRENTNEW);
             break;
-        case MODIFIED:
+        case RowStatus::MODIFIED:
             aBitmap = Bitmap(BMP_MODIFIED);
             bNeedMirror = false;    // the pen is not mirrored
             break;
-        case NEW:
+        case RowStatus::NEW:
             aBitmap = Bitmap(BMP_NEW);
             break;
-        case DELETED:
+        case RowStatus::DELETED:
             aBitmap = Bitmap(BMP_DELETED);
             break;
-        case PRIMARYKEY:
+        case RowStatus::PRIMARYKEY:
             aBitmap = Bitmap(BMP_PRIMARYKEY);
             break;
-        case CURRENT_PRIMARYKEY:
+        case RowStatus::CURRENT_PRIMARYKEY:
             aBitmap = Bitmap(BMP_CURRENT_PRIMARYKEY);
             break;
-        case FILTER:
+        case RowStatus::FILTER:
             aBitmap = Bitmap(BMP_FILTER);
             break;
-        case HEADERFOOTER:
+        case RowStatus::HEADERFOOTER:
             aBitmap = Bitmap(BMP_HEADERFOOTER);
             break;
-        case CLEAN:
+        case RowStatus::CLEAN:
             break;
     }
     if ( bNeedMirror )
@@ -293,7 +293,7 @@ void EditBrowseBox::PaintStatusCell(OutputDevice& rDev, const tools::Rectangle& 
                        DrawTextFlags::Center | DrawTextFlags::VCenter | DrawTextFlags::Clip );
     }
     // draw an image
-    else if (eStatus != CLEAN && rDev.GetOutDevType() == OUTDEV_WINDOW)
+    else if (eStatus != RowStatus::CLEAN && rDev.GetOutDevType() == OUTDEV_WINDOW)
     {
         Image aImage(GetImage(eStatus));
         // calc the image position
@@ -358,12 +358,7 @@ void EditBrowseBox::RowHeightChanged()
     BrowseBox::RowHeightChanged();
 }
 
-
-EditBrowseBox::RowStatus EditBrowseBox::GetRowStatus(sal_Int32) const
-{
-    return CLEAN;
-}
-
+EditBrowseBox::RowStatus EditBrowseBox::GetRowStatus(sal_Int32) const { return RowStatus::CLEAN; }
 
 void EditBrowseBox::KeyInput( const KeyEvent& rEvt )
 {

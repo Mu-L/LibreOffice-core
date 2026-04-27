@@ -1776,25 +1776,25 @@ void DbGridControl::AdjustRows()
 svt::EditBrowseBox::RowStatus DbGridControl::GetRowStatus(sal_Int32 nRow) const
 {
     if (IsFilterRow(nRow))
-        return EditBrowseBox::FILTER;
+        return EditBrowseBox::RowStatus::FILTER;
     else if (m_nCurrentPos >= 0 && nRow == m_nCurrentPos)
     {
         // new row
         if (!IsValid(m_xCurrentRow))
-            return EditBrowseBox::DELETED;
+            return RowStatus::DELETED;
         else if (IsModified())
-            return EditBrowseBox::MODIFIED;
+            return RowStatus::MODIFIED;
         else if (m_xCurrentRow->IsNew())
-            return EditBrowseBox::CURRENTNEW;
+            return RowStatus::CURRENTNEW;
         else
-            return EditBrowseBox::CURRENT;
+            return RowStatus::CURRENT;
     }
     else if (IsInsertionRow(nRow))
-        return EditBrowseBox::NEW;
+        return RowStatus::NEW;
     else if (!IsValid(m_xSeekRow))
-        return EditBrowseBox::DELETED;
+        return RowStatus::DELETED;
     else
-        return EditBrowseBox::CLEAN;
+        return RowStatus::CLEAN;
 }
 
 void DbGridControl::PaintCell(OutputDevice& rDev, const tools::Rectangle& rRect, sal_uInt16 nColumnId) const
@@ -3331,7 +3331,7 @@ void DbGridControl::FieldValueChanged(sal_uInt16 _nId)
 {
     osl::MutexGuard aPreventDestruction(m_aDestructionSafety);
     // needed as this may run in a thread other than the main one
-    if (GetRowStatus(GetCurRow()) != EditBrowseBox::MODIFIED)
+    if (GetRowStatus(GetCurRow()) != EditBrowseBox::RowStatus::MODIFIED)
         // all other cases are handled elsewhere
         return;
 

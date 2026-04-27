@@ -566,20 +566,21 @@ void OFieldExpressionControl::PaintCell( OutputDevice& rDev, const tools::Rectan
 EditBrowseBox::RowStatus OFieldExpressionControl::GetRowStatus(sal_Int32 nRow) const
 {
     if (nRow >= 0 && nRow == m_nDataPos)
-        return EditBrowseBox::CURRENT;
+        return RowStatus::CURRENT;
     if ( nRow != BROWSER_ENDOFSELECTION && nRow < static_cast<tools::Long>(m_aGroupPositions.size()) && m_aGroupPositions[nRow] != NO_GROUP )
     {
         try
         {
             uno::Reference< report::XGroup> xGroup = m_pParent->getGroup(m_aGroupPositions[nRow]);
-            return (xGroup->getHeaderOn() || xGroup->getFooterOn())? EditBrowseBox::HEADERFOOTER : EditBrowseBox::CLEAN;
+            return (xGroup->getHeaderOn() || xGroup->getFooterOn()) ? RowStatus::HEADERFOOTER
+                                                                    : RowStatus::CLEAN;
         }
         catch(uno::Exception&)
         {
             TOOLS_WARN_EXCEPTION( "reportdesign", "Exception caught while try to get a group!");
         }
     }
-    return EditBrowseBox::CLEAN;
+    return RowStatus::CLEAN;
 }
 
 // XContainerListener
