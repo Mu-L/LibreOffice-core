@@ -1009,7 +1009,7 @@ void EditBrowseBox::DeactivateCell(bool bUpdate)
     {
         commitBrowseBoxEvent(AccessibleEventId::CHILD, Any(),
                              Any(css::uno::Reference<XAccessible>(m_pActiveCell)));
-        clearActiveCell();
+        m_pActiveCell.clear();
     }
 
     aOldController = aController;

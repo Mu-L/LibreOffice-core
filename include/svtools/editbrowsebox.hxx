@@ -862,8 +862,6 @@ private:
 
     VclPtr<EditBrowserHeader> pHeader;
 
-    void clearActiveCell();
-
 protected:
     BrowserMouseEventPtr& getMouseEvent() { return aMouseEvent; }
 

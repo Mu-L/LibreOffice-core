@@ -90,8 +90,6 @@ rtl::Reference<comphelper::OAccessible> EditBrowseBox::CreateAccessibleControl(s
     return m_pActiveCell;
 }
 
-void EditBrowseBox::clearActiveCell() { m_pActiveCell.clear(); }
-
 void EditBrowseBox::GrabTableFocus()
 {
     if ( aController.is() )
