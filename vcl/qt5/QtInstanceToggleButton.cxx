@@ -15,9 +15,6 @@
 QtInstanceToggleButton::QtInstanceToggleButton(QAbstractButton* pButton)
     : QtInstanceButton(pButton)
 {
-    assert(pButton);
-    pButton->setCheckable(true);
-
     connect(&getButton(), &QAbstractButton::toggled, this, &QtInstanceToggleButton::signalToggled);
 }
 

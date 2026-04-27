@@ -378,6 +378,7 @@ QObject* QtBuilder::insertObject(QObject* pParent, const OUString& rClass, std::
     else if (rClass == u"GtkToggleButton")
     {
         QToolButton* pButton = new QToolButton(pParentWidget);
+        pButton->setCheckable(true);
         setButtonProperties(*pButton, rProps, pParentWidget);
         pObject = pButton;
     }
