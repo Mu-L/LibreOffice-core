@@ -246,6 +246,10 @@ const SmElementDescr s_a5FunctionsList[] =
     {RID_ADLMARCCOSX, RID_ARCCOSX_HELP, {}, {}},
     {RID_ADLMARCTANX, RID_ARCTANX_HELP, {}, {}},
     {},
+    {RID_NKOARCSINX, RID_ARCSINX_HELP, {}, {}},
+    {RID_NKOARCCOSX, RID_ARCCOSX_HELP, {}, {}},
+    {RID_NKOARCTANX, RID_ARCTANX_HELP, {}, {}},
+    {},
     {RID_FUNCX, RID_FUNCX_HELP, {}, {}},
 };
 
