@@ -156,7 +156,7 @@ public:
     virtual OUString         GetColumnDescription( sal_uInt16 _nColumn ) const override;
 
     /** @return  <TRUE/>, if the object has a row header. */
-    virtual bool                    HasRowHeader() const override; //GetColumnId
+    virtual bool HasRowHeader() const override;
     /** @return  <TRUE/>, if the object can focus a cell. */
     virtual bool                    GoToCell( sal_Int32 _nRow, sal_uInt16 _nColumn ) override;
 

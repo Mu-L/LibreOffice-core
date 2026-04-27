@@ -72,7 +72,7 @@ public:
     virtual OUString         GetColumnDescription( sal_uInt16 _nColumnPos ) const = 0;
 
     /** @return  <TRUE/>, if the object has a row header. */
-    virtual bool                    HasRowHeader() const = 0; //GetColumnId
+    virtual bool HasRowHeader() const = 0;
     virtual bool                    GoToCell( sal_Int32 _nRow, sal_uInt16 _nColumnPos ) = 0;
 
     virtual void                    SetNoSelection() = 0;
