@@ -138,24 +138,15 @@ public:
 
     bool            IsCellCheckBox( sal_Int32 _nRow, sal_uInt16 _nColumn, TriState& _rState ) const;
 
-    /** @return  The count of the rows. */
     virtual sal_Int32               GetRowCount() const override;
-    /** @return  The count of the columns. */
     virtual sal_uInt16              GetColumnCount() const override;
 
-    /** @return  The position of the current row. */
     virtual sal_Int32               GetCurrRow() const override;
-    /** @return  The position of the current column. */
     virtual sal_uInt16              GetCurrColumn() const override;
 
-    /** @return  The description of a row.
-        @param _nRow The row which description is in demand. */
     virtual OUString         GetRowDescription( sal_Int32 _nRow ) const override;
-    /** @return  The description of a column.
-        @param _nColumn The column which description is in demand. */
     virtual OUString         GetColumnDescription( sal_uInt16 _nColumn ) const override;
 
-    /** @return  <TRUE/>, if the object has a row header. */
     virtual bool HasRowHeader() const override;
     /** @return  <TRUE/>, if the object can focus a cell. */
     virtual bool                    GoToCell( sal_Int32 _nRow, sal_uInt16 _nColumn ) override;
@@ -167,13 +158,11 @@ public:
     virtual void                    SelectColumn( sal_uInt16 _nColumn, bool _bSelect = true ) override;
     virtual sal_Int32               GetSelectedRowCount() const override;
     virtual sal_Int32               GetSelectedColumnCount() const override;
-    /** @return  <TRUE/>, if the row is selected. */
     virtual bool                    IsRowSelected( sal_Int32 _nRow ) const override;
     virtual bool                    IsColumnSelected( sal_Int32 _nColumn ) const override;
     virtual void                    GetAllSelectedRows( css::uno::Sequence< sal_Int32 >& _rRows ) const override;
     virtual void                    GetAllSelectedColumns( css::uno::Sequence< sal_Int32 >& _rColumns ) const override;
 
-    /** @return  <TRUE/>, if the cell is visible. */
     virtual bool                    IsCellVisible( sal_Int32 _nRow, sal_uInt16 _nColumn ) const override;
     virtual OUString                GetAccessibleCellText( sal_Int32 _nRow, sal_uInt16 _nColumnPos ) const override;
 
