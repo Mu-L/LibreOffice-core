@@ -112,6 +112,7 @@ constexpr auto SUPPORTED_UI_FILES = frozen::make_unordered_set<std::u16string_vi
     u"cui/ui/queryupdategalleryfilelistdialog.ui",
     u"cui/ui/screenshotannotationdialog.ui",
     u"cui/ui/searchattrdialog.ui",
+    u"cui/ui/searchformatdialog.ui",
     u"cui/ui/securityoptionsdialog.ui",
     u"cui/ui/selectpathdialog.ui",
     u"cui/ui/signatureline.ui",
