@@ -5454,7 +5454,6 @@ include/svtools/colorcfg.hxx
 include/svtools/ctrlbox.hxx
 include/svtools/ctrltool.hxx
 include/svtools/dialogclosedlistener.hxx
-include/svtools/editbrowsebox.hxx
 include/svtools/ehdl.hxx
 include/svtools/embedhlp.hxx
 include/svtools/embedtransfer.hxx
