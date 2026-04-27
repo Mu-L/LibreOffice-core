@@ -152,10 +152,6 @@ class SvLBoxButton final : public SvLBoxItem
 
     static void ImplAdjustBoxSize( Size& io_rCtrlSize, ControlType i_eType, vcl::RenderContext const & pRenderContext);
 public:
-    // An SvLBoxButton can be of two different kinds: an
-    // enabled checkbox (the normal kind), or a static image
-    // (see SV_BMP_STATICIMAGE; nFlags are effectively ignored
-    // for that kind).
     SvLBoxButton( SvLBoxButtonData* pBData );
     SvLBoxButton();
     virtual ~SvLBoxButton() override;
