@@ -361,9 +361,6 @@ protected:
     // so it can't be called for a deleted object.
     Link<sal_Int8,void> GetDragFinishedHdl() const;
 
-    // For asynchronous D'n'D
-    sal_Int8        ExecuteDrop( const ExecuteDropEvent& rEvt, SvTreeListBox* pSourceView );
-
     void            OnCurrentEntryChanged();
 
     // ISearchableStringList

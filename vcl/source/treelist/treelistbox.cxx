@@ -1365,10 +1365,10 @@ sal_Int8 SvTreeListBox::AcceptDrop( const AcceptDropEvent& rEvt )
     return nRet;
 }
 
-sal_Int8 SvTreeListBox::ExecuteDrop( const ExecuteDropEvent& rEvt, SvTreeListBox* pSourceView )
+sal_Int8 SvTreeListBox::ExecuteDrop(const ExecuteDropEvent& rEvt)
 {
-    assert(pSourceView);
-    pSourceView->EnableSelectionAsDropTarget();
+    assert(g_pDDSource);
+    g_pDDSource->EnableSelectionAsDropTarget();
 
     ImplShowTargetEmphasis(m_pTargetEntry, false);
     g_pDDTarget = this;
@@ -1404,11 +1404,6 @@ sal_Int8 SvTreeListBox::ExecuteDrop( const ExecuteDropEvent& rEvt, SvTreeListBox
         }
     }
     return nRet;
-}
-
-sal_Int8 SvTreeListBox::ExecuteDrop( const ExecuteDropEvent& rEvt )
-{
-    return ExecuteDrop( rEvt, g_pDDSource );
 }
 
 /**
