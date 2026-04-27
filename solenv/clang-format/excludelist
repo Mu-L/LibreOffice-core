@@ -11193,7 +11193,6 @@ svx/source/inc/fmexch.hxx
 svx/source/inc/fmexpl.hxx
 svx/source/inc/fmobj.hxx
 svx/source/inc/fmpgeimp.hxx
-svx/source/inc/fmprop.hxx
 svx/source/inc/fmscriptingenv.hxx
 svx/source/inc/fmservs.hxx
 svx/source/inc/fmshimp.hxx

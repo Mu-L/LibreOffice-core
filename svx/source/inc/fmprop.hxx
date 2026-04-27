@@ -23,10 +23,10 @@
 
 // PropertyIds, which have an assignment to a PropertyName, could continue
 // to be WhichIds in the future -> Itemset
-#define FM_ATTR_START           0
+#define FM_ATTR_START 0
 
-#define FM_ATTR_FILTER          ( FM_ATTR_START + 1 )
-#define FM_ATTR_FORM_OPERATIONS ( FM_ATTR_START + 2 )
+#define FM_ATTR_FILTER (FM_ATTR_START + 1)
+#define FM_ATTR_FORM_OPERATIONS (FM_ATTR_START + 2)
 
 inline constexpr OUString FM_PROP_NAME = u"Name"_ustr;
 inline constexpr OUString FM_PROP_CLASSID = u"ClassId"_ustr;
@@ -90,16 +90,16 @@ inline constexpr OUString FM_PROP_TIMEMIN = u"TimeMin"_ustr;
 inline constexpr OUString FM_PROP_TIMEMAX = u"TimeMax"_ustr;
 inline constexpr OUString FM_PROP_LINECOUNT = u"LineCount"_ustr;
 inline constexpr OUString FM_PROP_BOUNDCOLUMN = u"BoundColumn"_ustr;
-#define FM_PROP_HASNAVIGATION                "HasNavigationBar"
+#define FM_PROP_HASNAVIGATION "HasNavigationBar"
 inline constexpr OUString FM_PROP_FONT = u"FontDescriptor"_ustr;
-#define FM_PROP_BACKGROUNDCOLOR              "BackgroundColor"
-#define FM_PROP_TEXTCOLOR                    "TextColor"
+#define FM_PROP_BACKGROUNDCOLOR "BackgroundColor"
+#define FM_PROP_TEXTCOLOR "TextColor"
 inline constexpr OUString FM_PROP_BORDER = u"Border"_ustr;
 inline constexpr OUString FM_PROP_DROPDOWN = u"Dropdown"_ustr;
 inline constexpr OUString FM_PROP_ROWHEIGHT = u"RowHeight"_ustr;
 inline constexpr OUString FM_PROP_HELPTEXT = u"HelpText"_ustr;
-#define FM_PROP_HELPURL                      "HelpURL"
-#define FM_PROP_RECORDMARKER                 "HasRecordMarker"
+#define FM_PROP_HELPURL "HelpURL"
+#define FM_PROP_RECORDMARKER "HasRecordMarker"
 inline constexpr OUString FM_PROP_BOUNDFIELD = u"BoundField"_ustr;
 inline constexpr OUString FM_PROP_EFFECTIVE_VALUE = u"EffectiveValue"_ustr;
 inline constexpr OUString FM_PROP_EFFECTIVE_DEFAULT = u"EffectiveDefault"_ustr;
@@ -131,8 +131,8 @@ inline constexpr OUString FM_PROP_ACTIVE_CONNECTION = u"ActiveConnection"_ustr;
 inline constexpr OUString FM_PROP_CONTROLSOURCEPROPERTY = u"DataFieldProperty"_ustr;
 inline constexpr OUString FM_PROP_REALNAME = u"RealName"_ustr;
 inline constexpr OUString FM_PROP_TEXTLINECOLOR = u"TextLineColor"_ustr;
-#define FM_PROP_FONTEMPHASISMARK             "FontEmphasisMark"
-#define FM_PROP_FONTRELIEF                   "FontRelief"
+#define FM_PROP_FONTEMPHASISMARK "FontEmphasisMark"
+#define FM_PROP_FONTRELIEF "FontRelief"
 inline constexpr OUString FM_PROP_ORIENTATION = u"Orientation"_ustr;
 inline constexpr OUString FM_PROP_LINEENDFORMAT = u"LineEndFormat"_ustr;
 inline constexpr OUString FM_PROP_VISUALEFFECT = u"VisualEffect"_ustr;
@@ -140,7 +140,8 @@ inline constexpr OUString FM_PROP_BORDERCOLOR = u"BorderColor"_ustr;
 inline constexpr OUString FM_PROP_DYNAMIC_CONTROL_BORDER = u"DynamicControlBorder"_ustr;
 inline constexpr OUString FM_PROP_CONTROL_BORDER_COLOR_FOCUS = u"ControlBorderColorOnFocus"_ustr;
 inline constexpr OUString FM_PROP_CONTROL_BORDER_COLOR_MOUSE = u"ControlBorderColorOnHover"_ustr;
-inline constexpr OUString FM_PROP_CONTROL_BORDER_COLOR_INVALID = u"ControlBorderColorOnInvalid"_ustr;
+inline constexpr OUString FM_PROP_CONTROL_BORDER_COLOR_INVALID
+    = u"ControlBorderColorOnInvalid"_ustr;
 inline constexpr OUString FM_PROP_BUTTON_TYPE = u"ButtonType"_ustr;
 inline constexpr OUString FM_PROP_FORM_OPERATIONS = u"FormOperations"_ustr;
 inline constexpr OUString FM_PROP_INPUT_REQUIRED = u"InputRequired"_ustr;
