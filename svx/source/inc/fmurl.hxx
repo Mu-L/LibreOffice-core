@@ -17,8 +17,7 @@
  *   the License at http://www.apache.org/licenses/LICENSE-2.0 .
  */
 
-#ifndef INCLUDED_SVX_SOURCE_INC_FMURL_HXX
-#define INCLUDED_SVX_SOURCE_INC_FMURL_HXX
+#pragma once
 
 #include <rtl/ustring.hxx>
 
@@ -49,7 +48,5 @@ inline constexpr OUString FMURL_GRIDVIEW_ATTACHTOFORM = u".uno:FormSlots/AttachT
 inline constexpr OUString FMARG_ATTACHTO_MASTERFORM = u"MasterForm"_ustr;
 inline constexpr OUString FMARG_ADDCOL_COLUMNTYPE = u"ColumnType"_ustr;
 inline constexpr OUString FMARG_ADDCOL_COLUMNPOS = u"ColumnPosition"_ustr;
-
-#endif // INCLUDED_SVX_SOURCE_INC_FMURL_HXX
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
