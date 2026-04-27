@@ -96,114 +96,6 @@
             <property name="row-spacing">6</property>
             <property name="column-spacing">12</property>
             <child>
-              <object class="GtkRadioButton" id="top">
-                <property name="label" translatable="yes" context="envprinterpage|top">_Print from top</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="receives-default">False</property>
-                <property name="use-underline">True</property>
-                <property name="active">True</property>
-                <property name="draw-indicator">True</property>
-                <child internal-child="accessible">
-                  <object class="AtkObject" id="top-atkobject">
-                    <property name="AtkObject::accessible-description" translatable="yes" context="envprinterpage|extended_tip|top">Feeds the envelope with the print side face up in the printer tray.</property>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="left-attach">0</property>
-                <property name="top-attach">2</property>
-                <property name="width">2</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkRadioButton" id="bottom">
-                <property name="label" translatable="yes" context="envprinterpage|bottom">Print from _bottom</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="receives-default">False</property>
-                <property name="use-underline">True</property>
-                <property name="draw-indicator">True</property>
-                <property name="group">top</property>
-                <child internal-child="accessible">
-                  <object class="AtkObject" id="bottom-atkobject">
-                    <property name="AtkObject::accessible-description" translatable="yes" context="envprinterpage|extended_tip|bottom">Feeds the envelope with the print side face down in the printer tray.</property>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="left-attach">0</property>
-                <property name="top-attach">3</property>
-                <property name="width">2</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel" id="label3">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="label" translatable="yes" context="envprinterpage|label3">_Shift right</property>
-                <property name="use-underline">True</property>
-                <property name="mnemonic-widget">right</property>
-                <property name="xalign">0</property>
-              </object>
-              <packing>
-                <property name="left-attach">0</property>
-                <property name="top-attach">4</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel" id="label4">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="label" translatable="yes" context="envprinterpage|label4">Shift _down</property>
-                <property name="use-underline">True</property>
-                <property name="mnemonic-widget">down</property>
-                <property name="xalign">0</property>
-              </object>
-              <packing>
-                <property name="left-attach">0</property>
-                <property name="top-attach">5</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkSpinButton" id="right">
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="activates-default">True</property>
-                <property name="truncate-multiline">True</property>
-                <property name="adjustment">adjustment2</property>
-                <property name="digits">2</property>
-                <child internal-child="accessible">
-                  <object class="AtkObject" id="right-atkobject">
-                    <property name="AtkObject::accessible-description" translatable="yes" context="envprinterpage|extended_tip|right">Enter the amount to shift the print area to the right.</property>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="left-attach">1</property>
-                <property name="top-attach">4</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkSpinButton" id="down">
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="activates-default">True</property>
-                <property name="truncate-multiline">True</property>
-                <property name="adjustment">adjustment1</property>
-                <property name="digits">2</property>
-                <child internal-child="accessible">
-                  <object class="AtkObject" id="down-atkobject">
-                    <property name="AtkObject::accessible-description" translatable="yes" context="envprinterpage|extended_tip|down">Enter the amount to shift the print area down.</property>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="left-attach">1</property>
-                <property name="top-attach">5</property>
-              </packing>
-            </child>
-            <child>
               <!-- n-columns=6 n-rows=1 -->
               <object class="GtkGrid" id="lower">
                 <property name="can-focus">False</property>
@@ -478,6 +370,114 @@
                 <property name="left-attach">0</property>
                 <property name="top-attach">1</property>
                 <property name="width">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkRadioButton" id="top">
+                <property name="label" translatable="yes" context="envprinterpage|top">_Print from top</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">False</property>
+                <property name="use-underline">True</property>
+                <property name="active">True</property>
+                <property name="draw-indicator">True</property>
+                <child internal-child="accessible">
+                  <object class="AtkObject" id="top-atkobject">
+                    <property name="AtkObject::accessible-description" translatable="yes" context="envprinterpage|extended_tip|top">Feeds the envelope with the print side face up in the printer tray.</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">2</property>
+                <property name="width">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkRadioButton" id="bottom">
+                <property name="label" translatable="yes" context="envprinterpage|bottom">Print from _bottom</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">False</property>
+                <property name="use-underline">True</property>
+                <property name="draw-indicator">True</property>
+                <property name="group">top</property>
+                <child internal-child="accessible">
+                  <object class="AtkObject" id="bottom-atkobject">
+                    <property name="AtkObject::accessible-description" translatable="yes" context="envprinterpage|extended_tip|bottom">Feeds the envelope with the print side face down in the printer tray.</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">3</property>
+                <property name="width">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="label3">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes" context="envprinterpage|label3">_Shift right</property>
+                <property name="use-underline">True</property>
+                <property name="mnemonic-widget">right</property>
+                <property name="xalign">0</property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">4</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkSpinButton" id="right">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="activates-default">True</property>
+                <property name="truncate-multiline">True</property>
+                <property name="adjustment">adjustment2</property>
+                <property name="digits">2</property>
+                <child internal-child="accessible">
+                  <object class="AtkObject" id="right-atkobject">
+                    <property name="AtkObject::accessible-description" translatable="yes" context="envprinterpage|extended_tip|right">Enter the amount to shift the print area to the right.</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">4</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="label4">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes" context="envprinterpage|label4">Shift _down</property>
+                <property name="use-underline">True</property>
+                <property name="mnemonic-widget">down</property>
+                <property name="xalign">0</property>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">5</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkSpinButton" id="down">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="activates-default">True</property>
+                <property name="truncate-multiline">True</property>
+                <property name="adjustment">adjustment1</property>
+                <property name="digits">2</property>
+                <child internal-child="accessible">
+                  <object class="AtkObject" id="down-atkobject">
+                    <property name="AtkObject::accessible-description" translatable="yes" context="envprinterpage|extended_tip|down">Enter the amount to shift the print area down.</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">5</property>
               </packing>
             </child>
           </object>
