@@ -798,6 +798,9 @@ public:
     /** Sets focus to current cell of the data table. */
     virtual void GrabTableFocus() override;
 
+    bool GetGlyphBoundRects(const Point& rOrigin, const OUString& rStr, int nIndex, int nLen,
+                            std::vector<tools::Rectangle>& rVector);
+
     // IAccessibleTableProvider
     virtual sal_Int32               GetCurrRow() const override;
     virtual sal_uInt16              GetCurrColumn() const override;
@@ -811,7 +814,6 @@ public:
     virtual void                    GetAllSelectedColumns( css::uno::Sequence< sal_Int32 >& _rColumns ) const override;
     virtual bool                    IsCellVisible( sal_Int32 _nRow, sal_uInt16 _nColumn ) const override;
     virtual OUString                GetAccessibleCellText(sal_Int32 _nRow, sal_uInt16 _nColPos) const override;
-    virtual bool                    GetGlyphBoundRects( const Point& rOrigin, const OUString& rStr, int nIndex, int nLen, std::vector< tools::Rectangle >& rVector ) override;
     virtual tools::Rectangle        GetWindowExtentsRelative(const vcl::Window& rRelativeWindow) const override;
     virtual void                    GrabFocus() override;
     virtual rtl::Reference<comphelper::OAccessible> GetAccessible() override;
