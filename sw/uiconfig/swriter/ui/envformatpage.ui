@@ -113,44 +113,6 @@
                     <property name="row-spacing">6</property>
                     <property name="column-spacing">12</property>
                     <child>
-                      <object class="GtkSpinButton" id="leftaddr">
-                        <property name="visible">True</property>
-                        <property name="can-focus">True</property>
-                        <property name="activates-default">True</property>
-                        <property name="truncate-multiline">True</property>
-                        <property name="adjustment">adjustment1</property>
-                        <property name="digits">2</property>
-                        <child internal-child="accessible">
-                          <object class="AtkObject" id="leftaddr-atkobject">
-                            <property name="AtkObject::accessible-description" translatable="yes" context="envformatpage|extended_tip|leftaddr">Enter the amount of space that you want to leave between the left edge of the envelope and the addressee field.</property>
-                          </object>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="left-attach">1</property>
-                        <property name="top-attach">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkSpinButton" id="topaddr">
-                        <property name="visible">True</property>
-                        <property name="can-focus">True</property>
-                        <property name="activates-default">True</property>
-                        <property name="truncate-multiline">True</property>
-                        <property name="adjustment">adjustment3</property>
-                        <property name="digits">2</property>
-                        <child internal-child="accessible">
-                          <object class="AtkObject" id="topaddr-atkobject">
-                            <property name="AtkObject::accessible-description" translatable="yes" context="envformatpage|extended_tip|topaddr">Enter the amount of space that you want to leave between the top edge of the envelope and the addressee field.</property>
-                          </object>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="left-attach">1</property>
-                        <property name="top-attach">1</property>
-                      </packing>
-                    </child>
-                    <child>
                       <object class="GtkBox" id="box1">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
@@ -178,6 +140,25 @@
                       </packing>
                     </child>
                     <child>
+                      <object class="GtkSpinButton" id="leftaddr">
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="activates-default">True</property>
+                        <property name="truncate-multiline">True</property>
+                        <property name="adjustment">adjustment1</property>
+                        <property name="digits">2</property>
+                        <child internal-child="accessible">
+                          <object class="AtkObject" id="leftaddr-atkobject">
+                            <property name="AtkObject::accessible-description" translatable="yes" context="envformatpage|extended_tip|leftaddr">Enter the amount of space that you want to leave between the left edge of the envelope and the addressee field.</property>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="left-attach">1</property>
+                        <property name="top-attach">0</property>
+                      </packing>
+                    </child>
+                    <child>
                       <object class="GtkBox" id="box2">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
@@ -201,6 +182,25 @@
                       </object>
                       <packing>
                         <property name="left-attach">0</property>
+                        <property name="top-attach">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkSpinButton" id="topaddr">
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="activates-default">True</property>
+                        <property name="truncate-multiline">True</property>
+                        <property name="adjustment">adjustment3</property>
+                        <property name="digits">2</property>
+                        <child internal-child="accessible">
+                          <object class="AtkObject" id="topaddr-atkobject">
+                            <property name="AtkObject::accessible-description" translatable="yes" context="envformatpage|extended_tip|topaddr">Enter the amount of space that you want to leave between the top edge of the envelope and the addressee field.</property>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="left-attach">1</property>
                         <property name="top-attach">1</property>
                       </packing>
                     </child>
@@ -319,44 +319,6 @@
                     <property name="row-spacing">6</property>
                     <property name="column-spacing">12</property>
                     <child>
-                      <object class="GtkSpinButton" id="leftsender">
-                        <property name="visible">True</property>
-                        <property name="can-focus">True</property>
-                        <property name="activates-default">True</property>
-                        <property name="truncate-multiline">True</property>
-                        <property name="adjustment">adjustment4</property>
-                        <property name="digits">2</property>
-                        <child internal-child="accessible">
-                          <object class="AtkObject" id="leftsender-atkobject">
-                            <property name="AtkObject::accessible-description" translatable="yes" context="envformatpage|extended_tip|leftsender">Enter the amount of space that you want to leave between the left edge of the envelope and the sender field.</property>
-                          </object>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="left-attach">1</property>
-                        <property name="top-attach">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkSpinButton" id="topsender">
-                        <property name="visible">True</property>
-                        <property name="can-focus">True</property>
-                        <property name="activates-default">True</property>
-                        <property name="truncate-multiline">True</property>
-                        <property name="adjustment">adjustment5</property>
-                        <property name="digits">2</property>
-                        <child internal-child="accessible">
-                          <object class="AtkObject" id="topsender-atkobject">
-                            <property name="AtkObject::accessible-description" translatable="yes" context="envformatpage|extended_tip|topsender">Enter the amount of space that you want to leave between the top edge of the envelope and the sender field.</property>
-                          </object>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="left-attach">1</property>
-                        <property name="top-attach">1</property>
-                      </packing>
-                    </child>
-                    <child>
                       <object class="GtkBox" id="box3">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
@@ -384,6 +346,25 @@
                       </packing>
                     </child>
                     <child>
+                      <object class="GtkSpinButton" id="leftsender">
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="activates-default">True</property>
+                        <property name="truncate-multiline">True</property>
+                        <property name="adjustment">adjustment4</property>
+                        <property name="digits">2</property>
+                        <child internal-child="accessible">
+                          <object class="AtkObject" id="leftsender-atkobject">
+                            <property name="AtkObject::accessible-description" translatable="yes" context="envformatpage|extended_tip|leftsender">Enter the amount of space that you want to leave between the left edge of the envelope and the sender field.</property>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="left-attach">1</property>
+                        <property name="top-attach">0</property>
+                      </packing>
+                    </child>
+                    <child>
                       <object class="GtkBox" id="box4">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
@@ -407,6 +388,25 @@
                       </object>
                       <packing>
                         <property name="left-attach">0</property>
+                        <property name="top-attach">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkSpinButton" id="topsender">
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="activates-default">True</property>
+                        <property name="truncate-multiline">True</property>
+                        <property name="adjustment">adjustment5</property>
+                        <property name="digits">2</property>
+                        <child internal-child="accessible">
+                          <object class="AtkObject" id="topsender-atkobject">
+                            <property name="AtkObject::accessible-description" translatable="yes" context="envformatpage|extended_tip|topsender">Enter the amount of space that you want to leave between the top edge of the envelope and the sender field.</property>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="left-attach">1</property>
                         <property name="top-attach">1</property>
                       </packing>
                     </child>
@@ -532,6 +532,21 @@
                   </packing>
                 </child>
                 <child>
+                  <object class="GtkComboBoxText" id="format">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <child internal-child="accessible">
+                      <object class="AtkObject" id="format-atkobject">
+                        <property name="AtkObject::accessible-description" translatable="yes" context="envformatpage|extended_tip|format">Select the envelope size that you want, or select "User Defined", and then enter the width and the height of the custom size.</property>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
                   <object class="GtkLabel" id="label13">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
@@ -543,20 +558,6 @@
                   <packing>
                     <property name="left-attach">0</property>
                     <property name="top-attach">1</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="label14">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="label" translatable="yes" context="envformatpage|label14">_Height</property>
-                    <property name="use-underline">True</property>
-                    <property name="mnemonic-widget">height</property>
-                    <property name="xalign">0</property>
-                  </object>
-                  <packing>
-                    <property name="left-attach">0</property>
-                    <property name="top-attach">2</property>
                   </packing>
                 </child>
                 <child>
@@ -580,6 +581,20 @@
                   </packing>
                 </child>
                 <child>
+                  <object class="GtkLabel" id="label14">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="label" translatable="yes" context="envformatpage|label14">_Height</property>
+                    <property name="use-underline">True</property>
+                    <property name="mnemonic-widget">height</property>
+                    <property name="xalign">0</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">2</property>
+                  </packing>
+                </child>
+                <child>
                   <object class="GtkSpinButton" id="height">
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
@@ -597,21 +612,6 @@
                   <packing>
                     <property name="left-attach">1</property>
                     <property name="top-attach">2</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkComboBoxText" id="format">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <child internal-child="accessible">
-                      <object class="AtkObject" id="format-atkobject">
-                        <property name="AtkObject::accessible-description" translatable="yes" context="envformatpage|extended_tip|format">Select the envelope size that you want, or select "User Defined", and then enter the width and the height of the custom size.</property>
-                      </object>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="left-attach">1</property>
-                    <property name="top-attach">0</property>
                   </packing>
                 </child>
               </object>
