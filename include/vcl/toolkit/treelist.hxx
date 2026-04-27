@@ -68,15 +68,17 @@ class UNLESS_MERGELIBS_MORE(VCL_DLLPUBLIC) SvTreeList final
     friend class SvTreeListBox;
 
     SvTreeListBox& mrOwnerListView;
-    sal_uInt32          nEntryCount;
+    sal_uInt32 m_nEntryCount;
 
-    Link<SvTreeListEntry*, SvTreeListEntry*>  aCloneLink;
-    Link<const SvSortData&, sal_Int32>        aCompareLink;
-    SvSortMode          eSortMode;
+    Link<SvTreeListEntry*, SvTreeListEntry*> m_aCloneLink;
+    Link<const SvSortData&, sal_Int32> m_aCompareLink;
+    SvSortMode m_eSortMode;
 
-    bool                bAbsPositionsValid;
+    bool m_bAbsPositionsValid;
 
     bool mbEnableInvalidate;
+
+    std::unique_ptr<SvTreeListEntry> m_pRootItem;
 
     SvTreeListEntry*        FirstVisible() const { return First(); }
     SvTreeListEntry* NextVisible(const SvTreeListBox*, SvTreeListEntry* pEntry,
@@ -122,8 +124,6 @@ class UNLESS_MERGELIBS_MORE(VCL_DLLPUBLIC) SvTreeList final
     SvTreeList(const SvTreeList&) = delete;
     SvTreeList& operator= (const SvTreeList&) = delete;
 
-    std::unique_ptr<SvTreeListEntry>  pRootItem;
-
 public:
 
                         SvTreeList() = delete;
@@ -138,7 +138,7 @@ public:
     // Notify all Listeners
     void                InvalidateEntry( SvTreeListEntry* );
 
-    sal_uInt32          GetEntryCount() const { return nEntryCount; }
+    sal_uInt32 GetEntryCount() const { return m_nEntryCount; }
     SvTreeListEntry*    First() const;
     SvTreeListEntry*    Next( SvTreeListEntry* pEntry, sal_uInt16* pDepth=nullptr ) const;
     SvTreeListEntry*    Last() const;
@@ -148,7 +148,7 @@ public:
     void Insert(SvTreeListEntry* pEntry, SvTreeListEntry* pPar, sal_uInt32 nPos = TREELIST_APPEND);
     void Insert(SvTreeListEntry* pEntry, sal_uInt32 nRootPos = TREELIST_APPEND)
     {
-        Insert(pEntry, pRootItem.get(), nRootPos);
+        Insert(pEntry, m_pRootItem.get(), nRootPos);
     }
 
     void                InsertTree( SvTreeListEntry* pTree, SvTreeListEntry* pTargetParent, sal_uInt32 nListPos );
@@ -186,17 +186,18 @@ public:
     // The Handler needs to return a SvTreeListEntry*
     SvTreeListEntry*    Clone( SvTreeListEntry* pEntry, sal_uInt32& nCloneCount ) const;
     void                SetCloneLink( const Link<SvTreeListEntry*,SvTreeListEntry*>& rLink )
-    { aCloneLink=rLink; }
+    {
+        m_aCloneLink = rLink;
+    }
 
-    const Link<SvTreeListEntry*,SvTreeListEntry*>&       GetCloneLink() const
-    { return aCloneLink; }
+    const Link<SvTreeListEntry*, SvTreeListEntry*>& GetCloneLink() const { return m_aCloneLink; }
 
     SvTreeListEntry*    CloneEntry( SvTreeListEntry* pSource ) const; // Calls the Clone Link
 
-    void                SetSortMode( SvSortMode eMode ) { eSortMode = eMode; }
-    SvSortMode          GetSortMode() const { return eSortMode; }
+    void SetSortMode(SvSortMode eMode) { m_eSortMode = eMode; }
+    SvSortMode GetSortMode() const { return m_eSortMode; }
     sal_Int32           Compare(const SvTreeListEntry* pLeft, const SvTreeListEntry* pRight) const;
-    void                SetCompareHdl( const Link<const SvSortData&, sal_Int32>& rLink ) { aCompareLink = rLink; }
+    void SetCompareHdl(const Link<const SvSortData&, sal_Int32>& rLink) { m_aCompareLink = rLink; }
     void                Resort();
 };
 

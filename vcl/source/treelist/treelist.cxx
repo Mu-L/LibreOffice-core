@@ -31,10 +31,10 @@ SvTreeList::SvTreeList(SvTreeListBox& rTreeListBox)
     : mrOwnerListView(rTreeListBox)
     , mbEnableInvalidate(true)
 {
-    nEntryCount = 0;
-    bAbsPositionsValid = false;
-    pRootItem.reset(new SvTreeListEntry);
-    eSortMode = SvSortMode::None;
+    m_nEntryCount = 0;
+    m_bAbsPositionsValid = false;
+    m_pRootItem.reset(new SvTreeListEntry);
+    m_eSortMode = SvSortMode::None;
 }
 
 SvTreeList::~SvTreeList()
@@ -53,7 +53,7 @@ bool SvTreeList::IsEntryVisible(const SvTreeListBox* pView, SvTreeListEntry* pEn
     bool bRetVal = false;
     do
     {
-        if ( pEntry == pRootItem.get() )
+        if (pEntry == m_pRootItem.get())
         {
             bRetVal = true;
             break;
@@ -65,9 +65,9 @@ bool SvTreeList::IsEntryVisible(const SvTreeListBox* pView, SvTreeListEntry* pEn
 
 sal_uInt16 SvTreeList::GetDepth( const SvTreeListEntry* pEntry ) const
 {
-    DBG_ASSERT(pEntry && pEntry!=pRootItem.get(),"GetDepth:Bad Entry");
+    DBG_ASSERT(pEntry && pEntry != m_pRootItem.get(), "GetDepth:Bad Entry");
     sal_uInt16 nDepth = 0;
-    while( pEntry && pEntry->pParent != pRootItem.get() )
+    while (pEntry && pEntry->pParent != m_pRootItem.get())
     {
         nDepth++;
         pEntry = pEntry->pParent;
@@ -77,21 +77,21 @@ sal_uInt16 SvTreeList::GetDepth( const SvTreeListEntry* pEntry ) const
 
 bool SvTreeList::IsAtRootDepth( const SvTreeListEntry* pEntry ) const
 {
-    return pEntry->pParent == pRootItem.get();
+    return pEntry->pParent == m_pRootItem.get();
 }
 
 void SvTreeList::Clear()
 {
     Broadcast( SvListAction::CLEARING );
-    pRootItem->ClearChildren();
-    nEntryCount = 0;
+    m_pRootItem->ClearChildren();
+    m_nEntryCount = 0;
     Broadcast( SvListAction::CLEARED );
 }
 
 bool SvTreeList::IsChild(const SvTreeListEntry* pParent, const SvTreeListEntry* pChild) const
 {
     if ( !pParent )
-        pParent = pRootItem.get();
+        pParent = m_pRootItem.get();
 
     if (pParent->m_Children.empty())
         return false;
@@ -141,7 +141,7 @@ sal_uInt32 SvTreeList::Move(SvTreeListEntry* pSrcEntry,SvTreeListEntry* pTargetP
     // pDest may be 0!
     assert(pSrcEntry && "Entry?");
     if ( !pTargetParent )
-        pTargetParent = pRootItem.get();
+        pTargetParent = m_pRootItem.get();
     DBG_ASSERT(pSrcEntry!=pTargetParent,"Move:Source=Target");
 
     Broadcast(SvListAction::MOVING, pSrcEntry);
@@ -151,7 +151,7 @@ sal_uInt32 SvTreeList::Move(SvTreeListEntry* pSrcEntry,SvTreeListEntry* pTargetP
         // position and bail out.
         return pSrcEntry->GetChildListPos();
 
-    bAbsPositionsValid = false;
+    m_bAbsPositionsValid = false;
 
     SvTreeListEntries& rDst = pTargetParent->m_Children;
     SvTreeListEntries& rSrc = pSrcEntry->pParent->m_Children;
@@ -236,13 +236,13 @@ sal_uInt32 SvTreeList::Copy(SvTreeListEntry* pSrcEntry,SvTreeListEntry* pTargetP
     // pDest may be 0!
     DBG_ASSERT(pSrcEntry,"Entry?");
     if ( !pTargetParent )
-        pTargetParent = pRootItem.get();
+        pTargetParent = m_pRootItem.get();
 
-    bAbsPositionsValid = false;
+    m_bAbsPositionsValid = false;
 
     sal_uInt32 nCloneCount = 0;
     SvTreeListEntry* pClonedEntry = Clone( pSrcEntry, nCloneCount );
-    nEntryCount += nCloneCount;
+    m_nEntryCount += nCloneCount;
 
     SvTreeListEntries& rDst = pTargetParent->m_Children;
 
@@ -271,7 +271,7 @@ void SvTreeList::Move( SvTreeListEntry* pSrcEntry, SvTreeListEntry* pDstEntry )
 
     if ( !pDstEntry )
     {
-        pParent = pRootItem.get();
+        pParent = m_pRootItem.get();
         nPos = 0;
     }
     else
@@ -291,12 +291,12 @@ void SvTreeList::InsertTree(SvTreeListEntry* pSrcEntry,
         return;
 
     if ( !pTargetParent )
-        pTargetParent = pRootItem.get();
+        pTargetParent = m_pRootItem.get();
 
     // take sorting into account
     GetInsertionPos(*pSrcEntry, pTargetParent, nListPos);
 
-    bAbsPositionsValid = false;
+    m_bAbsPositionsValid = false;
 
     pSrcEntry->pParent = pTargetParent; // move parent
     SvTreeListEntries& rDst = pTargetParent->m_Children;
@@ -311,16 +311,16 @@ void SvTreeList::InsertTree(SvTreeListEntry* pSrcEntry,
         rDst.push_back(std::unique_ptr<SvTreeListEntry>(pSrcEntry));
 
     SetListPositions(rDst); // correct list position in target list
-    nEntryCount += GetChildCount( pSrcEntry );
-    nEntryCount++; // the parent is new, too
+    m_nEntryCount += GetChildCount(pSrcEntry);
+    m_nEntryCount++; // the parent is new, too
 
     Broadcast(SvListAction::INSERTED_TREE, pSrcEntry );
 }
 
 SvTreeListEntry* SvTreeList::CloneEntry( SvTreeListEntry* pSource ) const
 {
-    if( aCloneLink.IsSet() )
-        return aCloneLink.Call( pSource );
+    if (m_aCloneLink.IsSet())
+        return m_aCloneLink.Call(pSource);
     SvTreeListEntry* pEntry = new SvTreeListEntry;
     pEntry->Clone(pSource);
     return pEntry;
@@ -383,7 +383,7 @@ sal_uInt32 SvTreeList::GetVisibleChildCount(const SvTreeListBox* pView,
 {
     assert(pView && "GetVisChildCount:No View");
     if ( !pParent )
-        pParent = pRootItem.get();
+        pParent = m_pRootItem.get();
 
     if (!pParent || !pView->IsExpanded(pParent) || pParent->m_Children.empty())
         return 0;
@@ -406,7 +406,7 @@ sal_uInt32 SvTreeList::GetChildSelectionCount(const SvTreeListBox* pView,
 {
     assert(pView && "GetChildSelCount:No View");
     if ( !pParent )
-        pParent = pRootItem.get();
+        pParent = m_pRootItem.get();
 
     if (!pParent || pParent->m_Children.empty())
         return 0;
@@ -426,8 +426,8 @@ sal_uInt32 SvTreeList::GetChildSelectionCount(const SvTreeListBox* pView,
 
 SvTreeListEntry* SvTreeList::First() const
 {
-    if ( nEntryCount )
-        return pRootItem->m_Children[0].get();
+    if (m_nEntryCount)
+        return m_pRootItem->m_Children[0].get();
     else
         return nullptr;
 }
@@ -471,7 +471,7 @@ SvTreeListEntry* SvTreeList::Next( SvTreeListEntry* pActEntry, sal_uInt16* pDept
     // Move up level(s) until we find the level where the next sibling exists.
     SvTreeListEntry* pParent = pActEntry->pParent;
     nDepth--;
-    while( pParent != pRootItem.get() && pParent != nullptr )
+    while (pParent != m_pRootItem.get() && pParent != nullptr)
     {
         pActualList = &pParent->pParent->m_Children;
         nActualPos = pParent->GetChildListPos();
@@ -490,7 +490,7 @@ SvTreeListEntry* SvTreeList::Next( SvTreeListEntry* pActEntry, sal_uInt16* pDept
 
 SvTreeListEntry* SvTreeList::Last() const
 {
-    SvTreeListEntries* pActList = &pRootItem->m_Children;
+    SvTreeListEntries* pActList = &m_pRootItem->m_Children;
     SvTreeListEntry* pEntry = nullptr;
     while (!pActList->empty())
     {
@@ -590,7 +590,7 @@ SvTreeListEntry* SvTreeList::NextVisible(const SvTreeListBox* pView, SvTreeListE
 
     SvTreeListEntry* pParent = pActEntry->pParent;
     nDepth--;
-    while( pParent != pRootItem.get() )
+    while (pParent != m_pRootItem.get())
     {
         pActualList = &pParent->pParent->m_Children;
         nActualPos = pParent->GetChildListPos();
@@ -631,7 +631,7 @@ SvTreeListEntry* SvTreeList::PrevVisible(const SvTreeListBox* pView,
         return pActEntry;
     }
 
-    if ( pActEntry->pParent == pRootItem.get() )
+    if (pActEntry->pParent == m_pRootItem.get())
         return nullptr;
 
     pActEntry = pActEntry->pParent;
@@ -711,7 +711,7 @@ SvTreeListEntry* SvTreeList::FirstSelected(const SvTreeListBox* pView) const
 SvTreeListEntry* SvTreeList::FirstChild(const SvTreeListEntry* pParent) const
 {
     if ( !pParent )
-        pParent = pRootItem.get();
+        pParent = m_pRootItem.get();
     SvTreeListEntry* pResult;
     if (!pParent->m_Children.empty())
         pResult = pParent->m_Children[0].get();
@@ -734,14 +734,14 @@ void SvTreeList::Insert(SvTreeListEntry* pEntry, SvTreeListEntry* pParent, sal_u
     assert(pEntry && "Entry?");
 
     if ( !pParent )
-        pParent = pRootItem.get();
+        pParent = m_pRootItem.get();
 
     SvTreeListEntries& rList = pParent->m_Children;
 
     // take sorting into account
     GetInsertionPos(*pEntry, pParent, nPos);
 
-    bAbsPositionsValid = false;
+    m_bAbsPositionsValid = false;
     pEntry->pParent = pParent;
 
     if (nPos < rList.size())
@@ -753,7 +753,7 @@ void SvTreeList::Insert(SvTreeListEntry* pEntry, SvTreeListEntry* pParent, sal_u
     else
         rList.push_back(std::unique_ptr<SvTreeListEntry>(pEntry));
 
-    nEntryCount++;
+    m_nEntryCount++;
     if (nPos != TREELIST_APPEND && (nPos != (rList.size()-1)))
         SetListPositions(rList);
     else
@@ -764,7 +764,7 @@ void SvTreeList::Insert(SvTreeListEntry* pEntry, SvTreeListEntry* pParent, sal_u
 
 sal_uInt32 SvTreeList::GetAbsPos( const SvTreeListEntry* pEntry) const
 {
-    if ( !bAbsPositionsValid )
+    if (!m_bAbsPositionsValid)
         const_cast<SvTreeList*>(this)->SetAbsolutePositions();
     return pEntry->nAbsPos;
 }
@@ -784,7 +784,7 @@ void SvTreeList::SetAbsolutePositions()
         nPos++;
         pEntry = Next( pEntry );
     }
-    bAbsPositionsValid = true;
+    m_bAbsPositionsValid = true;
 }
 
 bool SvTreeList::Remove( const SvTreeListEntry* pEntry )
@@ -802,7 +802,7 @@ bool SvTreeList::Remove( const SvTreeListEntry* pEntry )
 
     Broadcast(SvListAction::REMOVING, const_cast<SvTreeListEntry*>(pEntry));
     sal_uInt32 nRemoved = 1 + GetChildCount(pEntry);
-    bAbsPositionsValid = false;
+    m_bAbsPositionsValid = false;
 
     SvTreeListEntry* pParent = pEntry->pParent;
     SvTreeListEntries& rList = pParent->m_Children;
@@ -836,7 +836,7 @@ bool SvTreeList::Remove( const SvTreeListEntry* pEntry )
     if (!rList.empty() && !bLastEntry)
         SetListPositions(rList);
 
-    nEntryCount -= nRemoved;
+    m_nEntryCount -= nRemoved;
     Broadcast(SvListAction::REMOVED, const_cast<SvTreeListEntry*>(pEntry));
 
     return true;
@@ -890,12 +890,12 @@ void SvTreeList::InvalidateEntry( SvTreeListEntry* pEntry )
 
 sal_Int32 SvTreeList::Compare(const SvTreeListEntry* pLeft, const SvTreeListEntry* pRight) const
 {
-    if( aCompareLink.IsSet())
+    if (m_aCompareLink.IsSet())
     {
         SvSortData aSortData;
         aSortData.pLeft = pLeft;
         aSortData.pRight = pRight;
-        return aCompareLink.Call( aSortData );
+        return m_aCompareLink.Call(aSortData);
     }
     return 0;
 }
@@ -903,8 +903,8 @@ sal_Int32 SvTreeList::Compare(const SvTreeListEntry* pLeft, const SvTreeListEntr
 void SvTreeList::Resort()
 {
     Broadcast( SvListAction::RESORTING );
-    bAbsPositionsValid = false;
-    ResortChildren( pRootItem.get() );
+    m_bAbsPositionsValid = false;
+    ResortChildren(m_pRootItem.get());
     Broadcast( SvListAction::RESORTED );
 }
 
@@ -957,7 +957,7 @@ void SvTreeList::ResortChildren( SvTreeListEntry* pParent )
 void SvTreeList::GetInsertionPos(const SvTreeListEntry& rEntry, SvTreeListEntry* pParent,
     sal_uInt32& rPos )
 {
-    if( eSortMode == SvSortMode::None )
+    if (m_eSortMode == SvSortMode::None)
         return;
 
     rPos = TREELIST_ENTRY_NOTFOUND;
@@ -976,7 +976,7 @@ void SvTreeList::GetInsertionPos(const SvTreeListEntry& rEntry, SvTreeListEntry*
         k = (i+j)/2;
         const SvTreeListEntry* pTempEntry = rChildList[k].get();
         nCompare = Compare(&rEntry, pTempEntry);
-        if (nCompare != 0 && eSortMode == SvSortMode::Descending)
+        if (nCompare != 0 && m_eSortMode == SvSortMode::Descending)
         {
             if( nCompare < 0 )
                 nCompare = 1;
@@ -1002,7 +1002,7 @@ void SvTreeList::GetInsertionPos(const SvTreeListEntry& rEntry, SvTreeListEntry*
 
 SvTreeListEntry* SvTreeList::GetEntry( SvTreeListEntry* pParent, sal_uInt32 nPos ) const
 {   if ( !pParent )
-        pParent = pRootItem.get();
+        pParent = m_pRootItem.get();
     SvTreeListEntry* pRet = nullptr;
     if (nPos < pParent->m_Children.size())
         pRet = pParent->m_Children[nPos].get();
@@ -1012,29 +1012,29 @@ SvTreeListEntry* SvTreeList::GetEntry( SvTreeListEntry* pParent, sal_uInt32 nPos
 SvTreeListEntry* SvTreeList::GetEntry( sal_uInt32 nRootPos ) const
 {
     SvTreeListEntry* pRet = nullptr;
-    if (nEntryCount && nRootPos < pRootItem->m_Children.size())
-        pRet = pRootItem->m_Children[nRootPos].get();
+    if (m_nEntryCount && nRootPos < m_pRootItem->m_Children.size())
+        pRet = m_pRootItem->m_Children[nRootPos].get();
     return pRet;
 }
 
 const SvTreeListEntries& SvTreeList::GetChildList( SvTreeListEntry* pParent ) const
 {
     if ( !pParent )
-        pParent = pRootItem.get();
+        pParent = m_pRootItem.get();
     return pParent->m_Children;
 }
 
 SvTreeListEntries& SvTreeList::GetChildList( SvTreeListEntry* pParent )
 {
     if ( !pParent )
-        pParent = pRootItem.get();
+        pParent = m_pRootItem.get();
     return pParent->m_Children;
 }
 
 const SvTreeListEntry* SvTreeList::GetParent( const SvTreeListEntry* pEntry ) const
 {
     const SvTreeListEntry* pParent = pEntry->pParent;
-    if (pParent == pRootItem.get())
+    if (pParent == m_pRootItem.get())
         pParent = nullptr;
     return pParent;
 }
@@ -1042,7 +1042,7 @@ const SvTreeListEntry* SvTreeList::GetParent( const SvTreeListEntry* pEntry ) co
 SvTreeListEntry* SvTreeList::GetParent( SvTreeListEntry* pEntry )
 {
     SvTreeListEntry* pParent = pEntry->pParent;
-    if (pParent == pRootItem.get())
+    if (pParent == m_pRootItem.get())
         pParent = nullptr;
     return pParent;
 }

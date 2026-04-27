@@ -410,7 +410,7 @@ SvTreeListBox::SvTreeListBox(vcl::Window* pParent, WinBits nWinStyle) :
     m_pModel.reset(new SvTreeList(*this));
 
     // insert root entry
-    SvTreeListEntry* pEntry = m_pModel->pRootItem.get();
+    SvTreeListEntry* pEntry = m_pModel->m_pRootItem.get();
     SvViewDataEntry aViewData;
     aViewData.SetExpanded(true);
     m_DataTable.insert(std::make_pair(pEntry, std::move(aViewData)));
@@ -670,7 +670,7 @@ void SvTreeListBox::Reset()
     if (m_pModel)
     {
         // insert root entry
-        SvTreeListEntry* pEntry = m_pModel->pRootItem.get();
+        SvTreeListEntry* pEntry = m_pModel->m_pRootItem.get();
         SvViewDataEntry aViewData;
         aViewData.SetExpanded(true);
         m_DataTable.insert(std::make_pair(pEntry, std::move(aViewData)));
@@ -681,7 +681,7 @@ void SvTreeListBox::ActionMoving(SvTreeListEntry* pEntry)
 {
     SvTreeListEntry* pParent = pEntry->pParent;
     assert(pParent && "Model not consistent");
-    if (pParent != m_pModel->pRootItem.get() && pParent->m_Children.size() == 1)
+    if (pParent != m_pModel->m_pRootItem.get() && pParent->m_Children.size() == 1)
     {
         const auto iter = m_DataTable.find(pParent);
         assert(iter != m_DataTable.end());
@@ -776,7 +776,7 @@ void SvTreeListBox::ActionRemoving(SvTreeListEntry* pEntry)
     RemoveViewData(pEntry);
 
     SvTreeListEntry* pCurEntry = pEntry->pParent;
-    if (pCurEntry && pCurEntry != m_pModel->pRootItem.get() && pCurEntry->m_Children.size() == 1)
+    if (pCurEntry && pCurEntry != m_pModel->m_pRootItem.get() && pCurEntry->m_Children.size() == 1)
     {
         SvDataTable::iterator itr = m_DataTable.find(pCurEntry);
         assert(itr != m_DataTable.end() && "Entry not in Table");
