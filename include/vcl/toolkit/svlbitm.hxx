@@ -90,7 +90,7 @@ public:
     SvTreeListEntry*        GetActEntry() const;
     SvLBoxButton*           GetActBox() const;
 
-    Image&                  GetImage(SvBmp eIndex) { return aBmps.at(eIndex); }
+    const Image& GetImage(SvBmp eIndex) const { return aBmps.at(eIndex); }
 
     void                    SetDefaultImages(const Control& rControlForSettings);
                                 // set images according to the color scheme of the Control
