@@ -534,8 +534,10 @@ void FuPage::ApplyItemSet( const SfxItemSet* pArgs )
     if( pArgs->GetItemState(mrDoc.GetPool().GetWhichIDFromSlotID(SID_ATTR_LRSPACE),
                             true, &pPoolItem) == SfxItemState::SET )
     {
-        // FIXME for tdf#140226: using static_cast<const SvxULSpaceItem*>(pPoolItem)
+        // FIXME for tdf#140226: using pPoolItem->StaticWhichCast(SID_ATTR_LRSPACE)->ResolveLeft/Right
         // makes UITest_impress_tests fail
+        // more precisely tdf134734.TestClass.test_master_page_background
+        // for the record, pPoolItem->StaticWhichCast(EE_PARA_LRSPACE)->ResolveLeft/Right works
         nLeft = static_cast<const SvxLRSpaceItem*>(pPoolItem)->ResolveLeft();
         nRight = static_cast<const SvxLRSpaceItem*>(pPoolItem)->ResolveRight({});
 
@@ -547,8 +549,9 @@ void FuPage::ApplyItemSet( const SfxItemSet* pArgs )
     if( pArgs->GetItemState(mrDoc.GetPool().GetWhichIDFromSlotID(SID_ATTR_ULSPACE),
                             true, &pPoolItem) == SfxItemState::SET )
     {
-        // FIXME for tdf#140226: using static_cast<const SvxULSpaceItem*>(pPoolItem)
+        // FIXME for tdf#140226: using pPoolItem->StaticWhichCast(SID_ATTR_ULSPACE)->GetUpper/Lower
         // makes UITest_impress_tests fail
+        // more precisely tdf134734.TestClass.test_master_page_background
         nUpper = static_cast<const SvxULSpaceItem*>(pPoolItem)->GetUpper();
         nLower = static_cast<const SvxULSpaceItem*>(pPoolItem)->GetLower();
 
