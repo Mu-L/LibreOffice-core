@@ -43,7 +43,6 @@
 #include <utility>
 
 namespace com::sun::star::datatransfer::clipboard { class XClipboard; }
-namespace com::sun::star::datatransfer::dnd { class XDragGestureRecognizer; }
 namespace com::sun::star::io { class XInputStream; }
 namespace com::sun::star::datatransfer::dnd { class XDropTarget; }
 
@@ -51,6 +50,7 @@ template <typename Arg, typename Ret> class Link;
 enum class SotClipboardFormatId : sal_uInt32;
 
 class Bitmap;
+class DNDListenerContainer;
 class GDIMetaFile;
 class Graphic;
 class ImageMap;
@@ -395,7 +395,7 @@ private:
 
 private:
     std::mutex                                                            maMutex;
-    css::uno::Reference< css::datatransfer::dnd::XDragGestureRecognizer > mxDragGestureRecognizer;
+    rtl::Reference<DNDListenerContainer> mpDNDListenerContainer;
 
     rtl::Reference< DragSourceHelper::DragGestureListener >   mxDragGestureListener;
 

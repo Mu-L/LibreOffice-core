@@ -22,6 +22,7 @@
 #include <osl/mutex.hxx>
 #include <sot/exchange.hxx>
 #include <tools/debug.hxx>
+#include <vcl/dndlistenercontainer.hxx>
 #include <vcl/svapp.hxx>
 #include <vcl/window.hxx>
 #include <comphelper/lok.hxx>
@@ -72,25 +73,25 @@ void SAL_CALL DragSourceHelper::DragGestureListener::dragGestureRecognized( cons
 }
 
 DragSourceHelper::DragSourceHelper(vcl::Window* pWindow)
-    : mxDragGestureRecognizer(pWindow->GetDropTarget())
+    : mpDNDListenerContainer(pWindow->GetDropTarget())
 {
-    if( mxDragGestureRecognizer.is() )
+    if (mpDNDListenerContainer.is())
     {
         mxDragGestureListener = new DragSourceHelper::DragGestureListener( *this );
-        mxDragGestureRecognizer->addDragGestureListener( mxDragGestureListener );
+        mpDNDListenerContainer->addDragGestureListener(mxDragGestureListener);
     }
 }
 
 
 void DragSourceHelper::dispose()
 {
-    Reference<XDragGestureRecognizer> xTmp;
+    rtl::Reference<DNDListenerContainer> pTmp;
     {
         std::scoped_lock aGuard( maMutex );
-        xTmp = std::move(mxDragGestureRecognizer);
+        pTmp = std::move(mpDNDListenerContainer);
     }
-    if( xTmp.is()  )
-        xTmp->removeDragGestureListener( mxDragGestureListener );
+    if (pTmp.is())
+        pTmp->removeDragGestureListener(mxDragGestureListener);
 }
 
 DragSourceHelper::~DragSourceHelper()
