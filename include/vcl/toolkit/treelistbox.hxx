@@ -148,7 +148,6 @@ enum class DragDropMode
 {
     NONE            = 0x0000,
     CTRL_MOVE       = 0x0001,
-    APP_COPY        = 0x0004,
     // Entries may be dropped via the uppermost Entry
     // The DropTarget is 0 in that case
     ENABLE_TOP      = 0x0010,
