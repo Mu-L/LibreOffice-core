@@ -333,7 +333,7 @@ SvLBoxItem::~SvLBoxItem()
 
 int SvLBoxItem::GetWidth(const SvTreeListBox& rView, const SvTreeListEntry* pEntry) const
 {
-    const SvViewDataItem& rViewData = rView.GetViewDataItem(pEntry, this);
+    const SvViewDataItem& rViewData = rView.GetViewDataItem(pEntry, *this);
     int nWidth = rViewData.mnWidth;
     if (nWidth == -1)
     {
@@ -345,7 +345,7 @@ int SvLBoxItem::GetWidth(const SvTreeListBox& rView, const SvTreeListEntry* pEnt
 
 int SvLBoxItem::GetHeight(const SvTreeListBox& rView, const SvTreeListEntry* pEntry) const
 {
-    const SvViewDataItem& rViewData = rView.GetViewDataItem(pEntry, this);
+    const SvViewDataItem& rViewData = rView.GetViewDataItem(pEntry, *this);
     return rViewData.mnHeight;
 }
 
@@ -1116,18 +1116,18 @@ SvViewDataEntry* SvTreeListBox::GetViewDataEntry( SvTreeListEntry const * pEntry
 }
 
 SvViewDataItem& SvTreeListBox::GetViewDataItem(SvTreeListEntry const* pEntry,
-                                               SvLBoxItem const* pItem)
+                                               const SvLBoxItem& rItem)
 {
     return const_cast<SvViewDataItem&>(
-        static_cast<const SvTreeListBox*>(this)->GetViewDataItem(pEntry, pItem));
+        static_cast<const SvTreeListBox*>(this)->GetViewDataItem(pEntry, rItem));
 }
 
 const SvViewDataItem& SvTreeListBox::GetViewDataItem(const SvTreeListEntry* pEntry,
-                                                     const SvLBoxItem* pItem) const
+                                                     const SvLBoxItem& rItem) const
 {
     const SvViewDataEntry* pEntryData = GetViewData(pEntry);
     assert(pEntryData && "Entry not in View");
-    sal_uInt16 nItemPos = pEntry->GetPos(pItem);
+    sal_uInt16 nItemPos = pEntry->GetPos(&rItem);
     return pEntryData->GetItem(nItemPos);
 }
 

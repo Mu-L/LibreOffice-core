@@ -1541,7 +1541,7 @@ void UnoTreeListItem::SetGraphicURL( const OUString& rGraphicURL )
 void UnoTreeListItem::InitViewData(SvTreeListBox& rView, SvTreeListEntry* pEntry, SvViewDataItem* pViewData)
 {
     if( !pViewData )
-        pViewData = &rView.GetViewDataItem(pEntry, this);
+        pViewData = &rView.GetViewDataItem(pEntry, *this);
 
     Size aSize(maImage.GetSizePixel());
     pViewData->mnWidth = aSize.Width();
