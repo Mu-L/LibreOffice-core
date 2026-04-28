@@ -292,7 +292,7 @@
                             <property name="margin-top">6</property>
                             <child>
                               <object class="GtkCheckButton" id="headingcb">
-                                <property name="label" translatable="yes" context="converttexttable|headingcb">Heading</property>
+                                <property name="label" translatable="yes" context="converttexttable|headingcb">Header</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
@@ -300,7 +300,7 @@
                                 <property name="draw_indicator">True</property>
                                 <child internal-child="accessible">
                                   <object class="AtkObject" id="headingcb-atkobject">
-                                    <property name="AtkObject::accessible-description" translatable="yes" context="converttexttable|extended_tip|headingcb">Formats the first row of the new table as a heading.</property>
+                                    <property name="AtkObject::accessible-description" translatable="yes" context="converttexttable|extended_tip|headingcb">Formats the first row of the new table as a header.</property>
                                   </object>
                                 </child>
                               </object>
@@ -311,7 +311,7 @@
                             </child>
                             <child>
                               <object class="GtkCheckButton" id="repeatheading">
-                                <property name="label" translatable="yes" context="converttexttable|repeatheading">Repeat heading</property>
+                                <property name="label" translatable="yes" context="converttexttable|repeatheading">Repeat header</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>

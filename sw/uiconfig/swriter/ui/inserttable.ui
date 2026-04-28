@@ -287,7 +287,7 @@
                     <property name="row-spacing">6</property>
                     <child>
                       <object class="GtkCheckButton" id="headercb">
-                        <property name="label" translatable="yes" context="inserttable|headercb">Hea_ding</property>
+                        <property name="label" translatable="yes" context="inserttable|headercb">Hea_der</property>
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
                         <property name="receives-default">False</property>
@@ -295,7 +295,7 @@
                         <property name="draw-indicator">True</property>
                         <child internal-child="accessible">
                           <object class="AtkObject" id="headercb-atkobject">
-                            <property name="AtkObject::accessible-description" translatable="yes" context="inserttable|extended_tip|headercb">Includes a heading row in the table.</property>
+                            <property name="AtkObject::accessible-description" translatable="yes" context="inserttable|extended_tip|headercb">Includes a header row in the table.</property>
                           </object>
                         </child>
                       </object>
@@ -306,7 +306,7 @@
                     </child>
                     <child>
                       <object class="GtkCheckButton" id="repeatcb">
-                        <property name="label" translatable="yes" context="inserttable|repeatcb">Repeat heading rows on new _pages</property>
+                        <property name="label" translatable="yes" context="inserttable|repeatcb">Repeat header rows on new _pages</property>
                         <property name="visible">True</property>
                         <property name="sensitive">False</property>
                         <property name="can-focus">True</property>
@@ -317,7 +317,7 @@
                         <property name="draw-indicator">True</property>
                         <child internal-child="accessible">
                           <object class="AtkObject" id="repeatcb-atkobject">
-                            <property name="AtkObject::accessible-description" translatable="yes" context="inserttable|extended_tip|repeatcb">Repeats the heading of the table at the top of subsequent page if the table spans more than one page.</property>
+                            <property name="AtkObject::accessible-description" translatable="yes" context="inserttable|extended_tip|repeatcb">Repeats the header of the table at the top of each subsequent page if the table spans more than one page.</property>
                           </object>
                         </child>
                       </object>
@@ -363,7 +363,7 @@
                             <property name="value">1</property>
                             <child internal-child="accessible">
                               <object class="AtkObject" id="repeatheaderspin-atkobject">
-                                <property name="AtkObject::accessible-description" translatable="yes" context="inserttable|extended_tip|repeatheaderspin">Select the number of rows that you want to use for the heading.</property>
+                                <property name="AtkObject::accessible-description" translatable="yes" context="inserttable|extended_tip|repeatheaderspin">Select the number of rows that you want to use for the header.</property>
                               </object>
                             </child>
                           </object>
@@ -376,7 +376,7 @@
                           <object class="GtkLabel" id="repeatheaderafter">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="label" translatable="yes" context="inserttable|repeatheaderafter">Heading ro_ws:</property>
+                            <property name="label" translatable="yes" context="inserttable|repeatheaderafter">Header ro_ws:</property>
                             <property name="use-underline">True</property>
                             <property name="mnemonic-widget">repeatheaderspin</property>
                           </object>

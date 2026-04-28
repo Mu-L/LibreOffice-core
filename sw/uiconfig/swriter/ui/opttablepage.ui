@@ -57,7 +57,7 @@
                 <property name="column-spacing">12</property>
                 <child>
                   <object class="GtkCheckButton" id="header">
-                    <property name="label" translatable="yes" context="opttablepage|header">H_eading</property>
+                    <property name="label" translatable="yes" context="opttablepage|header">H_eader</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">False</property>
@@ -85,7 +85,7 @@
                     <property name="draw-indicator">True</property>
                     <child internal-child="accessible">
                       <object class="AtkObject" id="repeatheader-atkobject">
-                        <property name="AtkObject::accessible-description" translatable="yes" context="extended_tip|repeatheader">Specifies whether the table heading is carried over onto the new page after a page break.</property>
+                        <property name="AtkObject::accessible-description" translatable="yes" context="extended_tip|repeatheader">Specifies whether the table header is carried over onto the new page after a page break.</property>
                       </object>
                     </child>
                   </object>

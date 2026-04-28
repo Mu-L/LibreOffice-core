@@ -328,7 +328,7 @@
                 <property name="column-spacing">24</property>
                 <child>
                   <object class="GtkCheckButton" id="headline">
-                    <property name="label" translatable="yes" context="tabletextflowpage|headline">R_epeat heading</property>
+                    <property name="label" translatable="yes" context="tabletextflowpage|headline">R_epeat header</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">False</property>
@@ -336,7 +336,7 @@
                     <property name="draw-indicator">True</property>
                     <child internal-child="accessible">
                       <object class="AtkObject" id="headline-atkobject">
-                        <property name="AtkObject::accessible-description" translatable="yes" context="tabletextflowpage|extended_tip|headline">Repeats the table heading on a new page when the table spans more than one page.</property>
+                        <property name="AtkObject::accessible-description" translatable="yes" context="tabletextflowpage|extended_tip|headline">Repeats the table header on a new page when the table spans more than one page.</property>
                       </object>
                     </child>
                   </object>
@@ -384,7 +384,7 @@
                         <property name="adjustment">adjustment2</property>
                         <child internal-child="accessible">
                           <object class="AtkObject" id="repeatheadernf-atkobject">
-                            <property name="AtkObject::accessible-description" translatable="yes" context="tabletextflowpage|extended_tip|repeatheadernf">Enter the number of rows to include in the heading.</property>
+                            <property name="AtkObject::accessible-description" translatable="yes" context="tabletextflowpage|extended_tip|repeatheadernf">Enter the number of rows to include in the header.</property>
                           </object>
                         </child>
                       </object>

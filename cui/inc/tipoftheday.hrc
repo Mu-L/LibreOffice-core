@@ -88,7 +88,7 @@ const std::tuple<TranslateId, OUString, OUString, tipModule> TIPOFTHEDAY_STRINGA
      { NC_("RID_CUI_TIPOFTHEDAY", "Want to keep a part of an editable document as read-only? Insert ▸ Section. Add text to the section, then right-click “Edit Section” and check “Protect”."), "", "", swriter},
      { NC_("RID_CUI_TIPOFTHEDAY", "Use the Backspace key instead of Delete in Calc. You can choose what to delete."), "", "", scalc},
      { NC_("RID_CUI_TIPOFTHEDAY", "The best way to fix bad-looking MS Word table cells is via Table ▸ Size ▸ Optimal Row Height / Column Width."), "", "", swriter},
-     { NC_("RID_CUI_TIPOFTHEDAY", "To repeat a table heading when a table spans over a page, use Table ▸ Table Properties ▸ Text Flow ▸ Repeat heading."), "", "", swriter},
+     { NC_("RID_CUI_TIPOFTHEDAY", "To repeat a table header when a table spans over a page, use Table ▸ Table Properties ▸ Text Flow ▸ Repeat header."), "", "", swriter},
      { NC_("RID_CUI_TIPOFTHEDAY", "Want to quickly insert or delete rows? Select the desired number of rows (or columns) and press %MOD1+Plus sign (+) to add or %MOD1+Minus sign (-) to delete."), "modules/scalc/ui/insertcells/InsertCellsDialog", "", scalc},
      { NC_("RID_CUI_TIPOFTHEDAY", "To repeat rows/columns on every pages use Format ▸ Print Ranges ▸ Edit."), "", "", scalc},
      { NC_("RID_CUI_TIPOFTHEDAY", "Insert images and photos into shapes in Draw and Impress. Right-click on a shape, choose Area ▸ Image ▸ Add / Import, and use Options to adjust appearance."), "", "", sdraw},
