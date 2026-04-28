@@ -403,7 +403,7 @@ CPPUNIT_TEST_FIXTURE(HtmlImportTest, testTdf79298StrikeoutVariants)
 {
     createSwWebDoc("tdf79298-strikeout-variants.html");
 
-    // Without the accompanying fix in place, this tests would have failed with:
+    // Without the accompanying fix in place, these tests would have failed with:
     // - Expected: 1 (FontStrikeout::SINGLE)
     // - Actual  : 0 (FontStrikeout::NONE)
     CPPUNIT_ASSERT_EQUAL_MESSAGE(
@@ -421,7 +421,7 @@ CPPUNIT_TEST_FIXTURE(HtmlImportTest, testTdf171772StrikeoutVariants)
 {
     createSwWebDoc("tdf171772-strikeout-variants.html");
 
-    // Without the accompanying fix in place, this tests would have failed with:
+    // Without the accompanying fix in place, these tests would have failed with:
     // - Expected: 0 (FontStrikeout::NONE)
     // - Actual  : 1 (FontStrikeout::SINGLE)
     CPPUNIT_ASSERT_EQUAL_MESSAGE(
