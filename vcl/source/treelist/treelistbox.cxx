@@ -2685,7 +2685,7 @@ void SvTreeListBox::EditItemText(SvTreeListEntry& rEntry, SvLBoxString& rItem,
     }
     m_pEdEntry = &rEntry;
     m_pEdItem = &rItem;
-    SvLBoxTab* pTab = GetTab(rEntry, &rItem);
+    SvLBoxTab* pTab = GetTab(rEntry, rItem);
     DBG_ASSERT(pTab,"EditItemText:Tab not found");
 
     auto nItemHeight(rItem.GetHeight(*this, &rEntry));
@@ -2738,12 +2738,12 @@ void SvTreeListBox::ImplEditEntry( SvTreeListEntry* pEntry )
         if (rTmpItem.GetType() != SvLBoxItemType::String)
             continue;
 
-        SvLBoxTab* pTab = GetTab(*pEntry, &rTmpItem);
+        SvLBoxTab* pTab = GetTab(*pEntry, rTmpItem);
         nNextTabPos = -1;
         if( i < nCount - 1 )
         {
             SvLBoxItem& rNextItem = pEntry->GetItem( i + 1 );
-            SvLBoxTab* pNextTab = GetTab(*pEntry, &rNextItem);
+            SvLBoxTab* pNextTab = GetTab(*pEntry, rNextItem);
             nNextTabPos = pNextTab->GetPos();
         }
 
@@ -3516,9 +3516,9 @@ SvLBoxTab* SvTreeListBox::GetFirstDynamicTab() const
     return GetFirstDynamicTab( nDummy );
 }
 
-SvLBoxTab* SvTreeListBox::GetTab(const SvTreeListEntry& rEntry, SvLBoxItem const* pItem) const
+SvLBoxTab* SvTreeListBox::GetTab(const SvTreeListEntry& rEntry, const SvLBoxItem& rItem) const
 {
-    sal_uInt16 nPos = rEntry.GetPos(pItem);
+    sal_uInt16 nPos = rEntry.GetPos(&rItem);
     return m_aTabs[nPos].get();
 }
 
