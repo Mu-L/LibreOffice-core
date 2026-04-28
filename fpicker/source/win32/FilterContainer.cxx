@@ -220,12 +220,6 @@ static sal_uInt32 getTotalFilterLength( CFilterContainer& aFilterContainer )
     return ( totalLength > 0 ) ? totalLength + 1 : totalLength;
 }
 
-static
-void wcsmemcpy( sal_Unicode* pDest, const sal_Unicode* pSrc, sal_uInt32 nLength )
-{
-    memcpy( pDest, pSrc, nLength * sizeof( sal_Unicode ) );
-}
-
 // a helper trivial helper function to create a filter buffer in the
 // format the Win32 API requires,
 // e.g. "Text\0*.txt\0Doc\0*.doc;*xls\0\0"
@@ -252,17 +246,17 @@ OUString makeWinFilterBuffer( CFilterContainer& aFilterContainer )
 
     while( aFilterContainer.getNextFilter( nextFilter ) )
     {
-        wcsmemcpy(
-            pBuff.get() + memPos,
+        std::copy_n(
             nextFilter.first.getStr( ),
-            nextFilter.first.getLength( ) );
+            nextFilter.first.getLength( ),
+            pBuff.get() + memPos );
 
         memPos += nextFilter.first.getLength( ) + 1;
 
-        wcsmemcpy(
-            pBuff.get() + memPos,
+        std::copy_n(
             nextFilter.second.getStr( ),
-            nextFilter.second.getLength( ) );
+            nextFilter.second.getLength( ),
+            pBuff.get() + memPos );
 
         memPos += nextFilter.second.getLength( ) + 1 ;
     }
