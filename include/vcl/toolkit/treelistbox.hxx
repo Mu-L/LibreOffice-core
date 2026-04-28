@@ -178,12 +178,12 @@ typedef std::tuple<vcl::RenderContext&, const tools::Rectangle&, const SvTreeLis
 struct EntryItemText
 {
     SvTreeListEntry& m_rEntry;
-    const SvLBoxItem* m_pItem;
+    const SvLBoxItem& m_rItem;
     OUString m_sText;
 
-    EntryItemText(SvTreeListEntry& rEntry, const SvLBoxItem* pItem, const OUString& rText)
+    EntryItemText(SvTreeListEntry& rEntry, const SvLBoxItem& rItem, const OUString& rText)
         : m_rEntry(rEntry)
-        , m_pItem(pItem)
+        , m_rItem(rItem)
         , m_sText(rText)
     {
     }
