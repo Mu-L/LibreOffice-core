@@ -151,7 +151,6 @@ enum class DragDropMode
     // Entries may be dropped via the uppermost Entry
     // The DropTarget is 0 in that case
     ENABLE_TOP      = 0x0010,
-    ALL             = 0x0015,
 };
 namespace o3tl
 {
