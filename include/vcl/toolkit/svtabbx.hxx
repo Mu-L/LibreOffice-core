@@ -97,9 +97,6 @@ public:
 // class SvHeaderTabListBox ---------------------------------------------------
 
 class HeaderBar;
-namespace vcl {
-    struct SvHeaderTabListBoxImpl;
-}
 class AccessibleBrowseBoxHeaderCell;
 
 class UNLESS_MERGELIBS_MORE(VCL_DLLPUBLIC) SvHeaderTabListBox final : public SvTabListBox, public vcl::IAccessibleTableProvider
