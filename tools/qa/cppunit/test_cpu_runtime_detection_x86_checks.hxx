@@ -7,8 +7,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDE_TOOLS_QA_CPPUNIT_TEST_CPU_RUNTIME_DETECTION_X86_CHECKS_H
-#define INCLUDE_TOOLS_QA_CPPUNIT_TEST_CPU_RUNTIME_DETECTION_X86_CHECKS_H
+#pragma once
 
 class CpuRuntimeDetectionX86Checks
 {
@@ -17,7 +16,5 @@ public:
     static void checkSSE2();
     static void checkSSSE3();
 };
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */
