@@ -319,6 +319,7 @@ $(eval $(call gb_Library_add_exception_objects,vcl,\
     vcl/source/text/mnemonic \
     vcl/source/text/TextLayoutCache \
     vcl/source/text/textlayout \
+    vcl/source/treelist/SvHeaderTabListBox \
     vcl/source/treelist/headbar \
     vcl/source/treelist/iconview \
     vcl/source/treelist/iconviewimpl \

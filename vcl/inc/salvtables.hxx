@@ -9,6 +9,7 @@
 #pragma once
 
 #include <vcl/builder.hxx>
+#include <vcl/headbar.hxx>
 #include <vcl/weld/Assistant.hxx>
 #include <vcl/weld/Builder.hxx>
 #include <vcl/weld/ColorChooserDialog.hxx>

@@ -65,6 +65,7 @@
 #include <slider.hxx>
 #include <vcl/rendercontext/GetDefaultFontFlags.hxx>
 #include <vcl/sysdata.hxx>
+#include <vcl/toolkit/SvHeaderTabListBox.hxx>
 #include <vcl/toolkit/svlbitm.hxx>
 #include <vcl/toolkit/svtabbx.hxx>
 #include <vcl/tabctrl.hxx>

@@ -19,7 +19,10 @@
 
 #include <accessibility/accessibletablistbox.hxx>
 #include <accessibility/accessibletablistboxtable.hxx>
+
+#include <vcl/toolkit/SvHeaderTabListBox.hxx>
 #include <vcl/toolkit/svtabbx.hxx>
+
 #include <com/sun/star/lang/IndexOutOfBoundsException.hpp>
 
 // class AccessibleTabListBox -----------------------------------------------------
