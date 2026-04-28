@@ -331,7 +331,7 @@ sal_Int16 SAL_CALL AccessibleListBox::getAccessibleRole()
         if (GetRoleType() == 0)
             return AccessibleRole::LIST;
         else
-        return AccessibleRole::TREE;
+            return AccessibleRole::TREE;
 }
 
 OUString SAL_CALL AccessibleListBox::getAccessibleDescription(  )
