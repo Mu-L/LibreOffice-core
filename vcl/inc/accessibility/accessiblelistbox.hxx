@@ -52,8 +52,6 @@ private:
 
     void            RemoveChildEntries(SvTreeListEntry*);
 
-    bool HasListRole() const;
-
 public:
     /** OAccessibleBase needs a valid view
         @param  _rListBox
