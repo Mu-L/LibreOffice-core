@@ -286,33 +286,26 @@ Reference< XAccessible > SAL_CALL AccessibleListBox::getAccessibleParent(  )
     return m_xParent;
 }
 
-sal_Int32 AccessibleListBox::GetRoleType() const
+bool AccessibleListBox::HasListRole() const
 {
-    sal_Int32 nCase = 0;
     SvTreeListEntry* pEntry = getListBox()->GetEntry(0);
     if ( pEntry )
     {
         if( pEntry->HasChildrenOnDemand() || getListBox()->GetChildCount(pEntry) > 0  )
-        {
-            nCase = 1;
-            return nCase;
-        }
+            return false;
     }
 
     bool bHasButtons = (getListBox()->GetStyle() & WB_HASBUTTONS)!=0;
     if( !(getListBox()->GetTreeFlags() & SvTreeFlags::CHKBTN) )
     {
         if( bHasButtons )
-            nCase = 1;
+            return false;
     }
     else
     {
-        if( bHasButtons )
-            nCase = 2;
-        else
-            nCase = 3;
+        return false;
     }
-    return nCase;
+    return true;
 }
 
 sal_Int16 SAL_CALL AccessibleListBox::getAccessibleRole()
@@ -328,7 +321,7 @@ sal_Int16 SAL_CALL AccessibleListBox::getAccessibleRole()
     if (!bHasButtons && (pListBox->GetTreeFlags() & SvTreeFlags::CHKBTN))
         return AccessibleRole::LIST;
     else
-        if (GetRoleType() == 0)
+        if (HasListRole())
             return AccessibleRole::LIST;
         else
             return AccessibleRole::TREE;

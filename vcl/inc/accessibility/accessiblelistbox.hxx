@@ -52,7 +52,7 @@ private:
 
     void            RemoveChildEntries(SvTreeListEntry*);
 
-    sal_Int32 GetRoleType() const;
+    bool HasListRole() const;
 
 public:
     /** OAccessibleBase needs a valid view
