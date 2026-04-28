@@ -12050,7 +12050,10 @@ if test "$with_system_zxcvbn" = "yes"; then
     AC_MSG_RESULT([external])
     SYSTEM_ZXCVBN=TRUE
     AC_CHECK_HEADER(zxcvbn.h, [],
-       [ AC_MSG_ERROR(zxcvbn headers not found.)], [])
+       [ AC_CHECK_HEADER(zxcvbn/zxcvbn.h,
+          [ ZXCVBN_CFLAGS="-I/usr/include/zxcvbn" ],
+          [ AC_MSG_ERROR(zxcvbn headers not found.)], [])
+    ])
     AC_CHECK_LIB(zxcvbn, ZxcvbnMatch, [],
         [ AC_MSG_ERROR(zxcvbn library not found.)], [])
 else
@@ -12059,6 +12062,7 @@ else
    SYSTEM_ZXCVBN=
 fi
 AC_SUBST(SYSTEM_ZXCVBN)
+AC_SUBST(ZXCVBN_CFLAGS)
 
 dnl ===================================================================
 dnl Check for system zxing

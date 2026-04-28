@@ -4492,6 +4492,7 @@ define gb_LinkTarget__use_zxcvbn-c
 $(call gb_LinkTarget_set_include,$(1),\
 	-DSYSTEM_ZXCVBN \
 	$$(INCLUDE) \
+	$(ZXCVBN_CFLAGS) \
 )
 $(call gb_LinkTarget_add_libs,$(1),-lzxcvbn)
 endef
