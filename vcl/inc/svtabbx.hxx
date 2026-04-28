@@ -80,10 +80,10 @@ public:
         return m_aEditingEntryHdl.Call(pEntry);
     }
 
-    virtual bool EditedEntry(SvTreeListEntry& rEntry, const SvLBoxItem* pItem,
+    virtual bool EditedEntry(SvTreeListEntry& rEntry, const SvLBoxItem& rItem,
                              const OUString& rNewText) override
     {
-        return m_aEditedEntryHdl.Call(EntryItemText(rEntry, pItem, rNewText));
+        return m_aEditedEntryHdl.Call(EntryItemText(rEntry, &rItem, rNewText));
     }
 
     // the default NotifyStartDrag is weird to me, and defaults to enabling all

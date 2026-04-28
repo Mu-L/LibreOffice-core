@@ -2126,7 +2126,7 @@ bool SvTreeListBox::EditingEntry( SvTreeListEntry* )
     return true;
 }
 
-bool SvTreeListBox::EditedEntry(SvTreeListEntry&, const SvLBoxItem*, const OUString&)
+bool SvTreeListBox::EditedEntry(SvTreeListEntry&, const SvLBoxItem&, const OUString&)
 {
     return true;
 }
@@ -2772,7 +2772,8 @@ void SvTreeListBox::EditedText( const OUString& rStr )
 {
     if (m_pEdEntry) // we have to check if this entry is null that means that it is removed while editing
     {
-        if (EditedEntry(*m_pEdEntry, m_pEdItem, rStr))
+        assert(m_pEdItem);
+        if (EditedEntry(*m_pEdEntry, *m_pEdItem, rStr))
         {
             m_pEdItem->SetText(rStr);
             m_pModel->InvalidateEntry(m_pEdEntry);

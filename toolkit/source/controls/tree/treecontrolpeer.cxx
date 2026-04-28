@@ -99,7 +99,7 @@ public:
     virtual void    RequestingChildren( SvTreeListEntry* pParent ) override;
 
     virtual bool    EditingEntry( SvTreeListEntry* pEntry ) override;
-    virtual bool EditedEntry(SvTreeListEntry& rEntry, const SvLBoxItem* pItem,
+    virtual bool EditedEntry(SvTreeListEntry& rEntry, const SvLBoxItem& rItem,
                              const OUString& rNewText) override;
 
     DECL_LINK(OnSelectionChangeHdl, SvTreeListBox*, void);
@@ -1486,7 +1486,7 @@ bool UnoTreeListBoxImpl::EditingEntry( SvTreeListEntry* pEntry )
     return mxPeer.is() && mxPeer->onEditingEntry( dynamic_cast< UnoTreeListEntry* >( pEntry ) );
 }
 
-bool UnoTreeListBoxImpl::EditedEntry(SvTreeListEntry& rEntry, const SvLBoxItem*,
+bool UnoTreeListBoxImpl::EditedEntry(SvTreeListEntry& rEntry, const SvLBoxItem&,
                                      const OUString& rNewText)
 {
     return mxPeer.is() && mxPeer->onEditedEntry(dynamic_cast<UnoTreeListEntry*>(&rEntry), rNewText);

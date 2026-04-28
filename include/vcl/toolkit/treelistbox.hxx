@@ -677,7 +677,7 @@ public:
     // Edits the Entry's first StringItem, 0 == Cursor
     void            EditEntry( SvTreeListEntry* pEntry );
     virtual bool    EditingEntry( SvTreeListEntry* pEntry );
-    virtual bool EditedEntry(SvTreeListEntry& rEntry, const SvLBoxItem* pItem,
+    virtual bool EditedEntry(SvTreeListEntry& rEntry, const SvLBoxItem& rItem,
                              const OUString& rNewText);
 
     virtual void    Paint( vcl::RenderContext& rRenderContext, const tools::Rectangle& rRect ) override;
