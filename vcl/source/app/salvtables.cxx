@@ -3856,12 +3856,10 @@ SalInstanceTreeView::SalInstanceTreeView(SvTabListBox* pTreeView, SalInstanceBui
     }
     else
     {
-        static_cast<LclTabListBox&>(*m_xTreeView)
-            .SetModelChangedHdl(LINK(this, SalInstanceTreeView, ModelChangedHdl));
-        static_cast<LclTabListBox&>(*m_xTreeView)
-            .SetStartDragHdl(LINK(this, SalInstanceTreeView, StartDragHdl));
-        static_cast<LclTabListBox&>(*m_xTreeView)
-            .SetEndDragHdl(LINK(this, SalInstanceTreeView, FinishDragHdl));
+        LclTabListBox& rLclTabListBox = static_cast<LclTabListBox&>(*m_xTreeView);
+        rLclTabListBox.SetModelChangedHdl(LINK(this, SalInstanceTreeView, ModelChangedHdl));
+        rLclTabListBox.SetStartDragHdl(LINK(this, SalInstanceTreeView, StartDragHdl));
+        rLclTabListBox.SetEndDragHdl(LINK(this, SalInstanceTreeView, FinishDragHdl));
     }
     m_xTreeView->SetEditingEntryHdl(LINK(this, SalInstanceTreeView, EditingEntryHdl));
     m_xTreeView->SetEditedEntryHdl(LINK(this, SalInstanceTreeView, EditedEntryHdl));
