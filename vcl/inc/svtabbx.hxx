@@ -62,6 +62,13 @@ public:
     using SvTreeListBox::GetTab;
     tools::Long            GetLogicTab( sal_uInt16 nTab );
 
+
+    // the default NotifyStartDrag is weird to me, and defaults to enabling all
+    // possibilities when drag starts, while restricting it to some subset of
+    // the configured drag drop mode would make more sense to me, but I'm not
+    // going to change the baseclass
+    virtual DragDropMode NotifyStartDrag() override { return GetDragDropMode(); }
+
     virtual SvTreeListEntry*    InsertEntry( const OUString& rText, SvTreeListEntry* pParent = nullptr,
                                          bool bChildrenOnDemand = false,
                                          sal_uInt32 nPos=TREELIST_APPEND, OUString* pUserData = nullptr ) override;

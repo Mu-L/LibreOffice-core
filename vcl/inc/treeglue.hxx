@@ -10,11 +10,6 @@
 #include "svimpbox.hxx"
 #include "svtabbx.hxx"
 
-//the default NotifyStartDrag is weird to me, and defaults to enabling all
-//possibilities when drag starts, while restricting it to some subset of
-//the configured drag drop mode would make more sense to me, but I'm not
-//going to change the baseclass
-
 class LclTabListBox final : public SvTabListBox
 {
     Link<SvTreeListBox*, void> m_aModelChangedHdl;
@@ -40,8 +35,6 @@ public:
     {
         m_aEditedEntryHdl = rLink;
     }
-
-    virtual DragDropMode NotifyStartDrag() override { return GetDragDropMode(); }
 
     virtual void StartDrag(sal_Int8 nAction, const Point& rPosPixel) override
     {
