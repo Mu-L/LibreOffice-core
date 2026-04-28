@@ -30,6 +30,7 @@
 #include <o3tl/sorted_vector.hxx>
 #include <o3tl/string_view.hxx>
 #include <officecfg/Office/Common.hxx>
+#include <SvHeaderTabListBox.hxx>
 #include <salframe.hxx>
 #include <salinst.hxx>
 #include <salvd.hxx>
@@ -65,7 +66,6 @@
 #include <slider.hxx>
 #include <vcl/rendercontext/GetDefaultFontFlags.hxx>
 #include <vcl/sysdata.hxx>
-#include <vcl/toolkit/SvHeaderTabListBox.hxx>
 #include <vcl/toolkit/svlbitm.hxx>
 #include <vcl/toolkit/svtabbx.hxx>
 #include <vcl/tabctrl.hxx>

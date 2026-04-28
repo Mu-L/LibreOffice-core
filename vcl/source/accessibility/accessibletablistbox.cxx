@@ -17,10 +17,10 @@
  *   the License at http://www.apache.org/licenses/LICENSE-2.0 .
  */
 
+#include <SvHeaderTabListBox.hxx>
 #include <accessibility/accessibletablistbox.hxx>
 #include <accessibility/accessibletablistboxtable.hxx>
 
-#include <vcl/toolkit/SvHeaderTabListBox.hxx>
 #include <vcl/toolkit/svtabbx.hxx>
 
 #include <com/sun/star/lang/IndexOutOfBoundsException.hpp>

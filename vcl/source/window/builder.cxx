@@ -29,7 +29,6 @@
 #include <vcl/builder.hxx>
 #include <vcl/dialoghelper.hxx>
 #include <vcl/menu.hxx>
-#include <vcl/toolkit/SvHeaderTabListBox.hxx>
 #include <vcl/toolkit/button.hxx>
 #include <vcl/toolkit/dialog.hxx>
 #include <vcl/toolkit/edit.hxx>
@@ -75,6 +74,7 @@
 #include <window.h>
 #include <xmlreader/xmlreader.hxx>
 #include <desktop/crashreport.hxx>
+#include <SvHeaderTabListBox.hxx>
 #include <calendar.hxx>
 #include <menutogglebutton.hxx>
 #include <salinst.hxx>
