@@ -1127,7 +1127,7 @@ const SvViewDataItem& SvTreeListBox::GetViewDataItem(const SvTreeListEntry* pEnt
 {
     const SvViewDataEntry* pEntryData = GetViewData(pEntry);
     assert(pEntryData && "Entry not in View");
-    sal_uInt16 nItemPos = pEntry->GetPos(&rItem);
+    sal_uInt16 nItemPos = pEntry->GetPos(rItem);
     return pEntryData->GetItem(nItemPos);
 }
 
@@ -3519,7 +3519,7 @@ SvLBoxTab* SvTreeListBox::GetFirstDynamicTab() const
 
 SvLBoxTab* SvTreeListBox::GetTab(const SvTreeListEntry& rEntry, const SvLBoxItem& rItem) const
 {
-    sal_uInt16 nPos = rEntry.GetPos(&rItem);
+    sal_uInt16 nPos = rEntry.GetPos(rItem);
     return m_aTabs[nPos].get();
 }
 

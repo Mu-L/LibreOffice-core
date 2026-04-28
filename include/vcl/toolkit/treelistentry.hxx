@@ -103,7 +103,7 @@ public:
     SvLBoxItem& GetItem( size_t nPos );
     const SvLBoxItem* GetFirstItem(SvLBoxItemType eType) const;
     SvLBoxItem* GetFirstItem(SvLBoxItemType eType);
-    size_t GetPos( const SvLBoxItem* pItem ) const;
+    size_t GetPos(const SvLBoxItem& rItem) const;
     OUString* GetUserData() const { return pUserData; }
     void SetUserData(OUString* pPtr);
     void        EnableChildrenOnDemand( bool bEnable=true );

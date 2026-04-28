@@ -5082,7 +5082,7 @@ IMPL_LINK(SalInstanceTreeView, EditingEntryHdl, SvTreeListEntry*, pEntry, bool)
 IMPL_LINK(SalInstanceTreeView, EditedEntryHdl, const EntryItemText&, rEntryItemString, bool)
 {
     const int nColumn
-        = to_external_model(rEntryItemString.m_rEntry.GetPos(&rEntryItemString.m_rItem));
+        = to_external_model(rEntryItemString.m_rEntry.GetPos(rEntryItemString.m_rItem));
     return signal_editing_done(IterColText(SalInstanceTreeIter(*this, &rEntryItemString.m_rEntry),
                                            nColumn, rEntryItemString.m_sText));
 }
