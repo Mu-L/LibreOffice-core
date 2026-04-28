@@ -49,7 +49,6 @@
 #include <vcl/toolkit/scrbar.hxx>
 #include <vcl/split.hxx>
 #include <vcl/svapp.hxx>
-#include <vcl/toolkit/svtabbx.hxx>
 #include <vcl/tabctrl.hxx>
 #include <vcl/tabpage.hxx>
 #include <vcl/toolkit/throbber.hxx>
@@ -79,6 +78,7 @@
 #include <menutogglebutton.hxx>
 #include <salinst.hxx>
 #include <strings.hrc>
+#include <svtabbx.hxx>
 #include <treeglue.hxx>
 #include <verticaltabctrl.hxx>
 #include <wizdlg.hxx>

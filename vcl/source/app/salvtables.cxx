@@ -44,6 +44,7 @@
 #include <strings.hrc>
 #include <svdata.hxx>
 #include <svimpbox.hxx>
+#include <svtabbx.hxx>
 #include <messagedialog.hxx>
 #include <treeglue.hxx>
 #include <unotools/accessiblerelationsethelper.hxx>
@@ -67,7 +68,6 @@
 #include <vcl/rendercontext/GetDefaultFontFlags.hxx>
 #include <vcl/sysdata.hxx>
 #include <vcl/toolkit/svlbitm.hxx>
-#include <vcl/toolkit/svtabbx.hxx>
 #include <vcl/tabctrl.hxx>
 #include <vcl/tabpage.hxx>
 #include <vcl/toolbox.hxx>

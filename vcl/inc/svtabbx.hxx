@@ -19,12 +19,7 @@
 
 #pragma once
 
-#if !defined(VCL_DLLIMPLEMENTATION) && !defined(TOOLKIT_DLLIMPLEMENTATION) && !defined(VCL_INTERNALS)
-#error "don't use this in new code"
-#endif
-
 #include <config_options.h>
-#include <accessibility/accessibletablistbox.hxx>
 #include <vcl/dllapi.h>
 #include <vcl/toolkit/treelistbox.hxx>
 

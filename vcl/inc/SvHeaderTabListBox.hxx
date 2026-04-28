@@ -23,9 +23,9 @@
 #include <config_options.h>
 
 #include "accessibility/accessibletablistbox.hxx"
+#include "svtabbx.hxx"
 
 #include <vcl/dllapi.h>
-#include <vcl/toolkit/svtabbx.hxx>
 #include <vcl/toolkit/treelistbox.hxx>
 #include <vcl/accessibletableprovider.hxx>
 
