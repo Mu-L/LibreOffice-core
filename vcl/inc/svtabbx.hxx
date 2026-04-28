@@ -43,6 +43,9 @@ private:
     OUString                    aCurEntry;
     SvTabListBoxRole            m_eRole;
 
+    Link<SvTreeListEntry*, bool> m_aEditingEntryHdl;
+    Link<const EntryItemText&, bool> m_aEditedEntryHdl;
+
 protected:
     static std::u16string_view  GetToken( std::u16string_view sStr, sal_Int32 &nIndex );
 
@@ -62,6 +65,26 @@ public:
     using SvTreeListBox::GetTab;
     tools::Long            GetLogicTab( sal_uInt16 nTab );
 
+    void SetEditingEntryHdl(const Link<SvTreeListEntry*, bool>& rLink)
+    {
+        m_aEditingEntryHdl = rLink;
+    }
+
+    void SetEditedEntryHdl(const Link<const EntryItemText&, bool>& rLink)
+    {
+        m_aEditedEntryHdl = rLink;
+    }
+
+    virtual bool EditingEntry(SvTreeListEntry* pEntry) override
+    {
+        return m_aEditingEntryHdl.Call(pEntry);
+    }
+
+    virtual bool EditedEntry(SvTreeListEntry& rEntry, const SvLBoxItem* pItem,
+                             const OUString& rNewText) override
+    {
+        return m_aEditedEntryHdl.Call(EntryItemText(rEntry, pItem, rNewText));
+    }
 
     // the default NotifyStartDrag is weird to me, and defaults to enabling all
     // possibilities when drag starts, while restricting it to some subset of

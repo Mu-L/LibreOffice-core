@@ -43,9 +43,6 @@ private:
     rtl::Reference<AccessibleTabListBox> m_xAccessible;
     std::vector<rtl::Reference<AccessibleBrowseBoxHeaderCell>> m_aAccessibleChildren;
 
-    Link<SvTreeListEntry*, bool> m_aEditingEntryHdl;
-    Link<const EntryItemText&, bool> m_aEditedEntryHdl;
-
     DECL_DLLPRIVATE_LINK(ScrollHdl_Impl, SvTreeListBox*, void);
     DECL_DLLPRIVATE_LINK(CreateAccessibleHdl_Impl, HeaderBar*, void);
 
@@ -146,27 +143,6 @@ public:
                                            const Point& _rPoint) override;
 
     virtual void DumpAsPropertyTree(tools::JsonWriter& rJsonWriter) override;
-
-    void SetEditingEntryHdl(const Link<SvTreeListEntry*, bool>& rLink)
-    {
-        m_aEditingEntryHdl = rLink;
-    }
-
-    void SetEditedEntryHdl(const Link<const EntryItemText&, bool>& rLink)
-    {
-        m_aEditedEntryHdl = rLink;
-    }
-
-    virtual bool EditingEntry(SvTreeListEntry* pEntry) override
-    {
-        return m_aEditingEntryHdl.Call(pEntry);
-    }
-
-    virtual bool EditedEntry(SvTreeListEntry& rEntry, const SvLBoxItem* pItem,
-                             const OUString& rNewText) override
-    {
-        return m_aEditedEntryHdl.Call(EntryItemText(rEntry, pItem, rNewText));
-    }
 };
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab cinoptions=b1,g0,N-s cinkeys+=0=break: */
