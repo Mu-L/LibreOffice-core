@@ -6130,7 +6130,6 @@ include/vcl/toolkit/floatwin.hxx
 include/vcl/toolkit/fmtfield.hxx
 include/vcl/toolkit/group.hxx
 include/vcl/toolkit/imgctrl.hxx
-include/vcl/toolkit/ivctrl.hxx
 include/vcl/toolkit/longcurr.hxx
 include/vcl/toolkit/lstbox.hxx
 include/vcl/toolkit/MenuButton.hxx
@@ -14009,6 +14008,7 @@ vcl/inc/impfontcharmap.hxx
 vcl/inc/font/FontMetricData.hxx
 vcl/inc/impgraph.hxx
 vcl/inc/implimagetree.hxx
+vcl/inc/ivctrl.hxx
 vcl/inc/jobdata.hxx
 vcl/inc/jobset.h
 vcl/inc/listbox.hxx

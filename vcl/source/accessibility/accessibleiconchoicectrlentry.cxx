@@ -18,7 +18,8 @@
  */
 
 #include <accessibility/accessibleiconchoicectrlentry.hxx>
-#include <vcl/toolkit/ivctrl.hxx>
+#include <ivctrl.hxx>
+
 #include <com/sun/star/awt/Rectangle.hpp>
 #include <com/sun/star/accessibility/AccessibleRole.hpp>
 #include <com/sun/star/accessibility/AccessibleStateType.hpp>

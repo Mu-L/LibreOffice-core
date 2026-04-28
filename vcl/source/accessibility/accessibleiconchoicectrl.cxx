@@ -19,13 +19,14 @@
 
 #include <accessibility/accessibleiconchoicectrl.hxx>
 #include <accessibility/accessibleiconchoicectrlentry.hxx>
+#include <ivctrl.hxx>
+
 #include <com/sun/star/accessibility/AccessibleEventId.hpp>
 #include <com/sun/star/accessibility/AccessibleRole.hpp>
 #include <com/sun/star/accessibility/AccessibleStateType.hpp>
 #include <com/sun/star/lang/IndexOutOfBoundsException.hpp>
 #include <comphelper/accessiblecontexthelper.hxx>
 #include <vcl/vclevent.hxx>
-#include <vcl/toolkit/ivctrl.hxx>
 
 // class AccessibleIconChoiceCtrl ----------------------------------------------
 

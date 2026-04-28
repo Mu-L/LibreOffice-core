@@ -40,7 +40,6 @@
 #include <vcl/headbar.hxx>
 #include <vcl/notebookbar/NotebookBarAddonsItem.hxx>
 #include <vcl/notebookbar/NotebookBarAddonsMerger.hxx>
-#include <vcl/toolkit/ivctrl.hxx>
 #include <vcl/layout.hxx>
 #include <vcl/toolkit/lstbox.hxx>
 #include <vcl/toolkit/MenuButton.hxx>
@@ -75,6 +74,7 @@
 #include <desktop/crashreport.hxx>
 #include <SvHeaderTabListBox.hxx>
 #include <calendar.hxx>
+#include <ivctrl.hxx>
 #include <menutogglebutton.hxx>
 #include <salinst.hxx>
 #include <strings.hrc>

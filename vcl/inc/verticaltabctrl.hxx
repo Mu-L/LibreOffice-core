@@ -19,13 +19,13 @@
 
 #pragma once
 
-#include <memory>
-#include <string_view>
+#include "ivctrl.hxx"
 
 #include <tools/json_writer.hxx>
-
-#include <vcl/toolkit/ivctrl.hxx>
 #include <vcl/layout.hxx>
+
+#include <memory>
+#include <string_view>
 
 struct VerticalTabPageData;
 

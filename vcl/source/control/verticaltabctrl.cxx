@@ -17,12 +17,12 @@
  *   the License at http://www.apache.org/licenses/LICENSE-2.0 .
  */
 
+#include <ivctrl.hxx>
 #include <verticaltabctrl.hxx>
 
 #include <vcl/commandevent.hxx>
 #include <vcl/mnemonic.hxx>
 #include <vcl/tabctrl.hxx>
-#include <vcl/toolkit/ivctrl.hxx>
 #include <vcl/uitest/uiobject.hxx>
 #include <vcl/uitest/logger.hxx>
 #include <vcl/uitest/eventdescription.hxx>

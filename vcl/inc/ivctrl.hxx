@@ -19,10 +19,6 @@
 
 #pragma once
 
-#if !defined(VCL_DLLIMPLEMENTATION) && !defined(TOOLKIT_DLLIMPLEMENTATION) && !defined(VCL_INTERNALS)
-#error "don't use this in new code"
-#endif
-
 #include <config_options.h>
 #include <memory>
 #include <vcl/dllapi.h>

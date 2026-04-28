@@ -21,13 +21,14 @@
 
 #include <sal/config.h>
 
+#include <ivctrl.hxx>
+
 #include <o3tl/safeint.hxx>
 #include <vcl/virdev.hxx>
 #include <vcl/timer.hxx>
 #include <vcl/idle.hxx>
 #include <vcl/vclptr.hxx>
 #include <tools/debug.hxx>
-#include <vcl/toolkit/ivctrl.hxx>
 #include <vcl/toolkit/scrbar.hxx>
 
 #include <limits.h>

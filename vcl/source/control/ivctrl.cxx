@@ -19,7 +19,7 @@
 
 
 #include <utility>
-#include <vcl/toolkit/ivctrl.hxx>
+#include <ivctrl.hxx>
 #include "imivctl.hxx"
 #include <vcl/bitmap.hxx>
 #include <vcl/commandevent.hxx>

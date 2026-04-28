@@ -31,6 +31,7 @@
 #include <o3tl/string_view.hxx>
 #include <officecfg/Office/Common.hxx>
 #include <SvHeaderTabListBox.hxx>
+#include <ivctrl.hxx>
 #include <salframe.hxx>
 #include <salinst.hxx>
 #include <salvd.hxx>
@@ -59,7 +60,6 @@
 #include <vcl/toolkit/fixed.hxx>
 #include <vcl/toolkit/fmtfield.hxx>
 #include <vcl/headbar.hxx>
-#include <vcl/toolkit/ivctrl.hxx>
 #include <vcl/layout.hxx>
 #include <vcl/notebookbar/NotebookBarAddonsItem.hxx>
 #include <vcl/toolkit/MenuButton.hxx>

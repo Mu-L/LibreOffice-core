@@ -22,7 +22,6 @@
 #include <vcl/toolkit/spin.hxx>
 #include <vcl/toolkit/fmtfield.hxx>
 #include <vcl/toolkit/spinfld.hxx>
-#include <vcl/toolkit/ivctrl.hxx>
 #include <vcl/toolkit/button.hxx>
 #include <vcl/toolkit/dialog.hxx>
 #include <vcl/toolkit/edit.hxx>
@@ -34,6 +33,7 @@
 #include <vcl/toolkit/vclmedit.hxx>
 #include <vcl/uitest/logger.hxx>
 #include <vcl/vclevent.hxx>
+#include <ivctrl.hxx>
 #include <uiobject-internal.hxx>
 #include <verticaltabctrl.hxx>
 
