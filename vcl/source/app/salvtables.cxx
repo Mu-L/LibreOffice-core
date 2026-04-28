@@ -3853,8 +3853,6 @@ SalInstanceTreeView::SalInstanceTreeView(SvTabListBox* pTreeView, SalInstanceBui
             pHeaderBar->SetEndDragHdl(LINK(this, SalInstanceTreeView, EndDragHdl));
             pHeaderBar->SetSelectHdl(LINK(this, SalInstanceTreeView, HeaderBarClickedHdl));
         }
-        pHeaderBox->SetEditingEntryHdl(LINK(this, SalInstanceTreeView, EditingEntryHdl));
-        pHeaderBox->SetEditedEntryHdl(LINK(this, SalInstanceTreeView, EditedEntryHdl));
     }
     else
     {
@@ -3864,11 +3862,10 @@ SalInstanceTreeView::SalInstanceTreeView(SvTabListBox* pTreeView, SalInstanceBui
             .SetStartDragHdl(LINK(this, SalInstanceTreeView, StartDragHdl));
         static_cast<LclTabListBox&>(*m_xTreeView)
             .SetEndDragHdl(LINK(this, SalInstanceTreeView, FinishDragHdl));
-        static_cast<LclTabListBox&>(*m_xTreeView)
-            .SetEditingEntryHdl(LINK(this, SalInstanceTreeView, EditingEntryHdl));
-        static_cast<LclTabListBox&>(*m_xTreeView)
-            .SetEditedEntryHdl(LINK(this, SalInstanceTreeView, EditedEntryHdl));
     }
+    m_xTreeView->SetEditingEntryHdl(LINK(this, SalInstanceTreeView, EditingEntryHdl));
+    m_xTreeView->SetEditedEntryHdl(LINK(this, SalInstanceTreeView, EditedEntryHdl));
+
     m_aCheckButtonData.SetLink(LINK(this, SalInstanceTreeView, ToggleHdl));
     m_aRadioButtonData.SetLink(LINK(this, SalInstanceTreeView, ToggleHdl));
 }
