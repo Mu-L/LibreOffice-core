@@ -107,7 +107,7 @@ private:
     DECL_DLLPRIVATE_LINK(OpenPickerClickHdl, weld::Button&, void);
 
     static bool SelectValueSetEntry(SvxColorValueSet* pColorSet, const Color& rColor);
-    static NamedColor GetSelectEntryColor(ValueSet const * pColorSet);
+    static NamedColor GetSelectEntryColor(const ValueSet& rColorSet);
     NamedColor GetAutoColor() const;
 
 public:

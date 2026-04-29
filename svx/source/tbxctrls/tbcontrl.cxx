@@ -2182,10 +2182,10 @@ ColorWindow::~ColorWindow()
 {
 }
 
-NamedColor ColorWindow::GetSelectEntryColor(ValueSet const * pColorSet)
+NamedColor ColorWindow::GetSelectEntryColor(const ValueSet& rColorSet)
 {
-    Color aColor = pColorSet->GetItemColor(pColorSet->GetSelectedItemId());
-    const OUString& sColorName = pColorSet->GetItemText(pColorSet->GetSelectedItemId());
+    Color aColor = rColorSet.GetItemColor(rColorSet.GetSelectedItemId());
+    const OUString& sColorName = rColorSet.GetItemText(rColorSet.GetSelectedItemId());
     return { aColor, sColorName };
 }
 
@@ -2240,9 +2240,9 @@ namespace
 NamedColor ColorWindow::GetSelectEntryColor() const
 {
     if (!mxColorSet->IsNoSelection())
-        return GetSelectEntryColor(mxColorSet.get());
+        return GetSelectEntryColor(*mxColorSet);
     if (!mxRecentColorSet->IsNoSelection())
-        return GetSelectEntryColor(mxRecentColorSet.get());
+        return GetSelectEntryColor(*mxRecentColorSet);
     if (mxButtonNoneColor.get() == mpDefaultButton)
         return GetNoneColor();
     return GetAutoColor();
@@ -2250,7 +2250,7 @@ NamedColor ColorWindow::GetSelectEntryColor() const
 
 IMPL_LINK(ColorWindow, SelectHdl, ValueSet*, pColorSet, void)
 {
-    NamedColor aNamedColor = GetSelectEntryColor(pColorSet);
+    NamedColor aNamedColor = GetSelectEntryColor(*pColorSet);
 
     if (pColorSet != mxRecentColorSet.get())
     {
