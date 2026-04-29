@@ -213,9 +213,6 @@ namespace basegfx
             is part of the transformation.
         */
         B3DRange& operator*=( const ::basegfx::B3DHomMatrix& rMat );
-
-        /** Get a range filled with (0.0, 0.0, 0.0, 1.0, 1.0, 1.0) */
-        static const B3DRange& getUnitB3DRange();
     };
 
     /** Transform B3DRange by given transformation matrix (see operator*=())

@@ -968,7 +968,6 @@ public:
     SC_DLLPUBLIC SCROW MaxRow() const { return mxSheetLimits->mnMaxRow; }
     SC_DLLPUBLIC SCCOL GetMaxColCount() const { return mxSheetLimits->GetMaxColCount(); }
     SC_DLLPUBLIC SCROW GetMaxRowCount() const { return mxSheetLimits->GetMaxRowCount(); }
-    SC_DLLPUBLIC const OUString & MaxRowAsString() const { return mxSheetLimits->MaxRowAsString(); }
     SC_DLLPUBLIC const OUString & MaxColAsString() const { return mxSheetLimits->MaxColAsString(); }
     ScSheetLimits& GetSheetLimits() const { return *mxSheetLimits; }
     [[nodiscard]] bool ValidCol(SCCOL nCol) const { return ::ValidCol(nCol, mxSheetLimits->mnMaxCol); }

@@ -54,20 +54,6 @@ OUString SmLocalizedSymbolData::GetUiSymbolName( std::u16string_view rExportName
     return {};
 }
 
-OUString SmLocalizedSymbolData::GetExportSymbolName( std::u16string_view rUiName )
-{
-    auto it = std::find_if(std::begin(RID_UI_SYMBOL_NAMES), std::end(RID_UI_SYMBOL_NAMES),
-        [&rUiName](const auto& rUISymbolTranslateId)
-        { return rUiName == SmResId(rUISymbolTranslateId); });
-    if (it != std::end(RID_UI_SYMBOL_NAMES))
-    {
-        const char *pKey = it->getId();
-        return OUString(pKey, strlen(pKey), RTL_TEXTENCODING_UTF8);
-    }
-
-    return {};
-}
-
 OUString SmLocalizedSymbolData::GetUiSymbolSetName( std::u16string_view rExportName )
 {
     auto it = std::find_if(std::begin(RID_UI_SYMBOLSET_NAMES), std::end(RID_UI_SYMBOLSET_NAMES),

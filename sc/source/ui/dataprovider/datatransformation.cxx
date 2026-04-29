@@ -1266,11 +1266,6 @@ SCROW SwapRowsTransformation::getFirstRow() const
     return mxRow;
 }
 
-SCROW SwapRowsTransformation::getSecondRow() const
-{
-    return nxRow;
-}
-
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

@@ -19,55 +19,6 @@
 namespace mathml
 {
 template <typename runType>
-void SmMlIteratorBottomToTop(SmMlElement* pMlElementTree, runType aRunType, void* aData)
-{
-    if (pMlElementTree == nullptr)
-        return;
-
-    SmMlElement* pCurrent;
-
-    // Fetch the deepest element
-    pCurrent = pMlElementTree;
-    while (pCurrent->getSubElementsCount() != 0)
-    {
-        if (pCurrent->getSubElement(0) == nullptr)
-            break;
-        pCurrent = pCurrent->getSubElement(0);
-    }
-
-    do
-    {
-        // Fetch next element
-        size_t nId = pCurrent->getSubElementId();
-        // We are back to the top.
-        if (pCurrent->getParentElement() == nullptr)
-            break;
-        // If this was the last, then turn back to the parent
-        if (nId + 1 == pCurrent->getParentElement()->getSubElementsCount())
-            pCurrent = pCurrent->getParentElement();
-        else // If not, next is the one near it
-        {
-            // It could have sub elements
-            if (pCurrent->getParentElement()->getSubElement(nId + 1) == nullptr)
-                break;
-            pCurrent = pCurrent->getParentElement()->getSubElement(nId + 1);
-            // Fetch the deepest element
-            while (pCurrent->getSubElementsCount() != 0)
-            {
-                if (pCurrent->getSubElement(0) == nullptr)
-                    break;
-                pCurrent = pCurrent->getSubElement(0);
-            }
-        }
-
-        // Just in case of, but should be forbidden
-        if (pCurrent != nullptr)
-            aRunType(pCurrent, aData);
-
-    } while (pCurrent != nullptr);
-}
-
-template <typename runType>
 void SmMlIteratorTopToBottom(SmMlElement* pMlElementTree, runType aRunType, void* aData)
 {
     if (pMlElementTree == nullptr)
@@ -117,8 +68,6 @@ void SmMlIteratorTopToBottom(SmMlElement* pMlElementTree, runType aRunType, void
 }
 
 void SmMlIteratorFree(SmMlElement* pMlElementTree);
-
-SmMlElement* SmMlIteratorCopy(SmMlElement* pMlElementTree);
 
 } // end namespace mathml
 

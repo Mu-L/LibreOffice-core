@@ -447,7 +447,6 @@ public:
     const Color&                    GetInactiveTabColor() const;
 
     void SetAlternatingRowColor(const Color& rColor);
-    SAL_DLLPRIVATE const Color&                    GetAlternatingRowColor() const;
 
     void                            SetHighContrastMode(bool bHighContrast );
     bool                            GetHighContrastMode() const;
@@ -576,7 +575,6 @@ public:
 
     void                            SetToolbarIconSize( ToolbarIconSize nSize );
     ToolbarIconSize                 GetToolbarIconSize() const;
-    SAL_DLLPRIVATE Size             GetToolbarIconSizePixel() const;
 
     /** Set the icon theme to use. */
     void                            SetIconTheme(const OUString&);

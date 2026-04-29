@@ -22,20 +22,6 @@
 #include <smmod.hxx>
 #include <cfgitem.hxx>
 
-AbstractSmParser* starmathdatabase::GetDefaultSmParser()
-{
-    switch (SmModule::get()->GetConfig()->GetDefaultSmSyntaxVersion())
-    {
-    case 5:
-    {
-        AbstractSmParser* aParser = new SmParser5();
-        return aParser;
-    }
-    default:
-        throw std::range_error("parser version limit");
-    }
-}
-
 AbstractSmParser* starmathdatabase::GetVersionSmParser(sal_uInt16 nVersion)
 {
     switch(nVersion)

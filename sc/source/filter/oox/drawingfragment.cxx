@@ -397,33 +397,6 @@ void DrawingFragment::applyFontRefColor(const oox::drawingml::ShapePtr& pShape,
 
 // VML
 
-namespace {
-
-class VmlFindNoteFunc
-{
-public:
-    explicit            VmlFindNoteFunc( const ScAddress& rPos );
-    bool                operator()( const ::oox::vml::ShapeBase& rShape ) const;
-
-private:
-    sal_Int32           mnCol;
-    sal_Int32           mnRow;
-};
-
-VmlFindNoteFunc::VmlFindNoteFunc( const ScAddress& rPos ) :
-    mnCol( rPos.Col() ),
-    mnRow( rPos.Row() )
-{
-}
-
-bool VmlFindNoteFunc::operator()( const ::oox::vml::ShapeBase& rShape ) const
-{
-    const ::oox::vml::ClientData* pClientData = rShape.getClientData();
-    return pClientData && (pClientData->mnCol == mnCol) && (pClientData->mnRow == mnRow);
-}
-
-} // namespace
-
 VmlControlMacroAttacher::VmlControlMacroAttacher( const OUString& rMacroName,
         const Reference< XIndexContainer >& rxCtrlFormIC, sal_Int32 nCtrlIndex, sal_Int32 nCtrlType, sal_Int32 nDropStyle ) :
     VbaMacroAttacherBase( rMacroName ),
@@ -496,11 +469,6 @@ VmlDrawing::VmlDrawing( const WorksheetHelper& rHelper ) :
     maListBoxFont.moName = "Tahoma";
     maListBoxFont.moColor = "auto";
     maListBoxFont.monSize = 160;
-}
-
-const ::oox::vml::ShapeBase* VmlDrawing::getNoteShape( const ScAddress& rPos ) const
-{
-    return getShapes().findShape( VmlFindNoteFunc( rPos ) );
 }
 
 VmlDrawing::NoteShapesMap VmlDrawing::buildNoteShapesMap() const

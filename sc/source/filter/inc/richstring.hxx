@@ -241,8 +241,6 @@ public:
 
     void                setAttributes(const AttributeList& rAttribs);
 
-    bool                isPreserveSpace() const { return mbPreserveSpace; }
-
 private:
     /** Creates, appends, and returns a new empty string portion. */
     sal_Int32 createPortion();

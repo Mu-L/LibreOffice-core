@@ -93,23 +93,6 @@ public:
         m_nStartTicks = tools::Time::GetSystemTicks();
         m_nIterStartTicks = m_nStartTicks;
     }
-
-    /**
-     * Sets the input events, which should also "exceed" the stopwatch.
-     *
-     * Per default this ignores the VclInputFlags::TIMER.
-     */
-    void setInputStop(VclInputFlags eInputStop = eDefaultInputStop) { m_eInputStop = eInputStop; }
-    VclInputFlags inputStop() const { return m_eInputStop; }
-
-    /**
-     * Sets the time considered the acceptable maximum for a task to run
-     *
-     * This is an orientation for long time background jobs to yield to
-     * the scheduler, so Idle task don't starve each other too much.
-     **/
-    static unsigned int timeSlice() { return m_nTimeSlice; }
-    static void setTimeSlice(unsigned int nTimeSlice) { m_nTimeSlice = nTimeSlice; }
 };
 
 #endif // INCLUDED_VCL_TASK_STOPWATCH_HXX

@@ -59,7 +59,6 @@ public:
     bool Export(SfxMedium& rMedium);
     void SetFlat(bool bIn) { bFlat = bIn; }
 
-    bool IsUseHTMLMLEntities() const { return m_bUseHTMLMLEntities; }
     void SetUseHTMLMLEntities(bool bUseHTMLMLEntities)
     {
         m_bUseHTMLMLEntities = bUseHTMLMLEntities;

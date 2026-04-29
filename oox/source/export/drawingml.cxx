@@ -627,13 +627,6 @@ void DrawingML::WriteGradientStop(double fOffset, const basegfx::BColor& rColor,
     mpFS->endElementNS( XML_a, XML_gs );
 }
 
-::Color DrawingML::ColorWithIntensity( sal_uInt32 nColor, sal_uInt32 nIntensity )
-{
-    return ::Color(ColorTransparency, ( ( ( nColor & 0xff ) * nIntensity ) / 100 )
-        | ( ( ( ( ( nColor & 0xff00 ) >> 8 ) * nIntensity ) / 100 ) << 8 )
-        | ( ( ( ( ( nColor & 0xff0000 ) >> 8 ) * nIntensity ) / 100 ) << 8 ));
-}
-
 void DrawingML::WriteGradientFill( const Reference< XPropertySet >& rXPropSet )
 {
     if (!GetProperty(rXPropSet, u"FillGradient"_ustr))

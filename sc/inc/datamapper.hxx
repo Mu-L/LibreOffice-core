@@ -72,8 +72,6 @@ private:
 public:
     ExternalDataSource(OUString aURL, OUString aProvider, ScDocument* pDoc);
 
-    void setUpdateFrequency(double nUpdateFrequency);
-
     void setID(const OUString& rID);
     void setURL(const OUString& rURL);
     void setProvider(const OUString& rProvider);

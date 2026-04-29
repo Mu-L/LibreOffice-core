@@ -79,8 +79,6 @@ public:
     OUString GetSigningKey     () const;
     OUString GetEncryptionKey  () const;
     bool GetEncryptToSelf      () const;
-    OUString GetSigningKeyDisplayName () const;
-    OUString GetEncryptionKeyDisplayName () const;
 
     OUString GetFullName       () const;
 

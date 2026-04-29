@@ -83,19 +83,9 @@ CSVFetchThread::~CSVFetchThread()
 {
 }
 
-bool CSVFetchThread::IsRequestedTerminate()
-{
-    return mbTerminate.load();
-}
-
 void CSVFetchThread::RequestTerminate()
 {
     mbTerminate.store(true);
-}
-
-void CSVFetchThread::EndThread()
-{
-    RequestTerminate();
 }
 
 void CSVFetchThread::execute()

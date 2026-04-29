@@ -331,8 +331,6 @@ private:
     void ImpAddStyleSheet(SfxStyleSheet& rNewStyleSheet);
 
     SdrPageProperties& operator=(const SdrPageProperties& rCandidate) = delete;
-
-    void sendLOKitThemeChangedCallback();
 public:
     // construct/destruct
     SdrPageProperties(SdrPage& rSdrPage);

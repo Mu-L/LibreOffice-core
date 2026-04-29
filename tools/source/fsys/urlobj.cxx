@@ -247,7 +247,7 @@ sal_Int32 INetURLObject::SubString::set(OUString & rString,
 {
     sal_Int32 nDelta = rSubString.size() - m_nLength;
 
-    rString = OUString::Concat(rString.subView(0, m_nBegin)) + 
+    rString = OUString::Concat(rString.subView(0, m_nBegin)) +
              rSubString + rString.subView(m_nBegin + m_nLength);
 
     m_nLength = rSubString.size();
@@ -2964,46 +2964,6 @@ bool INetURLObject::parseHostOrNetBiosName(
                 return false;
         }
     }
-    return true;
-}
-
-bool INetURLObject::setHost(std::u16string_view rTheHost,
-                            rtl_TextEncoding eCharset)
-{
-    if (!getSchemeInfo().m_bHost)
-        return false;
-    OUStringBuffer aSynHost(rTheHost);
-    bool bNetBiosName = false;
-    switch (m_eScheme)
-    {
-        case INetProtocol::File:
-            {
-                if (OUString::unacquired(aSynHost).equalsIgnoreAsciiCase("localhost"))
-                {
-                    aSynHost.setLength(0);
-                }
-                bNetBiosName = true;
-            }
-            break;
-        case INetProtocol::Ldap:
-            if (aSynHost.isEmpty() && m_aPort.isPresent())
-                return false;
-            break;
-
-        default:
-            if (aSynHost.isEmpty())
-                return false;
-            break;
-    }
-    if (!parseHostOrNetBiosName(
-            aSynHost.getStr(), aSynHost.getStr() + aSynHost.getLength(),
-            EncodeMechanism::WasEncoded, eCharset, bNetBiosName, &aSynHost))
-        return false;
-    sal_Int32 nDelta = m_aHost.set(m_aAbsURIRef, aSynHost);
-    m_aPort += nDelta;
-    m_aPath += nDelta;
-    m_aQuery += nDelta;
-    m_aFragment += nDelta;
     return true;
 }
 

@@ -53,7 +53,6 @@ public:
     const OUString& getName()         const { return m_sName; }
     const OUString& getDisplayName()  const { return m_sDisplayName; }
     Color           getColor()        const { return m_nColor; }
-    Color           getDefaultColor() const { return m_nDefaultColor; }
 
     void            setColor(Color _nColor) { m_nColor = _nColor; }
 };

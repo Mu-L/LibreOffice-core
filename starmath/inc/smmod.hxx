@@ -52,7 +52,6 @@ OUString SmResId(TranslateId aId);
 namespace SmLocalizedSymbolData
 {
     OUString GetUiSymbolName( std::u16string_view rExportName );
-    OUString GetExportSymbolName( std::u16string_view rUiName );
 
     OUString GetUiSymbolSetName( std::u16string_view rExportName );
     OUString GetExportSymbolSetName( std::u16string_view rUiName );

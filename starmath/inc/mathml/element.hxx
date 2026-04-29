@@ -95,48 +95,12 @@ public: // Element type
       */
     SmMlElementType getMlElementType() const { return m_aElementType; };
 
-    /**
-      * Check if the mathml element is of a given type
-      * @param aElementType
-      * @return is mathml element type
-      */
-    bool isMlElementType(SmMlElementType aElementType) const
-    {
-        return m_aElementType == aElementType;
-    };
-
 public: // location in the source
     /**
       * Returns the location in the source code of the node type
       * @return selection
       */
-    const ESelection& getESelection() const { return m_aESelection; };
-
-    /**
-      * Returns the location in the source code of the node type
-      * @return selection
-      */
     const ESelection& getESelectionReference() const { return m_aESelection; };
-
-    /**
-      * Sets the location in the source code of the node type
-      * @param aESelection
-      */
-    void setESelection(ESelection aESelection) { m_aESelection = aESelection; };
-
-    /**
-      * Gets the line in the text where the node is located.
-      * It is used to do the visual <-> text correspondence.
-      * @return line
-      */
-    sal_Int32 GetSourceCodeRow() const { return m_aESelection.start.nPara; }
-
-    /**
-      * Gets the column of the line in the text where the node is located.
-      * It is used to do the visual <-> text correspondence.
-      * @return column
-      */
-    sal_Int32 GetSourceCodeColumn() const { return m_aESelection.start.nIndex; }
 
 public: // attributes
     /**

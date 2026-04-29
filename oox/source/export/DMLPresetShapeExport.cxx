@@ -91,8 +91,6 @@ DMLPresetShapeExporter::~DMLPresetShapeExporter(){
     // Do nothing
 };
 
-bool DMLPresetShapeExporter::HasHandleValue() const { return m_bHasHandleValues; }
-
 const OUString& DMLPresetShapeExporter::GetShapeType() const { return m_sPresetShapeType; }
 
 const css::uno::Sequence<css::uno::Sequence<css::beans::PropertyValue>>&

@@ -402,7 +402,6 @@ public:
     virtual bool HasActiveEditor () const override;
 
     void UpdateModule ();
-    const OUString & GetEditorColorScheme() { return m_sWinColorScheme; }
     void SetEditorColorScheme(const OUString& rColorScheme);
 };
 

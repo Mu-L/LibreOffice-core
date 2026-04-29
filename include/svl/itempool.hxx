@@ -198,7 +198,6 @@ private:
         assert(false && "missing bounds check before use");
         return 0;
     }
-    sal_uInt16 GetSize_Impl() const { return mnEnd - mnStart + 1; }
     SfxItemPool* getTargetPool(sal_uInt16 nWhich) const;
 
     // moved to private: use the access methods, e.g. NeedsSurrogateSupport
@@ -258,7 +257,6 @@ public:
 
     virtual MapUnit                 GetMetric( sal_uInt16 nWhich ) const;
     void                            SetDefaultMetric( MapUnit eNewMetric );
-    MapUnit GetDefaultMetric() const { return eDefMetric; }
 
     /** Request string representation of pool items.
 

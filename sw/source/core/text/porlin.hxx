@@ -127,7 +127,6 @@ public:
     bool IsErgoSumPortion() const { return mnWhichPor == PortionType::ErgoSum; }
     bool IsQuoVadisPortion() const { return mnWhichPor == PortionType::QuoVadis; }
     bool IsTabLeftPortion() const { return mnWhichPor == PortionType::TabLeft; }
-    bool IsTabRightPortion() const { return mnWhichPor == PortionType::TabRight; }
     bool IsTabCenterPortion() const { return mnWhichPor == PortionType::TabCenter; }
     bool IsTabDecimalPortion() const { return mnWhichPor == PortionType::TabDecimal; }
     bool IsFootnoteNumPortion() const { return mnWhichPor == PortionType::FootnoteNum; }

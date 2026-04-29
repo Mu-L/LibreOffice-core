@@ -606,8 +606,6 @@ double box2DWorld::stepAmount(const double fPassedTime)
     return fTimeSteppedThrough;
 }
 
-bool box2DWorld::shapesInitialized() { return mbShapesInitialized; }
-
 bool box2DWorld::isInitialized() const
 {
     if (mpBox2DWorld)

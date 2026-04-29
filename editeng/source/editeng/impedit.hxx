@@ -802,22 +802,6 @@ private:
         return double(nYValue) * maScalingParameters.fSpacingY;
     }
 
-    double scaleXFontValue(tools::Long nXValue) const
-    {
-        if (!maStatus.DoStretch() || (maScalingParameters.fFontX == 1.0))
-            return nXValue;
-
-        return double(nXValue) * maScalingParameters.fFontX;
-    }
-
-    double scaleYFontValue(sal_uInt16 nYValue) const
-    {
-        if (!maStatus.DoStretch() || (maScalingParameters.fFontY == 1.0))
-            return nYValue;
-
-        return double(nYValue) * maScalingParameters.fFontY;
-    }
-
     void setRoundToNearestPt(bool bRound) { mbRoundToNearestPt = bRound; }
     double roundToNearestPt(double fInput) const;
 

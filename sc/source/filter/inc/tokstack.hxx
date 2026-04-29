@@ -208,7 +208,6 @@ private:
         sal_uInt16                      m_nRek; // recursion counter
 #endif
 
-        bool                        GrowTripel( sal_uInt16 nByMin );
         bool                        GrowId();
         bool                        GrowMatrix();
                                     /** @return false means nElementCurrent range

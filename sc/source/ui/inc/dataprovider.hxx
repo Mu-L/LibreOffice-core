@@ -56,9 +56,7 @@ public:
     virtual ~CSVFetchThread() override;
 
     void RequestTerminate();
-    bool IsRequestedTerminate();
     void Terminate();
-    void EndThread();
     bool IsParseError() const { return mbIsParseError; }
     const std::exception_ptr & GetLastException() const { return mpLastException; }
 

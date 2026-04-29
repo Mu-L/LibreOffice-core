@@ -56,44 +56,4 @@ enum class SmNodeType : int_fast16_t
     MathIdent // identities and variables
 };
 
-namespace starmathdatabase
-{
-inline bool isStructuralNode(SmNodeType aNodeTypeName)
-{
-    return aNodeTypeName == SmNodeType::Table || aNodeTypeName == SmNodeType::Line
-           || aNodeTypeName == SmNodeType::UnHor || aNodeTypeName == SmNodeType::BinHor
-           || aNodeTypeName == SmNodeType::BinVer || aNodeTypeName == SmNodeType::BinDiagonal
-           || aNodeTypeName == SmNodeType::SubSup || aNodeTypeName == SmNodeType::Matrix
-           || aNodeTypeName == SmNodeType::Root || aNodeTypeName == SmNodeType::Expression
-           || aNodeTypeName == SmNodeType::Brace || aNodeTypeName == SmNodeType::Bracebody
-           || aNodeTypeName == SmNodeType::Oper || aNodeTypeName == SmNodeType::Align
-           || aNodeTypeName == SmNodeType::Attribute || aNodeTypeName == SmNodeType::Font;
-}
-
-inline bool isBinOperatorNode(SmNodeType aNodeTypeName)
-{
-    return aNodeTypeName == SmNodeType::BinHor || aNodeTypeName == SmNodeType::BinVer
-           || aNodeTypeName == SmNodeType::BinDiagonal || aNodeTypeName == SmNodeType::SubSup;
-}
-
-inline bool isUnOperatorNode(SmNodeType aNodeTypeName)
-{
-    return aNodeTypeName == SmNodeType::UnHor;
-}
-
-inline bool isOperatorNode(SmNodeType aNodeTypeName)
-{
-    return aNodeTypeName == SmNodeType::BinHor || aNodeTypeName == SmNodeType::BinVer
-           || aNodeTypeName == SmNodeType::BinDiagonal || aNodeTypeName == SmNodeType::SubSup
-           || aNodeTypeName == SmNodeType::UnHor || aNodeTypeName == SmNodeType::Oper;
-}
-
-inline bool isStandaloneNode(SmNodeType aNodeTypeName)
-{
-    return aNodeTypeName == SmNodeType::Text || aNodeTypeName == SmNodeType::Special
-           || aNodeTypeName == SmNodeType::GlyphSpecial || aNodeTypeName == SmNodeType::Math
-           || aNodeTypeName == SmNodeType::Blank || aNodeTypeName == SmNodeType::MathIdent;
-}
-}
-
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

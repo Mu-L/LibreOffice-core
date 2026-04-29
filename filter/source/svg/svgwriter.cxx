@@ -2529,17 +2529,6 @@ void SVGActionWriter::ImplWriteGradientStop( const Color& rColor, double fOffset
     }
 }
 
-
-Color SVGActionWriter::ImplGetColorWithIntensity( const Color& rColor,
-                                                  sal_uInt16 nIntensity )
-{
-     sal_uInt8 nNewRed = static_cast<sal_uInt8>( static_cast<tools::Long>(rColor.GetRed()) * nIntensity / 100 );
-     sal_uInt8 nNewGreen = static_cast<sal_uInt8>( static_cast<tools::Long>(rColor.GetGreen()) * nIntensity / 100 );
-     sal_uInt8 nNewBlue = static_cast<sal_uInt8>( static_cast<tools::Long>(rColor.GetBlue()) * nIntensity / 100 );
-     return Color( nNewRed, nNewGreen, nNewBlue);
-}
-
-
 void SVGActionWriter::StartMask(const Point& rDestPt, const Size& rDestSize,
                                 const Gradient& rGradient, sal_uInt32 nWriteFlags,
                                 const basegfx::BColorStops* pColorStops, OUString* pTextFillOpacity)

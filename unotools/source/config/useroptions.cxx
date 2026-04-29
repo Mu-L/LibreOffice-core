@@ -309,8 +309,6 @@ OUString SvtUserOptions::GetFax            () const { return GetToken(UserOptTok
 OUString SvtUserOptions::GetEmail          () const { return GetToken(UserOptToken::Email); }
 OUString SvtUserOptions::GetSigningKey     () const { return GetToken(UserOptToken::SigningKey); }
 OUString SvtUserOptions::GetEncryptionKey  () const { return GetToken(UserOptToken::EncryptionKey); }
-OUString SvtUserOptions::GetSigningKeyDisplayName () const { return GetToken(UserOptToken::SigningKeyDisplayName); }
-OUString SvtUserOptions::GetEncryptionKeyDisplayName () const { return GetToken(UserOptToken::EncryptionKeyDisplayName); }
 
 bool SvtUserOptions::IsTokenReadonly (UserOptToken nToken) const
 {

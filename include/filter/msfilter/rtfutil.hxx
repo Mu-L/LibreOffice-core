@@ -47,13 +47,6 @@ MSFILTER_DLLPUBLIC OString OutString(std::u16string_view rStr, rtl_TextEncoding 
 MSFILTER_DLLPUBLIC OString OutStringUpr(std::string_view pToken, std::u16string_view rStr,
                                         rtl_TextEncoding eDestEnc);
 
-/**
- * Get the numeric value of a single character, representing a hex value.
- *
- * @return -1 on failure
- */
-MSFILTER_DLLPUBLIC int AsHex(char ch);
-
 /// Writes binary data as a hex dump.
 MSFILTER_DLLPUBLIC OString WriteHex(const sal_uInt8* pData, sal_uInt32 nSize,
                                     SvStream* pStream = nullptr, sal_uInt32 nLimit = 64);

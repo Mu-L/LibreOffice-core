@@ -99,8 +99,6 @@ inline const SvxEscapementItem   &SwAttrSet::GetEscapement(bool bInP) const
     {   return Get( RES_CHRATR_ESCAPEMENT,bInP); }
 inline const SvxCaseMapItem      &SwAttrSet::GetCaseMap(bool bInP) const
     {   return Get( RES_CHRATR_CASEMAP,bInP); }
-inline const SvxNoHyphenItem     &SwAttrSet::GetNoHyphenHere(bool bInP) const
-    {   return Get( RES_CHRATR_NOHYPHEN,bInP); }
 inline const SvxEmphasisMarkItem &SwAttrSet::GetEmphasisMark( bool bInP ) const
     {   return Get( RES_CHRATR_EMPHASIS_MARK, bInP ); }
 inline const SvxTwoLinesItem     &SwAttrSet::Get2Lines( bool bInP ) const

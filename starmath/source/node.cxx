@@ -439,18 +439,6 @@ SmNode* SmStructureNode::GetSubNode(size_t nIndex)
     return maSubNodes[nIndex];
 }
 
-SmNode* SmStructureNode::GetSubNodeBinMo(size_t nIndex) const
-{
-    if(GetType()==SmNodeType::BinDiagonal)
-    {
-        if (nIndex==1)
-            nIndex = 2;
-        else if (nIndex==2)
-            nIndex = 1;
-    }
-    return maSubNodes[nIndex];
-}
-
 void SmStructureNode::GetAccessibleText( OUStringBuffer &rText ) const
 {
     ForEachNonNull(const_cast<SmStructureNode *>(this),

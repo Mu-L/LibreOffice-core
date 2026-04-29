@@ -121,7 +121,6 @@ public:
     vcl::Window*        GetWindow() const
                         { return pWindow; }
     void                SetController(const std::shared_ptr<SfxDialogController>& controller) { xController = controller; }
-    void                ClearController() { xController.reset(); }
     std::shared_ptr<SfxDialogController>& GetController() { return xController; }
     const std::shared_ptr<SfxDialogController>& GetController() const { return xController; }
     vcl::Window*        GetParent() const

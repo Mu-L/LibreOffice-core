@@ -359,12 +359,6 @@ namespace svgio::svgreader
             /// stroke content
             const basegfx::BColor* getStroke() const;
 
-            /// context fill content
-            const basegfx::BColor* getContextFill() const;
-
-            /// context stroke content
-            const basegfx::BColor* getContextStroke() const;
-
             /// stop color content
             const basegfx::BColor& getStopColor() const;
 

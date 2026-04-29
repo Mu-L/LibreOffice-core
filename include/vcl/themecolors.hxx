@@ -43,7 +43,6 @@ class VCL_DLLPUBLIC ThemeColors
 
 public:
     static ThemeColors& GetThemeColors() { return m_aThemeColors; }
-    static void SetThemeColors(const ThemeColors& rThemeColors) { m_aThemeColors = rThemeColors; }
 
     static bool IsThemeCached() { return m_bIsThemeCached; }
     static void SetThemeCached(bool bCached) { m_bIsThemeCached = bCached; }
@@ -147,7 +146,6 @@ public:
     const Color& GetMenuHighlightColor() const { return m_aMenuHighlightColor; }
     const Color& GetMenuHighlightTextColor() const { return m_aMenuhighlightTextColor; }
     const Color& GetMenuBorderColor() const { return m_aMenuBorderColor; }
-    const Color& GetInactiveColor() const { return m_aInactiveColor; }
     const Color& GetInactiveTextColor() const { return m_aInactiveTextColor; }
     const Color& GetInactiveBorderColor() const { return m_aInactiveBorderColor; }
     const OUString& GetThemeName() const { return m_sThemeName; }

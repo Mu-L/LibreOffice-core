@@ -96,16 +96,6 @@ public:
 
     double getImportedShapesCount() const{ return mnAscendingPrio; }
 
-    void setMasterPageObjectsOnly(bool bMasterPageObjectsOnly)
-    {
-        mbMasterPageObjectsOnly = bMasterPageObjectsOnly;
-    }
-
-    void setTextFieldsOnly(bool bTextFieldsOnly)
-    {
-        mbTextFieldsOnly = bTextFieldsOnly;
-    }
-
 private:
     bool isSkip( css::uno::Reference<css::beans::XPropertySet> const& xPropSet,
                  std::u16string_view shapeType,

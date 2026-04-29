@@ -320,7 +320,6 @@ namespace sw
 #endif
                 m_pCurrent = m_pPosition = m_rRoot.m_pWriterListeners;
             }
-            WriterListener* GetLeftOfPos() { return m_pPosition->m_pLeft; }
             WriterListener* GetRightOfPos() { return m_pPosition->m_pRight; }
             WriterListener* GoStart()
             {

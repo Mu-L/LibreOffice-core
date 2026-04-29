@@ -2021,18 +2021,6 @@ bool LayoutNode::setupShape( const SmartArtDiagram& rDgm, const ShapePtr& rShape
     return true;
 }
 
-const LayoutNode* LayoutNode::getParentLayoutNode() const
-{
-    for (LayoutAtomPtr pAtom = getParent(); pAtom; pAtom = pAtom->getParent())
-    {
-        auto pLayoutNode = dynamic_cast<LayoutNode*>(pAtom.get());
-        if (pLayoutNode)
-            return pLayoutNode;
-    }
-
-    return nullptr;
-}
-
 void ShapeAtom::accept( LayoutAtomVisitor& rVisitor )
 {
     rVisitor.visit(*this);

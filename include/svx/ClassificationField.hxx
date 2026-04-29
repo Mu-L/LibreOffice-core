@@ -44,12 +44,6 @@ public:
     {
     }
 
-    /// Returns the text to display, which is the Abbreviated Name, if provided, otherwise Name.
-    OUString const & getDisplayText() const
-    {
-        return !msAbbreviatedName.isEmpty() ? msAbbreviatedName : msName;
-    }
-
     bool operator==(const ClassificationResult& rOther) const
     {
         return (meType == rOther.meType &&

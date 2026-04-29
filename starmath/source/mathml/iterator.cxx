@@ -16,38 +16,6 @@
 
 namespace mathml
 {
-static inline void cloneElement(SmMlElement* aSmMlElement, void* aData)
-{
-    // Prepare data
-    SmMlElement* aNewSmMlElement = new SmMlElement(*aSmMlElement);
-    SmMlElement* aCopyTree = *static_cast<SmMlElement**>(aData);
-
-    // Append data
-    aCopyTree->setSubElement(aCopyTree->getSubElementsCount(), aNewSmMlElement);
-
-    // Prepare for following
-    // If it has sub elements, then it will be the next
-    if (aSmMlElement->getSubElementsCount() != 0)
-        aCopyTree = aNewSmMlElement;
-    else // Otherwise remounts up to where it should be
-    {
-        while (aSmMlElement->getParentElement() != nullptr)
-        {
-            // get parent
-            SmMlElement* pParent = aSmMlElement->getParentElement();
-            aCopyTree = aCopyTree->getParentElement();
-            // was this the last branch ?
-            if (aSmMlElement->getSubElementId() + 1 != pParent->getSubElementsCount())
-                break; // no -> stop going up
-            // Prepare for next round
-            aSmMlElement = pParent;
-        }
-    }
-
-    // Closing extras
-    *static_cast<SmMlElement**>(aData) = aCopyTree;
-}
-
 void SmMlIteratorFree(SmMlElement* pMlElementTree)
 {
     if (pMlElementTree == nullptr)
@@ -57,17 +25,6 @@ void SmMlIteratorFree(SmMlElement* pMlElementTree)
         SmMlIteratorFree(pMlElementTree->getSubElement(i));
     }
     delete pMlElementTree;
-}
-
-SmMlElement* SmMlIteratorCopy(SmMlElement* pMlElementTree)
-{
-    if (pMlElementTree == nullptr)
-        return nullptr;
-    SmMlElement* aDummyElement = new SmMlElement();
-    SmMlIteratorTopToBottom(pMlElementTree, cloneElement, &aDummyElement);
-    SmMlElement* aResultElement = aDummyElement->getSubElement(0);
-    delete aDummyElement;
-    return aResultElement;
 }
 
 } // end namespace mathml

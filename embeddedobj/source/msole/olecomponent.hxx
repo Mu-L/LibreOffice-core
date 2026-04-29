@@ -81,8 +81,6 @@ public:
 
     virtual ~OleComponent() override;
 
-    OleComponent* createEmbeddedCopyOfLink();
-
     void disconnectEmbeddedObject();
 
     static css::awt::Size CalculateWithFactor( const css::awt::Size& aSize,

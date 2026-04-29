@@ -968,7 +968,6 @@ public:
 public:
     // if writer is NULL, dumps the layout structure as XML in layout.xml
     virtual void dumpAsXml(xmlTextWriterPtr writer = nullptr) const = 0;
-    void dumpTopMostAsXml(xmlTextWriterPtr writer = nullptr) const;
     void dumpInfosAsXml(xmlTextWriterPtr writer) const;
     virtual void dumpAsXmlAttributes(xmlTextWriterPtr writer) const;
     void dumpChildrenAsXml(xmlTextWriterPtr writer) const;
@@ -1468,8 +1467,6 @@ public:
     tools::Long  GetPrtRight    (const SwFrame& rFrame) const { return (rFrame.*m_fnRect->fnGetPrtRight)    (); }
     tools::Long  TopDist   (const SwRect& rRect, tools::Long nPos) const { return (rRect.*m_fnRect->fnTopDist)    (nPos); }
     tools::Long  BottomDist(const SwRect& rRect, tools::Long nPos) const { return (rRect.*m_fnRect->fnBottomDist) (nPos); }
-    tools::Long  LeftDist   (const SwRect& rRect, tools::Long nPos) const { return (rRect.*m_fnRect->fnLeftDist)    (nPos); }
-    tools::Long  RightDist   (const SwRect& rRect, tools::Long nPos) const { return (rRect.*m_fnRect->fnRightDist)    (nPos); }
     bool  SetLimit (SwFrame& rFrame, tools::Long nNew) const { return (rFrame.*m_fnRect->fnSetLimit) (nNew); }
     bool  OverStep  (const SwRect& rRect, tools::Long nPos) const { return (rRect.*m_fnRect->fnOverStep)   (nPos); }
 

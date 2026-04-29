@@ -94,9 +94,6 @@ private:
     typedef AdjustmentPointValueBase XAdjustmentValue;
     typedef AdjustmentPointValueBase YAdjustmentValue;
 
-    // Returns true, if the shape has adjusting points
-    bool HasHandleValue() const;
-
     // Returns true if the shape flipped.
     bool IsXFlipped() const { return m_bIsFlipped.first; };
     bool IsYFlipped() const { return m_bIsFlipped.second; };

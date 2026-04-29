@@ -439,8 +439,6 @@ public:
     SCROW           GetCurYForTab( SCTAB nTabIndex ) const;
     SCCOL           GetOldCurX() const;
     SCROW           GetOldCurY() const;
-    tools::Long            GetLOKDocWidthPixel() const             { return pThisTab->aWidthHelper.getPosition(pThisTab->nMaxTiledCol); }
-    tools::Long            GetLOKDocHeightPixel() const            { return pThisTab->aHeightHelper.getPosition(pThisTab->nMaxTiledRow); }
 
     ScPositionHelper& GetLOKWidthHelper()                   { return pThisTab->aWidthHelper; }
     ScPositionHelper& GetLOKHeightHelper()                  { return pThisTab->aHeightHelper; }
@@ -595,7 +593,6 @@ public:
     const ScViewOptions&    GetOptions() const { return maOptions; }
     SC_DLLPUBLIC void       SetOptions( const ScViewOptions& rOpt );
 
-    bool    IsGridMode      () const            { return maOptions.GetOption(sc::ViewOption::GRID); }
     bool    IsSyntaxMode    () const            { return maOptions.GetOption(sc::ViewOption::SYNTAX); }
     void    SetSyntaxMode   ( bool bNewMode )   { maOptions.SetOption(sc::ViewOption::SYNTAX, bNewMode); }
     bool    IsHeaderMode    () const            { return maOptions.GetOption(sc::ViewOption::HEADER); }

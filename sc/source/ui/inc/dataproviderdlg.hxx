@@ -60,7 +60,6 @@ private:
     ScDBData* pDBData;
     ScDBCollection* mpDestDBCollection;
 
-    DECL_LINK(StartMenuHdl, const OString&, void);
     DECL_LINK(ColumnMenuHdl, const weld::ComboBox&, void);
     DECL_LINK(ScrollToEnd, Timer*, void);
     DECL_LINK(ApplyQuitHdl, weld::Button&, void);
@@ -77,9 +76,6 @@ public:
     ScDataProviderDlg(weld::Window* pWindow, std::shared_ptr<ScDocument> pDoc,
                       const ScDocument* pDocument);
     virtual ~ScDataProviderDlg() override;
-
-    void applyAndQuit();
-    void cancelAndQuit();
 
     void deleteColumn();
     void splitColumn();

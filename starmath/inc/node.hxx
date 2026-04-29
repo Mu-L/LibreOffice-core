@@ -501,13 +501,6 @@ public:
     virtual SmNode * GetSubNode(size_t nIndex) override;
 
     /**
-     * Gets the subnode of index nIndex, used for operators.
-     * @param nIndex
-     * @return subnode of index nIndex
-     */
-    SmNode * GetSubNodeBinMo(size_t nIndex) const;
-
-    /**
      * Does the cleaning of the subnodes.
      * @return
      */

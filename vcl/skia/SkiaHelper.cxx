@@ -740,21 +740,6 @@ sk_sp<SkImage> findCachedImage(const OString& key)
     return nullptr;
 }
 
-void removeCachedImage(sk_sp<SkImage> image)
-{
-    for (auto it = imageCache.begin(); it != imageCache.end();)
-    {
-        if (it->image == image)
-        {
-            imageCacheSize -= it->size;
-            assert(imageCacheSize >= 0);
-            it = imageCache.erase(it);
-        }
-        else
-            ++it;
-    }
-}
-
 tools::Long maxImageCacheSize()
 {
     // Defaults to 4x 2000px 32bpp images, 64MiB.

@@ -1944,8 +1944,6 @@ void SwTextBoxNode::ClearAll()
     }
 }
 
-bool SwTextBoxNode::IsGroupTextBox() const { return m_pTextBoxes.size() > 1; }
-
 std::map<SdrObject*, SwFrameFormat*> SwTextBoxNode::GetAllTextBoxes() const
 {
     std::map<SdrObject*, SwFrameFormat*> aRet;

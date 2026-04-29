@@ -341,7 +341,6 @@ private:
     void                    ImplWriteGradientEx( const tools::PolyPolygon& rPolyPoly, const Gradient& rGradient, sal_uInt32 nWriteFlags, const basegfx::BColorStops* pColorStops);
     void                    ImplWriteGradientLinear( const tools::PolyPolygon& rPolyPoly, const Gradient& rGradient, const basegfx::BColorStops* pColorStops );
     void                    ImplWriteGradientStop( const Color& rColor, double fOffset );
-    static Color            ImplGetColorWithIntensity( const Color& rColor, sal_uInt16 nIntensity );
     void                    ImplWriteMask( GDIMetaFile& rMtf, const Point& rDestPt, const Size& rDestSize, const Gradient& rGradient, sal_uInt32 nWriteFlags, const basegfx::BColorStops* pColorStops);
     void                    ImplWriteText( const Point& rPos, const OUString& rText, KernArraySpan pDXArray, tools::Long nWidth );
     void                    ImplWriteText( const Point& rPos, const OUString& rText, KernArraySpan pDXArray, tools::Long nWidth, Color aTextColor );

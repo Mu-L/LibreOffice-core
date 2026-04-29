@@ -90,7 +90,6 @@ public:
     const oox::drawingml::ClrMapPtr& getClrMap() const { return mpClrMapPtr; }
 
     void setBackgroundProperties( const oox::drawingml::FillPropertiesPtr& rFillPropertiesPtr ){ mpBackgroundPropertiesPtr = rFillPropertiesPtr; }
-    const oox::drawingml::FillPropertiesPtr& getBackgroundProperties() const { return mpBackgroundPropertiesPtr; }
     oox::drawingml::Color& getBackgroundColor() { return maBackgroundColor; }
 
     bool isMasterPage() const { return mbMaster; }

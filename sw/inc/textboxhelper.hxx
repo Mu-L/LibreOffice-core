@@ -256,9 +256,6 @@ public:
     // Clears all textboxes of this node from the doc and also from here.
     void ClearAll();
 
-    // If this is a group shape, that returns true.
-    bool IsGroupTextBox() const;
-
     // This returns with the shape what this class belongs to.
     SwFrameFormat* GetOwnerShape() { return m_pOwnerShapeFormat; };
 

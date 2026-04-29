@@ -90,14 +90,6 @@ namespace emfplushelper
         // flags table from MS-EMFPLUS doc
         bool DirectionRightToLeft()  const { return stringFormatFlags & 0x00000001;}
         bool DirectionVertical()     const { return stringFormatFlags & 0x00000002;}
-        bool NoFitBlackBox()         const { return stringFormatFlags & 0x00000004;}
-        bool DisplayFormatControl()  const { return stringFormatFlags & 0x00000020;}
-        bool NoFontFallback()        const { return stringFormatFlags & 0x00000400;}
-        bool MeasureTrailingSpaces() const { return stringFormatFlags & 0x00000800;}
-        bool NoWrap()                const { return stringFormatFlags & 0x00001000;}
-        bool LineLimit()             const { return stringFormatFlags & 0x00002000;}
-        bool NoClip()                const { return stringFormatFlags & 0x00004000;}
-        bool BypassGDI()             const { return stringFormatFlags & 0x80000000;}
     };
 }
 

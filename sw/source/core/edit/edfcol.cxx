@@ -1861,18 +1861,6 @@ void SwEditShell::ValidateParagraphSignatures(SwTextNode* pNode, bool updateDont
     lcl_ValidateParagraphSignatures(*GetDoc(), xParentText, updateDontRemove, aGraphNames);
 }
 
-void SwEditShell::ValidateCurrentParagraphSignatures(bool updateDontRemove)
-{
-    SwDocShell* pDocShell = GetDoc()->GetDocShell();
-    if (!pDocShell || !GetCursor() || !GetCursor()->Start() || !IsParagraphSignatureValidationEnabled())
-        return;
-
-    SwPaM* pPaM = GetCursor();
-    const SwPosition* pPosStart = pPaM->Start();
-    SwTextNode* pNode = pPosStart->GetNode().GetTextNode();
-    ValidateParagraphSignatures(pNode, updateDontRemove);
-}
-
 void SwEditShell::ValidateAllParagraphSignatures(bool updateDontRemove)
 {
     SwDocShell* pDocShell = GetDoc()->GetDocShell();

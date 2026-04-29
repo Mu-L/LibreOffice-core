@@ -48,10 +48,6 @@ public:
      */
     bool getSuccess() const { return m_bSuccess; }
 
-    /** Get's if xmlns field is added
-     */
-    bool getUseExportTag() const { return m_bUseExportTag; }
-
     /** Set's if xmlns field is added
      */
     void setUseExportTag(bool bUseExportTag) { m_bUseExportTag = bUseExportTag; }

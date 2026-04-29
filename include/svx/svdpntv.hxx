@@ -515,7 +515,6 @@ public:
     /// the loading there. When such an object is done loading, it is displayed.
     /// TODO: Only works at the moment, if SwapGraphics is enabled in the model.
     /// The default = false flag is non-persistent
-    bool IsSwapAsynchron() const { return mbSwapAsynchron; }
     void SetSwapAsynchron(bool bJa=true) { mbSwapAsynchron=bJa; }
     virtual bool KeyInput(const KeyEvent& rKEvt, vcl::Window* pWin);
 

@@ -246,8 +246,6 @@ public:
                             { return getOneLocaleItem( css::i18n::LocaleItem::LONG_DATE_DAY_SEPARATOR ); }
     const OUString&       getLongDateMonthSep() const
                             { return getOneLocaleItem( css::i18n::LocaleItem::LONG_DATE_MONTH_SEPARATOR ); }
-    const OUString&       getLongDateYearSep() const
-                            { return getOneLocaleItem( css::i18n::LocaleItem::LONG_DATE_YEAR_SEPARATOR ); }
 
     /** A wrapper around rtl::math::stringToDouble() using the locale dependent
         decimal separator, group separator, and if needed decimal separator

@@ -149,9 +149,6 @@ public:
 
     explicit            VmlDrawing( const WorksheetHelper& rHelper );
 
-    /** Returns the drawing shape for a cell note at the specified position. */
-    const ::oox::vml::ShapeBase* getNoteShape( const ScAddress& rPos ) const;
-
     NoteShapesMap buildNoteShapesMap() const;
 
     /** Filters cell note shapes. */

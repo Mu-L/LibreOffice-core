@@ -79,7 +79,6 @@ public:
     sal_Int32 getStart() { return m_nStart; }
     sal_Int32 getEnd() { return m_nEnd; }
     SwNode* getNode() { return m_pNode; }
-    SwTextFootnote* getTextFootnote() { return m_pTextFootnote; }
 
     AccessibilityIssue& operator=(const AccessibilityIssue&) = default;
 };

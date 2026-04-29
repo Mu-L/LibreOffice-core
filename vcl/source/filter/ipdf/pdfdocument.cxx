@@ -1214,9 +1214,6 @@ bool PDFDocument::Tokenize(SvStream& rStream, TokenizeMode eMode,
                             auto pReference = new PDFReferenceElement(*this, *pObjectNumber,
                                                                       *pGenerationNumber);
                             rElements.push_back(std::unique_ptr<PDFElement>(pReference));
-                            if (bInObject && nDepth > 0 && pObject)
-                                // Inform the object about a new in-dictionary reference.
-                                pObject->AddDictionaryReference(pReference);
                         }
                         if (!rElements.back()->Read(rStream))
                         {
@@ -2511,16 +2508,6 @@ void PDFObjectElement::SetNameElement(PDFNameElement* pNameElement)
 
 PDFNameElement* PDFObjectElement::GetNameElement() const { return m_pNameElement; }
 
-const std::vector<PDFReferenceElement*>& PDFObjectElement::GetDictionaryReferences() const
-{
-    return m_aDictionaryReferences;
-}
-
-void PDFObjectElement::AddDictionaryReference(PDFReferenceElement* pReference)
-{
-    m_aDictionaryReferences.push_back(pReference);
-}
-
 const std::map<OString, PDFElement*>& PDFObjectElement::GetDictionaryItems()
 {
     parseIfNecessary();
@@ -2708,11 +2695,8 @@ PDFReferenceElement::PDFReferenceElement(PDFDocument& rDoc, PDFNumberElement& rO
     : m_rDoc(rDoc)
     , m_fObjectValue(rObject.GetValue())
     , m_fGenerationValue(rGeneration.GetValue())
-    , m_rObject(rObject)
 {
 }
-
-PDFNumberElement& PDFReferenceElement::GetObjectElement() const { return m_rObject; }
 
 bool PDFReferenceElement::Read(SvStream& rStream)
 {

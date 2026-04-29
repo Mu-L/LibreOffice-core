@@ -374,28 +374,6 @@ ProcessElements1(
 };
 
 template<typename StoreT, typename Blk1, typename Blk2, typename FuncElem, typename FuncElse>
-void ProcessElements2(StoreT& rStore, FuncElem& rFuncElem, FuncElse& rFuncElse)
-{
-    typename StoreT::size_type nTopRow = 0, nDataSize = 0;
-    typename StoreT::iterator it = rStore.begin(), itEnd = rStore.end();
-    for (; it != itEnd; ++it, nTopRow += nDataSize)
-    {
-        nDataSize = it->size;
-        switch (it->type)
-        {
-            case Blk1::block_type:
-                EachElem<Blk1, typename Blk1::iterator>(*it, rFuncElem);
-            break;
-            case Blk2::block_type:
-                EachElem<Blk2, typename Blk2::iterator>(*it, rFuncElem);
-            break;
-            default:
-                rFuncElse(it->type, nTopRow, nDataSize);
-        }
-    }
-}
-
-template<typename StoreT, typename Blk1, typename Blk2, typename FuncElem, typename FuncElse>
 void ProcessElements2Reverse(StoreT& rStore, FuncElem& rFuncElem, FuncElse& rFuncElse)
 {
     typename StoreT::size_type nTopRow = 0, nDataSize = 0;

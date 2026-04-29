@@ -38,10 +38,6 @@ public:
     {
         insert_item(-1, rId, rStr, nullptr, nullptr, TRISTATE_TRUE);
     }
-    void append_item_radio(const OUString& rId, const OUString& rStr)
-    {
-        insert_item(-1, rId, rStr, nullptr, nullptr, TRISTATE_FALSE);
-    }
     void append_item(const OUString& rId, const OUString& rStr, const OUString& rImage)
     {
         insert_item(-1, rId, rStr, &rImage, nullptr, TRISTATE_INDET);

@@ -128,7 +128,6 @@ VCL_DLLPUBLIC void
 // Shared cache of images.
 void addCachedImage(const OString& key, sk_sp<SkImage> image);
 sk_sp<SkImage> findCachedImage(const OString& key);
-void removeCachedImage(sk_sp<SkImage> image);
 tools::Long maxImageCacheSize();
 
 // Get checksum of the image content, only for raster images. Is cached,

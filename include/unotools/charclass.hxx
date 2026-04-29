@@ -97,15 +97,6 @@ public:
             ((nType & ~nCharClassNumericTypeMask) == 0);
     }
 
-    /// whether type is pure alphanumeric or not, e.g. return of getCharacterType()
-    static bool isAlphaNumericType( sal_Int32 nType )
-    {
-        return ((nType & (nCharClassAlphaType |
-            nCharClassNumericType)) != 0) &&
-            ((nType & ~(nCharClassAlphaTypeMask |
-            nCharClassNumericTypeMask)) == 0);
-    }
-
     /// whether type is pure letter or not, e.g. return of getCharacterType()
     static bool isLetterType( sal_Int32 nType )
     {

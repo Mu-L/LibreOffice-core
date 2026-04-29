@@ -87,7 +87,6 @@ public:
     void SetIncludeBOM( bool bVal ) { m_bIncludeBOM = bVal; }
 
     bool GetIncludeHidden() const { return m_bIncludeHidden; }
-    void SetIncludeHidden( bool bVal ) { m_bIncludeHidden = bVal; }
 
     void Reset();
 

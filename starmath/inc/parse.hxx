@@ -28,8 +28,6 @@
 namespace starmathdatabase
 {
 
-AbstractSmParser* GetDefaultSmParser();
-
 AbstractSmParser* GetVersionSmParser(sal_uInt16 nVersion);
 
 }

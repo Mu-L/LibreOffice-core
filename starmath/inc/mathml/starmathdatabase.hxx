@@ -280,14 +280,6 @@ SmColorTokenTableEntry Identify_Color_Parser(sal_uInt32 cColor);
 SmColorTokenTableEntry Identify_Color_MATHML(sal_uInt32 cColor);
 
 /**
-  * Identifies color from color code cColor.
-  * It will be returned with the dvipsnames syntax.
-  * @param cColor
-  * @param parser color
-  */
-SmColorTokenTableEntry Identify_Color_DVIPSNAMES(sal_uInt32 cColor);
-
-/**
   * Identifies color from color name.
   * It will be returned with the parser syntax.
   *

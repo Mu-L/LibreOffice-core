@@ -110,15 +110,6 @@ public:
     };
 
     /**
-      * Compares the type of attribute with a given one.
-      * Attribute Value Type
-      */
-    bool isMlAttributeValueType(SmMlAttributeValueType aAttributeValueType) const
-    {
-        return m_aSmMlAttributeValueType == aAttributeValueType;
-    };
-
-    /**
       * Set the type of attribute we are dealing with.
       * @param Attribute Value Type
       */

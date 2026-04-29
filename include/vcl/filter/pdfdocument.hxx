@@ -89,9 +89,6 @@ class VCL_DLLPUBLIC PDFObjectElement final : public PDFElement
     std::vector<std::unique_ptr<PDFElement>> m_aElements;
     /// Uncompressed buffer of an object in an object stream.
     std::unique_ptr<SvMemoryStream> m_pStreamBuffer;
-    /// List of all reference elements inside this object's dictionary and
-    /// nested dictionaries.
-    std::vector<PDFReferenceElement*> m_aDictionaryReferences;
 
     bool m_bParsed;
 
@@ -115,8 +112,6 @@ public:
     PDFNameElement* GetNameElement() const;
     /// Get access to the parsed key-value items from the object dictionary.
     const std::map<OString, PDFElement*>& GetDictionaryItems();
-    SAL_DLLPRIVATE const std::vector<PDFReferenceElement*>& GetDictionaryReferences() const;
-    SAL_DLLPRIVATE void AddDictionaryReference(PDFReferenceElement* pReference);
     SAL_DLLPRIVATE void SetArray(PDFArrayElement* pArrayElement);
     SAL_DLLPRIVATE void SetStream(PDFStreamElement* pStreamElement);
     /// Access to the stream of the object, if it has any.
@@ -170,8 +165,6 @@ class VCL_DLLPUBLIC PDFReferenceElement final : public PDFElement
     int m_fGenerationValue;
     /// Location after the 'R' token.
     sal_uInt64 m_nOffset = 0;
-    /// The element providing the object number.
-    PDFNumberElement& m_rObject;
 
 public:
     PDFReferenceElement(PDFDocument& rDoc, PDFNumberElement& rObject,
@@ -184,7 +177,6 @@ public:
     int GetObjectValue() const;
     int GetGenerationValue() const;
     SAL_DLLPRIVATE sal_uInt64 GetOffset() const;
-    SAL_DLLPRIVATE PDFNumberElement& GetObjectElement() const;
 
     void writeString(OStringBuffer& rBuffer) override
     {

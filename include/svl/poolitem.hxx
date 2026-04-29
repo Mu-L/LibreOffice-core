@@ -658,8 +658,6 @@ public:
     bool isSetItem() const { return m_bIsSetItem; }
     bool isShareable() const { return m_bShareable; }
     bool isNameOrIndex() const { return m_bNameOrIndex; }
-    bool isPooled() const { return GetRefCount() > 0; }
-
 
     // version that allows nullptrs
     static bool areSame(const SfxPoolItem* pItem1, const SfxPoolItem* pItem2);

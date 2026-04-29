@@ -51,14 +51,6 @@ template <integral I, floating_point F> constexpr I saturating_cast(F f)
         return std::numeric_limits<I>::max();
     return f;
 }
-
-// Return `value` of floating-point type `F` rounded to the nearest integer away from zero (which
-// can be useful in calls to convertsToAtLeast/Most(roundAway(x), n), to reject x that are
-// smaller/larger than n because they have a fractional part):
-template <floating_point F> F roundAway(F value)
-{
-    return value >= 0 ? std::ceil(value) : std::floor(value);
-}
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab cinoptions=b1,g0,N-s cinkeys+=0=break: */

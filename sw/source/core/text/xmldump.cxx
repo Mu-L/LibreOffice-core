@@ -156,17 +156,6 @@ const char* sw::PortionTypeToString(PortionType nType)
     return "Unknown";
 }
 
-void SwFrame::dumpTopMostAsXml(xmlTextWriterPtr writer) const
-{
-    const SwFrame* pFrame = this;
-    while (pFrame->GetUpper())
-    {
-        pFrame = pFrame->GetUpper();
-    }
-
-    pFrame->dumpAsXml(writer);
-}
-
 void SwFrame::dumpInfosAsXml( xmlTextWriterPtr writer ) const
 {
     // output the Frame

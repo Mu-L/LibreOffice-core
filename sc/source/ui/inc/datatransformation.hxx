@@ -222,7 +222,6 @@ class SwapRowsTransformation : public DataTransformation
         virtual void Transform(ScDocument& rDoc) const override;
         virtual TransformationType getTransformationType() const override;
         SCROW getFirstRow() const;
-        SCROW getSecondRow() const;
 };
 
 }

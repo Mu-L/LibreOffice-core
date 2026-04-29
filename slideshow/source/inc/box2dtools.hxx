@@ -240,8 +240,6 @@ public:
     */
     double stepAmount(const double fPassedTime);
 
-    /// @return whether shapes in the slide are initialized as Box2D bodies or not
-    bool shapesInitialized();
     /// @return whether the Box2D World is initialized or not
     bool isInitialized() const;
 

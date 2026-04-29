@@ -475,8 +475,6 @@ public:
     void SetLOKLanguageAndLocale(const OUString& rBcp47LanguageTag);
     /// Get the LibreOfficeKit calendar of this view.
     CalendarWrapper& GetLOKCalendar();
-    /// Get the form factor of the device where the lok client is running.
-    LOKDeviceFormFactor GetLOKDeviceFormFactor() const { return maLOKDeviceFormFactor; }
     /// Check if the lok client is running on a desktop machine.
     bool isLOKDesktop() const { return maLOKDeviceFormFactor == LOKDeviceFormFactor::DESKTOP; }
     /// Check if the lok client is running on a tablet.

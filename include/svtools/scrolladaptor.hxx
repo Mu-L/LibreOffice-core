@@ -57,9 +57,6 @@ public:
     void SetScrollHdl(const Link<weld::Scrollbar&, void>& rLink);
     void SetMouseReleaseHdl(const Link<const MouseEvent&, bool>& rLink);
 
-    // what is it
-    bool IsHoriScroll() const { return m_bHori; }
-
     ScrollType GetScrollType() const;
 
     virtual void EnableRTL(bool bEnable = true) override;

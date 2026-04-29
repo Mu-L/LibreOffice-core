@@ -28,11 +28,6 @@
 namespace color
 {
 
-constexpr sal_uInt32 extractRGB(sal_uInt32 nColorNumber)
-{
-    return nColorNumber & 0x00FFFFFF;
-}
-
 constexpr sal_uInt8 ColorChannelMerge(sal_uInt8 nDst, sal_uInt8 nSrc, sal_uInt8 nSrcTrans)
 {
     return sal_uInt8(((sal_Int32(nDst) - nSrc) * nSrcTrans + ((nSrc << 8) | nDst)) >> 8);

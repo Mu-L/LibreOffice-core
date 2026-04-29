@@ -348,16 +348,12 @@ public:
         { mpExistingShape = pShape; }
     const ShapePtr& getExistingShape() const
         { return mpExistingShape; }
-    const std::vector<ShapePtr> & getNodeShapes() const
-        { return mpNodeShapes; }
     void addNodeShape(const ShapePtr& pShape)
         { mpNodeShapes.push_back(pShape); }
 
     bool setupShape( const SmartArtDiagram& rDgm, const ShapePtr& rShape,
                      const svx::diagram::Point* pPresNode,
                      sal_Int32 nCurrIdx ) const;
-
-    const LayoutNode* getParentLayoutNode() const;
 
 private:
     VarMap                       mVariables;

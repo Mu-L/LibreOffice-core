@@ -113,9 +113,6 @@ namespace basegfx
         virtual ::basegfx::BColor getModifiedColor(const ::basegfx::BColor& aSourceColor) const = 0;
 
         virtual OUString getModifierName() const = 0;
-
-        // return type
-        BColorModifierType getBColorModifierType() const { return maType; }
     };
 
     /** convert color to gray
