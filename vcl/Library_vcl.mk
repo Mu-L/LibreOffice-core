@@ -571,6 +571,7 @@ $(eval $(call gb_Library_add_exception_objects,vcl,\
     vcl/source/font/FontVariation \
     vcl/source/font/EOTConverter \
     vcl/source/font/TrueTypeFont \
+    vcl/source/fontsubset/cff \
     vcl/source/pdf/COSWriter \
     vcl/source/pdf/EncryptionHashTransporter \
     vcl/source/pdf/ExternalPDFStreams \

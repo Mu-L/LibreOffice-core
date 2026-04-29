@@ -585,28 +585,13 @@ bool PhysicalFontFace::CreateFontSubset(std::vector<sal_uInt8>& rOutBuffer,
     hb_blob_t* pCFFBlob = hb_face_reference_table(pSubsetFace, HB_TAG('C', 'F', 'F', ' '));
     comphelper::ScopeGuard aCFFBlobGuard([&]() { hb_blob_destroy(pCFFBlob); });
     if (pCFFBlob == hb_blob_get_empty())
+    {
+        // This is not a font with CFF table, so we will create a TTF font subset.
         rInfo.m_nFontType = FontType::SFNT_TTF;
-    else
-    {
-        rInfo.m_nFontType = FontType::SFNT_CFF;
 
-        // Get glyph names from the subset CFF charset, needed for building
-        // the PDF Encoding dictionary that maps character codes to glyph names.
-        rInfo.m_aGlyphNames.resize(nGlyphCount);
-        for (int i = 0; i < nGlyphCount; ++i)
-        {
-            char aName[64];
-            if (hb_font_get_glyph_name(pSubsetFont, pEncoding[i], aName, sizeof(aName)))
-                rInfo.m_aGlyphNames[i] = OString(aName);
-            else
-                rInfo.m_aGlyphNames[i] = ".notdef"_ostr;
-        }
-    }
-
-    // HarfBuzz creates a Unicode cmap, but we need a fake cmap based on pEncoding,
-    // so we use face builder to construct a new face based on the subset tables,
-    // and create a new cmap table and add it to the new face.
-    {
+        // HarfBuzz creates a Unicode cmap, but we need a fake cmap based on pEncoding,
+        // so we use face builder construct a new face based in the subset table,
+        // and create a new cmap table and add it to the new face.
         hb_face_t* pBuilderFace = hb_face_builder_create();
         comphelper::ScopeGuard aBuilderFaceGuard([&]() { hb_face_destroy(pBuilderFace); });
         unsigned int nSubsetTableCount = hb_face_get_table_tags(pSubsetFace, 0, nullptr, nullptr);
@@ -662,6 +647,26 @@ bool PhysicalFontFace::CreateFontSubset(std::vector<sal_uInt8>& rOutBuffer,
 
         rOutBuffer.assign(reinterpret_cast<const sal_uInt8*>(pSubsetData),
                           reinterpret_cast<const sal_uInt8*>(pSubsetData) + nSubsetLength);
+    }
+    else
+    {
+        // Ideally we should be outputting a CFF (Type1C) font here, but I couldn’t get it to work.
+        // So we oconvert it to Type1 font instead.
+        // TODO: simplify CreateCFFfontSubset() to only do the conversion, since we already
+        // have the subsetted font.
+        rInfo.m_nFontType = FontType::TYPE1_PFB;
+
+        unsigned int nCffLen;
+        const char* pCffData = hb_blob_get_data(pCFFBlob, &nCffLen);
+        if (!pCffData || !nCffLen)
+            return false;
+
+        if (!ConvertCFFfontToType1(reinterpret_cast<const unsigned char*>(pCffData), nCffLen,
+                                   rOutBuffer, rInfo))
+        {
+            SAL_WARN("vcl.fonts.cff", "Failed to convert CFF data to Type 1 font");
+            return false;
+        }
     }
 
     return true;
