@@ -1890,24 +1890,6 @@ starmath/inc/mathml/element.hxx:132
     int SmMlElement::GetSourceCodeRow() const
 starmath/inc/mathml/element.hxx:139
     int SmMlElement::GetSourceCodeColumn() const
-starmath/inc/mathml/export.hxx:55
-    void SmMLExportWrapper::setFlat(_Bool)
-starmath/inc/mathml/export.hxx:59
-    _Bool SmMLExportWrapper::getFlat() const
-starmath/inc/mathml/export.hxx:63
-    void SmMLExportWrapper::setUseHTMLMLEntities(_Bool)
-starmath/inc/mathml/export.hxx:70
-    _Bool SmMLExportWrapper::getUseHTMLMLEntities() const
-starmath/inc/mathml/export.hxx:74
-    _Bool SmMLExportWrapper::getUseExportTag() const
-starmath/inc/mathml/export.hxx:78
-    void SmMLExportWrapper::setUseExportTag(_Bool)
-starmath/inc/mathml/export.hxx:81
-     SmMLExportWrapper::SmMLExportWrapper(rtl::Reference<SmModel>)
-starmath/inc/mathml/export.hxx:92
-    _Bool SmMLExportWrapper::Export(SfxMedium &)
-starmath/inc/mathml/export.hxx:96
-    rtl::OUString SmMLExportWrapper::Export(SmMlElement *)
 starmath/inc/mathml/export.hxx:139
     _Bool SmMLExport::getUseExportTag() const
 starmath/inc/mathml/import.hxx:39

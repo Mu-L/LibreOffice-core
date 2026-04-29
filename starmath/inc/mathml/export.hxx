@@ -25,7 +25,6 @@
 #include <unomodel.hxx>
 
 // Xml tools
-#include <utility>
 #include <xmloff/xmlnamespace.hxx>
 #include <xmloff/xmlexp.hxx>
 #include <xmloff/xmltoken.hxx>
@@ -36,93 +35,6 @@
 class SfxMedium;
 class SmDocShell;
 class SmModel;
-
-class SmMLExportWrapper
-{
-private:
-    // Model
-    rtl::Reference<SmModel> m_xModel;
-    // Save as a flat document ( mml, fodf ... )
-    bool m_bFlat;
-    // Use html / mathml entities
-    bool m_bUseHTMLMLEntities;
-    // Mathmml tree to parse
-    SmMlElement* m_pElementTree;
-    // Export xmlns tag
-    bool m_bUseExportTag;
-
-public:
-    /** Set's the writer to export to flat document
-     */
-    void setFlat(bool bFlat) { m_bFlat = bFlat; }
-
-    /** Checks if the writer is set to export to flat document
-     */
-    bool getFlat() const { return m_bFlat; }
-
-    /** Checks the use of HTML / MathML entities such as &infinity;
-     */
-    void setUseHTMLMLEntities(bool bUseHTMLMLEntities)
-    {
-        m_bUseHTMLMLEntities = bUseHTMLMLEntities;
-    }
-
-    /** Activates the use of HTML / MathML entities such as &infinity;
-     */
-    bool getUseHTMLMLEntities() const { return m_bUseHTMLMLEntities; }
-
-    /** Get's if xmlns field is added
-     */
-    bool getUseExportTag() const { return m_bUseExportTag; }
-
-    /** Set's if xmlns field is added
-     */
-    void setUseExportTag(bool bUseExportTag) { m_bUseExportTag = bUseExportTag; }
-
-public:
-    explicit SmMLExportWrapper(rtl::Reference<SmModel> xRef)
-        : m_xModel(std::move(xRef))
-        , m_bFlat(true)
-        , m_bUseHTMLMLEntities(false)
-        , m_pElementTree(nullptr)
-        , m_bUseExportTag(false)
-    {
-    }
-
-    /** Export to an archive
-      */
-    bool Export(SfxMedium& rMedium);
-
-    /** Just export a mathml tree
-      */
-    OUString Export(SmMlElement* pElementTree);
-
-    // Making this protected we can keep it from getting trash as input
-protected:
-    /** export through an XML exporter component (output stream version)
-        */
-    bool WriteThroughComponentOS(const css::uno::Reference<css::io::XOutputStream>& xOutputStream,
-                                 const css::uno::Reference<css::lang::XComponent>& xComponent,
-                                 css::uno::Reference<css::uno::XComponentContext> const& rxContext,
-                                 css::uno::Reference<css::beans::XPropertySet> const& rPropSet,
-                                 const char16_t* pComponentName, int_fast16_t nSyntaxVersion);
-
-    /** export through an XML exporter component (storage version)
-      */
-    bool WriteThroughComponentS(const css::uno::Reference<css::embed::XStorage>& xStor,
-                                const css::uno::Reference<css::lang::XComponent>& xComponent,
-                                const char16_t* pStreamName,
-                                css::uno::Reference<css::uno::XComponentContext> const& rxContext,
-                                css::uno::Reference<css::beans::XPropertySet> const& rPropSet,
-                                const char16_t* pComponentName, int_fast16_t nSyntaxVersion);
-
-    /** export through an XML exporter component (memory stream version)
-      */
-    OUString
-    WriteThroughComponentMS(const css::uno::Reference<css::lang::XComponent>& xComponent,
-                            css::uno::Reference<css::uno::XComponentContext> const& rxContext,
-                            css::uno::Reference<css::beans::XPropertySet> const& rPropSet);
-};
 
 class SmMLExport final : public SvXMLExport
 {
