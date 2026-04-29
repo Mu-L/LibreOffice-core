@@ -2363,13 +2363,13 @@ void ColorWindow::statusChanged( const css::frame::FeatureStateEvent& rEvent )
     }
 }
 
-bool ColorWindow::SelectValueSetEntry(SvxColorValueSet* pColorSet, const Color& rColor)
+bool ColorWindow::SelectValueSetEntry(SvxColorValueSet& rColorSet, const Color& rColor)
 {
-    for (size_t i = 1; i <= pColorSet->GetItemCount(); ++i)
+    for (size_t i = 1; i <= rColorSet.GetItemCount(); ++i)
     {
-        if (rColor == pColorSet->GetItemColor(i))
+        if (rColor == rColorSet.GetItemColor(i))
         {
-            pColorSet->SelectItem(i);
+            rColorSet.SelectItem(i);
             return true;
         }
     }
@@ -2395,10 +2395,10 @@ void ColorWindow::SelectEntry(const NamedColor& rNamedColor)
     }
 
     // try current palette
-    bool bFoundColor = SelectValueSetEntry(mxColorSet.get(), rColor);
+    bool bFoundColor = SelectValueSetEntry(*mxColorSet, rColor);
     // try recently used
     if (!bFoundColor)
-        bFoundColor = SelectValueSetEntry(mxRecentColorSet.get(), rColor);
+        bFoundColor = SelectValueSetEntry(*mxRecentColorSet, rColor);
     // if it's not there, add it there now to the end of the recently used
     // so its available somewhere handy, but not without trashing the
     // whole recently used
@@ -2407,7 +2407,7 @@ void ColorWindow::SelectEntry(const NamedColor& rNamedColor)
         const OUString& rColorName = rNamedColor.m_aName;
         mxPaletteManager->AddRecentColor(rColor, rColorName, false);
         mxPaletteManager->ReloadRecentColorSet(*mxRecentColorSet);
-        SelectValueSetEntry(mxRecentColorSet.get(), rColor);
+        SelectValueSetEntry(*mxRecentColorSet, rColor);
     }
 }
 
