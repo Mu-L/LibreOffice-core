@@ -34,7 +34,7 @@ void ColorIconView::insert(int nIndex, const Color& rColor, const OUString& rCol
 
 int ColorIconView::getItemCount() const { return m_pIconView->n_children(); }
 
-Color ColorIconView::getColor(int nIndex)
+Color ColorIconView::getColor(int nIndex) const
 {
     if (nIndex < 0 || nIndex >= m_pIconView->n_children())
         return Color();

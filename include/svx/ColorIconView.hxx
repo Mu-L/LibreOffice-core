@@ -38,7 +38,7 @@ public:
     virtual void insert(int nIndex, const Color& rColor, const OUString& rColorName) override;
     virtual int getItemCount() const override;
 
-    Color getColor(int nIndex);
+    Color getColor(int nIndex) const;
     OUString getColorName(int nIndex) const;
 
     int get_selected_index() const;
