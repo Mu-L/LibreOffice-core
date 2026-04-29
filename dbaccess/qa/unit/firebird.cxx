@@ -12,6 +12,8 @@
 #include <com/sun/star/sdb/XOfficeDatabaseDocument.hpp>
 #include <com/sun/star/sdbc/XColumnLocate.hpp>
 #include <com/sun/star/sdbc/XConnection.hpp>
+#include <com/sun/star/sdbc/XParameters.hpp>
+#include <com/sun/star/sdbc/XPreparedStatement.hpp>
 #include <com/sun/star/sdbc/XResultSet.hpp>
 #include <com/sun/star/sdbc/XRow.hpp>
 #include <com/sun/star/sdbc/XStatement.hpp>
@@ -28,11 +30,13 @@ public:
     void testEmptyDBConnection();
     void testIntegerDatabase();
     void testTdf132924();
+    void testTdf153057();
 
     CPPUNIT_TEST_SUITE(FirebirdTest);
     CPPUNIT_TEST(testEmptyDBConnection);
     CPPUNIT_TEST(testIntegerDatabase);
     CPPUNIT_TEST(testTdf132924);
+    CPPUNIT_TEST(testTdf153057);
     CPPUNIT_TEST_SUITE_END();
 };
 
@@ -111,6 +115,83 @@ void FirebirdTest::testTdf132924()
     // - Actual  : The column name 'TestId' is not valid
     CPPUNIT_ASSERT_EQUAL(sal_Int16(1), xRow->getShort(xColumnLocate->findColumn(u"TestId"_ustr)));
     CPPUNIT_ASSERT_EQUAL(u"TestName"_ustr, xRow->getString(xColumnLocate->findColumn(u"TestName"_ustr)));
+}
+
+/**
+ * Test for tdf#153057: filtering on DATE, TIME and TIMESTAMP columns via
+ * a string value.  Before the fix, OPreparedStatement::setString() had no
+ * cases for DataType::DATE / TIME / TIMESTAMP and would throw
+ * "Incorrect type for setString" when a filter string was applied to such
+ * a column in Base.
+ */
+void FirebirdTest::testTdf153057()
+{
+    // Create a fresh embedded Firebird database in a temp file.
+    createTempCopy(u"firebird_empty.odb");
+    uno::Reference<XOfficeDatabaseDocument> xDocument = getDocumentForUrl(maTempFile.GetURL());
+
+    uno::Reference<XConnection> xConnection = getConnectionForDocument(xDocument);
+    CPPUNIT_ASSERT(xConnection.is());
+
+    // Create a table with DATE, TIME and TIMESTAMP columns and two rows.
+    uno::Reference<XStatement> xStmt = xConnection->createStatement();
+    xStmt->execute(u"CREATE TABLE \"TEMPORAL\" ("
+                   " \"ID\"   INTEGER NOT NULL PRIMARY KEY,"
+                   " \"D\"    DATE,"
+                   " \"T\"    TIME,"
+                   " \"TS\"   TIMESTAMP)"_ustr);
+
+    xStmt->execute(
+        u"INSERT INTO \"TEMPORAL\" VALUES(1, '2024-07-15', '14:30:00', '2024-07-15 14:30:00')"_ustr);
+    xStmt->execute(
+        u"INSERT INTO \"TEMPORAL\" VALUES(2, '2025-01-01', '09:00:00', '2025-01-01 09:00:00')"_ustr);
+    xConnection->commit();
+
+    // --- Test DATE filtering via setString ---
+    // Before the fix this would throw "Incorrect type for setString".
+    {
+        uno::Reference<XPreparedStatement> xPS = xConnection->prepareStatement(
+            u"SELECT \"ID\" FROM \"TEMPORAL\" WHERE \"D\" = ?"_ustr);
+        uno::Reference<XParameters> xParams(xPS, UNO_QUERY_THROW);
+        xParams->setString(1, u"2024-07-15"_ustr);
+
+        uno::Reference<XResultSet> xRS = xPS->executeQuery();
+        CPPUNIT_ASSERT_MESSAGE("DATE filter: expected at least one row", xRS->next());
+        uno::Reference<XRow> xRow(xRS, UNO_QUERY_THROW);
+        CPPUNIT_ASSERT_EQUAL_MESSAGE("DATE filter: wrong row returned", sal_Int32(1),
+                                     xRow->getInt(1));
+        CPPUNIT_ASSERT_MESSAGE("DATE filter: expected exactly one row", !xRS->next());
+    }
+
+    // --- Test TIME filtering via setString ---
+    {
+        uno::Reference<XPreparedStatement> xPS = xConnection->prepareStatement(
+            u"SELECT \"ID\" FROM \"TEMPORAL\" WHERE \"T\" = ?"_ustr);
+        uno::Reference<XParameters> xParams(xPS, UNO_QUERY_THROW);
+        xParams->setString(1, u"09:00:00"_ustr);
+
+        uno::Reference<XResultSet> xRS = xPS->executeQuery();
+        CPPUNIT_ASSERT_MESSAGE("TIME filter: expected at least one row", xRS->next());
+        uno::Reference<XRow> xRow(xRS, UNO_QUERY_THROW);
+        CPPUNIT_ASSERT_EQUAL_MESSAGE("TIME filter: wrong row returned", sal_Int32(2),
+                                     xRow->getInt(1));
+        CPPUNIT_ASSERT_MESSAGE("TIME filter: expected exactly one row", !xRS->next());
+    }
+
+    // --- Test TIMESTAMP filtering via setString ---
+    {
+        uno::Reference<XPreparedStatement> xPS = xConnection->prepareStatement(
+            u"SELECT \"ID\" FROM \"TEMPORAL\" WHERE \"TS\" = ?"_ustr);
+        uno::Reference<XParameters> xParams(xPS, UNO_QUERY_THROW);
+        xParams->setString(1, u"2025-01-01 09:00:00"_ustr);
+
+        uno::Reference<XResultSet> xRS = xPS->executeQuery();
+        CPPUNIT_ASSERT_MESSAGE("TIMESTAMP filter: expected at least one row", xRS->next());
+        uno::Reference<XRow> xRow(xRS, UNO_QUERY_THROW);
+        CPPUNIT_ASSERT_EQUAL_MESSAGE("TIMESTAMP filter: wrong row returned", sal_Int32(2),
+                                     xRow->getInt(1));
+        CPPUNIT_ASSERT_MESSAGE("TIMESTAMP filter: expected exactly one row", !xRS->next());
+    }
 }
 
 CPPUNIT_TEST_SUITE_REGISTRATION(FirebirdTest);

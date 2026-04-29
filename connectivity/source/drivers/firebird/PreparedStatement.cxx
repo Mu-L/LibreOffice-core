@@ -29,6 +29,7 @@
 #include <comphelper/sequence.hxx>
 #include <connectivity/dbexception.hxx>
 #include <propertyids.hxx>
+#include <connectivity/dbconversion.hxx>
 #include <connectivity/dbtools.hxx>
 #include <sal/log.hxx>
 
@@ -267,6 +268,15 @@ void SAL_CALL OPreparedStatement::setString(sal_Int32 nParameterIndex,
         setBoolean(nParameterIndex, boolValue);
         break;
     }
+    case DataType::DATE:
+        setDate(nParameterIndex, ::dbtools::DBTypeConversion::toDate(sInput));
+        break;
+    case DataType::TIME:
+        setTime(nParameterIndex, ::dbtools::DBTypeConversion::toTime(sInput));
+        break;
+    case DataType::TIMESTAMP:
+        setTimestamp(nParameterIndex, ::dbtools::DBTypeConversion::toDateTime(sInput));
+        break;
     case DataType::SQLNULL:
     {
         // See https://www.firebirdsql.org/file/documentation/html/en/refdocs/fblangref25/firebird-25-language-reference.html#fblangref25-datatypes-special-sqlnull
