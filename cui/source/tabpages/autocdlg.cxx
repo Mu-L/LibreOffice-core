@@ -1018,24 +1018,16 @@ void OfaAutocorrReplacePage::NewEntry(const OUString& sShort, const OUString& sL
 void OfaAutocorrReplacePage::DeleteEntry(const OUString& sShort, const OUString& sLong)
 {
     DoubleStringArray& rNewArray = aChangesTable[eLang].aNewEntries;
-    for (size_t i = 0; i < rNewArray.size(); i++)
-    {
-        if (rNewArray[i].sShort == sShort)
-        {
-            rNewArray.erase(rNewArray.begin() + i);
-            break;
-        }
-    }
+    auto itNew = std::find_if(rNewArray.begin(), rNewArray.end(),
+        [&sShort](const DoubleString& rEntry) { return rEntry.sShort == sShort; });
+    if (itNew != rNewArray.end())
+        rNewArray.erase(itNew);
 
     DoubleStringArray& rDeletedArray = aChangesTable[eLang].aDeletedEntries;
-    for (size_t i = 0; i < rDeletedArray.size(); i++)
-    {
-        if (rDeletedArray[i].sShort == sShort)
-        {
-            rDeletedArray.erase(rDeletedArray.begin() + i);
-            break;
-        }
-    }
+    auto itDeleted = std::find_if(rDeletedArray.begin(), rDeletedArray.end(),
+        [&sShort](const DoubleString& rEntry) { return rEntry.sShort == sShort; });
+    if (itDeleted != rDeletedArray.end())
+        rDeletedArray.erase(itDeleted);
 
     DoubleString aDeletedString(sShort, sLong);
     rDeletedArray.push_back(aDeletedString);
