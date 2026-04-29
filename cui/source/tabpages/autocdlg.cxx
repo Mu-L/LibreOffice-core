@@ -1000,14 +1000,10 @@ void OfaAutocorrReplacePage::NewEntry(const OUString& sShort, const OUString& sL
         rNewArray.erase(it);
 
     DoubleStringArray& rDeletedArray = aChangesTable[eLang].aDeletedEntries;
-    for (size_t i = 0; i < rDeletedArray.size(); i++)
-    {
-        if (rDeletedArray[i].sShort == sShort)
-        {
-            rDeletedArray.erase(rDeletedArray.begin() + i);
-            break;
-        }
-    }
+    auto itDeleted = std::find_if(rDeletedArray.begin(), rDeletedArray.end(),
+        [&sShort](const DoubleString& rEntry) { return rEntry.sShort == sShort; });
+    if (itDeleted != rDeletedArray.end())
+        rDeletedArray.erase(itDeleted);
 
     DoubleString aNewString(sShort, sLong);
     rNewArray.push_back(aNewString);
