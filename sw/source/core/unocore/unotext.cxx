@@ -544,7 +544,26 @@ SwXText::insertTextContent(
         // if necessary, replace xTempRange with a new SwXTextCursor
         PrepareForAttach(xTempRange, aPam);
     }
-    xContent->attach(xTempRange);
+    try
+    {
+        xContent->attach(xTempRange);
+    }
+    catch (const lang::IllegalArgumentException&)
+    {
+        // tdf#125485. Check if the content looks like a textfield.URL. If so then try to give a
+        // hint to the developer about how to fix their code.
+        uno::Reference<beans::XPropertySet> xPropSet(xContent, uno::UNO_QUERY);
+
+        if (xPropSet.is() && xPropSet->getPropertySetInfo()->hasPropertyByName("URL"))
+        {
+            throw lang::IllegalArgumentException(u"com.sun.star.text.textfield.URL can’t be used "
+                                                 "with a Writer document. Use the HyperLinkURL "
+                                                 "text property instead."_ustr,
+                                                 static_cast<lang::XTypeProvider*>(this), 1);
+        }
+
+        throw;
+    }
 }
 
 void SAL_CALL

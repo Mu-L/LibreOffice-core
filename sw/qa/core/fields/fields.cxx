@@ -91,6 +91,31 @@ CPPUNIT_TEST_FIXTURE(Test, testAuthorityTooltip)
     CPPUNIT_ASSERT_EQUAL(u"ARJ00: Ar, J, mytitle, 2020"_ustr, aTooltip);
 }
 
+CPPUNIT_TEST_FIXTURE(Test, testURL)
+{
+    // tdf#125485 Make sure that trying to insert a com.sun.star.textfield.URL into a Writer
+    // document throws an exception.
+    createSwDoc();
+    uno::Reference<lang::XMultiServiceFactory> xFactory(mxComponent, uno::UNO_QUERY_THROW);
+    uno::Reference<text::XTextContent> xURL(
+        xFactory->createInstance(u"com.sun.star.text.textfield.URL"_ustr), uno::UNO_QUERY_THROW);
+    uno::Reference<text::XTextDocument> xTextDocument(mxComponent, uno::UNO_QUERY_THROW);
+    uno::Reference<text::XText> xText = xTextDocument->getText();
+
+    CPPUNIT_ASSERT_THROW(xText->insertTextContent(xText, xURL, false),
+                         lang::IllegalArgumentException);
+    // Make sure that the exception contains a note about HyperLinkURL
+    try
+    {
+        xText->insertTextContent(xText, xURL, false);
+    }
+    catch (const lang::IllegalArgumentException& e)
+    {
+        CPPUNIT_ASSERT(e.Message.indexOf("HyperLinkURL") != -1);
+        CPPUNIT_ASSERT_EQUAL(sal_Int16(1), e.ArgumentPosition);
+    }
+}
+
 CPPUNIT_TEST_FIXTURE(Test, testTdf143424)
 {
     createSwDoc("tdf143424.odt");
