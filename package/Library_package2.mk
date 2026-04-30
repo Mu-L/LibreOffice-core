@@ -59,7 +59,6 @@ $(eval $(call gb_Library_add_exception_objects,package2,\
 	package/source/zipapi/InflaterBytesZlib \
 	package/source/zipapi/InflaterBytesZstd \
 	package/source/zipapi/InflateZlib \
-	package/source/zipapi/InflateZstd \
 	package/source/zipapi/sha1context \
 	package/source/zipapi/ThreadedDeflater \
 	package/source/zipapi/XBufferedThreadedStream \

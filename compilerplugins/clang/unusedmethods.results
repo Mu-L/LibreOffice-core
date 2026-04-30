@@ -756,8 +756,6 @@ include/opencl/openclconfig.hxx:58
     _Bool OpenCLConfig::ImplMatcher::operator!=(const struct OpenCLConfig::ImplMatcher &) const
 include/opencl/openclconfig.hxx:95
     std::basic_ostream<char> & operator<<(std::basic_ostream<char> &,const struct OpenCLConfig &)
-include/package/InflateZstd.hxx:33
-     ZipUtils::InflateZstd::InflateZstd(_Bool)
 include/sfx2/evntconf.hxx:61
     struct SfxEventName & SfxEventNamesList::at(unsigned long)
 include/sfx2/infobar.hxx:104
