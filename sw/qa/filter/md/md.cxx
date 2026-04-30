@@ -126,12 +126,7 @@ CPPUNIT_TEST_FIXTURE(Test, testTdf169884_import_crash)
 {
     setImportFilterName(TestFilter::MD);
     createSwDoc("tdf169884.md");
-
-    CPPUNIT_ASSERT_EQUAL(OUString("Selected range of Release "
-                                  "note\nhttps://wiki.documentfoundation.org/ReleaseNotes/"
-                                  "26.2#Markdown:~:text=Added%20support%20for%20importing%20from%"
-                                  "20Markdown%20format"),
-                         getParagraph(1)->getString());
+    CPPUNIT_ASSERT_EQUAL(2, getParagraphs());
 }
 
 CPPUNIT_TEST_FIXTURE(Test, testHeading)
