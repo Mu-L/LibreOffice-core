@@ -7410,7 +7410,7 @@
                             <property name="toolbar_style">both-horiz</property>
                             <property name="show_arrow">False</property>
                             <child>
-                              <object class="GtkToolButton" id="Review-SpellingAndGrammarDialog">
+                              <object class="GtkToolButton" id="Review-SpellDialog">
                                 <property name="visible">True</property>
                                 <property name="action_name">.uno:SpellDialog</property>
                               </object>
