@@ -304,25 +304,33 @@ bool DrawViewShell::ShouldDisableEditHyperlink() const
     }
     else
     {
-        SdrUnoObj* pUnoCtrl = dynamic_cast<SdrUnoObj*>( rMarkList.GetMark(0)->GetMarkedSdrObj() );
+    SdrUnoObj* pUnoCtrl = dynamic_cast<SdrUnoObj*>( rMarkList.GetMark(0)->GetMarkedSdrObj() );
 
-        if ( pUnoCtrl && SdrInventor::FmForm == pUnoCtrl->GetObjInventor() )
+    if ( pUnoCtrl && SdrInventor::FmForm == pUnoCtrl->GetObjInventor() )
+    {
+        const uno::Reference< awt::XControlModel >& xControlModel( pUnoCtrl->GetUnoControlModel() );
+        if( xControlModel.is() )
         {
-            const uno::Reference< awt::XControlModel >& xControlModel( pUnoCtrl->GetUnoControlModel() );
-            if( xControlModel.is() )
+            uno::Reference< beans::XPropertySet > xPropSet( xControlModel, uno::UNO_QUERY );
+            if( xPropSet.is() )
             {
-                uno::Reference< beans::XPropertySet > xPropSet( xControlModel, uno::UNO_QUERY );
-                if( xPropSet.is() )
+                uno::Reference< beans::XPropertySetInfo > xPropInfo( xPropSet->getPropertySetInfo() );
+                if( xPropInfo.is() && xPropInfo->hasPropertyByName( u"TargetURL"_ustr) )
                 {
-                    uno::Reference< beans::XPropertySetInfo > xPropInfo( xPropSet->getPropertySetInfo() );
-                    if( xPropInfo.is() && xPropInfo->hasPropertyByName( u"TargetURL"_ustr) )
-                    {
-                        bDisableEditHyperlink = false;
-                    }
+                    bDisableEditHyperlink = false;
                 }
             }
         }
     }
+    else
+    {
+        SdrObject* pObj = rMarkList.GetMark(0)->GetMarkedSdrObj();
+        if( pObj && !pObj->getHyperlink().isEmpty() )
+        {
+            bDisableEditHyperlink = false;
+        }
+    }
+}
     return bDisableEditHyperlink;
 }
 
