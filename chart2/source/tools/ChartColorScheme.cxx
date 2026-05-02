@@ -18,6 +18,7 @@
  */
 
 #include <ChartColorScheme.hxx>
+#include <algorithm>
 
 namespace chart
 {
@@ -28,10 +29,8 @@ ChartColorScheme::ChartColorScheme(const ChartColorPalette& rPalette)
     m_nNumberOfColors = rPalette.size();
     m_aColorSequence.realloc(m_nNumberOfColors);
     sal_Int64* pColors = m_aColorSequence.getArray();
-    for (size_t i = 0; i < rPalette.size(); ++i)
-    {
-        pColors[i] = static_cast<sal_Int32>(rPalette[i]);
-    }
+    std::transform(rPalette.begin(), rPalette.end(), pColors,
+                   [](Color const& rColor) { return static_cast<sal_Int32>(rColor); });
 }
 
 ::sal_Int32 SAL_CALL ChartColorScheme::getColorByIndex(::sal_Int32 nIndex)

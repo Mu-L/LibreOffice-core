@@ -35,6 +35,7 @@
 #include <comphelper/sequence.hxx>
 #include <comphelper/diagnose_ex.hxx>
 #include <tools/color.hxx>
+#include <algorithm>
 
 using namespace ::com::sun::star;
 
@@ -53,14 +54,12 @@ void lcl_fillRanges(
     sal_Int32 nIndex = -1 )
 {
     rOutRanges.realloc( aRangeStrings.size());
-    auto pOutRanges = rOutRanges.getArray();
-    for( size_t i=0; i<aRangeStrings.size(); ++i )
-    {
-        pOutRanges[i].RangeRepresentation = aRangeStrings[i];
-        pOutRanges[i].PreferredColor = sal_Int32(nPreferredColor);
-        pOutRanges[i].AllowMerginigWithOtherRanges = false;
-        pOutRanges[i].Index = nIndex;
-    }
+    std::transform(aRangeStrings.begin(), aRangeStrings.end(), rOutRanges.getArray(),
+                   [nPreferredColor, nIndex](const OUString& rRange) {
+                       return chart2::data::HighlightedRange{
+                           rRange, /*index*/ nIndex, sal_Int32(nPreferredColor),
+                           /*allow merging*/ false };
+                   });
 }
 
 } // anonymous namespace
@@ -192,15 +191,13 @@ void RangeHighlighter::fillRangesForDiagram( const rtl::Reference< Diagram > & x
 {
     std::vector< OUString > aSelectedRanges( DataSourceHelper::getUsedDataRanges( xDiagram ));
     m_aSelectedRanges.realloc( aSelectedRanges.size());
-    auto pSelectedRanges = m_aSelectedRanges.getArray();
     // @todo: merge ranges
-    for( size_t i=0; i<aSelectedRanges.size(); ++i )
-    {
-        pSelectedRanges[i].RangeRepresentation = aSelectedRanges[i];
-        pSelectedRanges[i].Index = -1;
-        pSelectedRanges[i].PreferredColor = sal_Int32(defaultPreferredColor);
-        pSelectedRanges[i].AllowMerginigWithOtherRanges = true;
-    }
+    std::transform(aSelectedRanges.begin(), aSelectedRanges.end(), m_aSelectedRanges.getArray(),
+                   [](const OUString& rRange) {
+                       return chart2::data::HighlightedRange{
+                           rRange, /*index*/ -1, sal_Int32(defaultPreferredColor),
+                           /*allow merging*/ true };
+                   });
 }
 
 void RangeHighlighter::fillRangesForDataSeries( const uno::Reference< chart2::XDataSeries > & xSeries )

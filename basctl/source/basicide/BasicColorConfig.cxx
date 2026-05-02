@@ -19,6 +19,7 @@
 
 #include <BasicColorConfig.hxx>
 #include <officecfg/Office/BasicIDE.hxx>
+#include <algorithm>
 
 namespace basctl
 {
@@ -59,10 +60,7 @@ ColorScheme BasicColorConfig::GetColorScheme(const OUString& rScheme)
 
     css::uno::Sequence<OUString> aPropNames(aVecPropNames.size());
     OUString* pPropNames = aPropNames.getArray();
-    for (size_t i = 0; i < aVecPropNames.size(); i++)
-    {
-        pPropNames[i] = aVecPropNames[i];
-    }
+    std::copy(aVecPropNames.begin(), aVecPropNames.end(), pPropNames);
     css::uno::Sequence<css::uno::Any> aColors = GetProperties(aPropNames);
 
     ColorScheme aColorScheme;
