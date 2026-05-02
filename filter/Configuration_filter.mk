@@ -475,7 +475,6 @@ $(eval $(call filter_Configuration_add_types,fcfg_langpack,fcfg_calc_types.xcu,f
 	generic_XML \
 	calc_Gnumeric \
 	calc_Lotus \
-	calc_Parquet \
 	calc_QPro \
 	calc_MS_Excel_40 \
 	calc_MS_Excel_40_VorlageTemplate \
@@ -538,7 +537,6 @@ $(eval $(call filter_Configuration_add_filters,fcfg_langpack,fcfg_calc_filters.x
 	calc_HTML_WebQuery \
 	calc_StarOffice_XML_Calc_Template \
 	calc_pdf_Export \
-	calc_Parquet \
 	dBase \
 	calc8 \
 	calc8_template \
@@ -562,6 +560,15 @@ $(eval $(call filter_Configuration_add_filters,fcfg_langpack,fcfg_calc_filters.x
 	StarOffice_Spreadsheet \
 	MS_Multiplan \
 ))
+
+ifeq "$(WITH_PARQUET_FILTER)" "TRUE"
+$(eval $(call filter_Configuration_add_types,fcfg_langpack,fcfg_calc_types.xcu,filter/source/config/fragments/types,\
+	calc_Parquet \
+))
+$(eval $(call filter_Configuration_add_filters,fcfg_langpack,fcfg_calc_filters.xcu,filter/source/config/fragments/filters,\
+	calc_Parquet \
+))
+endif
 
 ifneq ($(ENABLE_WASM_STRIP_BASIC_DRAW_MATH_IMPRESS),TRUE)
 # fcfg_draw

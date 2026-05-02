@@ -11766,6 +11766,30 @@ dnl FIXME by renaming SYSTEM_LIBORCUS to SYSTEM_ORCUS in the build system world
 SYSTEM_LIBORCUS=$SYSTEM_ORCUS
 AC_SUBST(SYSTEM_LIBORCUS)
 
+AC_MSG_CHECKING([whether to enable the parquet filter])
+if test "$with_parquet_filter" = "yes"; then
+  AC_MSG_RESULT([yes])
+  WITH_PARQUET_FILTER=TRUE
+  if test "$with_system_orcus" = "yes"; then
+    # FIXME: probably we should better check for it (orcus_parquet::detect() existing in the lib?)
+    # but I fail to do that with C++.. So let's do this for now...
+    AC_MSG_CHECKING([whether liborcus has parquet support])
+    _orcus_so=`pkg-config --variable=libdir liborcus-0.21`/liborcus-0.21.so
+    if objdump -p $_orcus_so | grep NEEDED | grep -q parquet; then
+      AC_MSG_RESULT([yes])
+    else
+      AC_MSG_ERROR([no. either build orcus with parquet support or use --disable-parquet-filter])
+    fi
+  else
+    # will be checked in liborcus, too, but better fail early..
+    PKG_CHECK_MODULES([PARQUET], [parquet])
+  fi
+else
+  AC_MSG_RESULT([no])
+  WITH_PARQUET_FILTER=
+fi
+AC_SUBST(WITH_PARQUET_FILTER)
+
 dnl ===================================================================
 dnl HarfBuzz
 dnl ===================================================================
@@ -13696,6 +13720,10 @@ AC_SUBST(LIBASSUAN_CFLAGS)
 AC_SUBST(LIBASSUAN_LIBS)
 AC_SUBST(GPGMEPP_CFLAGS)
 AC_SUBST(GPGMEPP_LIBS)
+
+AC_ARG_WITH(parquet-filter,
+   AS_HELP_STRING([--with-parquet-filter],
+	[Enable the Parquet import filter.]),,)
 
 AC_ARG_WITH(system-java-websocket,
     AS_HELP_STRING([--with-system-java-websocket],

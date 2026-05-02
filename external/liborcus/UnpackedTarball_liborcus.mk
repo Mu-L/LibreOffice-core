@@ -19,6 +19,12 @@ $(eval $(call gb_UnpackedTarball_add_patches,liborcus,\
 	external/liborcus/add-lt-operator.patch.1 \
 ))
 
+ifeq ($(WITH_PARQUET_FILTER),TRUE)
+$(eval $(call gb_UnpackedTarball_add_patches,liborcus,\
+	external/liborcus/arrow-23.diff \
+))
+endif
+
 ifeq ($(OS),WNT)
 $(eval $(call gb_UnpackedTarball_add_patches,liborcus,\
 	external/liborcus/windows-constants-hack.patch \

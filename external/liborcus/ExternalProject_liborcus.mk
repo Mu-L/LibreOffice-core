@@ -101,6 +101,7 @@ $(call gb_ExternalProject_get_state_target,liborcus,build) :
                        --without-doc-example \
                        --disable-python \
                        --disable-werror \
+                       $(if $(WITH_PARQUET_FILTER),--with-parquet-filter) \
                        $(if $(filter MACOSX,$(OS)),--prefix=/@.__________________________________________________OOO) \
                        $(if $(SYSTEM_BOOST),,\
 				--with-boost=$(WORKDIR)/UnpackedTarball/boost \
