@@ -1345,9 +1345,9 @@ public:
                 LoadAllImages();
 
                 Point aLocation(0,maIcons[0].GetSizePixel().Height() + 8);
-                for (size_t i = 0; i < maIcons.size(); i++)
+                for (const Bitmap& rIcon : maIcons)
                 {
-                    Bitmap aSrc(maIcons[i]);
+                    Bitmap aSrc(rIcon);
 
                     // original above
                     Point aAbove(aLocation);
@@ -1607,9 +1607,9 @@ void DemoRenderer::InitRenderers()
 OUString DemoRenderer::getRendererList()
 {
     OUStringBuffer aBuf;
-    for (size_t i = 0; i < maRenderers.size(); i++)
+    for (RegionRenderer* pRenderer : maRenderers)
     {
-        aBuf.append(maRenderers[i]->getName());
+        aBuf.append(pRenderer->getName());
         aBuf.append(' ');
     }
     return aBuf.makeStringAndClear();
@@ -1619,17 +1619,17 @@ double DemoRenderer::getAndResetBenchmark(const RenderStyle style)
 {
     double geomean = 1.0;
     fprintf(stderr, "Rendering: %s, Times (ms):\n", style == RENDER_THUMB ? "THUMB": "EXPANDED");
-    for (size_t i = 0; i < maRenderers.size(); i++)
+    for (RegionRenderer* pRenderer : maRenderers)
     {
-        double avgtime = maRenderers[i]->sumTime / maRenderers[i]->countTime;
+        double avgtime = pRenderer->sumTime / pRenderer->countTime;
         geomean *= avgtime;
         fprintf(stderr, "%s: %f (iteration: %d*%d*%d)\n",
-                OUStringToOString(maRenderers[i]->getName(),
+                OUStringToOString(pRenderer->getName(),
                 RTL_TEXTENCODING_UTF8).getStr(), avgtime,
-                maRenderers[i]->countTime, maRenderers[i]->getTestRepeatCount(),
+                pRenderer->countTime, pRenderer->getTestRepeatCount(),
                 (style == RENDER_THUMB) ? THUMB_REPEAT_FACTOR : 1);
-        maRenderers[i]->sumTime = 0;
-        maRenderers[i]->countTime = 0;
+        pRenderer->sumTime = 0;
+        pRenderer->countTime = 0;
     }
     geomean = pow(geomean, 1.0/maRenderers.size());
     fprintf(stderr, "GEOMEAN_%s: %f\n", style == RENDER_THUMB ? "THUMB": "EXPANDED", geomean);
