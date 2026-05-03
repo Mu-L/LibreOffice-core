@@ -1304,30 +1304,30 @@ void FontworkHelpers::createCharInteropGrabBagUpdatesFromShapeProps(
                 bHasTransparenceGradient);
             pGrabBagStack->push(u"gradFill"_ustr);
             pGrabBagStack->push(u"gsLst"_ustr);
-            for (auto it = aColorMap.begin(); it != aColorMap.end(); ++it)
+            for (const auto & [ nPos, rColors ] : aColorMap)
             {
                 pGrabBagStack->push(u"gs"_ustr);
                 pGrabBagStack->push(u"attributes"_ustr);
-                pGrabBagStack->addInt32(u"pos"_ustr, (*it).first);
+                pGrabBagStack->addInt32(u"pos"_ustr, nPos);
                 pGrabBagStack->pop();
-                if ((*it).second.TTColor.getThemeColorType() == model::ThemeColorType::Unknown)
+                if (rColors.TTColor.getThemeColorType() == model::ThemeColorType::Unknown)
                 {
                     pGrabBagStack->push(u"srgbClr"_ustr);
                     pGrabBagStack->push(u"attributes"_ustr);
-                    pGrabBagStack->addString(u"val"_ustr, (*it).second.RGBColor.AsRGBHexString());
+                    pGrabBagStack->addString(u"val"_ustr, rColors.RGBColor.AsRGBHexString());
                     pGrabBagStack->pop(); // maCurrentElement:'srgbClr', maPropertyList:'attributes'
                 }
                 else
                 {
                     pGrabBagStack->push(u"schemeClr"_ustr);
                     pGrabBagStack->push(u"attributes"_ustr);
-                    pGrabBagStack->addString(
-                        u"val"_ustr, lcl_getW14MarkupStringForThemeColor((*it).second.TTColor));
+                    pGrabBagStack->addString(u"val"_ustr,
+                                             lcl_getW14MarkupStringForThemeColor(rColors.TTColor));
                     pGrabBagStack->pop();
                     // maCurrentElement:'schemeClr', maPropertyList:'attributes'
                 }
 
-                lcl_addColorTransformationToGrabBagStack((*it).second.TTColor, pGrabBagStack);
+                lcl_addColorTransformationToGrabBagStack(rColors.TTColor, pGrabBagStack);
                 pGrabBagStack->pop();
                 // maCurrentElement:'gs', maPropertyList:'attributes', 'srgbClr' or 'schemeClr'
                 pGrabBagStack->pop(); // maCurrentElement:'gsLst', maPropertyList: at least two 'gs'

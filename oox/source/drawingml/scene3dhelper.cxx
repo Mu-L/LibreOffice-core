@@ -748,8 +748,8 @@ void lcl_ApplyShapeRotationToLights(std::vector<basegfx::B3DVector>& rLightDirVe
     aTransform.rotate(0.0, 0.0, -fZ);
     aTransform.rotate(0.0, -fY, 0.0);
     aTransform.rotate(fX, 0.0, 0.0);
-    for (auto it = rLightDirVec.begin(); it != rLightDirVec.end(); ++it)
-        (*it) *= aTransform;
+    for (auto& rDir : rLightDirVec)
+        rDir *= aTransform;
 }
 
 /** Applies the light rig rotation to the directions of the individual lights
