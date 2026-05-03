@@ -31,7 +31,7 @@ struct TokenTable { SbiToken t; const char *s; };
 
 }
 
-const TokenTable aTokTable_Basic [] = {
+constexpr TokenTable aTokTable_Basic [] = {
     { CAT,      "&" },
     { MUL,      "*" },
     { PLUS,     "+" },
@@ -199,7 +199,7 @@ TokenLabelInfo::TokenLabelInfo()
     m_pTokenCanBeLabelTab.fill(false);
 
     // Token accepted as label by VBA
-    static const SbiToken eLabelToken[] = { ACCESS, ALIAS, APPEND, BASE, BINARY, CLASSMODULE,
+    static constexpr SbiToken eLabelToken[] = { ACCESS, ALIAS, APPEND, BASE, BINARY, CLASSMODULE,
                                COMPARE, COMPATIBLE, DEFERR, ERROR_, BASIC_EXPLICIT, LIB, LINE, LPRINT, NAME,
                                TOBJECT, OUTPUT, PROPERTY, RANDOM, READ, STEP, STOP, TEXT, VBASUPPORT };
     for( SbiToken eTok : eLabelToken )
