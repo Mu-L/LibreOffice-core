@@ -350,17 +350,17 @@ void SfxCharmapContainer::updateCharControl(weld::IconView& rIconView,
 {
     rIconView.clear();
 
-    for (auto it = rChars.begin(); it != rChars.end(); ++it)
+    for (const auto& rChar : rChars)
     {
         const int nIndex = rIconView.n_children();
         const OUString* pNullIconName = nullptr;
         rIconView.insert(nIndex, nullptr, nullptr, pNullIconName, nullptr);
-        ScopedVclPtr<VirtualDevice> pDev = CreateIcon(rIconView, it->sFont, it->sChar);
+        ScopedVclPtr<VirtualDevice> pDev = CreateIcon(rIconView, rChar.sFont, rChar.sChar);
         rIconView.set_image(nIndex, *pDev);
         OUString sAccName;
-        if (GetDecimalValueAndCharName(it->sChar, o3tl::temporary(sal_UCS4()), sAccName))
+        if (GetDecimalValueAndCharName(rChar.sChar, o3tl::temporary(sal_UCS4()), sAccName))
             rIconView.set_item_accessible_name(nIndex, sAccName);
-        rIconView.set_item_tooltip_text(nIndex, GetCharInfoText(it->sChar));
+        rIconView.set_item_tooltip_text(nIndex, GetCharInfoText(rChar.sChar));
     }
 }
 
