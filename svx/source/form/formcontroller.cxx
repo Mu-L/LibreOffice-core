@@ -782,14 +782,14 @@ void FormController::getFastPropertyValue( Any& rValue, sal_Int32 nHandle ) cons
                             continue;
 
                         OUStringBuffer aRowFilter;
-                        for ( FmFilterRow::const_iterator condition = rRow.begin(); condition != rRow.end(); ++condition )
+                        for ( const auto& rCondition : rRow )
                         {
                             // get the field of the controls map
-                            Reference< XControl > xControl( condition->first, UNO_QUERY_THROW );
+                            Reference< XControl > xControl( rCondition.first, UNO_QUERY_THROW );
                             Reference< XPropertySet > xModelProps( xControl->getModel(), UNO_QUERY_THROW );
                             Reference< XPropertySet > xField( xModelProps->getPropertyValue( FM_PROP_BOUNDFIELD ), UNO_QUERY_THROW );
 
-                            OUString sFilterValue( condition->second );
+                            OUString sFilterValue( rCondition.second );
 
                             OUString sErrorMsg;
                             const std::unique_ptr< OSQLParseNode > pParseNode =
@@ -800,7 +800,7 @@ void FormController::getFastPropertyValue( Any& rValue, sal_Int32 nHandle ) cons
                                 OUString sCriteria;
                                 // don't use a parse context here, we need it unlocalized
                                 pParseNode->parseNodeToStr( sCriteria, xConnection );
-                                if ( condition != rRow.begin() )
+                                if ( !aRowFilter.isEmpty() )
                                     aRowFilter.append( " AND " );
                                 aRowFilter.append( sCriteria );
                             }

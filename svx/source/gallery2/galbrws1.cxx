@@ -1043,12 +1043,12 @@ void GalleryBrowser::ImplUpdateViews( sal_uInt16 nSelectionId )
         mxListView->freeze();
         OUString aThemeName = mpCurTheme->GetName();
         sal_Int32 inserted = 0;
-        for (GalleryThemeEntries::const_iterator aFoundIter = maFoundThemeEntries.begin(); aFoundIter != maFoundThemeEntries.end(); ++aFoundIter)
+        for (const auto& rEntry : maFoundThemeEntries)
         {
-            if (aFoundIter->maThemeName == aThemeName)
+            if (rEntry.maThemeName == aThemeName)
             {
-               mxIconView->InsertItem(aFoundIter->mnIdInTheme + 1); // skip reserved id 0
-               mxListView->append(OUString::number(aFoundIter->mnIdInTheme),u""_ustr); // create on-demand in VisRowsScrolledHdl
+               mxIconView->InsertItem(rEntry.mnIdInTheme + 1); // skip reserved id 0
+               mxListView->append(OUString::number(rEntry.mnIdInTheme),u""_ustr); // create on-demand in VisRowsScrolledHdl
 
                if (inserted == nAlwaysUpToDate) // fill in the first block
                     UpdateRows(false);
@@ -1557,13 +1557,13 @@ IMPL_LINK(GalleryBrowser, SearchHdl, weld::Entry&, searchEdit, void)
         WildCard aSearchExpression(m_aCharacterClassficator.lowercase(search));
         bool currentThemeFound = false;
         maFoundThemeEntries.clear();
-        for (GalleryThemeEntries::const_iterator allIter = maAllThemeEntries.begin(); allIter != maAllThemeEntries.end(); ++allIter)
+        for (const auto& rEntry : maAllThemeEntries)
         {
-            if (aSearchExpression.Matches(m_aCharacterClassficator.lowercase(allIter->maEntryTitle)))
+            if (aSearchExpression.Matches(m_aCharacterClassficator.lowercase(rEntry.maEntryTitle)))
             {
-                maFoundThemeEntries.push_back(*allIter);
-                aFoundThemes.insert(allIter->maThemeName);
-                if (curThemeName == allIter->maThemeName)
+                maFoundThemeEntries.push_back(rEntry);
+                aFoundThemes.insert(rEntry.maThemeName);
+                if (curThemeName == rEntry.maThemeName)
                     currentThemeFound = true;
             }
         }
