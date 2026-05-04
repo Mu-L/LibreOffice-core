@@ -324,6 +324,7 @@ constexpr auto SUPPORTED_UI_FILES = frozen::make_unordered_set<std::u16string_vi
     u"svx/ui/querydeleteobjectdialog.ui",
     u"svx/ui/querydeletethemedialog.ui",
     u"svx/ui/safemodedialog.ui",
+    u"svx/ui/stringinput.ui",
     u"svx/ui/tableautofmtdlg.ui",
     u"svx/ui/themecoloreditdialog.ui",
     u"svx/ui/themedialog.ui",
