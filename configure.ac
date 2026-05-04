@@ -4504,14 +4504,15 @@ find_ucrt()
     reg_get_value_32 "HKEY_LOCAL_MACHINE/SOFTWARE/Microsoft/Microsoft SDKs/Windows/v10.0" "InstallationFolder"
     if test -n "$regvalue"; then
         PathFormat "$regvalue"
-        UCRTSDKDIR=$formatted_path_unix
+        UCRTSDKDIR=$formatted_path
+        UCRTSDKDIR_unix=$formatted_path_unix
         reg_get_value_32 "HKEY_LOCAL_MACHINE/SOFTWARE/Microsoft/Microsoft SDKs/Windows/v10.0" "ProductVersion"
         if test -n "$regvalue"; then
             UCRTVERSION="$regvalue".0
         fi
 
         # Rest if not exist
-        if ! test -d "${UCRTSDKDIR}Include/$UCRTVERSION/ucrt"; then
+        if ! test -d "${UCRTSDKDIR_unix}Include/$UCRTVERSION/ucrt"; then
           UCRTSDKDIR=
         fi
     fi
@@ -4520,12 +4521,13 @@ find_ucrt()
         ide_env_file="${ide_env_dir}VsDevCmd.bat"
         if test -f "$ide_env_file"; then
             PathFormat "$(win_get_env_from_vsdevcmdbat UniversalCRTSdkDir)"
-            UCRTSDKDIR=$formatted_path_unix
+            UCRTSDKDIR=$formatted_path
+            UCRTSDKDIR_unix=$formatted_path_unix
             UCRTVERSION=$(win_get_env_from_vsdevcmdbat UCRTVersion)
             dnl Hack needed at least by tml:
             if test "$UCRTVERSION" = 10.0.15063.0 \
-                -a ! -f "${UCRTSDKDIR}Include/10.0.15063.0/um/sqlext.h" \
-                -a -f "${UCRTSDKDIR}Include/10.0.14393.0/um/sqlext.h"
+                -a ! -f "${UCRTSDKDIR_unix}Include/10.0.15063.0/um/sqlext.h" \
+                -a -f "${UCRTSDKDIR_unix}Include/10.0.14393.0/um/sqlext.h"
             then
                 UCRTVERSION=10.0.14393.0
             fi
