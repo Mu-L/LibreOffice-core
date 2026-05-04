@@ -225,4 +225,31 @@ class Test(UITestCase):
             self.assertEqual(xDocAccelCfg.getCommandByKeyEvent(xKeyEvent),
                              ".uno:OptionsSecurityDialog")
 
+    def test_start_center(self):
+        # Try opening the customization dialog from the start center
+        with self.ui_test.execute_dialog_through_command(".uno:ConfigureDialog") as xDialog:
+            select_keyboard_tab(xDialog)
+
+            xAcceleratorPage = xDialog.getChild("AccelConfigPage")
+
+            # All of the radio controls apart from the global one should be hidden
+            xGlobal = xAcceleratorPage.getChild("office")
+            self.assertEqual(get_state_as_dict(xGlobal)["Visible"], "true")
+            xModule = xAcceleratorPage.getChild("module")
+            self.assertEqual(get_state_as_dict(xModule)["Visible"], "false")
+            xDocument = xAcceleratorPage.getChild("document")
+            self.assertEqual(get_state_as_dict(xDocument)["Visible"], "false")
+            xScope = xAcceleratorPage.getChild("savein")
+            self.assertEqual(get_state_as_dict(xScope)["Visible"], "false")
+
+            # Assign a key
+            self.assign_key(xDialog, "office", "F7", "Edit Macros")
+
+        # Check that the key made it into the global config
+        xGlobalAccelCfg = self.xContext.ServiceManager.createInstance(
+            'com.sun.star.ui.GlobalAcceleratorConfiguration')
+        xKeyEvent = KeyEvent()
+        xKeyEvent.KeyCode = Key.F7
+        self.assertEqual(xGlobalAccelCfg.getCommandByKeyEvent(xKeyEvent), ".uno:BasicIDEAppear")
+
 # vim: set shiftwidth=4 softtabstop=4 expandtab:

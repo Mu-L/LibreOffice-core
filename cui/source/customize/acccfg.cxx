@@ -1111,13 +1111,16 @@ void SfxAcceleratorConfigPage::InitAccCfg()
         // get global accelerator configuration
         m_xGlobal = css::ui::GlobalAcceleratorConfiguration::create(m_xContext);
 
-        // get module accelerator configuration
-
-        uno::Reference<ui::XModuleUIConfigurationManagerSupplier> xModuleCfgSupplier(
-            ui::theModuleUIConfigurationManagerSupplier::get(m_xContext));
-        uno::Reference<ui::XUIConfigurationManager> xUICfgManager
-            = xModuleCfgSupplier->getUIConfigurationManager(m_sModuleLongName);
-        m_xModule = xUICfgManager->getShortCutManager();
+        // get module accelerator configuration, unless it’s the start module in which case we’ll
+        // only allow configuring the global configuration
+        if (m_sModuleLongName != "com.sun.star.frame.StartModule")
+        {
+            uno::Reference<ui::XModuleUIConfigurationManagerSupplier> xModuleCfgSupplier(
+                ui::theModuleUIConfigurationManagerSupplier::get(m_xContext));
+            uno::Reference<ui::XUIConfigurationManager> xUICfgManager
+                = xModuleCfgSupplier->getUIConfigurationManager(m_sModuleLongName);
+            m_xModule = xUICfgManager->getShortCutManager();
+        }
     }
     catch (const uno::RuntimeException&)
     {

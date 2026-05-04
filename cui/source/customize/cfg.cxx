@@ -265,9 +265,6 @@ void SvxConfigDialog::SetFrame(const css::uno::Reference<css::frame::XFrame>& xF
         aModuleId != "com.sun.star.presentation.PresentationDocument" &&
         aModuleId != "com.sun.star.drawing.DrawingDocument")
         RemoveTabPage(u"notebookbar"_ustr);
-
-    if (aModuleId == "com.sun.star.frame.StartModule")
-        RemoveTabPage(u"keyboard"_ustr);
 }
 
 void SvxConfigDialog::PageCreated(const OUString &rId, SfxTabPage& rPage)
