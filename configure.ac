@@ -9473,7 +9473,7 @@ _ACEOF
         fi
     fi
     PathFormat "$JAVA_HOME"
-    JAVA_HOME="$formatted_path_unix"
+    JAVA_HOME="$formatted_path"
 fi
 
 if test -z "$JAWTLIB" -a -n "$ENABLE_JAVA" -a "$_os" != Android -a \
@@ -16345,10 +16345,12 @@ else
         fi
         pathmunge "$WINDOWS_SDK_BINDIR_NO_ARCH/$WIN_BUILD_ARCH" "before"
         if test "$ENABLE_JAVA" != ""; then
-            if test -d "$JAVA_HOME/jre/bin/client"; then
+            PathFormat "$JAVA_HOME"
+            JAVA_HOME_unix="$formatted_path_unix"
+            if test -d "$JAVA_HOME_unix/jre/bin/client"; then
                 pathmunge "$JAVA_HOME/jre/bin/client" "before"
             fi
-            if test -d "$JAVA_HOME/jre/bin/hotspot"; then
+            if test -d "$JAVA_HOME_unix/jre/bin/hotspot"; then
                 pathmunge "$JAVA_HOME/jre/bin/hotspot" "before"
             fi
             pathmunge "$JAVA_HOME/bin" "before"
