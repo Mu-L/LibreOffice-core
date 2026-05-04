@@ -59,6 +59,7 @@ libraryNames = {
     "sqlite": "sqlite",
     "reemkufi": "aliftype-reem-kufi-fonts",
     "culmus": "culmus-fonts",
+    "quickjs": "quickjs-ng",
 }
 
 def get_current_version(libName):
