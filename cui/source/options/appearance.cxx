@@ -121,6 +121,7 @@ SvxAppearanceTabPage::SvxAppearanceTabPage(weld::Container* pPage,
     , m_xNotebookbarIconSize(m_xBuilder->weld_combo_box(u"notebookbariconsdropdown"_ustr))
     , m_xSizeGrid(m_xBuilder->weld_widget(u"grdIconSize"_ustr))
     , m_xCustomizationFrame(m_xBuilder->weld_widget(u"items"_ustr))
+    , m_xDialogFrame(m_xBuilder->weld_widget(u"dialogs"_ustr))
     , m_xVerticalToolbars(m_xBuilder->weld_radio_button(u"rbVertical"_ustr))
     , m_xHorizontalToolbars(m_xBuilder->weld_radio_button(u"rbHorizontal"_ustr))
 {
@@ -214,6 +215,7 @@ void SvxAppearanceTabPage::Reset(const SfxItemSet* /* rSet */)
         // hide advanced controls
         m_xSizeGrid->set_visible(false);
         m_xCustomizationFrame->set_visible(false);
+        m_xDialogFrame->set_visible(false);
 
         // default to vertical avoiding to check UseVerticalNotebookbar
         m_xVerticalToolbars->set_active(true);

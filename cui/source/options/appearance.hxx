@@ -45,6 +45,7 @@ private:
     std::unique_ptr<weld::ComboBox> m_xNotebookbarIconSize;
     std::unique_ptr<weld::Widget> m_xSizeGrid;
     std::unique_ptr<weld::Widget> m_xCustomizationFrame;
+    std::unique_ptr<weld::Widget> m_xDialogFrame;
     std::unique_ptr<weld::RadioButton> m_xVerticalToolbars;
     std::unique_ptr<weld::RadioButton> m_xHorizontalToolbars;
 
