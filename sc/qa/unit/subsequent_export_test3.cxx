@@ -2152,7 +2152,7 @@ CPPUNIT_TEST_FIXTURE(ScExportTest3, testEmptyTwoCellAnchor)
     save(TestFilter::XLSX);
     xmlDocUniquePtr pDrawing = parseExport(u"xl/drawings/drawing1.xml"_ustr);
     CPPUNIT_ASSERT(pDrawing);
-    /* The anchored element on sheeet 1 of the doc doesn't contain any graphic
+    /* The anchored element on sheet 1 of the doc doesn't contain any graphic
        and exporting empty anchors with no graphic produces an error in excel. Hence,
        we should not export the anchor at all if it doesn't contain any graphic.
     */
