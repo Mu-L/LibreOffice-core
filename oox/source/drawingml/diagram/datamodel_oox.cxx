@@ -131,7 +131,7 @@ void DiagramData_oox::writeDiagramData(DrawingML& rOriginalDrawingML, const sax_
         FSNS(XML_xmlns, XML_dgm), aNsDmlDiagram,
         FSNS(XML_xmlns, XML_a), aNsDml);
 
-    // need to use a full ShapeExport to get the correct DocumentType suppport if SW export
+    // need to use a full ShapeExport to get the correct DocumentType support if SW export
     ShapeExport aShapeExport(XML_dsp, rTarget, nullptr, pOriginalFB, rOriginalDrawingML.GetDocumentType(), rOriginalDrawingML.GetTextExport(), true);
     aShapeExport.setDiagaramExport(true);
 
