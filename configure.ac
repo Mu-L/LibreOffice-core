@@ -6719,7 +6719,7 @@ if test -z "$TARFILE_LOCATION"; then
 else
     AbsolutePath "$TARFILE_LOCATION"
     PathFormat "${absolute_path}"
-    TARFILE_LOCATION="${formatted_path_unix}"
+    TARFILE_LOCATION="${formatted_path}"
 fi
 AC_SUBST(TARFILE_LOCATION)
 
@@ -16399,9 +16399,7 @@ if test -n "$WSL_ONLY_AS_HELPER"; then
     SRC_ROOT="$formatted_path"
     PathFormat "$BUILDDIR"
     BUILDDIR="$formatted_path"
-    # TARFILE_LOCATION and JAVAINTERPRETER are used in the validator scripts
-    PathFormat "$TARFILE_LOCATION"
-    TARFILE_LOCATION="$formatted_path"
+    # JAVAINTERPRETER is used in the validator scripts
     PathFormat "$JAVAINTERPRETER"
     JAVAINTERPRETER="$formatted_path"
     # git-bash has (gnu) tar, curl and sha256sum
