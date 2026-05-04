@@ -12191,21 +12191,26 @@ dnl ===================================================================
 dnl Check for system box2d
 dnl ===================================================================
 AC_MSG_CHECKING([which box2d to use])
+BOX2D_MAJOR=2
+BOX2D_MINOR=4
 if test "$with_system_box2d" = "yes"; then
     AC_MSG_RESULT([external])
     SYSTEM_BOX2D=TRUE
     AC_LANG_PUSH([C++])
-    AC_CHECK_HEADER(box2d/box2d.h, [BOX2D_H_FOUND='TRUE'],
-        [BOX2D_H_FOUND='FALSE'])
-    if test "$BOX2D_H_FOUND" = "TRUE"; then # 2.4.0+
-        _BOX2D_LIB=box2d
-        AC_DEFINE(BOX2D_HEADER,<box2d/box2d.h>)
-    else
-        # fail this. there's no other alternative to check when we are here.
-        AC_CHECK_HEADER([Box2D/Box2D.h], [],
-            [AC_MSG_ERROR(box2d headers not found.)])
-        _BOX2D_LIB=Box2D
-        AC_DEFINE(BOX2D_HEADER,<Box2D/Box2D.h>)
+    BOX2D_VERSION=`$PKG_CONFIG --modversion box2d 2>/dev/null`
+    BOX2D_MAJOR=`echo $BOX2D_VERSION | cut -d"." -f1`
+    BOX2D_MINOR=`echo $BOX2D_VERSION | cut -d"." -f2`
+    if test "$BOX2D_MAJOR" -eq "2"; then
+        if test "$BOX2D_MINOR" -eq "4"; then
+            _BOX2D_LIB=box2d
+            AC_DEFINE(BOX2D_HEADER,<box2d/box2d.h>)
+        else
+            # fail this. there's no other alternative to check when we are here.
+            AC_CHECK_HEADER([Box2D/Box2D.h], [],
+                [AC_MSG_ERROR(box2d headers not found.)])
+            _BOX2D_LIB=Box2D
+            AC_DEFINE(BOX2D_HEADER,<Box2D/Box2D.h>)
+        fi
     fi
     AC_CHECK_LIB([$_BOX2D_LIB], [main], [:],
         [ AC_MSG_ERROR(box2d library not found.) ], [])
