@@ -525,17 +525,18 @@
                                 <property name="row-spacing">12</property>
                                 <property name="column-spacing">12</property>
                                 <child>
-                                  <object class="GtkBox" id="borderpadding">
+                                  <object class="GtkBox" id="bordercolor">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
+                                    <property name="valign">center</property>
                                     <property name="spacing">6</property>
                                     <child>
-                                      <object class="GtkLabel" id="borderwidthlb">
+                                      <object class="GtkLabel" id="bordercolorlb">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <property name="label" translatable="yes" context="borderwidthlb|label">Width:</property>
+                                        <property name="label" translatable="yes" context="bordercolorlb|label">Color:</property>
                                         <property name="use-underline">True</property>
-                                        <property name="mnemonic-widget">borderwidth</property>
+                                        <property name="mnemonic-widget">bordercolormb</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -544,29 +545,25 @@
                                       </packing>
                                     </child>
                                     <child>
-                                      <object class="GtkComboBoxText" id="borderwidth">
+                                      <object class="GtkMenuButton" id="bordercolormb">
                                         <property name="visible">True</property>
-                                        <property name="can-focus">False</property>
-                                        <property name="hexpand">False</property>
-                                        <items>
-                                          <item id="0" translatable="yes" context="borderpage|linewidthlb">Hairline (0.05pt)</item>
-                                          <item id="1" translatable="yes" context="borderpage|linewidthlb">Very thin (0.5pt)</item>
-                                          <item id="2" translatable="yes" context="borderpage|linewidthlb">Thin (0.75pt)</item>
-                                          <item id="3" translatable="yes" context="borderpage|linewidthlb">Medium (1.5pt)</item>
-                                          <item id="4" translatable="yes" context="borderpage|linewidthlb">Thick (2.25pt)</item>
-                                          <item id="5" translatable="yes" context="borderpage|linewidthlb">Extra thick (4.5pt)</item>
-                                        </items>
+                                        <property name="can-focus">True</property>
+                                        <property name="focus-on-click">False</property>
+                                        <property name="receives-default">True</property>
+                                        <child>
+                                          <placeholder/>
+                                        </child>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
-                                        <property name="fill">True</property>
+                                        <property name="fill">False</property>
                                         <property name="position">1</property>
                                       </packing>
                                     </child>
                                   </object>
                                   <packing>
-                                    <property name="left-attach">1</property>
-                                    <property name="top-attach">1</property>
+                                    <property name="left-attach">0</property>
+                                    <property name="top-attach">0</property>
                                   </packing>
                                 </child>
                                 <child>
@@ -653,18 +650,17 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkBox" id="bordercolor">
+                                  <object class="GtkBox" id="borderpadding">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
-                                    <property name="valign">center</property>
                                     <property name="spacing">6</property>
                                     <child>
-                                      <object class="GtkLabel" id="bordercolorlb">
+                                      <object class="GtkLabel" id="borderwidthlb">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <property name="label" translatable="yes" context="bordercolorlb|label">Color:</property>
+                                        <property name="label" translatable="yes" context="borderwidthlb|label">Width:</property>
                                         <property name="use-underline">True</property>
-                                        <property name="mnemonic-widget">bordercolormb</property>
+                                        <property name="mnemonic-widget">borderwidth</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -673,25 +669,29 @@
                                       </packing>
                                     </child>
                                     <child>
-                                      <object class="GtkMenuButton" id="bordercolormb">
+                                      <object class="GtkComboBoxText" id="borderwidth">
                                         <property name="visible">True</property>
-                                        <property name="can-focus">True</property>
-                                        <property name="focus-on-click">False</property>
-                                        <property name="receives-default">True</property>
-                                        <child>
-                                          <placeholder/>
-                                        </child>
+                                        <property name="can-focus">False</property>
+                                        <property name="hexpand">False</property>
+                                        <items>
+                                          <item id="0" translatable="yes" context="borderpage|linewidthlb">Hairline (0.05pt)</item>
+                                          <item id="1" translatable="yes" context="borderpage|linewidthlb">Very thin (0.5pt)</item>
+                                          <item id="2" translatable="yes" context="borderpage|linewidthlb">Thin (0.75pt)</item>
+                                          <item id="3" translatable="yes" context="borderpage|linewidthlb">Medium (1.5pt)</item>
+                                          <item id="4" translatable="yes" context="borderpage|linewidthlb">Thick (2.25pt)</item>
+                                          <item id="5" translatable="yes" context="borderpage|linewidthlb">Extra thick (4.5pt)</item>
+                                        </items>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
-                                        <property name="fill">False</property>
+                                        <property name="fill">True</property>
                                         <property name="position">1</property>
                                       </packing>
                                     </child>
                                   </object>
                                   <packing>
-                                    <property name="left-attach">0</property>
-                                    <property name="top-attach">0</property>
+                                    <property name="left-attach">1</property>
+                                    <property name="top-attach">1</property>
                                   </packing>
                                 </child>
                               </object>
@@ -899,6 +899,86 @@
                                   <packing>
                                     <property name="left-attach">1</property>
                                     <property name="top-attach">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkBox" id="number">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <child>
+                                      <object class="GtkLabel" id="numberlb">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes" context="numberlb|label">Number:</property>
+                                        <property name="use-underline">True</property>
+                                        <property name="mnemonic-widget">numbertb</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">0</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkToolbar" id="numbertb">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <child>
+                                          <object class="GtkToggleToolButton" id="decimal">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="tooltip-text" translatable="yes" context="decimal|tooltip-text">Format as Number</property>
+                                            <property name="label" translatable="yes" context="decimal|label">Decimal</property>
+                                            <property name="use-underline">True</property>
+                                            <property name="icon-name">cmd/lc_numberformatdecimal.png</property>
+                                            <property name="active">True</property>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="homogeneous">True</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkToggleToolButton" id="percent">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="tooltip-text" translatable="yes" context="percent|tooltip-text">Format as Percentage</property>
+                                            <property name="label" translatable="yes" context="percent|label">Percent</property>
+                                            <property name="use-underline">True</property>
+                                            <property name="icon-name">cmd/lc_numberformatpercent.png</property>
+                                            <property name="active">True</property>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="homogeneous">True</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkToggleToolButton" id="currency">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="tooltip-text" translatable="yes" context="currency|tooltip-text">Format as Currency</property>
+                                            <property name="label" translatable="yes" context="currency|label">Currency</property>
+                                            <property name="use-underline">True</property>
+                                            <property name="icon-name">cmd/lc_numberformatcurrency.png</property>
+                                            <property name="active">True</property>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="homogeneous">True</property>
+                                          </packing>
+                                        </child>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">1</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">0</property>
+                                    <property name="top-attach">1</property>
                                   </packing>
                                 </child>
                                 <child>
@@ -1121,86 +1201,6 @@
                                   <packing>
                                     <property name="left-attach">1</property>
                                     <property name="top-attach">3</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkBox" id="number">
-                                    <property name="visible">True</property>
-                                    <property name="can-focus">False</property>
-                                    <child>
-                                      <object class="GtkLabel" id="numberlb">
-                                        <property name="visible">True</property>
-                                        <property name="can-focus">False</property>
-                                        <property name="label" translatable="yes" context="numberlb|label">Number:</property>
-                                        <property name="use-underline">True</property>
-                                        <property name="mnemonic-widget">numbertb</property>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="fill">True</property>
-                                        <property name="position">0</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkToolbar" id="numbertb">
-                                        <property name="visible">True</property>
-                                        <property name="can-focus">False</property>
-                                        <child>
-                                          <object class="GtkToggleToolButton" id="decimal">
-                                            <property name="visible">True</property>
-                                            <property name="can-focus">False</property>
-                                            <property name="tooltip-text" translatable="yes" context="decimal|tooltip-text">Format as Number</property>
-                                            <property name="label" translatable="yes" context="decimal|label">Decimal</property>
-                                            <property name="use-underline">True</property>
-                                            <property name="icon-name">cmd/lc_numberformatdecimal.png</property>
-                                            <property name="active">True</property>
-                                          </object>
-                                          <packing>
-                                            <property name="expand">False</property>
-                                            <property name="homogeneous">True</property>
-                                          </packing>
-                                        </child>
-                                        <child>
-                                          <object class="GtkToggleToolButton" id="percent">
-                                            <property name="visible">True</property>
-                                            <property name="can-focus">False</property>
-                                            <property name="tooltip-text" translatable="yes" context="percent|tooltip-text">Format as Percentage</property>
-                                            <property name="label" translatable="yes" context="percent|label">Percent</property>
-                                            <property name="use-underline">True</property>
-                                            <property name="icon-name">cmd/lc_numberformatpercent.png</property>
-                                            <property name="active">True</property>
-                                          </object>
-                                          <packing>
-                                            <property name="expand">False</property>
-                                            <property name="homogeneous">True</property>
-                                          </packing>
-                                        </child>
-                                        <child>
-                                          <object class="GtkToggleToolButton" id="currency">
-                                            <property name="visible">True</property>
-                                            <property name="can-focus">False</property>
-                                            <property name="tooltip-text" translatable="yes" context="currency|tooltip-text">Format as Currency</property>
-                                            <property name="label" translatable="yes" context="currency|label">Currency</property>
-                                            <property name="use-underline">True</property>
-                                            <property name="icon-name">cmd/lc_numberformatcurrency.png</property>
-                                            <property name="active">True</property>
-                                          </object>
-                                          <packing>
-                                            <property name="expand">False</property>
-                                            <property name="homogeneous">True</property>
-                                          </packing>
-                                        </child>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="fill">True</property>
-                                        <property name="position">1</property>
-                                      </packing>
-                                    </child>
-                                  </object>
-                                  <packing>
-                                    <property name="left-attach">0</property>
-                                    <property name="top-attach">1</property>
                                   </packing>
                                 </child>
                                 <child>
