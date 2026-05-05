@@ -27,7 +27,7 @@ class SvTreeListBox;
 class IconViewImpl : public SvImpLBox
 {
 public:
-    IconViewImpl(IconView& rIconView, SvTreeList* pTreeList, WinBits nWinStyle);
+    IconViewImpl(IconView& rIconView, SvTreeList& rTreeList, WinBits nWinStyle);
 
     void KeyDown(bool bPageDown) override;
 
