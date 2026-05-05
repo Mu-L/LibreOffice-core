@@ -1291,11 +1291,6 @@
                     </accessibility>
                   </object>
                 </child>
-                <child internal-child="accessible">
-                  <object class="AtkObject" id="rightframe-atkobject">
-                    <property name="AtkObject::accessible-name" translatable="yes" context="rightframe-atkobject|accessible-name">Properties</property>
-                  </object>
-                </child>
                 <child type="label">
                   <object class="GtkLabel" id="propertieslb">
                     <property name="visible">True</property>
@@ -1307,6 +1302,11 @@
                     <accessibility>
                       <relation type="label-for" target="properties"/>
                     </accessibility>
+                  </object>
+                </child>
+                <child internal-child="accessible">
+                  <object class="AtkObject" id="rightframe-atkobject">
+                    <property name="AtkObject::accessible-name" translatable="yes" context="rightframe-atkobject|accessible-name">Properties</property>
                   </object>
                 </child>
               </object>
