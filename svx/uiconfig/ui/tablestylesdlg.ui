@@ -128,9 +128,8 @@
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
                                 <property name="label" translatable="yes" context="basicnamelb|label">Name:</property>
-                                <accessibility>
-                                  <relation type="label-for" target="basicnameentry"/>
-                                </accessibility>
+                                <property name="use-underline">True</property>
+                                <property name="mnemonic-widget">basicnameentry</property>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
@@ -142,9 +141,6 @@
                               <object class="GtkEntry" id="basicnameentry">
                                 <property name="visible">True</property>
                                 <property name="can-focus">True</property>
-                                <accessibility>
-                                  <relation type="labelled-by" target="basicnamelb"/>
-                                </accessibility>
                                 <child internal-child="accessible">
                                   <object class="AtkObject" id="basicnameentry-atkobject">
                                     <property name="AtkObject::accessible-name" translatable="yes" context="basicnameentry-atkobject|accessible-name">Name</property>
@@ -175,9 +171,8 @@
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
                                 <property name="label" translatable="yes" context="linkedwithlb|label">Inherit from:</property>
-                                <accessibility>
-                                  <relation type="label-for" target="linkedwithbox"/>
-                                </accessibility>
+                                <property name="use-underline">True</property>
+                                <property name="mnemonic-widget">linkedwithbox</property>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
@@ -197,9 +192,6 @@
                                     <property name="truncate-multiline">True</property>
                                   </object>
                                 </child>
-                                <accessibility>
-                                  <relation type="labelled-by" target="linkedwithlb"/>
-                                </accessibility>
                               </object>
                               <packing>
                                 <property name="expand">True</property>
@@ -306,9 +298,8 @@
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
                             <property name="label" translatable="yes" context="elementlb|label">Element:</property>
-                            <accessibility>
-                              <relation type="label-for" target="elementbox"/>
-                            </accessibility>
+                            <property name="use-underline">True</property>
+                            <property name="mnemonic-widget">elementbox</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -339,9 +330,6 @@
                               <item id="14" translatable="yes" context="elementbox|lastrowendcolumn">Last Row End Column</item>
                               <item id="15" translatable="yes" context="elementbox|lastrowstartcolumn">Last Row Start Column</item>
                             </items>
-                            <accessibility>
-                              <relation type="labelled-by" target="elementlb"/>
-                            </accessibility>
                             <child internal-child="accessible">
                               <object class="AtkObject" id="elementbox-atkobject">
                                 <property name="AtkObject::accessible-name" translatable="yes" context="elementbox-atkobject|accessible-name">Element</property>
@@ -403,9 +391,8 @@
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="label" translatable="yes" context="cellcolorlb|label">Color:</property>
-                                        <accessibility>
-                                          <relation type="label-for" target="cellcolormb"/>
-                                        </accessibility>
+                                        <property name="use-underline">True</property>
+                                        <property name="mnemonic-widget">cellcolormb</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -423,9 +410,6 @@
                                         <child>
                                           <placeholder/>
                                         </child>
-                                        <accessibility>
-                                          <relation type="labelled-by" target="cellcolorlb"/>
-                                        </accessibility>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -450,9 +434,8 @@
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="label" translatable="yes" context="cellpaddinglb|label">Padding:</property>
-                                        <accessibility>
-                                          <relation type="label-for" target="cellpaddingsb"/>
-                                        </accessibility>
+                                        <property name="use-underline">True</property>
+                                        <property name="mnemonic-widget">cellpaddingsb</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -467,9 +450,6 @@
                                         <property name="progress-pulse-step">0.02</property>
                                         <property name="adjustment">paddingadj</property>
                                         <property name="digits">2</property>
-                                        <accessibility>
-                                          <relation type="labelled-by" target="cellpaddinglb"/>
-                                        </accessibility>
                                         <child internal-child="accessible">
                                           <object class="AtkObject" id="cellpaddingsb-atkobject">
                                             <property name="AtkObject::accessible-name" translatable="yes" context="cellpaddingsb-atkobject|accessible-name">Padding</property>
@@ -544,9 +524,8 @@
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="label" translatable="yes" context="borderwidthlb|label">Width:</property>
-                                        <accessibility>
-                                          <relation type="label-for" target="borderwidth"/>
-                                        </accessibility>
+                                        <property name="use-underline">True</property>
+                                        <property name="mnemonic-widget">borderwidth</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -567,9 +546,6 @@
                                           <item id="4" translatable="yes" context="borderpage|linewidthlb">Thick (2.25pt)</item>
                                           <item id="5" translatable="yes" context="borderpage|linewidthlb">Extra thick (4.5pt)</item>
                                         </items>
-                                        <accessibility>
-                                          <relation type="labelled-by" target="borderwidthlb"/>
-                                        </accessibility>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -593,9 +569,8 @@
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="label" translatable="yes" context="borderlayoutlb|label">Layout:</property>
-                                        <accessibility>
-                                          <relation type="label-for" target="borders"/>
-                                        </accessibility>
+                                        <property name="use-underline">True</property>
+                                        <property name="mnemonic-widget">borders</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -607,9 +582,6 @@
                                       <object class="GtkDrawingArea" id="borders">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <accessibility>
-                                          <relation type="labelled-by" target="borderlayoutlb"/>
-                                        </accessibility>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -633,9 +605,8 @@
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="label" translatable="yes" context="borderstylelb|label">Style:</property>
-                                        <accessibility>
-                                          <relation type="label-for" target="borderstylemb"/>
-                                        </accessibility>
+                                        <property name="use-underline">True</property>
+                                        <property name="mnemonic-widget">borderstylemb</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -652,9 +623,6 @@
                                         <child>
                                           <placeholder/>
                                         </child>
-                                        <accessibility>
-                                          <relation type="labelled-by" target="borderstylelb"/>
-                                        </accessibility>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -679,9 +647,8 @@
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="label" translatable="yes" context="bordercolorlb|label">Color:</property>
-                                        <accessibility>
-                                          <relation type="label-for" target="bordercolormb"/>
-                                        </accessibility>
+                                        <property name="use-underline">True</property>
+                                        <property name="mnemonic-widget">bordercolormb</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -698,9 +665,6 @@
                                         <child>
                                           <placeholder/>
                                         </child>
-                                        <accessibility>
-                                          <relation type="labelled-by" target="bordercolorlb"/>
-                                        </accessibility>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -769,9 +733,8 @@
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="label" translatable="yes" context="charhorilb|label">Horizontal:</property>
-                                        <accessibility>
-                                          <relation type="label-for" target="charhoritb"/>
-                                        </accessibility>
+                                        <property name="use-underline">True</property>
+                                        <property name="mnemonic-widget">charhoritb</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -828,9 +791,6 @@
                                             <property name="homogeneous">True</property>
                                           </packing>
                                         </child>
-                                        <accessibility>
-                                          <relation type="labelled-by" target="charhorilb"/>
-                                        </accessibility>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -854,9 +814,8 @@
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="label" translatable="yes" context="charvertlb|label">Vertical:</property>
-                                        <accessibility>
-                                          <relation type="label-for" target="charverttb"/>
-                                        </accessibility>
+                                        <property name="use-underline">True</property>
+                                        <property name="mnemonic-widget">charverttb</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -913,9 +872,6 @@
                                             <property name="homogeneous">True</property>
                                           </packing>
                                         </child>
-                                        <accessibility>
-                                          <relation type="labelled-by" target="charvertlb"/>
-                                        </accessibility>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -939,9 +895,8 @@
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="label" translatable="yes" context="charnamelb|label">Name:</property>
-                                        <accessibility>
-                                          <relation type="label-for" target="charnamebox"/>
-                                        </accessibility>
+                                        <property name="use-underline">True</property>
+                                        <property name="mnemonic-widget">charnamebox</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -961,9 +916,6 @@
                                             <property name="truncate-multiline">True</property>
                                           </object>
                                         </child>
-                                        <accessibility>
-                                          <relation type="labelled-by" target="charnamelb"/>
-                                        </accessibility>
                                         <child internal-child="accessible">
                                           <object class="AtkObject" id="charnamebox-atkobject">
                                             <property name="AtkObject::accessible-name" translatable="yes" context="charnamebox-atkobject|accessible-name">Font Name</property>
@@ -992,9 +944,8 @@
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="label" translatable="yes" context="charsizelb|label">Size:</property>
-                                        <accessibility>
-                                          <relation type="label-for" target="charsizebox"/>
-                                        </accessibility>
+                                        <property name="use-underline">True</property>
+                                        <property name="mnemonic-widget">charsizebox</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -1014,9 +965,6 @@
                                             <property name="truncate-multiline">True</property>
                                           </object>
                                         </child>
-                                        <accessibility>
-                                          <relation type="labelled-by" target="charsizelb"/>
-                                        </accessibility>
                                         <child internal-child="accessible">
                                           <object class="AtkObject" id="charsizebox-atkobject">
                                             <property name="AtkObject::accessible-name" translatable="yes" context="charsizebox-atkobject|accessible-name">Font Size</property>
@@ -1047,9 +995,8 @@
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="label" translatable="yes" context="charcolorlb|label">Color:</property>
-                                        <accessibility>
-                                          <relation type="label-for" target="charcolormb"/>
-                                        </accessibility>
+                                        <property name="use-underline">True</property>
+                                        <property name="mnemonic-widget">charcolormb</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -1066,9 +1013,6 @@
                                         <child>
                                           <placeholder/>
                                         </child>
-                                        <accessibility>
-                                          <relation type="labelled-by" target="charcolorlb"/>
-                                        </accessibility>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -1092,9 +1036,8 @@
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="label" translatable="yes" context="charstylelb|label">Style:</property>
-                                        <accessibility>
-                                          <relation type="label-for" target="charstyletb"/>
-                                        </accessibility>
+                                        <property name="use-underline">True</property>
+                                        <property name="mnemonic-widget">charstyletb</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -1151,9 +1094,6 @@
                                             <property name="homogeneous">True</property>
                                           </packing>
                                         </child>
-                                        <accessibility>
-                                          <relation type="labelled-by" target="charstylelb"/>
-                                        </accessibility>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -1176,9 +1116,8 @@
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="label" translatable="yes" context="numberlb|label">Number:</property>
-                                        <accessibility>
-                                          <relation type="label-for" target="numbertb"/>
-                                        </accessibility>
+                                        <property name="use-underline">True</property>
+                                        <property name="mnemonic-widget">numbertb</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -1235,9 +1174,6 @@
                                             <property name="homogeneous">True</property>
                                           </packing>
                                         </child>
-                                        <accessibility>
-                                          <relation type="labelled-by" target="numberlb"/>
-                                        </accessibility>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
