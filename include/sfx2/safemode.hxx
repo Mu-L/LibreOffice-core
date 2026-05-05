@@ -20,29 +20,29 @@ class SFX2_DLLPUBLIC SafeMode
 {
 public:
     /**
-     * Write a flag file to the user profile indicating that the next launch should be in safe mode.
+     * Write a flag file to the user profile indicating that the next launch should be in troubleshoot mode.
      *
      * @return Whether the file could be written successfully
      */
     static bool putFlag();
 
     /**
-     * Check the existence of the safe mode flag file.
+     * Check the existence of the troubleshoot mode flag file.
      *
-     * @return Whether the flag file for the safe mode exists
+     * @return Whether the flag file for the troubleshoot mode exists
      */
     static bool hasFlag();
 
     /**
-     * Remove the flag file for the safe mode.
+     * Remove the flag file for the troubleshoot mode.
      *
      * @return Whether the flag file could be removed successfully
      */
     static bool removeFlag();
 
     /**
-     * Write a flag to the user profile indicating that we are currently restarting from safe mode -
-     * that means we don't want to enter safe mode again.
+     * Write a flag to the user profile indicating that we are currently restarting from troubleshoot mode -
+     * that means we don't want to enter troubleshoot mode again.
      *
      * @return Whether the file could be written successfully
      */
@@ -63,7 +63,7 @@ public:
     static bool removeRestartFlag();
 
 private:
-    /** Returns the path of the safe mode flag file.*/
+    /** Returns the path of the troubleshoot mode flag file.*/
     static OUString getFilePath(const OUString& sFilename);
 };
 }

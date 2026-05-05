@@ -5,7 +5,7 @@
   <object class="GtkDialog" id="SafeModeDialog">
     <property name="can_focus">False</property>
     <property name="border_width">6</property>
-    <property name="title" translatable="yes" context="safemodedialog|SafeModeDialog">Safe Mode</property>
+    <property name="title" translatable="yes" context="safemodedialog|SafeModeDialog">Troubleshoot Mode</property>
     <property name="resizable">False</property>
     <property name="modal">True</property>
     <property name="default_width">0</property>
@@ -40,7 +40,7 @@
             </child>
             <child>
               <object class="GtkButton" id="btn_continue">
-                <property name="label" translatable="yes" context="safemodedialog|btn_continue">_Continue in Safe Mode</property>
+                <property name="label" translatable="yes" context="safemodedialog|btn_continue">_Continue in Troubleshoot Mode</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
@@ -56,7 +56,7 @@
             </child>
             <child>
               <object class="GtkButton" id="btn_restart">
-                <property name="label" translatable="yes" context="safemodedialog|btn_restart">_Restart in Normal Mode</property>
+                <property name="label" translatable="yes" context="safemodedialog|btn_restart">_Restart Normally</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
@@ -94,7 +94,7 @@
           <object class="GtkLabel" id="label1">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="label" translatable="yes" context="safemodedialog|label1">%PRODUCTNAME is now running in safe mode which temporarily disables your user configuration and extensions.
+            <property name="label" translatable="yes" context="safemodedialog|label1">%PRODUCTNAME is now running in troubleshoot mode, which temporarily disables your user configuration and extensions.
 
 You can make one or more of the following changes to your user profile to return %PRODUCTNAME to a working state.</property>
             <property name="wrap">True</property>
@@ -376,7 +376,7 @@ You can make one or more of the following changes to your user profile to return
                   <object class="GtkLabel" id="label3">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="label" translatable="yes" context="safemodedialog|label3">If you experience problems that are not resolved by using safe mode, visit the following link to get help or report a bug.</property>
+                    <property name="label" translatable="yes" context="safemodedialog|label3">If using troubleshoot mode does not fix your issues, click this link to get assistance or report a bug.</property>
                     <property name="xalign">0</property>
                   </object>
                   <packing>

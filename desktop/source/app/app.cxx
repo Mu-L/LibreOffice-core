@@ -484,9 +484,9 @@ void Desktop::Init()
         std::abort();
     }
 
-    // Check whether safe mode is enabled
+    // Check whether troubleshoot mode is enabled
     const CommandLineArgs& rCmdLineArgs = GetCommandLineArgs();
-    // Check if we are restarting from safe mode - in that case we don't want to enter it again
+    // Check if we are restarting from troubleshoot mode - in that case we don't want to enter it again
     if (sfx2::SafeMode::hasRestartFlag())
         sfx2::SafeMode::removeRestartFlag();
     else if (rCmdLineArgs.IsSafeMode() || sfx2::SafeMode::hasFlag())
@@ -900,7 +900,7 @@ void Desktop::HandleBootstrapErrors(
         // but end up in a _exit() call
         comphelper::BackupFileHelper::setExitWasCalled();
 
-        // enter safe mode, too
+        // enter troubleshoot mode, too
         sfx2::SafeMode::putFlag();
 
         OUString msg(DpResId(STR_CONFIG_ERR_ACCESS_GENERAL));
@@ -2052,7 +2052,7 @@ void Desktop::OpenClients()
     bool bAllowRecoveryAndSessionManagement = ( !rArgs.IsNoRestore() ) && ( !rArgs.IsHeadless()  );
 
 #if !defined ANDROID
-    // Enter safe mode if requested
+    // Enter troubleshoot mode if requested
     if (Application::IsSafeModeEnabled()) {
         handleSafeMode();
     }

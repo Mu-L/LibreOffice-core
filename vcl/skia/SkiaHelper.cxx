@@ -447,7 +447,7 @@ static bool initVCLSkiaEnabled()
         bRet = true; // macOS/win can __only__ render via skia
 #else
         bRet = bForceSkia;
-        // If not forced, don't enable in safe mode
+        // If not forced, don't enable in troubleshoot mode
         if (!bRet && !Application::IsSafeModeEnabled())
         {
             bRet = getenv("SAL_ENABLESKIA") != nullptr

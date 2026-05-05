@@ -178,7 +178,7 @@ namespace comphelper
         /** Return the profile url */
         static const OUString& getUserProfileURL();
 
-        /** Return the url of the backed up profile (when in safe mode) */
+        /** Return the url of the backed up profile (when in troubleshoot mode) */
         static const OUString& getUserProfileWorkURL();
 
     private:

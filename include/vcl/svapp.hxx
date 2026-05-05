@@ -1237,10 +1237,10 @@ public:
 
     ///@}
 
-    /** Set safe mode to enabled */
+    /** Set troubleshoot mode to enabled */
     static void                 EnableSafeMode();
 
-    /** Determines if safe mode is enabled */
+    /** Determines if troubleshoot mode is enabled */
     static bool                 IsSafeModeEnabled();
 
     /** Collect what .ui files are used*/

@@ -115,7 +115,7 @@ void SafeModeDialog::enableDisableWidgets()
 short SafeModeDialog::run()
 {
     short nRet = weld::GenericDialogController::run();
-    // Remove the safe mode flag before exiting this dialog
+    // Remove the troubleshoot mode flag before exiting this dialog
     sfx2::SafeMode::removeFlag();
     return nRet;
 }

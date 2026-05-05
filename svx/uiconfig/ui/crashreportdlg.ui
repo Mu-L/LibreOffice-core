@@ -160,7 +160,7 @@ Thank you for your help in improving %PRODUCTNAME.</property>
             </child>
             <child>
               <object class="GtkCheckButton" id="check_safemode">
-                <property name="label" translatable="yes" context="crashreportdlg|check_safemode">Restart %PRODUCTNAME to enter safe mode</property>
+                <property name="label" translatable="yes" context="crashreportdlg|check_safemode">Restart %PRODUCTNAME to enter troubleshoot mode</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">False</property>

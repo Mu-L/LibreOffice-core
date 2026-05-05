@@ -72,7 +72,7 @@ short CrashReportDialog::run()
 {
     short nRet = GenericDialogController::run();
 
-    // Check whether to go to safe mode
+    // Check whether to go to troubleshoot mode
     if (mxCBSafeMode->get_active())
     {
         sfx2::SafeMode::putFlag();
