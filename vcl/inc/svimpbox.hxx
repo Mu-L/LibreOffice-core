@@ -37,7 +37,7 @@ namespace comphelper::string { class NaturalStringSorter; }
 
 class ImpLBSelEng final : public FunctionSet
 {
-    SvImpLBox*          pImp;
+    SvImpLBox& m_rImp;
     VclPtr<SvTreeListBox>  pView;
 
 public:

@@ -2552,8 +2552,8 @@ void SvImpLBox::SelectEntry( SvTreeListEntry* pEntry, bool bSelect )
 }
 
 ImpLBSelEng::ImpLBSelEng(SvImpLBox& rImp, SvTreeListBox& rView)
+    : m_rImp(rImp)
 {
-    pImp = &rImp;
     pView = &rView;
 }
 
@@ -2561,37 +2561,28 @@ ImpLBSelEng::~ImpLBSelEng()
 {
 }
 
-void ImpLBSelEng::BeginDrag()
-{
-    pImp->BeginDrag();
-}
+void ImpLBSelEng::BeginDrag() { m_rImp.BeginDrag(); }
 
-void ImpLBSelEng::CreateAnchor()
-{
-    pImp->m_pAnchor = pImp->m_pCursor;
-}
+void ImpLBSelEng::CreateAnchor() { m_rImp.m_pAnchor = m_rImp.m_pCursor; }
 
-void ImpLBSelEng::DestroyAnchor()
-{
-    pImp->m_pAnchor = nullptr;
-}
+void ImpLBSelEng::DestroyAnchor() { m_rImp.m_pAnchor = nullptr; }
 
 void ImpLBSelEng::SetCursorAtPoint(const Point& rPoint, bool bDontSelectAtCursor)
 {
-    SvTreeListEntry* pNewCursor = pImp->MakePointVisible( rPoint );
+    SvTreeListEntry* pNewCursor = m_rImp.MakePointVisible(rPoint);
     if( pNewCursor )
     {
         // at SimpleTravel, the SetCursor is selected and the select handler is
         // called
         //if( !bDontSelectAtCursor && !pImp->bSimpleTravel )
         //  pImp->SelectEntry( pNewCursor, true );
-        pImp->SetCursor( pNewCursor, bDontSelectAtCursor );
+        m_rImp.SetCursor(pNewCursor, bDontSelectAtCursor);
     }
 }
 
 bool ImpLBSelEng::IsSelectionAtPoint( const Point& rPoint )
 {
-    SvTreeListEntry* pEntry = pImp->MakePointVisible( rPoint );
+    SvTreeListEntry* pEntry = m_rImp.MakePointVisible(rPoint);
     if( pEntry )
         return pView->IsSelected(pEntry);
     return false;
@@ -2599,16 +2590,16 @@ bool ImpLBSelEng::IsSelectionAtPoint( const Point& rPoint )
 
 void ImpLBSelEng::DeselectAtPoint( const Point& rPoint )
 {
-    SvTreeListEntry* pEntry = pImp->MakePointVisible( rPoint );
+    SvTreeListEntry* pEntry = m_rImp.MakePointVisible(rPoint);
     if( !pEntry )
         return;
-    pImp->SelectEntry( pEntry, false );
+    m_rImp.SelectEntry(pEntry, false);
 }
 
 void ImpLBSelEng::DeselectAll()
 {
-    pImp->SelAllDestrAnch( false, false ); // don't reset SelectionEngine!
-    pImp->m_nFlags &= ~LBoxFlags::DeselectAll;
+    m_rImp.SelAllDestrAnch(false, false); // don't reset SelectionEngine!
+    m_rImp.m_nFlags &= ~LBoxFlags::DeselectAll;
 }
 
 // ***********************************************************************
