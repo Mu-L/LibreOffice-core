@@ -25,6 +25,11 @@
 #include <vcl/weld/TreeView.hxx>
 #include <svx/dialog/TableAutoFmtPreview.hxx>
 
+namespace weld
+{
+class IconView;
+}
+
 class SVX_DLLPUBLIC SvxTableStylesDlg : public weld::GenericDialogController
 {
 private:
@@ -40,7 +45,7 @@ private:
 
     enum BorderLayout
     {
-        TABLE_NO_BORDERS = 1,
+        TABLE_NO_BORDERS = 0,
         TABLE_LEFT_BORDER,
         TABLE_RIGHT_BORDER,
         TABLE_LEFT_RIGHT_BORDERS,
@@ -73,8 +78,7 @@ private:
     std::unique_ptr<ColorListBox> m_xBorderColor;
     std::unique_ptr<ColorListBox> m_xTextColor;
     std::unique_ptr<SvtLineListBox> m_xBorderStyle;
-    std::unique_ptr<ValueSet> m_xBorderSelector;
-    std::unique_ptr<weld::CustomWeld> m_xBorderSelectorWin;
+    std::unique_ptr<weld::IconView> m_xBorderSelector;
     std::unique_ptr<weld::CustomWeld> mxWndPreview;
     std::unique_ptr<weld::ComboBox> m_xElementBox;
     std::unique_ptr<weld::Entry> m_xNameEntry;
@@ -96,7 +100,7 @@ private:
     DECL_LINK(TextStyleHdl, const OUString&, void);
     DECL_LINK(HorAlignHdl, const OUString&, void);
     DECL_LINK(VerAlignHdl, const OUString&, void);
-    DECL_LINK(BorderLayoutSelHdl, ValueSet*, void);
+    DECL_LINK(BorderLayoutItemActivatedHdl, const weld::TreeIter&, bool);
     DECL_LINK(BorderStyleHdl, SvtLineListBox&, void);
     DECL_LINK(PaddingHdl, weld::MetricSpinButton&, void);
     DECL_LINK(OkayHdl, weld::Button&, void);

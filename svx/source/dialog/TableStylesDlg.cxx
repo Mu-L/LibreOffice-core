@@ -43,6 +43,7 @@
 #include <vcl/weld/Builder.hxx>
 #include <vcl/weld/ScrolledWindow.hxx>
 #include <vcl/weld/Dialog.hxx>
+#include <vcl/weld/IconView.hxx>
 #include <vcl/weld/MessageDialog.hxx>
 #include <vcl/weld/Toolbar.hxx>
 
@@ -148,8 +149,7 @@ SvxTableStylesDlg::SvxTableStylesDlg(weld::Window* pParent, bool bNewStyle, SvxA
     , m_xTextColor(new ColorListBox(m_xBuilder->weld_menu_button(u"charcolormb"_ustr),
                                     [this] { return m_xDialog.get(); }))
     , m_xBorderStyle(new SvtLineListBox(m_xBuilder->weld_menu_button(u"borderstylemb"_ustr)))
-    , m_xBorderSelector(new ValueSet(nullptr))
-    , m_xBorderSelectorWin(new weld::CustomWeld(*m_xBuilder, u"borders"_ustr, *m_xBorderSelector))
+    , m_xBorderSelector(m_xBuilder->weld_icon_view(u"borders"_ustr))
     , mxWndPreview(new weld::CustomWeld(*m_xBuilder, u"previewarea"_ustr, maWndPreview))
     , m_xElementBox(m_xBuilder->weld_combo_box(u"elementbox"_ustr))
     , m_xNameEntry(m_xBuilder->weld_entry(u"basicnameentry"_ustr))
@@ -284,10 +284,6 @@ void SvxTableStylesDlg::InitLineStyles()
 
 void SvxTableStylesDlg::InitBorderSelector()
 {
-    m_xBorderSelector->SetStyle(m_xBorderSelector->GetStyle() | WB_ITEMBORDER | WB_DOUBLEBORDER);
-    m_xBorderSelector->SetColCount(4);
-    m_xBorderSelector->SetLineCount(2);
-
     struct
     {
         OUString IconId;
@@ -303,16 +299,15 @@ void SvxTableStylesDlg::InitBorderSelector()
 
     for (size_t i = 0; i < std::size(aBorderStyles); i++)
     {
-        m_xBorderSelector->InsertItem(i + 1);
-        m_xBorderSelector->SetItemImage(i + 1, Image(StockImage::Yes, aBorderStyles[i].IconId));
-        m_xBorderSelector->SetItemText(i + 1, SvxResId(aBorderStyles[i].LabelId));
+        const Bitmap aIcon = Image(StockImage::Yes, aBorderStyles[i].IconId).GetBitmap();
+        m_xBorderSelector->insert(i, nullptr, nullptr, &aIcon, nullptr);
+        const OUString sName = SvxResId(aBorderStyles[i].LabelId);
+        m_xBorderSelector->set_item_accessible_name(i, sName);
+        m_xBorderSelector->set_item_tooltip_text(i, sName);
     }
 
-    m_xBorderSelector->SetNoSelection();
-    m_xBorderSelector->SetOptimalSize();
-    m_xBorderSelector->Show();
-
-    m_xBorderSelector->SetSelectHdl(LINK(this, SvxTableStylesDlg, BorderLayoutSelHdl));
+    m_xBorderSelector->connect_item_activated(
+        LINK(this, SvxTableStylesDlg, BorderLayoutItemActivatedHdl));
 }
 
 SvxBoxItem SvxTableStylesDlg::GetValidBox()
@@ -372,41 +367,41 @@ IMPL_LINK_NOARG(SvxTableStylesDlg, ElementSelHdl, weld::ComboBox&, void)
     SvxBoxItem aBox = aField.GetBox();
     if (aBox.GetLeft() && aBox.GetRight() && aBox.GetTop() && aBox.GetBottom())
     {
-        m_xBorderSelector->SelectItem(TABLE_ALL_BORDERS);
+        m_xBorderSelector->select(TABLE_ALL_BORDERS);
         aBorder = aBox.GetLeft();
     }
     else if (aBox.GetTop() && aBox.GetBottom())
     {
-        m_xBorderSelector->SelectItem(TABLE_TOP_BOTTOM_BORDERS);
+        m_xBorderSelector->select(TABLE_TOP_BOTTOM_BORDERS);
         aBorder = aBox.GetTop();
     }
     else if (aBox.GetLeft() && aBox.GetRight())
     {
-        m_xBorderSelector->SelectItem(TABLE_LEFT_RIGHT_BORDERS);
+        m_xBorderSelector->select(TABLE_LEFT_RIGHT_BORDERS);
         aBorder = aBox.GetLeft();
     }
     else if (aBox.GetLeft())
     {
-        m_xBorderSelector->SelectItem(TABLE_LEFT_BORDER);
+        m_xBorderSelector->select(TABLE_LEFT_BORDER);
         aBorder = aBox.GetLeft();
     }
     else if (aBox.GetRight())
     {
-        m_xBorderSelector->SelectItem(TABLE_RIGHT_BORDER);
+        m_xBorderSelector->select(TABLE_RIGHT_BORDER);
         aBorder = aBox.GetRight();
     }
     else if (aBox.GetTop())
     {
-        m_xBorderSelector->SelectItem(TABLE_TOP_BORDER);
+        m_xBorderSelector->select(TABLE_TOP_BORDER);
         aBorder = aBox.GetTop();
     }
     else if (aBox.GetBottom())
     {
-        m_xBorderSelector->SelectItem(TABLE_BOTTOM_BORDER);
+        m_xBorderSelector->select(TABLE_BOTTOM_BORDER);
         aBorder = aBox.GetBottom();
     }
     else
-        m_xBorderSelector->SelectItem(TABLE_NO_BORDERS);
+        m_xBorderSelector->select(TABLE_NO_BORDERS);
 
     if (aBorder)
     {
@@ -637,9 +632,11 @@ IMPL_LINK(SvxTableStylesDlg, VerAlignHdl, const OUString&, rAlign, void)
     mpCurrField->SetPropertyFlag(PROP_VER_JUSTIFY);
 }
 
-IMPL_LINK_NOARG(SvxTableStylesDlg, BorderLayoutSelHdl, ValueSet*, void)
+IMPL_LINK(SvxTableStylesDlg, BorderLayoutItemActivatedHdl, const weld::TreeIter&, rIter, bool)
 {
-    sal_uInt16 nSelected = m_xBorderSelector->GetSelectedItemId();
+    const int nSelected = m_xBorderSelector->get_iter_index_in_parent(rIter);
+    assert(nSelected >= 0 && nSelected < m_xBorderSelector->n_children() && "invalid index");
+
     SvxBoxItem aBox = GetValidBox();
     editeng::SvxBorderLine aBorder;
     if (aBox.GetTop())
@@ -707,6 +704,8 @@ IMPL_LINK_NOARG(SvxTableStylesDlg, BorderLayoutSelHdl, ValueSet*, void)
     m_xBorderColor->SelectEntry(aBorder.GetColor());
     mpCurrField->SetPropertyFlag(PROP_BOX);
     maWndPreview.NotifyChange(mpFormat.GetResolvedStyle(&mpData));
+
+    return true;
 }
 
 void SvxTableStylesDlg::UpdateWidth(tools::Long nWidth)
