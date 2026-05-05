@@ -228,7 +228,7 @@ protected:
     DECL_LINK( MyUserEvent,  void*, void);
 
 public:
-    SvImpLBox(SvTreeListBox& rView, SvTreeList*, WinBits nWinStyle);
+    SvImpLBox(SvTreeListBox& rView, SvTreeList& rTree, WinBits nWinStyle);
     virtual ~SvImpLBox();
 
     void                Clear();

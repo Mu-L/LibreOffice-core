@@ -23,7 +23,7 @@
 #include "iconviewimpl.hxx"
 
 IconViewImpl::IconViewImpl(IconView& rIconView, SvTreeList& rTreeList, WinBits nWinStyle)
-    : SvImpLBox(rIconView, &rTreeList, nWinStyle)
+    : SvImpLBox(rIconView, rTreeList, nWinStyle)
 {
 }
 

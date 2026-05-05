@@ -48,7 +48,7 @@ Image*  SvImpLBox::s_pDefCollapsed      = nullptr;
 Image*  SvImpLBox::s_pDefExpanded       = nullptr;
 oslInterlockedCount SvImpLBox::s_nImageRefCount   = 0;
 
-SvImpLBox::SvImpLBox(SvTreeListBox& rView, SvTreeList* pLBTree, WinBits nWinStyle)
+SvImpLBox::SvImpLBox(SvTreeListBox& rView, SvTreeList& rTree, WinBits nWinStyle)
     : m_aScrBarBox(VclPtr<ScrollBarBox>::Create(&rView))
     , m_aFctSet(this, &rView)
     , mbForceMakeVisible (false)
@@ -62,7 +62,7 @@ SvImpLBox::SvImpLBox(SvTreeListBox& rView, SvTreeList* pLBTree, WinBits nWinStyl
     , m_nNextVerVisSize(0)
 {
     osl_atomic_increment(&s_nImageRefCount);
-    m_pTree = pLBTree;
+    m_pTree = &rTree;
     m_aSelEng.SetFunctionSet( static_cast<FunctionSet*>(&m_aFctSet) );
     m_aSelEng.ExpandSelectionOnMouseMove( false );
     SetStyle( nWinStyle );
