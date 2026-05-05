@@ -601,7 +601,6 @@ protected:
     SvLBoxTab*      GetFirstTab( SvLBoxTabFlags nFlagMask, sal_uInt16& rTabPos );
     void            GetLastTab( SvLBoxTabFlags nFlagMask, sal_uInt16& rTabPos );
     SvLBoxTab* GetTab(const SvTreeListEntry&, const SvLBoxItem&) const;
-    void            ClearTabList();
 
     virtual void    InitEntry(SvTreeListEntry*, const OUString&, const Image&, const Image&);
 

@@ -1603,7 +1603,7 @@ void SvTreeListBox::dispose()
     }
     if( mpImpl )
     {
-        ClearTabList();
+        m_aTabs.clear();
 
         m_pEdCtrl.reset();
 
@@ -1717,7 +1717,7 @@ void SvTreeListBox::SetTabs()
     for (size_t n = 0; n < m_aTabs.size(); ++n)
         hiddenState[n] = m_aTabs[n]->IsHidden();
 
-    ClearTabList();
+    m_aTabs.clear();
 
     TreeListButtonType eButtonType = TreeListButtonType::NO_BUTTONS;
     if (!(m_nTreeFlags & SvTreeFlags::CHKBTN))
@@ -3522,12 +3522,6 @@ SvLBoxTab* SvTreeListBox::GetTab(const SvTreeListEntry& rEntry, const SvLBoxItem
     sal_uInt16 nPos = rEntry.GetPos(rItem);
     return m_aTabs[nPos].get();
 }
-
-void SvTreeListBox::ClearTabList()
-{
-    m_aTabs.clear();
-}
-
 
 Size SvTreeListBox::GetOutputSizePixel() const
 {
