@@ -96,7 +96,7 @@ friend class SvTreeListBox;
 friend class SalInstanceTreeView;
 friend class IconView;
 private:
-    SvTreeList*          m_pTree;
+    SvTreeList& m_rTree;
     SvTreeListEntry*     m_pAnchor;
     SvTreeListEntry*     m_pMostRightEntry;
     SvLBoxButton*        m_pActiveButton;

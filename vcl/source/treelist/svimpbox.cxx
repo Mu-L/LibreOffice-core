@@ -49,7 +49,8 @@ Image*  SvImpLBox::s_pDefExpanded       = nullptr;
 oslInterlockedCount SvImpLBox::s_nImageRefCount   = 0;
 
 SvImpLBox::SvImpLBox(SvTreeListBox& rView, SvTreeList& rTree, WinBits nWinStyle)
-    : m_aScrBarBox(VclPtr<ScrollBarBox>::Create(&rView))
+    : m_rTree(rTree)
+    , m_aScrBarBox(VclPtr<ScrollBarBox>::Create(&rView))
     , m_aFctSet(this, &rView)
     , mbForceMakeVisible (false)
     , m_aEditIdle("SvImpLBox m_aEditIdle")
@@ -62,7 +63,6 @@ SvImpLBox::SvImpLBox(SvTreeListBox& rView, SvTreeList& rTree, WinBits nWinStyle)
     , m_nNextVerVisSize(0)
 {
     osl_atomic_increment(&s_nImageRefCount);
-    m_pTree = &rTree;
     m_aSelEng.SetFunctionSet( static_cast<FunctionSet*>(&m_aFctSet) );
     m_aSelEng.ExpandSelectionOnMouseMove( false );
     SetStyle( nWinStyle );
@@ -1009,7 +1009,7 @@ void SvImpLBox::DrawNet(vcl::RenderContext& rRenderContext)
     SvTreeListEntry* pEntry = m_pStartEntry;
 
     SvLBoxTab* pFirstDynamicTab = m_rView.GetFirstDynamicTab();
-    while (m_pTree->GetDepth( pEntry ) > 0)
+    while (m_rTree.GetDepth(pEntry) > 0)
     {
         pEntry = m_rView.GetParent(pEntry);
     }
@@ -1051,7 +1051,7 @@ void SvImpLBox::DrawNet(vcl::RenderContext& rRenderContext)
             rRenderContext.DrawLine(aPos1, aPos2);
         }
         // visible in control?
-        if (n >= nOffs && !m_pTree->IsAtRootDepth(pEntry))
+        if (n >= nOffs && !m_rTree.IsAtRootDepth(pEntry))
         {
             // draw horizontal line
             aPos1.setX(m_rView.GetTabPos(m_rView.GetParent(pEntry), pFirstDynamicTab)
@@ -1438,7 +1438,7 @@ void SvImpLBox::EntryCollapsed( SvTreeListEntry* pEntry )
 
     ShowCursor( false );
 
-    if( !m_pMostRightEntry || m_pTree->IsChild( pEntry,m_pMostRightEntry ) )
+    if (!m_pMostRightEntry || m_rTree.IsChild(pEntry, m_pMostRightEntry))
     {
         FindMostRight();
     }
@@ -1463,7 +1463,7 @@ void SvImpLBox::EntryCollapsed( SvTreeListEntry* pEntry )
         ShowVerSBar();
     }
     // has the cursor been collapsed?
-    if( m_pTree->IsChild( pEntry, m_pCursor ) )
+    if (m_rTree.IsChild(pEntry, m_pCursor))
         SetCursor( pEntry );
     if( GetUpdateMode() )
         ShowVerSBar();
@@ -1488,7 +1488,7 @@ void SvImpLBox::CollapsingEntry( SvTreeListEntry* pEntry )
     }
     else
     {
-        if( m_pTree->IsChild(pEntry, m_pStartEntry) )
+        if (m_rTree.IsChild(pEntry, m_pStartEntry))
         {
             m_pStartEntry = pEntry;
             if( GetUpdateMode() )
@@ -1560,7 +1560,7 @@ void SvImpLBox::RemovingEntry( SvTreeListEntry* pEntry )
 
     if (pEntry == m_pMostRightEntry
         || (pEntry->HasChildren() && m_rView.IsExpanded(pEntry)
-            && m_pTree->IsChild(pEntry, m_pMostRightEntry)))
+            && m_rTree.IsChild(pEntry, m_pMostRightEntry)))
     {
         m_nFlags |= LBoxFlags::RemovedRecalcMostRight;
     }
@@ -1576,9 +1576,9 @@ void SvImpLBox::RemovingEntry( SvTreeListEntry* pEntry )
         InvalidateEntry( pParent );
     }
 
-    if( m_pCursor && m_pTree->IsChild( pEntry, m_pCursor) )
+    if (m_pCursor && m_rTree.IsChild(pEntry, m_pCursor))
         m_pCursor = pEntry;
-    if( m_pStartEntry && m_pTree->IsChild(pEntry,m_pStartEntry) )
+    if (m_pStartEntry && m_rTree.IsChild(pEntry, m_pStartEntry))
         m_pStartEntry = pEntry;
 
     SvTreeListEntry* pTemp;
@@ -1624,7 +1624,7 @@ void SvImpLBox::EntryRemoved()
         return;
     }
     if( !m_pStartEntry )
-        m_pStartEntry = m_pTree->First();
+        m_pStartEntry = m_rTree.First();
     if( !m_pCursor )
         SetCursor( m_pStartEntry, true );
 
@@ -1705,8 +1705,8 @@ void SvImpLBox::EntryMoved( SvTreeListEntry* pEntry )
         m_pStartEntry = m_rView.First();
 
     m_aVerSBar->SetRange(Range(0, static_cast<tools::Long>(m_rView.GetVisibleCount()) - 1));
-    sal_uInt16 nFirstPos = static_cast<sal_uInt16>(m_pTree->GetAbsPos( m_pStartEntry ));
-    sal_uInt16 nNewPos = static_cast<sal_uInt16>(m_pTree->GetAbsPos( pEntry ));
+    sal_uInt16 nFirstPos = static_cast<sal_uInt16>(m_rTree.GetAbsPos(m_pStartEntry));
+    sal_uInt16 nNewPos = static_cast<sal_uInt16>(m_rTree.GetAbsPos(pEntry));
     FindMostRight();
     if( nNewPos < nFirstPos ) // HACK!
         m_pStartEntry = pEntry;
@@ -1719,7 +1719,7 @@ void SvImpLBox::EntryMoved( SvTreeListEntry* pEntry )
         {
             SvTreeListEntry* pParent = pEntry;
             do {
-                pParent = m_pTree->GetParent( pParent );
+                pParent = m_rTree.GetParent(pParent);
             } while (!m_rView.IsEntryVisible(pParent));
             SetCursor( pParent );
         }
@@ -1734,10 +1734,10 @@ void SvImpLBox::EntryInserted( SvTreeListEntry* pEntry )
     if( !GetUpdateMode() )
         return;
 
-    SvTreeListEntry* pParent = m_pTree->GetParent(pEntry);
-    if (pParent && m_pTree->GetChildList(pParent).size() == 1)
+    SvTreeListEntry* pParent = m_rTree.GetParent(pEntry);
+    if (pParent && m_rTree.GetChildList(pParent).size() == 1)
         // draw plus sign
-        m_pTree->InvalidateEntry( pParent );
+        m_rTree.InvalidateEntry(pParent);
 
     if (!m_rView.IsEntryVisible(pEntry))
         return;
@@ -2059,13 +2059,13 @@ void SvImpLBox::MouseMove( const MouseEvent& rMEvt)
 
 void SvImpLBox::ExpandAll()
 {
-    sal_uInt16 nRefDepth = m_pTree->GetDepth(m_pCursor);
-    SvTreeListEntry* pCur = m_pTree->Next(m_pCursor);
-    while (pCur && m_pTree->GetDepth(pCur) > nRefDepth)
+    sal_uInt16 nRefDepth = m_rTree.GetDepth(m_pCursor);
+    SvTreeListEntry* pCur = m_rTree.Next(m_pCursor);
+    while (pCur && m_rTree.GetDepth(pCur) > nRefDepth)
     {
         if (pCur->HasChildren() && !m_rView.IsExpanded(pCur))
             m_rView.Expand(pCur);
-        pCur = m_pTree->Next(pCur);
+        pCur = m_rTree.Next(pCur);
     }
 }
 
@@ -2078,27 +2078,27 @@ void SvImpLBox::CollapseTo(SvTreeListEntry* pParentToCollapse)
     sal_uInt16 nRefDepth;
     // special case explorer: if the root only has a single
     // entry, don't collapse the root entry
-    if (m_pTree->GetChildList(nullptr).size() < 2)
+    if (m_rTree.GetChildList(nullptr).size() < 2)
     {
         nRefDepth = 1;
         pParentToCollapse = m_pCursor;
-        while (m_pTree->GetParent(pParentToCollapse)
-               && m_pTree->GetDepth(m_pTree->GetParent(pParentToCollapse)) > 0)
+        while (m_rTree.GetParent(pParentToCollapse)
+               && m_rTree.GetDepth(m_rTree.GetParent(pParentToCollapse)) > 0)
         {
-            pParentToCollapse = m_pTree->GetParent(pParentToCollapse);
+            pParentToCollapse = m_rTree.GetParent(pParentToCollapse);
         }
     }
     else
-        nRefDepth = m_pTree->GetDepth(pParentToCollapse);
+        nRefDepth = m_rTree.GetDepth(pParentToCollapse);
 
     if (m_rView.IsExpanded(pParentToCollapse))
         m_rView.Collapse(pParentToCollapse);
-    SvTreeListEntry* pCur = m_pTree->Next(pParentToCollapse);
-    while (pCur && m_pTree->GetDepth(pCur) > nRefDepth)
+    SvTreeListEntry* pCur = m_rTree.Next(pParentToCollapse);
+    while (pCur && m_rTree.GetDepth(pCur) > nRefDepth)
     {
         if (pCur->HasChildren() && m_rView.IsExpanded(pCur))
             m_rView.Collapse(pCur);
-        pCur = m_pTree->Next(pCur);
+        pCur = m_rTree.Next(pCur);
     }
 }
 
@@ -2762,7 +2762,7 @@ void SvImpLBox::SelAllDestrAnch(
     bool bUpdate = GetUpdateMode();
 
     m_nFlags |= LBoxFlags::IgnoreSelect; // EntryInserted should not do anything
-    pEntry = m_pTree->First();
+    pEntry = m_rTree.First();
     while( pEntry )
     {
         if (m_rView.Select(pEntry, bSelect))
@@ -2774,7 +2774,7 @@ void SvImpLBox::SelAllDestrAnch(
                     InvalidateEntry(pEntry);
             }
         }
-        pEntry = m_pTree->Next( pEntry );
+        pEntry = m_rTree.Next(pEntry);
     }
     m_nFlags &= ~LBoxFlags::IgnoreSelect;
 
@@ -3051,7 +3051,7 @@ void SvImpLBox::FindMostRight( SvTreeListEntry* pParent )
 
 void SvImpLBox::FindMostRight_Impl( SvTreeListEntry* pParent )
 {
-    SvTreeListEntries& rList = m_pTree->GetChildList( pParent );
+    SvTreeListEntries& rList = m_rTree.GetChildList(pParent);
 
     size_t nCount = rList.size();
     for( size_t nCur = 0; nCur < nCount; nCur++ )
