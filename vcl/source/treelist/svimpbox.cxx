@@ -51,7 +51,7 @@ oslInterlockedCount SvImpLBox::s_nImageRefCount   = 0;
 SvImpLBox::SvImpLBox(SvTreeListBox& rView, SvTreeList& rTree, WinBits nWinStyle)
     : m_rTree(rTree)
     , m_aScrBarBox(VclPtr<ScrollBarBox>::Create(&rView))
-    , m_aFctSet(this, &rView)
+    , m_aFctSet(*this, rView)
     , mbForceMakeVisible (false)
     , m_aEditIdle("SvImpLBox m_aEditIdle")
     , m_rView(rView)
@@ -2551,10 +2551,10 @@ void SvImpLBox::SelectEntry( SvTreeListEntry* pEntry, bool bSelect )
     m_rView.Select(pEntry, bSelect);
 }
 
-ImpLBSelEng::ImpLBSelEng( SvImpLBox* pImpl, SvTreeListBox* pV )
+ImpLBSelEng::ImpLBSelEng(SvImpLBox& rImp, SvTreeListBox& rView)
 {
-    pImp = pImpl;
-    pView = pV;
+    pImp = &rImp;
+    pView = &rView;
 }
 
 ImpLBSelEng::~ImpLBSelEng()

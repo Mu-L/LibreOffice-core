@@ -41,7 +41,7 @@ class ImpLBSelEng final : public FunctionSet
     VclPtr<SvTreeListBox>  pView;
 
 public:
-    ImpLBSelEng( SvImpLBox* pImp, SvTreeListBox* pView );
+    ImpLBSelEng(SvImpLBox& rImp, SvTreeListBox& rView);
     virtual ~ImpLBSelEng() override;
     void        BeginDrag() override;
     void        CreateAnchor() override;
