@@ -437,7 +437,7 @@ SvTreeListBox::SvTreeListBox(vcl::Window* pParent, WinBits nWinStyle) :
     m_nTreeFlags = SvTreeFlags::RECALCTABS;
     m_nIndent = SV_LBOX_DEFAULT_INDENT_PIXEL;
     m_nEntryHeightOffs = SV_ENTRYHEIGHTOFFS_PIXEL;
-    m_pImpl.reset(new SvImpLBox(*this, GetModel(), GetStyle()));
+    m_pImpl.reset(new SvImpLBox(*this, m_pModel.get(), GetStyle()));
 
     mbContextBmpExpanded = true;
     m_nContextBmpWidthMax = 0;
@@ -450,8 +450,6 @@ SvTreeListBox::SvTreeListBox(vcl::Window* pParent, WinBits nWinStyle) :
     InitSettings();
     ImplInitStyle();
     SetTabs();
-
-    m_pImpl->SetModel(m_pModel.get());
 
     SetSublistOpenWithLeftRight();
 }

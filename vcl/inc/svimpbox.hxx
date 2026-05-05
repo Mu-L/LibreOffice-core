@@ -234,7 +234,6 @@ public:
     void                Clear();
     void                SetStyle( WinBits i_nWinStyle );
     void                SetNoAutoCurEntry( bool b );
-    void                SetModel( SvTreeList* pModel ) { m_pTree = pModel;}
 
     void                EntryInserted( SvTreeListEntry*);
     void                RemovingEntry( SvTreeListEntry* pEntry );
