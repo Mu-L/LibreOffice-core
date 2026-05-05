@@ -1698,6 +1698,7 @@ namespace emfplushelper
                         css::lang::Locale locale;
                         double stringAlignmentHorizontalOffset = 0.0;
                         double stringAlignmentVerticalOffset = font->emSize;
+                        std::vector<double> aDXArray;
                         if (stringFormat)
                         {
                             LanguageTag aLanguageTag(static_cast<LanguageType>(stringFormat->language));
@@ -1708,6 +1709,18 @@ namespace emfplushelper
                                 font->emSize, locale);
 
                             double fTextWidth = aTextLayouter.getTextWidth(text, 0, stringLength);
+
+                            // Apply character spacing (tracking).  Tracking is a multiplier on
+                            // each character's natural advance; default 1.0 means no change.
+                            if (stringFormat->tracking != 1.0f && stringLength > 0)
+                            {
+                                aDXArray = aTextLayouter.getTextArray(text, 0, stringLength);
+                                for (double& rPos : aDXArray)
+                                    rPos *= stringFormat->tracking;
+                                if (!aDXArray.empty())
+                                    fTextWidth = aDXArray.back();
+                            }
+
                             SAL_WARN_IF(stringFormat->DirectionRightToLeft(), "drawinglayer.emf",
                                         "EMF+\t DrawString Alignment TODO For a right-to-left layout rectangle, the origin should be at the upper right.");
                             if (stringFormat->stringAlignment == StringAlignmentNear)
@@ -1774,7 +1787,6 @@ namespace emfplushelper
 
                         if (color.GetAlpha() > 0)
                         {
-                            std::vector<double> emptyVector;
                             rtl::Reference<drawinglayer::primitive2d::BasePrimitive2D> pBaseText;
                             if (font->Underline() || font->Strikeout())
                             {
@@ -1783,7 +1795,7 @@ namespace emfplushelper
                                             text,
                                             0,             // text always starts at 0
                                             stringLength,
-                                            std::move(emptyVector),   // EMF-PLUS has no DX-array
+                                            std::move(aDXArray),
                                             {},
                                             std::move(fontAttribute),
                                             locale,
@@ -1807,7 +1819,7 @@ namespace emfplushelper
                                             text,
                                             0,             // text always starts at 0
                                             stringLength,
-                                            std::move(emptyVector),   // EMF-PLUS has no DX-array
+                                            std::move(aDXArray),
                                             {},
                                             std::move(fontAttribute),
                                             std::move(locale),
