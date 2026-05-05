@@ -2819,7 +2819,7 @@ SvTreeListEntry* SvTreeListBox::GetEntry( const Point& rPos, bool bHit ) const
     if( pEntry && bHit )
     {
         tools::Long nLine = m_pImpl->GetEntryLine(pEntry);
-        if (!(m_pImpl->EntryReallyHit(pEntry, rPos, nLine)))
+        if (!(m_pImpl->EntryReallyHit(*pEntry, rPos, nLine)))
             return nullptr;
     }
     return pEntry;

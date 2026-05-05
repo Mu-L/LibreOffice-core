@@ -165,7 +165,7 @@ private:
     bool                ButtonUpCheckCtrl( const MouseEvent& rMEvt );
     bool                ButtonDownCheckExpand( const MouseEvent&, SvTreeListEntry* );
 
-    bool                EntryReallyHit(SvTreeListEntry* pEntry, const Point& rPos, tools::Long nLine);
+    bool EntryReallyHit(SvTreeListEntry& rEntry, const Point& rPos, tools::Long nLine);
     void                InitScrollBarBox();
     SvLBoxTab*          NextTab( SvLBoxTab const * );
 

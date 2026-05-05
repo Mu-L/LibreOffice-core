@@ -747,19 +747,20 @@ SvTreeListEntry* SvImpLBox::GetClickedEntry( const Point& rPoint ) const
 //  checks if the entry was hit "the right way"
 //  (Focusrect+ ContextBitmap at TreeListBox)
 
-bool SvImpLBox::EntryReallyHit(SvTreeListEntry* pEntry, const Point& rPosPixel, tools::Long nLine)
+bool SvImpLBox::EntryReallyHit(SvTreeListEntry& rEntry, const Point& rPosPixel, tools::Long nLine)
 {
     bool bRet;
     // we are not too exact when it comes to "special" entries
     // (with CheckButtons etc.)
-    if( pEntry->ItemCount() >= 3 )
+    if (rEntry.ItemCount() >= 3)
         return true;
 
-    tools::Rectangle aRect(m_rView.GetFocusRect(pEntry, nLine));
+    tools::Rectangle aRect(m_rView.GetFocusRect(&rEntry, nLine));
     aRect.SetRight(GetOutputSize().Width() - m_rView.GetMapMode().GetOrigin().X());
 
-    SvLBoxContextBmp* pBmp = static_cast<SvLBoxContextBmp*>(pEntry->GetFirstItem(SvLBoxItemType::ContextBmp));
-    aRect.AdjustLeft(-pBmp->GetWidth(m_rView, pEntry));
+    SvLBoxContextBmp* pBmp
+        = static_cast<SvLBoxContextBmp*>(rEntry.GetFirstItem(SvLBoxItemType::ContextBmp));
+    aRect.AdjustLeft(-pBmp->GetWidth(m_rView, &rEntry));
     aRect.AdjustLeft( -4 ); // a little tolerance
 
     Point aPos( rPosPixel );
@@ -1942,7 +1943,7 @@ void SvImpLBox::MouseButtonDown( const MouseEvent& rMEvt )
     if( ButtonDownCheckExpand( rMEvt, pEntry ) )
         return;
 
-    if( !EntryReallyHit(pEntry,aPos,nY))
+    if (!EntryReallyHit(*pEntry, aPos, nY))
         return;
 
     SvLBoxItem* pXItem = m_rView.GetItem(pEntry, aPos.X());
