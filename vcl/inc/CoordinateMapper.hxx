@@ -26,8 +26,8 @@
 class CoordinateMapper
 {
 private:
-    sal_Int32 mnDPIX;
-    sal_Int32 mnDPIY;
+    sal_Int32 mnDPIX = 0;
+    sal_Int32 mnDPIY = 0;
     sal_Int32 mnDPIScalePercentage = 100;
 
 public:
