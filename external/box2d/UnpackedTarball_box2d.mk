@@ -11,8 +11,4 @@ $(eval $(call gb_UnpackedTarball_UnpackedTarball,box2d))
 
 $(eval $(call gb_UnpackedTarball_set_tarball,box2d,$(BOX2D_TARBALL)))
 
-$(eval $(call gb_UnpackedTarball_add_patches,box2d, \
-	external/box2d/android.patch \
-))
-
 # vim: set noet sw=4 ts=4:

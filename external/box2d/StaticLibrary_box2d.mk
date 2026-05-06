@@ -29,9 +29,8 @@ endif
 
 $(eval $(call gb_StaticLibrary_add_generated_cobjects,box2d,\
 	UnpackedTarball/box2d/src/aabb \
-	UnpackedTarball/box2d/src/allocate \
+	UnpackedTarball/box2d/src/arena_allocator \
 	UnpackedTarball/box2d/src/body \
-	UnpackedTarball/box2d/src/block_array \
 	UnpackedTarball/box2d/src/dynamic_tree \
 	UnpackedTarball/box2d/src/island \
 	UnpackedTarball/box2d/src/motor_joint \
@@ -59,7 +58,7 @@ $(eval $(call gb_StaticLibrary_add_generated_cobjects,box2d,\
 	UnpackedTarball/box2d/src/id_pool \
 	UnpackedTarball/box2d/src/math_functions \
 	UnpackedTarball/box2d/src/revolute_joint \
-	UnpackedTarball/box2d/src/stack_allocator \
+	UnpackedTarball/box2d/src/sensor \
 	UnpackedTarball/box2d/src/solver \
 	UnpackedTarball/box2d/src/solver_set \
 	UnpackedTarball/box2d/src/weld_joint \

@@ -105,8 +105,13 @@ void addTriangleVectorToBody(const basegfx::triangulator::B2DTriangleVector& rTr
             b2Hull aHull = b2ComputeHull(aTriangleVertices, 3);
             b2ShapeDef aShapeDef = b2DefaultShapeDef();
             aShapeDef.density = fDefaultStaticDensity;
+#if BOX2D_CHECK_VERSION(3, 1)
+            aShapeDef.material.friction = fDefaultStaticFriction;
+            aShapeDef.material.restitution = fDefaultStaticBodyBounciness;
+#else
             aShapeDef.friction = fDefaultStaticFriction;
             aShapeDef.restitution = fDefaultStaticBodyBounciness;
+#endif
             b2Polygon aPolygonShape = b2MakePolygon(&aHull, 0.0);
             b2CreatePolygonShape(*aBody, &aShapeDef, &aPolygonShape);
 #else
@@ -208,8 +213,13 @@ void addEdgeShapeToBody(const basegfx::B2DPolygon& rPolygon, b2Body* aBody,
             b2Hull aHull = b2ComputeHull(aQuadrilateralVertices, 4);
             b2ShapeDef aShapeDef = b2DefaultShapeDef();
             aShapeDef.density = fDefaultStaticDensity;
+#if BOX2D_CHECK_VERSION(3, 1)
+            aShapeDef.material.friction = fDefaultStaticFriction;
+            aShapeDef.material.restitution = fDefaultStaticBodyBounciness;
+#else
             aShapeDef.friction = fDefaultStaticFriction;
             aShapeDef.restitution = fDefaultStaticBodyBounciness;
+#endif
             b2Polygon aPolygonShape = b2MakePolygon(&aHull, 0.0);
             b2CreatePolygonShape(*aBody, &aShapeDef, &aPolygonShape);
 #else
@@ -993,7 +1003,11 @@ void box2DBody::setDensityAndRestitution(const double fDensity, const double fRe
     for (int i = 0; i < nShapeCount; ++i)
     {
         b2ShapeId aShapeId = aShapeIds[i];
+#if BOX2D_CHECK_VERSION(3, 1)
+        b2Shape_SetDensity(aShapeId, static_cast<float>(fDensity), false);
+#else
         b2Shape_SetDensity(aShapeId, static_cast<float>(fDensity));
+#endif
         b2Shape_SetRestitution(aShapeId, static_cast<float>(fRestitution));
     }
     // without resetting the massdata of the body, density change won't take effect

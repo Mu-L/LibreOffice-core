@@ -12194,7 +12194,7 @@ dnl Check for system box2d
 dnl ===================================================================
 AC_MSG_CHECKING([which box2d to use])
 BOX2D_MAJOR=3
-BOX2D_MINOR=0
+BOX2D_MINOR=1
 if test "$with_system_box2d" = "yes"; then
     AC_MSG_RESULT([external])
     SYSTEM_BOX2D=TRUE
