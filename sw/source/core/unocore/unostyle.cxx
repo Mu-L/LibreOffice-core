@@ -3936,7 +3936,7 @@ SwAutoStylesEnumImpl::SwAutoStylesEnumImpl( SwDoc& rInitDoc, IStyleAccess::SwAut
                 {
                     auto pItemSet = std::make_shared<SfxItemSet>(SfxItemSet::makeFixedSfxItemSet<RES_TXTATR_CJK_RUBY, RES_TXTATR_CJK_RUBY>( rAttrPool ));
                     pItemSet->Put( rRubyItem );
-                    mAutoStyles.push_back( pItemSet );
+                    mAutoStyles.push_back( std::move(pItemSet) );
                 }
             }
         }
