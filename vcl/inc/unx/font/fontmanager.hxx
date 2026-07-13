@@ -44,8 +44,6 @@ class FontSelectPattern;
 }
 class GenericUnixSalData;
 
-namespace psp {
-
 struct FontconfigFont
 {
     FontAttributes    m_aFontAttributes;
@@ -55,7 +53,7 @@ struct FontconfigFont
     int               m_nVariationEntry = 0;  // 0 for regular fonts, 0 to ... for fonts stemming from font variations
 };
 
-class VCL_PLUGIN_PUBLIC PrintFontManager
+class VCL_PLUGIN_PUBLIC FontConfigManager
 {
     std::vector<FontconfigFont> m_aSystemFonts;
 
@@ -92,11 +90,11 @@ class VCL_PLUGIN_PUBLIC PrintFontManager
     Timer m_aFontInstallerTimer;
 
     DECL_DLLPRIVATE_LINK( autoInstallFontLangSupport, Timer*, void );
-    PrintFontManager();
+    FontConfigManager();
 public:
-    ~PrintFontManager();
-    friend class ::GenericUnixSalData;
-    static PrintFontManager& get(); // one instance only
+    ~FontConfigManager();
+    friend class GenericUnixSalData;
+    static FontConfigManager& get(); // one instance only
 
     std::vector<FontconfigFont> takeSystemFonts() { return std::move(m_aSystemFonts); }
 
@@ -141,7 +139,5 @@ public:
     void Substitute(vcl::font::FontSelectPattern &rPattern, OUString& rMissingCodes);
 
 };
-
-} // namespace
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

@@ -309,7 +309,7 @@ bool FreetypeFontList::AddFontFile(std::u16string_view rFileUrl, const OUString&
     if (m_aFontFileToFontId.contains(aFullPath))
         return true;
 
-    std::vector<psp::FontconfigFont> aFonts = psp::PrintFontManager::get().addFontFile(aFullPath);
+    std::vector<FontconfigFont> aFonts = FontConfigManager::get().addFontFile(aFullPath);
     if (aFonts.empty())
         return false;
 
@@ -338,7 +338,7 @@ void FreetypeFontList::RemoveFontFile(std::u16string_view rFileUrl)
         m_aFontFaceList.erase(nFontId);
     m_aFontFileToFontId.erase(it);
 
-    psp::PrintFontManager::removeFontFile(aFullPath);
+    FontConfigManager::removeFontFile(aFullPath);
 }
 
 const FreetypeFontFace* FreetypeFontList::FindFontFace(const OString& rFileName, int nFaceNum,
@@ -498,7 +498,7 @@ namespace
 {
     std::unique_ptr<FontConfigFontOptions> GetFCFontOptions(const FontAttributes& rFontAttributes, int nSize)
     {
-        return psp::PrintFontManager::getFontOptions(rFontAttributes, nSize);
+        return FontConfigManager::getFontOptions(rFontAttributes, nSize);
     }
 }
 

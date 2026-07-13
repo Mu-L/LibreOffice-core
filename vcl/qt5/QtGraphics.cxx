@@ -143,7 +143,7 @@ void QtGraphics::GetDevFontList(vcl::font::PhysicalFontCollection* pPFC)
         return;
 
 #if USE_HEADLESS_CODE
-    psp::PrintFontManager::get();
+    FontConfigManager::get();
 
     static const bool bUseFontconfig = (nullptr == getenv("SAL_VCL_QT_NO_FONTCONFIG"));
     if (bUseFontconfig)

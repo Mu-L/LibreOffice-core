@@ -38,7 +38,7 @@ public:
         vcl::font::FontSelectPattern aPattern(rFont, rFont.GetFamilyName(), aSize, fExactHeight,
                                               bNonAntialias);
         aPattern.maTargetName = rFont.GetFamilyName();
-        psp::PrintFontManager& rMgr = psp::PrintFontManager::get();
+        FontConfigManager& rMgr = FontConfigManager::get();
         OUString aMissingCodes;
 
         rMgr.Substitute(aPattern, aMissingCodes);

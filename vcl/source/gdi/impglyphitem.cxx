@@ -373,7 +373,7 @@ const SalLayoutGlyphs* SalLayoutGlyphsCache::GetLayoutGlyphs(
             bool bEnableOptimization = (text.getLength() < nOptLengthThreshold);
 
             // Writer layouts tests enable SAL_NON_APPLICATION_FONT_USE=abort in order
-            // to make PrintFontManager::Substitute() abort if font fallback happens. When
+            // to make FontConfigManager::Substitute() abort if font fallback happens. When
             // laying out the entire string the chance this happens increases (e.g. testAbi11870
             // normally calls this function only for a part of a string, but this optimization
             // lays out the entire string and causes a fallback). Since this optimization

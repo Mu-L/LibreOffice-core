@@ -36,7 +36,7 @@ FreetypeFontList::FreetypeFontList()
 
 void FreetypeFontList::Init()
 {
-    for (const auto& rFont : psp::PrintFontManager::get().takeSystemFonts())
+    for (const auto& rFont : FontConfigManager::get().takeSystemFonts())
     {
         FontAttributes aDFA = rFont.m_aFontAttributes;
         aDFA.IncreaseQualityBy(4096);

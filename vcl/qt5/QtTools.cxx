@@ -347,7 +347,7 @@ std::optional<vcl::Font> toVclFont(const QFont& rQFont, const css::lang::Locale&
     FontAttributes aFA;
     QtFontFace::fillAttributesFromQFont(rQFont, aFA);
 
-    bool bFound = psp::PrintFontManager::matchFont(aFA, rLocale);
+    bool bFound = FontConfigManager::matchFont(aFA, rLocale);
     SAL_INFO("vcl.qt",
              "font match result for '"
                  << rQFont.family() << "': "

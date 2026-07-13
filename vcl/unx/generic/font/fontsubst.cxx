@@ -64,7 +64,7 @@ void SalGenericInstance::RegisterFontSubstitutors(vcl::font::PhysicalFontCollect
 static vcl::font::FontSelectPattern GetFcSubstitute(const vcl::font::FontSelectPattern &rFontSelData, OUString& rMissingCodes)
 {
     vcl::font::FontSelectPattern aSubstituted(rFontSelData);
-    psp::PrintFontManager& rMgr = psp::PrintFontManager::get();
+    FontConfigManager& rMgr = FontConfigManager::get();
     rMgr.Substitute(aSubstituted, rMissingCodes);
     return aSubstituted;
 }

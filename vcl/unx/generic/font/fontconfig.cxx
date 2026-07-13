@@ -56,8 +56,6 @@
 #include <utility>
 #include <algorithm>
 
-using namespace psp;
-
 namespace
 {
 
@@ -520,9 +518,9 @@ void FontCfgWrapper::clear()
 }
 
 /*
- * PrintFontManager::initFontconfig
+ * FontConfigManager::initFontconfig
  */
-void PrintFontManager::initFontconfig()
+void FontConfigManager::initFontconfig()
 {
     FontCfgWrapper& rWrapper = FontCfgWrapper::get();
     rWrapper.clear();
@@ -611,7 +609,7 @@ namespace
     }
 }
 
-std::optional<FontconfigFont> PrintFontManager::fontFromFcPattern(FcPattern* pPattern)
+std::optional<FontconfigFont> FontConfigManager::fontFromFcPattern(FcPattern* pPattern)
 {
     FontCfgWrapper& rWrapper = FontCfgWrapper::get();
 
@@ -696,7 +694,7 @@ std::optional<FontconfigFont> PrintFontManager::fontFromFcPattern(FcPattern* pPa
     return aFont;
 }
 
-std::vector<FontconfigFont> PrintFontManager::fontsFromFontconfigFile(std::string_view rFilePath)
+std::vector<FontconfigFont> FontConfigManager::fontsFromFontconfigFile(std::string_view rFilePath)
 {
     std::vector<FontconfigFont> aFonts;
 
@@ -721,7 +719,7 @@ std::vector<FontconfigFont> PrintFontManager::fontsFromFontconfigFile(std::strin
     return aFonts;
 }
 
-void PrintFontManager::collectSystemFonts()
+void FontConfigManager::collectSystemFonts()
 {
     FontCfgWrapper& rWrapper = FontCfgWrapper::get();
 
@@ -774,12 +772,12 @@ void PrintFontManager::collectSystemFonts()
     SAL_INFO("vcl.fonts", "collected " << m_aSystemFonts.size() << " fonts from fontconfig");
 }
 
-void PrintFontManager::deinitFontconfig()
+void FontConfigManager::deinitFontconfig()
 {
     FontCfgWrapper::release();
 }
 
-void PrintFontManager::addFontconfigDir( const OString& rDirName )
+void FontConfigManager::addFontconfigDir( const OString& rDirName )
 {
     const char* pDirName = rDirName.getStr();
     bool bDirOk = (FcConfigAppFontAddDir(FcConfigGetCurrent(), reinterpret_cast<FcChar8 const *>(pDirName) ) == FcTrue);
@@ -806,7 +804,7 @@ void PrintFontManager::addFontconfigDir( const OString& rDirName )
     }
 }
 
-void PrintFontManager::addFontconfigFile( const OString& rFileName )
+void FontConfigManager::addFontconfigFile( const OString& rFileName )
 {
     const char* pFileName = rFileName.getStr();
     bool bFileOk = (FcConfigAppFontAddFile(FcConfigGetCurrent(), reinterpret_cast<FcChar8 const *>(pFileName) ) == FcTrue);
@@ -822,7 +820,7 @@ void PrintFontManager::addFontconfigFile( const OString& rFileName )
     rWrapper.addFontSet( FcSetApplication );
 }
 
-void PrintFontManager::removeFontconfigFile(std::string_view aFileName)
+void FontConfigManager::removeFontconfigFile(std::string_view aFileName)
 {
     FcFontSet* pOrig = FcConfigGetFonts(FcConfigGetCurrent(), FcSetApplication);
     if (!pOrig)
@@ -1036,7 +1034,7 @@ namespace
     }
 }
 
-IMPL_LINK_NOARG(PrintFontManager, autoInstallFontLangSupport, Timer *, void)
+IMPL_LINK_NOARG(FontConfigManager, autoInstallFontLangSupport, Timer *, void)
 {
     try
     {
@@ -1057,7 +1055,7 @@ IMPL_LINK_NOARG(PrintFontManager, autoInstallFontLangSupport, Timer *, void)
     m_aCurrentRequests.clear();
 }
 
-void PrintFontManager::Substitute(vcl::font::FontSelectPattern &rPattern, OUString& rMissingCodes)
+void FontConfigManager::Substitute(vcl::font::FontSelectPattern &rPattern, OUString& rMissingCodes)
 {
     FontCfgWrapper& rWrapper = FontCfgWrapper::get();
 
@@ -1279,7 +1277,7 @@ void PrintFontManager::Substitute(vcl::font::FontSelectPattern &rPattern, OUStri
         FcFontSetDestroy( pSet );
     }
 
-    SAL_INFO("vcl.fonts", "PrintFontManager::Substitute: replacing missing font: '"
+    SAL_INFO("vcl.fonts", "FontConfigManager::Substitute: replacing missing font: '"
                               << rPattern.maTargetName << "' with '" << rPattern.maSearchName
                               << "'");
 
@@ -1300,7 +1298,7 @@ void PrintFontManager::Substitute(vcl::font::FontSelectPattern &rPattern, OUStri
         }
         if (rPattern.maTargetName == "Linux Libertine G" && rPattern.maSearchName == "Linux Libertine O")
             return;
-        SAL_WARN("vcl.fonts", "PrintFontManager::Substitute: missing font: '" << rPattern.maTargetName <<
+        SAL_WARN("vcl.fonts", "FontConfigManager::Substitute: missing font: '" << rPattern.maTargetName <<
                               "' try: " << rPattern.maSearchName << " instead");
         std::cerr << "terminating test due to missing font: " << rPattern.maTargetName << std::endl;
         std::abort();
@@ -1348,7 +1346,7 @@ void FontConfigFontOptions::SyncPattern(const OString& rFileName, sal_uInt32 nIn
     }
 }
 
-std::unique_ptr<FontConfigFontOptions> PrintFontManager::getFontOptions(const FontAttributes& rInfo, int nSize)
+std::unique_ptr<FontConfigFontOptions> FontConfigManager::getFontOptions(const FontAttributes& rInfo, int nSize)
 {
     FontOptionsKey aKey{ rInfo.GetFamilyName(), nSize, rInfo.GetItalic(),
                          rInfo.GetWeight(), rInfo.GetWidthType(), rInfo.GetPitch() };
@@ -1392,7 +1390,7 @@ std::unique_ptr<FontConfigFontOptions> PrintFontManager::getFontOptions(const Fo
 }
 
 
-bool PrintFontManager::matchFont(FontAttributes& rDFA, const css::lang::Locale& rLocale)
+bool FontConfigManager::matchFont(FontAttributes& rDFA, const css::lang::Locale& rLocale)
 {
     bool bFound = false;
     FontCfgWrapper& rWrapper = FontCfgWrapper::get();
