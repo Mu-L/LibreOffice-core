@@ -1467,16 +1467,43 @@ void SwWW8FltControlStack::SetAttrInDoc(const SwPosition& rTmpPos,
                         if ( pNum )
                         {
                             // #i103711#
-                            const bool bFirstLineIndentSet =
+                            bool bFirstLineIndentSet =
                                 ( m_rReader.m_aTextNodesHavingFirstLineOfstSet.end() !=
                                     m_rReader.m_aTextNodesHavingFirstLineOfstSet.find( pNode ) );
                             // #i105414#
-                            const bool bLeftIndentSet =
+                            bool bLeftIndentSet =
                                 (  m_rReader.m_aTextNodesHavingLeftIndentSet.end() !=
                                     m_rReader.m_aTextNodesHavingLeftIndentSet.find( pNode ) );
                             SyncIndentWithList(firstLineNew, leftMarginNew, *pNum,
                                                 bFirstLineIndentSet,
                                                 bLeftIndentSet );
+
+                            // Outline-numbered / list paragraphs can carry
+                            // paragraph indent SPRMs that are only legacy compatibility
+                            // copies of the list level indent. When the paragraph's style
+                            // hierarchy controls the indent for an axis - apply
+                            // neither the compatibility copy nor
+                            // the list level value: the paragraph inherits the style indent.
+                            // Drop the override for such an axis (restore the inherited
+                            // value) so nothing is hard-set and the style value shows through.
+                            if (pNum->GetPositionAndSpaceMode() == SvxNumberFormat::LABEL_ALIGNMENT)
+                            {
+                                ::sw::ListLevelIndents const indents(
+                                    pTextNode->AreListLevelIndentsApplicable());
+                                if (!(indents & ::sw::ListLevelIndents::FirstLine))
+                                {
+                                    firstLineNew.SetTextFirstLineOffset(
+                                        firstLineOld.GetTextFirstLineOffset(),
+                                        firstLineOld.GetPropTextFirstLineOffset());
+                                    firstLineNew.SetAutoFirst(firstLineOld.IsAutoFirst());
+                                }
+                                if (!(indents & ::sw::ListLevelIndents::LeftMargin))
+                                {
+                                    leftMarginNew.SetTextLeft(
+                                        leftMarginOld.GetTextLeft(),
+                                        leftMarginOld.GetPropLeft());
+                                }
+                            }
                         }
 
                         if (firstLineNew != firstLineOld)
