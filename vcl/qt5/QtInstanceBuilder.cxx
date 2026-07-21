@@ -182,6 +182,7 @@ constexpr auto SUPPORTED_UI_FILES = frozen::make_unordered_set<std::u16string_vi
     u"modules/scalc/ui/databaroptions.ui",
     u"modules/scalc/ui/datafieldoptionsdialog.ui",
     u"modules/scalc/ui/definedatabaserangedialog.ui",
+    u"modules/scalc/ui/definename.ui",
     u"modules/scalc/ui/definetablerangedialog.ui",
     u"modules/scalc/ui/deletecells.ui",
     u"modules/scalc/ui/deletecontents.ui",
