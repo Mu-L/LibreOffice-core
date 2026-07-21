@@ -107,6 +107,8 @@ weld::Window* SalFrame::GetFrameWeld() const
     return m_xFrameWeld.get();
 }
 
+void SalFrame::SimulateKeyPress(sal_uInt16) {}
+
 Selection SalFrame::CalcDeleteSurroundingSelection(std::u16string_view rSurroundingText,
                                                    sal_Int32 nCursorIndex, int nOffset, int nChars)
 {

@@ -2009,10 +2009,6 @@ KeyIndicatorState AquaSalFrame::GetIndicatorState()
     return KeyIndicatorState::NONE;
 }
 
-void AquaSalFrame::SimulateKeyPress( sal_uInt16 /*nKeyCode*/ )
-{
-}
-
 void AquaSalFrame::SetPluginParent( SystemParentData* )
 {
     // plugin parent may be killed unexpectedly by

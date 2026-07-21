@@ -1113,11 +1113,6 @@ SalFrame::SalPointerState QtFrame::GetPointerState()
 
 KeyIndicatorState QtFrame::GetIndicatorState() { return KeyIndicatorState(); }
 
-void QtFrame::SimulateKeyPress(sal_uInt16 nKeyCode)
-{
-    SAL_WARN("vcl.qt", "missing simulate keypress " << nKeyCode);
-}
-
 // don't set QWidget parents; this breaks popups on Wayland, like the LO ComboBox or ColorPicker!
 void QtFrame::SetParent(SalFrame* pNewParent) { m_pParent = static_cast<QtFrame*>(pNewParent); }
 

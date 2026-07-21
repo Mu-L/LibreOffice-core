@@ -235,7 +235,7 @@ public:
 
     virtual KeyIndicatorState GetIndicatorState() = 0;
 
-    virtual void            SimulateKeyPress( sal_uInt16 nKeyCode ) = 0;
+    virtual void SimulateKeyPress(sal_uInt16 nKeyCode);
 
     // set new parent window
     virtual void            SetParent( SalFrame* pNewParent ) = 0;

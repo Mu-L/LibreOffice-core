@@ -110,7 +110,6 @@ public:
     virtual const SystemEnvData& GetSystemData() const override;
     virtual SalPointerState     GetPointerState() override;
     virtual KeyIndicatorState   GetIndicatorState() override;
-    virtual void                SimulateKeyPress( sal_uInt16 nKeyCode ) override;
     virtual void                SetParent( SalFrame* pNewParent ) override;
     virtual void                SetPluginParent( SystemParentData* pNewParent ) override;
     virtual void                ResetClipRegion() override;

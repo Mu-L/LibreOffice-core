@@ -2954,11 +2954,6 @@ KeyIndicatorState GtkSalFrame::GetIndicatorState()
     return nState;
 }
 
-void GtkSalFrame::SimulateKeyPress( sal_uInt16 nKeyCode )
-{
-    g_warning ("missing simulate keypress %d", nKeyCode);
-}
-
 void GtkSalFrame::SetInputContext( SalInputContext* pContext )
 {
     if( ! pContext )

@@ -521,10 +521,6 @@ KeyIndicatorState SvpSalFrame::GetIndicatorState()
     return KeyIndicatorState::NONE;
 }
 
-void SvpSalFrame::SimulateKeyPress( sal_uInt16 /*nKeyCode*/ )
-{
-}
-
 void SvpSalFrame::SetParent( SalFrame* pNewParent )
 {
     if( m_pParent )
