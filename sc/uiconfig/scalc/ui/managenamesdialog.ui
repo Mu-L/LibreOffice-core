@@ -526,7 +526,4 @@
       </object>
     </child>
   </object>
-  <object class="GtkTreeViewColumn" id="treeviewcolumn4">
-    <property name="title" translatable="yes" context="managenamesdialog|treeviewcolumn1">column</property>
-  </object>
 </interface>
