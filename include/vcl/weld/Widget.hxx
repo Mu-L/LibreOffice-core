@@ -50,13 +50,13 @@ class VCL_DLLPUBLIC Widget
     int m_nBlockNotify = 0;
 
     Link<const CommandEvent&, bool> m_aCommandHdl;
+    Link<const Size&, void> m_aSizeAllocateHdl;
 
 protected:
     Link<Widget&, void> m_aFocusInHdl;
     Link<Widget&, void> m_aFocusOutHdl;
     Link<Widget&, bool> m_aMnemonicActivateHdl;
     Link<Widget&, void> m_aStyleUpdatedHdl;
-    Link<const Size&, void> m_aSizeAllocateHdl;
     Link<const KeyEvent&, bool> m_aKeyPressHdl;
     Link<const KeyEvent&, bool> m_aKeyReleaseHdl;
     Link<const MouseEvent&, bool> m_aMousePressHdl;

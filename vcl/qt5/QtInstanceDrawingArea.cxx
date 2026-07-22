@@ -156,7 +156,7 @@ void QtInstanceDrawingArea::handleResizeEvent()
     const QSize aLabelSize = m_pLabel->size();
     const Size aOutputSize = toSize(aLabelSize - aMarginSize);
     m_xDevice->SetOutputSizePixel(aOutputSize);
-    m_aSizeAllocateHdl.Call(toSize(aLabelSize));
+    signal_size_allocate(toSize(aLabelSize));
 }
 
 bool QtInstanceDrawingArea::handleToolTipEvent(const QHelpEvent& rHelpEvent)

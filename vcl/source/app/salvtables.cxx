@@ -5748,7 +5748,7 @@ IMPL_LINK(SalInstanceDrawingArea, PaintHdl, target_and_area, aPayload, void)
 
 IMPL_LINK(SalInstanceDrawingArea, ResizeHdl, const Size&, rSize, void)
 {
-    m_aSizeAllocateHdl.Call(rSize);
+    signal_size_allocate(rSize);
 }
 
 IMPL_LINK(SalInstanceDrawingArea, MousePressHdl, const MouseEvent&, rEvent, bool)
