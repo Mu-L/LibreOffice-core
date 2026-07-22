@@ -28,6 +28,7 @@
 #include <svl/cjkoptions.hxx>
 #include <vcl/svapp.hxx>
 #include <vcl/weld/Builder.hxx>
+#include <vcl/weld/Dialog.hxx>
 #include <numpara.hxx>
 #include <swmodule.hxx>
 #include <wrtsh.hxx>
@@ -494,7 +495,7 @@ void SwTemplateDlgController::PageCreated(const OUString& rId, SfxTabPage &rPage
         aSet.Put (SfxStringItem(SID_BULLET_CHAR_FMT,sBulletCharFormat.toString()));
 
         // collect character styles
-        std::unique_ptr<weld::Builder> xBuilder(Application::CreateBuilder(nullptr, u"modules/swriter/ui/comboboxfragment.ui"_ustr));
+        std::unique_ptr<weld::Builder> xBuilder(Application::CreateBuilder(getDialog(), u"modules/swriter/ui/comboboxfragment.ui"_ustr));
         std::unique_ptr<weld::ComboBox> xCharFormatLB(xBuilder->weld_combo_box(u"combobox"_ustr));
         xCharFormatLB->clear();
         xCharFormatLB->append_text(SwViewShell::GetShellRes()->aStrNone);
