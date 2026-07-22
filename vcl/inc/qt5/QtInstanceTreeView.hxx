@@ -192,6 +192,7 @@ private Q_SLOTS:
                            const QVector<int>& rRoles);
     void signalCollapsing(const QModelIndex& rIndex);
     void signalExpanding(const QModelIndex& rIndex);
+    void signalVisibleRangeChanged();
 };
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab cinoptions=b1,g0,N-s cinkeys+=0=break: */
