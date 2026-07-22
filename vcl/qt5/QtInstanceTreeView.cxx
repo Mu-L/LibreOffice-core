@@ -473,9 +473,29 @@ void QtInstanceTreeView::all_foreach(const std::function<bool(weld::TreeIter&)>&
     }
 }
 
-void QtInstanceTreeView::visible_foreach(const std::function<bool(weld::TreeIter&)>&)
+void QtInstanceTreeView::visible_foreach(const std::function<bool(weld::TreeIter&)>& func)
 {
-    assert(false && "Not implemented yet");
+    SolarMutexGuard g;
+
+    GetQtInstance().RunInMainThread([&] {
+        const QModelIndex aFirstVisibleIndex = m_pTreeView->indexAt(QPoint(0, 0));
+        if (!aFirstVisibleIndex.isValid())
+            return;
+
+        const int nViewportHeight = m_pTreeView->viewport()->height();
+        QtInstanceTreeIter aIter = treeIter(aFirstVisibleIndex);
+        QRect aEntryRect = m_pTreeView->visualRect(aIter.modelIndex());
+        while (aEntryRect.isValid() && aEntryRect.y() < nViewportHeight)
+        {
+            if (func(aIter))
+                return;
+
+            if (!iter_next(aIter))
+                return;
+
+            aEntryRect = m_pTreeView->visualRect(aIter.modelIndex());
+        }
+    });
 }
 
 void QtInstanceTreeView::bulk_insert_for_each(
