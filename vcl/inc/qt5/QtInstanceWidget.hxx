@@ -175,6 +175,7 @@ public:
     static void setHelpId(QObject& rObject, const OUString& rHelpId);
 
 protected:
+    virtual void handleResizeEvent();
     virtual bool handleToolTipEvent(const QHelpEvent& rHelpEvent);
 
 private Q_SLOTS:

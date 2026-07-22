@@ -55,7 +55,7 @@ public:
 
 private:
     void handlePaintEvent();
-    void handleResizeEvent();
+    virtual void handleResizeEvent() override;
     virtual bool handleToolTipEvent(const QHelpEvent& rHelpEvent) override;
 };
 

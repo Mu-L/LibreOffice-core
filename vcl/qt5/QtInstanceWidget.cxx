@@ -349,6 +349,11 @@ bool QtInstanceWidget::eventFilter(QObject* pObject, QEvent* pEvent)
             QMouseEvent* pMouseEvent = static_cast<QMouseEvent*>(pEvent);
             return signal_mouse_motion(toVclMouseEvent(*pMouseEvent));
         }
+        case QEvent::Resize:
+        {
+            handleResizeEvent();
+            return false;
+        }
         case QEvent::ToolTip:
         {
             return handleToolTipEvent(static_cast<QHelpEvent&>(*pEvent));
@@ -808,6 +813,8 @@ void QtInstanceWidget::draw(OutputDevice&, const Point&, const Size&)
 {
     assert(false && "Not implemented yet");
 }
+
+void QtInstanceWidget::handleResizeEvent() { signal_size_allocate(toSize(getQWidget()->size())); }
 
 bool QtInstanceWidget::handleToolTipEvent(const QHelpEvent& rHelpEvent)
 {

@@ -122,9 +122,6 @@ bool QtInstanceDrawingArea::eventFilter(QObject* pObject, QEvent* pEvent)
         case QEvent::Paint:
             handlePaintEvent();
             return false;
-        case QEvent::Resize:
-            handleResizeEvent();
-            return false;
         default:
             break;
     }
@@ -156,7 +153,8 @@ void QtInstanceDrawingArea::handleResizeEvent()
     const QSize aLabelSize = m_pLabel->size();
     const Size aOutputSize = toSize(aLabelSize - aMarginSize);
     m_xDevice->SetOutputSizePixel(aOutputSize);
-    signal_size_allocate(toSize(aLabelSize));
+
+    QtInstanceWidget::handleResizeEvent();
 }
 
 bool QtInstanceDrawingArea::handleToolTipEvent(const QHelpEvent& rHelpEvent)
