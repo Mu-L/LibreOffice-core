@@ -321,6 +321,7 @@ constexpr auto SUPPORTED_UI_FILES = frozen::make_unordered_set<std::u16string_vi
     u"modules/swriter/ui/splittable.ui",
     u"modules/swriter/ui/stringinput.ui",
     u"modules/swriter/ui/tableproperties.ui",
+    u"modules/swriter/ui/templatedialog16.ui",
     u"modules/swriter/ui/templatedialog1.ui",
     u"modules/swriter/ui/templatedialog2.ui",
     u"modules/swriter/ui/templatedialog8.ui",
