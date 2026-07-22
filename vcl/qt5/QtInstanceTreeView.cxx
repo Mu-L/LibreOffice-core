@@ -960,6 +960,12 @@ void QtInstanceTreeView::setColumnRoles(QTreeView& rTreeView,
 
 bool QtInstanceTreeView::eventFilter(QObject* pObject, QEvent* pEvent)
 {
+    if (pEvent->type() == QEvent::Resize && pObject == m_pTreeView->viewport())
+    {
+        handleResizeEvent();
+        return false;
+    }
+
     if (pEvent->type() == QEvent::ToolTip && pObject == m_pTreeView->viewport())
         return handleViewPortToolTipEvent(static_cast<QHelpEvent&>(*pEvent));
 
