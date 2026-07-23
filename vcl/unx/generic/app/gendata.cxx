@@ -27,7 +27,7 @@
 
 #ifndef IOS
 
-#include <unx/font/glyphcache.hxx>
+#include <unx/font/FreetypeFontList.hxx>
 #include <printerinfomanager.hxx>
 
 SalData::SalData() {}

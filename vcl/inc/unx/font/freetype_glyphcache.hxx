@@ -21,12 +21,16 @@
 
 #include <sal/config.h>
 
-#include <unx/font/glyphcache.hxx>
+#include <freetype/config/ftheader.h>
+#include FT_FREETYPE_H
+#include FT_GLYPH_H
+
 #include <font/PhysicalFontFace.hxx>
 #include <font/LogicalFontInstance.hxx>
 
 #include <glyphid.hxx>
 
+class FreetypeFontList;
 class FontConfigFontOptions;
 
 // FreetypeFontFile has the responsibility that a font file is only mapped once.

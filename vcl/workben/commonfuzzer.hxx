@@ -28,7 +28,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include "headless/svpgdi.hxx"
-#include "unx/font/glyphcache.hxx"
+#include "unx/font/FreetypeFontList.hxx"
 
 using namespace ::com::sun::star::uno;
 using namespace ::com::sun::star::lang;

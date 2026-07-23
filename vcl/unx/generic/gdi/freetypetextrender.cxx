@@ -30,7 +30,7 @@
 
 #include <unx/font/fontmanager.hxx>
 #include <unx/geninst.h>
-#include <unx/font/glyphcache.hxx>
+#include <unx/font/FreetypeFontList.hxx>
 #include <unx/font/fc_fontoptions.hxx>
 #include <unx/font/freetype_glyphcache.hxx>
 #include <font/PhysicalFontFace.hxx>

@@ -21,29 +21,26 @@
 
 #include <sal/config.h>
 
-#include <memory>
-#include <freetype/config/ftheader.h>
-#include FT_FREETYPE_H
-#include FT_GLYPH_H
+#include <unx/font/freetype_glyphcache.hxx>
 
 #include <o3tl/sorted_vector.hxx>
 #include <rtl/ref.hxx>
 #include <vcl/dllapi.h>
-#include <vcl/outdev.hxx>
 
 #include <fontattributes.hxx>
-#include <font/FontMetricData.hxx>
-#include <glyphid.hxx>
 
+#include <memory>
 #include <string_view>
 #include <unordered_map>
 
-class FreetypeFontFace;
 class FreetypeFontFile;
 namespace vcl::font
 {
 class PhysicalFontCollection;
 }
+
+FT_Library GetFreetypeLibrary();
+int GetDefaultAntiAliasPrio();
 
  /**
   * The FreetypeFontList is the list of the fonts we know about.

@@ -14074,7 +14074,7 @@ vcl/inc/unx/gendisp.hxx
 vcl/inc/unx/geninst.h
 vcl/inc/unx/genprn.h
 vcl/inc/unx/genpspgraphics.h
-vcl/inc/unx/font/glyphcache.hxx
+vcl/inc/unx/font/FreetypeFontList.hxx
 vcl/inc/unx/gtk/gloactiongroup.h
 vcl/inc/unx/gtk/glomenu.h
 vcl/inc/unx/gtk/gtkdata.hxx
@@ -14702,7 +14702,7 @@ vcl/unx/generic/gdi/freetypetextrender.cxx
 vcl/unx/generic/gdi/salgdi.cxx
 vcl/unx/generic/gdi/salvd.cxx
 vcl/unx/generic/font/freetype_glyphcache.cxx
-vcl/unx/generic/font/glyphcache.cxx
+vcl/unx/generic/font/FreetypeFontList.cxx
 vcl/unx/generic/print/genprnpsp.cxx
 vcl/unx/generic/print/genpspgraphics.cxx
 vcl/unx/generic/print/prtsetup.cxx
