@@ -14701,7 +14701,7 @@ vcl/unx/generic/gdi/font.cxx
 vcl/unx/generic/gdi/freetypetextrender.cxx
 vcl/unx/generic/gdi/salgdi.cxx
 vcl/unx/generic/gdi/salvd.cxx
-vcl/unx/generic/font/freetype_glyphcache.cxx
+vcl/unx/generic/font/FreetypeFont.cxx
 vcl/unx/generic/font/FreetypeFontList.cxx
 vcl/unx/generic/print/genprnpsp.cxx
 vcl/unx/generic/print/genpspgraphics.cxx
