@@ -14068,7 +14068,7 @@ vcl/inc/unx/cairotextrender.hxx
 vcl/inc/unx/cupsmgr.hxx
 vcl/inc/unx/font/fc_fontoptions.hxx
 vcl/inc/unx/font/fontmanager.hxx
-vcl/inc/unx/font/freetype_glyphcache.hxx
+vcl/inc/unx/font/FreetypeFontFace.hxx
 vcl/inc/unx/freetypetextrender.hxx
 vcl/inc/unx/gendisp.hxx
 vcl/inc/unx/geninst.h

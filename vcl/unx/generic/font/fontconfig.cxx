@@ -25,7 +25,7 @@
 
 #include <o3tl/lru_map.hxx>
 #include <unx/font/fontmanager.hxx>
-#include <unx/font/freetype_glyphcache.hxx>
+#include <unx/font/FreetypeFontFace.hxx>
 #include <unx/font/FreetypeFontList.hxx>
 #include <comphelper/sequence.hxx>
 #include <vcl/dropcache.hxx>

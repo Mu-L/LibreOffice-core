@@ -31,7 +31,7 @@
 #include <skia/x11/textrender.hxx>
 
 #include <unx/font/fc_fontoptions.hxx>
-#include <unx/font/freetype_glyphcache.hxx>
+#include <unx/font/FreetypeFont.hxx>
 #include <vcl/svapp.hxx>
 #include <sallayout.hxx>
 #include <skia/gdiimpl.hxx>

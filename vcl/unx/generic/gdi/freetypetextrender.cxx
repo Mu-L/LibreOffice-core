@@ -32,7 +32,7 @@
 #include <unx/geninst.h>
 #include <unx/font/FreetypeFontList.hxx>
 #include <unx/font/fc_fontoptions.hxx>
-#include <unx/font/freetype_glyphcache.hxx>
+#include <unx/font/FreetypeFont.hxx>
 #include <font/PhysicalFontFace.hxx>
 #include <font/FontMetricData.hxx>
 

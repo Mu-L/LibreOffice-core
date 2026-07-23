@@ -26,12 +26,10 @@
 #include FT_GLYPH_H
 
 #include <font/PhysicalFontFace.hxx>
-#include <font/LogicalFontInstance.hxx>
-
+#include <fontattributes.hxx>
 #include <glyphid.hxx>
 
 class FreetypeFontList;
-class FontConfigFontOptions;
 
 // FreetypeFontFile has the responsibility that a font file is only mapped once.
 // (#86621#) the old directly ft-managed solution caused it to be mapped
@@ -89,45 +87,6 @@ private:
     const int               mnFaceVariation;
     mutable int             mnRefCount;
     const sal_IntPtr        mnFontId;
-};
-
-class VCL_DLLPUBLIC FreetypeFont final : public LogicalFontInstance
-{
-    friend rtl::Reference<LogicalFontInstance> FreetypeFontFace::CreateFontInstance(const vcl::font::FontSelectPattern&) const;
-
-public:
-    virtual ~FreetypeFont() override;
-
-    const FreetypeFontFace* GetFontFace() const
-        { return static_cast<const FreetypeFontFace*>(LogicalFontInstance::GetFontFace()); }
-
-    bool                    TestFont() const { return mbFaceOk; }
-    FT_Face                 GetFtFace() const;
-    const FontConfigFontOptions* GetFontOptions() const;
-
-    void                    GetFontMetric(FontMetricDataRef const &);
-
-    virtual bool GetGlyphOutline(sal_GlyphId, basegfx::B2DPolyPolygon&, bool) const override;
-    bool                    GetAntialiasAdvice() const;
-
-private:
-    explicit FreetypeFont(const FreetypeFontFace&, const vcl::font::FontSelectPattern&);
-
-    void ApplyGlyphTransform(bool bVertical, FT_Glyph) const;
-
-    // 16.16 fixed point values used for a rotated font
-    tools::Long             mnCos;
-    tools::Long             mnSin;
-
-    int                     mnWidth;
-    int                     mnPrioAntiAlias;
-    double                  mfStretch;
-    FT_FaceRec_*            maFaceFT;
-    FT_SizeRec_*            maSizeFT;
-
-    mutable std::unique_ptr<FontConfigFontOptions> mxFontOptions;
-
-    bool                    mbFaceOk;
 };
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

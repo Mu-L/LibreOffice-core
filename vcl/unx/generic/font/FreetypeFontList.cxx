@@ -22,7 +22,7 @@
 #include <stdlib.h>
 
 #include <unx/font/FreetypeFontList.hxx>
-#include <unx/font/freetype_glyphcache.hxx>
+#include <unx/font/FreetypeFontFace.hxx>
 #include <unx/font/fontmanager.hxx>
 #include <unx/gendata.hxx>
 

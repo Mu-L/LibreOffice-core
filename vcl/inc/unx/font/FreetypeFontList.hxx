@@ -21,7 +21,7 @@
 
 #include <sal/config.h>
 
-#include <unx/font/freetype_glyphcache.hxx>
+#include <unx/font/FreetypeFontFace.hxx>
 
 #include <o3tl/sorted_vector.hxx>
 #include <rtl/ref.hxx>

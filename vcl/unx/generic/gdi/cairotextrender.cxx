@@ -22,7 +22,7 @@
 #include <comphelper/scopeguard.hxx>
 #include <unx/cairotextrender.hxx>
 #include <unx/font/fc_fontoptions.hxx>
-#include <unx/font/freetype_glyphcache.hxx>
+#include <unx/font/FreetypeFont.hxx>
 #include <unx/gendata.hxx>
 #include <headless/CairoCommon.hxx>
 #include <vcl/svapp.hxx>
