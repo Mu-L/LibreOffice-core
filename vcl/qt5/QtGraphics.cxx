@@ -111,16 +111,7 @@ void QtGraphics::SetFont(LogicalFontInstance* pReqFont, int nFallbackLevel)
 
 void QtGraphics::GetFontMetric(FontMetricDataRef& rFMD, int nFallbackLevel)
 {
-    QRawFont aRawFont(QRawFont::fromFont(*m_pTextStyle[nFallbackLevel]));
-    QtFontFace::fillAttributesFromQFont(*m_pTextStyle[nFallbackLevel], *rFMD);
-
-    rFMD->ImplCalcLineSpacing(m_pTextStyle[nFallbackLevel].get());
-    rFMD->ImplInitBaselines(m_pTextStyle[nFallbackLevel].get());
-
-    rFMD->SetSlant(0);
-    rFMD->SetWidth(aRawFont.averageCharWidth());
-
-    rFMD->SetMinKashida(m_pTextStyle[nFallbackLevel]->GetKashidaWidth());
+    m_pTextStyle[nFallbackLevel]->GetFontMetric(rFMD);
 }
 
 FontCharMapRef QtGraphics::GetFontCharMap() const

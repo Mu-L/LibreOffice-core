@@ -55,8 +55,6 @@ class CoreTextFont final : public LogicalFontInstance
 public:
     ~CoreTextFont() override;
 
-    void GetFontMetric(FontMetricDataRef const&);
-
     CTFontRef GetCTFont() const { return mpCTFont; }
 
     /// <1.0: font is squeezed, >1.0 font is stretched, else 1.0

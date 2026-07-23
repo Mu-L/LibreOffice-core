@@ -25,6 +25,7 @@
 #include <vcl/font/Feature.hxx>
 #include <font/PhysicalFontFace.hxx>
 #include <font/LogicalFontInstance.hxx>
+#include <font/TrueTypeFont.hxx>
 #include <impfontcache.hxx>
 
 #include <basegfx/matrix/b2dhommatrixtools.hxx>
@@ -217,6 +218,70 @@ void LogicalFontInstance::IgnoreFallbackForUnicode(sal_UCS4 cChar, FontWeight eW
     const MapEntry& rEntry = (*it).second;
     if (rEntry.sFontName == rFontName)
         maUnicodeFallbackList.erase(it);
+}
+
+void LogicalFontInstance::GetFontMetric(FontMetricDataRef const& rxTo)
+{
+    rxTo->FontAttributes::operator=(*GetFontFace());
+    rxTo->SetSlant(0);
+
+    rxTo->SetMinKashida(GetKashidaWidth());
+    rxTo->ImplCalcLineSpacing(this);
+    rxTo->ImplInitBaselines(this);
+
+    const auto& rFSP = GetFontSelectPattern();
+    rxTo->SetWidth(rFSP.mnWidth ? rFSP.mnWidth : rFSP.mnHeight);
+
+    auto aOS2(GetFontFace()->GetRawFontData(HB_TAG('O', 'S', '/', '2')));
+    if (aOS2.size() >= size_t(vcl::OS2_panose_offset) + 4)
+    {
+        const uint8_t* pPanose = aOS2.data() + vcl::OS2_panose_offset;
+        switch (pPanose[0]) // bFamilyType
+        {
+            case 1:
+                rxTo->SetFamilyType(FAMILY_ROMAN);
+                break;
+            case 2:
+                rxTo->SetFamilyType(FAMILY_SWISS);
+                break;
+            case 3:
+                rxTo->SetFamilyType(FAMILY_MODERN);
+                break;
+            case 4:
+                rxTo->SetFamilyType(FAMILY_SCRIPT);
+                break;
+            case 5:
+                rxTo->SetFamilyType(FAMILY_DECORATIVE);
+                break;
+            default:
+                break; // Any/No Fit: keep the face-derived family type
+        }
+        switch (pPanose[3]) // bProportion
+        {
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+            case 8:
+                rxTo->SetPitch(PITCH_VARIABLE);
+                break;
+            case 9:
+                rxTo->SetPitch(PITCH_FIXED);
+                break;
+            default:
+                break; // Any/No Fit: keep the face-derived pitch
+        }
+    }
+
+    auto aPost(GetFontFace()->GetRawFontData(HB_TAG('p', 'o', 's', 't')));
+    if (aPost.size() >= size_t(vcl::POST_isFixedPitch_offset) + 4)
+    {
+        const uint8_t* pFixed = aPost.data() + vcl::POST_isFixedPitch_offset;
+        if (pFixed[0] || pFixed[1] || pFixed[2] || pFixed[3])
+            rxTo->SetPitch(PITCH_FIXED);
+    }
 }
 
 bool LogicalFontInstance::GetGlyphBoundRect(sal_GlyphId nID, basegfx::B2DRectangle& rRect,

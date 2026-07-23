@@ -48,8 +48,6 @@ public:
     FT_Face GetFtFace() const;
     const FontConfigFontOptions* GetFontOptions() const;
 
-    void GetFontMetric(FontMetricDataRef const&);
-
     bool GetAntialiasAdvice() const;
 
 private:

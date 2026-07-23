@@ -15,6 +15,7 @@
 
 #include <vcl/virdev.hxx>
 #include <vcl/font.hxx>
+#include <vcl/metric.hxx>
 
 #include <font/LogicalFontInstance.hxx>
 
@@ -28,10 +29,12 @@ public:
 
     void testglyphboundrect();
     void testglyphoutline();
+    void testfontmetric();
 
     CPPUNIT_TEST_SUITE(VclLogicalFontInstanceTest);
     CPPUNIT_TEST(testglyphboundrect);
     CPPUNIT_TEST(testglyphoutline);
+    CPPUNIT_TEST(testfontmetric);
 
     CPPUNIT_TEST_SUITE_END();
 };
@@ -140,6 +143,24 @@ void VclLogicalFontInstanceTest::testglyphoutline()
     CPPUNIT_ASSERT(
         pFontInstance->GetGlyphOutline(pFontInstance->GetGlyphIndex(0x0020), aSpaceOutline, false));
     CPPUNIT_ASSERT_EQUAL(sal_uInt32(0), aSpaceOutline.count());
+#endif
+}
+
+void VclLogicalFontInstanceTest::testfontmetric()
+{
+#if HAVE_MORE_FONTS
+    ScopedVclPtr<VirtualDevice> device = VclPtr<VirtualDevice>::Create(DeviceFormat::WITHOUT_ALPHA);
+    device->SetOutputSizePixel(Size(1000, 1000));
+
+    device->SetFont(vcl::Font(u"Liberation Sans"_ustr, Size(0, 110)));
+    FontMetric aSans = device->GetFontMetric();
+    CPPUNIT_ASSERT_EQUAL(FAMILY_SWISS, aSans.GetFamilyType());
+    CPPUNIT_ASSERT_EQUAL(PITCH_VARIABLE, aSans.GetPitch());
+
+    device->SetFont(vcl::Font(u"Liberation Mono"_ustr, Size(0, 110)));
+    FontMetric aMono = device->GetFontMetric();
+    CPPUNIT_ASSERT_EQUAL(FAMILY_SWISS, aMono.GetFamilyType());
+    CPPUNIT_ASSERT_EQUAL(PITCH_FIXED, aMono.GetPitch());
 #endif
 }
 

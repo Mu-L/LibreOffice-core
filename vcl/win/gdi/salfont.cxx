@@ -834,21 +834,7 @@ void WinSalGraphics::SetFont(LogicalFontInstance* pFont, int nFallbackLevel)
 
 void WinSalGraphics::GetFontMetric( FontMetricDataRef& rxFontMetric, int nFallbackLevel )
 {
-    rtl::Reference<WinFontInstance> pFontInstance = mpWinFontEntry[nFallbackLevel];
-    const WinFontFace* pFace = pFontInstance->GetFontFace();
-
-    // device independent font attributes
-    rxFontMetric->FontAttributes::operator=(*pFace);
-    rxFontMetric->SetSlant( 0 );
-
-    rxFontMetric->SetMinKashida(pFontInstance->GetKashidaWidth());
-    rxFontMetric->ImplCalcLineSpacing(pFontInstance.get());
-    rxFontMetric->ImplInitBaselines(pFontInstance.get());
-
-    // transformation dependent font metrics, mnWidth is only used for
-    // stretching/squeezing fonts
-    const vcl::font::FontSelectPattern& rFSP = pFontInstance->GetFontSelectPattern();
-    rxFontMetric->SetWidth(rFSP.mnWidth ? rFSP.mnWidth : rFSP.mnHeight);
+    mpWinFontEntry[nFallbackLevel]->GetFontMetric(rxFontMetric);
 }
 
 FontCharMapRef WinSalGraphics::GetFontCharMap() const

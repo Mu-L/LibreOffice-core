@@ -25,7 +25,6 @@
 #include <unx/font/fontmanager.hxx>
 
 #include <font/LogicalFontInstance.hxx>
-#include <font/FontMetricData.hxx>
 #include <fontattributes.hxx>
 
 #include <sal/log.hxx>
@@ -33,7 +32,6 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include FT_SIZES_H
-#include FT_TRUETYPE_TABLES_H
 
 FT_Face FreetypeFont::GetFtFace() const
 {
@@ -112,57 +110,6 @@ FreetypeFont::~FreetypeFont()
         FT_Done_Size( maSizeFT );
 
     GetFontFace()->ReleaseFaceFT();
-}
-
-void FreetypeFont::GetFontMetric(FontMetricDataRef const & rxTo)
-{
-    rxTo->FontAttributes::operator =(*GetFontFace());
-
-    rxTo->SetOrientation(GetFontSelectPattern().mnOrientation);
-
-    FT_Activate_Size( maSizeFT );
-
-    rxTo->ImplCalcLineSpacing(this);
-    rxTo->ImplInitBaselines(this);
-
-    rxTo->SetSlant( 0 );
-    rxTo->SetWidth( mnWidth );
-
-    const TT_OS2* pOS2 = static_cast<const TT_OS2*>(FT_Get_Sfnt_Table( maFaceFT, ft_sfnt_os2 ));
-    if( pOS2 && (pOS2->version != 0xFFFF) )
-    {
-        // map the panose info from the OS2 table to their VCL counterparts
-        switch( pOS2->panose[0] )
-        {
-            case 1: rxTo->SetFamilyType( FAMILY_ROMAN ); break;
-            case 2: rxTo->SetFamilyType( FAMILY_SWISS ); break;
-            case 3: rxTo->SetFamilyType( FAMILY_MODERN ); break;
-            case 4: rxTo->SetFamilyType( FAMILY_SCRIPT ); break;
-            case 5: rxTo->SetFamilyType( FAMILY_DECORATIVE ); break;
-            // TODO: is it reasonable to override the attribute with DONTKNOW?
-            case 0: // fall through
-            default: rxTo->SetFamilyType( FAMILY_DONTKNOW ); break;
-        }
-
-        switch( pOS2->panose[3] )
-        {
-            case 2: // fall through
-            case 3: // fall through
-            case 4: // fall through
-            case 5: // fall through
-            case 6: // fall through
-            case 7: // fall through
-            case 8: rxTo->SetPitch( PITCH_VARIABLE ); break;
-            case 9: rxTo->SetPitch( PITCH_FIXED ); break;
-            // TODO: is it reasonable to override the attribute with DONTKNOW?
-            case 0: // fall through
-            case 1: // fall through
-            default: rxTo->SetPitch( PITCH_DONTKNOW ); break;
-        }
-    }
-
-    // initialize kashida width
-    rxTo->SetMinKashida(GetKashidaWidth());
 }
 
 bool FreetypeFont::GetAntialiasAdvice() const

@@ -114,6 +114,7 @@ public: // TODO: make data members private
     vcl::font::PhysicalFontFace* GetFontFace() { return m_pFontFace.get(); }
     const ImplFontCache* GetFontCache() const { return mpFontCache; }
 
+    void GetFontMetric(FontMetricDataRef const&);
     bool GetGlyphBoundRect(sal_GlyphId, basegfx::B2DRectangle&, bool) const;
     bool GetGlyphOutline(sal_GlyphId, basegfx::B2DPolyPolygon&, bool) const;
     SAL_DLLPRIVATE basegfx::B2DPolyPolygon GetGlyphOutlineUntransformed(sal_GlyphId) const;
