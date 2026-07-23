@@ -56,7 +56,6 @@ public:
     ~CoreTextFont() override;
 
     void GetFontMetric(FontMetricDataRef const&);
-    bool GetGlyphOutline(sal_GlyphId, basegfx::B2DPolyPolygon&, bool) const override;
 
     CTFontRef GetCTFont() const { return mpCTFont; }
 

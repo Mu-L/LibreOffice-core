@@ -338,7 +338,8 @@ void close_path_func(hb_draw_funcs_t*, void* pDrawData, hb_draw_state_t*, void* 
 }
 }
 
-basegfx::B2DPolyPolygon LogicalFontInstance::GetGlyphOutlineUntransformed(sal_GlyphId nGlyph) const
+bool LogicalFontInstance::DrawGlyph(hb_font_t* pHbFont, sal_GlyphId nGlyph,
+                                    basegfx::B2DPolyPolygon& rPoly) const
 {
     if (!m_pHbDrawFuncs)
     {
@@ -354,13 +355,41 @@ basegfx::B2DPolyPolygon LogicalFontInstance::GetGlyphOutlineUntransformed(sal_Gl
         hb_draw_funcs_set_close_path_func(m_pHbDrawFuncs, close_path_func, pUserData, nullptr);
     }
 
-    basegfx::B2DPolyPolygon aPolyPoly;
-#if HB_VERSION_ATLEAST(7, 0, 0)
-    hb_font_draw_glyph(GetHbFontUntransformed(), nGlyph, m_pHbDrawFuncs, &aPolyPoly);
+#if HB_VERSION_ATLEAST(11, 2, 0)
+    return hb_font_draw_glyph_or_fail(pHbFont, nGlyph, m_pHbDrawFuncs, &rPoly);
 #else
-    hb_font_get_glyph_shape(GetHbFontUntransformed(), nGlyph, m_pHbDrawFuncs, &aPolyPoly);
+    hb_font_draw_glyph(pHbFont, nGlyph, m_pHbDrawFuncs, &rPoly);
+    return true;
 #endif
+}
+
+basegfx::B2DPolyPolygon LogicalFontInstance::GetGlyphOutlineUntransformed(sal_GlyphId nGlyph) const
+{
+    basegfx::B2DPolyPolygon aPolyPoly;
+    DrawGlyph(GetHbFontUntransformed(), nGlyph, aPolyPoly);
     return aPolyPoly;
+}
+
+bool LogicalFontInstance::GetGlyphOutline(sal_GlyphId nID, basegfx::B2DPolyPolygon& rPoly,
+                                          bool /*bVertical*/) const
+{
+    rPoly.clear();
+
+    if (!DrawGlyph(const_cast<LogicalFontInstance*>(this)->GetHbFont(), nID, rPoly))
+    {
+        rPoly.clear();
+        return false;
+    }
+
+    if (!rPoly.count())
+        return true;
+
+    // Scale from font units to device pixels.
+    double nXScale = 0, nYScale = 0;
+    GetScale(&nXScale, &nYScale);
+    rPoly.transform(basegfx::utils::createScaleB2DHomMatrix(nXScale, nYScale));
+
+    return true;
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

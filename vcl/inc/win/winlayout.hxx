@@ -50,8 +50,6 @@ public:
     const WinFontFace * GetFontFace() const { return static_cast<const WinFontFace *>(LogicalFontInstance::GetFontFace()); }
     WinFontFace * GetFontFace() { return static_cast<WinFontFace *>(LogicalFontInstance::GetFontFace()); }
 
-    bool GetGlyphOutline(sal_GlyphId, basegfx::B2DPolyPolygon&, bool) const override;
-
     const sal::systools::COMReference<IDWriteFontFace>& GetDWFontFace() const;
 
 private:

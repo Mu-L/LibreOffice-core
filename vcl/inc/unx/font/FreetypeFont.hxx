@@ -50,17 +50,10 @@ public:
 
     void GetFontMetric(FontMetricDataRef const&);
 
-    virtual bool GetGlyphOutline(sal_GlyphId, basegfx::B2DPolyPolygon&, bool) const override;
     bool GetAntialiasAdvice() const;
 
 private:
     explicit FreetypeFont(const FreetypeFontFace&, const vcl::font::FontSelectPattern&);
-
-    void ApplyGlyphTransform(bool bVertical, FT_Glyph) const;
-
-    // 16.16 fixed point values used for a rotated font
-    tools::Long mnCos;
-    tools::Long mnSin;
 
     int mnWidth;
     int mnPrioAntiAlias;

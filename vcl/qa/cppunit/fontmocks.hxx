@@ -24,11 +24,6 @@ public:
         : LogicalFontInstance(rFontFace, rFontSelectPattern)
     {
     }
-
-    bool GetGlyphOutline(sal_GlyphId, basegfx::B2DPolyPolygon&, bool) const override
-    {
-        return true;
-    }
 };
 
 class TestFontFace : public vcl::font::PhysicalFontFace

@@ -20,9 +20,6 @@
 #include <sal/config.h>
 #include <sal/log.hxx>
 
-#include <basegfx/polygon/b2dpolygon.hxx>
-#include <basegfx/matrix/b2dhommatrix.hxx>
-
 #ifdef MACOSX
 #include <osx/saldata.hxx>
 #include <osx/salinst.h>
@@ -84,106 +81,11 @@ void CoreTextFont::GetFontMetric(FontMetricDataRef const& rxFontMetric)
     rxFontMetric->SetMinKashida(GetKashidaWidth());
 }
 
-namespace
-{
-// callbacks from CTFontCreatePathForGlyph+CGPathApply for GetGlyphOutline()
-struct GgoData
-{
-    basegfx::B2DPolygon maPolygon;
-    basegfx::B2DPolyPolygon* mpPolyPoly;
-};
-}
-
-static void MyCGPathApplierFunc(void* pData, const CGPathElement* pElement)
-{
-    basegfx::B2DPolygon& rPolygon = static_cast<GgoData*>(pData)->maPolygon;
-    const int nPointCount = rPolygon.count();
-
-    switch (pElement->type)
-    {
-        case kCGPathElementCloseSubpath:
-        case kCGPathElementMoveToPoint:
-            if (nPointCount > 0)
-            {
-                static_cast<GgoData*>(pData)->mpPolyPoly->append(rPolygon);
-                rPolygon.clear();
-            }
-            // fall through for kCGPathElementMoveToPoint:
-            if (pElement->type != kCGPathElementMoveToPoint)
-            {
-                break;
-            }
-            [[fallthrough]];
-        case kCGPathElementAddLineToPoint:
-            rPolygon.append(basegfx::B2DPoint(+pElement->points[0].x, -pElement->points[0].y));
-            break;
-
-        case kCGPathElementAddCurveToPoint:
-            rPolygon.append(basegfx::B2DPoint(+pElement->points[2].x, -pElement->points[2].y));
-            rPolygon.setNextControlPoint(
-                nPointCount - 1, basegfx::B2DPoint(pElement->points[0].x, -pElement->points[0].y));
-            rPolygon.setPrevControlPoint(
-                nPointCount + 0, basegfx::B2DPoint(pElement->points[1].x, -pElement->points[1].y));
-            break;
-
-        case kCGPathElementAddQuadCurveToPoint:
-        {
-            const basegfx::B2DPoint aStartPt = rPolygon.getB2DPoint(nPointCount - 1);
-            const basegfx::B2DPoint aCtrPt1((aStartPt.getX() + 2 * pElement->points[0].x) / 3.0,
-                                            (aStartPt.getY() - 2 * pElement->points[0].y) / 3.0);
-            const basegfx::B2DPoint aCtrPt2(
-                (+2 * pElement->points[0].x + pElement->points[1].x) / 3.0,
-                (-2 * pElement->points[0].y - pElement->points[1].y) / 3.0);
-            rPolygon.append(basegfx::B2DPoint(+pElement->points[1].x, -pElement->points[1].y));
-            rPolygon.setNextControlPoint(nPointCount - 1, aCtrPt1);
-            rPolygon.setPrevControlPoint(nPointCount + 0, aCtrPt2);
-        }
-        break;
-    }
-}
-
 static void MyDestroyCFDataRef(void* pUserData)
 {
     CFDataRef pData = static_cast<CFDataRef>(pUserData);
     if (pData)
         CFRelease(pData);
-}
-
-bool CoreTextFont::GetGlyphOutline(sal_GlyphId nId, basegfx::B2DPolyPolygon& rResult, bool) const
-{
-    rResult.clear();
-
-    CGGlyph nCGGlyph = nId;
-
-    SAL_WNODEPRECATED_DECLARATIONS_PUSH
-    const CTFontOrientation aFontOrientation = kCTFontDefaultOrientation;
-    SAL_WNODEPRECATED_DECLARATIONS_POP
-    CGRect aCGRect
-        = CTFontGetBoundingRectsForGlyphs(mpCTFont, aFontOrientation, &nCGGlyph, nullptr, 1);
-
-    if (!CGRectIsNull(aCGRect) && CGRectIsEmpty(aCGRect))
-    {
-        // CTFontCreatePathForGlyph returns NULL for blank glyphs, but we want
-        // to return true for them.
-        return true;
-    }
-
-    CGPathRef xPath = CTFontCreatePathForGlyph(mpCTFont, nCGGlyph, nullptr);
-    if (!xPath)
-    {
-        return false;
-    }
-
-    GgoData aGgoData;
-    aGgoData.mpPolyPoly = &rResult;
-    CGPathApply(xPath, static_cast<void*>(&aGgoData), MyCGPathApplierFunc);
-#if 0 // TODO: does OSX ensure that the last polygon is always closed?
-    const CGPathElement aClosingElement = { kCGPathElementCloseSubpath, NULL };
-    MyCGPathApplierFunc( (void*)&aGgoData, &aClosingElement );
-#endif
-    CFRelease(xPath);
-
-    return true;
 }
 
 hb_blob_t* CoreTextFontFace::GetHbTable(hb_tag_t nTag) const

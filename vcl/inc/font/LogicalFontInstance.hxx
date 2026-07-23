@@ -115,7 +115,7 @@ public: // TODO: make data members private
     const ImplFontCache* GetFontCache() const { return mpFontCache; }
 
     bool GetGlyphBoundRect(sal_GlyphId, basegfx::B2DRectangle&, bool) const;
-    virtual bool GetGlyphOutline(sal_GlyphId, basegfx::B2DPolyPolygon&, bool) const = 0;
+    bool GetGlyphOutline(sal_GlyphId, basegfx::B2DPolyPolygon&, bool) const;
     SAL_DLLPRIVATE basegfx::B2DPolyPolygon GetGlyphOutlineUntransformed(sal_GlyphId) const;
 
     sal_GlyphId GetGlyphIndex(uint32_t, uint32_t = 0) const;
@@ -140,6 +140,7 @@ protected:
 
 private:
     SAL_DLLPRIVATE hb_font_t* GetHbFontUntransformed() const;
+    SAL_DLLPRIVATE bool DrawGlyph(hb_font_t*, sal_GlyphId, basegfx::B2DPolyPolygon&) const;
 
     struct MapEntry
     {

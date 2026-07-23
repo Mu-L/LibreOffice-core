@@ -49,8 +49,6 @@ class BuildinFontInstance final : public LogicalFontInstance
 {
 public:
     BuildinFontInstance(const vcl::font::PhysicalFontFace&, const vcl::font::FontSelectPattern&);
-
-    bool GetGlyphOutline(sal_GlyphId nId, basegfx::B2DPolyPolygon& rPoly, bool) const override;
 };
 
 class BuildinFontFace final : public vcl::font::PhysicalFontFace

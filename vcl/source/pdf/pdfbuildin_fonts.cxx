@@ -752,11 +752,6 @@ BuildinFontInstance::BuildinFontInstance(const vcl::font::PhysicalFontFace& rFon
 {
 }
 
-bool BuildinFontInstance::GetGlyphOutline(sal_GlyphId, basegfx::B2DPolyPolygon&, bool) const
-{
-    return false;
-}
-
 BuildinFontFace::BuildinFontFace(int nId)
     : vcl::font::PhysicalFontFace(m_aBuildinFonts[nId].GetFontAttributes())
     , mrBuildin(m_aBuildinFonts[nId])
