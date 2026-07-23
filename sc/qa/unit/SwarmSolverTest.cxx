@@ -82,6 +82,10 @@ class SwarmSolverTest : public UnoApiTest
     void testControllersUnlockedAfterError();
     void testConstrainedLinearProgram();
 
+    uno::Reference<sheet::XSolver>
+    initializeSolver(table::CellAddress& rObjective, uno::Sequence<table::CellAddress>& rVariables,
+                     uno::Sequence<sheet::SolverConstraint>& rConstraints, bool bMaximize);
+
 public:
     SwarmSolverTest()
         : UnoApiTest(u"sc/qa/unit/data/solver"_ustr)
@@ -109,19 +113,31 @@ public:
     CPPUNIT_TEST_SUITE_END();
 };
 
-void SwarmSolverTest::testUnconstrained()
+uno::Reference<sheet::XSolver> SwarmSolverTest::initializeSolver(
+    table::CellAddress& rObjective, uno::Sequence<table::CellAddress>& rVariables,
+    uno::Sequence<sheet::SolverConstraint>& rConstraints, bool bMaximize)
 {
-    loadFromFile(u"Simple.ods");
-
     uno::Reference<sheet::XSpreadsheetDocument> xDocument(mxComponent, uno::UNO_QUERY_THROW);
     uno::Reference<container::XIndexAccess> xIndex(xDocument->getSheets(), uno::UNO_QUERY_THROW);
     uno::Reference<sheet::XSpreadsheet> xSheet(xIndex->getByIndex(0), uno::UNO_QUERY_THROW);
 
-    uno::Reference<sheet::XSolver> xSolver;
+    uno::Reference<sheet::XSolver> xSolver(
+        m_xContext->getServiceManager()->createInstanceWithContext(
+            u"com.sun.star.comp.Calc.SwarmSolver"_ustr, m_xContext),
+        uno::UNO_QUERY_THROW);
 
-    xSolver.set(m_xContext->getServiceManager()->createInstanceWithContext(
-                    u"com.sun.star.comp.Calc.SwarmSolver"_ustr, m_xContext),
-                uno::UNO_QUERY_THROW);
+    xSolver->setDocument(xDocument);
+    xSolver->setObjective(rObjective);
+    xSolver->setVariables(rVariables);
+    xSolver->setConstraints(rConstraints);
+    xSolver->setMaximize(bMaximize);
+
+    return xSolver;
+}
+
+void SwarmSolverTest::testUnconstrained()
+{
+    loadFromFile(u"Simple.ods");
 
     table::CellAddress aObjective(0, 1, 1);
 
@@ -131,12 +147,8 @@ void SwarmSolverTest::testUnconstrained()
     // constraints
     uno::Sequence<sheet::SolverConstraint> aConstraints;
 
-    // initialize solver
-    xSolver->setDocument(xDocument);
-    xSolver->setObjective(aObjective);
-    xSolver->setVariables(aVariables);
-    xSolver->setConstraints(aConstraints);
-    xSolver->setMaximize(false);
+    uno::Reference<sheet::XSolver> xSolver
+        = initializeSolver(aObjective, aVariables, aConstraints, /*bMaximize*/ false);
 
     // test results
     xSolver->solve();
@@ -156,16 +168,6 @@ void SwarmSolverTest::testVariableBounded()
 {
     loadFromFile(u"Simple.ods");
 
-    uno::Reference<sheet::XSpreadsheetDocument> xDocument(mxComponent, uno::UNO_QUERY_THROW);
-    uno::Reference<container::XIndexAccess> xIndex(xDocument->getSheets(), uno::UNO_QUERY_THROW);
-    uno::Reference<sheet::XSpreadsheet> xSheet(xIndex->getByIndex(0), uno::UNO_QUERY_THROW);
-
-    uno::Reference<sheet::XSolver> xSolver;
-
-    xSolver.set(m_xContext->getServiceManager()->createInstanceWithContext(
-                    u"com.sun.star.comp.Calc.SwarmSolver"_ustr, m_xContext),
-                uno::UNO_QUERY_THROW);
-
     table::CellAddress aObjective(0, 1, 1);
 
     // "changing cells" - unknown variables
@@ -181,12 +183,8 @@ void SwarmSolverTest::testVariableBounded()
           /*     Right    */ uno::Any(-100.0) }
     };
 
-    // initialize solver
-    xSolver->setDocument(xDocument);
-    xSolver->setObjective(aObjective);
-    xSolver->setVariables(aVariables);
-    xSolver->setConstraints(aConstraints);
-    xSolver->setMaximize(false);
+    uno::Reference<sheet::XSolver> xSolver
+        = initializeSolver(aObjective, aVariables, aConstraints, /*bMaximize*/ false);
 
     // test results
     xSolver->solve();
@@ -200,16 +198,6 @@ void SwarmSolverTest::testVariableBounded()
 void SwarmSolverTest::testVariableConstrained()
 {
     loadFromFile(u"Simple.ods");
-
-    uno::Reference<sheet::XSpreadsheetDocument> xDocument(mxComponent, uno::UNO_QUERY_THROW);
-    uno::Reference<container::XIndexAccess> xIndex(xDocument->getSheets(), uno::UNO_QUERY_THROW);
-    uno::Reference<sheet::XSpreadsheet> xSheet(xIndex->getByIndex(0), uno::UNO_QUERY_THROW);
-
-    uno::Reference<sheet::XSolver> xSolver;
-
-    xSolver.set(m_xContext->getServiceManager()->createInstanceWithContext(
-                    u"com.sun.star.comp.Calc.SwarmSolver"_ustr, m_xContext),
-                uno::UNO_QUERY_THROW);
 
     table::CellAddress aObjective(0, 1, 1);
 
@@ -229,12 +217,8 @@ void SwarmSolverTest::testVariableConstrained()
           /*     Right    */ uno::Any(10.0) }
     };
 
-    // initialize solver
-    xSolver->setDocument(xDocument);
-    xSolver->setObjective(aObjective);
-    xSolver->setVariables(aVariables);
-    xSolver->setConstraints(aConstraints);
-    xSolver->setMaximize(false);
+    uno::Reference<sheet::XSolver> xSolver
+        = initializeSolver(aObjective, aVariables, aConstraints, /*bMaximize*/ false);
 
     // test results
     xSolver->solve();
@@ -248,16 +232,6 @@ void SwarmSolverTest::testVariableConstrained()
 void SwarmSolverTest::testTwoVariables()
 {
     loadFromFile(u"TwoVariables.ods");
-
-    uno::Reference<sheet::XSpreadsheetDocument> xDocument(mxComponent, uno::UNO_QUERY_THROW);
-    uno::Reference<container::XIndexAccess> xIndex(xDocument->getSheets(), uno::UNO_QUERY_THROW);
-    uno::Reference<sheet::XSpreadsheet> xSheet(xIndex->getByIndex(0), uno::UNO_QUERY_THROW);
-
-    uno::Reference<sheet::XSolver> xSolver;
-
-    xSolver.set(m_xContext->getServiceManager()->createInstanceWithContext(
-                    u"com.sun.star.comp.Calc.SwarmSolver"_ustr, m_xContext),
-                uno::UNO_QUERY_THROW);
 
     table::CellAddress aObjective(0, 1, 5);
 
@@ -280,12 +254,8 @@ void SwarmSolverTest::testTwoVariables()
           /*     Right    */ uno::Any(100.0) }
     };
 
-    // initialize solver
-    xSolver->setDocument(xDocument);
-    xSolver->setObjective(aObjective);
-    xSolver->setVariables(aVariables);
-    xSolver->setConstraints(aConstraints);
-    xSolver->setMaximize(true);
+    uno::Reference<sheet::XSolver> xSolver
+        = initializeSolver(aObjective, aVariables, aConstraints, /*bMaximize*/ true);
 
     // test results
     xSolver->solve();
@@ -300,19 +270,6 @@ void SwarmSolverTest::testTwoVariables()
 void SwarmSolverTest::testMultipleVariables()
 {
     loadFromFile(u"MultiVariable.ods");
-
-    uno::Reference<sheet::XSpreadsheetDocument> xDocument(mxComponent, uno::UNO_QUERY_THROW);
-    uno::Reference<container::XIndexAccess> xIndex(xDocument->getSheets(), uno::UNO_QUERY_THROW);
-    uno::Reference<sheet::XSpreadsheet> xSheet(xIndex->getByIndex(0), uno::UNO_QUERY_THROW);
-
-    uno::Reference<sheet::XSolver> xSolver;
-
-    xSolver.set(m_xContext->getServiceManager()->createInstanceWithContext(
-                    u"com.sun.star.comp.Calc.SwarmSolver"_ustr, m_xContext),
-                uno::UNO_QUERY_THROW);
-
-    uno::Reference<beans::XPropertySet> xPropSet(xSolver, uno::UNO_QUERY_THROW);
-    xPropSet->setPropertyValue(u"Integer"_ustr, uno::Any(true));
 
     table::CellAddress aObjective(0, 5, 7);
 
@@ -361,12 +318,11 @@ void SwarmSolverTest::testMultipleVariables()
           /*      Right    */ uno::Any(10000.0) }
     };
 
-    // initialize solver
-    xSolver->setDocument(xDocument);
-    xSolver->setObjective(aObjective);
-    xSolver->setVariables(aVariables);
-    xSolver->setConstraints(aConstraints);
-    xSolver->setMaximize(false);
+    uno::Reference<sheet::XSolver> xSolver
+        = initializeSolver(aObjective, aVariables, aConstraints, /*bMaximize*/ false);
+
+    uno::Reference<beans::XPropertySet> xPropSet(xSolver, uno::UNO_QUERY_THROW);
+    xPropSet->setPropertyValue(u"Integer"_ustr, uno::Any(true));
 
     // test results
     xSolver->solve();
@@ -392,16 +348,6 @@ void SwarmSolverTest::testInfeasibleConstraints_Differential_Evolution()
     // result is infeasible and getSuccess must be false.
     loadFromFile(u"Simple.ods");
 
-    uno::Reference<sheet::XSpreadsheetDocument> xDocument(mxComponent, uno::UNO_QUERY_THROW);
-
-    uno::Reference<sheet::XSolver> xSolver;
-    xSolver.set(m_xContext->getServiceManager()->createInstanceWithContext(
-                    u"com.sun.star.comp.Calc.SwarmSolver"_ustr, m_xContext),
-                uno::UNO_QUERY_THROW);
-
-    uno::Reference<beans::XPropertySet> xPropSet(xSolver, uno::UNO_QUERY_THROW);
-    xPropSet->setPropertyValue(u"Algorithm"_ustr, uno::Any(sal_Int32(0)));
-
     table::CellAddress aObjective(0, 1, 1);
     uno::Sequence<table::CellAddress> aVariables{ { 0, 1, 0 } };
 
@@ -419,11 +365,11 @@ void SwarmSolverTest::testInfeasibleConstraints_Differential_Evolution()
           /*     Right    */ uno::Any(-1000.0) }
     };
 
-    xSolver->setDocument(xDocument);
-    xSolver->setObjective(aObjective);
-    xSolver->setVariables(aVariables);
-    xSolver->setConstraints(aConstraints);
-    xSolver->setMaximize(false);
+    uno::Reference<sheet::XSolver> xSolver
+        = initializeSolver(aObjective, aVariables, aConstraints, /*bMaximize*/ false);
+
+    uno::Reference<beans::XPropertySet> xPropSet(xSolver, uno::UNO_QUERY_THROW);
+    xPropSet->setPropertyValue(u"Algorithm"_ustr, uno::Any(sal_Int32(0)));
 
     xSolver->solve();
 
@@ -439,16 +385,6 @@ void SwarmSolverTest::testInfeasibleConstraints_Particle_Swarm()
     // result is infeasible and getSuccess must be false.
     loadFromFile(u"Simple.ods");
 
-    uno::Reference<sheet::XSpreadsheetDocument> xDocument(mxComponent, uno::UNO_QUERY_THROW);
-
-    uno::Reference<sheet::XSolver> xSolver;
-    xSolver.set(m_xContext->getServiceManager()->createInstanceWithContext(
-                    u"com.sun.star.comp.Calc.SwarmSolver"_ustr, m_xContext),
-                uno::UNO_QUERY_THROW);
-
-    uno::Reference<beans::XPropertySet> xPropSet(xSolver, uno::UNO_QUERY_THROW);
-    xPropSet->setPropertyValue(u"Algorithm"_ustr, uno::Any(sal_Int32(1)));
-
     table::CellAddress aObjective(0, 1, 1);
     uno::Sequence<table::CellAddress> aVariables{ { 0, 1, 0 } };
 
@@ -466,11 +402,11 @@ void SwarmSolverTest::testInfeasibleConstraints_Particle_Swarm()
           /*     Right    */ uno::Any(-1000.0) }
     };
 
-    xSolver->setDocument(xDocument);
-    xSolver->setObjective(aObjective);
-    xSolver->setVariables(aVariables);
-    xSolver->setConstraints(aConstraints);
-    xSolver->setMaximize(false);
+    uno::Reference<sheet::XSolver> xSolver
+        = initializeSolver(aObjective, aVariables, aConstraints, /*bMaximize*/ false);
+
+    uno::Reference<beans::XPropertySet> xPropSet(xSolver, uno::UNO_QUERY_THROW);
+    xPropSet->setPropertyValue(u"Algorithm"_ustr, uno::Any(sal_Int32(1)));
 
     xSolver->solve();
 
@@ -485,16 +421,6 @@ void SwarmSolverTest::testLargeObjectiveStillSolvable_Differential_Evolution()
     // check below guards.
 
     loadFromFile(u"Simple.ods");
-
-    uno::Reference<sheet::XSpreadsheetDocument> xDocument(mxComponent, uno::UNO_QUERY_THROW);
-
-    uno::Reference<sheet::XSolver> xSolver;
-    xSolver.set(m_xContext->getServiceManager()->createInstanceWithContext(
-                    u"com.sun.star.comp.Calc.SwarmSolver"_ustr, m_xContext),
-                uno::UNO_QUERY_THROW);
-
-    uno::Reference<beans::XPropertySet> xPropSet(xSolver, uno::UNO_QUERY_THROW);
-    xPropSet->setPropertyValue(u"Algorithm"_ustr, uno::Any(sal_Int32(0)));
 
     table::CellAddress aObjective(0, 1, 1);
     uno::Sequence<table::CellAddress> aVariables{ { 0, 1, 0 } };
@@ -516,11 +442,11 @@ void SwarmSolverTest::testLargeObjectiveStillSolvable_Differential_Evolution()
           /*     Right    */ uno::Any(2.0e39) }
     };
 
-    xSolver->setDocument(xDocument);
-    xSolver->setObjective(aObjective);
-    xSolver->setVariables(aVariables);
-    xSolver->setConstraints(aConstraints);
-    xSolver->setMaximize(false);
+    uno::Reference<sheet::XSolver> xSolver
+        = initializeSolver(aObjective, aVariables, aConstraints, /*bMaximize*/ false);
+
+    uno::Reference<beans::XPropertySet> xPropSet(xSolver, uno::UNO_QUERY_THROW);
+    xPropSet->setPropertyValue(u"Algorithm"_ustr, uno::Any(sal_Int32(0)));
 
     xSolver->solve();
 
@@ -542,16 +468,6 @@ void SwarmSolverTest::testLargeObjectiveStillSolvable_Particle_Swarm()
 
     loadFromFile(u"Simple.ods");
 
-    uno::Reference<sheet::XSpreadsheetDocument> xDocument(mxComponent, uno::UNO_QUERY_THROW);
-
-    uno::Reference<sheet::XSolver> xSolver;
-    xSolver.set(m_xContext->getServiceManager()->createInstanceWithContext(
-                    u"com.sun.star.comp.Calc.SwarmSolver"_ustr, m_xContext),
-                uno::UNO_QUERY_THROW);
-
-    uno::Reference<beans::XPropertySet> xPropSet(xSolver, uno::UNO_QUERY_THROW);
-    xPropSet->setPropertyValue(u"Algorithm"_ustr, uno::Any(sal_Int32(1)));
-
     table::CellAddress aObjective(0, 1, 1);
     uno::Sequence<table::CellAddress> aVariables{ { 0, 1, 0 } };
 
@@ -572,11 +488,11 @@ void SwarmSolverTest::testLargeObjectiveStillSolvable_Particle_Swarm()
           /*     Right    */ uno::Any(2.0e39) }
     };
 
-    xSolver->setDocument(xDocument);
-    xSolver->setObjective(aObjective);
-    xSolver->setVariables(aVariables);
-    xSolver->setConstraints(aConstraints);
-    xSolver->setMaximize(false);
+    uno::Reference<sheet::XSolver> xSolver
+        = initializeSolver(aObjective, aVariables, aConstraints, /*bMaximize*/ false);
+
+    uno::Reference<beans::XPropertySet> xPropSet(xSolver, uno::UNO_QUERY_THROW);
+    xPropSet->setPropertyValue(u"Algorithm"_ustr, uno::Any(sal_Int32(1)));
 
     xSolver->solve();
 
@@ -628,13 +544,6 @@ void SwarmSolverTest::testUnreadableConstraintStillChecksOthers()
     // solved.
     loadFromFile(u"Simple.ods");
 
-    uno::Reference<sheet::XSpreadsheetDocument> xDocument(mxComponent, uno::UNO_QUERY_THROW);
-
-    uno::Reference<sheet::XSolver> xSolver;
-    xSolver.set(m_xContext->getServiceManager()->createInstanceWithContext(
-                    u"com.sun.star.comp.Calc.SwarmSolver"_ustr, m_xContext),
-                uno::UNO_QUERY_THROW);
-
     table::CellAddress aObjective(0, 1, 1);
     uno::Sequence<table::CellAddress> aVariables{ { 0, 1, 0 } };
 
@@ -652,11 +561,8 @@ void SwarmSolverTest::testUnreadableConstraintStillChecksOthers()
           /*     Right    */ uno::Any(-1000.0) }
     };
 
-    xSolver->setDocument(xDocument);
-    xSolver->setObjective(aObjective);
-    xSolver->setVariables(aVariables);
-    xSolver->setConstraints(aConstraints);
-    xSolver->setMaximize(false);
+    uno::Reference<sheet::XSolver> xSolver
+        = initializeSolver(aObjective, aVariables, aConstraints, /*bMaximize*/ false);
 
     xSolver->solve();
 
@@ -673,13 +579,6 @@ void SwarmSolverTest::testContradictoryBoundsTerminate()
 
     loadFromFile(u"Simple.ods");
 
-    uno::Reference<sheet::XSpreadsheetDocument> xDocument(mxComponent, uno::UNO_QUERY_THROW);
-
-    uno::Reference<sheet::XSolver> xSolver;
-    xSolver.set(m_xContext->getServiceManager()->createInstanceWithContext(
-                    u"com.sun.star.comp.Calc.SwarmSolver"_ustr, m_xContext),
-                uno::UNO_QUERY_THROW);
-
     table::CellAddress aObjective(0, 1, 1);
     uno::Sequence<table::CellAddress> aVariables{ { 0, 1, 0 } };
 
@@ -693,11 +592,8 @@ void SwarmSolverTest::testContradictoryBoundsTerminate()
           /*     Right    */ uno::Any(5.0) }
     };
 
-    xSolver->setDocument(xDocument);
-    xSolver->setObjective(aObjective);
-    xSolver->setVariables(aVariables);
-    xSolver->setConstraints(aConstraints);
-    xSolver->setMaximize(false);
+    uno::Reference<sheet::XSolver> xSolver
+        = initializeSolver(aObjective, aVariables, aConstraints, /*bMaximize*/ false);
 
     // The guarantee here is that solve returns at all.
     xSolver->solve();
@@ -716,27 +612,17 @@ void SwarmSolverTest::testUnboundedIntegerVariable()
 
     loadFromFile(u"Simple.ods");
 
-    uno::Reference<sheet::XSpreadsheetDocument> xDocument(mxComponent, uno::UNO_QUERY_THROW);
-
-    uno::Reference<sheet::XSolver> xSolver;
-    xSolver.set(m_xContext->getServiceManager()->createInstanceWithContext(
-                    u"com.sun.star.comp.Calc.SwarmSolver"_ustr, m_xContext),
-                uno::UNO_QUERY_THROW);
-
-    uno::Reference<beans::XPropertySet> xPropSet(xSolver, uno::UNO_QUERY_THROW);
-    xPropSet->setPropertyValue(u"Integer"_ustr, uno::Any(true));
-
     table::CellAddress aObjective(0, 1, 1);
     uno::Sequence<table::CellAddress> aVariables{ { 0, 1, 0 } };
 
     // No constraints, so the variable keeps the default unbounded range.
     uno::Sequence<sheet::SolverConstraint> aConstraints;
 
-    xSolver->setDocument(xDocument);
-    xSolver->setObjective(aObjective);
-    xSolver->setVariables(aVariables);
-    xSolver->setConstraints(aConstraints);
-    xSolver->setMaximize(false);
+    uno::Reference<sheet::XSolver> xSolver
+        = initializeSolver(aObjective, aVariables, aConstraints, /*bMaximize*/ false);
+
+    uno::Reference<beans::XPropertySet> xPropSet(xSolver, uno::UNO_QUERY_THROW);
+    xPropSet->setPropertyValue(u"Integer"_ustr, uno::Any(true));
 
     xSolver->solve();
 
@@ -758,29 +644,22 @@ void SwarmSolverTest::testRepeatedSolveResetsState()
 
     loadFromFile(u"Simple.ods");
 
-    uno::Reference<sheet::XSpreadsheetDocument> xDocument(mxComponent, uno::UNO_QUERY_THROW);
-
-    uno::Reference<sheet::XSolver> xSolver;
-    xSolver.set(m_xContext->getServiceManager()->createInstanceWithContext(
-                    u"com.sun.star.comp.Calc.SwarmSolver"_ustr, m_xContext),
-                uno::UNO_QUERY_THROW);
-
     table::CellAddress aObjective(0, 1, 1);
     uno::Sequence<table::CellAddress> aVariables{ { 0, 1, 0 } };
 
-    xSolver->setDocument(xDocument);
-    xSolver->setObjective(aObjective);
-    xSolver->setVariables(aVariables);
-    xSolver->setMaximize(false);
+    uno::Sequence<sheet::SolverConstraint> aConstraints{
+        { /* Left */ table::CellAddress(0, 1, 0),
+          /* Op   */ sheet::SolverConstraintOperator_LESS_EQUAL,
+          /* Right*/ uno::Any(0.0) },
+        { /* Left */ table::CellAddress(0, 1, 1),
+          /* Op   */ sheet::SolverConstraintOperator_LESS_EQUAL,
+          /* Right*/ uno::Any(-1000.0) }
+    };
 
     // First run: a bound on the variable plus an impossible constraint on the
     // objective, so it cannot be solved.
-    xSolver->setConstraints({ { /* Left */ table::CellAddress(0, 1, 0),
-                                /* Op   */ sheet::SolverConstraintOperator_LESS_EQUAL,
-                                /* Right*/ uno::Any(0.0) },
-                              { /* Left */ table::CellAddress(0, 1, 1),
-                                /* Op   */ sheet::SolverConstraintOperator_LESS_EQUAL,
-                                /* Right*/ uno::Any(-1000.0) } });
+    uno::Reference<sheet::XSolver> xSolver
+        = initializeSolver(aObjective, aVariables, aConstraints, /*bMaximize*/ false);
     xSolver->solve();
     CPPUNIT_ASSERT(!xSolver->getSuccess());
 
@@ -810,23 +689,14 @@ void SwarmSolverTest::testControllersUnlockedAfterError()
 
     loadFromFile(u"Simple.ods");
 
-    uno::Reference<sheet::XSpreadsheetDocument> xDocument(mxComponent, uno::UNO_QUERY_THROW);
-    uno::Reference<frame::XModel> xModel(xDocument, uno::UNO_QUERY_THROW);
-
-    uno::Reference<sheet::XSolver> xSolver;
-    xSolver.set(m_xContext->getServiceManager()->createInstanceWithContext(
-                    u"com.sun.star.comp.Calc.SwarmSolver"_ustr, m_xContext),
-                uno::UNO_QUERY_THROW);
+    uno::Sequence<sheet::SolverConstraint> aConstraints;
 
     table::CellAddress aObjective(0, 1, 1);
     // sheet index 99 does not exist, so reading or writing this cell throws
     uno::Sequence<table::CellAddress> aVariables{ { 99, 1, 0 } };
 
-    xSolver->setDocument(xDocument);
-    xSolver->setObjective(aObjective);
-    xSolver->setVariables(aVariables);
-    xSolver->setConstraints({});
-    xSolver->setMaximize(false);
+    uno::Reference<sheet::XSolver> xSolver
+        = initializeSolver(aObjective, aVariables, aConstraints, /*bMaximize*/ false);
 
     bool bThrew = false;
     try
@@ -839,6 +709,8 @@ void SwarmSolverTest::testControllersUnlockedAfterError()
     }
 
     CPPUNIT_ASSERT(bThrew);
+    uno::Reference<sheet::XSpreadsheetDocument> xDocument(mxComponent, uno::UNO_QUERY_THROW);
+    uno::Reference<frame::XModel> xModel(xDocument, uno::UNO_QUERY_THROW);
     CPPUNIT_ASSERT_MESSAGE("Controllers must be unlocked after a failed solve",
                            !xModel->hasControllersLocked());
 }
@@ -851,13 +723,6 @@ void SwarmSolverTest::testConstrainedLinearProgram()
     // objective reaches its maximum of 10.
 
     loadFromFile(u"ConstrainedLinear.fods");
-
-    uno::Reference<sheet::XSpreadsheetDocument> xDocument(mxComponent, uno::UNO_QUERY_THROW);
-
-    uno::Reference<sheet::XSolver> xSolver;
-    xSolver.set(m_xContext->getServiceManager()->createInstanceWithContext(
-                    u"com.sun.star.comp.Calc.SwarmSolver"_ustr, m_xContext),
-                uno::UNO_QUERY_THROW);
 
     // objective 2x + 4y is in B3
     table::CellAddress aObjective(0, 1, 2);
@@ -878,11 +743,8 @@ void SwarmSolverTest::testConstrainedLinearProgram()
         { table::CellAddress(0, 1, 1), sheet::SolverConstraintOperator_LESS_EQUAL, uno::Any(6.0) }
     };
 
-    xSolver->setDocument(xDocument);
-    xSolver->setObjective(aObjective);
-    xSolver->setVariables(aVariables);
-    xSolver->setConstraints(aConstraints);
-    xSolver->setMaximize(true);
+    uno::Reference<sheet::XSolver> xSolver
+        = initializeSolver(aObjective, aVariables, aConstraints, /*bMaximize*/ true);
 
     xSolver->solve();
 
