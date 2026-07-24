@@ -32,11 +32,6 @@
 #include <sal/log.hxx>
 #include <tools/urlobj.hxx>
 
-#include <ft2build.h>
-#include FT_FREETYPE_H
-
-static FT_Library aLibFT = nullptr;
-
 // TODO: remove when the priorities are selected by UI
 // if (AH==0) => disable autohinting
 // if (AA==0) => disable antialiasing
@@ -44,27 +39,15 @@ static FT_Library aLibFT = nullptr;
 // if (AA prio <= AH prio) => antialias + autohint
 // if (AH<AA) => do not autohint when antialiasing
 // if (EB<AH) => do not autohint for monochrome
-static int nDefaultPrioAntiAlias   = 1;
-
-FT_Library GetFreetypeLibrary() { return aLibFT; }
+static int nDefaultPrioAntiAlias = 1;
 
 int GetDefaultAntiAliasPrio() { return nDefaultPrioAntiAlias; }
 
-void FreetypeFontList::InitFreetype()
-{
-    /*FT_Error rcFT =*/ FT_Init_FreeType( &aLibFT );
-
-    // TODO: remove when the priorities are selected by UI
-    char* pEnv;
-    pEnv = ::getenv( "SAL_ANTIALIASED_TEXT_PRIORITY" );
-    if( pEnv )
-        nDefaultPrioAntiAlias = pEnv[0] - '0';
-}
-
-
 FreetypeFontList::FreetypeFontList()
 {
-    InitFreetype();
+    // TODO: remove when the priorities are selected by UI
+    if (const char* pEnv = ::getenv("SAL_ANTIALIASED_TEXT_PRIORITY"))
+        nDefaultPrioAntiAlias = pEnv[0] - '0';
 }
 
 void FreetypeFontList::Init()
@@ -82,32 +65,13 @@ void FreetypeFontList::Init()
     SAL_INFO("vcl.fonts", "have " << m_aFontFaceList.size() << " fonts");
 }
 
-FreetypeFontList::~FreetypeFontList()
-{
-    // the faces point at the font files, so they have to go first
-    m_aFontFaceList.clear();
-}
+FreetypeFontList::~FreetypeFontList() {}
 
 FreetypeFontList& FreetypeFontList::get()
 {
     GenericUnixSalData* const pSalData(GetGenericUnixSalData());
     assert(pSalData);
     return *pSalData->GetFreetypeFontList();
-}
-
-FreetypeFontFile* FreetypeFontList::FindFontFile(const OString& rNativeFileName)
-{
-    // font file already known? (e.g. for ttc, synthetic, aliased fonts)
-    const char* pFileName = rNativeFileName.getStr();
-    FontFileList::const_iterator it = m_aFontFileList.find(pFileName);
-    if (it != m_aFontFileList.end())
-        return it->second.get();
-
-    // no => create new one
-    FreetypeFontFile* pFontFile = new FreetypeFontFile(rNativeFileName);
-    pFileName = pFontFile->maNativeFileName.getStr();
-    m_aFontFileList[pFileName].reset(pFontFile);
-    return pFontFile;
 }
 
 void FreetypeFontList::AddFontFace(const FontAttributes& rDevFontAttr, const OString& rFileName,
@@ -117,8 +81,8 @@ void FreetypeFontList::AddFontFace(const FontAttributes& rDevFontAttr, const OSt
         return;
 
     const sal_IntPtr nFontId = m_nNextFontId++;
-    m_aFontFaceList[ nFontId ] = new FreetypeFontFace( rDevFontAttr,
-        FindFontFile(rFileName), nFaceNum, nVariationNum, nFontId);
+    m_aFontFaceList[nFontId]
+        = new FreetypeFontFace(rDevFontAttr, rFileName, nFaceNum, nVariationNum, nFontId);
     m_aFontFileToFontId[ rFileName ].insert( nFontId );
 }
 

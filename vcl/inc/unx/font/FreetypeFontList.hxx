@@ -33,27 +33,19 @@
 #include <string_view>
 #include <unordered_map>
 
-class FreetypeFontFile;
 namespace vcl::font
 {
 class PhysicalFontCollection;
 }
 
-FT_Library GetFreetypeLibrary();
 int GetDefaultAntiAliasPrio();
 
  /**
   * The FreetypeFontList is the list of the fonts we know about.
   *
-  * It enumerates them from fontconfig, maps a font id to the FreetypeFontFace
-  * for it, and keeps the mmapped font files those faces read from. The faces it
-  * hands to a PhysicalFontCollection are the very same objects, shared by every
-  * collection.
-  *
-  * The resources are:
-  *   FreetypeFontFile = holds the mmapped font file, as long as it's used by any face.
-  *   FreetypeFontFace = holds the FT_FaceRec_ object, as long as it's used by any FreetypeFont.
-  *   FreetypeFont     = holds the FT_SizeRec_; it is the Freetype LogicalFontInstance.
+  * It enumerates them from fontconfig and maps a font id to the FreetypeFontFace
+  * for it. The faces it hands to a PhysicalFontCollection are the very same
+  * objects, shared by every collection.
   **/
 class VCL_DLLPUBLIC FreetypeFontList final
 {
@@ -80,17 +72,13 @@ private:
 
     SAL_DLLPRIVATE void Init();
 
-    SAL_DLLPRIVATE static void InitFreetype();
-    SAL_DLLPRIVATE FreetypeFontFile* FindFontFile(const OString& rNativeFileName);
     SAL_DLLPRIVATE void AddFontFace(const FontAttributes& rDFA, const OString& rFileName,
                                     int nFaceNum, int nVariationNum);
 
     typedef std::unordered_map<sal_IntPtr, rtl::Reference<FreetypeFontFace>> FontFaceList;
-    typedef std::unordered_map<const char*, std::unique_ptr<FreetypeFontFile>, rtl::CStringHash, rtl::CStringEqual> FontFileList;
 
     sal_IntPtr              m_nNextFontId = 1;
     FontFaceList            m_aFontFaceList;
-    FontFileList            m_aFontFileList;
     std::unordered_map<OString, o3tl::sorted_vector<sal_IntPtr>> m_aFontFileToFontId;
 };
 

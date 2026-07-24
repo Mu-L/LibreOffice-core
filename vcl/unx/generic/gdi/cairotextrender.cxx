@@ -41,20 +41,18 @@
 
 namespace {
 
-typedef struct FT_FaceRec_* FT_Face;
-
 class CairoFontsCache : public CacheOwner
 {
 public:
     struct CacheId
     {
-        FT_Face maFace;
+        const void* mpFace;
         const FontConfigFontOptions *mpOptions;
         bool mbEmbolden;
         bool mbVerticalMetrics;
         bool operator ==(const CacheId& rOther) const
         {
-            return maFace == rOther.maFace &&
+            return mpFace == rOther.mpFace &&
                 mpOptions == rOther.mpOptions &&
                 mbEmbolden == rOther.mbEmbolden &&
                 mbVerticalMetrics == rOther.mbVerticalMetrics;
@@ -261,9 +259,8 @@ static CairoFontsCache::CacheId makeCacheId(const GenericSalLayout& rLayout)
 {
     const FreetypeFont& rFont = static_cast<const FreetypeFont&>(rLayout.GetFont());
 
-    FT_Face aFace = rFont.GetFtFace();
     CairoFontsCache::CacheId aId;
-    aId.maFace = aFace;
+    aId.mpFace = rFont.GetFontFace();
     aId.mpOptions = rFont.GetFontOptions();
     aId.mbEmbolden = rFont.NeedsArtificialBold();
     aId.mbVerticalMetrics = false;

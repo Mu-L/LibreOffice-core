@@ -37,15 +37,12 @@ class VCL_DLLPUBLIC FreetypeFont final : public LogicalFontInstance
     FreetypeFontFace::CreateFontInstance(const vcl::font::FontSelectPattern&) const;
 
 public:
-    virtual ~FreetypeFont() override;
-
     const FreetypeFontFace* GetFontFace() const
     {
         return static_cast<const FreetypeFontFace*>(LogicalFontInstance::GetFontFace());
     }
 
-    bool TestFont() const { return mbFaceOk; }
-    FT_Face GetFtFace() const;
+    bool TestFont() const;
     const FontConfigFontOptions* GetFontOptions() const;
 
     bool GetAntialiasAdvice() const;
@@ -53,15 +50,9 @@ public:
 private:
     explicit FreetypeFont(const FreetypeFontFace&, const vcl::font::FontSelectPattern&);
 
-    int mnWidth;
     int mnPrioAntiAlias;
-    double mfStretch;
-    FT_FaceRec_* maFaceFT;
-    FT_SizeRec_* maSizeFT;
 
     mutable std::unique_ptr<FontConfigFontOptions> mxFontOptions;
-
-    bool mbFaceOk;
 };
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

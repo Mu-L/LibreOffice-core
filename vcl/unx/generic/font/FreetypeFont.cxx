@@ -27,60 +27,19 @@
 #include <font/LogicalFontInstance.hxx>
 #include <fontattributes.hxx>
 
-#include <sal/log.hxx>
-
-#include <ft2build.h>
-#include FT_FREETYPE_H
-#include FT_SIZES_H
-
-FT_Face FreetypeFont::GetFtFace() const
-{
-    FT_Activate_Size( maSizeFT );
-
-    return maFaceFT;
-}
+#include <hb.h>
 
 // FreetypeFont
 
 FreetypeFont::FreetypeFont(const FreetypeFontFace& rFontFace, const vcl::font::FontSelectPattern& rFSD)
-:   LogicalFontInstance(rFontFace, rFSD),
-    mnPrioAntiAlias(GetDefaultAntiAliasPrio()),
-    maFaceFT( nullptr ),
-    maSizeFT( nullptr ),
-    mbFaceOk( false )
+    : LogicalFontInstance(rFontFace, rFSD)
+    , mnPrioAntiAlias(GetDefaultAntiAliasPrio())
 {
-    maFaceFT = rFontFace.GetFaceFT();
+}
 
-    // set the pixel size of the font instance
-    mnWidth = rFSD.mnWidth;
-    if( !mnWidth )
-        mnWidth = rFSD.mnHeight;
-    if (rFSD.mnHeight == 0)
-    {
-        SAL_WARN("vcl", "FreetypeFont divide by zero");
-        mfStretch = 1.0;
-        return;
-    }
-    mfStretch = static_cast<double>(mnWidth) / rFSD.mnHeight;
-    // sanity checks (e.g. #i66394#, #i66244#, #i66537#)
-    if (mnWidth < 0)
-    {
-        SAL_WARN("vcl", "FreetypeFont negative font width of: " << mnWidth);
-        return;
-    }
-
-    SAL_WARN_IF(mfStretch > +64.0 || mfStretch < -64.0, "vcl", "FreetypeFont excessive stretch of: " << mfStretch);
-
-    if( !maFaceFT )
-        return;
-
-    FT_New_Size( maFaceFT, &maSizeFT );
-    FT_Activate_Size( maSizeFT );
-    /* This might fail for color bitmap fonts, but that is fine since we will
-     * not need any glyph data from FreeType in this case */
-    /*FT_Error rc = */ FT_Set_Pixel_Sizes( maFaceFT, mnWidth, rFSD.mnHeight );
-
-    mbFaceOk = true;
+bool FreetypeFont::TestFont() const
+{
+    return hb_face_get_glyph_count(GetFontFace()->GetHbFace()) > 0;
 }
 
 namespace
@@ -102,14 +61,6 @@ const FontConfigFontOptions* FreetypeFont::GetFontOptions() const
                                    GetVariations());
     }
     return mxFontOptions.get();
-}
-
-FreetypeFont::~FreetypeFont()
-{
-    if( maSizeFT )
-        FT_Done_Size( maSizeFT );
-
-    GetFontFace()->ReleaseFaceFT();
 }
 
 bool FreetypeFont::GetAntialiasAdvice() const
