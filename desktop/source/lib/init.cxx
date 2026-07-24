@@ -5216,22 +5216,10 @@ static void lo_setOption(LibreOfficeKit* /*pThis*/, const char *pOption, const c
 #ifdef LINUX
     else if (strcmp(pOption, "addfont") == 0)
     {
-        if (memcmp(pValue, "file://", 7) == 0)
-            pValue += 7;
-
-        int fd = open(pValue, O_RDONLY);
-        if (fd == -1)
-        {
-            std::cerr << "Could not open font file '" << pValue << "': " << strerror(errno) << std::endl;
-            return;
-        }
-
-        OUString sMagicFileName = "file:///:FD:/" + OUString::number(fd);
-
         SolarMutexGuard aGuard;
         OutputDevice *pDevice = Application::GetDefaultDevice();
         OutputDevice::ImplClearAllFontData(true);
-        pDevice->AddTempDevFont(sMagicFileName, u""_ustr);
+        pDevice->AddTempDevFont(OUString::fromUtf8(pValue), u""_ustr);
         OutputDevice::ImplRefreshAllFontData(true);
     }
 #endif

@@ -25,7 +25,6 @@ endif
 $(eval $(call gb_UnpackedTarball_add_patches,cairo,\
     external/cairo/cairo/cairo.RGB24_888.patch \
     external/cairo/cairo/san.patch.0 \
-    external/cairo/cairo/cairo-fd-hack.patch.0 \
     external/cairo/cairo/cairo.ofz57493-Timeout.patch.1 \
     external/cairo/cairo/shm-null-deref.patch.1 \
     external/cairo/cairo/avoid-negative-left-shift.patch.1 \
