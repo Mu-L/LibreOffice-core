@@ -15,6 +15,7 @@
 
 #include <vcl/virdev.hxx>
 #include <vcl/font.hxx>
+#include <vcl/font/Feature.hxx>
 #include <vcl/metric.hxx>
 
 #include <font/LogicalFontInstance.hxx>
@@ -30,11 +31,13 @@ public:
     void testglyphboundrect();
     void testglyphoutline();
     void testfontmetric();
+    void testfontvariations();
 
     CPPUNIT_TEST_SUITE(VclLogicalFontInstanceTest);
     CPPUNIT_TEST(testglyphboundrect);
     CPPUNIT_TEST(testglyphoutline);
     CPPUNIT_TEST(testfontmetric);
+    CPPUNIT_TEST(testfontvariations);
 
     CPPUNIT_TEST_SUITE_END();
 };
@@ -161,6 +164,27 @@ void VclLogicalFontInstanceTest::testfontmetric()
     FontMetric aMono = device->GetFontMetric();
     CPPUNIT_ASSERT_EQUAL(FAMILY_SWISS, aMono.GetFamilyType());
     CPPUNIT_ASSERT_EQUAL(PITCH_FIXED, aMono.GetPitch());
+#endif
+}
+
+void VclLogicalFontInstanceTest::testfontvariations()
+{
+#if HAVE_MORE_FONTS
+    ScopedVclPtr<VirtualDevice> device = VclPtr<VirtualDevice>::Create(DeviceFormat::WITHOUT_ALPHA);
+    device->SetOutputSizePixel(Size(1000, 1000));
+
+    // "Reem Kufi" is a variable font with named instances at wght 400/500/600/700;
+    // selecting Bold picks the wght=700 instance, whose design coordinates
+    // GetVariations() reads via HarfBuzz.
+    vcl::Font font(u"Reem Kufi"_ustr, Size(0, 100));
+    font.SetWeight(WEIGHT_BOLD);
+    device->SetFont(font);
+
+    const LogicalFontInstance* pFontInstance = device->GetFontInstance();
+    const auto& rVariations = pFontInstance->GetVariations();
+    CPPUNIT_ASSERT_EQUAL(size_t(1), rVariations.size());
+    CPPUNIT_ASSERT_EQUAL(vcl::font::featureCode("wght"), rVariations[0].nTag);
+    CPPUNIT_ASSERT_EQUAL(700.0f, rVariations[0].fValue);
 #endif
 }
 

@@ -19,7 +19,6 @@
 
 #include <sal/config.h>
 
-#include <o3tl/safeint.hxx>
 #include <utility>
 
 #include <unx/font/FreetypeFontFace.hxx>
@@ -38,7 +37,8 @@
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
-#include FT_MULTIPLE_MASTERS_H
+
+#include <hb-ot.h>
 
 #include <tools/UnixWrappers.h>
 #include <fcntl.h>
@@ -168,40 +168,6 @@ FreetypeFontFace::FreetypeFontFace(const FontAttributes& rDevFontAttributes,
     IncreaseQualityBy(mpFontFile->GetLangBoost());
 }
 
-namespace
-{
-void dlFT_Done_MM_Var(FT_Library library, FT_MM_Var* amaster)
-{
-#if !HAVE_DLAPI
-    FT_Done_MM_Var(library, amaster);
-#else
-#ifdef _WIN32
-    // Unlike on Unixes, we can't pass a NULL module parameter to
-    // osl_getAsciiFunctionSymbol(), i.e. GetProcAddress(), and
-    // have it look through all modules loaded, like dlsym() does.
-    // Instead, we "know" that FT_Done_MM_Var will either be in
-    // mergedlo.dll or vcllo.dll.
-    void (*func)(FT_Library, FT_MM_Var*) = nullptr;
-    oslModule module;
-    if (osl_getModuleHandle((u"mergedlo.dll"_ustr).pData, &module)
-        || osl_getModuleHandle((u"vcllo.dll"_ustr).pData, &module))
-        func = reinterpret_cast<void (*)(FT_Library, FT_MM_Var*)>(
-            osl_getAsciiFunctionSymbol(module, "FT_Done_MM_Var"));
-        // If FT_Done_MM_Var is not found, we will crash or something,
-        // at least in a build with the debugging C runtime, as
-        // calling free() below is very wrong, I think.
-#else
-    static auto func = reinterpret_cast<void (*)(FT_Library, FT_MM_Var*)>(
-        osl_getAsciiFunctionSymbol(nullptr, "FT_Done_MM_Var"));
-#endif
-    if (func)
-        func(library, amaster);
-    else
-        free(amaster);
-#endif
-}
-}
-
 FT_FaceRec_* FreetypeFontFace::GetFaceFT() const
 {
     if (!maFaceFT && mpFontFile->Map())
@@ -210,20 +176,6 @@ FT_FaceRec_* FreetypeFontFace::GetFaceFT() const
                                          mpFontFile->GetFileSize(), mnFaceNum, &maFaceFT);
         if ((rc != FT_Err_Ok) || (maFaceFT->num_glyphs <= 0))
             maFaceFT = nullptr;
-
-        if (maFaceFT && mnFaceVariation)
-        {
-            FT_MM_Var* pFtMMVar;
-            if (FT_Get_MM_Var(maFaceFT, &pFtMMVar) == 0)
-            {
-                if (o3tl::make_unsigned(mnFaceVariation) <= pFtMMVar->num_namedstyles)
-                {
-                    FT_Var_Named_Style* instance = &pFtMMVar->namedstyle[mnFaceVariation - 1];
-                    FT_Set_Var_Design_Coordinates(maFaceFT, pFtMMVar->num_axis, instance->coords);
-                }
-                dlFT_Done_MM_Var(GetFreetypeLibrary(), pFtMMVar);
-            }
-        }
     }
 
     ++mnRefCount;
@@ -295,26 +247,26 @@ FreetypeFontFace::GetVariations(const LogicalFontInstance&) const
     if (!mxVariations)
     {
         mxVariations.emplace();
-        FT_Face aFaceFT = GetFaceFT();
         sal_uInt32 nFaceVariation = GetFontFaceVariation();
-        if (!(aFaceFT && nFaceVariation))
-            return *mxVariations;
-
-        FT_MM_Var* pFtMMVar;
-        if (FT_Get_MM_Var(aFaceFT, &pFtMMVar) != 0)
-            return *mxVariations;
-
-        if (nFaceVariation <= pFtMMVar->num_namedstyles)
+        if (nFaceVariation)
         {
-            FT_Var_Named_Style* instance = &pFtMMVar->namedstyle[nFaceVariation - 1];
-            mxVariations->resize(pFtMMVar->num_axis);
-            for (FT_UInt i = 0; i < pFtMMVar->num_axis; ++i)
+            hb_face_t* pHbFace = GetHbFace();
+            unsigned int nAxes = hb_ot_var_get_axis_count(pHbFace);
+            if (nAxes && nFaceVariation - 1 < hb_ot_var_get_named_instance_count(pHbFace))
             {
-                (*mxVariations)[i].nTag = pFtMMVar->axis[i].tag;
-                (*mxVariations)[i].fValue = instance->coords[i] / 65536.0;
+                std::vector<hb_ot_var_axis_info_t> aInfos(nAxes);
+                hb_ot_var_get_axis_infos(pHbFace, 0, &nAxes, aInfos.data());
+                std::vector<float> aCoords(nAxes);
+                unsigned int nCoords = nAxes;
+                if (hb_ot_var_named_instance_get_design_coords(pHbFace, nFaceVariation - 1,
+                                                               &nCoords, aCoords.data()))
+                {
+                    mxVariations->reserve(nAxes);
+                    for (unsigned int i = 0; i < nAxes; ++i)
+                        mxVariations->push_back({ aInfos[i].tag, aCoords[i] });
+                }
             }
         }
-        dlFT_Done_MM_Var(GetFreetypeLibrary(), pFtMMVar);
     }
 
     return *mxVariations;
